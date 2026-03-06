@@ -6,8 +6,7 @@ import { rateLimit } from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
-import { getDb, closeDb } from './db/database.js';
-import { seedDatabase } from './db/seed.js';
+import { supabase } from './db/supabase.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.js';
 import menuRoutes from './routes/menu.js';
@@ -16,6 +15,8 @@ import orderRoutes from './routes/orders.js';
 import userRoutes from './routes/user.js';
 import adminRoutes from './routes/admin.js';
 import promoRoutes from './routes/promo.js';
+import cronRoutes from './routes/cron.js';
+
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,7 +30,7 @@ app.use(helmet({
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
             "img-src": ["'self'", "data:", "https://sushidemaksim.com", "http://localhost:3000", "http://localhost:3001"],
-            "connect-src": ["'self'", "http://localhost:3000", "http://localhost:3001"],
+            "connect-src": ["'self'", "http://localhost:3000", "http://localhost:3001", "*.supabase.co"],
         },
     },
 }));
@@ -43,25 +44,24 @@ app.use(cors({
 
 // ─── Rate Limiting ─────────────────────────────────────────────────────────────
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 20,                   // max 20 requests per window
+    windowMs: 15 * 60 * 1000,
+    max: 20,
     message: { error: 'Demasiados intentos. Inténtalo de nuevo en 15 minutos.' },
     standardHeaders: true,
     legacyHeaders: false,
 });
 
-// Strict limiter for password reset — prevents email spam and brute-force
 const resetLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 3,                    // max 3 reset attempts per 15 min
+    windowMs: 15 * 60 * 1000,
+    max: 3,
     message: { error: 'Demasiados intentos de recuperación. Espera 15 minutos.' },
     standardHeaders: true,
     legacyHeaders: false,
 });
 
 const generalLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 minute
-    max: 120,             // max 120 requests per minute
+    windowMs: 60 * 1000,
+    max: 120,
     message: { error: 'Demasiadas solicitudes. Inténtalo más tarde.' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -79,10 +79,6 @@ app.use(morgan(config.isDev ? 'dev' : 'combined'));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// ─── Database ──────────────────────────────────────────────────────────────────
-getDb();
-seedDatabase();
-
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/menu', menuRoutes);
@@ -91,6 +87,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/promo', promoRoutes);
+app.use('/api/cron', cronRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
@@ -110,43 +107,55 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 // ─── Start Server ──────────────────────────────────────────────────────────────
-app.listen(config.port, () => {
-    console.log(`\n🍣 Sushi de Maksim API [${config.nodeEnv}]`);
-    console.log(`   Server:  http://localhost:${config.port}`);
-    console.log(`   Health:  http://localhost:${config.port}/api/health`);
-    console.log(`   CORS:    ${config.corsOrigin}\n`);
-});
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+    app.listen(config.port, () => {
+        console.log(`\n🍣 Sushi de Maksim API [${config.nodeEnv}]`);
+        console.log(`   Server:  http://localhost:${config.port}`);
+        console.log(`   Health:  http://localhost:${config.port}/api/health`);
+        console.log(`   CORS:    ${config.corsOrigin}\n`);
+    });
+}
+
+export default app;
 
 // ─── Background Jobs ───────────────────────────────────────────────────────────
-setInterval(() => {
-    try {
-        const db = getDb();
-        const lateOrders = db.prepare(`
-            SELECT o.id, o.user_id, u.email 
-            FROM orders o
-            JOIN users u ON o.user_id = u.id
-            WHERE o.status != 'delivered' AND o.status != 'cancelled' 
-              AND o.discount_sent = 0 
-              AND datetime('now') > datetime(o.created_at, '+60 minutes')
-        `).all() as any[];
+if (!process.env.VERCEL) {
+    setInterval(async () => {
+        try {
+            const sixtyMinsAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
-        for (const order of lateOrders) {
-            const code = `LATE-20-${order.id}-${Math.floor(Math.random() * 1000)}`;
-            db.prepare('INSERT INTO promo_codes (code, discount_percentage, user_id) VALUES (?, ?, ?)').run(code, 20, order.user_id);
-            db.prepare('UPDATE orders SET discount_sent = 1 WHERE id = ?').run(order.id);
-            console.log(`📧 Simulated email to ${order.email}: Your order #${order.id} is late! Here is a 20% discount code for your next order: ${code}`);
+            const { data: lateOrders } = await supabase
+                .from('orders')
+                .select('id, user_id, users(email)')
+                .not('status', 'in', '("delivered", "cancelled")')
+                .eq('discount_sent', false)
+                .lt('created_at', sixtyMinsAgo);
+
+            if (lateOrders && lateOrders.length > 0) {
+                for (const order of lateOrders) {
+                    const code = `LATE-20-${order.id}-${Math.floor(Math.random() * 1000)}`;
+
+                    await Promise.all([
+                        supabase.from('promo_codes').insert({ code, discount_percentage: 20, user_id: order.user_id }),
+                        supabase.from('orders').update({ discount_sent: true }).eq('id', order.id)
+                    ]);
+
+                    console.log(`📧 Simulated email to ${(order.users as any)?.email}: Your order #${order.id} is late! Here is a 20% discount code for your next order: ${code}`);
+                }
+            }
+        } catch (e) {
+            console.error('Error checking late orders:', e);
         }
-    } catch (e) {
-        console.error('Error checking late orders:', e);
-    }
-}, 60 * 1000); // limit 1 min
+    }, 60 * 1000);
+}
 
 // ─── Graceful Shutdown ─────────────────────────────────────────────────────────
 function shutdown(signal: string) {
     console.log(`\n⚡ Received ${signal}. Shutting down gracefully...`);
-    closeDb();
     process.exit(0);
 }
 
-process.on('SIGINT', () => shutdown('SIGINT'));
-process.on('SIGTERM', () => shutdown('SIGTERM'));
+if (!process.env.VERCEL) {
+    process.on('SIGINT', () => shutdown('SIGINT'));
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+}

@@ -31,4 +31,8 @@ export const config = {
         pass: process.env.SMTP_PASS || '',
         fromName: process.env.SMTP_FROM_NAME || 'Sushi de Maksim',
     },
+    supabase: {
+        url: process.env.SUPABASE_URL || '',
+        key: process.env.SUPABASE_KEY || '',
+    },
 };

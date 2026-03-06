@@ -1,29 +1,51 @@
 import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { getDb } from '../db/database.js';
+import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate, emailRule, passwordRule } from '../middleware/validate.js';
+import { validate, passwordRule } from '../middleware/validate.js';
 
 const router = Router();
 router.use(authMiddleware);
 
 // GET /api/user/profile
 router.get('/profile', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const db = getDb();
-    const user = db.prepare('SELECT id, name, email, phone, avatar, role, created_at AS createdAt FROM users WHERE id = ?').get(req.userId) as any;
+    const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('id, name, email, phone, avatar, role, created_at')
+        .eq('id', req.userId)
+        .single();
 
-    if (!user) {
+    if (userError || !user) {
         return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    const addresses = db.prepare('SELECT id, label, street, city, postal_code AS postalCode, phone, is_default AS isDefault FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC').all(req.userId);
-    const orderCount = db.prepare('SELECT COUNT(*) as count FROM orders WHERE user_id = ?').get(req.userId) as any;
+    const { data: addresses } = await supabase
+        .from('user_addresses')
+        .select('id, label, street, city, postal_code, phone, is_default')
+        .eq('user_id', req.userId)
+        .order('is_default', { ascending: false });
 
-    res.json({ user: { ...user, addresses, orderCount: orderCount.count } });
+    const { count: orderCount } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', req.userId);
+
+    const formattedUser = {
+        ...user,
+        createdAt: user.created_at,
+        addresses: addresses?.map(a => ({
+            ...a,
+            postalCode: a.postal_code,
+            isDefault: a.is_default
+        })),
+        orderCount: orderCount || 0
+    };
+
+    res.json({ user: formattedUser });
 }));
 
-// PUT /api/user/profile — update name, email, phone, avatar
+// PUT /api/user/profile
 router.put(
     '/profile',
     validate({
@@ -35,36 +57,42 @@ router.put(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { name, email, phone, avatar } = req.body;
 
-        const db = getDb();
-
         if (email) {
-            const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?) AND id != ?').get(email, req.userId);
+            const { data: existing } = await supabase
+                .from('users')
+                .select('id')
+                .ilike('email', email.trim())
+                .neq('id', req.userId)
+                .maybeSingle();
+
             if (existing) {
                 return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
             }
         }
 
-        const updates: string[] = [];
-        const values: any[] = [];
+        const updateData: any = {};
+        if (name) updateData.name = name.trim();
+        if (email) updateData.email = email.toLowerCase().trim();
+        if (phone !== undefined) updateData.phone = phone?.trim() || '';
+        if (avatar !== undefined) updateData.avatar = avatar?.trim() || '';
 
-        if (name) { updates.push('name = ?'); values.push(name.trim()); }
-        if (email) { updates.push('email = ?'); values.push(email.toLowerCase().trim()); }
-        if (phone !== undefined) { updates.push('phone = ?'); values.push(phone?.trim() || ''); }
-        if (avatar !== undefined) { updates.push('avatar = ?'); values.push(avatar?.trim() || ''); }
-
-        if (updates.length === 0) {
+        if (Object.keys(updateData).length === 0) {
             return res.status(400).json({ error: 'No hay datos para actualizar' });
         }
 
-        values.push(req.userId);
-        db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+        const { data: user, error } = await supabase
+            .from('users')
+            .update(updateData)
+            .eq('id', req.userId)
+            .select('id, name, email, phone, avatar, role, created_at')
+            .single();
 
-        const user = db.prepare('SELECT id, name, email, phone, avatar, role, created_at AS createdAt FROM users WHERE id = ?').get(req.userId);
-        res.json({ user });
+        if (error) throw error;
+        res.json({ user: { ...user, createdAt: user.created_at } });
     })
 );
 
-// PUT /api/user/change-password — change password (requires current password)
+// PUT /api/user/change-password
 router.put(
     '/change-password',
     validate({
@@ -74,10 +102,13 @@ router.put(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { currentPassword, newPassword } = req.body;
 
-        const db = getDb();
-        const user = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(req.userId) as any;
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('password_hash')
+            .eq('id', req.userId)
+            .single();
 
-        if (!user) {
+        if (error || !user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
@@ -87,7 +118,7 @@ router.put(
         }
 
         const newHash = await bcrypt.hash(newPassword, 10);
-        db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newHash, req.userId);
+        await supabase.from('users').update({ password_hash: newHash }).eq('id', req.userId);
 
         res.json({ success: true, message: 'Contraseña actualizada correctamente' });
     })
@@ -95,9 +126,21 @@ router.put(
 
 // GET /api/user/addresses
 router.get('/addresses', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const db = getDb();
-    const addresses = db.prepare('SELECT id, label, street, city, postal_code AS postalCode, phone, is_default AS isDefault FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC').all(req.userId);
-    res.json({ addresses });
+    const { data: addresses, error } = await supabase
+        .from('user_addresses')
+        .select('id, label, street, city, postal_code, phone, is_default')
+        .eq('user_id', req.userId)
+        .order('is_default', { ascending: false });
+
+    if (error) throw error;
+
+    const formatted = addresses?.map(a => ({
+        ...a,
+        postalCode: a.postal_code,
+        isDefault: a.is_default
+    }));
+
+    res.json({ addresses: formatted });
 }));
 
 // POST /api/user/addresses
@@ -113,23 +156,37 @@ router.post(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { label, street, city, postalCode, phone, isDefault } = req.body;
 
-        const db = getDb();
-
         if (isDefault) {
-            db.prepare('UPDATE user_addresses SET is_default = 0 WHERE user_id = ?').run(req.userId);
+            await supabase.from('user_addresses').update({ is_default: false }).eq('user_id', req.userId);
         }
 
-        const result = db.prepare(`
-            INSERT INTO user_addresses (user_id, label, street, city, postal_code, phone, is_default)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `).run(req.userId, label?.trim() || '', street.trim(), city?.trim() || '', postalCode?.trim() || '', phone?.trim() || '', isDefault ? 1 : 0);
+        const { data: address, error } = await supabase
+            .from('user_addresses')
+            .insert({
+                user_id: req.userId,
+                label: label?.trim() || '',
+                street: street.trim(),
+                city: city?.trim() || '',
+                postal_code: postalCode?.trim() || '',
+                phone: phone?.trim() || '',
+                is_default: !!isDefault
+            })
+            .select()
+            .single();
 
-        const address = db.prepare('SELECT id, label, street, city, postal_code AS postalCode, phone, is_default AS isDefault FROM user_addresses WHERE id = ?').get(result.lastInsertRowid);
-        res.status(201).json({ address });
+        if (error) throw error;
+
+        res.status(201).json({
+            address: {
+                ...address,
+                postalCode: address.postal_code,
+                isDefault: address.is_default
+            }
+        });
     })
 );
 
-// PUT /api/user/addresses/:id — edit address
+// PUT /api/user/addresses/:id
 router.put(
     '/addresses/:id',
     validate({
@@ -140,111 +197,97 @@ router.put(
         phone: { type: 'string', maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
-
-        if (isNaN(id)) {
-            return res.status(400).json({ error: 'ID de dirección inválido' });
-        }
-
+        const id = req.params.id;
         const { label, street, city, postalCode, phone, isDefault } = req.body;
-        const db = getDb();
-
-        // Check ownership
-        const existing = db.prepare('SELECT id FROM user_addresses WHERE id = ? AND user_id = ?').get(id, req.userId);
-        if (!existing) {
-            return res.status(404).json({ error: 'Dirección no encontrada' });
-        }
 
         if (isDefault) {
-            db.prepare('UPDATE user_addresses SET is_default = 0 WHERE user_id = ?').run(req.userId);
+            await supabase.from('user_addresses').update({ is_default: false }).eq('user_id', req.userId);
         }
 
-        const updates: string[] = [];
-        const values: any[] = [];
+        const updateData: any = {};
+        if (label !== undefined) updateData.label = label?.trim() || '';
+        if (street !== undefined) updateData.street = street.trim();
+        if (city !== undefined) updateData.city = city?.trim() || '';
+        if (postalCode !== undefined) updateData.postal_code = postalCode?.trim() || '';
+        if (phone !== undefined) updateData.phone = phone?.trim() || '';
+        if (isDefault !== undefined) updateData.is_default = !!isDefault;
 
-        if (label !== undefined) { updates.push('label = ?'); values.push(label?.trim() || ''); }
-        if (street !== undefined) { updates.push('street = ?'); values.push(street.trim()); }
-        if (city !== undefined) { updates.push('city = ?'); values.push(city?.trim() || ''); }
-        if (postalCode !== undefined) { updates.push('postal_code = ?'); values.push(postalCode?.trim() || ''); }
-        if (phone !== undefined) { updates.push('phone = ?'); values.push(phone?.trim() || ''); }
-        if (isDefault !== undefined) { updates.push('is_default = ?'); values.push(isDefault ? 1 : 0); }
+        const { data: address, error } = await supabase
+            .from('user_addresses')
+            .update(updateData)
+            .eq('id', id)
+            .eq('user_id', req.userId)
+            .select()
+            .single();
 
-        if (updates.length === 0) {
-            return res.status(400).json({ error: 'No hay datos para actualizar' });
-        }
+        if (error) return res.status(404).json({ error: 'Dirección no encontrada' });
 
-        values.push(id);
-        db.prepare(`UPDATE user_addresses SET ${updates.join(', ')} WHERE id = ?`).run(...values);
-
-        const address = db.prepare('SELECT id, label, street, city, postal_code AS postalCode, phone, is_default AS isDefault FROM user_addresses WHERE id = ?').get(id);
-        res.json({ address });
+        res.json({
+            address: {
+                ...address,
+                postalCode: address.postal_code,
+                isDefault: address.is_default
+            }
+        });
     })
 );
 
 // DELETE /api/user/addresses/:id
 router.delete('/addresses/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const id = parseInt(req.params.id);
+    const { error } = await supabase
+        .from('user_addresses')
+        .delete()
+        .eq('id', req.params.id)
+        .eq('user_id', req.userId);
 
-    if (isNaN(id)) {
-        return res.status(400).json({ error: 'ID de dirección inválido' });
-    }
-
-    const db = getDb();
-    const result = db.prepare('DELETE FROM user_addresses WHERE id = ? AND user_id = ?').run(id, req.userId);
-
-    if (result.changes === 0) {
-        return res.status(404).json({ error: 'Dirección no encontrada' });
-    }
-
+    if (error) return res.status(404).json({ error: 'Dirección no encontrada' });
     res.json({ success: true });
 }));
 
-// PUT /api/user/addresses/:id/default — set as default
+// PUT /api/user/addresses/:id/default
 router.put('/addresses/:id/default', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
+    await supabase.from('user_addresses').update({ is_default: false }).eq('user_id', req.userId);
+    const { error } = await supabase
+        .from('user_addresses')
+        .update({ is_default: true })
+        .eq('id', id)
+        .eq('user_id', req.userId);
 
-    if (isNaN(id)) {
-        return res.status(400).json({ error: 'ID de dirección inválido' });
-    }
-
-    const db = getDb();
-    db.prepare('UPDATE user_addresses SET is_default = 0 WHERE user_id = ?').run(req.userId);
-    const result = db.prepare('UPDATE user_addresses SET is_default = 1 WHERE id = ? AND user_id = ?').run(id, req.userId);
-
-    if (result.changes === 0) {
-        return res.status(404).json({ error: 'Dirección no encontrada' });
-    }
-
+    if (error) return res.status(404).json({ error: 'Dirección no encontrada' });
     res.json({ success: true });
 }));
 
 // GET /api/user/favorites
 router.get('/favorites', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const db = getDb();
-    const favorites = db.prepare(`
-        SELECT mi.* 
-        FROM user_favorites uf
-        JOIN menu_items mi ON uf.menu_item_id = mi.id
-        WHERE uf.user_id = ?
-    `).all(req.userId);
-    res.json({ favorites });
+    const { data: favorites, error } = await supabase
+        .from('user_favorites')
+        .select('menu_items(*)')
+        .eq('user_id', req.userId);
+
+    if (error) throw error;
+    res.json({ favorites: favorites?.map(f => f.menu_items) || [] });
 }));
 
-// POST /api/user/favorites — toggle favorite
+// POST /api/user/favorites
 router.post(
     '/favorites',
     validate({ menuItemId: { required: true, type: 'number' } }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { menuItemId } = req.body;
-        const db = getDb();
 
-        const exists = db.prepare('SELECT id FROM user_favorites WHERE user_id = ? AND menu_item_id = ?').get(req.userId, menuItemId);
+        const { data: exists } = await supabase
+            .from('user_favorites')
+            .select('id')
+            .eq('user_id', req.userId)
+            .eq('menu_item_id', menuItemId)
+            .maybeSingle();
 
         if (exists) {
-            db.prepare('DELETE FROM user_favorites WHERE user_id = ? AND menu_item_id = ?').run(req.userId, menuItemId);
+            await supabase.from('user_favorites').delete().eq('id', exists.id);
             res.json({ isFavorite: false });
         } else {
-            db.prepare('INSERT INTO user_favorites (user_id, menu_item_id) VALUES (?, ?)').run(req.userId, menuItemId);
+            await supabase.from('user_favorites').insert({ user_id: req.userId, menu_item_id: menuItemId });
             res.json({ isFavorite: true });
         }
     })

@@ -170,6 +170,7 @@ export default function ProfilePage() {
                             <AddressesTab
                                 addresses={user.addresses}
                                 addAddress={addAddress}
+                                editAddress={editAddress}
                                 removeAddress={removeAddress}
                                 setDefaultAddress={setDefaultAddress}
                                 onSuccess={showToast}

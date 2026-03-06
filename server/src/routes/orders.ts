@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import { getDb } from '../db/database.js';
+import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
@@ -17,70 +17,80 @@ router.post(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { deliveryAddress, phoneNumber, notes, promoCode } = req.body;
 
-        const db = getDb();
+        // 1. Get cart items with product details
+        const { data: cartItems, error: cartError } = await supabase
+            .from('cart_items')
+            .select('quantity, menu_item_id, menu_items(name, price, image)')
+            .eq('user_id', req.userId);
 
-        const cartItems = db.prepare(`
-            SELECT ci.quantity, ci.menu_item_id,
-                   mi.name, mi.price, mi.image
-            FROM cart_items ci
-            JOIN menu_items mi ON ci.menu_item_id = mi.id
-            WHERE ci.user_id = ?
-        `).all(req.userId) as any[];
-
-        if (cartItems.length === 0) {
+        if (cartError) throw cartError;
+        if (!cartItems || cartItems.length === 0) {
             return res.status(400).json({ error: 'La cesta está vacía' });
         }
 
-        let finalTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        // 2. Calculate total
+        let finalTotal = cartItems.reduce((sum, item: any) => sum + item.menu_items.price * item.quantity, 0);
         let usedPromoId = null;
 
         if (promoCode) {
-            const promo = db.prepare('SELECT * FROM promo_codes WHERE code = ? AND is_used = 0 AND user_id = ?').get(promoCode, req.userId) as any;
+            const { data: promo } = await supabase
+                .from('promo_codes')
+                .select('*')
+                .eq('code', promoCode)
+                .eq('is_used', false)
+                .eq('user_id', req.userId)
+                .single();
+
             if (promo) {
                 finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
                 usedPromoId = promo.id;
             }
         }
 
-        const createOrder = db.transaction(() => {
-            const orderResult = db.prepare(`
-                INSERT INTO orders (user_id, total, delivery_address, phone_number, status, estimated_delivery_time, notes)
-                VALUES (?, ?, ?, ?, 'pending', ?, ?)
-            `).run(
-                req.userId,
-                Math.round(finalTotal * 100) / 100,
-                deliveryAddress?.trim() || '',
-                phoneNumber?.trim() || '',
-                '30-60 min',
-                notes?.trim() || ''
-            );
+        // 3. Create Order
+        const { data: order, error: orderError } = await supabase
+            .from('orders')
+            .insert({
+                user_id: req.userId,
+                total: Math.round(finalTotal * 100) / 100,
+                delivery_address: deliveryAddress?.trim() || '',
+                phone_number: phoneNumber?.trim() || '',
+                status: 'pending',
+                estimated_delivery_time: '30-60 min',
+                notes: notes?.trim() || ''
+            })
+            .select()
+            .single();
 
-            const orderId = orderResult.lastInsertRowid;
+        if (orderError) throw orderError;
 
-            const insertItem = db.prepare(`
-                INSERT INTO order_items (order_id, menu_item_id, name, quantity, price_at_time, image)
-                VALUES (?, ?, ?, ?, ?, ?)
-            `);
+        // 4. Create Order Items
+        const orderItemsToInsert = cartItems.map((item: any) => ({
+            order_id: order.id,
+            menu_item_id: item.menu_item_id,
+            name: item.menu_items.name,
+            quantity: item.quantity,
+            price_at_time: item.menu_items.price,
+            image: item.menu_items.image
+        }));
 
-            for (const item of cartItems) {
-                insertItem.run(orderId, item.menu_item_id, item.name, item.quantity, item.price, item.image);
-            }
+        const { error: itemsError } = await supabase.from('order_items').insert(orderItemsToInsert);
+        if (itemsError) throw itemsError;
 
-            if (usedPromoId) {
-                db.prepare('UPDATE promo_codes SET is_used = 1 WHERE id = ?').run(usedPromoId);
-            }
+        // 5. Cleanup (Promo and Cart)
+        if (usedPromoId) {
+            await supabase.from('promo_codes').update({ is_used: true }).eq('id', usedPromoId);
+        }
+        await supabase.from('cart_items').delete().eq('user_id', req.userId);
 
-            db.prepare('DELETE FROM cart_items WHERE user_id = ?').run(req.userId);
+        // Return order with items
+        const { data: fullOrder } = await supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('id', order.id)
+            .single();
 
-            return orderId;
-        });
-
-        const orderId = createOrder();
-
-        const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId) as any;
-        const items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(orderId);
-
-        res.status(201).json({ order: { ...order, items } });
+        res.status(201).json({ order: fullOrder });
     })
 );
 
@@ -90,74 +100,56 @@ router.get('/', asyncHandler(async (req: AuthRequest, res: Response) => {
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 10));
     const offset = (page - 1) * limit;
 
-    const db = getDb();
+    const { data: orders, count, error } = await supabase
+        .from('orders')
+        .select('*, order_items(*)', { count: 'exact' })
+        .eq('user_id', req.userId)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
-    const { total } = db.prepare(
-        'SELECT COUNT(*) as total FROM orders WHERE user_id = ?'
-    ).get(req.userId) as { total: number };
-
-    const orders = db.prepare(
-        'SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?'
-    ).all(req.userId, limit, offset) as any[];
-
-    const getItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?');
-
-    const ordersWithItems = orders.map(order => ({
-        ...order,
-        items: getItems.all(order.id),
-    }));
+    if (error) throw error;
 
     res.json({
-        orders: ordersWithItems,
+        orders: orders || [],
         pagination: {
-            total,
+            total: count || 0,
             page,
             limit,
-            pages: Math.ceil(total / limit),
-            hasNext: page * limit < total,
+            pages: Math.ceil((count || 0) / limit),
+            hasNext: page * limit < (count || 0),
             hasPrev: page > 1,
         },
     });
 }));
 
-
 // GET /api/orders/:id — single order
 router.get('/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const id = parseInt(req.params.id);
+    const { data: order, error } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .eq('id', req.params.id)
+        .eq('user_id', req.userId)
+        .single();
 
-    if (isNaN(id)) {
-        return res.status(400).json({ error: 'ID de pedido inválido' });
-    }
-
-    const db = getDb();
-    const order = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(id, req.userId) as any;
-
-    if (!order) {
+    if (error || !order) {
         return res.status(404).json({ error: 'Pedido no encontrado' });
     }
 
-    order.items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(order.id);
     res.json({ order });
 }));
 
-// PATCH /api/orders/:id/cancel — user can only cancel their own pending orders
+// PATCH /api/orders/:id/cancel
 router.patch(
     '/:id/cancel',
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
+        const { data: order, error: fetchError } = await supabase
+            .from('orders')
+            .select('status')
+            .eq('id', req.params.id)
+            .eq('user_id', req.userId)
+            .single();
 
-        if (isNaN(id)) {
-            return res.status(400).json({ error: 'ID de pedido inválido' });
-        }
-
-        const db = getDb();
-
-        // Only allow cancelling orders that are still 'pending'
-        const order = db.prepare(
-            'SELECT * FROM orders WHERE id = ? AND user_id = ?'
-        ).get(id, req.userId) as any;
-
-        if (!order) {
+        if (fetchError || !order) {
             return res.status(404).json({ error: 'Pedido no encontrado' });
         }
 
@@ -167,30 +159,30 @@ router.patch(
             });
         }
 
-        db.prepare('UPDATE orders SET status = ? WHERE id = ?').run('cancelled', id);
+        const { data: updated, error: updateError } = await supabase
+            .from('orders')
+            .update({ status: 'cancelled' })
+            .eq('id', req.params.id)
+            .select()
+            .single();
 
-        const updated = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+        if (updateError) throw updateError;
         res.json({ order: updated });
     })
 );
 
-// PATCH /api/orders/:id/deliver — mark order as delivered (to stop the timer)
+// PATCH /api/orders/:id/deliver
 router.patch(
     '/:id/deliver',
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
+        const { data: order, error: fetchError } = await supabase
+            .from('orders')
+            .select('status')
+            .eq('id', req.params.id)
+            .eq('user_id', req.userId)
+            .single();
 
-        if (isNaN(id)) {
-            return res.status(400).json({ error: 'ID de pedido inválido' });
-        }
-
-        const db = getDb();
-
-        const order = db.prepare(
-            'SELECT * FROM orders WHERE id = ? AND user_id = ?'
-        ).get(id, req.userId) as any;
-
-        if (!order) {
+        if (fetchError || !order) {
             return res.status(404).json({ error: 'Pedido no encontrado' });
         }
 
@@ -198,9 +190,14 @@ router.patch(
             return res.status(400).json({ error: 'El pedido ya fue entregado' });
         }
 
-        db.prepare('UPDATE orders SET status = ? WHERE id = ?').run('delivered', id);
+        const { data: updated, error: updateError } = await supabase
+            .from('orders')
+            .update({ status: 'delivered' })
+            .eq('id', req.params.id)
+            .select()
+            .single();
 
-        const updated = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+        if (updateError) throw updateError;
         res.json({ order: updated });
     })
 );

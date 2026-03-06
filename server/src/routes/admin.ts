@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { getDb } from '../db/database.js';
+import { supabase } from '../db/supabase.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
@@ -45,15 +45,20 @@ router.post('/menu/upload-image', upload.single('image'), asyncHandler(async (re
 
 // ─── MENU MANAGEMENT ──────────────────────────────────────────────────────────
 
-// GET /api/admin/menu — all items (same as public but no cache concerns)
+// GET /api/admin/menu
 router.get('/menu', asyncHandler(async (_req: Request, res: Response) => {
-    const db = getDb();
-    const items = db.prepare('SELECT * FROM menu_items ORDER BY category, id').all() as any[];
-    const formatted = items.map(formatMenuItem);
+    const { data: items, error } = await supabase
+        .from('menu_items')
+        .select('*')
+        .order('category')
+        .order('id');
+
+    if (error) throw error;
+    const formatted = (items || []).map(formatMenuItem);
     res.json({ items: formatted, total: formatted.length });
 }));
 
-// POST /api/admin/menu — create new menu item
+// POST /api/admin/menu
 router.post(
     '/menu',
     validate({
@@ -70,31 +75,29 @@ router.post(
     asyncHandler(async (req: Request, res: Response) => {
         const { name, description, price, image, category, weight, pieces, spicy, vegetarian, is_promo } = req.body;
 
-        const db = getDb();
+        const { data: item, error } = await supabase
+            .from('menu_items')
+            .insert({
+                name: name.trim(),
+                description: description?.trim() || '',
+                price,
+                image: image?.trim() || '',
+                category,
+                weight: weight?.trim() || null,
+                pieces: pieces || null,
+                spicy: !!spicy,
+                vegetarian: !!vegetarian,
+                is_promo: !!is_promo
+            })
+            .select()
+            .single();
 
-        const result = db.prepare(`
-            INSERT INTO menu_items (name, description, price, image, category, weight, pieces, spicy, vegetarian, is_promo)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `).run(
-            name.trim(),
-            description?.trim() || '',
-            price,
-            image?.trim() || '',
-            category,
-            weight?.trim() || null,
-            pieces || null,
-            spicy ? 1 : 0,
-            vegetarian ? 1 : 0,
-            is_promo ? 1 : 0,
-        );
-
-        const newItemId = result.lastInsertRowid;
-        const item = db.prepare('SELECT * FROM menu_items WHERE id = ?').get(newItemId) as any;
+        if (error) throw error;
         res.status(201).json({ item: formatMenuItem(item) });
     })
 );
 
-// PUT /api/admin/menu/:id — update menu item
+// PUT /api/admin/menu/:id
 router.put(
     '/menu/:id',
     validate({
@@ -108,59 +111,51 @@ router.put(
         pieces: { type: 'number', min: 1, max: 999 },
     }),
     asyncHandler(async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
-
-        const db = getDb();
-        const existing = db.prepare('SELECT id FROM menu_items WHERE id = ?').get(id);
-        if (!existing) return res.status(404).json({ error: 'Producto no encontrado' });
-
+        const id = req.params.id;
         const { name, description, price, image, category, weight, pieces, spicy, vegetarian, is_promo } = req.body;
 
-        const updates: string[] = [];
-        const values: any[] = [];
+        const updateData: any = {};
+        if (name !== undefined) updateData.name = name.trim();
+        if (description !== undefined) updateData.description = description.trim();
+        if (price !== undefined) updateData.price = price;
+        if (image !== undefined) updateData.image = image.trim();
+        if (category !== undefined) updateData.category = category;
+        if (weight !== undefined) updateData.weight = weight?.trim() || null;
+        if (pieces !== undefined) updateData.pieces = pieces || null;
+        if (spicy !== undefined) updateData.spicy = !!spicy;
+        if (vegetarian !== undefined) updateData.vegetarian = !!vegetarian;
+        if (is_promo !== undefined) updateData.is_promo = !!is_promo;
 
-        if (name !== undefined) { updates.push('name = ?'); values.push(name.trim()); }
-        if (description !== undefined) { updates.push('description = ?'); values.push(description.trim()); }
-        if (price !== undefined) { updates.push('price = ?'); values.push(price); }
-        if (image !== undefined) { updates.push('image = ?'); values.push(image.trim()); }
-        if (category !== undefined) { updates.push('category = ?'); values.push(category); }
-        if (weight !== undefined) { updates.push('weight = ?'); values.push(weight?.trim() || null); }
-        if (pieces !== undefined) { updates.push('pieces = ?'); values.push(pieces || null); }
-        if (spicy !== undefined) { updates.push('spicy = ?'); values.push(spicy ? 1 : 0); }
-        if (vegetarian !== undefined) { updates.push('vegetarian = ?'); values.push(vegetarian ? 1 : 0); }
-        if (is_promo !== undefined) { updates.push('is_promo = ?'); values.push(is_promo ? 1 : 0); }
+        const { data: item, error } = await supabase
+            .from('menu_items')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
 
-        if (updates.length === 0) {
-            return res.status(400).json({ error: 'No hay campos para actualizar' });
+        if (error) {
+            if (error.code === 'PGRST116') return res.status(404).json({ error: 'Producto no encontrado' });
+            throw error;
         }
 
-        values.push(id);
-        db.prepare(`UPDATE menu_items SET ${updates.join(', ')} WHERE id = ?`).run(...values);
-
-        const item = db.prepare('SELECT * FROM menu_items WHERE id = ?').get(id) as any;
         res.json({ item: formatMenuItem(item) });
     })
 );
 
-// DELETE /api/admin/menu/:id — delete menu item
+// DELETE /api/admin/menu/:id
 router.delete('/menu/:id', asyncHandler(async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    const { error } = await supabase
+        .from('menu_items')
+        .delete()
+        .eq('id', req.params.id);
 
-    const db = getDb();
-    const result = db.prepare('DELETE FROM menu_items WHERE id = ?').run(id);
-
-    if (result.changes === 0) {
-        return res.status(404).json({ error: 'Producto no encontrado' });
-    }
-
-    res.json({ success: true, message: `Producto ${id} eliminado` });
+    if (error) throw error;
+    res.json({ success: true, message: `Producto ${req.params.id} eliminado` });
 }));
 
 // ─── ORDER MANAGEMENT ─────────────────────────────────────────────────────────
 
-// GET /api/admin/orders — all orders with pagination and filters
+// GET /api/admin/orders
 router.get('/orders', asyncHandler(async (req: Request, res: Response) => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
@@ -168,51 +163,40 @@ router.get('/orders', asyncHandler(async (req: Request, res: Response) => {
     const status = req.query.status as string | undefined;
     const userId = req.query.userId as string | undefined;
 
-    const db = getDb();
+    let query = supabase
+        .from('orders')
+        .select('*, users(name, email), order_items(*)', { count: 'exact' });
 
-    // Build dynamic WHERE clause
-    const conditions: string[] = [];
-    const params: any[] = [];
+    if (status) query = query.eq('status', status);
+    if (userId) query = query.eq('user_id', userId);
 
-    if (status) { conditions.push('o.status = ?'); params.push(status); }
-    if (userId) { conditions.push('o.user_id = ?'); params.push(parseInt(userId)); }
+    const { data: orders, count, error } = await query
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
-    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    if (error) throw error;
 
-    const { total } = db.prepare(
-        `SELECT COUNT(*) as total FROM orders o ${where}`
-    ).get(...params) as { total: number };
-
-    const orders = db.prepare(`
-        SELECT o.*, u.name as user_name, u.email as user_email
-        FROM orders o
-        JOIN users u ON o.user_id = u.id
-        ${where}
-        ORDER BY o.created_at DESC
-        LIMIT ? OFFSET ?
-    `).all(...params, limit, offset) as any[];
-
-    const getItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?');
-
-    const ordersWithItems = orders.map(order => ({
-        ...order,
-        items: getItems.all(order.id),
+    const formattedOrders = (orders || []).map((o: any) => ({
+        ...o,
+        user_name: o.users?.name,
+        user_email: o.users?.email,
+        items: o.order_items
     }));
 
     res.json({
-        orders: ordersWithItems,
+        orders: formattedOrders,
         pagination: {
-            total,
+            total: count || 0,
             page,
             limit,
-            pages: Math.ceil(total / limit),
-            hasNext: page * limit < total,
+            pages: Math.ceil((count || 0) / limit),
+            hasNext: page * limit < (count || 0),
             hasPrev: page > 1,
         },
     });
 }));
 
-// PATCH /api/admin/orders/:id/status — update any order status
+// PATCH /api/admin/orders/:id/status
 router.patch(
     '/orders/:id/status',
     validate({
@@ -222,62 +206,58 @@ router.patch(
         },
     }),
     asyncHandler(async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) return res.status(400).json({ error: 'ID de pedido inválido' });
-
         const { status } = req.body;
-        const db = getDb();
+        const { data: order, error } = await supabase
+            .from('orders')
+            .update({ status })
+            .eq('id', req.params.id)
+            .select('*, order_items(*)')
+            .single();
 
-        const result = db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, id);
-
-        if (result.changes === 0) {
-            return res.status(404).json({ error: 'Pedido no encontrado' });
+        if (error) {
+            if (error.code === 'PGRST116') return res.status(404).json({ error: 'Pedido no encontrado' });
+            throw error;
         }
 
-        const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id) as any;
-        order.items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(id);
-
-        res.json({ order });
+        res.json({ order: { ...order, items: order.order_items } });
     })
 );
 
 // ─── USER MANAGEMENT ──────────────────────────────────────────────────────────
 
-// GET /api/admin/users — all users (no passwords)
+// GET /api/admin/users
 router.get('/users', asyncHandler(async (req: Request, res: Response) => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
     const offset = (page - 1) * limit;
 
-    const db = getDb();
+    const { data: users, count, error } = await supabase
+        .from('users')
+        .select('*, orders(count)', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
-    const { total } = db.prepare('SELECT COUNT(*) as total FROM users').get() as { total: number };
+    if (error) throw error;
 
-    const users = db.prepare(
-        'SELECT id, name, email, phone, role, created_at, is_superadmin FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?'
-    ).all(limit, offset) as any[];
-
-    // Attach order count per user
-    const getOrderCount = db.prepare('SELECT COUNT(*) as count FROM orders WHERE user_id = ?');
-    const usersWithStats = users.map(u => ({
+    const usersWithStats = (users || []).map((u: any) => ({
         ...u,
-        orderCount: (getOrderCount.get(u.id) as any).count,
+        orderCount: u.orders[0]?.count || 0
     }));
 
     res.json({
         users: usersWithStats,
         pagination: {
-            total,
+            total: count || 0,
             page,
             limit,
-            pages: Math.ceil(total / limit),
-            hasNext: page * limit < total,
+            pages: Math.ceil((count || 0) / limit),
+            hasNext: page * limit < (count || 0),
             hasPrev: page > 1,
         },
     });
 }));
 
-// PATCH /api/admin/users/:id/role — change user role (only for superadmin)
+// PATCH /api/admin/users/:id/role
 router.patch(
     '/users/:id/role',
     validate({
@@ -285,105 +265,116 @@ router.patch(
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = parseInt(req.params.id);
-        if (isNaN(id)) return res.status(400).json({ error: 'ID de usuario inválido' });
 
-        const db = getDb();
-        const currentUser = db.prepare('SELECT is_superadmin FROM users WHERE id = ?').get(req.userId) as any;
+        const { data: currentUser } = await supabase
+            .from('users')
+            .select('is_superadmin')
+            .eq('id', req.userId)
+            .single();
 
-        if (!currentUser || currentUser.is_superadmin !== 1) {
-            return res.status(403).json({ error: 'Solo el propietario (super administrador) puede cambiar los roles de otros usuarios' });
+        if (!currentUser || !currentUser.is_superadmin) {
+            return res.status(403).json({ error: 'Solo el propietario can change roles' });
         }
 
-        // Prevent self-demotion
         if (id === req.userId) {
             return res.status(400).json({ error: 'No puedes cambiar tu propio rol' });
         }
 
         const { role } = req.body;
-        const result = db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, id);
+        const { data: user, error } = await supabase
+            .from('users')
+            .update({ role })
+            .eq('id', id)
+            .select('id, name, email, role, is_superadmin')
+            .single();
 
-        if (result.changes === 0) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
-
-        const user = db.prepare('SELECT id, name, email, role, is_superadmin FROM users WHERE id = ?').get(id);
+        if (error) throw error;
         res.json({ user });
     })
 );
 
-
 // ─── STATS ────────────────────────────────────────────────────────────────────
 
-// GET /api/admin/stats — dashboard overview
 router.get('/stats', asyncHandler(async (_req: Request, res: Response) => {
-    const db = getDb();
+    // 1. Basic counts
+    const [{ count: totalUsers }, { count: totalOrders }, { data: revenueData }, { count: menuItems }] = await Promise.all([
+        supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'user'),
+        supabase.from('orders').select('*', { count: 'exact', head: true }),
+        supabase.from('orders').select('total').neq('status', 'cancelled'),
+        supabase.from('menu_items').select('*', { count: 'exact', head: true })
+    ]);
 
-    // ── Totals ──
-    const { totalUsers } = db.prepare("SELECT COUNT(*) as totalUsers FROM users WHERE role = 'user'").get() as any;
-    const { totalOrders } = db.prepare('SELECT COUNT(*) as totalOrders FROM orders').get() as any;
-    const { revenue } = db.prepare("SELECT COALESCE(SUM(total), 0) as revenue FROM orders WHERE status != 'cancelled'").get() as any;
-    const { menuItems } = db.prepare('SELECT COUNT(*) as menuItems FROM menu_items').get() as any;
+    const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
 
-    // ── Today metrics (what the dashboard cards expect) ──
+    // 2. Today metrics
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayISO = todayStart.toISOString();
 
-    const { revenueToday } = db.prepare(
-        "SELECT COALESCE(SUM(total), 0) as revenueToday FROM orders WHERE status != 'cancelled' AND created_at >= ?"
-    ).get(todayISO) as any;
+    const [
+        { data: revTodayData },
+        { count: ordersToday },
+        { count: pendingOrders },
+        { count: usersToday }
+    ] = await Promise.all([
+        supabase.from('orders').select('total').neq('status', 'cancelled').gte('created_at', todayISO),
+        supabase.from('orders').select('*', { count: 'exact', head: true }).gte('created_at', todayISO),
+        supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('users').select('*', { count: 'exact', head: true }).gte('created_at', todayISO)
+    ]);
 
-    const { ordersToday } = db.prepare(
-        'SELECT COUNT(*) as ordersToday FROM orders WHERE created_at >= ?'
-    ).get(todayISO) as any;
+    const revenueToday = revTodayData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
 
-    const { pendingOrders } = db.prepare(
-        "SELECT COUNT(*) as pendingOrders FROM orders WHERE status = 'pending'"
-    ).get() as any;
+    // 3. Status breakdown
+    const { data: statusData } = await supabase.from('orders').select('status');
+    const ordersByStatus: Record<string, number> = {};
+    statusData?.forEach(o => {
+        ordersByStatus[o.status] = (ordersByStatus[o.status] || 0) + 1;
+    });
 
-    const { usersToday } = db.prepare(
-        'SELECT COUNT(*) as usersToday FROM users WHERE created_at >= ?'
-    ).get(todayISO) as any;
+    // 4. Recent orders
+    const { data: recentOrders } = await supabase
+        .from('orders')
+        .select('id, total, status, created_at, users(name)')
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-    // ── Breakdown ──
-    const ordersByStatus = db.prepare(
-        'SELECT status, COUNT(*) as count FROM orders GROUP BY status'
-    ).all() as any[];
+    const formattedRecent = (recentOrders || []).map((o: any) => ({
+        ...o,
+        user_name: o.users?.name
+    }));
 
-    const recentOrders = db.prepare(`
-        SELECT o.id, o.total, o.status, o.created_at, u.name as user_name
-        FROM orders o
-        JOIN users u ON o.user_id = u.id
-        ORDER BY o.created_at DESC
-        LIMIT 5
-    `).all();
+    // 5. Top Items (using order_items)
+    const { data: topItemsRaw } = await supabase
+        .from('order_items')
+        .select('name, quantity, price_at_time');
 
-    const topItems = db.prepare(`
-        SELECT oi.name, SUM(oi.quantity) as sold, SUM(oi.quantity * oi.price_at_time) as revenue
-        FROM order_items oi
-        GROUP BY oi.menu_item_id, oi.name
-        ORDER BY sold DESC
-        LIMIT 5
-    `).all();
+    const itemMap: Record<string, { name: string, sold: number, revenue: number }> = {};
+    topItemsRaw?.forEach(item => {
+        if (!itemMap[item.name]) itemMap[item.name] = { name: item.name, sold: 0, revenue: 0 };
+        itemMap[item.name].sold += item.quantity;
+        itemMap[item.name].revenue += item.quantity * item.price_at_time;
+    });
+
+    const topItems = Object.values(itemMap)
+        .sort((a, b) => b.sold - a.sold)
+        .slice(0, 5);
 
     res.json({
-        // Today metrics — used by dashboard stat cards
         revenueToday: Math.round(revenueToday * 100) / 100,
         ordersToday,
         pendingOrders,
         usersToday,
-        // Totals
         stats: {
             totalUsers,
             totalOrders,
             revenue: Math.round(revenue * 100) / 100,
             menuItems,
         },
-        ordersByStatus: Object.fromEntries(ordersByStatus.map(r => [r.status, r.count])),
-        recentOrders,
+        ordersByStatus,
+        recentOrders: formattedRecent,
         topItems,
     });
 }));
-
 
 export default router;

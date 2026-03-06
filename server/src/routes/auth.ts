@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { getDb } from '../db/database.js';
+import { supabase } from '../db/supabase.js';
 import { config } from '../config.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
@@ -21,8 +21,11 @@ router.post(
     asyncHandler(async (req, res: Response) => {
         const { name, email, phone, password } = req.body;
 
-        const db = getDb();
-        const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+        const { data: existing } = await supabase
+            .from('users')
+            .select('id')
+            .ilike('email', email)
+            .single();
 
         if (existing) {
             return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
@@ -30,14 +33,33 @@ router.post(
 
         const passwordHash = await bcrypt.hash(password, config.bcryptRounds);
 
-        const result = db.prepare(
-            'INSERT INTO users (name, email, phone, password_hash) VALUES (?, ?, ?, ?)'
-        ).run(name.trim(), email.toLowerCase().trim(), phone?.trim() || '', passwordHash);
+        const { data: newUser, error: insertError } = await supabase
+            .from('users')
+            .insert({
+                name: name.trim(),
+                email: email.toLowerCase().trim(),
+                phone: phone?.trim() || '',
+                password_hash: passwordHash
+            })
+            .select()
+            .single();
 
-        const token = jwt.sign({ userId: result.lastInsertRowid }, config.jwtSecret, {
+        if (insertError) throw insertError;
+
+        const token = jwt.sign({ userId: newUser.id }, config.jwtSecret, {
             expiresIn: config.jwtExpiresIn,
         });
-        const user = db.prepare('SELECT id, name, email, phone, avatar, role, is_superadmin, created_at AS createdAt FROM users WHERE id = ?').get(result.lastInsertRowid);
+
+        const user = {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            phone: newUser.phone,
+            avatar: newUser.avatar,
+            role: newUser.role,
+            is_superadmin: newUser.is_superadmin,
+            createdAt: newUser.created_at
+        };
 
         res.status(201).json({ token, user });
     })
@@ -53,11 +75,13 @@ router.post(
     asyncHandler(async (req, res: Response) => {
         const { email, password } = req.body;
 
-        const db = getDb();
-        const user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(email) as any;
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .ilike('email', email.trim())
+            .single();
 
-        if (!user) {
-            // Use same message to avoid user enumeration
+        if (error || !user) {
             return res.status(401).json({ error: 'Email o contraseña incorrectos' });
         }
 
@@ -70,24 +94,42 @@ router.post(
             expiresIn: config.jwtExpiresIn,
         });
 
-        const { password_hash, ...userWithoutPassword } = user;
-        res.json({ token, user: userWithoutPassword });
+        const { password_hash, created_at, ...userRest } = user;
+        res.json({ token, user: { ...userRest, createdAt: created_at } });
     })
 );
 
 // GET /api/auth/me
 router.get('/me', authMiddleware, asyncHandler(async (req: AuthRequest, res: Response) => {
-    const db = getDb();
-    const user = db.prepare('SELECT id, name, email, phone, avatar, role, is_superadmin, created_at AS createdAt FROM users WHERE id = ?').get(req.userId) as any;
+    const { data: user, error } = await supabase
+        .from('users')
+        .select('id, name, email, phone, avatar, role, is_superadmin, created_at')
+        .eq('id', req.userId)
+        .single();
 
-    if (!user) {
+    if (error || !user) {
         return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    const addresses = db.prepare('SELECT id, label, street, city, postal_code AS postalCode, phone, is_default AS isDefault FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC').all(req.userId);
-    user.addresses = addresses;
+    const { data: addresses, error: addrError } = await supabase
+        .from('user_addresses')
+        .select('id, label, street, city, postal_code, phone, is_default')
+        .eq('user_id', req.userId)
+        .order('is_default', { ascending: false });
 
-    res.json({ user });
+    if (addrError) throw addrError;
+
+    const formattedUser = {
+        ...user,
+        createdAt: user.created_at,
+        addresses: addresses?.map(a => ({
+            ...a,
+            postalCode: a.postal_code,
+            isDefault: a.is_default
+        }))
+    };
+
+    res.json({ user: formattedUser });
 }));
 
 // POST /api/auth/forgot-password
@@ -96,37 +138,46 @@ router.post(
     validate({ email: emailRule }),
     asyncHandler(async (req, res: Response) => {
         const { email } = req.body;
-        const db = getDb();
 
-        const user = db.prepare('SELECT id, email FROM users WHERE LOWER(email) = LOWER(?)').get(email) as any;
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('id, email')
+            .ilike('email', email.trim())
+            .single();
 
-        // Return error if user doesn't exist
-        if (!user) {
+        if (userError || !user) {
             return res.status(404).json({ error: 'No existe una cuenta con este email' });
         }
 
-        // Cooldown: don't allow another code within 60 seconds
-        const recentCode = db.prepare(
-            `SELECT created_at FROM password_resets 
-             WHERE user_id = ? AND created_at > datetime('now', '-60 seconds')
-             ORDER BY created_at DESC LIMIT 1`
-        ).get(user.id) as any;
+        // Cooldown: 60 seconds
+        const sixtySecondsAgo = new Date(Date.now() - 60 * 1000).toISOString();
+        const { data: recentCode } = await supabase
+            .from('password_resets')
+            .select('created_at')
+            .eq('user_id', user.id)
+            .gt('created_at', sixtySecondsAgo)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
         if (recentCode) {
             return res.status(429).json({ error: 'Ya enviamos un código. Espera 1 minuto antes de intentarlo de nuevo.' });
         }
 
-        // Generate 6-digit code
         const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // Expire in 15 minutes
         const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
-        // Invalidate any previous unused codes for this user
-        db.prepare('UPDATE password_resets SET used = 1 WHERE user_id = ? AND used = 0').run(user.id);
+        // Invalidate previous
+        await supabase
+            .from('password_resets')
+            .update({ used: true })
+            .eq('user_id', user.id)
+            .eq('used', false);
 
-        // Store new code (attempts starts at 0)
-        db.prepare('INSERT INTO password_resets (user_id, code, expires_at) VALUES (?, ?, ?)').run(user.id, code, expiresAt);
+        // Store new
+        await supabase
+            .from('password_resets')
+            .insert({ user_id: user.id, code, expires_at: expiresAt });
 
         // Send email
         try {
@@ -152,45 +203,50 @@ router.post(
     }),
     asyncHandler(async (req, res: Response) => {
         const { email, code, newPassword } = req.body;
-        const db = getDb();
 
-        const user = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email) as any;
+        const { data: user } = await supabase
+            .from('users')
+            .select('id')
+            .ilike('email', email.trim())
+            .single();
+
         if (!user) {
             return res.status(400).json({ error: 'Código inválido o expirado' });
         }
 
-        // Find latest unused, non-expired code for this user
-        const resetRecord = db.prepare(
-            `SELECT * FROM password_resets 
-             WHERE user_id = ? AND used = 0 AND expires_at > datetime('now')
-             ORDER BY created_at DESC LIMIT 1`
-        ).get(user.id) as any;
+        const { data: resetRecord, error } = await supabase
+            .from('password_resets')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('used', false)
+            .gt('expires_at', new Date().toISOString())
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-        if (!resetRecord) {
+        if (error || !resetRecord) {
             return res.status(400).json({ error: 'Código inválido o expirado' });
         }
 
-        // Check if max attempts exceeded (5 wrong tries)
         if (resetRecord.attempts >= 5) {
-            db.prepare('UPDATE password_resets SET used = 1 WHERE id = ?').run(resetRecord.id);
+            await supabase.from('password_resets').update({ used: true }).eq('id', resetRecord.id);
             return res.status(400).json({ error: 'Demasiados intentos fallidos. Solicita un nuevo código.' });
         }
 
-        // Check if code matches
         if (resetRecord.code !== code) {
-            db.prepare('UPDATE password_resets SET attempts = attempts + 1 WHERE id = ?').run(resetRecord.id);
+            await supabase.from('password_resets').update({ attempts: resetRecord.attempts + 1 }).eq('id', resetRecord.id);
             const remaining = 4 - resetRecord.attempts;
             return res.status(400).json({
                 error: `Código incorrecto. ${remaining > 0 ? `Te quedan ${remaining} intento${remaining > 1 ? 's' : ''}.` : 'Solicita un nuevo código.'}`
             });
         }
 
-        // Mark code as used
-        db.prepare('UPDATE password_resets SET used = 1 WHERE id = ?').run(resetRecord.id);
-
-        // Update password
+        // Success
         const passwordHash = await bcrypt.hash(newPassword, config.bcryptRounds);
-        db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, user.id);
+        await Promise.all([
+            supabase.from('password_resets').update({ used: true }).eq('id', resetRecord.id),
+            supabase.from('users').update({ password_hash: passwordHash }).eq('id', user.id)
+        ]);
 
         console.log(`🔑 Password reset for user ${user.id}`);
 
