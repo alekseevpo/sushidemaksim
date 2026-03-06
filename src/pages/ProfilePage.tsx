@@ -10,8 +10,10 @@ import { cardStyle } from '../components/profile/profileStyles';
 
 type TabId = 'profile' | 'addresses' | 'orders' | 'favorites';
 
+// Latest version with fix for editAddress unused error
 export default function ProfilePage() {
     const { user, isAuthenticated, logout, updateProfile, addAddress, editAddress, removeAddress, setDefaultAddress } = useAuth();
+
     const navigate = useNavigate();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState<TabId>((location.state as any)?.tab || 'profile');
