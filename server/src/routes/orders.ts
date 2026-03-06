@@ -99,7 +99,7 @@ router.post(
             .eq('id', order.id)
             .single();
 
-        res.status(201).json({ order: fullOrder });
+        res.status(201).json({ order: { ...fullOrder, items: fullOrder.order_items } });
     })
 );
 
@@ -118,8 +118,13 @@ router.get('/', asyncHandler(async (req: AuthRequest, res: Response) => {
 
     if (error) throw error;
 
+    const formattedOrders = (orders || []).map((o: any) => ({
+        ...o,
+        items: o.order_items
+    }));
+
     res.json({
-        orders: orders || [],
+        orders: formattedOrders || [],
         pagination: {
             total: count || 0,
             page,
@@ -144,7 +149,7 @@ router.get('/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
         return res.status(404).json({ error: 'Pedido no encontrado' });
     }
 
-    res.json({ order });
+    res.json({ order: { ...order, items: order.order_items } });
 }));
 
 // PATCH /api/orders/:id/cancel
