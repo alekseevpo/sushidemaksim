@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Clock, MapPin, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 
 const FeatureCard = ({ icon: Icon, title, desc, colorClass, index }: any) => (
     <motion.div
@@ -23,6 +24,12 @@ const FeatureCard = ({ icon: Icon, title, desc, colorClass, index }: any) => (
 export default function HomePageSimple() {
     return (
         <div className="overflow-hidden">
+            <SEO
+                title="Sushibar en Madrid centro"
+                description="El mejor sushi artesanal de Madrid. Entrega rápida, atún Balfegó y salmón noruego. Pide online ahora y disfruta de la experiencia Maksim en tu casa."
+                keywords="sushi, madrid, delivery, pedido a domicilio, rollo, maksim, atun balfego"
+            />
+
             {/* Hero Section */}
             <section className="relative min-h-[85vh] flex items-center justify-center px-4 pt-20 pb-32 bg-[url('/sushi-hero.jpg')] bg-cover bg-center">
                 {/* Background Overlay (Filter) */}

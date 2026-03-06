@@ -5,6 +5,7 @@ import { Plus, Search, X, Heart } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
+import SEO from '../components/SEO';
 
 interface MenuItem {
     id: number;
@@ -179,6 +180,11 @@ export default function MenuPageSimple() {
 
     return (
         <div className="min-h-screen bg-gray-50 px-4 py-8">
+            <SEO
+                title="Menú y Carta de Sushi"
+                description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
+                keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
+            />
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-4xl text-gray-900 font-bold text-center mb-6">Nuestro Menú</h1>
 

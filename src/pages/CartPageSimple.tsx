@@ -4,6 +4,7 @@ import { Minus, Plus, Trash2, ArrowLeft, MapPin, CheckCircle } from 'lucide-reac
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api, ApiError } from '../utils/api';
+import SEO from '../components/SEO';
 
 export default function CartPageSimple() {
     const {
@@ -161,6 +162,10 @@ export default function CartPageSimple() {
 
     return (
         <div className="min-h-screen bg-gray-50 px-4 py-8">
+            <SEO
+                title="Tu Cesta"
+                description="Revisa los productos en tu cesta antes de hacer el pedido."
+            />
             <div className="max-w-5xl mx-auto">
                 <h1 className="text-4xl font-bold mb-8">Tu cesta</h1>
 

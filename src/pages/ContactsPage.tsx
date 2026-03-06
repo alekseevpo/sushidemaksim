@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Star, ArrowRight } from 'lucide-react';
 import { api } from '../utils/api';
+import SEO from '../components/SEO';
 
 const iconMap: Record<string, any> = {
     whatsapp: (props: any) => (
@@ -73,6 +74,11 @@ export default function ContactsPage() {
 
     return (
         <div className="flex-1 bg-white">
+            <SEO
+                title="Contacto"
+                description="Contacta con Sushi de Maksim. Llámanos, visítanos o síguenos en nuestras redes sociales para estar al día de las últimas novedades."
+                keywords="contacto sushi, telefono sushi madrid, direccion maksim, ubicacion sushi"
+            />
             {/* Hero Header */}
             <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-20 pb-28 px-4">
                 <div className="absolute inset-0 bg-black/70"></div>

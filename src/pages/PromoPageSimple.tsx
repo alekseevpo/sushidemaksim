@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Clock, Tag, Plus } from 'lucide-react';
 import { api } from '../utils/api';
 import { useCart } from '../hooks/useCart';
+import SEO from '../components/SEO';
 
 interface PromoItem {
     id: number;
@@ -58,6 +59,12 @@ export default function PromoPageSimple() {
 
     return (
         <div className="flex-1 bg-white">
+            <SEO
+                title="Ofertas y Promociones"
+                description="Descubre nuestras promociones exclusivas, combos especiales de sushi con descuentos y ofertas limitadas. ¡Pide online ahora!"
+                keywords="ofertas sushi, promos sushi, combos sushi madrid, descuento sushi"
+            />
+
             {/* Hero Header */}
             <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-20 pb-28 px-4">
                 <div className="absolute inset-0 bg-black/70"></div>

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
 import { api } from '../utils/api';
+import SEO from '../components/SEO';
 
 interface BlogPost {
     id: number;
@@ -71,6 +72,12 @@ export default function BlogPostPage() {
 
     return (
         <article className="min-h-screen bg-white pb-20">
+            <SEO
+                title={post.title}
+                description={post.excerpt}
+                image={post.image_url}
+                type="article"
+            />
             {/* Minimalist Header with Back Button */}
             <div className="absolute top-24 left-4 md:left-8 z-50">
                 <Link

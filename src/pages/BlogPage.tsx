@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ChevronRight, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Calendar, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../utils/api';
+import SEO from '../components/SEO';
 
 interface BlogPost {
     id: number;
@@ -37,6 +38,12 @@ export default function BlogPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
+            <SEO
+                title="Blog"
+                description="Historias, recetas y secretos del mundo del sushi artesanal. Aprende más sobre la comida japonesa con Sushi de Maksim."
+                keywords="blog sushi, recetas japonesas, cultura japonesa, maksim sushi, historia del sushi"
+            />
+
             {/* Hero Section */}
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
