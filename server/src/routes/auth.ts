@@ -39,7 +39,7 @@ router.post(
                 name: name.trim(),
                 email: email.toLowerCase().trim(),
                 phone: phone?.trim() || '',
-                password_hash: passwordHash
+                password_hash: passwordHash,
             })
             .select()
             .single();
@@ -58,7 +58,7 @@ router.post(
             avatar: newUser.avatar,
             role: newUser.role,
             is_superadmin: newUser.is_superadmin,
-            createdAt: newUser.created_at
+            createdAt: newUser.created_at,
         };
 
         res.status(201).json({ token, user });
@@ -101,37 +101,41 @@ router.post(
 );
 
 // GET /api/auth/me
-router.get('/me', authMiddleware, asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { data: user, error } = await supabase
-        .from('users')
-        .select('id, name, email, phone, avatar, role, is_superadmin, created_at')
-        .eq('id', req.userId)
-        .single();
+router.get(
+    '/me',
+    authMiddleware,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('id, name, email, phone, avatar, role, is_superadmin, created_at')
+            .eq('id', req.userId)
+            .single();
 
-    if (error || !user) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
+        if (error || !user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
 
-    const { data: addresses, error: addrError } = await supabase
-        .from('user_addresses')
-        .select('id, label, street, city, postal_code, phone, is_default')
-        .eq('user_id', req.userId)
-        .order('is_default', { ascending: false });
+        const { data: addresses, error: addrError } = await supabase
+            .from('user_addresses')
+            .select('id, label, street, city, postal_code, phone, is_default')
+            .eq('user_id', req.userId)
+            .order('is_default', { ascending: false });
 
-    if (addrError) throw addrError;
+        if (addrError) throw addrError;
 
-    const formattedUser = {
-        ...user,
-        createdAt: user.created_at,
-        addresses: addresses?.map(a => ({
-            ...a,
-            postalCode: a.postal_code,
-            isDefault: a.is_default
-        }))
-    };
+        const formattedUser = {
+            ...user,
+            createdAt: user.created_at,
+            addresses: addresses?.map(a => ({
+                ...a,
+                postalCode: a.postal_code,
+                isDefault: a.is_default,
+            })),
+        };
 
-    res.json({ user: formattedUser });
-}));
+        res.json({ user: formattedUser });
+    })
+);
 
 // POST /api/auth/forgot-password
 router.post(
@@ -162,7 +166,9 @@ router.post(
             .maybeSingle();
 
         if (recentCode) {
-            return res.status(429).json({ error: 'Ya enviamos un código. Espera 1 minuto antes de intentarlo de nuevo.' });
+            return res.status(429).json({
+                error: 'Ya enviamos un código. Espera 1 minuto antes de intentarlo de nuevo.',
+            });
         }
 
         const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -231,14 +237,19 @@ router.post(
 
         if (resetRecord.attempts >= 5) {
             await supabase.from('password_resets').update({ used: true }).eq('id', resetRecord.id);
-            return res.status(400).json({ error: 'Demasiados intentos fallidos. Solicita un nuevo código.' });
+            return res
+                .status(400)
+                .json({ error: 'Demasiados intentos fallidos. Solicita un nuevo código.' });
         }
 
         if (resetRecord.code !== code) {
-            await supabase.from('password_resets').update({ attempts: resetRecord.attempts + 1 }).eq('id', resetRecord.id);
+            await supabase
+                .from('password_resets')
+                .update({ attempts: resetRecord.attempts + 1 })
+                .eq('id', resetRecord.id);
             const remaining = 4 - resetRecord.attempts;
             return res.status(400).json({
-                error: `Código incorrecto. ${remaining > 0 ? `Te quedan ${remaining} intento${remaining > 1 ? 's' : ''}.` : 'Solicita un nuevo código.'}`
+                error: `Código incorrecto. ${remaining > 0 ? `Te quedan ${remaining} intento${remaining > 1 ? 's' : ''}.` : 'Solicita un nuevo código.'}`,
             });
         }
 
@@ -246,7 +257,7 @@ router.post(
         const passwordHash = await bcrypt.hash(newPassword, config.bcryptRounds);
         await Promise.all([
             supabase.from('password_resets').update({ used: true }).eq('id', resetRecord.id),
-            supabase.from('users').update({ password_hash: passwordHash }).eq('id', user.id)
+            supabase.from('users').update({ password_hash: passwordHash }).eq('id', user.id),
         ]);
 
         console.log(`🔑 Password reset for user ${user.id}`);

@@ -17,45 +17,45 @@ const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 
 function PageLoader() {
-  return (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="text-center">
-        <div className="text-4xl mb-3 animate-bounce">🍣</div>
-        <p className="text-gray-400 text-sm">Cargando...</p>
-      </div>
-    </div>
-  );
+    return (
+        <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+                <div className="text-4xl mb-3 animate-bounce">🍣</div>
+                <p className="text-gray-400 text-sm">Cargando...</p>
+            </div>
+        </div>
+    );
 }
 
 function App() {
-  const { pathname } = useLocation();
-  const isAdminRoute = pathname.startsWith('/admin');
+    const { pathname } = useLocation();
+    const isAdminRoute = pathname.startsWith('/admin');
 
-  return (
-    <AuthProvider>
-      <CartProvider>
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-          {!isAdminRoute && <Header />}
-          <main className="flex-1 flex flex-col relative">
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<HomePageSimple />} />
-                <Route path="/menu" element={<MenuPageSimple />} />
-                <Route path="/cart" element={<CartPageSimple />} />
-                <Route path="/promo" element={<PromoPageSimple />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/admin" element={<AdminPage />} />
-                <Route path="/contacts" element={<ContactsPage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/:slug" element={<BlogPostPage />} />
-              </Routes>
-            </Suspense>
-          </main>
-          {!isAdminRoute && <Footer />}
-        </div>
-      </CartProvider>
-    </AuthProvider>
-  );
+    return (
+        <AuthProvider>
+            <CartProvider>
+                <div className="min-h-screen bg-gray-50 flex flex-col">
+                    {!isAdminRoute && <Header />}
+                    <main className="flex-1 flex flex-col relative">
+                        <Suspense fallback={<PageLoader />}>
+                            <Routes>
+                                <Route path="/" element={<HomePageSimple />} />
+                                <Route path="/menu" element={<MenuPageSimple />} />
+                                <Route path="/cart" element={<CartPageSimple />} />
+                                <Route path="/promo" element={<PromoPageSimple />} />
+                                <Route path="/profile" element={<ProfilePage />} />
+                                <Route path="/admin" element={<AdminPage />} />
+                                <Route path="/contacts" element={<ContactsPage />} />
+                                <Route path="/blog" element={<BlogPage />} />
+                                <Route path="/blog/:slug" element={<BlogPostPage />} />
+                            </Routes>
+                        </Suspense>
+                    </main>
+                    {!isAdminRoute && <Footer />}
+                </div>
+            </CartProvider>
+        </AuthProvider>
+    );
 }
 
 export default App;

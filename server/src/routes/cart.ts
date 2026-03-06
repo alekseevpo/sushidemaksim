@@ -8,28 +8,33 @@ const router = Router();
 router.use(authMiddleware);
 
 // GET /api/cart
-router.get('/', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { data: items, error } = await supabase
-        .from('cart_items')
-        .select(`
+router.get(
+    '/',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { data: items, error } = await supabase
+            .from('cart_items')
+            .select(
+                `
             id, quantity, menu_item_id,
             menu_items(name, price, image, description, category)
-        `)
-        .eq('user_id', req.userId)
-        .order('id');
+        `
+            )
+            .eq('user_id', req.userId)
+            .order('id');
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const formattedItems = (items || []).map((item: any) => ({
-        id: item.id,
-        quantity: item.quantity,
-        menu_item_id: item.menu_item_id,
-        ...item.menu_items
-    }));
+        const formattedItems = (items || []).map((item: any) => ({
+            id: item.id,
+            quantity: item.quantity,
+            menu_item_id: item.menu_item_id,
+            ...item.menu_items,
+        }));
 
-    const total = formattedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    res.json({ items: formattedItems, total: Math.round(total * 100) / 100 });
-}));
+        const total = formattedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        res.json({ items: formattedItems, total: Math.round(total * 100) / 100 });
+    })
+);
 
 // POST /api/cart — add item
 router.post(
@@ -92,21 +97,27 @@ router.put(
 );
 
 // DELETE /api/cart/:itemId — remove single item
-router.delete('/:itemId', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { error } = await supabase
-        .from('cart_items')
-        .delete()
-        .eq('id', req.params.itemId)
-        .eq('user_id', req.userId);
+router.delete(
+    '/:itemId',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { error } = await supabase
+            .from('cart_items')
+            .delete()
+            .eq('id', req.params.itemId)
+            .eq('user_id', req.userId);
 
-    if (error) return res.status(404).json({ error: 'Item no encontrado en la cesta' });
-    res.json({ success: true });
-}));
+        if (error) return res.status(404).json({ error: 'Item no encontrado en la cesta' });
+        res.json({ success: true });
+    })
+);
 
 // DELETE /api/cart — clear entire cart
-router.delete('/', asyncHandler(async (req: AuthRequest, res: Response) => {
-    await supabase.from('cart_items').delete().eq('user_id', req.userId);
-    res.json({ success: true, message: 'Cesta vaciada' });
-}));
+router.delete(
+    '/',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        await supabase.from('cart_items').delete().eq('user_id', req.userId);
+        res.json({ success: true, message: 'Cesta vaciada' });
+    })
+);
 
 export default router;

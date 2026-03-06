@@ -9,41 +9,44 @@ const router = Router();
 router.use(authMiddleware);
 
 // GET /api/user/profile
-router.get('/profile', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('id, name, email, phone, avatar, role, created_at')
-        .eq('id', req.userId)
-        .single();
+router.get(
+    '/profile',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('id, name, email, phone, avatar, role, created_at')
+            .eq('id', req.userId)
+            .single();
 
-    if (userError || !user) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
+        if (userError || !user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
 
-    const { data: addresses } = await supabase
-        .from('user_addresses')
-        .select('id, label, street, city, postal_code, phone, is_default')
-        .eq('user_id', req.userId)
-        .order('is_default', { ascending: false });
+        const { data: addresses } = await supabase
+            .from('user_addresses')
+            .select('id, label, street, city, postal_code, phone, is_default')
+            .eq('user_id', req.userId)
+            .order('is_default', { ascending: false });
 
-    const { count: orderCount } = await supabase
-        .from('orders')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', req.userId);
+        const { count: orderCount } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', req.userId);
 
-    const formattedUser = {
-        ...user,
-        createdAt: user.created_at,
-        addresses: addresses?.map(a => ({
-            ...a,
-            postalCode: a.postal_code,
-            isDefault: a.is_default
-        })),
-        orderCount: orderCount || 0
-    };
+        const formattedUser = {
+            ...user,
+            createdAt: user.created_at,
+            addresses: addresses?.map(a => ({
+                ...a,
+                postalCode: a.postal_code,
+                isDefault: a.is_default,
+            })),
+            orderCount: orderCount || 0,
+        };
 
-    res.json({ user: formattedUser });
-}));
+        res.json({ user: formattedUser });
+    })
+);
 
 // PUT /api/user/profile
 router.put(
@@ -125,23 +128,26 @@ router.put(
 );
 
 // GET /api/user/addresses
-router.get('/addresses', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { data: addresses, error } = await supabase
-        .from('user_addresses')
-        .select('id, label, street, city, postal_code, phone, is_default')
-        .eq('user_id', req.userId)
-        .order('is_default', { ascending: false });
+router.get(
+    '/addresses',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { data: addresses, error } = await supabase
+            .from('user_addresses')
+            .select('id, label, street, city, postal_code, phone, is_default')
+            .eq('user_id', req.userId)
+            .order('is_default', { ascending: false });
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const formatted = addresses?.map(a => ({
-        ...a,
-        postalCode: a.postal_code,
-        isDefault: a.is_default
-    }));
+        const formatted = addresses?.map(a => ({
+            ...a,
+            postalCode: a.postal_code,
+            isDefault: a.is_default,
+        }));
 
-    res.json({ addresses: formatted });
-}));
+        res.json({ addresses: formatted });
+    })
+);
 
 // POST /api/user/addresses
 router.post(
@@ -157,7 +163,10 @@ router.post(
         const { label, street, city, postalCode, phone, isDefault } = req.body;
 
         if (isDefault) {
-            await supabase.from('user_addresses').update({ is_default: false }).eq('user_id', req.userId);
+            await supabase
+                .from('user_addresses')
+                .update({ is_default: false })
+                .eq('user_id', req.userId);
         }
 
         const { data: address, error } = await supabase
@@ -169,7 +178,7 @@ router.post(
                 city: city?.trim() || '',
                 postal_code: postalCode?.trim() || '',
                 phone: phone?.trim() || '',
-                is_default: !!isDefault
+                is_default: !!isDefault,
             })
             .select()
             .single();
@@ -180,8 +189,8 @@ router.post(
             address: {
                 ...address,
                 postalCode: address.postal_code,
-                isDefault: address.is_default
-            }
+                isDefault: address.is_default,
+            },
         });
     })
 );
@@ -201,7 +210,10 @@ router.put(
         const { label, street, city, postalCode, phone, isDefault } = req.body;
 
         if (isDefault) {
-            await supabase.from('user_addresses').update({ is_default: false }).eq('user_id', req.userId);
+            await supabase
+                .from('user_addresses')
+                .update({ is_default: false })
+                .eq('user_id', req.userId);
         }
 
         const updateData: any = {};
@@ -226,48 +238,60 @@ router.put(
             address: {
                 ...address,
                 postalCode: address.postal_code,
-                isDefault: address.is_default
-            }
+                isDefault: address.is_default,
+            },
         });
     })
 );
 
 // DELETE /api/user/addresses/:id
-router.delete('/addresses/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { error } = await supabase
-        .from('user_addresses')
-        .delete()
-        .eq('id', req.params.id)
-        .eq('user_id', req.userId);
+router.delete(
+    '/addresses/:id',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { error } = await supabase
+            .from('user_addresses')
+            .delete()
+            .eq('id', req.params.id)
+            .eq('user_id', req.userId);
 
-    if (error) return res.status(404).json({ error: 'Dirección no encontrada' });
-    res.json({ success: true });
-}));
+        if (error) return res.status(404).json({ error: 'Dirección no encontrada' });
+        res.json({ success: true });
+    })
+);
 
 // PUT /api/user/addresses/:id/default
-router.put('/addresses/:id/default', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const id = req.params.id;
-    await supabase.from('user_addresses').update({ is_default: false }).eq('user_id', req.userId);
-    const { error } = await supabase
-        .from('user_addresses')
-        .update({ is_default: true })
-        .eq('id', id)
-        .eq('user_id', req.userId);
+router.put(
+    '/addresses/:id/default',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const id = req.params.id;
+        await supabase
+            .from('user_addresses')
+            .update({ is_default: false })
+            .eq('user_id', req.userId);
+        const { error } = await supabase
+            .from('user_addresses')
+            .update({ is_default: true })
+            .eq('id', id)
+            .eq('user_id', req.userId);
 
-    if (error) return res.status(404).json({ error: 'Dirección no encontrada' });
-    res.json({ success: true });
-}));
+        if (error) return res.status(404).json({ error: 'Dirección no encontrada' });
+        res.json({ success: true });
+    })
+);
 
 // GET /api/user/favorites
-router.get('/favorites', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { data: favorites, error } = await supabase
-        .from('user_favorites')
-        .select('menu_items(*)')
-        .eq('user_id', req.userId);
+router.get(
+    '/favorites',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { data: favorites, error } = await supabase
+            .from('user_favorites')
+            .select('menu_items(*)')
+            .eq('user_id', req.userId);
 
-    if (error) throw error;
-    res.json({ favorites: favorites?.map(f => f.menu_items) || [] });
-}));
+        if (error) throw error;
+        res.json({ favorites: favorites?.map(f => f.menu_items) || [] });
+    })
+);
 
 // POST /api/user/favorites
 router.post(
@@ -287,7 +311,9 @@ router.post(
             await supabase.from('user_favorites').delete().eq('id', exists.id);
             res.json({ isFavorite: false });
         } else {
-            await supabase.from('user_favorites').insert({ user_id: req.userId, menu_item_id: menuItemId });
+            await supabase
+                .from('user_favorites')
+                .insert({ user_id: req.userId, menu_item_id: menuItemId });
             res.json({ isFavorite: true });
         }
     })

@@ -12,7 +12,16 @@ type TabId = 'profile' | 'addresses' | 'orders' | 'favorites';
 
 // Latest version with fix for editAddress unused error
 export default function ProfilePage() {
-    const { user, isAuthenticated, logout, updateProfile, addAddress, editAddress, removeAddress, setDefaultAddress } = useAuth();
+    const {
+        user,
+        isAuthenticated,
+        logout,
+        updateProfile,
+        addAddress,
+        editAddress,
+        removeAddress,
+        setDefaultAddress,
+    } = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -28,9 +37,23 @@ export default function ProfilePage() {
     if (!isAuthenticated || !user) {
         return (
             <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '32px 16px' }}>
-                <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', padding: '80px 0' }}>
+                <div
+                    style={{
+                        maxWidth: '600px',
+                        margin: '0 auto',
+                        textAlign: 'center',
+                        padding: '80px 0',
+                    }}
+                >
                     <div style={{ fontSize: '80px', marginBottom: '24px' }}>🔒</div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#111827' }}>
+                    <h1
+                        style={{
+                            fontSize: '28px',
+                            fontWeight: 'bold',
+                            marginBottom: '12px',
+                            color: '#111827',
+                        }}
+                    >
                         Inicia sesión
                     </h1>
                     <p style={{ fontSize: '16px', color: '#6B7280', marginBottom: '32px' }}>
@@ -39,8 +62,14 @@ export default function ProfilePage() {
                     <button
                         onClick={() => navigate('/')}
                         style={{
-                            backgroundColor: '#DC2626', color: 'white', padding: '12px 32px',
-                            borderRadius: '10px', border: 'none', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer',
+                            backgroundColor: '#DC2626',
+                            color: 'white',
+                            padding: '12px 32px',
+                            borderRadius: '10px',
+                            border: 'none',
+                            fontWeight: 'bold',
+                            fontSize: '15px',
+                            cursor: 'pointer',
                         }}
                     >
                         Volver al inicio
@@ -60,7 +89,12 @@ export default function ProfilePage() {
         setTimeout(() => setSaveSuccess(''), 2000);
     };
 
-    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const initials = user.name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
 
     const tabs: { id: TabId; label: string; icon: typeof User }[] = [
         { id: 'profile', label: 'Mi Perfil', icon: User },
@@ -72,49 +106,88 @@ export default function ProfilePage() {
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#F3F4F6', padding: '32px 16px' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-
                 {/* Success toast */}
                 {saveSuccess && (
-                    <div style={{
-                        position: 'fixed', top: '80px', right: '24px',
-                        backgroundColor: '#059669', color: 'white', padding: '12px 24px',
-                        borderRadius: '10px', fontSize: '14px', fontWeight: 'bold', zIndex: 100,
-                        boxShadow: '0 10px 25px rgba(5, 150, 105, 0.3)',
-                        animation: 'slideIn 0.3s ease', display: 'flex', alignItems: 'center', gap: '8px',
-                    }}>
+                    <div
+                        style={{
+                            position: 'fixed',
+                            top: '80px',
+                            right: '24px',
+                            backgroundColor: '#059669',
+                            color: 'white',
+                            padding: '12px 24px',
+                            borderRadius: '10px',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            zIndex: 100,
+                            boxShadow: '0 10px 25px rgba(5, 150, 105, 0.3)',
+                            animation: 'slideIn 0.3s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                        }}
+                    >
                         ✓ {saveSuccess}
                     </div>
                 )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
-
                     {/* Sidebar */}
                     <div>
                         {/* User Card */}
                         <div style={{ ...cardStyle, textAlign: 'center' }}>
-                            <div style={{
-                                width: '80px', height: '80px', borderRadius: '50%',
-                                background: user.avatar ? '#F9FAFB' : 'linear-gradient(135deg, #DC2626, #F87171)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                margin: '0 auto 16px',
-                                fontSize: user.avatar ? '48px' : '28px',
-                                fontWeight: 'bold', color: 'white',
-                                boxShadow: user.avatar ? '0 4px 12px rgba(0, 0, 0, 0.05)' : '0 4px 12px rgba(220, 38, 38, 0.3)',
-                            }}>
+                            <div
+                                style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    borderRadius: '50%',
+                                    background: user.avatar
+                                        ? '#F9FAFB'
+                                        : 'linear-gradient(135deg, #DC2626, #F87171)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto 16px',
+                                    fontSize: user.avatar ? '48px' : '28px',
+                                    fontWeight: 'bold',
+                                    color: 'white',
+                                    boxShadow: user.avatar
+                                        ? '0 4px 12px rgba(0, 0, 0, 0.05)'
+                                        : '0 4px 12px rgba(220, 38, 38, 0.3)',
+                                }}
+                            >
                                 {user.avatar ? user.avatar : initials}
                             </div>
-                            <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#111827' }}>
+                            <h2
+                                style={{
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    margin: '0 0 4px 0',
+                                    color: '#111827',
+                                }}
+                            >
                                 {user.name}
                             </h2>
-                            <p style={{ fontSize: '13px', color: '#6B7280', margin: '0 0 4px 0' }}>{user.email}</p>
+                            <p style={{ fontSize: '13px', color: '#6B7280', margin: '0 0 4px 0' }}>
+                                {user.email}
+                            </p>
                             <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
-                                Miembro desde {(() => {
+                                Miembro desde{' '}
+                                {(() => {
                                     const rawDate = user.createdAt || '';
                                     const d = new Date(rawDate);
                                     const validDate = isNaN(d.getTime())
-                                        ? new Date(rawDate.replace(' ', 'T') + (rawDate.includes('Z') || rawDate.includes('+') ? '' : 'Z'))
+                                        ? new Date(
+                                              rawDate.replace(' ', 'T') +
+                                                  (rawDate.includes('Z') || rawDate.includes('+')
+                                                      ? ''
+                                                      : 'Z')
+                                          )
                                         : d;
-                                    return validDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                                    return validDate.toLocaleDateString('es-ES', {
+                                        month: 'long',
+                                        year: 'numeric',
+                                    });
                                 })()}
                             </p>
                         </div>
@@ -130,38 +203,79 @@ export default function ProfilePage() {
                                             key={tab.id}
                                             onClick={() => setActiveTab(tab.id)}
                                             style={{
-                                                display: 'flex', alignItems: 'center', gap: '12px',
-                                                padding: '12px 16px', border: 'none', borderRadius: '10px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px',
+                                                padding: '12px 16px',
+                                                border: 'none',
+                                                borderRadius: '10px',
                                                 cursor: 'pointer',
-                                                backgroundColor: isActive ? '#FEE2E2' : 'transparent',
+                                                backgroundColor: isActive
+                                                    ? '#FEE2E2'
+                                                    : 'transparent',
                                                 color: isActive ? '#DC2626' : '#374151',
                                                 fontWeight: isActive ? 'bold' : 'normal',
-                                                fontSize: '14px', transition: 'all 0.2s',
-                                                width: '100%', textAlign: 'left',
+                                                fontSize: '14px',
+                                                transition: 'all 0.2s',
+                                                width: '100%',
+                                                textAlign: 'left',
                                             }}
-                                            onMouseOver={e => { if (!isActive) e.currentTarget.style.backgroundColor = '#F9FAFB'; }}
-                                            onMouseOut={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                                            onMouseOver={e => {
+                                                if (!isActive)
+                                                    e.currentTarget.style.backgroundColor =
+                                                        '#F9FAFB';
+                                            }}
+                                            onMouseOut={e => {
+                                                if (!isActive)
+                                                    e.currentTarget.style.backgroundColor =
+                                                        'transparent';
+                                            }}
                                         >
                                             <Icon size={18} />
                                             {tab.label}
-                                            <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: isActive ? 1 : 0.3 }} />
+                                            <ChevronRight
+                                                size={14}
+                                                style={{
+                                                    marginLeft: 'auto',
+                                                    opacity: isActive ? 1 : 0.3,
+                                                }}
+                                            />
                                         </button>
                                     );
                                 })}
 
-                                <div style={{ height: '1px', backgroundColor: '#E5E7EB', margin: '8px 0' }} />
+                                <div
+                                    style={{
+                                        height: '1px',
+                                        backgroundColor: '#E5E7EB',
+                                        margin: '8px 0',
+                                    }}
+                                />
 
                                 <button
                                     onClick={handleLogout}
                                     style={{
-                                        display: 'flex', alignItems: 'center', gap: '12px',
-                                        padding: '12px 16px', border: 'none', borderRadius: '10px',
-                                        cursor: 'pointer', backgroundColor: 'transparent', color: '#EF4444',
-                                        fontWeight: 'normal', fontSize: '14px', transition: 'all 0.2s',
-                                        width: '100%', textAlign: 'left',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '12px 16px',
+                                        border: 'none',
+                                        borderRadius: '10px',
+                                        cursor: 'pointer',
+                                        backgroundColor: 'transparent',
+                                        color: '#EF4444',
+                                        fontWeight: 'normal',
+                                        fontSize: '14px',
+                                        transition: 'all 0.2s',
+                                        width: '100%',
+                                        textAlign: 'left',
                                     }}
-                                    onMouseOver={e => e.currentTarget.style.backgroundColor = '#FEF2F2'}
-                                    onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                                    onMouseOver={e =>
+                                        (e.currentTarget.style.backgroundColor = '#FEF2F2')
+                                    }
+                                    onMouseOut={e =>
+                                        (e.currentTarget.style.backgroundColor = 'transparent')
+                                    }
                                 >
                                     <LogOut size={18} />
                                     Cerrar sesión
@@ -173,7 +287,11 @@ export default function ProfilePage() {
                     {/* Main Content */}
                     <div>
                         {activeTab === 'profile' && (
-                            <ProfileTab user={user} updateProfile={updateProfile} onSuccess={showToast} />
+                            <ProfileTab
+                                user={user}
+                                updateProfile={updateProfile}
+                                onSuccess={showToast}
+                            />
                         )}
                         {activeTab === 'addresses' && (
                             <AddressesTab

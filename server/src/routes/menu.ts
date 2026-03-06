@@ -6,84 +6,87 @@ import { formatMenuItem } from '../utils/helpers.js';
 const router = Router();
 
 // GET /api/menu — all items, optional ?category= and ?search= filter
-router.get('/', asyncHandler(async (req: Request, res: Response) => {
-    const { category, search } = req.query;
+router.get(
+    '/',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { category, search } = req.query;
 
-    let query = supabase
-        .from('menu_items')
-        .select('*');
+        let query = supabase.from('menu_items').select('*');
 
-    if (category) {
-        query = query.eq('category', category);
-    }
+        if (category) {
+            query = query.eq('category', category);
+        }
 
-    if (search && typeof search === 'string' && search.trim().length > 0) {
-        const term = search.trim();
-        query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
-    }
+        if (search && typeof search === 'string' && search.trim().length > 0) {
+            const term = search.trim();
+            query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
+        }
 
-    const { data: items, error } = await query.order('category').order('id');
+        const { data: items, error } = await query.order('category').order('id');
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const formatted = (items || []).map(formatMenuItem);
-    res.json({ items: formatted, total: formatted.length });
-}));
+        const formatted = (items || []).map(formatMenuItem);
+        res.json({ items: formatted, total: formatted.length });
+    })
+);
 
 // GET /api/menu/info/categories — category list with counts
-router.get('/info/categories', asyncHandler(async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-        .from('menu_items')
-        .select('category');
+router.get(
+    '/info/categories',
+    asyncHandler(async (_req: Request, res: Response) => {
+        const { data, error } = await supabase.from('menu_items').select('category');
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const counts: Record<string, number> = {};
-    data?.forEach(item => {
-        counts[item.category] = (counts[item.category] || 0) + 1;
-    });
+        const counts: Record<string, number> = {};
+        data?.forEach(item => {
+            counts[item.category] = (counts[item.category] || 0) + 1;
+        });
 
-    const categoryMap: Record<string, { name: string; icon: string }> = {
-        'entrantes': { name: 'Entrantes', icon: '🥟' },
-        'rollos-grandes': { name: 'Rollos Grandes', icon: '🍣' },
-        'rollos-clasicos': { name: 'Rollos Clásicos', icon: '🥢' },
-        'rollos-fritos': { name: 'Rollos Fritos/Horneados', icon: '🔥' },
-        'sopas': { name: 'Sopas', icon: '🍜' },
-        'menus': { name: 'Menús', icon: '🎁' },
-        'extras': { name: 'Extras', icon: '🧴' },
-        'postre': { name: 'Postre', icon: '🍰' },
-    };
+        const categoryMap: Record<string, { name: string; icon: string }> = {
+            entrantes: { name: 'Entrantes', icon: '🥟' },
+            'rollos-grandes': { name: 'Rollos Grandes', icon: '🍣' },
+            'rollos-clasicos': { name: 'Rollos Clásicos', icon: '🥢' },
+            'rollos-fritos': { name: 'Rollos Fritos/Horneados', icon: '🔥' },
+            sopas: { name: 'Sopas', icon: '🍜' },
+            menus: { name: 'Menús', icon: '🎁' },
+            extras: { name: 'Extras', icon: '🧴' },
+            postre: { name: 'Postre', icon: '🍰' },
+        };
 
-    const result = Object.entries(counts).map(([cat, count]) => ({
-        id: cat,
-        ...(categoryMap[cat] || { name: cat, icon: '📋' }),
-        count,
-    }));
+        const result = Object.entries(counts).map(([cat, count]) => ({
+            id: cat,
+            ...(categoryMap[cat] || { name: cat, icon: '📋' }),
+            count,
+        }));
 
-    res.json({ categories: result });
-}));
+        res.json({ categories: result });
+    })
+);
 
 // GET /api/menu/:id — single item
-router.get('/:id', asyncHandler(async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
+router.get(
+    '/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const id = parseInt(req.params.id);
 
-    if (isNaN(id) || id <= 0) {
-        return res.status(400).json({ error: 'ID de producto inválido' });
-    }
+        if (isNaN(id) || id <= 0) {
+            return res.status(400).json({ error: 'ID de producto inválido' });
+        }
 
-    const { data: item, error } = await supabase
-        .from('menu_items')
-        .select('*')
-        .eq('id', id)
-        .single();
+        const { data: item, error } = await supabase
+            .from('menu_items')
+            .select('*')
+            .eq('id', id)
+            .single();
 
-    if (error || !item) {
-        return res.status(404).json({ error: 'Producto no encontrado' });
-    }
+        if (error || !item) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
 
-    res.json({ item: formatMenuItem(item) });
-}));
-
-
+        res.json({ item: formatMenuItem(item) });
+    })
+);
 
 export default router;

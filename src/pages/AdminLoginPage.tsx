@@ -56,7 +56,6 @@ export default function AdminLoginPage() {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-100">
                     <form className="space-y-6" onSubmit={handleSubmit}>
-
                         {error && (
                             <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
                                 <div className="flex">
@@ -64,9 +63,7 @@ export default function AdminLoginPage() {
                                         <span className="text-red-500">⚠️</span>
                                     </div>
                                     <div className="ml-3">
-                                        <p className="text-sm text-red-700 font-medium">
-                                            {error}
-                                        </p>
+                                        <p className="text-sm text-red-700 font-medium">{error}</p>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +81,7 @@ export default function AdminLoginPage() {
                                     type="email"
                                     required
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={e => setEmail(e.target.value)}
                                     className="focus:ring-red-500 focus:border-red-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
                                     placeholder="admin@sushidemaksim.es"
                                 />
@@ -103,7 +100,7 @@ export default function AdminLoginPage() {
                                     type="password"
                                     required
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={e => setPassword(e.target.value)}
                                     className="focus:ring-red-500 focus:border-red-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
                                     placeholder="••••••••"
                                 />
@@ -112,7 +109,16 @@ export default function AdminLoginPage() {
 
                         <div className="flex items-center justify-end">
                             <div className="text-sm">
-                                <a href="#" onClick={(e) => { e.preventDefault(); alert('Por favor, contacta con el administrador principal (DBA) para restablecer la contraseña.'); }} className="font-medium text-red-600 hover:text-red-500 transition">
+                                <a
+                                    href="#"
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        alert(
+                                            'Por favor, contacta con el administrador principal (DBA) para restablecer la contraseña.'
+                                        );
+                                    }}
+                                    className="font-medium text-red-600 hover:text-red-500 transition"
+                                >
                                     ¿Olvidaste la contraseña?
                                 </a>
                             </div>

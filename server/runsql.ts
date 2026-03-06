@@ -12,9 +12,9 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function runSQL() {
     const sql = fs.readFileSync('promos_migration.sql', 'utf8');
 
-    console.log("Creating table...");
+    console.log('Creating table...');
     // Since supabase js client doesn't have a direct raw SQL execution without knowing the postgres url (rpc is possible if we created an exec function, which we probably didn't).
-    console.log("We need to run this in SQL Editor.");
+    console.log('We need to run this in SQL Editor.');
 }
 
 runSQL();

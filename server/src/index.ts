@@ -27,22 +27,37 @@ const __dirname = path.dirname(__filename);
 app.use('/api/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
 
 // ─── Security ─────────────────────────────────────────────────────────────────
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "img-src": ["'self'", "data:", "https://sushidemaksim.com", "http://localhost:3000", "http://localhost:3001"],
-            "connect-src": ["'self'", "http://localhost:3000", "http://localhost:3001", "*.supabase.co"],
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                'img-src': [
+                    "'self'",
+                    'data:',
+                    'https://sushidemaksim.com',
+                    'http://localhost:3000',
+                    'http://localhost:3001',
+                ],
+                'connect-src': [
+                    "'self'",
+                    'http://localhost:3000',
+                    'http://localhost:3001',
+                    '*.supabase.co',
+                ],
+            },
         },
-    },
-}));
+    })
+);
 
-app.use(cors({
-    origin: config.corsOrigin,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+    cors({
+        origin: config.corsOrigin,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    })
+);
 
 // ─── Rate Limiting ─────────────────────────────────────────────────────────────
 const authLimiter = rateLimit({
@@ -140,11 +155,15 @@ if (!process.env.VERCEL) {
                     const code = `LATE-20-${order.id}-${Math.floor(Math.random() * 1000)}`;
 
                     await Promise.all([
-                        supabase.from('promo_codes').insert({ code, discount_percentage: 20, user_id: order.user_id }),
-                        supabase.from('orders').update({ discount_sent: true }).eq('id', order.id)
+                        supabase
+                            .from('promo_codes')
+                            .insert({ code, discount_percentage: 20, user_id: order.user_id }),
+                        supabase.from('orders').update({ discount_sent: true }).eq('id', order.id),
                     ]);
 
-                    console.log(`📧 Simulated email to ${(order.users as any)?.email}: Your order #${order.id} is late! Here is a 20% discount code for your next order: ${code}`);
+                    console.log(
+                        `📧 Simulated email to ${(order.users as any)?.email}: Your order #${order.id} is late! Here is a 20% discount code for your next order: ${code}`
+                    );
                 }
             }
         } catch (e) {

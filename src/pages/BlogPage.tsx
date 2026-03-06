@@ -26,7 +26,7 @@ export default function BlogPage() {
                 const data = await api.get('/blog');
                 setPosts(data);
             } catch (err) {
-                console.error("Error fetching blog posts:", err);
+                console.error('Error fetching blog posts:', err);
             } finally {
                 setLoading(false);
             }
@@ -42,7 +42,9 @@ export default function BlogPage() {
                 <div className="absolute inset-0 z-0">
                     <img
                         src="/blog_post_sushi_art.png"
-                        alt="Sushi Art"
+                        alt="Mundo Sushi de Maksim"
+                        fetchPriority="high"
+                        decoding="async"
                         className="w-full h-full object-cover opacity-40 scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
@@ -68,79 +70,86 @@ export default function BlogPage() {
 
             {/* Container */}
             <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-20">
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {loading ? (
                         <div className="col-span-full py-20 flex justify-center text-gray-500">
                             <RefreshCw className="animate-spin mr-2" /> Cargando artículos...
                         </div>
-                    ) : (
-                        posts.length > 0 ? (
-                            posts.map((post, index) => (
-                                <motion.article
-                                    key={post.id}
-                                    initial={{ opacity: 0, y: 50 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full relative"
-                                >
-                                    {/* Link overlay for the whole card */}
-                                    <Link to={`/blog/${post.slug}`} className="absolute inset-0 z-10" aria-label={`Leer más sobre ${post.title}`}></Link>
+                    ) : posts.length > 0 ? (
+                        posts.map((post, index) => (
+                            <motion.article
+                                key={post.id}
+                                initial={{ opacity: 0, y: 50 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full relative"
+                            >
+                                {/* Link overlay for the whole card */}
+                                <Link
+                                    to={`/blog/${post.slug}`}
+                                    className="absolute inset-0 z-10"
+                                    aria-label={`Leer más sobre ${post.title}`}
+                                ></Link>
 
-                                    {/* Image Wrapper */}
-                                    <div className="relative h-64 overflow-hidden">
-                                        <img
-                                            src={post.image_url || '/sushi-hero.jpg'}
-                                            alt={post.title}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        />
-                                        <div className="absolute top-4 left-4 z-20">
-                                            <span className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-bold text-gray-900 uppercase shadow-sm">
-                                                {post.category}
-                                            </span>
-                                        </div>
+                                {/* Image Wrapper */}
+                                <div className="relative h-64 overflow-hidden">
+                                    <img
+                                        src={post.image_url || '/sushi-hero.jpg'}
+                                        alt={`Imagen del articulo ${post.title}`}
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                    <div className="absolute top-4 left-4 z-20">
+                                        <span className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-bold text-gray-900 uppercase shadow-sm">
+                                            {post.category}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-6 flex-1 flex flex-col">
+                                    <div className="flex items-center gap-4 text-gray-400 text-[11px] font-medium mb-3">
+                                        <span className="flex items-center gap-1.5 line-clamp-1">
+                                            <Calendar size={12} className="text-red-500" />{' '}
+                                            {new Date(post.created_at).toLocaleDateString()}
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <Clock size={12} className="text-red-500" />{' '}
+                                            {post.read_time || '5 min'}
+                                        </span>
                                     </div>
 
-                                    {/* Content */}
-                                    <div className="p-6 flex-1 flex flex-col">
-                                        <div className="flex items-center gap-4 text-gray-400 text-[11px] font-medium mb-3">
-                                            <span className="flex items-center gap-1.5 line-clamp-1">
-                                                <Calendar size={12} className="text-red-500" /> {new Date(post.created_at).toLocaleDateString()}
-                                            </span>
-                                            <span className="flex items-center gap-1.5">
-                                                <Clock size={12} className="text-red-500" /> {post.read_time || '5 min'}
-                                            </span>
-                                        </div>
+                                    <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors line-clamp-2 leading-snug">
+                                        {post.title}
+                                    </h2>
 
-                                        <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors line-clamp-2 leading-snug">
-                                            {post.title}
-                                        </h2>
+                                    <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">
+                                        {post.excerpt}
+                                    </p>
 
-                                        <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">
-                                            {post.excerpt}
-                                        </p>
-
-                                        <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between z-20">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-[10px] font-bold text-red-600">
-                                                    {post.author ? post.author.charAt(0) : 'E'}
-                                                </div>
-                                                <span className="text-xs font-bold text-gray-700">{post.author || 'Equipo Editorial'}</span>
+                                    <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between z-20">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-[10px] font-bold text-red-600">
+                                                {post.author ? post.author.charAt(0) : 'E'}
                                             </div>
-
-                                            <button className="text-[12px] font-black uppercase tracking-tighter text-red-600 flex items-center gap-1 hover:gap-2 transition-all">
-                                                Leer más <ChevronRight size={14} />
-                                            </button>
+                                            <span className="text-xs font-bold text-gray-700">
+                                                {post.author || 'Equipo Editorial'}
+                                            </span>
                                         </div>
+
+                                        <button className="text-[12px] font-black uppercase tracking-tighter text-red-600 flex items-center gap-1 hover:gap-2 transition-all">
+                                            Leer más <ChevronRight size={14} />
+                                        </button>
                                     </div>
-                                </motion.article>
-                            ))
-                        ) : (
-                            <div className="col-span-full py-20 text-center text-gray-500 font-medium">
-                                No hay artículos publicados aún.
-                            </div>
-                        )
+                                </div>
+                            </motion.article>
+                        ))
+                    ) : (
+                        <div className="col-span-full py-20 text-center text-gray-500 font-medium">
+                            No hay artículos publicados aún.
+                        </div>
                     )}
                 </div>
 
@@ -155,11 +164,18 @@ export default function BlogPage() {
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-600/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
 
                     <div className="relative z-10 max-w-2xl mx-auto">
-                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">¿Quieres recibir ofertas <span className="text-red-500">exclusivas</span>?</h2>
+                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                            ¿Quieres recibir ofertas{' '}
+                            <span className="text-red-500">exclusivas</span>?
+                        </h2>
                         <p className="text-gray-400 mb-8 text-sm md:text-base leading-relaxed">
-                            Únete a nuestro club de amantes del sushi y recibe historias del blog y promociones directamente en tu email.
+                            Únete a nuestro club de amantes del sushi y recibe historias del blog y
+                            promociones directamente en tu email.
                         </p>
-                        <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+                        <form
+                            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+                            onSubmit={e => e.preventDefault()}
+                        >
                             <input
                                 type="email"
                                 placeholder="Tu mejor email..."
@@ -173,7 +189,10 @@ export default function BlogPage() {
                 </motion.div>
 
                 <div className="mt-12 text-center">
-                    <Link to="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-red-600 font-bold text-sm transition-colors">
+                    <Link
+                        to="/"
+                        className="inline-flex items-center gap-2 text-gray-500 hover:text-red-600 font-bold text-sm transition-colors"
+                    >
                         <ArrowLeft size={16} /> Volver a la tienda
                     </Link>
                 </div>

@@ -18,7 +18,9 @@ export async function adminMiddleware(req: AuthRequest, res: Response, next: Nex
         .single();
 
     if (error || !user || user.role !== 'admin') {
-        return res.status(403).json({ error: 'Acceso denegado: se requieren privilegios de administrador' });
+        return res
+            .status(403)
+            .json({ error: 'Acceso denegado: se requieren privilegios de administrador' });
     }
 
     next();

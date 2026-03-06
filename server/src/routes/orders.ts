@@ -29,7 +29,10 @@ router.post(
         }
 
         // 2. Calculate total
-        let finalTotal = cartItems.reduce((sum, item: any) => sum + item.menu_items.price * item.quantity, 0);
+        let finalTotal = cartItems.reduce(
+            (sum, item: any) => sum + item.menu_items.price * item.quantity,
+            0
+        );
         let usedPromoId = null;
 
         if (promoCode) {
@@ -37,9 +40,9 @@ router.post(
 
             // ─── Test Promo Codes ───
             if (upperCode === 'TEST10') {
-                finalTotal = finalTotal * 0.90; // 10% discount
+                finalTotal = finalTotal * 0.9; // 10% discount
             } else if (upperCode === 'TEST50') {
-                finalTotal = finalTotal * 0.50; // 50% discount
+                finalTotal = finalTotal * 0.5; // 50% discount
             } else {
                 const { data: promo } = await supabase
                     .from('promo_codes')
@@ -66,7 +69,7 @@ router.post(
                 phone_number: phoneNumber?.trim() || '',
                 status: 'pending',
                 estimated_delivery_time: '30-60 min',
-                notes: notes?.trim() || ''
+                notes: notes?.trim() || '',
             })
             .select()
             .single();
@@ -80,7 +83,7 @@ router.post(
             name: item.menu_items.name,
             quantity: item.quantity,
             price_at_time: item.menu_items.price,
-            image: item.menu_items.image
+            image: item.menu_items.image,
         }));
 
         const { error: itemsError } = await supabase.from('order_items').insert(orderItemsToInsert);
@@ -104,53 +107,63 @@ router.post(
 );
 
 // GET /api/orders — order history with pagination
-router.get('/', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 10));
-    const offset = (page - 1) * limit;
+router.get(
+    '/',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const page = Math.max(1, parseInt(req.query.page as string) || 1);
+        const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 10));
+        const offset = (page - 1) * limit;
 
-    const { data: orders, count, error } = await supabase
-        .from('orders')
-        .select('*, order_items(*)', { count: 'exact' })
-        .eq('user_id', req.userId)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
+        const {
+            data: orders,
+            count,
+            error,
+        } = await supabase
+            .from('orders')
+            .select('*, order_items(*)', { count: 'exact' })
+            .eq('user_id', req.userId)
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const formattedOrders = (orders || []).map((o: any) => ({
-        ...o,
-        items: o.order_items
-    }));
+        const formattedOrders = (orders || []).map((o: any) => ({
+            ...o,
+            items: o.order_items,
+        }));
 
-    res.json({
-        orders: formattedOrders || [],
-        pagination: {
-            total: count || 0,
-            page,
-            limit,
-            pages: Math.ceil((count || 0) / limit),
-            hasNext: page * limit < (count || 0),
-            hasPrev: page > 1,
-        },
-    });
-}));
+        res.json({
+            orders: formattedOrders || [],
+            pagination: {
+                total: count || 0,
+                page,
+                limit,
+                pages: Math.ceil((count || 0) / limit),
+                hasNext: page * limit < (count || 0),
+                hasPrev: page > 1,
+            },
+        });
+    })
+);
 
 // GET /api/orders/:id — single order
-router.get('/:id', asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { data: order, error } = await supabase
-        .from('orders')
-        .select('*, order_items(*)')
-        .eq('id', req.params.id)
-        .eq('user_id', req.userId)
-        .single();
+router.get(
+    '/:id',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { data: order, error } = await supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('id', req.params.id)
+            .eq('user_id', req.userId)
+            .single();
 
-    if (error || !order) {
-        return res.status(404).json({ error: 'Pedido no encontrado' });
-    }
+        if (error || !order) {
+            return res.status(404).json({ error: 'Pedido no encontrado' });
+        }
 
-    res.json({ order: { ...order, items: order.order_items } });
-}));
+        res.json({ order: { ...order, items: order.order_items } });
+    })
+);
 
 // PATCH /api/orders/:id/cancel
 router.patch(

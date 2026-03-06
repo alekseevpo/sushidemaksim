@@ -29,12 +29,16 @@ router.post('/check-late-orders', async (req, res) => {
                 const code = `LATE-20-${order.id}-${Math.floor(Math.random() * 1000)}`;
 
                 await Promise.all([
-                    supabase.from('promo_codes').insert({ code, discount_percentage: 20, user_id: order.user_id }),
-                    supabase.from('orders').update({ discount_sent: true }).eq('id', order.id)
+                    supabase
+                        .from('promo_codes')
+                        .insert({ code, discount_percentage: 20, user_id: order.user_id }),
+                    supabase.from('orders').update({ discount_sent: true }).eq('id', order.id),
                 ]);
 
                 results.push({ orderId: order.id, code });
-                console.log(`📧 CRON: Simulated email to ${(order.users as any)?.email}: Your order #${order.id} is late! Code: ${code}`);
+                console.log(
+                    `📧 CRON: Simulated email to ${(order.users as any)?.email}: Your order #${order.id} is late! Code: ${code}`
+                );
             }
         }
 

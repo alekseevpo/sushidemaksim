@@ -35,7 +35,7 @@ export default function AdminUsers() {
             await api.patch(`/admin/users/${userId}/role`, { role: newRole });
 
             // Update local state
-            setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
+            setUsers(users.map(u => (u.id === userId ? { ...u, role: newRole } : u)));
         } catch (err) {
             alert(err instanceof ApiError ? err.message : 'Error al cambiar rol');
         }
@@ -70,11 +70,17 @@ export default function AdminUsers() {
                         <tbody className="divide-y divide-gray-100">
                             {users.map(user => (
                                 <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-3 font-semibold text-gray-900">#{user.id}</td>
+                                    <td className="px-6 py-3 font-semibold text-gray-900">
+                                        #{user.id}
+                                    </td>
                                     <td className="px-6 py-3">
                                         <div className="font-bold text-gray-900">{user.name}</div>
                                         <div className="text-gray-500 text-xs">{user.email}</div>
-                                        {user.phone && <div className="text-gray-400 text-xs">{user.phone}</div>}
+                                        {user.phone && (
+                                            <div className="text-gray-400 text-xs">
+                                                {user.phone}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-6 py-3 text-center">
                                         <div className="inline-flex items-center justify-center bg-gray-100 text-gray-700 w-8 h-8 rounded-full font-bold">
@@ -103,13 +109,18 @@ export default function AdminUsers() {
                                         <td className="px-6 py-3 text-center">
                                             {user.is_superadmin !== 1 && (
                                                 <button
-                                                    onClick={() => toggleAdminRole(user.id, user.role)}
-                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
-                                                        ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                        : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                                        }`}
+                                                    onClick={() =>
+                                                        toggleAdminRole(user.id, user.role)
+                                                    }
+                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
+                                                        user.role === 'admin'
+                                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                            : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                                                    }`}
                                                 >
-                                                    {user.role === 'admin' ? 'Revocar Admin' : 'Hacer Admin'}
+                                                    {user.role === 'admin'
+                                                        ? 'Revocar Admin'
+                                                        : 'Hacer Admin'}
                                                 </button>
                                             )}
                                         </td>
@@ -126,7 +137,8 @@ export default function AdminUsers() {
                             // Simple pagination logic, showing up to 5 surrounding pages
                             let pageNum = pagination.page - 2 + i;
                             if (pagination.page <= 3) pageNum = i + 1;
-                            else if (pagination.page >= pagination.pages - 2) pageNum = pagination.pages - 4 + i;
+                            else if (pagination.page >= pagination.pages - 2)
+                                pageNum = pagination.pages - 4 + i;
 
                             if (pageNum < 1 || pageNum > pagination.pages) return null;
 
@@ -134,10 +146,11 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                        }`}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                        pageNum === pagination.page
+                                            ? 'bg-red-600 text-white'
+                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
                                 >
                                     {pageNum}
                                 </button>

@@ -3,126 +3,132 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply antialiased text-gray-900 bg-gray-50;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  }
+    body {
+        @apply antialiased text-gray-900 bg-gray-50;
+        font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    }
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
-  }
+    .glass {
+        @apply bg-white/70 backdrop-blur-md border border-white/20;
+    }
 
-  .glass-dark {
-    @apply bg-black/40 backdrop-blur-lg border border-white/10;
-  }
+    .glass-dark {
+        @apply bg-black/40 backdrop-blur-lg border border-white/10;
+    }
 
-  .premium-shadow {
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), 0 5px 20px -5px rgba(0, 0, 0, 0.03);
-  }
+    .premium-shadow {
+        box-shadow:
+            0 10px 40px -10px rgba(0, 0, 0, 0.05),
+            0 5px 20px -5px rgba(0, 0, 0, 0.03);
+    }
 
-  .premium-card {
-    @apply bg-white rounded-3xl border border-gray-100 transition-all duration-500 ease-out;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-  }
+    .premium-card {
+        @apply bg-white rounded-3xl border border-gray-100 transition-all duration-500 ease-out;
+        box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.02),
+            0 2px 4px -1px rgba(0, 0, 0, 0.01);
+    }
 
-  .premium-card:hover {
-    @apply border-red-100 -translate-y-1;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-  }
+    .premium-card:hover {
+        @apply border-red-100 -translate-y-1;
+        box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.05),
+            0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    }
 
-  .btn-premium {
-    @apply relative overflow-hidden transition-all duration-300 transform active:scale-95;
-  }
+    .btn-premium {
+        @apply relative overflow-hidden transition-all duration-300 transform active:scale-95;
+    }
 
-  .btn-premium::after {
-    content: '';
-    @apply absolute inset-0 bg-white/20 -translate-x-full skew-x-12 transition-transform duration-500;
-  }
+    .btn-premium::after {
+        content: '';
+        @apply absolute inset-0 bg-white/20 -translate-x-full skew-x-12 transition-transform duration-500;
+    }
 
-  .btn-premium:hover::after {
-    @apply translate-x-full;
-  }
+    .btn-premium:hover::after {
+        @apply translate-x-full;
+    }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+    @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+    @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
 }
 
 /* Shared keyframe animations */
 @keyframes dropIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
+    from {
+        opacity: 0;
+    }
 
-  to {
-    opacity: 1;
-  }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 /* Modal input with icon — compact style */
 .modal-input {
-  @apply w-full py-2 pl-9 pr-3 border border-gray-200 rounded-lg text-[13px] outline-none transition-all duration-200 bg-gray-50 focus:border-red-600 focus:ring-[3px] focus:ring-red-600/10 focus:bg-white;
+    @apply w-full py-2 pl-9 pr-3 border border-gray-200 rounded-lg text-[13px] outline-none transition-all duration-200 bg-gray-50 focus:border-red-600 focus:ring-[3px] focus:ring-red-600/10 focus:bg-white;
 }
 
 .modal-input-pwd {
-  @apply modal-input pr-9;
+    @apply modal-input pr-9;
 }

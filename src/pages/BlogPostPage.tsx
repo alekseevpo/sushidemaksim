@@ -31,8 +31,8 @@ export default function BlogPostPage() {
                 setPost(data);
                 setError(null);
             } catch (err: any) {
-                console.error("Error fetching blog post:", err);
-                setError(err.message || "No se pudo cargar el artículo.");
+                console.error('Error fetching blog post:', err);
+                setError(err.message || 'No se pudo cargar el artículo.');
             } finally {
                 setLoading(false);
             }
@@ -56,9 +56,11 @@ export default function BlogPostPage() {
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
                 <AlertCircle size={60} className="text-red-500 mb-6" />
-                <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">¡Ups! Algo salió mal</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">
+                    ¡Ups! Algo salió mal
+                </h1>
                 <p className="text-gray-500 mb-8 max-w-md text-center">
-                    {error || "El artículo que buscas no existe o ha sido movido."}
+                    {error || 'El artículo que buscas no existe o ha sido movido.'}
                 </p>
                 <Link to="/blog" className="btn-premium">
                     Volver al Blog
@@ -71,7 +73,10 @@ export default function BlogPostPage() {
         <article className="min-h-screen bg-white pb-20">
             {/* Minimalist Header with Back Button */}
             <div className="absolute top-24 left-4 md:left-8 z-50">
-                <Link to="/blog" className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-red-600">
+                <Link
+                    to="/blog"
+                    className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-red-600"
+                >
                     <ArrowLeft size={16} /> Volver
                 </Link>
             </div>
@@ -80,7 +85,9 @@ export default function BlogPostPage() {
             <div className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden bg-gray-900">
                 <img
                     src={post.image_url || '/sushi-hero.jpg'}
-                    alt={post.title}
+                    alt={`Hero de ${post.title}`}
+                    fetchPriority="high"
+                    decoding="async"
                     className="w-full h-full object-cover opacity-60"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
@@ -125,8 +132,12 @@ export default function BlogPostPage() {
                         {post.author ? post.author.charAt(0) : 'E'}
                     </div>
                     <div>
-                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-wider">Escrito por</div>
-                        <div className="font-bold text-gray-900 text-sm">{post.author || 'Equipo Editorial'}</div>
+                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-wider">
+                            Escrito por
+                        </div>
+                        <div className="font-bold text-gray-900 text-sm">
+                            {post.author || 'Equipo Editorial'}
+                        </div>
                     </div>
                 </motion.div>
 
@@ -138,11 +149,14 @@ export default function BlogPostPage() {
                 {/* Main Body */}
                 <div className="prose prose-lg md:prose-xl prose-red max-w-none text-gray-700 space-y-8">
                     {/* Render paragraphs, rudimentary simulation of rich text for now */}
-                    {post.content.split('\n').filter(p => p.trim() !== '').map((paragraph, idx) => (
-                        <p key={idx} className="leading-relaxed">
-                            {paragraph}
-                        </p>
-                    ))}
+                    {post.content
+                        .split('\n')
+                        .filter(p => p.trim() !== '')
+                        .map((paragraph, idx) => (
+                            <p key={idx} className="leading-relaxed">
+                                {paragraph}
+                            </p>
+                        ))}
                 </div>
 
                 {/* Footer Share / Tags area */}

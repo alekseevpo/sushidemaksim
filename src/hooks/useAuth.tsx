@@ -7,9 +7,16 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-    register: (name: string, email: string, phone: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    register: (
+        name: string,
+        email: string,
+        phone: string,
+        password: string
+    ) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
-    updateProfile: (data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>) => Promise<void>;
+    updateProfile: (
+        data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>
+    ) => Promise<void>;
     addAddress: (address: Omit<UserAddress, 'id'>) => Promise<void>;
     editAddress: (id: string, address: Partial<Omit<UserAddress, 'id'>>) => Promise<void>;
     removeAddress: (id: string) => Promise<void>;
@@ -75,8 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         window.location.href = '/';
     };
 
-
-    const updateProfile = async (data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>) => {
+    const updateProfile = async (
+        data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>
+    ) => {
         try {
             await api.put('/user/profile', data);
             await loadUser(); // refresh
@@ -127,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const addOrder = (order: Order) => {
-        setUser(prev => prev ? { ...prev, orders: [order, ...prev.orders] } : null);
+        setUser(prev => (prev ? { ...prev, orders: [order, ...prev.orders] } : null));
     };
 
     return (

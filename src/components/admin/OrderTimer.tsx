@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 
-export const OrderTimer = ({ createdAt, status }: { createdAt: string, status: string }) => {
+export const OrderTimer = ({ createdAt, status }: { createdAt: string; status: string }) => {
     const [timeLeft, setTimeLeft] = useState('');
     const [isLate, setIsLate] = useState(false);
 
@@ -14,7 +14,10 @@ export const OrderTimer = ({ createdAt, status }: { createdAt: string, status: s
                 const createdDate = new Date(createdAt);
                 // If native parsing fails, try manual fixes for older formats
                 const finalDate = isNaN(createdDate.getTime())
-                    ? new Date(createdAt.replace(' ', 'T') + (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z'))
+                    ? new Date(
+                          createdAt.replace(' ', 'T') +
+                              (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
+                      )
                     : createdDate;
 
                 const now = new Date();
@@ -49,7 +52,9 @@ export const OrderTimer = ({ createdAt, status }: { createdAt: string, status: s
     }
 
     return (
-        <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${isLate ? 'bg-red-100 text-red-700 animate-pulse' : 'bg-amber-100 text-amber-700'}`}>
+        <div
+            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${isLate ? 'bg-red-100 text-red-700 animate-pulse' : 'bg-amber-100 text-amber-700'}`}
+        >
             <Clock size={10} />
             {timeLeft}
         </div>

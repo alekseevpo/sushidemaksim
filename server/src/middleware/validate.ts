@@ -55,10 +55,14 @@ export function validate(schema: Schema, source: 'body' | 'query' | 'params' = '
 
             if (typeof value === 'string') {
                 if (rules.minLength !== undefined && value.length < rules.minLength) {
-                    errors.push(`El campo '${field}' debe tener al menos ${rules.minLength} caracteres`);
+                    errors.push(
+                        `El campo '${field}' debe tener al menos ${rules.minLength} caracteres`
+                    );
                 }
                 if (rules.maxLength !== undefined && value.length > rules.maxLength) {
-                    errors.push(`El campo '${field}' no puede superar los ${rules.maxLength} caracteres`);
+                    errors.push(
+                        `El campo '${field}' no puede superar los ${rules.maxLength} caracteres`
+                    );
                 }
                 if (rules.match && !rules.match.test(value)) {
                     errors.push(rules.message || `El campo '${field}' tiene un formato inválido`);
@@ -83,7 +87,7 @@ export const emailRule: Rule = {
     required: true,
     type: 'string',
     match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    message: "Email inválido",
+    message: 'Email inválido',
 };
 
 export const passwordRule: Rule = {
