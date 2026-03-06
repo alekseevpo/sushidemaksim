@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2, ArrowLeft, MapPin, CheckCircle, Sparkles } from 'lucide-react';
+import { Sparkles, MapPin, CheckCircle, Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api, ApiError } from '../utils/api';
@@ -37,7 +38,11 @@ export default function CartPageSimple() {
     const [orderError, setOrderError] = useState('');
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
 
-    // New options
+    const FREE_DELIVERY_THRESHOLD = 25;
+    const DELIVERY_FEE = 3.5;
+    const remainingForFreeDelivery = Math.max(0, FREE_DELIVERY_THRESHOLD - total);
+    const hasFreeDelivery = total >= FREE_DELIVERY_THRESHOLD;
+
     const [noCall, setNoCall] = useState(false);
     const [noBuzzer, setNoBuzzer] = useState(false);
     const [customNote, setCustomNote] = useState('');
@@ -136,7 +141,9 @@ export default function CartPageSimple() {
         }
     };
 
-    const finalTotal = appliedPromo ? total * (1 - appliedPromo.percentage / 100) : total;
+    const cartSubtotal = appliedPromo ? total * (1 - appliedPromo.percentage / 100) : total;
+    const deliveryCost = hasFreeDelivery ? 0 : DELIVERY_FEE;
+    const finalTotal = cartSubtotal + deliveryCost;
 
     // ===== ORDER SUCCESS STATE =====
     if (orderSuccess !== null) {
@@ -408,7 +415,7 @@ export default function CartPageSimple() {
                         ) : suggestions.length > 0 ? (
                             <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 animate-in fade-in duration-500">
                                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                                    <Sparkles size={18} className="text-amber-500" /> ¿Te falta algo?
+                                    <Sparkles size={18} className="text-amber-500" /> Complementos populares
                                 </h3>
                                 <div className="flex flex-col gap-4">
                                     {suggestions.map(item => (
@@ -447,7 +454,30 @@ export default function CartPageSimple() {
                             </div>
                         ) : null}
 
-                        <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 sticky top-24">
+                        <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 sticky top-24 overflow-hidden">
+                            {/* Free Delivery Progressive Bar */}
+                            <div className="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100 relative overflow-hidden">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                        {hasFreeDelivery ? '🎉 ¡Envío gratis conseguido!' : `Faltan ${remainingForFreeDelivery.toFixed(2)} € para envío GRATIS`}
+                                    </span>
+                                    <span className="text-xs font-bold text-gray-900">{Math.min(100, Math.round((total / FREE_DELIVERY_THRESHOLD) * 100))}%</span>
+                                </div>
+                                <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${Math.min(100, (total / FREE_DELIVERY_THRESHOLD) * 100)}%` }}
+                                        transition={{ duration: 0.8, ease: "easeOut" }}
+                                        className={`h-full ${hasFreeDelivery ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)]' : 'bg-red-600'}`}
+                                    />
+                                </div>
+                                {!hasFreeDelivery && (
+                                    <p className="text-[10px] text-gray-400 mt-2 italic font-medium">
+                                        Tip: ¡Añade una bebida o postre y ahorra los 3,50€ de envío!
+                                    </p>
+                                )}
+                            </div>
+
                             <h2 className="text-xl font-bold mb-6">Resumen</h2>
 
                             <div className="flex flex-col gap-3 mb-6">
@@ -461,7 +491,9 @@ export default function CartPageSimple() {
                                 </div>
                                 <div className="flex justify-between text-gray-500">
                                     <span>Envío</span>
-                                    <span className="font-bold text-green-600">Gratis</span>
+                                    <span className={`font-bold ${hasFreeDelivery ? 'text-green-600' : 'text-gray-900'}`}>
+                                        {hasFreeDelivery ? 'Gratis' : `${DELIVERY_FEE.toFixed(2)} €`}
+                                    </span>
                                 </div>
                                 <div className="border-t border-gray-200 pt-3 mt-1">
                                     <div className="flex justify-between text-lg font-bold">

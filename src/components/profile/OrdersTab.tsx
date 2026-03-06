@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, CheckCircle } from 'lucide-react';
+import { Clock, CheckCircle, RefreshCcw } from 'lucide-react';
 import { api } from '../../utils/api';
+import { useCart } from '../../hooks/useCart';
 import { cardStyle } from './profileStyles';
 
 function OrderTimer({ createdAt }: { createdAt: string }) {
@@ -13,9 +14,9 @@ function OrderTimer({ createdAt }: { createdAt: string }) {
             const d = new Date(createdAt);
             const validDate = isNaN(d.getTime())
                 ? new Date(
-                      createdAt.replace(' ', 'T') +
-                          (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
-                  )
+                    createdAt.replace(' ', 'T') +
+                    (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
+                )
                 : d;
             const start = validDate.getTime();
             const end = start + 60 * 60 * 1000; // 60 minutes
@@ -75,8 +76,10 @@ function getStatusBadge(status: string) {
 
 export default function OrdersTab() {
     const navigate = useNavigate();
+    const { addItem } = useCart();
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [isRepeating, setIsRepeating] = useState<number | null>(null);
     const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
     useEffect(() => {
@@ -102,6 +105,27 @@ export default function OrdersTab() {
             loadOrders(pagination.page);
         } catch (e) {
             alert('Error al actualizar el pedido');
+        }
+    };
+
+    const handleRepeatOrder = async (order: any) => {
+        setIsRepeating(order.id);
+        try {
+            for (const item of order.items) {
+                await addItem({
+                    id: String(item.menu_item_id || item.id), // Handle both potential naming conventions
+                    name: item.name,
+                    description: item.description || '',
+                    price: item.price,
+                    image: item.image || '',
+                    category: (item.category as any) || 'rollos-grandes'
+                });
+            }
+            navigate('/cart');
+        } catch (e) {
+            alert('Error al repetir el pedido. Por favor, inténtalo de nuevo.');
+        } finally {
+            setIsRepeating(null);
         }
     };
 
@@ -235,12 +259,12 @@ export default function OrdersTab() {
                                     const d = new Date(order.created_at);
                                     const validDate = isNaN(d.getTime())
                                         ? new Date(
-                                              order.created_at.replace(' ', 'T') +
-                                                  (order.created_at.includes('Z') ||
-                                                  order.created_at.includes('+')
-                                                      ? ''
-                                                      : 'Z')
-                                          )
+                                            order.created_at.replace(' ', 'T') +
+                                            (order.created_at.includes('Z') ||
+                                                order.created_at.includes('+')
+                                                ? ''
+                                                : 'Z')
+                                        )
                                         : d;
                                     return validDate.toLocaleDateString('es-ES', {
                                         day: 'numeric',
@@ -369,31 +393,31 @@ export default function OrdersTab() {
                                 (s: number, i: any) => s + i.price_at_time * i.quantity,
                                 0
                             ) > order.total && (
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        fontSize: '14px',
-                                        color: '#10B981',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    <span>Descuento aplicado:</span>
-                                    <span>
-                                        -
-                                        {(
-                                            order.items?.reduce(
-                                                (s: number, i: any) =>
-                                                    s + i.price_at_time * i.quantity,
-                                                0
-                                            ) - order.total
-                                        )
-                                            .toFixed(2)
-                                            .replace('.', ',')}{' '}
-                                        €
-                                    </span>
-                                </div>
-                            )}
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            fontSize: '14px',
+                                            color: '#10B981',
+                                            fontWeight: 'bold',
+                                        }}
+                                    >
+                                        <span>Descuento aplicado:</span>
+                                        <span>
+                                            -
+                                            {(
+                                                order.items?.reduce(
+                                                    (s: number, i: any) =>
+                                                        s + i.price_at_time * i.quantity,
+                                                    0
+                                                ) - order.total
+                                            )
+                                                .toFixed(2)
+                                                .replace('.', ',')}{' '}
+                                            €
+                                        </span>
+                                    </div>
+                                )}
 
                             <div
                                 style={{
@@ -412,6 +436,32 @@ export default function OrdersTab() {
                                     {order.total.toFixed(2).replace('.', ',')} €
                                 </span>
                             </div>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #F3F4F6' }}>
+                            <button
+                                onClick={() => handleRepeatOrder(order)}
+                                disabled={isRepeating === order.id}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    backgroundColor: '#111827',
+                                    color: 'white',
+                                    padding: '10px 20px',
+                                    borderRadius: '10px',
+                                    border: 'none',
+                                    fontWeight: 'bold',
+                                    fontSize: '14px',
+                                    cursor: isRepeating === order.id ? 'not-allowed' : 'pointer',
+                                    opacity: isRepeating === order.id ? 0.7 : 1,
+                                    transition: 'all 0.2s',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                                }}
+                            >
+                                <RefreshCcw size={16} className={isRepeating === order.id ? 'animate-spin' : ''} />
+                                {isRepeating === order.id ? 'Añadiendo...' : 'Repetir Pedido'}
+                            </button>
                         </div>
                     </div>
                     {order.notes && (
