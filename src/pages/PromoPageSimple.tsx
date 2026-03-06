@@ -175,9 +175,28 @@ export default function PromoPageSimple() {
                     </div>
 
                     {isLoading ? (
-                        <div className="text-center py-20 text-gray-400">
-                            <div className="text-5xl mb-4 animate-bounce">🎁</div>
-                            <p className="text-lg font-medium">Cargando las mejores ofertas...</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {[1, 2].map(i => (
+                                <div
+                                    key={i}
+                                    className="bg-white rounded-[2rem] shadow-sm overflow-hidden flex flex-col h-full animate-pulse border border-gray-100"
+                                >
+                                    <div className="h-56 bg-gray-200"></div>
+                                    <div className="p-8 flex flex-col gap-4">
+                                        <div className="h-8 bg-gray-200 rounded w-2/3"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-5/6 mb-2"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                                        <div className="flex justify-between items-end mt-4">
+                                            <div>
+                                                <div className="h-4 bg-gray-200 rounded w-12 mb-2"></div>
+                                                <div className="h-8 bg-gray-200 rounded w-20"></div>
+                                            </div>
+                                            <div className="h-10 bg-gray-200 rounded-full w-32"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     ) : promoItems.length === 0 ? (
                         <div className="bg-gray-50 rounded-[2rem] p-12 text-center border-2 border-dashed border-gray-200">

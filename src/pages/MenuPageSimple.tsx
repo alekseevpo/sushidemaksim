@@ -237,9 +237,24 @@ export default function MenuPageSimple() {
 
                 {/* Items */}
                 {isLoading ? (
-                    <div className="text-center py-16 text-gray-400">
-                        <div className="text-5xl mb-4 animate-pulse">🍣</div>
-                        <p className="text-lg">Cargando menú...</p>
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                            <div
+                                key={i}
+                                className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col h-full animate-pulse border border-gray-100"
+                            >
+                                <div className="h-[200px] bg-gray-200"></div>
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-full mb-1"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
+                                    <div className="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
+                                        <div className="h-6 bg-gray-200 rounded w-16"></div>
+                                        <div className="h-8 bg-gray-200 rounded-full w-24"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : items.length === 0 ? (
                     <div className="text-center py-12">
