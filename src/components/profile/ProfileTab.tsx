@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { User, Edit3, Save, X, Clock, Phone, Mail, Shield, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Edit3, Save, X, Clock, Phone, Mail, Shield, Lock, Eye, EyeOff, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
 import { User as UserType } from '../../types';
 import { cardStyle, inputStyle, handleInputFocus, handleInputBlur } from './profileStyles';
 
 interface Props {
     user: UserType;
     updateProfile: (
-        data: Partial<Pick<UserType, 'name' | 'email' | 'phone' | 'avatar'>>
+        data: Partial<Pick<UserType, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
     ) => Promise<void>;
     onSuccess: (msg: string) => void;
 }
@@ -35,6 +35,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
     const [editPhone, setEditPhone] = useState('');
     const [editEmail, setEditEmail] = useState('');
     const [editAvatar, setEditAvatar] = useState('');
+    const [editBirthDate, setEditBirthDate] = useState('');
 
     // Change password state
     const [showChangePassword, setShowChangePassword] = useState(false);
@@ -51,6 +52,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
         setEditPhone(user.phone);
         setEditEmail(user.email);
         setEditAvatar(user.avatar || '');
+        setEditBirthDate(user.birthDate || '');
         setIsEditing(true);
     };
 
@@ -61,6 +63,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                 phone: editPhone,
                 email: editEmail,
                 avatar: editAvatar,
+                birthDate: editBirthDate,
             });
             setIsEditing(false);
             onSuccess('Perfil actualizado');
@@ -322,6 +325,61 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                             })}
                         </p>
                     </div>
+                    <div>
+                        <label
+                            style={{
+                                display: 'block',
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                color: '#6B7280',
+                                marginBottom: '6px',
+                            }}
+                        >
+                            Fecha de nacimiento
+                        </label>
+                        {isEditing && !user.birthDateVerified ? (
+                            <div>
+                                <input
+                                    type="date"
+                                    value={editBirthDate}
+                                    onChange={e => setEditBirthDate(e.target.value)}
+                                    style={inputStyle}
+                                    onFocus={handleInputFocus}
+                                    onBlur={handleInputBlur}
+                                />
+                                <p style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
+                                    Recibirás nuestra regalo sorpresa el día de tu cumpleaños.
+                                </p>
+                            </div>
+                        ) : (
+                            <div>
+                                <p
+                                    style={{
+                                        margin: 0,
+                                        fontSize: '15px',
+                                        color: '#111827',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        marginBottom: '4px'
+                                    }}
+                                >
+                                    <Calendar size={14} color="#6B7280" />
+                                    {user.birthDate ? new Date(user.birthDate).toLocaleDateString('es-ES') : 'No añadida'}
+                                </p>
+                                {user.birthDate && !user.birthDateVerified && (
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', backgroundColor: '#FEF9C3', color: '#854D0E', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
+                                        <AlertCircle size={10} /> Pendiente de revisar (muestra ID al repartidor)
+                                    </span>
+                                )}
+                                {user.birthDateVerified && (
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', backgroundColor: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
+                                        <CheckCircle size={10} /> Confirmada
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {isEditing && (
@@ -495,7 +553,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     val: confirmNewPassword,
                                     set: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => {},
+                                    toggle: () => { },
                                 },
                             ].map(({ label, val, set, show, toggle }) => (
                                 <div key={label}>

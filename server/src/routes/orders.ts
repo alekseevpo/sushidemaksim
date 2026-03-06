@@ -3,6 +3,7 @@ import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
+import { UAParser } from 'ua-parser-js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -16,6 +17,11 @@ router.post(
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { deliveryAddress, phoneNumber, notes, promoCode } = req.body;
+
+        const parser = new UAParser(req.headers['user-agent'] || '');
+        const deviceType = parser.getDevice().type || 'desktop';
+        const osName = parser.getOS().name || 'Unknown';
+        const browserName = parser.getBrowser().name || 'Unknown';
 
         // 1. Get cart items with product details
         const { data: cartItems, error: cartError } = await supabase
@@ -70,6 +76,9 @@ router.post(
                 status: 'pending',
                 estimated_delivery_time: '30-60 min',
                 notes: notes?.trim() || '',
+                device_type: deviceType,
+                os_name: osName,
+                browser_name: browserName,
             })
             .select()
             .single();

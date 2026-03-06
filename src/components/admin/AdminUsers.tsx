@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Users as UsersIcon, RefreshCw, Crown } from 'lucide-react';
+import { Shield, Users as UsersIcon, RefreshCw, Crown, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -41,6 +41,15 @@ export default function AdminUsers() {
         }
     };
 
+    const toggleBirthdayVerified = async (userId: number, currentVerified: boolean) => {
+        try {
+            await api.patch(`/admin/users/${userId}/verify-birthday`, { verified: !currentVerified });
+            setUsers(users.map(u => (u.id === userId ? { ...u, birth_date_verified: !currentVerified } : u)));
+        } catch (err) {
+            alert('Error updating verification');
+        }
+    };
+
     if (loading && users.length === 0) {
         return (
             <div className="text-center py-12 text-gray-400">
@@ -59,6 +68,7 @@ export default function AdminUsers() {
                             <tr>
                                 <th className="px-6 py-4">ID</th>
                                 <th className="px-6 py-4">Nombre / Email</th>
+                                <th className="px-6 py-4">Cumpleaños / Verif.</th>
                                 <th className="px-6 py-4 text-center">Pedidos</th>
                                 <th className="px-6 py-4">Registro</th>
                                 <th className="px-6 py-4 text-center">Rol</th>
@@ -81,6 +91,38 @@ export default function AdminUsers() {
                                                 {user.phone}
                                             </div>
                                         )}
+                                    </td>
+                                    <td className="px-6 py-3">
+                                        <div className="flex flex-col gap-1.5">
+                                            {user.birth_date ? (
+                                                <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                                                    <Calendar size={12} className="text-gray-400" />
+                                                    {new Date(user.birth_date).toLocaleDateString()}
+                                                </div>
+                                            ) : (
+                                                <span className="text-xs text-gray-400">Sin fecha</span>
+                                            )}
+
+                                            {user.birth_date && (
+                                                <button
+                                                    onClick={() => toggleBirthdayVerified(user.id, user.birth_date_verified)}
+                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
+                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                            : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                                        }`}
+                                                >
+                                                    {user.birth_date_verified ? (
+                                                        <>
+                                                            <CheckCircle size={10} /> Verificado
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <AlertCircle size={10} /> Sin Verificar
+                                                        </>
+                                                    )}
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-3 text-center">
                                         <div className="inline-flex items-center justify-center bg-gray-100 text-gray-700 w-8 h-8 rounded-full font-bold">
@@ -112,11 +154,10 @@ export default function AdminUsers() {
                                                     onClick={() =>
                                                         toggleAdminRole(user.id, user.role)
                                                     }
-                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
-                                                        user.role === 'admin'
+                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
                                                             ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                             : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {user.role === 'admin'
                                                         ? 'Revocar Admin'
@@ -146,11 +187,10 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                        pageNum === pagination.page
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
                                             ? 'bg-red-600 text-white'
                                             : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                    }`}
+                                        }`}
                                 >
                                     {pageNum}
                                 </button>

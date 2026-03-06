@@ -153,11 +153,10 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
-                                    isActive
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
                                         ? 'bg-red-50 text-red-700'
                                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon
@@ -420,6 +419,53 @@ export default function AdminPage() {
                                     )}
                                 </div>
                             </div>
+
+                            {/* Device Analytics */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
+                                <h3 className="font-bold text-gray-900 mb-6">Analítica de Dispositivos (Pedidos Registrados)</h3>
+                                {loading ? (
+                                    <div className="h-32 bg-gray-50 rounded animate-pulse"></div>
+                                ) : !stats?.analytics || Object.keys(stats.analytics.devices).length === 0 ? (
+                                    <div className="text-center py-10 text-gray-400 text-sm">No hay suficientes datos registrados</div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Por Tipo de Dispositivo</h4>
+                                            <ul className="space-y-3">
+                                                {Object.entries(stats.analytics.devices).sort((a: any, b: any) => b[1] - a[1]).map(([name, count]: any) => (
+                                                    <li key={name} className="flex justify-between items-center text-sm">
+                                                        <span className="text-gray-600 capitalize">{name}</span>
+                                                        <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">{count}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Por Sistema Operativo</h4>
+                                            <ul className="space-y-3">
+                                                {Object.entries(stats.analytics.os).sort((a: any, b: any) => b[1] - a[1]).map(([name, count]: any) => (
+                                                    <li key={name} className="flex justify-between items-center text-sm">
+                                                        <span className="text-gray-600">{name}</span>
+                                                        <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">{count}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Por Navegador Web</h4>
+                                            <ul className="space-y-3">
+                                                {Object.entries(stats.analytics.browsers).sort((a: any, b: any) => b[1] - a[1]).map(([name, count]: any) => (
+                                                    <li key={name} className="flex justify-between items-center text-sm">
+                                                        <span className="text-gray-600">{name}</span>
+                                                        <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">{count}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                         </div>
                     )}
 

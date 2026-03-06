@@ -14,7 +14,7 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: user, error: userError } = await supabase
             .from('users')
-            .select('id, name, email, phone, avatar, role, created_at')
+            .select('id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified')
             .eq('id', req.userId)
             .single();
 
@@ -36,6 +36,8 @@ router.get(
         const formattedUser = {
             ...user,
             createdAt: user.created_at,
+            birthDate: user.birth_date,
+            birthDateVerified: user.birth_date_verified,
             addresses: addresses?.map(a => ({
                 ...a,
                 postalCode: a.postal_code,
@@ -58,7 +60,7 @@ router.put(
         avatar: { type: 'string' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { name, email, phone, avatar } = req.body;
+        const { name, email, phone, avatar, birthDate } = req.body;
 
         if (email) {
             const { data: existing } = await supabase
@@ -78,6 +80,7 @@ router.put(
         if (email) updateData.email = email.toLowerCase().trim();
         if (phone !== undefined) updateData.phone = phone?.trim() || '';
         if (avatar !== undefined) updateData.avatar = avatar?.trim() || '';
+        if (birthDate !== undefined) updateData.birth_date = birthDate; // Add birthday update
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({ error: 'No hay datos para actualizar' });
@@ -87,11 +90,11 @@ router.put(
             .from('users')
             .update(updateData)
             .eq('id', req.userId)
-            .select('id, name, email, phone, avatar, role, created_at')
+            .select('id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified')
             .single();
 
         if (error) throw error;
-        res.json({ user: { ...user, createdAt: user.created_at } });
+        res.json({ user: { ...user, createdAt: user.created_at, birthDate: user.birth_date, birthDateVerified: user.birth_date_verified } });
     })
 );
 

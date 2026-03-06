@@ -376,6 +376,28 @@ router.patch(
     })
 );
 
+// PATCH /api/admin/users/:id/verify-birthday
+router.patch(
+    '/users/:id/verify-birthday',
+    validate({
+        verified: { required: true, type: 'boolean' },
+    }),
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const id = parseInt(req.params.id);
+        const { verified } = req.body;
+
+        const { data: user, error } = await supabase
+            .from('users')
+            .update({ birth_date_verified: verified })
+            .eq('id', id)
+            .select('id, name, email, birth_date, birth_date_verified')
+            .single();
+
+        if (error) throw error;
+        res.json({ user });
+    })
+);
+
 // ─── STATS ────────────────────────────────────────────────────────────────────
 
 router.get(
@@ -463,6 +485,24 @@ router.get(
             .sort((a, b) => b.sold - a.sold)
             .slice(0, 5);
 
+        // 6. Device/OS breakdown
+        const { data: devicesData } = await supabase.from('orders').select('device_type, os_name, browser_name');
+
+        const analytics = {
+            devices: {} as Record<string, number>,
+            os: {} as Record<string, number>,
+            browsers: {} as Record<string, number>,
+        };
+
+        devicesData?.forEach(o => {
+            const dt = o.device_type || 'Unknown';
+            const os = o.os_name || 'Unknown';
+            const b = o.browser_name || 'Unknown';
+            analytics.devices[dt] = (analytics.devices[dt] || 0) + 1;
+            analytics.os[os] = (analytics.os[os] || 0) + 1;
+            analytics.browsers[b] = (analytics.browsers[b] || 0) + 1;
+        });
+
         res.json({
             revenueToday: Math.round(revenueToday * 100) / 100,
             ordersToday,
@@ -477,6 +517,7 @@ router.get(
             ordersByStatus,
             recentOrders: formattedRecent,
             topItems,
+            analytics,
         });
     })
 );
