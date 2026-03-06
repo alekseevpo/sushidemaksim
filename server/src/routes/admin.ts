@@ -111,7 +111,12 @@ router.put(
         pieces: { type: 'number', min: 1, max: 999 },
     }),
     asyncHandler(async (req: Request, res: Response) => {
-        const id = req.params.id;
+        const id = parseInt(req.params.id);
+
+        if (isNaN(id)) {
+            return res.status(400).json({ error: 'ID de producto inválido' });
+        }
+
         const { name, description, price, image, category, weight, pieces, spicy, vegetarian, is_promo } = req.body;
 
         const updateData: any = {};
@@ -122,9 +127,11 @@ router.put(
         if (category !== undefined) updateData.category = category;
         if (weight !== undefined) updateData.weight = weight?.trim() || null;
         if (pieces !== undefined) updateData.pieces = pieces || null;
-        if (spicy !== undefined) updateData.spicy = !!spicy;
-        if (vegetarian !== undefined) updateData.vegetarian = !!vegetarian;
-        if (is_promo !== undefined) updateData.is_promo = !!is_promo;
+
+        // Ensure boolean values for Supabase
+        if (spicy !== undefined) updateData.spicy = Boolean(spicy);
+        if (vegetarian !== undefined) updateData.vegetarian = Boolean(vegetarian);
+        if (is_promo !== undefined) updateData.is_promo = Boolean(is_promo);
 
         const { data: item, error } = await supabase
             .from('menu_items')
@@ -134,6 +141,7 @@ router.put(
             .single();
 
         if (error) {
+            console.error('❌ Supabase error updating item:', error);
             if (error.code === 'PGRST116') return res.status(404).json({ error: 'Producto no encontrado' });
             throw error;
         }
