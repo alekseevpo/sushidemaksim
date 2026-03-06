@@ -19,27 +19,43 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-    destination: uploadDir,
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = path.extname(file.originalname);
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-    }
-});
-const upload = multer({ storage });
+// Use memory storage for Multer (Vercel has read-only filesystem)
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
 
 // All admin routes require auth + admin role
 router.use(authMiddleware, adminMiddleware);
 
-// POST /api/admin/menu/upload-image
+// POST /api/admin/menu/upload-image (to Supabase Storage)
 router.post('/menu/upload-image', upload.single('image'), asyncHandler(async (req: AuthRequest, res: Response) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No se subió ninguna imagen' });
     }
-    const publicUrl = `/api/uploads/${req.file.filename}`;
+
+    const file = req.file;
+    const fileExt = file.originalname.split('.').pop();
+    const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
+    const filePath = `menu/${fileName}`;
+
+    // Upload to Supabase Storage 'images' bucket
+    const { data, error } = await supabase.storage
+        .from('images')
+        .upload(filePath, file.buffer, {
+            contentType: file.mimetype,
+            upsert: true
+        });
+
+    if (error) {
+        console.error('❌ Supabase storage error:', error);
+        return res.status(500).json({ error: 'Error al subir la imagen a Supabase Storage' });
+    }
+
+    // Get Public URL
+    const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath);
+
     res.json({ url: publicUrl });
 }));
 
