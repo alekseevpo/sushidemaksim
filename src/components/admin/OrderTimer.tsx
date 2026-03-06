@@ -11,11 +11,14 @@ export const OrderTimer = ({ createdAt, status }: { createdAt: string, status: s
         const calculateTime = () => {
             try {
                 // Ensure date parsing works correctly across browsers
-                const safeDateStr = createdAt.replace(' ', 'T');
-                const createdDate = new Date(safeDateStr + (safeDateStr.includes('Z') ? '' : 'Z'));
-                const now = new Date();
+                const createdDate = new Date(createdAt);
+                // If native parsing fails, try manual fixes for older formats
+                const finalDate = isNaN(createdDate.getTime())
+                    ? new Date(createdAt.replace(' ', 'T') + (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z'))
+                    : createdDate;
 
-                const elapsed = now.getTime() - createdDate.getTime();
+                const now = new Date();
+                const elapsed = now.getTime() - finalDate.getTime();
                 const sixtyMinutes = 60 * 60 * 1000;
                 const remaining = sixtyMinutes - elapsed;
 

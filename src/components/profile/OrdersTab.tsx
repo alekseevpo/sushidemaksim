@@ -10,7 +10,11 @@ function OrderTimer({ createdAt }: { createdAt: string }) {
 
     useEffect(() => {
         const calculateTimeLeft = () => {
-            const start = new Date(createdAt).getTime();
+            const d = new Date(createdAt);
+            const validDate = isNaN(d.getTime())
+                ? new Date(createdAt.replace(' ', 'T') + (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z'))
+                : d;
+            const start = validDate.getTime();
             const end = start + 60 * 60 * 1000; // 60 minutes
             const now = new Date().getTime();
             const diff = end - now;
@@ -144,9 +148,15 @@ export default function OrdersTab() {
                             </div>
                             <p style={{ fontSize: '13px', color: '#6B7280', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 <Clock size={12} />
-                                {new Date(order.created_at).toLocaleDateString('es-ES', {
-                                    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                                })}
+                                {(() => {
+                                    const d = new Date(order.created_at);
+                                    const validDate = isNaN(d.getTime())
+                                        ? new Date(order.created_at.replace(' ', 'T') + (order.created_at.includes('Z') || order.created_at.includes('+') ? '' : 'Z'))
+                                        : d;
+                                    return validDate.toLocaleDateString('es-ES', {
+                                        day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                                    });
+                                })()}
                             </p>
                             {order.status !== 'delivered' && order.status !== 'cancelled' && (
                                 <p style={{ fontSize: '13px', margin: '4px 0 0 0' }}>

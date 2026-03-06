@@ -108,7 +108,14 @@ export default function ProfilePage() {
                             </h2>
                             <p style={{ fontSize: '13px', color: '#6B7280', margin: '0 0 4px 0' }}>{user.email}</p>
                             <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
-                                Miembro desde {new Date(user.createdAt?.replace(' ', 'T') || Date.now()).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+                                Miembro desde {(() => {
+                                    const rawDate = user.createdAt || '';
+                                    const d = new Date(rawDate);
+                                    const validDate = isNaN(d.getTime())
+                                        ? new Date(rawDate.replace(' ', 'T') + (rawDate.includes('Z') || rawDate.includes('+') ? '' : 'Z'))
+                                        : d;
+                                    return validDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                                })()}
                             </p>
                         </div>
 

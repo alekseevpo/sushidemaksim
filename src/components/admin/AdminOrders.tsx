@@ -107,7 +107,13 @@ export default function AdminOrders() {
                                                 Pedido #{String(order.id).padStart(5, '0')}
                                             </h3>
                                             <span className="text-sm text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full font-medium">
-                                                {new Date(order.created_at.replace(' ', 'T') + 'Z').toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
+                                                {(() => {
+                                                    const d = new Date(order.created_at);
+                                                    const validDate = isNaN(d.getTime())
+                                                        ? new Date(order.created_at.replace(' ', 'T') + (order.created_at.includes('Z') || order.created_at.includes('+') ? '' : 'Z'))
+                                                        : d;
+                                                    return validDate.toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+                                                })()}
                                             </span>
                                         </div>
                                         <div className="text-sm font-medium text-gray-600">
