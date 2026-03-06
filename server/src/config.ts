@@ -1,0 +1,34 @@
+import 'dotenv/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const DEFAULT_JWT_SECRET = 'sushi-de-maksim-secret-key-2024-CHANGE-IN-PRODUCTION';
+
+const jwtSecret = process.env.JWT_SECRET || DEFAULT_JWT_SECRET;
+const nodeEnv = process.env.NODE_ENV || 'development';
+
+if (nodeEnv === 'production' && jwtSecret === DEFAULT_JWT_SECRET) {
+    console.error('❌ FATAL: JWT_SECRET must be set in production environment!');
+    process.exit(1);
+}
+
+export const config = {
+    port: parseInt(process.env.PORT || '3001'),
+    jwtSecret,
+    jwtExpiresIn: '7d' as const,
+    dbPath: path.join(__dirname, '..', 'data', 'sushi.db'),
+    bcryptRounds: 10,
+    corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    nodeEnv,
+    isDev: nodeEnv === 'development',
+    isProd: nodeEnv === 'production',
+    smtp: {
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        user: process.env.SMTP_USER || '',
+        pass: process.env.SMTP_PASS || '',
+        fromName: process.env.SMTP_FROM_NAME || 'Sushi de Maksim',
+    },
+};
