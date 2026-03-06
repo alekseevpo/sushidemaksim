@@ -28,6 +28,38 @@ export default function HomePageSimple() {
                 title="Sushibar en Madrid centro"
                 description="El mejor sushi artesanal de Madrid. Entrega rápida, atún Balfegó y salmón noruego. Pide online ahora y disfruta de la experiencia Maksim en tu casa."
                 keywords="sushi, madrid, delivery, pedido a domicilio, rollo, maksim, atun balfego"
+                schema={{
+                    "@context": "https://schema.org",
+                    "@type": "FoodEstablishment",
+                    "name": "Sushi de Maksim",
+                    "image": "https://sushidemaksim.com/sushi-hero.jpg",
+                    "@id": "https://sushidemaksim.com",
+                    "url": "https://sushidemaksim.com",
+                    "telephone": "+34600000000",
+                    "priceRange": "$$",
+                    "address": {
+                        "@type": "PostalAddress",
+                        "streetAddress": "Calle de la Infanta Mercedes, 62",
+                        "addressLocality": "Madrid",
+                        "postalCode": "28020",
+                        "addressCountry": "ES"
+                    },
+                    "geo": {
+                        "@type": "GeoCoordinates",
+                        "latitude": 40.4571,
+                        "longitude": -3.7037
+                    },
+                    "openingHoursSpecification": [
+                        {
+                            "@type": "OpeningHoursSpecification",
+                            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                            "opens": "12:00",
+                            "closes": "22:00"
+                        }
+                    ],
+                    "servesCuisine": "Japanese, Sushi",
+                    "acceptsReservations": "false"
+                }}
             />
 
             {/* Hero Section */}

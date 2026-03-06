@@ -7,6 +7,7 @@ interface SEOProps {
     image?: string;
     url?: string;
     type?: string;
+    schema?: object | object[];
 }
 
 export default function SEO({
@@ -16,6 +17,7 @@ export default function SEO({
     image = 'https://sushidemaksim.com/sushi-hero.jpg',
     url = 'https://sushidemaksim.com',
     type = 'website',
+    schema,
 }: SEOProps) {
     const fullTitle = `${title} | Sushi de Maksim`;
 
@@ -40,6 +42,13 @@ export default function SEO({
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
+
+            {/* Structured Data (Schema.org) */}
+            {schema && (Array.isArray(schema) ? schema : [schema]).map((s, i) => (
+                <script key={i} type="application/ld+json">
+                    {JSON.stringify(s)}
+                </script>
+            ))}
         </Helmet>
     );
 }

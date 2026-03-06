@@ -1,10 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2, ArrowLeft, MapPin, CheckCircle } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowLeft, MapPin, CheckCircle, Sparkles } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api, ApiError } from '../utils/api';
 import SEO from '../components/SEO';
+
+interface MenuItem {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    category: string;
+}
 
 export default function CartPageSimple() {
     const {
@@ -17,6 +26,10 @@ export default function CartPageSimple() {
     } = useCart();
     const { isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
+
+    const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
+    const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+    const { addItem } = useCart();
 
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
@@ -39,6 +52,31 @@ export default function CartPageSimple() {
 
     // Pre-fill from user's default address
     const defaultAddr = user?.addresses?.find(a => a.isDefault) ?? user?.addresses?.[0];
+
+    useEffect(() => {
+        loadSuggestions();
+    }, []);
+
+    const loadSuggestions = async () => {
+        setIsLoadingSuggestions(true);
+        try {
+            // Fetch potential snacks, drinks, desserts
+            const [extras, beverages, desserts] = await Promise.all([
+                api.get('/menu?category=extras'),
+                api.get('/menu?category=entrantes'), // Using starters as well
+                api.get('/menu?category=postre'),
+            ]);
+
+            const all = [...(extras.items || []), ...(beverages.items || []), ...(desserts.items || [])];
+            // Filter out items already in cart
+            const filtered = all.filter(item => !items.find(cartItem => cartItem.id === item.id)).slice(0, 8);
+            setSuggestions(filtered);
+        } catch (err) {
+            console.error('Failed to load suggestions', err);
+        } finally {
+            setIsLoadingSuggestions(false);
+        }
+    };
 
     const handleOrder = async () => {
         setOrderError('');
@@ -350,7 +388,65 @@ export default function CartPageSimple() {
                     </div>
 
                     {/* Order Summary */}
-                    <div>
+                    <div className="flex flex-col gap-8">
+                        {/* Upselling Suggestions */}
+                        {isLoadingSuggestions ? (
+                            <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6">
+                                <div className="h-6 w-32 bg-gray-100 animate-pulse rounded mb-4"></div>
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="flex gap-3 items-center">
+                                            <div className="w-12 h-12 bg-gray-100 animate-pulse rounded"></div>
+                                            <div className="flex-1 space-y-2">
+                                                <div className="h-3 w-3/4 bg-gray-100 animate-pulse rounded"></div>
+                                                <div className="h-3 w-1/4 bg-gray-100 animate-pulse rounded"></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : suggestions.length > 0 ? (
+                            <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 animate-in fade-in duration-500">
+                                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                    <Sparkles size={18} className="text-amber-500" /> ¿Te falta algo?
+                                </h3>
+                                <div className="flex flex-col gap-4">
+                                    {suggestions.map(item => (
+                                        <div key={String(item.id)} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-100">
+                                            <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-xl">🍱</div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-gray-900 truncate m-0">{item.name}</p>
+                                                <p className="text-xs text-red-600 font-bold m-0">{item.price.toFixed(2)} €</p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    addItem({
+                                                        id: String(item.id),
+                                                        name: item.name,
+                                                        description: item.description || '',
+                                                        price: item.price,
+                                                        image: item.image,
+                                                        category: item.category as any
+                                                    });
+                                                    setSuggestions(prev => prev.filter(p => p.id !== item.id));
+                                                }}
+                                                className="bg-gray-900 text-white rounded-full p-1.5 hover:bg-red-600 transition-all shadow-sm flex items-center justify-center"
+                                                title="Añadir al pedido"
+                                            >
+                                                <Plus size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+
                         <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 sticky top-24">
                             <h2 className="text-xl font-bold mb-6">Resumen</h2>
 
@@ -412,7 +508,7 @@ export default function CartPageSimple() {
                                 ) : (
                                     <div className="flex items-center justify-between bg-green-50 border border-green-200 px-4 py-3 rounded-lg">
                                         <div className="text-sm text-green-700 font-medium">
-                                            🎉 -{appliedPromo.percentage}% (Código:{' '}
+                                            🎉 -{String(appliedPromo.percentage)}% (Código:{' '}
                                             {appliedPromo.code})
                                         </div>
                                         <button
@@ -477,6 +573,6 @@ export default function CartPageSimple() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

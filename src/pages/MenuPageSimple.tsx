@@ -178,12 +178,37 @@ export default function MenuPageSimple() {
         }
     };
 
+    const menuSchema = {
+        "@context": "https://schema.org",
+        "@type": "Menu",
+        "name": "Menú Sushi de Maksim",
+        "mainEntityOfPage": "https://sushidemaksim.com/menu",
+        "hasMenuSection": CATEGORIES.map(cat => ({
+            "@type": "MenuSection",
+            "name": cat.name,
+            "hasMenuItem": items
+                .filter(item => item.category === cat.id)
+                .map(item => ({
+                    "@type": "MenuItem",
+                    "name": item.name,
+                    "description": item.description,
+                    "offers": {
+                        "@type": "Offer",
+                        "price": item.price,
+                        "priceCurrency": "EUR"
+                    },
+                    "image": item.image
+                }))
+        }))
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 px-4 py-8">
             <SEO
                 title="Menú y Carta de Sushi"
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
+                schema={menuSchema}
             />
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-4xl text-gray-900 font-bold text-center mb-6">Nuestro Menú</h1>
@@ -217,11 +242,10 @@ export default function MenuPageSimple() {
                 <div className="flex flex-wrap justify-center gap-2 mb-8">
                     <button
                         onClick={() => setSelectedCategory('all')}
-                        className={`px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${
-                            selectedCategory === 'all'
+                        className={`px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${selectedCategory === 'all'
                                 ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
                                 : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                        }`}
+                            }`}
                     >
                         Todos
                     </button>
@@ -229,11 +253,10 @@ export default function MenuPageSimple() {
                         <button
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${
-                                selectedCategory === cat.id
+                            className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${selectedCategory === cat.id
                                     ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
                                     : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                            }`}
+                                }`}
                         >
                             <span>{cat.icon}</span>
                             {cat.name}
@@ -355,11 +378,10 @@ export default function MenuPageSimple() {
                                         </span>
                                         <button
                                             onClick={e => handleAddToCart(item, e)}
-                                            className={`px-4 py-2.5 rounded-lg font-bold border-none cursor-pointer flex items-center gap-1.5 text-sm outline-none transition-all duration-300 ${
-                                                addedItems.has(item.id)
+                                            className={`px-4 py-2.5 rounded-lg font-bold border-none cursor-pointer flex items-center gap-1.5 text-sm outline-none transition-all duration-300 ${addedItems.has(item.id)
                                                     ? 'bg-green-600 text-white'
                                                     : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'
-                                            }`}
+                                                }`}
                                         >
                                             {addedItems.has(item.id) ? (
                                                 <>✓ Añadido</>
