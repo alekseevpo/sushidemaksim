@@ -243,8 +243,8 @@ export default function MenuPageSimple() {
                     <button
                         onClick={() => setSelectedCategory('all')}
                         className={`px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${selectedCategory === 'all'
-                                ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                            ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                            : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
                             }`}
                     >
                         Todos
@@ -254,8 +254,8 @@ export default function MenuPageSimple() {
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${selectedCategory === cat.id
-                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                                ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
                                 }`}
                         >
                             <span>{cat.icon}</span>
@@ -321,24 +321,16 @@ export default function MenuPageSimple() {
 
                                 {/* Image */}
                                 <div className="h-[200px] bg-gray-100 rounded-t-xl overflow-hidden relative">
-                                    {!failedImages.has(item.id) ? (
-                                        <img
-                                            src={item.image}
-                                            alt={`Sushi ${item.name} - ${item.category}`}
-                                            loading="lazy"
-                                            decoding="async"
-                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                            onError={() =>
-                                                setFailedImages(prev => new Set(prev).add(item.id))
-                                            }
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                            <span className="text-6xl">
-                                                {EMOJI[item.category] ?? '🍣'}
-                                            </span>
-                                        </div>
-                                    )}
+                                    <img
+                                        src={!failedImages.has(item.id) && item.image ? item.image : '/placeholder-sushi.png'}
+                                        alt={`Sushi ${item.name} - ${item.category}`}
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        onError={() =>
+                                            setFailedImages(prev => new Set(prev).add(item.id))
+                                        }
+                                    />
                                     <div className="absolute top-2 left-2 flex gap-1">
                                         {item.spicy && (
                                             <span className="bg-red-100 text-red-800 rounded-full px-2 py-1 text-xs font-semibold">
@@ -379,8 +371,8 @@ export default function MenuPageSimple() {
                                         <button
                                             onClick={e => handleAddToCart(item, e)}
                                             className={`px-4 py-2.5 rounded-lg font-bold border-none cursor-pointer flex items-center gap-1.5 text-sm outline-none transition-all duration-300 ${addedItems.has(item.id)
-                                                    ? 'bg-green-600 text-white'
-                                                    : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'
+                                                ? 'bg-green-600 text-white'
+                                                : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'
                                                 }`}
                                         >
                                             {addedItems.has(item.id) ? (

@@ -237,20 +237,16 @@ export default function CartPageSimple() {
                                         className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                                     >
                                         <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-gray-200 flex items-center justify-center">
-                                            {item.image ? (
-                                                <img
-                                                    src={item.image}
-                                                    alt={`Producto ${item.name} en el carrito`}
-                                                    loading="lazy"
-                                                    decoding="async"
-                                                    className="w-full h-full object-cover"
-                                                    onError={e => {
-                                                        e.currentTarget.style.display = 'none';
-                                                    }}
-                                                />
-                                            ) : (
-                                                <span className="text-3xl">🍣</span>
-                                            )}
+                                            <img
+                                                src={item.image || '/placeholder-sushi.png'}
+                                                alt={`Producto ${item.name} en el carrito`}
+                                                loading="lazy"
+                                                decoding="async"
+                                                className="w-full h-full object-cover"
+                                                onError={e => {
+                                                    e.currentTarget.src = '/placeholder-sushi.png';
+                                                }}
+                                            />
                                         </div>
 
                                         <div className="flex-1">
@@ -421,11 +417,14 @@ export default function CartPageSimple() {
                                     {suggestions.map(item => (
                                         <div key={String(item.id)} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-100">
                                             <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
-                                                {item.image ? (
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-xl">🍱</div>
-                                                )}
+                                                <img
+                                                    src={item.image || '/placeholder-sushi.png'}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-cover"
+                                                    onError={e => {
+                                                        e.currentTarget.src = '/placeholder-sushi.png';
+                                                    }}
+                                                />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-bold text-gray-900 truncate m-0">{item.name}</p>
