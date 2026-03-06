@@ -9,9 +9,12 @@ import { api } from '../utils/api';
 import AdminMenu from '../components/admin/AdminMenu';
 import AdminUsers from '../components/admin/AdminUsers';
 import AdminOrders from '../components/admin/AdminOrders';
+import AdminPromos from '../components/admin/AdminPromos';
+import AdminBlog from '../components/admin/AdminBlog';
+import AdminSettings from '../components/admin/AdminSettings';
 import { OrderTimer } from '../components/admin/OrderTimer';
 
-type TabId = 'dashboard' | 'orders' | 'menu' | 'users';
+type TabId = 'dashboard' | 'orders' | 'menu' | 'users' | 'promos' | 'blog' | 'settings';
 
 export default function AdminPage() {
     const { user, isAuthenticated } = useAuth();
@@ -76,6 +79,9 @@ export default function AdminPage() {
         { id: 'orders', label: 'Gestión de Pedidos', icon: Package },
         { id: 'menu', label: 'Gestión de Menú', icon: MenuIcon },
         { id: 'users', label: 'Usuarios y Clientes', icon: Users },
+        { id: 'promos', label: 'Gestión de Promociones', icon: ShoppingBag },
+        { id: 'blog', label: 'Gestión de Blog', icon: Activity },
+        { id: 'settings', label: 'Ajustes de Contacto', icon: DollarSign },
     ];
 
     const StatCard = ({ title, value, icon: Icon, colorClass, desc }: any) => (
@@ -179,6 +185,9 @@ export default function AdminPage() {
                                         {activeTab === 'orders' && 'Aquí gestionas los pedidos. Consejo: Presta atención a los pedidos con estado "Pendiente". Puedes cambiar su estado a "Preparando" para que el cliente sepa que ya estás en ello, y luego a "En camino" o "Entregado".'}
                                         {activeTab === 'menu' && 'Desde aquí puedes añadir nuevos platos, cambiar precios o marcar platos con promociones. Si un plato se agota, puedes ocultarlo temporalmente para que los clientes no puedan pedirlo.'}
                                         {activeTab === 'users' && 'Este es el directorio de tus clientes. Puedes ver quiénes son tus mejores compradores y analizar su historial de pedidos.'}
+                                        {activeTab === 'promos' && 'Gestiona tus ofertas estáticas aquí. Crea banners promocionales con diferentes colores, iconos y ofertas.'}
+                                        {activeTab === 'blog' && 'Maneja tu blog aquí. Crea artículos nuevos, edita los existentes o cambia su estado de publicación.'}
+                                        {activeTab === 'settings' && 'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails y redes sociales en un solo lugar.'}
                                     </p>
                                 </div>
                             </div>
@@ -186,6 +195,9 @@ export default function AdminPage() {
                     )}
 
                     {/* Tab Contents */}
+                    {activeTab === 'settings' && <AdminSettings />}
+                    {activeTab === 'promos' && <AdminPromos />}
+                    {activeTab === 'blog' && <AdminBlog />}
                     {activeTab === 'dashboard' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
 

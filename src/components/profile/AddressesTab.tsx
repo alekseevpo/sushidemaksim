@@ -339,23 +339,47 @@ export default function AddressesTab({ addresses, addAddress, editAddress, remov
                         </div>
                         <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
                             {!addr.isDefault && (
-                                <button onClick={() => setDefaultAddress(addr.id)} style={{
-                                    padding: '6px 12px', border: '1px solid #E5E7EB', borderRadius: '6px',
-                                    cursor: 'pointer', backgroundColor: 'white', fontSize: '12px', color: '#374151',
-                                }}>
-                                    <Star size={12} /> Predeterminar
+                                <button
+                                    onClick={() => setDefaultAddress(addr.id)}
+                                    title="Hacer predeterminada"
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '4px',
+                                        padding: '6px 10px', border: '1px solid #E5E7EB', borderRadius: '8px',
+                                        cursor: 'pointer', backgroundColor: 'white', fontSize: '12px', color: '#4B5563',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseOver={e => { e.currentTarget.style.backgroundColor = '#F9FAFB'; e.currentTarget.style.borderColor = '#D1D5DB'; }}
+                                    onMouseOut={e => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
+                                >
+                                    <Star size={14} /> Predeterminar
                                 </button>
                             )}
-                            <button onClick={() => startEditing(addr)} style={{
-                                padding: '6px', border: 'none', borderRadius: '6px',
-                                cursor: 'pointer', backgroundColor: '#F3F4F6', color: '#374151',
-                            }}>
+                            <button
+                                onClick={() => startEditing(addr)}
+                                title="Editar"
+                                style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    width: '32px', height: '32px', border: '1px solid #E5E7EB', borderRadius: '8px',
+                                    cursor: 'pointer', backgroundColor: 'white', color: '#4B5563',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => { e.currentTarget.style.backgroundColor = '#F9FAFB'; e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.color = '#111827'; }}
+                                onMouseOut={e => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#4B5563'; }}
+                            >
                                 <Pencil size={14} />
                             </button>
-                            <button onClick={() => removeAddress(addr.id)} style={{
-                                padding: '6px', border: 'none', borderRadius: '6px',
-                                cursor: 'pointer', backgroundColor: '#FEF2F2', color: '#DC2626',
-                            }}>
+                            <button
+                                onClick={() => removeAddress(addr.id)}
+                                title="Eliminar"
+                                style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    width: '32px', height: '32px', border: '1px solid #FECACA', borderRadius: '8px',
+                                    cursor: 'pointer', backgroundColor: '#FEF2F2', color: '#DC2626',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => { e.currentTarget.style.backgroundColor = '#FEE2E2'; e.currentTarget.style.borderColor = '#FCA5A5'; }}
+                                onMouseOut={e => { e.currentTarget.style.backgroundColor = '#FEF2F2'; e.currentTarget.style.borderColor = '#FECACA'; }}
+                            >
                                 <Trash2 size={14} />
                             </button>
                         </div>

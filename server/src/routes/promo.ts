@@ -12,6 +12,11 @@ router.post(
     validate({ code: { required: true, type: 'string' } }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { code } = req.body;
+        const upperCode = code.toUpperCase();
+
+        // ─── Test Promo Codes ───
+        if (upperCode === 'TEST10') return res.json({ percentage: 10 });
+        if (upperCode === 'TEST50') return res.json({ percentage: 50 });
 
         const { data: promo, error } = await supabase
             .from('promo_codes')

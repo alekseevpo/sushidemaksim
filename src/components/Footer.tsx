@@ -1,7 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield } from 'lucide-react';
+import { api } from '../utils/api';
 
 export default function Footer() {
+    const [settings, setSettings] = useState<any>(null);
+
+    useEffect(() => {
+        api.get('/settings').then(setSettings).catch(console.error);
+    }, []);
     return (
         <footer className="bg-black text-gray-400 py-10 mt-auto border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -27,8 +34,8 @@ export default function Footer() {
                         <Link to="/promo" className="hover:text-white transition">Promociones</Link>
                         <Link to="/contacts" className="hover:text-white transition">Contacto</Link>
                     </div>
-                    <a href="tel:+34641518390" className="text-sm font-bold text-gray-300 hover:text-red-500 transition-colors">
-                        +34 641 518 390
+                    <a href={`tel:${settings?.contact_phone?.replace(/\s/g, '')}`} className="text-sm font-bold text-gray-300 hover:text-red-500 transition-colors">
+                        {settings?.contact_phone || '+34 641 518 390'}
                     </a>
 
                     {/* Botón discreto para administradores */}

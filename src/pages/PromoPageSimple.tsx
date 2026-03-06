@@ -4,48 +4,7 @@ import { ArrowRight, Clock, Tag, Plus } from 'lucide-react';
 import { api } from '../utils/api';
 import { useCart } from '../hooks/useCart';
 
-const STATIC_PROMOS = [
-  {
-    id: 1,
-    title: 'Happy Hours',
-    description: '20% de descuento en todos los rollos de 12:00 a 15:00 h de lunes a viernes',
-    discount: '−20%',
-    validUntil: '31 de marzo 2026',
-    icon: '⏰',
-    color: '#DC2626',
-    bg: 'from-red-600 to-red-500',
-  },
-  {
-    id: 2,
-    title: 'Cumpleaños',
-    description: 'Set de rollos gratis en tu cumpleaños con pedidos a partir de 30 €',
-    discount: 'Regalo',
-    validUntil: 'Permanente',
-    icon: '🎂',
-    color: '#EC4899',
-    bg: 'from-pink-500 to-pink-400',
-  },
-  {
-    id: 3,
-    title: 'Cena familiar',
-    description: 'Pedido de más de 50 € — postre de regalo',
-    discount: '+Postre',
-    validUntil: '30 de abril 2026',
-    icon: '👨‍👩‍👧‍👦',
-    color: '#10B981',
-    bg: 'from-emerald-500 to-emerald-400',
-  },
-  {
-    id: 4,
-    title: 'Primer pedido',
-    description: '15% de descuento en tu primer pedido a través de la web',
-    discount: '−15%',
-    validUntil: 'Permanente',
-    icon: '🎁',
-    color: '#F59E0B',
-    bg: 'from-amber-500 to-amber-400',
-  },
-];
+
 
 interface PromoItem {
   id: number;
@@ -58,15 +17,25 @@ interface PromoItem {
 
 export default function PromoPageSimple() {
   const [promoItems, setPromoItems] = useState<PromoItem[]>([]);
+  const [staticPromos, setStaticPromos] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
   const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
   const { addItem } = useCart();
 
   useEffect(() => {
-    api.get('/menu?category=menus&limit=20')
-      .then(data => setPromoItems(data.items ?? []))
-      .catch(() => setPromoItems([]))
+    Promise.all([
+      api.get('/menu?category=menus&limit=20'),
+      api.get('/promos')
+    ])
+      .then(([menuData, promosData]) => {
+        setPromoItems(menuData.items ?? []);
+        setStaticPromos(promosData.promos ?? []);
+      })
+      .catch(() => {
+        setPromoItems([]);
+        setStaticPromos([]);
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -85,51 +54,57 @@ export default function PromoPageSimple() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10">
-      <div className="max-w-7xl mx-auto">
-
-        {/* Hero */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            Promociones y ofertas 🎉
+    <div className="flex-1 bg-white">
+      {/* Hero Header */}
+      <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-20 pb-28 px-4">
+        <div className="absolute inset-0 bg-black/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-50/20 to-transparent"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+            Promociones y ofertas <span className="text-red-500">🎉</span>
           </h1>
-          <p className="text-xl text-gray-500 max-w-xl mx-auto">
+          <p className="text-gray-300 text-lg md:text-xl font-medium max-w-xl mx-auto">
             Ofertas especiales y descuentos exclusivos de Sushi de Maksim
           </p>
         </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 -mt-16 mb-20 relative z-20">
 
         {/* Static Promo Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-14">
-          {STATIC_PROMOS.map(promo => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-20">
+          {!isLoading && staticPromos.map(promo => (
             <div
               key={promo.id}
-              className="bg-white rounded-2xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08)] overflow-hidden hover:-translate-y-1 hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.12)] transition-all duration-300"
+              className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col group"
             >
               {/* Colored header */}
               <div
-                className="p-6 text-center"
-                style={{ backgroundColor: promo.color }}
+                className={`p-8 text-center bg-gradient-to-br ${promo.bg} relative overflow-hidden`}
               >
-                <div className="text-5xl mb-3">{promo.icon}</div>
-                <h3 className="text-xl font-bold text-white mb-2">{promo.title}</h3>
-                <span className="bg-white/20 text-white text-sm font-bold px-3 py-1 rounded-full">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+                <div className="text-5xl mb-4 relative z-10 transform group-hover:scale-110 transition-transform">{promo.icon}</div>
+                <h3 className="text-2xl font-black text-white mb-3 relative z-10">{promo.title}</h3>
+                <span className="bg-black/20 backdrop-blur-md text-white text-sm font-black px-4 py-1.5 rounded-full relative z-10">
                   {promo.discount}
                 </span>
               </div>
 
               {/* Body */}
-              <div className="p-5">
-                <p className="text-gray-600 text-sm leading-relaxed mb-4">{promo.description}</p>
-                <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                  <Clock size={13} />
-                  <span>Válido hasta: {promo.validUntil}</span>
+              <div className="p-6 flex flex-col flex-1">
+                <p className="text-gray-600 font-medium leading-relaxed mb-6 flex-1">{promo.description}</p>
+                <div className="flex items-center gap-2 text-sm text-gray-400 mb-6 font-semibold bg-gray-50 p-3 rounded-xl">
+                  <Clock size={16} className="text-gray-500" />
+                  <span>Válido hasta: <span className="text-gray-700">{promo.valid_until}</span></span>
                 </div>
+                {/* Visual line */}
+                <div className="w-full h-px bg-gray-100 mb-6"></div>
                 <Link
                   to="/menu"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg font-bold text-sm text-white no-underline transition hover:opacity-90"
-                  style={{ backgroundColor: promo.color }}
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-black text-sm text-white no-underline transition-all hover:opacity-90 active:scale-95 shadow-lg group-hover:shadow-xl"
+                  style={{ backgroundColor: promo.color, boxShadow: `0 10px 25px -5px ${promo.color}40` }}
                 >
-                  Ver menú <ArrowRight size={15} />
+                  Ver menú <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -137,78 +112,84 @@ export default function PromoPageSimple() {
         </div>
 
         {/* Weekly Banner */}
-        <div className="bg-gradient-to-r from-red-600 to-pink-500 rounded-2xl p-10 text-center text-white mb-14 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 50%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-          <div className="relative z-10">
-            <div className="text-6xl mb-4">🎯</div>
-            <h2 className="text-3xl font-bold mb-3">¡Súper oferta de la semana!</h2>
-            <p className="text-xl mb-4 opacity-90">
+        <div className="bg-red-600 rounded-[3rem] p-12 text-center text-white mb-20 relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/20 blur-[80px] rounded-full"></div>
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-black/20 blur-[80px] rounded-full"></div>
+
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <div className="text-6xl mb-6 transform hover:scale-110 transition-transform">🎯</div>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">¡Súper oferta de la semana!</h2>
+            <p className="text-xl md:text-2xl font-medium mb-8 opacity-90 text-red-100">
               Pide el menú «Chef Gourmet» y llévate un postre Mochi de regalo
             </p>
-            <div className="inline-block bg-white/20 px-6 py-2 rounded-lg text-lg font-bold mb-6">
+            <div className="inline-block bg-white/20 backdrop-blur-md px-8 py-3 rounded-full text-xl font-black mb-10 border border-white/30">
               Ahorra hasta 5,00 €
             </div>
             <br />
             <Link
               to="/menu"
-              className="inline-flex items-center gap-2 bg-white text-red-600 px-8 py-3 rounded-xl font-bold text-lg no-underline hover:bg-gray-50 transition mt-2"
+              className="inline-flex items-center gap-2 bg-white text-red-600 px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-wide no-underline transition-all active:scale-95 shadow-xl hover:shadow-2xl hover:-translate-y-1 group"
             >
-              Pedir ahora <ArrowRight size={20} />
+              Pedir este combo <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
 
         {/* Promo Menu Items from API */}
-        <div className="mb-4">
-          <div className="flex items-center gap-3 mb-6">
-            <Tag size={22} className="text-red-600" />
-            <h2 className="text-2xl font-bold text-gray-900 m-0">Menús especiales</h2>
+        <div className="mb-10 max-w-5xl mx-auto">
+          <div className="flex items-center justify-center gap-3 mb-10">
+            <Tag size={28} className="text-red-600" />
+            <h2 className="text-3xl font-black text-gray-900 m-0 tracking-tight">Menús especiales</h2>
           </div>
 
           {isLoading ? (
-            <div className="text-center py-10 text-gray-400">
-              <div className="text-4xl mb-3 animate-pulse">🎁</div>
-              <p>Cargando ofertas...</p>
+            <div className="text-center py-20 text-gray-400">
+              <div className="text-5xl mb-4 animate-bounce">🎁</div>
+              <p className="text-lg font-medium">Cargando las mejores ofertas...</p>
             </div>
           ) : promoItems.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">No hay menús disponibles ahora mismo</p>
+            <div className="bg-gray-50 rounded-[2rem] p-12 text-center border-2 border-dashed border-gray-200">
+              <div className="text-5xl mb-4 grayscale opacity-50">🍱</div>
+              <p className="text-gray-500 text-lg font-medium">No hay menús disponibles ahora mismo</p>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {promoItems.map(item => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08)] overflow-hidden hover:-translate-y-1 hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col group"
+                  className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/40 overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col group border border-gray-50"
                 >
-                  <div className="h-44 bg-gray-100 overflow-hidden relative">
+                  <div className="h-56 bg-gray-100 overflow-hidden relative">
                     {!failedImages.has(item.id) ? (
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-5xl">🎁</div>
+                      <div className="w-full h-full flex items-center justify-center text-6xl">🎁</div>
                     )}
-                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      🏷️ Menú especial
+                    <span className="absolute top-4 left-4 bg-black/80 backdrop-blur-md text-white text-xs uppercase tracking-wider font-black px-3 py-1.5 rounded-full">
+                      Solo hoy
                     </span>
                   </div>
-                  <div className="p-5 flex flex-col flex-1">
-                    <h3 className="font-bold text-gray-900 text-lg mb-1">{item.name}</h3>
-                    <p className="text-gray-500 text-sm flex-1 mb-4 leading-relaxed">{item.description}</p>
+                  <div className="p-8 flex flex-col flex-1">
+                    <h3 className="font-black text-gray-900 text-2xl mb-2">{item.name}</h3>
+                    <p className="text-gray-500 font-medium flex-1 mb-6 leading-relaxed">{item.description}</p>
                     <div className="flex items-center justify-between mt-auto">
-                      <span className="text-2xl font-bold text-red-600">
+                      <span className="text-3xl font-black text-red-600">
                         {item.price.toFixed(2).replace('.', ',')} €
                       </span>
                       <button
                         onClick={() => handleAdd(item)}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-bold text-sm border-none cursor-pointer transition-all duration-300 ${addedItems.has(item.id)
-                            ? 'bg-green-600 text-white'
-                            : 'bg-red-600 text-white hover:bg-red-700 shadow-md'
+                        className={`flex items-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${addedItems.has(item.id)
+                          ? 'bg-green-500 text-white shadow-lg shadow-green-500/30'
+                          : 'bg-red-600 text-white hover:bg-red-700 shadow-xl shadow-red-600/20'
                           }`}
                       >
-                        {addedItems.has(item.id) ? '✓ Añadido' : <><Plus size={15} /> Añadir</>}
+                        {addedItems.has(item.id) ? '✓ Añadido' : <><Plus size={16} /> Añadir</>}
                       </button>
                     </div>
                   </div>

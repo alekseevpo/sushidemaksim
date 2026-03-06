@@ -31,6 +31,7 @@ export default function AdminOrders() {
         }, 60000);
 
         return () => clearInterval(intervalId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pagination.page]);
 
     const handleUpdateStatus = async (id: number, newStatus: string) => {

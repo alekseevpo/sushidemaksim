@@ -33,17 +33,26 @@ router.post(
         let usedPromoId = null;
 
         if (promoCode) {
-            const { data: promo } = await supabase
-                .from('promo_codes')
-                .select('*')
-                .eq('code', promoCode)
-                .eq('is_used', false)
-                .eq('user_id', req.userId)
-                .single();
+            const upperCode = promoCode.toUpperCase();
 
-            if (promo) {
-                finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
-                usedPromoId = promo.id;
+            // ─── Test Promo Codes ───
+            if (upperCode === 'TEST10') {
+                finalTotal = finalTotal * 0.90; // 10% discount
+            } else if (upperCode === 'TEST50') {
+                finalTotal = finalTotal * 0.50; // 50% discount
+            } else {
+                const { data: promo } = await supabase
+                    .from('promo_codes')
+                    .select('*')
+                    .eq('code', promoCode)
+                    .eq('is_used', false)
+                    .eq('user_id', req.userId)
+                    .single();
+
+                if (promo) {
+                    finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
+                    usedPromoId = promo.id;
+                }
             }
         }
 

@@ -16,6 +16,8 @@ import userRoutes from './routes/user.js';
 import adminRoutes from './routes/admin.js';
 import promoRoutes from './routes/promo.js';
 import cronRoutes from './routes/cron.js';
+import blogRoutes from './routes/blog.js';
+import settingsRoutes from './routes/settings.js';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -88,6 +90,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/promo', promoRoutes);
 app.use('/api/cron', cronRoutes);
+app.use('/api/blog', blogRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

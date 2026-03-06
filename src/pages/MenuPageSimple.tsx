@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, X, Heart } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -15,6 +17,16 @@ interface MenuItem {
   spicy?: boolean;
   vegetarian?: boolean;
   is_promo?: boolean;
+}
+
+interface FlyingItem {
+  id: string;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  image?: string;
+  emoji?: string;
 }
 
 const CATEGORIES = [
@@ -44,6 +56,7 @@ export default function MenuPageSimple() {
   const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
   const [favoriteItems, setFavoriteItems] = useState<Set<number>>(new Set());
   const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
+  const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
 
   // Debounce search input — only fire API call after 350ms of no typing
@@ -56,6 +69,7 @@ export default function MenuPageSimple() {
 
   useEffect(() => {
     loadMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, debouncedSearch]);
 
   const loadMenu = async () => {
@@ -82,7 +96,41 @@ export default function MenuPageSimple() {
     }
   };
 
-  const handleAddToCart = (item: MenuItem) => {
+  const handleAddToCart = (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>) => {
+    // Determine start and end coordinates for animation
+    const cartIcon = document.getElementById('cart-icon');
+    let endX = window.innerWidth - 40; // Fallback x
+    let endY = 40; // Fallback y
+
+    if (cartIcon) {
+      const rect = cartIcon.getBoundingClientRect();
+      endX = rect.left + rect.width / 2;
+      endY = rect.top + rect.height / 2;
+    }
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+
+    const animId = Date.now().toString() + Math.random().toString();
+    const hasImage = !failedImages.has(item.id) && item.image;
+
+    // Spawn the flying element
+    setFlyingItems(prev => [...prev, {
+      id: animId,
+      startX,
+      startY,
+      endX,
+      endY,
+      image: hasImage ? item.image : undefined,
+      emoji: hasImage ? undefined : (EMOJI[item.category] || '🍱')
+    }]);
+
+    // Remove flying element after animation finishes
+    setTimeout(() => {
+      setFlyingItems(prev => prev.filter(f => f.id !== animId));
+    }, 1200);
+
+    // Add to real cart
     addItem({
       id: String(item.id),
       name: item.name,
@@ -238,7 +286,7 @@ export default function MenuPageSimple() {
                       {item.price.toFixed(2).replace('.', ',')} €
                     </span>
                     <button
-                      onClick={() => handleAddToCart(item)}
+                      onClick={(e) => handleAddToCart(item, e)}
                       className={`px-4 py-2.5 rounded-lg font-bold border-none cursor-pointer flex items-center gap-1.5 text-sm outline-none transition-all duration-300 ${addedItems.has(item.id)
                         ? 'bg-green-600 text-white'
                         : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'
@@ -253,6 +301,45 @@ export default function MenuPageSimple() {
           </div>
         )}
       </div>
+
+      {/* Fly-to-Cart Portals */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {flyingItems.map(fly => (
+            <motion.div
+              key={fly.id}
+              initial={{ x: fly.startX - 25, y: fly.startY - 25, scale: 1, opacity: 1 }}
+              animate={{
+                x: fly.endX - 25,
+                // Make the arc more pronounced and ensure it hits the cart at scale 0.1
+                y: [fly.startY - 25, Math.min(fly.startY - 150, fly.endY - 50), fly.endY - 25],
+                scale: [1, 1.2, 0.1],
+                opacity: [1, 1, 0]
+              }}
+              transition={{
+                duration: 1.1,
+                // Move horizontally in a straight line, slower
+                x: { ease: "linear", duration: 1.1 },
+                // Move vertically with an arc: jump up fast, fall down slowly
+                y: { ease: ["easeOut", "easeIn"], times: [0, 0.4, 1], duration: 1.1 },
+                // Grow a bit at start of arc, then shrink into cart
+                scale: { ease: "easeInOut", times: [0, 0.3, 1], duration: 1.1 },
+                // Fade out only at the very end
+                opacity: { ease: "linear", times: [0, 0.85, 1], duration: 1.1 }
+              }}
+              className="fixed top-0 left-0 z-[1000] pointer-events-none rounded-full overflow-hidden shadow-2xl flex items-center justify-center bg-white border-2 border-red-500 will-change-transform"
+              style={{ width: '50px', height: '50px' }}
+            >
+              {fly.image ? (
+                <img src={fly.image} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-2xl">{fly.emoji}</span>
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

@@ -173,15 +173,47 @@ export default function OrdersTab() {
                             </div>
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: order.notes ? '12px' : '0' }}>
-                        {order.items?.map((item: any, i: number) => (
-                            <div key={i} style={{
-                                backgroundColor: '#F9FAFB', borderRadius: '8px', padding: '8px 12px',
-                                fontSize: '13px', color: '#374151',
-                            }}>
-                                {item.name} ×{item.quantity}
+                    <div style={{ marginBottom: order.notes ? '16px' : '12px', backgroundColor: '#F9FAFB', borderRadius: '12px', padding: '16px', border: '1px solid #F3F4F6' }}>
+                        <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#374151', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #E5E7EB' }}>
+                            Detalles del pedido
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+                            {order.items?.map((item: any, i: number) => (
+                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#4B5563' }}>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                        <span style={{ fontWeight: 'bold', color: '#111827', minWidth: '24px' }}>x{item.quantity}</span>
+                                        <span>{item.name}</span>
+                                    </div>
+                                    <div style={{ fontWeight: 'medium' }}>
+                                        {(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div style={{ paddingTop: '12px', borderTop: '1px dashed #D1D5DB', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {/* Calculate subtotal from items if possible, otherwise rely on order total */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#6B7280' }}>
+                                <span>Subtotal:</span>
+                                <span>
+                                    {order.items?.reduce((s: number, i: any) => s + (i.price_at_time * i.quantity), 0).toFixed(2).replace('.', ',')} €
+                                </span>
                             </div>
-                        ))}
+
+                            {order.items?.reduce((s: number, i: any) => s + (i.price_at_time * i.quantity), 0) > order.total && (
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#10B981', fontWeight: 'bold' }}>
+                                    <span>Descuento aplicado:</span>
+                                    <span>
+                                        -{(order.items?.reduce((s: number, i: any) => s + (i.price_at_time * i.quantity), 0) - order.total).toFixed(2).replace('.', ',')} €
+                                    </span>
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', color: '#111827', fontWeight: 'bold', marginTop: '4px', paddingTop: '8px', borderTop: '1px solid #E5E7EB' }}>
+                                <span>Total Pagado:</span>
+                                <span style={{ color: '#DC2626' }}>{order.total.toFixed(2).replace('.', ',')} €</span>
+                            </div>
+                        </div>
                     </div>
                     {order.notes && (
                         <div style={{ backgroundColor: '#FEF2F2', padding: '10px 12px', borderRadius: '8px', fontSize: '13px', color: '#B91C1C', borderLeft: '3px solid #DC2626', marginBottom: '12px' }}>

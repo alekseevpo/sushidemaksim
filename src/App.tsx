@@ -13,6 +13,8 @@ const PromoPageSimple = lazy(() => import('./pages/PromoPageSimple'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 const ContactsPage = lazy(() => import('./pages/ContactsPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 
 function PageLoader() {
   return (
@@ -44,6 +46,8 @@ function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/contacts" element={<ContactsPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogPostPage />} />
               </Routes>
             </Suspense>
           </main>

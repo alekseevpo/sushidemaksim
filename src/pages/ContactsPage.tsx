@@ -1,17 +1,57 @@
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Star } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Star, ArrowRight } from 'lucide-react';
+import { api } from '../utils/api';
+
+const iconMap: Record<string, any> = {
+    whatsapp: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" /><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" /></svg>,
+    tiktok: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" /></svg>,
+    instagram: Instagram,
+    facebook: Facebook,
+};
 
 export default function ContactsPage() {
+    const [settings, setSettings] = useState<any>({
+        contact_phone: '+34 641 518 390',
+        contact_email: 'info@sushidemaksim.com',
+        contact_address_line1: 'Calle Barrilero, 20,',
+        contact_address_line2: '28007 Madrid',
+        contact_google_maps_url: 'https://www.google.com/maps/search/?api=1&query=Calle+Barrilero,+20,+28007+Madrid',
+        contact_schedule: [
+            { days: 'Miércoles - Viernes', hours: '20:00 - 23:00' },
+            { days: 'Sábado - Domingo', hours: '14:00 - 17:00 y 20:00 - 23:00' },
+            { days: 'Lunes - Martes', hours: 'Cerrado', closed: true }
+        ],
+        social_links: [
+            { platform: 'WhatsApp', url: 'https://wa.me/34641518390', icon: 'whatsapp' },
+            { platform: 'TikTok', url: '#', icon: 'tiktok' },
+            { platform: 'Instagram', url: '#', icon: 'instagram' },
+            { platform: 'Facebook', url: '#', icon: 'facebook' }
+        ]
+    });
+
+    useEffect(() => {
+        api.get('/settings')
+            .then(data => {
+                if (data && Object.keys(data).length > 0) {
+                    setSettings(data);
+                }
+            })
+            .catch(console.error);
+    }, []);
+
     return (
         <div className="flex-1 bg-white">
             {/* Hero Header */}
-            <section className="bg-gray-900 py-16 px-4">
-                <div className="max-w-4xl mx-auto text-center">
+            <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-20 pb-28 px-4">
+                <div className="absolute inset-0 bg-black/70"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-50/20 to-transparent"></div>
+                <div className="max-w-4xl mx-auto text-center relative z-10">
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Contacto</h1>
-                    <p className="text-gray-400 text-lg">Estamos aquí para ayudarte. ¡Hablemos!</p>
+                    <p className="text-gray-300 text-lg font-medium">Estamos aquí para ayudarte. ¡Hablemos!</p>
                 </div>
             </section>
             {/* Restaurant Photo Section */}
-            <section className="max-w-7xl mx-auto px-4 -mt-10 mb-12">
+            <section className="max-w-7xl mx-auto px-4 -mt-16 mb-12 relative z-20">
                 <div className="relative h-[300px] md:h-[450px] w-full rounded-3xl overflow-hidden shadow-2xl">
                     <img
                         src="https://lh3.googleusercontent.com/gps-cs-s/AHVAwerkdGixMAWgBIMmoJjP1MX7jWMzKqJ7V9vy4jvAQaJRkD1rLfsKxfAkLuD2GL5-Dlv8H-JPqpTtZYfNrw0EwmQxJjmolR9MRhiJOn2PmlUYM-U7hShrCdYQZ_Ns2rut3ZKiQc8=w1200"
@@ -54,32 +94,27 @@ export default function ContactsPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Llámanos</h3>
                             <p className="text-gray-500 mb-4">Atención al cliente y pedidos por teléfono.</p>
-                            <a href="tel:+34641518390" className="text-lg font-bold text-red-600 hover:text-red-700 transition">
-                                +34 641 518 390
+                            <a href={`tel:${settings.contact_phone?.replace(/\s/g, '')}`} className="text-lg font-bold text-red-600 hover:text-red-700 transition">
+                                {settings.contact_phone}
                             </a>
                         </div>
 
                         <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+                            <div className="w-12 h-12 bg-gray-900 text-white rounded-xl flex items-center justify-center mb-6">
                                 <Clock size={24} />
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Horario</h3>
                             <div className="space-y-2 text-gray-500 text-sm">
-                                <div className="flex justify-between font-medium">
-                                    <span>Miércoles - Viernes:</span>
-                                    <span className="text-gray-900">20:00 - 23:00</span>
-                                </div>
-                                <div className="flex justify-between font-medium">
-                                    <span>Sábado - Domingo:</span>
-                                    <div className="text-right">
-                                        <div className="text-gray-900">14:00 - 17:00</div>
-                                        <div className="text-gray-900">20:00 - 23:00</div>
+                                {settings.contact_schedule?.map((item: any, idx: number) => (
+                                    <div key={idx} className={`flex justify-between font-medium ${item.closed ? 'text-red-500 pt-1' : ''}`}>
+                                        <span>{item.days}</span>
+                                        <div className={item.hours.includes('/') ? 'text-right' : ''}>
+                                            {item.hours.split('/').map((h: string, i: number) => (
+                                                <div key={i} className={item.closed ? '' : 'text-gray-900'}>{h.trim()}</div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="flex justify-between font-medium text-red-500 pt-1">
-                                    <span>Lunes - Martes:</span>
-                                    <span>Cerrado</span>
-                                </div>
+                                ))}
                             </div>
                         </div>
 
@@ -89,8 +124,8 @@ export default function ContactsPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Escríbenos</h3>
                             <p className="text-gray-500 mb-4">Para consultas generales o eventos especiales.</p>
-                            <a href="mailto:info@sushidemaksim.com" className="text-lg font-bold text-amber-600 hover:text-amber-700 transition">
-                                info@sushidemaksim.com
+                            <a href={`mailto:${settings.contact_email}`} className="text-lg font-bold text-amber-600 hover:text-amber-700 transition">
+                                {settings.contact_email}
                             </a>
                         </div>
 
@@ -100,11 +135,11 @@ export default function ContactsPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Encuéntranos</h3>
                             <p className="text-gray-500 mb-4 leading-relaxed">
-                                Calle Barrilero, 20,<br />
-                                28007 Madrid
+                                {settings.contact_address_line1}<br />
+                                {settings.contact_address_line2}
                             </p>
                             <a
-                                href="https://www.google.com/maps/search/?api=1&query=Calle+Barrilero,+20,+28007+Madrid"
+                                href={settings.contact_google_maps_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-sm font-bold text-blue-600 hover:underline inline-flex items-center gap-1"
@@ -145,13 +180,30 @@ export default function ContactsPage() {
 
                             <div className="mt-12 pt-12 border-t border-gray-100">
                                 <h4 className="text-sm font-bold text-gray-400 uppercase mb-6">Redes Sociales</h4>
-                                <div className="flex gap-4">
-                                    <a href="#" className="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300 shadow-sm">
-                                        <Instagram size={24} />
-                                    </a>
-                                    <a href="#" className="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-sm">
-                                        <Facebook size={24} />
-                                    </a>
+                                <div className="flex flex-wrap gap-4">
+                                    {settings.social_links?.map((social: any, idx: number) => {
+                                        const IconComponent = iconMap[social.icon?.toLowerCase()] || null;
+
+                                        // Colors mapping for popular networks to maintain the design
+                                        let hoverColor = "hover:bg-gray-900";
+                                        if (social.icon === 'whatsapp') hoverColor = "hover:bg-green-500";
+                                        if (social.icon === 'instagram') hoverColor = "hover:bg-pink-600";
+                                        if (social.icon === 'facebook') hoverColor = "hover:bg-blue-600";
+                                        if (social.icon === 'tiktok') hoverColor = "hover:bg-black";
+
+                                        return (
+                                            <a
+                                                key={idx}
+                                                href={social.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title={social.platform}
+                                                className={`w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center ${hoverColor} hover:text-white transition-all duration-300 shadow-sm`}
+                                            >
+                                                {IconComponent && <IconComponent size={24} />}
+                                            </a>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -217,5 +269,3 @@ export default function ContactsPage() {
         </div>
     );
 }
-
-import { ArrowRight } from 'lucide-react';

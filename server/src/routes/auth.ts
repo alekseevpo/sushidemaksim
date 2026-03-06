@@ -94,6 +94,7 @@ router.post(
             expiresIn: config.jwtExpiresIn,
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password_hash, created_at, ...userRest } = user;
         res.json({ token, user: { ...userRest, createdAt: created_at } });
     })

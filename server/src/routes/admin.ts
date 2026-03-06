@@ -39,7 +39,7 @@ router.post('/menu/upload-image', upload.single('image'), asyncHandler(async (re
     const filePath = `menu/${fileName}`;
 
     // Upload to Supabase Storage 'images' bucket
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
         .from('images')
         .upload(filePath, file.buffer, {
             contentType: file.mimetype,
@@ -399,6 +399,85 @@ router.get('/stats', asyncHandler(async (_req: Request, res: Response) => {
         recentOrders: formattedRecent,
         topItems,
     });
+}));
+
+// ─── PROMOS MANAGEMENT ────────────────────────────────────────────────────────
+router.get('/promos', asyncHandler(async (_req: Request, res: Response) => {
+    const { data: promos, error } = await supabase.from('promos').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json(promos);
+}));
+
+router.post('/promos', asyncHandler(async (req: Request, res: Response) => {
+    const { title, description, discount, valid_until, icon, color, bg, is_active } = req.body;
+    const { data: promo, error } = await supabase.from('promos').insert({ title, description, discount, valid_until, icon, color, bg, is_active }).select().single();
+    if (error) throw error;
+    res.json(promo);
+}));
+
+router.put('/promos/:id', asyncHandler(async (req: Request, res: Response) => {
+    const { title, description, discount, valid_until, icon, color, bg, is_active } = req.body;
+    const { data: promo, error } = await supabase.from('promos').update({ title, description, discount, valid_until, icon, color, bg, is_active }).eq('id', req.params.id).select().single();
+    if (error) throw error;
+    res.json(promo);
+}));
+
+router.delete('/promos/:id', asyncHandler(async (req: Request, res: Response) => {
+    const { error } = await supabase.from('promos').delete().eq('id', req.params.id);
+    if (error) throw error;
+    res.json({ success: true });
+}));
+
+// ─── BLOG POSTS MANAGEMENT ────────────────────────────────────────────────────
+router.get('/blog_posts', asyncHandler(async (_req: Request, res: Response) => {
+    const { data: posts, error } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json(posts);
+}));
+
+router.post('/blog_posts', asyncHandler(async (req: Request, res: Response) => {
+    const { title, slug, excerpt, content, image_url, author, category, read_time, published } = req.body;
+    const { data: post, error } = await supabase.from('blog_posts').insert({ title, slug, excerpt, content, image_url, author, category, read_time, published }).select().single();
+    if (error) throw error;
+    res.json(post);
+}));
+
+router.put('/blog_posts/:id', asyncHandler(async (req: Request, res: Response) => {
+    const { title, slug, excerpt, content, image_url, author, category, read_time, published } = req.body;
+    const { data: post, error } = await supabase.from('blog_posts').update({ title, slug, excerpt, content, image_url, author, category, read_time, published }).eq('id', req.params.id).select().single();
+    if (error) throw error;
+    res.json(post);
+}));
+
+router.delete('/blog_posts/:id', asyncHandler(async (req: Request, res: Response) => {
+    const { error } = await supabase.from('blog_posts').delete().eq('id', req.params.id);
+    if (error) throw error;
+    res.json({ success: true });
+}));
+
+// ─── SITE SETTINGS MANAGEMENT ─────────────────────────────────────────────────
+router.get('/settings', asyncHandler(async (_req: Request, res: Response) => {
+    const { data: settings, error } = await supabase.from('site_settings').select('*');
+    if (error) throw error;
+
+    const settingsMap = settings.reduce((acc: any, curr: any) => {
+        try { acc[curr.key] = JSON.parse(curr.value); } catch { acc[curr.key] = curr.value; }
+        return acc;
+    }, {});
+
+    res.json(settingsMap);
+}));
+
+router.put('/settings', asyncHandler(async (req: Request, res: Response) => {
+    const updates = Object.keys(req.body).map(key => ({
+        key,
+        value: typeof req.body[key] === 'object' ? JSON.stringify(req.body[key]) : req.body[key]
+    }));
+
+    const { error } = await supabase.from('site_settings').upsert(updates, { onConflict: 'key' });
+    if (error) throw error;
+
+    res.json({ success: true });
 }));
 
 export default router;
