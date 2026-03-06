@@ -26,7 +26,7 @@
     "crons": [
         {
             "path": "/api/cron/check-late-orders",
-            "schedule": "*/10 * * * *"
+            "schedule": "0 0 * * *"
         }
     ]
 }
