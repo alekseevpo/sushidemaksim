@@ -8,6 +8,7 @@ export default function AdminOrders() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
+    const [filter, setFilter] = useState<'active' | 'invitations' | 'all'>('active');
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
 
     const loadOrders = async (page: number = 1) => {
@@ -93,39 +94,70 @@ export default function AdminOrders() {
         return Number(amount).toFixed(2).replace('.', ',') + ' €';
     };
 
-    const filteredOrders = orders.filter(
-        o =>
+    const filteredOrders = orders.filter(o => {
+        // 1. Status Filter
+        if (filter === 'active') {
+            if (['delivered', 'cancelled', 'waiting_payment'].includes(o.status)) return false;
+        } else if (filter === 'invitations') {
+            if (o.status !== 'waiting_payment') return false;
+        }
+
+        // 2. Search Filter
+        const matchesSearch =
             String(o.id).includes(search) ||
-            (o.delivery_address &&
-                o.delivery_address.toLowerCase().includes(search.toLowerCase())) ||
+            (o.delivery_address && o.delivery_address.toLowerCase().includes(search.toLowerCase())) ||
             (o.phone_number && o.phone_number.includes(search)) ||
-            (o.promocode && o.promocode.toLowerCase().includes(search.toLowerCase()))
-    );
+            (o.promocode && o.promocode.toLowerCase().includes(search.toLowerCase()));
+
+        return matchesSearch;
+    });
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Top Controls */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <div className="relative w-full sm:w-96">
-                    <Search
-                        size={18}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Buscar ID, Teléfono, Promo..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
-                    />
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <div className="relative w-full sm:w-96">
+                        <Search
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Buscar ID, Teléfono, Promo..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
+                        />
+                    </div>
+                    <button
+                        onClick={() => loadOrders(pagination.page)}
+                        className="w-full sm:w-auto p-2 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                        title="Actualizar"
+                    >
+                        <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+                    </button>
                 </div>
-                <button
-                    onClick={() => loadOrders(pagination.page)}
-                    className="w-full sm:w-auto p-2 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
-                    title="Actualizar"
-                >
-                    <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-                </button>
+
+                {/* Filter Tabs */}
+                <div className="flex bg-gray-50 p-1 rounded-xl w-full sm:w-fit">
+                    {[
+                        { id: 'active', label: 'Activos' },
+                        { id: 'invitations', label: 'Invitaciones' },
+                        { id: 'all', label: 'Todos' }
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setFilter(tab.id as any)}
+                            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition ${filter === tab.id
+                                    ? 'bg-white text-red-600 shadow-sm'
+                                    : 'text-gray-400 hover:text-gray-600'
+                                }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {error ? (
@@ -159,8 +191,13 @@ export default function AdminOrders() {
                                 <div className="p-4 sm:p-5 bg-gray-50 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
                                         <div className="flex items-center gap-3 mb-1">
-                                            <h3 className="font-bold text-gray-900 text-lg">
+                                            <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
                                                 Pedido #{String(order.id).padStart(5, '0')}
+                                                {order.status === 'waiting_payment' && (
+                                                    <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded border border-amber-200 uppercase font-black">
+                                                        Invitación / Borrador
+                                                    </span>
+                                                )}
                                             </h3>
                                             <span className="text-sm text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full font-medium">
                                                 {(() => {
