@@ -83,6 +83,20 @@ export default function MenuPageSimple() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCategory, debouncedSearch]);
 
+    // Scroll to top when category changes to ensure user sees the results
+    useEffect(() => {
+        if (!isLoading) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [selectedCategory]);
+
+    // Scroll to top on search only if there are results and search is not empty
+    useEffect(() => {
+        if (debouncedSearch && !isLoading && items.length > 0) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [debouncedSearch]);
+
     const loadMenu = async () => {
         setIsLoading(true);
         try {
@@ -250,8 +264,8 @@ export default function MenuPageSimple() {
                         <button
                             onClick={() => setSelectedCategory('all')}
                             className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === 'all'
-                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                                ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
                                 }`}
                         >
                             Todos
@@ -261,8 +275,8 @@ export default function MenuPageSimple() {
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
                                 className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === cat.id
-                                        ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                        : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
                                     }`}
                             >
                                 <span className="text-sm md:text-base">{cat.icon}</span>
@@ -396,8 +410,8 @@ export default function MenuPageSimple() {
                                         <button
                                             onClick={e => handleAddToCart(item, e)}
                                             className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${addedItems.has(item.id)
-                                                    ? 'bg-green-600 text-white'
-                                                    : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
+                                                ? 'bg-green-600 text-white'
+                                                : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
                                                 }`}
                                         >
                                             {addedItems.has(item.id) ? (
