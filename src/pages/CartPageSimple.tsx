@@ -34,6 +34,8 @@ export default function CartPageSimple() {
     const { addItem } = useCart();
 
     const [address, setAddress] = useState('');
+    const [house, setHouse] = useState('');
+    const [apartment, setApartment] = useState('');
     const [phone, setPhone] = useState('');
     const [isOrdering, setIsOrdering] = useState(false);
     const [orderError, setOrderError] = useState('');
@@ -129,21 +131,34 @@ export default function CartPageSimple() {
 
     const handleOrder = async () => {
         setOrderError('');
-        const deliveryAddress =
+        const streetVal =
             address.trim() ||
             (defaultAddr && defaultAddr.street
                 ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
                 : '');
-        const deliveryPhone = phone.trim() || user?.phone || '';
+
+        const houseVal = house.trim();
+        const aptVal = apartment.trim();
 
         if (
-            !deliveryAddress ||
-            deliveryAddress.length < 5 ||
-            deliveryAddress.includes('undefined')
+            !streetVal ||
+            streetVal.length < 3 ||
+            streetVal.includes('undefined')
         ) {
-            setOrderError('Por favor, introduce una dirección de entrega válida');
+            setOrderError('Por favor, indica tu calle / dirección');
             return;
         }
+        if (!houseVal) {
+            setOrderError('Por favor, indica tu portal/casa');
+            return;
+        }
+        if (!aptVal) {
+            setOrderError('Por favor, indica tu piso/puerta');
+            return;
+        }
+
+        const deliveryAddress = `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
+        const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 6) {
             setOrderError('Por favor, introduce un teléfono de contacto válido');
             return;
@@ -159,12 +174,21 @@ export default function CartPageSimple() {
         const notes = notesArray.join('. ');
 
         try {
-            const data = await api.post('/orders', {
+            const orderPayload: any = {
                 deliveryAddress,
                 phoneNumber: deliveryPhone,
                 notes,
                 promoCode: appliedPromo?.code || undefined,
-            });
+            };
+
+            if (!isAuthenticated) {
+                orderPayload.guestItems = items.map(i => ({
+                    menuItemId: parseInt(i.id),
+                    quantity: i.quantity
+                }));
+            }
+
+            const data = await api.post('/orders', orderPayload);
             setOrderSuccess(data.order.id);
             clearCart();
 
@@ -246,12 +270,14 @@ export default function CartPageSimple() {
                     </div>
 
                     <div className="flex flex-col gap-3 relative z-10">
-                        <button
-                            onClick={() => navigate('/profile', { state: { tab: 'orders' } })}
-                            className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95"
-                        >
-                            Ver mis pedidos
-                        </button>
+                        {isAuthenticated && (
+                            <button
+                                onClick={() => navigate('/profile', { state: { tab: 'orders' } })}
+                                className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95"
+                            >
+                                Ver mis pedidos
+                            </button>
+                        )}
                         <Link
                             to="/menu"
                             className="bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-gray-200 transition-all active:scale-95"
@@ -422,9 +448,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                      item.id,
-                                                                      item.quantity - 1
-                                                                  )
+                                                                    item.id,
+                                                                    item.quantity - 1
+                                                                )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -468,98 +494,124 @@ export default function CartPageSimple() {
                             </div>
                         </div>
 
-                        {/* Delivery info — only for logged-in users */}
-                        {isAuthenticated && (
-                            <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 mx-2 md:mx-0 rounded-[28px] md:rounded-xl">
-                                <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                                    <MapPin size={18} className="text-red-600" /> Datos de entrega
-                                </h2>
+                        {/* Delivery info — available for all */}
+                        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 mx-2 md:mx-0 rounded-[28px] md:rounded-xl">
+                            <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
+                                <MapPin size={18} className="text-red-600" /> Datos de entrega
+                            </h2>
 
-                                {/* Default address pill */}
-                                {defaultAddr && defaultAddr.street && (
-                                    <button
-                                        onClick={() => {
-                                            setAddress(
-                                                `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
-                                            );
-                                            setPhone(prev => prev || defaultAddr.phone);
-                                        }}
-                                        className="mb-4 flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-full px-4 py-2 cursor-pointer hover:bg-red-100 transition font-medium"
-                                    >
-                                        <MapPin size={14} /> Usar "
-                                        {defaultAddr.label || 'Mi dirección'}": {defaultAddr.street}
-                                    </button>
-                                )}
+                            {/* Default address pill */}
+                            {defaultAddr && defaultAddr.street && (
+                                <button
+                                    onClick={() => {
+                                        setAddress(
+                                            `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
+                                        );
+                                        setPhone(prev => prev || defaultAddr.phone);
+                                    }}
+                                    className="mb-4 flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-full px-4 py-2 cursor-pointer hover:bg-red-100 transition font-medium"
+                                >
+                                    <MapPin size={14} /> Usar "
+                                    {defaultAddr.label || 'Mi dirección'}": {defaultAddr.street}
+                                </button>
+                            )}
 
-                                <div className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-3">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-600 mb-1">
+                                        Calle / Avenida *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={address}
+                                        onChange={e => setAddress(e.target.value)}
+                                        placeholder={
+                                            defaultAddr && defaultAddr.street
+                                                ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
+                                                : 'Nombre de tu calle'
+                                        }
+                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-600 mb-1">
-                                            Dirección de entrega *
+                                            Portal / Casa *
                                         </label>
                                         <input
                                             type="text"
-                                            value={address}
-                                            onChange={e => setAddress(e.target.value)}
-                                            placeholder={
-                                                defaultAddr && defaultAddr.street
-                                                    ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
-                                                    : 'Calle, número, piso, ciudad'
-                                            }
+                                            value={house}
+                                            onChange={e => setHouse(e.target.value)}
+                                            placeholder="Ej: 15"
                                             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                         />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-600 mb-1">
-                                            Teléfono de contacto *
+                                            Piso / Puerta *
                                         </label>
                                         <input
-                                            type="tel"
-                                            value={phone}
-                                            onChange={e => setPhone(e.target.value)}
-                                            placeholder={user?.phone || '+34 600 000 000'}
+                                            type="text"
+                                            value={apartment}
+                                            onChange={e => setApartment(e.target.value)}
+                                            placeholder="Ej: 3ºB"
                                             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                         />
                                     </div>
                                 </div>
 
-                                {/* Checkboxes */}
-                                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-100">
-                                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
-                                        <input
-                                            type="checkbox"
-                                            className="w-4 h-4 accent-red-600 rounded cursor-pointer"
-                                            checked={noCall}
-                                            onChange={e => setNoCall(e.target.checked)}
-                                        />
-                                        Sin llamada de confirmación de pedido
-                                    </label>
-                                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
-                                        <input
-                                            type="checkbox"
-                                            className="w-4 h-4 accent-red-600 rounded cursor-pointer"
-                                            checked={noBuzzer}
-                                            onChange={e => setNoBuzzer(e.target.checked)}
-                                        />
-                                        No llamar al timbre / El repartidor llama al móvil
-                                    </label>
-                                </div>
-
-                                {/* Custom Note */}
-                                <div className="mt-4 pt-4 border-t border-gray-100">
+                                <div>
                                     <label className="block text-sm font-semibold text-gray-600 mb-1">
-                                        Comentario para el pedido (Opcional)
+                                        Teléfono de contacto *
                                     </label>
-                                    <textarea
-                                        value={customNote}
-                                        onChange={e => setCustomNote(e.target.value)}
-                                        placeholder="Ej. Quitar pepino del rollo California, dejar el pedido en la puerta..."
-                                        rows={2}
-                                        style={{ resize: 'none' }}
+                                    <input
+                                        type="tel"
+                                        value={phone}
+                                        onChange={e => setPhone(e.target.value)}
+                                        placeholder={user?.phone || '+34 600 000 000'}
                                         className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                     />
                                 </div>
                             </div>
-                        )}
+
+                            {/* Checkboxes */}
+                            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-100">
+                                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                                    <input
+                                        type="checkbox"
+                                        className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                        checked={noCall}
+                                        onChange={e => setNoCall(e.target.checked)}
+                                    />
+                                    Sin llamada de confirmación de pedido
+                                </label>
+                                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                                    <input
+                                        type="checkbox"
+                                        className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                        checked={noBuzzer}
+                                        onChange={e => setNoBuzzer(e.target.checked)}
+                                    />
+                                    No llamar al timbre / El repartidor llama al móvil
+                                </label>
+                            </div>
+
+                            {/* Custom Note */}
+                            <div className="mt-4 pt-4 border-t border-gray-100">
+                                <label className="block text-sm font-semibold text-gray-600 mb-1">
+                                    Comentario para el pedido (Opcional)
+                                </label>
+                                <textarea
+                                    value={customNote}
+                                    onChange={e => setCustomNote(e.target.value)}
+                                    placeholder="Ej. Quitar pepino del rollo California, dejar el pedido en la puerta..."
+                                    rows={2}
+                                    style={{ resize: 'none' }}
+                                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Order Summary */}
@@ -771,27 +823,13 @@ export default function CartPageSimple() {
                                 </div>
                             )}
 
-                            {isAuthenticated ? (
-                                <button
-                                    onClick={handleOrder}
-                                    disabled={isOrdering || items.length === 0}
-                                    className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold border-none cursor-pointer w-full mb-4 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                >
-                                    {isOrdering ? 'Procesando...' : 'Realizar pedido →'}
-                                </button>
-                            ) : (
-                                <div className="mb-4">
-                                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm text-center mb-3">
-                                        🔐 Inicia sesión para realizar el pedido
-                                    </div>
-                                    <Link
-                                        to="/"
-                                        className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold no-underline flex items-center justify-center w-full hover:bg-red-700 transition"
-                                    >
-                                        Iniciar sesión
-                                    </Link>
-                                </div>
-                            )}
+                            <button
+                                onClick={handleOrder}
+                                disabled={isOrdering || items.length === 0}
+                                className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold border-none cursor-pointer w-full mb-4 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            >
+                                {isOrdering ? 'Procesando...' : 'Realizar pedido →'}
+                            </button>
 
                             <Link
                                 to="/menu"

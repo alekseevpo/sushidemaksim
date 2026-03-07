@@ -23,3 +23,21 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
         return res.status(401).json({ error: 'Token inválido o expirado' });
     }
 }
+export function optionalAuthMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const payload = jwt.verify(token, config.jwtSecret) as { userId: number };
+        req.userId = payload.userId;
+    } catch {
+        // Just ignore invalid tokens for optional auth
+    }
+
+    next();
+}

@@ -1,38 +1,62 @@
 import { Router, Response } from 'express';
 import { supabase } from '../db/supabase.js';
-import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { UAParser } from 'ua-parser-js';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 
 const router = Router();
-router.use(authMiddleware);
 
-// POST /api/orders — create order from current cart
+// POST /api/orders — create order from current cart (supports Guests and Users)
 router.post(
     '/',
+    optionalAuthMiddleware,
     validate({
         deliveryAddress: { type: 'string', required: true, maxLength: 300 },
         phoneNumber: { type: 'string', required: true, maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems } = req.body;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
         const osName = parser.getOS().name || 'Unknown';
         const browserName = parser.getBrowser().name || 'Unknown';
 
-        // 1. Get cart items with product details
-        const { data: cartItems, error: cartError } = await supabase
-            .from('cart_items')
-            .select('quantity, menu_item_id, menu_items(name, price, image)')
-            .eq('user_id', req.userId);
+        // 1. Get cart items
+        let cartItems: any[] = [];
 
-        if (cartError) throw cartError;
-        if (!cartItems || cartItems.length === 0) {
-            return res.status(400).json({ error: 'La cesta está vacía' });
+        if (req.userId) {
+            const { data: dbCartItems, error: cartError } = await supabase
+                .from('cart_items')
+                .select('quantity, menu_item_id, menu_items(name, price, image)')
+                .eq('user_id', req.userId);
+
+            if (cartError) throw cartError;
+            cartItems = dbCartItems || [];
+        } else if (guestItems && Array.isArray(guestItems) && guestItems.length > 0) {
+            const itemIds = guestItems.map((i: any) => i.menuItemId);
+            const { data: menuData, error: menuErr } = await supabase
+                .from('menu_items')
+                .select('id, name, price, image')
+                .in('id', itemIds);
+
+            if (menuErr) throw menuErr;
+
+            cartItems = guestItems.map((gi: any) => {
+                const menuItem = menuData?.find((m: any) => m.id === gi.menuItemId);
+                if (!menuItem) return null;
+                return {
+                    quantity: gi.quantity,
+                    menu_item_id: gi.menuItemId,
+                    menu_items: menuItem
+                };
+            }).filter((i: any) => i !== null);
+        }
+
+        if (cartItems.length === 0) {
+            return res.status(400).json({ error: 'La cesta está vacía o artículos no encontrados' });
         }
 
         // 2. Calculate total
@@ -46,13 +70,19 @@ router.post(
             if (promoCode === 'TEST10') {
                 finalTotal = finalTotal * 0.9; // 10% discount
             } else {
-                const { data: promo } = await supabase
+                const query = supabase
                     .from('promo_codes')
                     .select('*')
                     .eq('code', promoCode)
-                    .eq('is_used', false)
-                    .or(`user_id.is.null,user_id.eq.${req.userId}`)
-                    .maybeSingle();
+                    .eq('is_used', false);
+
+                if (req.userId) {
+                    query.or(`user_id.is.null,user_id.eq.${req.userId}`);
+                } else {
+                    query.is('user_id', null);
+                }
+
+                const { data: promo } = await query.maybeSingle();
 
                 if (promo) {
                     finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
@@ -65,7 +95,7 @@ router.post(
         const { data: order, error: orderError } = await supabase
             .from('orders')
             .insert({
-                user_id: req.userId,
+                user_id: req.userId || null,
                 total: Math.round(finalTotal * 100) / 100,
                 delivery_address: deliveryAddress?.trim() || '',
                 phone_number: phoneNumber?.trim() || '',
@@ -98,7 +128,9 @@ router.post(
         if (usedPromoId) {
             await supabase.from('promo_codes').update({ is_used: true }).eq('id', usedPromoId);
         }
-        await supabase.from('cart_items').delete().eq('user_id', req.userId);
+        if (req.userId) {
+            await supabase.from('cart_items').delete().eq('user_id', req.userId);
+        }
 
         // Return order with items
         const { data: fullOrder } = await supabase
@@ -107,27 +139,29 @@ router.post(
             .eq('id', order.id)
             .single();
 
-        // 6. Send Receipt Email
-        try {
-            const { data: userData } = await supabase
-                .from('users')
-                .select('email, name')
-                .eq('id', req.userId)
-                .single();
+        // 6. Send Receipt Email if user is authenticated
+        if (req.userId) {
+            try {
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('email, name')
+                    .eq('id', req.userId)
+                    .single();
 
-            if (userData && userData.email) {
-                await sendOrderReceiptEmail(userData.email, {
-                    orderId: order.id,
-                    customerName: userData.name || 'Cliente',
-                    items: orderItemsToInsert,
-                    total: finalTotal,
-                    deliveryAddress,
-                    phoneNumber,
-                    notes,
-                });
+                if (userData && userData.email) {
+                    await sendOrderReceiptEmail(userData.email, {
+                        orderId: order.id,
+                        customerName: userData.name || 'Cliente',
+                        items: orderItemsToInsert,
+                        total: finalTotal,
+                        deliveryAddress,
+                        phoneNumber,
+                        notes,
+                    });
+                }
+            } catch (emailErr) {
+                console.error('Failed to send receipt email:', emailErr);
             }
-        } catch (emailErr) {
-            console.error('Failed to send receipt email:', emailErr);
         }
 
         res.status(201).json({ order: { ...fullOrder, items: fullOrder.order_items } });
@@ -137,6 +171,7 @@ router.post(
 // GET /api/orders — order history with pagination
 router.get(
     '/',
+    authMiddleware,
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const page = Math.max(1, parseInt(req.query.page as string) || 1);
         const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 10));
@@ -177,6 +212,7 @@ router.get(
 // GET /api/orders/:id — single order
 router.get(
     '/:id',
+    authMiddleware,
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: order, error } = await supabase
             .from('orders')
@@ -196,6 +232,7 @@ router.get(
 // PATCH /api/orders/:id/cancel
 router.patch(
     '/:id/cancel',
+    authMiddleware,
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: order, error: fetchError } = await supabase
             .from('orders')

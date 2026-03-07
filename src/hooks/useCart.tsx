@@ -24,8 +24,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const loadCart = useCallback(async () => {
         if (!isAuthenticated) {
-            setItems([]);
-            setTotal(0);
+            const localCart = localStorage.getItem('guest_cart');
+            if (localCart) {
+                try {
+                    const parsed = JSON.parse(localCart);
+                    setItems(parsed);
+                    const localTotal = parsed.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+                    setTotal(localTotal);
+                } catch (e) {
+                    setItems([]);
+                    setTotal(0);
+                }
+            } else {
+                setItems([]);
+                setTotal(0);
+            }
             setIsLoading(false);
             return;
         }
@@ -61,24 +74,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [loadCart]);
 
     const addItem = async (item: SushiItem) => {
-        if (!isAuthenticated) {
-            alert('Debes iniciar sesión para añadir a la cesta');
-            return;
-        }
-
         // Haptic feedback
         if ('vibrate' in navigator) {
             navigator.vibrate(50);
         }
 
-        // Optimistic UI update
         const existing = items.find(i => i.id === item.id);
-        if (existing) {
-            setItems(items.map(i => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)));
-            setTotal(prev => prev + item.price);
-        } else {
-            setItems([...items, { ...item, quantity: 1 }]);
-            setTotal(prev => prev + item.price);
+        const newItems = existing
+            ? items.map(i => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i))
+            : [...items, { ...item, quantity: 1 }];
+
+        setItems(newItems);
+        setTotal(prev => prev + item.price);
+
+        if (!isAuthenticated) {
+            localStorage.setItem('guest_cart', JSON.stringify(newItems));
+            return;
         }
 
         try {
@@ -91,20 +102,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
 
     const removeItem = async (id: string) => {
-        // Optimistic UI
         const item = items.find(i => i.id === id);
-        if (item) {
-            setItems(items.filter(i => i.id !== id));
-            setTotal(prev => prev - item.price * item.quantity);
+        if (!item) return;
+
+        const newItems = items.filter(i => i.id !== id);
+        setItems(newItems);
+        setTotal(prev => prev - item.price * item.quantity);
+
+        if (!isAuthenticated) {
+            localStorage.setItem('guest_cart', JSON.stringify(newItems));
+            return;
         }
 
         try {
-            // Find the cart_item.id (we only have menu_item_id as id in frontend cart)
-            // The API expects the cart_item id, so we need to fetch the real cart first
-            // Actually, since we rewrite /cart to use menu_item_id would be easier,
-            // but let's just reload for removal to be safe, or we can adapt the endpoint.
-            // Wait, let's fix the API to delete by menu_item_id for simplicity or we use the cart_item.id.
-            // For now, let's just get the cart item id from the loaded items.
             const data = await api.get('/cart');
             const realCartItem = data.items.find((i: any) => i.menu_item_id.toString() === id);
 
@@ -118,12 +128,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
 
     const updateQuantity = async (id: string, quantity: number) => {
-        // Optimistic update
         const item = items.find(i => i.id === id);
-        if (item) {
-            const diff = quantity - item.quantity;
-            setItems(items.map(i => (i.id === id ? { ...i, quantity } : i)));
-            setTotal(prev => prev + item.price * diff);
+        if (!item) return;
+
+        const diff = quantity - item.quantity;
+        const newItems = items.map(i => (i.id === id ? { ...i, quantity } : i));
+
+        setItems(newItems);
+        setTotal(prev => prev + item.price * diff);
+
+        if (!isAuthenticated) {
+            localStorage.setItem('guest_cart', JSON.stringify(newItems));
+            return;
         }
 
         try {
@@ -142,6 +158,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const clearCart = async () => {
         setItems([]);
         setTotal(0);
+
+        if (!isAuthenticated) {
+            localStorage.removeItem('guest_cart');
+            return;
+        }
+
         try {
             await api.delete('/cart');
             await loadCart();
