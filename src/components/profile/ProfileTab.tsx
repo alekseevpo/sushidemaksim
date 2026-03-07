@@ -144,10 +144,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         <>
                             <button
                                 onClick={() => setIsEditing(false)}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
                             >
-                                <X size={16} /> <span className="hidden xs:inline">Cancelar</span>
-                                <span className="xs:hidden">X</span>
+                                <X size={16} /> <span className="hidden sm:inline">Cancelar</span>
                             </button>
                             <button
                                 onClick={saveProfile}
