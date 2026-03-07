@@ -335,11 +335,76 @@ router.post(
         }));
         await supabase.from('order_items').insert(itemsToInsert);
 
-        const frontendUrl = (req.headers.origin as string) || (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
+        const origin = (req.headers.origin as string) || (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
         res.status(201).json({
             orderId: order.id,
-            shareUrl: `${frontendUrl}/pay-for-friend/${order.id}`
+            shareUrl: `${origin}/api/orders/share/${order.id}`
         });
+    })
+);
+
+// GET /api/orders/share/:id — Social preview redirector (enhances Telegram/WhatsApp previews)
+router.get(
+    '/share/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const { data: order } = await supabase
+            .from('orders')
+            .select('notes, total')
+            .eq('id', id)
+            .single();
+
+        const host = req.get('host');
+        const protocol = req.protocol;
+        const fullOrigin = `${protocol}://${host}`;
+
+        // Extract sender name from notes [De parte de: Name]
+        const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
+        const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
+        const pandaImg = `${fullOrigin}/hungry-panda.png`;
+        const finalDest = `${fullOrigin}/pay-for-friend/${id}`;
+
+        const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>¡Invita a ${senderName}! 🎁 — Sushi de Maksim</title>
+    <meta name="description" content="¡Te han enviado un pedido sorpresa! Ayuda a ${senderName} a disfrutar del mejor sushi de Madrid. 🍱✨">
+    
+    <!-- WhatsApp / Telegram / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="¡Invita a ${senderName}! 🎁">
+    <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
+    <meta property="og:image" content="${pandaImg}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="1200">
+    <meta property="og:url" content="${finalDest}">
+    <meta property="og:site_name" content="Sushi de Maksim">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="${pandaImg}">
+    <meta name="twitter:title" content="¡Invita a ${senderName}! 🎁">
+    
+    <!-- Redirection -->
+    <meta http-equiv="refresh" content="0; url=${finalDest}">
+    <script>window.location.href = "${finalDest}";</script>
+    <style>
+        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fdfbf7; color: #666; }
+        .loader { text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <h1 style="font-size: 40px; margin-bottom: 10px;">🍣</h1>
+        <p>Redirigiendo a la sorpresa...</p>
+    </div>
+</body>
+</html>`;
+
+        res.set('Content-Type', 'text/html');
+        res.send(html);
     })
 );
 
