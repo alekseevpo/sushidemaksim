@@ -262,7 +262,7 @@ export default function PayForFriendPage() {
                         <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter">¡Eres Genial! 🌟</h2>
                         <p className="text-xl text-gray-500 max-w-sm mx-auto mb-10 leading-relaxed">
                             Has pagado el pedido de <span className="text-gray-900 font-bold">{senderName}</span>.
-                            Seguro что le has alegrado el día.
+                            Seguro que le has alegrado el día.
                         </p>
 
                         <div className="flex flex-col gap-4 w-full max-w-xs">
