@@ -496,10 +496,24 @@ router.get(
 
         // 5. Top Items (using order_items from last 30 days)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-        const { data: topItemsRaw } = await supabase
-            .from('order_items')
-            .select('name, quantity, price_at_time')
-            .gte('created_at', thirtyDaysAgo);
+
+        // 5a. First find orders in that range
+        const { data: recentOrderIds } = await supabase
+            .from('orders')
+            .select('id')
+            .gte('created_at', thirtyDaysAgo)
+            .neq('status', 'cancelled');
+
+        const ids = recentOrderIds?.map(o => o.id) || [];
+
+        let topItemsRaw: any[] | null = [];
+        if (ids.length > 0) {
+            const { data } = await supabase
+                .from('order_items')
+                .select('name, quantity, price_at_time')
+                .in('order_id', ids);
+            topItemsRaw = data;
+        }
 
         const itemMap: Record<string, { name: string; sold: number; revenue: number }> = {};
         topItemsRaw?.forEach(item => {
