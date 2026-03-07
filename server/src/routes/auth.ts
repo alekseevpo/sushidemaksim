@@ -129,7 +129,7 @@ router.get(
 
         const { data: addresses, error: addrError } = await supabase
             .from('user_addresses')
-            .select('id, label, street, city, postal_code, phone, is_default')
+            .select('id, label, street, house, apartment, city, postal_code, phone, is_default')
             .eq('user_id', req.userId)
             .order('is_default', { ascending: false });
 
