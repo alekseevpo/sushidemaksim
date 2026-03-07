@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Save, Plus, Trash2 } from 'lucide-react';
+import { Save, Plus, Trash2, CheckCircle2, AlertTriangle, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../../utils/api';
 
 export default function AdminSettings() {
@@ -20,6 +21,7 @@ export default function AdminSettings() {
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [saveStatus, setSaveStatus] = useState<null | 'success' | 'error'>(null);
 
     useEffect(() => {
         loadSettings();
@@ -58,10 +60,12 @@ export default function AdminSettings() {
         setSaving(true);
         try {
             await api.put('/admin/settings', settings);
-            alert('Ajustes guardados con éxito');
+            setSaveStatus('success');
+            setTimeout(() => setSaveStatus(null), 4000);
         } catch (err) {
             console.error(err);
-            alert('Error al guardar ajustes');
+            setSaveStatus('error');
+            setTimeout(() => setSaveStatus(null), 4000);
         } finally {
             setSaving(false);
         }
@@ -363,6 +367,47 @@ export default function AdminSettings() {
                     className="w-full h-48 border rounded-lg px-3 py-2 text-sm font-mono outline-none focus:border-red-500 bg-gray-50"
                 />
             </div>
+
+            {/* Notification Toast */}
+            <AnimatePresence>
+                {saveStatus && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                        className="fixed bottom-8 right-8 z-50"
+                    >
+                        <div
+                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${saveStatus === 'success'
+                                ? 'bg-green-600 border-green-500 text-white'
+                                : 'bg-red-600 border-red-500 text-white'
+                                }`}
+                        >
+                            {saveStatus === 'success' ? (
+                                <CheckCircle2 size={24} className="animate-bounce" />
+                            ) : (
+                                <AlertTriangle size={24} />
+                            )}
+                            <div>
+                                <p className="font-bold text-sm">
+                                    {saveStatus === 'success' ? '¡Cambios guardados!' : 'Error'}
+                                </p>
+                                <p className="text-xs opacity-90">
+                                    {saveStatus === 'success'
+                                        ? 'La configuración se actualizó correctamente.'
+                                        : 'Hubo un problema al guardar los cambios.'}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setSaveStatus(null)}
+                                className="ml-4 p-1 hover:bg-white/10 rounded-lg transition"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </form>
     );
 }
