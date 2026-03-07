@@ -589,33 +589,43 @@ export default function CartPageSimple() {
                                 <MapPin size={18} className="text-red-600" /> Datos de entrega
                             </h2>
 
-                            {/* Default address pill */}
-                            {defaultAddr && defaultAddr.street && (
-                                <button
-                                    onClick={() => {
-                                        let s = defaultAddr.street || '';
-                                        let h = defaultAddr.house || '';
-                                        let a = defaultAddr.apartment || '';
+                            {/* User addresses pills */}
+                            {user?.addresses && user.addresses.length > 0 && (
+                                <div className="flex flex-col gap-2 mb-4">
+                                    {user.addresses.map((addr) => (
+                                        <button
+                                            key={addr.id}
+                                            onClick={() => {
+                                                let s = addr.street || '';
+                                                let h = addr.house || '';
+                                                let a = addr.apartment || '';
 
-                                        if (s.includes(',') && !h && !a) {
-                                            const pts = s.split(',').map(p => p.trim());
-                                            if (pts.length >= 2) {
-                                                s = pts[0];
-                                                h = pts[1];
-                                                if (pts.length >= 3) a = pts.slice(2).join(', ');
-                                            }
-                                        }
+                                                if (s.includes(',') && !h && !a) {
+                                                    const pts = s.split(',').map(p => p.trim());
+                                                    if (pts.length >= 2) {
+                                                        s = pts[0];
+                                                        h = pts[1];
+                                                        if (pts.length >= 3) a = pts.slice(2).join(', ');
+                                                    }
+                                                }
 
-                                        setAddress(s);
-                                        setHouse(h);
-                                        setApartment(a);
-                                        setPhone(prev => prev || defaultAddr.phone || '');
-                                    }}
-                                    type="button"
-                                    className="mb-4 flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-full px-4 py-2 cursor-pointer hover:bg-red-100 transition font-medium text-left"
-                                >
-                                    <MapPin size={14} /> Usar "{defaultAddr.label || 'Mi dirección'}": {defaultAddr.street}
-                                </button>
+                                                setAddress(s);
+                                                setHouse(h);
+                                                setApartment(a);
+                                                setPhone(prev => prev || addr.phone || '');
+                                            }}
+                                            type="button"
+                                            className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-4 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
+                                        >
+                                            <MapPin size={16} className="shrink-0" />
+                                            <span className="truncate">
+                                                Usar "{addr.label || 'Mi dirección'}": {addr.street}
+                                                {addr.house && `, Portal/Casa ${addr.house}`}
+                                                {addr.apartment && `, Piso/Puerta ${addr.apartment}`}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
                             )}
 
                             <div className="flex flex-col gap-3">
