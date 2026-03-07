@@ -245,15 +245,14 @@ export default function MenuPageSimple() {
                 </div>
 
                 {/* Category Filter - Sticky and Scrollable on Mobile */}
-                <div className="sticky top-20 z-20 -mx-4 px-4 py-3 md:py-4 bg-gray-50/80 backdrop-blur-md mb-6 md:mb-8">
+                <div className="sticky top-20 z-20 -mx-2 md:-mx-4 px-2 md:px-4 py-3 md:py-4 bg-gray-50/80 backdrop-blur-md mb-6 md:mb-8">
                     <div className="flex overflow-x-auto no-scrollbar gap-2 md:gap-2 max-w-7xl mx-auto flex-nowrap sm:flex-wrap sm:justify-center">
                         <button
                             onClick={() => setSelectedCategory('all')}
-                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
-                                selectedCategory === 'all'
+                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === 'all'
                                     ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
                                     : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                            }`}
+                                }`}
                         >
                             Todos
                         </button>
@@ -261,11 +260,10 @@ export default function MenuPageSimple() {
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
-                                    selectedCategory === cat.id
+                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === cat.id
                                         ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
                                         : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                                }`}
+                                    }`}
                             >
                                 <span className="text-sm md:text-base">{cat.icon}</span>
                                 {cat.name}
@@ -397,11 +395,10 @@ export default function MenuPageSimple() {
                                         </div>
                                         <button
                                             onClick={e => handleAddToCart(item, e)}
-                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${
-                                                addedItems.has(item.id)
+                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${addedItems.has(item.id)
                                                     ? 'bg-green-600 text-white'
                                                     : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
-                                            }`}
+                                                }`}
                                         >
                                             {addedItems.has(item.id) ? (
                                                 <span className="font-black">✓</span>

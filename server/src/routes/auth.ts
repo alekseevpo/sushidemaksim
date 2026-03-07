@@ -59,6 +59,8 @@ router.post(
             role: newUser.role,
             is_superadmin: newUser.is_superadmin,
             createdAt: newUser.created_at,
+            birthDate: newUser.birth_date,
+            birthDateVerified: newUser.birth_date_verified,
         };
 
         res.status(201).json({ token, user });
@@ -95,8 +97,16 @@ router.post(
         });
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password_hash, created_at, ...userRest } = user;
-        res.json({ token, user: { ...userRest, createdAt: created_at } });
+        const { password_hash, created_at, birth_date, birth_date_verified, ...userRest } = user;
+        res.json({
+            token,
+            user: {
+                ...userRest,
+                createdAt: created_at,
+                birthDate: birth_date,
+                birthDateVerified: birth_date_verified
+            }
+        });
     })
 );
 
@@ -107,7 +117,9 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: user, error } = await supabase
             .from('users')
-            .select('id, name, email, phone, avatar, role, is_superadmin, created_at')
+            .select(
+                'id, name, email, phone, avatar, role, is_superadmin, created_at, birth_date, birth_date_verified'
+            )
             .eq('id', req.userId)
             .single();
 
@@ -126,6 +138,8 @@ router.get(
         const formattedUser = {
             ...user,
             createdAt: user.created_at,
+            birthDate: user.birth_date,
+            birthDateVerified: user.birth_date_verified,
             addresses: addresses?.map(a => ({
                 ...a,
                 postalCode: a.postal_code,

@@ -64,9 +64,15 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
         setEditPhone(user.phone);
         setEditEmail(user.email);
         setEditAvatar(user.avatar || '');
-        // Format birthDate to YYYY-MM-DD for the HTML date input
-        const bDate = user.birthDate ? new Date(user.birthDate).toISOString().split('T')[0] : '';
-        setEditBirthDate(bDate);
+
+        // Format birthDate to YYYY-MM-DD safely for input type="date"
+        if (user.birthDate) {
+            // If it's already YYYY-MM-DD (standard DATE from Postgres), use it directly
+            const dateStr = user.birthDate.split('T')[0];
+            setEditBirthDate(dateStr);
+        } else {
+            setEditBirthDate('');
+        }
         setIsEditing(true);
     };
 
@@ -183,9 +189,10 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                     },
                     {
                         label: 'Fecha de Cumpleaños',
-                        value: user.birthDate
-                            ? new Date(user.birthDate).toLocaleDateString('es-ES')
-                            : 'No añadida',
+                        value: user.birthDate ? (() => {
+                            const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                            return `${d}/${m}/${y}`;
+                        })() : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
                         icon: Calendar,
@@ -194,7 +201,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                 ].map(field => (
                     <div
                         key={field.label}
-                        className="group p-4 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300"
+                        className="group p-4 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 flex flex-col min-h-[110px]"
                     >
                         <label className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 group-hover:text-red-500 transition-colors">
                             <field.icon size={12} />
@@ -202,28 +209,28 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         </label>
 
                         {isEditing ? (
-                            <div className="relative">
+                            <div className="flex flex-col gap-1 flex-1">
                                 <input
                                     type={field.type}
                                     value={field.editedValue}
                                     onChange={e => field.setter(e.target.value)}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 outline-none transition-all shadow-sm"
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 outline-none transition-all shadow-sm h-[46px]"
                                     placeholder={`Introduce tu ${field.label.toLowerCase()}`}
                                 />
                                 {field.label.includes('Cumpleaños') && (
-                                    <p className="text-[10px] text-gray-500 mt-2 font-medium">
+                                    <p className="text-[10px] text-gray-500 mt-1 font-medium animate-in fade-in slide-in-from-top-1">
                                         🎁 ¡Te enviaremos un regalo especial en tu día!
                                     </p>
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between min-h-[46px]">
                                 <p className="text-sm font-black text-gray-900 m-0">
                                     {field.value}
                                 </p>
                                 {field.label === 'Fecha de Cumpleaños' && user.birthDate && (
                                     <div
-                                        className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.birthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}
+                                        className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.birthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} border-none`}
                                     >
                                         {user.birthDateVerified ? 'Verificado' : 'Pendiente'}
                                     </div>
@@ -333,7 +340,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => {},
+                                    toggle: () => { },
                                 },
                             ].map(f => (
                                 <div key={f.label}>

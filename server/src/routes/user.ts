@@ -60,6 +60,7 @@ router.put(
         email: { type: 'string', match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
         phone: { type: 'string', maxLength: 30 },
         avatar: { type: 'string' },
+        birthDate: { type: 'string' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { name, email, phone, avatar, birthDate } = req.body;
