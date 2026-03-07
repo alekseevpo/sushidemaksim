@@ -22,6 +22,8 @@ interface MenuItem {
     spicy?: boolean;
     vegetarian?: boolean;
     is_promo?: boolean;
+    is_popular?: boolean;
+    allergens?: string[];
 }
 
 export default function AdminMenu() {
@@ -74,6 +76,8 @@ export default function AdminMenu() {
             spicy: false,
             vegetarian: false,
             is_promo: false,
+            is_popular: false,
+            allergens: [],
         });
         setError('');
         setIsModalOpen(true);
@@ -254,6 +258,16 @@ export default function AdminMenu() {
                                                 {item.is_promo && (
                                                     <span className="text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-1 rounded-full">
                                                         Promo
+                                                    </span>
+                                                )}
+                                                {item.is_popular && (
+                                                    <span className="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-1 rounded-full">
+                                                        Top
+                                                    </span>
+                                                )}
+                                                {item.allergens && item.allergens.length > 0 && (
+                                                    <span className="text-[10px] bg-gray-100 text-gray-700 font-bold px-2 py-1 rounded-full">
+                                                        {item.allergens.length} Alérg.
                                                     </span>
                                                 )}
                                             </div>
@@ -534,6 +548,47 @@ export default function AdminMenu() {
                                             🏷️ Promoción
                                         </span>
                                     </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.is_popular}
+                                            onChange={e =>
+                                                setFormData({
+                                                    ...formData,
+                                                    is_popular: e.target.checked,
+                                                })
+                                            }
+                                            className="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">
+                                            🔥 Popular (Top)
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-gray-700">Alérgenos</label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {['gluten', 'lactose', 'fish', 'soy', 'nuts'].map(allergen => (
+                                            <label key={allergen} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.allergens?.includes(allergen)}
+                                                    onChange={e => {
+                                                        const current = formData.allergens || [];
+                                                        const updated = e.target.checked
+                                                            ? [...current, allergen]
+                                                            : current.filter(a => a !== allergen);
+                                                        setFormData({ ...formData, allergens: updated });
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                                />
+                                                <span className="text-xs font-medium text-gray-600 capitalize">
+                                                    {allergen}
+                                                </span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             </form>
                         </div>

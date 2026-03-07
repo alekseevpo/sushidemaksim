@@ -29,6 +29,7 @@ export default function CartPageSimple() {
     const navigate = useNavigate();
 
     const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
+    const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const { addItem } = useCart();
 
@@ -60,27 +61,46 @@ export default function CartPageSimple() {
 
     useEffect(() => {
         loadSuggestions();
+        loadPopularItems();
     }, []);
 
     const loadSuggestions = async () => {
         setIsLoadingSuggestions(true);
         try {
-            // Fetch potential snacks, drinks, desserts
             const [extras, beverages, desserts] = await Promise.all([
                 api.get('/menu?category=extras'),
-                api.get('/menu?category=entrantes'), // Using starters as well
+                api.get('/menu?category=entrantes'),
                 api.get('/menu?category=postre'),
             ]);
 
             const all = [...(extras.items || []), ...(beverages.items || []), ...(desserts.items || [])];
-            // Filter out items already in cart
-            const filtered = all.filter(item => !items.find(cartItem => cartItem.id === item.id)).slice(0, 8);
+            const filtered = all.filter(item => !items.find(cartItem => cartItem.id === String(item.id))).slice(0, 8);
             setSuggestions(filtered);
         } catch (err) {
             console.error('Failed to load suggestions', err);
         } finally {
             setIsLoadingSuggestions(false);
         }
+    };
+
+    const loadPopularItems = async () => {
+        try {
+            const data = await api.get('/menu?limit=3');
+            setPopularItems(data.items || []);
+        } catch (err) {
+            console.error('Failed to load popular items', err);
+        }
+    };
+
+    const handleAddToCart = (item: MenuItem) => {
+        addItem({
+            id: String(item.id),
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            image: item.image,
+            category: item.category as any,
+        });
     };
 
     const handleOrder = async () => {
@@ -198,8 +218,41 @@ export default function CartPageSimple() {
                         className="bg-red-600 text-white px-6 py-3 rounded-lg no-underline font-bold inline-flex items-center gap-2 hover:bg-red-700 transition"
                     >
                         <ArrowLeft size={20} />
-                        Ir al menú
+                        Volver al menú
                     </Link>
+
+                    {popularItems.length > 0 && (
+                        <div className="mt-20">
+                            <h2 className="text-2xl font-black mb-8">Nuestros favoritos hoy 🔥</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+                                {popularItems.map(item => (
+                                    <div key={item.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col group">
+                                        <div className="h-32 bg-gray-100 rounded-2xl mb-4 overflow-hidden relative">
+                                            <img
+                                                src={item.image || '/placeholder-sushi.png'}
+                                                alt={item.name}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            />
+                                            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md text-[10px] font-black px-2 py-1 rounded-lg">
+                                                ★ TOP
+                                            </div>
+                                        </div>
+                                        <h3 className="font-bold text-gray-900 mb-1">{item.name}</h3>
+                                        <p className="text-gray-500 text-xs mb-4 flex-1 line-clamp-2">{item.description}</p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-bold text-red-600">{item.price.toFixed(2)} €</span>
+                                            <button
+                                                onClick={() => handleAddToCart(item)}
+                                                className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center border-none cursor-pointer hover:bg-red-700 active:scale-90 transition-all"
+                                            >
+                                                <Plus size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );

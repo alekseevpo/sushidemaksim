@@ -18,6 +18,8 @@ interface MenuItem {
     spicy?: boolean;
     vegetarian?: boolean;
     is_promo?: boolean;
+    is_popular?: boolean;
+    allergens?: string[];
 }
 
 interface FlyingItem {
@@ -331,17 +333,24 @@ export default function MenuPageSimple() {
                                             setFailedImages(prev => new Set(prev).add(item.id))
                                         }
                                     />
-                                    <div className="absolute top-2 left-2 flex gap-1">
-                                        {item.spicy && (
-                                            <span className="bg-red-100 text-red-800 rounded-full px-2 py-1 text-xs font-semibold">
-                                                🌶️ Picante
+                                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                                        {item.is_popular && (
+                                            <span className="bg-amber-500 text-white rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg">
+                                                🔥 Top Ventas
                                             </span>
                                         )}
-                                        {item.is_promo && (
-                                            <span className="bg-green-100 text-green-800 rounded-full px-2 py-1 text-xs font-bold">
-                                                🏷️ Promo
-                                            </span>
-                                        )}
+                                        <div className="flex gap-1">
+                                            {item.spicy && (
+                                                <span className="bg-red-100 text-red-800 rounded-full px-2 py-1 text-xs font-semibold">
+                                                    🌶️ Picante
+                                                </span>
+                                            )}
+                                            {item.is_promo && (
+                                                <span className="bg-green-100 text-green-800 rounded-full px-2 py-1 text-xs font-bold">
+                                                    🏷️ Promo
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -360,10 +369,34 @@ export default function MenuPageSimple() {
                                         {item.description}
                                     </p>
                                     {item.pieces && (
-                                        <div className="text-sm text-gray-400 mb-3 font-medium">
+                                        <div className="text-sm text-gray-400 mb-2 font-medium">
                                             {item.pieces} uds
                                         </div>
                                     )}
+
+                                    {/* Allergens Icons */}
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {item.vegetarian && (
+                                            <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-emerald-100 flex items-center gap-1">
+                                                🥬 Veg
+                                            </span>
+                                        )}
+                                        {item.allergens?.includes('gluten') && (
+                                            <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-amber-100 flex items-center gap-1" title="Contiene gluten">
+                                                🌾 Gluten
+                                            </span>
+                                        )}
+                                        {item.allergens?.includes('lactose') && (
+                                            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-blue-100 flex items-center gap-1" title="Contiene lácteos">
+                                                🥛 Lácteo
+                                            </span>
+                                        )}
+                                        {item.allergens?.includes('fish') && (
+                                            <span className="bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-cyan-100 flex items-center gap-1" title="Contiene pescado">
+                                                🐟 Pescado
+                                            </span>
+                                        )}
+                                    </div>
                                     <div className="flex items-center justify-between mt-auto">
                                         <span className="text-[22px] font-bold text-red-600">
                                             {item.price.toFixed(2).replace('.', ',')} €

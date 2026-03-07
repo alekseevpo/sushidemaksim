@@ -18,6 +18,8 @@ export interface SushiItem {
     spicy?: boolean;
     vegetarian?: boolean;
     isPromo?: boolean;
+    allergens?: string[];
+    isPopular?: boolean;
 }
 
 export interface CartItem extends SushiItem {

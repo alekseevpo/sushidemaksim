@@ -114,6 +114,8 @@ router.post(
             spicy,
             vegetarian,
             is_promo,
+            is_popular,
+            allergens,
         } = req.body;
 
         const { data: item, error } = await supabase
@@ -129,6 +131,8 @@ router.post(
                 spicy: !!spicy,
                 vegetarian: !!vegetarian,
                 is_promo: !!is_promo,
+                is_popular: !!is_popular,
+                allergens: allergens || [],
             })
             .select()
             .single();
@@ -178,6 +182,8 @@ router.put(
             spicy,
             vegetarian,
             is_promo,
+            is_popular,
+            allergens,
         } = req.body;
 
         const updateData: any = {};
@@ -193,6 +199,8 @@ router.put(
         if (spicy !== undefined) updateData.spicy = Boolean(spicy);
         if (vegetarian !== undefined) updateData.vegetarian = Boolean(vegetarian);
         if (is_promo !== undefined) updateData.is_promo = Boolean(is_promo);
+        if (is_popular !== undefined) updateData.is_popular = Boolean(is_popular);
+        if (allergens !== undefined) updateData.allergens = allergens;
 
         const { data: item, error } = await supabase
             .from('menu_items')

@@ -11,5 +11,8 @@ export function formatMenuItem(item: any) {
         vegetarian: !!item.vegetarian,
         is_promo: !!item.is_promo,
         isPromo: !!item.is_promo,
+        is_popular: !!item.is_popular,
+        isPopular: !!item.is_popular,
+        allergens: Array.isArray(item.allergens) ? item.allergens : [],
     };
 }
