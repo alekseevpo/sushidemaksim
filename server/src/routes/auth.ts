@@ -50,6 +50,17 @@ router.post(
             expiresIn: config.jwtExpiresIn,
         });
 
+        // Send welcome email (asynchronously, don't block response)
+        try {
+            const { sendWelcomeEmail } = await import('../utils/email.js');
+            sendWelcomeEmail(newUser.email, newUser.name).catch(e =>
+                console.error('Failed to send welcome email:', e)
+            );
+            console.log(`📧 Welcome email triggered for ${newUser.email}`);
+        } catch (e) {
+            console.error('Could not import email utility:', e);
+        }
+
         const user = {
             id: newUser.id,
             name: newUser.name,

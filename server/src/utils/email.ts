@@ -2,26 +2,26 @@ import nodemailer from 'nodemailer';
 import { config } from '../config.js';
 
 const transporter = nodemailer.createTransport({
-    host: config.smtp.host,
-    port: config.smtp.port,
-    secure: false, // STARTTLS on port 587
-    auth: {
-        user: config.smtp.user,
-        pass: config.smtp.pass,
-    },
+  host: config.smtp.host,
+  port: config.smtp.port,
+  secure: false, // STARTTLS on port 587
+  auth: {
+    user: config.smtp.user,
+    pass: config.smtp.pass,
+  },
 });
 
 /**
  * Send a password-reset email with a 6-digit code.
  */
 export async function sendResetCodeEmail(to: string, code: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: 'Código de recuperación — Sushi de Maksim',
-        html: `
+  await transporter.sendMail({
+    from,
+    to,
+    subject: 'Código de recuperación — Sushi de Maksim',
+    html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -51,20 +51,20 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
   </div>
 </body>
 </html>`,
-    });
+  });
 }
 
 /**
  * Send a birthday gift email with a 10% discount code.
  */
 export async function sendBirthdayGiftEmail(to: string, name: string, code: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
-        html: `
+  await transporter.sendMail({
+    from,
+    to,
+    subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
+    html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -102,18 +102,18 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
   </div>
 </body>
 </html>`,
-    });
+  });
 }
 
 /**
  * Send an order receipt email.
  */
 export async function sendOrderReceiptEmail(to: string, orderData: any): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-    const itemsHtml = orderData.items
-        .map(
-            (item: any) => `
+  const itemsHtml = orderData.items
+    .map(
+      (item: any) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
       <td style="padding: 12px 0; color: #374151; font-size: 15px;">${item.quantity}x ${item.name}</td>
       <td style="padding: 12px 0; text-align: right; color: #374151; font-size: 15px; font-weight: bold;">
@@ -121,10 +121,10 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       </td>
     </tr>
   `
-        )
-        .join('');
+    )
+    .join('');
 
-    const html = `
+  const html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -178,10 +178,48 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
 </html>
   `;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
-        html,
-    });
+  await transporter.sendMail({
+    from,
+    to,
+    subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
+    html,
+  });
+}
+
+/**
+ * Send a welcome email to a new user.
+ */
+export async function sendWelcomeEmail(to: string, name: string): Promise<void> {
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+
+  await transporter.sendMail({
+    from,
+    to,
+    subject: '¡Bienvenido a Sushi de Maksim! 🍣',
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
+  <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:32px;text-align:center;">
+      <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+    </div>
+    <div style="padding:32px;text-align:center;">
+      <h2 style="color:#111827;margin:0 0 16px;font-size:20px;">¡Hola ${name}!</h2>
+      <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 24px;">
+        Gracias por registrarte en **Sushi de Maksim**. Estamos encantados de tenerte con nosotros. 🤍
+      </p>
+      <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 32px;">
+        Prepárate para disfrutar del mejor sushi artesanal directamente en tu mesa. ¡Explora nuestro menú y haz tu primer pedido hoy mismo!
+      </p>
+      <a href="https://sushidemaksim.vercel.app/menu" style="display:inline-block;background:#DC2626;color:#fff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.2);">VER EL MENÚ</a>
+    </div>
+    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+    </div>
+  </div>
+</body>
+</html>`,
+  });
 }
