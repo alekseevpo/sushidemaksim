@@ -51,7 +51,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
         setEditPhone(user.phone);
         setEditEmail(user.email);
         setEditAvatar(user.avatar || '');
-        setEditBirthDate(user.birthDate || '');
+        // Format birthDate to YYYY-MM-DD for the HTML date input
+        const bDate = user.birthDate ? new Date(user.birthDate).toISOString().split('T')[0] : '';
+        setEditBirthDate(bDate);
         setIsEditing(true);
     };
 

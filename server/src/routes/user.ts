@@ -80,7 +80,7 @@ router.put(
         if (email) updateData.email = email.toLowerCase().trim();
         if (phone !== undefined) updateData.phone = phone?.trim() || '';
         if (avatar !== undefined) updateData.avatar = avatar?.trim() || '';
-        if (birthDate !== undefined) updateData.birth_date = birthDate; // Add birthday update
+        if (birthDate !== undefined) updateData.birth_date = birthDate || null;
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({ error: 'No hay datos para actualizar' });

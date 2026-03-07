@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { supabase } from '../db/supabase.js';
 import { getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
+import { sendBirthdayGiftEmail } from '../utils/email.js';
 
 const router = Router();
 
@@ -105,7 +106,12 @@ router.post('/check-birthdays', async (req, res) => {
                         type,
                     });
 
-                    console.log(`📧 CRON (Birthday): Send email to ${user.email} -> Feliz Cumpleaños! Tu código es ${code} (Por favor, muestra tu ID al repartidor).`);
+                    try {
+                        await sendBirthdayGiftEmail(user.email, user.name, code);
+                        console.log(`📧 CRON (Birthday): Send email to ${user.email} -> Feliz Cumpleaños! Tu código es ${code}.`);
+                    } catch (emailErr) {
+                        console.error(`❌ CRON (Birthday): Failed to send email to ${user.email}:`, emailErr);
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@ interface AuthContextType {
     ) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
     updateProfile: (
-        data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>
+        data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
     ) => Promise<void>;
     addAddress: (address: Omit<UserAddress, 'id'>) => Promise<void>;
     editAddress: (id: string, address: Partial<Omit<UserAddress, 'id'>>) => Promise<void>;
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const updateProfile = async (
-        data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar'>>
+        data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
     ) => {
         try {
             await api.put('/user/profile', data);
