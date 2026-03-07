@@ -38,8 +38,10 @@ export default function AdminPromos() {
         try {
             if (isEditing) {
                 await api.put(`/admin/promos/${isEditing.id}`, form);
+                alert('Promoción actualizada con éxito');
             } else {
                 await api.post('/admin/promos', form);
+                alert('Promoción creada con éxito');
             }
             setIsEditing(null);
             setForm({
@@ -53,23 +55,27 @@ export default function AdminPromos() {
                 is_active: true,
             });
             loadPromos();
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
+            alert('Error al guardar: ' + (err.message || 'Error desconocido'));
         }
     };
 
     const handleEdit = (promo: any) => {
         setIsEditing(promo);
         setForm(promo);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleDelete = async (id: string) => {
         if (!confirm('¿Seguro que quieres eliminar esta promoción?')) return;
         try {
             await api.delete(`/admin/promos/${id}`);
+            alert('Promoción eliminada');
             loadPromos();
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
+            alert('Error al eliminar');
         }
     };
 

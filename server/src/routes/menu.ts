@@ -9,12 +9,16 @@ const router = Router();
 router.get(
     '/',
     asyncHandler(async (req: Request, res: Response) => {
-        const { category, search } = req.query;
+        const { category, search, is_promo } = req.query;
 
         let query = supabase.from('menu_items').select('*');
 
         if (category) {
             query = query.eq('category', category);
+        }
+
+        if (is_promo === 'true') {
+            query = query.eq('is_promo', true);
         }
 
         if (search && typeof search === 'string' && search.trim().length > 0) {

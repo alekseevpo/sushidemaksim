@@ -161,11 +161,10 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
-                                    isActive
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
                                         ? 'bg-red-50 text-red-700'
                                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon
@@ -437,7 +436,7 @@ export default function AdminPage() {
                                 {loading ? (
                                     <div className="h-32 bg-gray-50 rounded animate-pulse"></div>
                                 ) : !stats?.analytics ||
-                                  Object.keys(stats.analytics.devices).length === 0 ? (
+                                    Object.keys(stats.analytics.devices).length === 0 ? (
                                     <div className="text-center py-10 text-gray-400 text-sm">
                                         No hay suficientes datos registrados
                                     </div>
@@ -605,21 +604,6 @@ export default function AdminPage() {
 
                     {activeTab === 'orders' && <AdminOrders />}
 
-                    {/* Placeholders for other tabs for now */}
-                    {activeTab !== 'dashboard' &&
-                        activeTab !== 'menu' &&
-                        activeTab !== 'users' &&
-                        activeTab !== 'orders' && (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <h2 className="text-xl font-bold text-gray-900 mb-2">
-                                    Módulo en Desarrollo
-                                </h2>
-                                <p className="text-gray-500 max-w-md mx-auto">
-                                    Estará disponible en la próxima actualización. Actualmente
-                                    cuentas con los endpoints en la API para completarlo.
-                                </p>
-                            </div>
-                        )}
                 </div>
             </main>
         </div>

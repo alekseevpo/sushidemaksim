@@ -425,6 +425,11 @@ export default function MenuPageSimple() {
                                                 🆕 Nuevo
                                             </span>
                                         )}
+                                        {item.is_promo && (
+                                            <span className="bg-red-600 text-white rounded-r-lg pl-1.5 pr-2 py-0.5 text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
+                                                🏷️ Oferta
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="absolute bottom-1.5 right-1.5 flex gap-1">
                                         {item.spicy && (

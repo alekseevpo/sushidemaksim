@@ -23,16 +23,33 @@ export default function PromoPageSimple() {
     const { addItem } = useCart();
 
     useEffect(() => {
-        Promise.all([api.get('/menu?category=menus&limit=20'), api.get('/promos')])
-            .then(([menuData, promosData]) => {
-                setPromoItems(menuData.items ?? []);
-                setStaticPromos(promosData.promos ?? []);
-            })
-            .catch(() => {
-                setPromoItems([]);
-                setStaticPromos([]);
-            })
-            .finally(() => setIsLoading(false));
+        const loadPageData = async () => {
+            setIsLoading(true);
+            try {
+                const [menuRes, promosRes] = await Promise.allSettled([
+                    api.get('/menu?is_promo=true'),
+                    api.get('/promos')
+                ]);
+
+                if (menuRes.status === 'fulfilled') {
+                    setPromoItems(menuRes.value.items ?? []);
+                } else {
+                    console.error('Failed to load promotional menu items:', menuRes.reason);
+                }
+
+                if (promosRes.status === 'fulfilled') {
+                    setStaticPromos(promosRes.value.promos ?? []);
+                } else {
+                    console.error('Failed to load static promotions:', promosRes.reason);
+                }
+            } catch (err) {
+                console.error('Critical error loading promos page:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadPageData();
     }, []);
 
     const handleAdd = (item: PromoItem) => {
@@ -235,11 +252,10 @@ export default function PromoPageSimple() {
                                             </span>
                                             <button
                                                 onClick={() => handleAdd(item)}
-                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${
-                                                    addedItems.has(item.id)
-                                                        ? 'bg-green-500 text-white shadow-lg'
-                                                        : 'bg-red-600 text-white hover:bg-red-700 shadow-xl'
-                                                }`}
+                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${addedItems.has(item.id)
+                                                    ? 'bg-green-500 text-white shadow-lg'
+                                                    : 'bg-red-600 text-white hover:bg-red-700 shadow-xl'
+                                                    }`}
                                             >
                                                 {addedItems.has(item.id) ? (
                                                     '✓'
