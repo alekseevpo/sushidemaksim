@@ -51,9 +51,14 @@ export default function CartPageSimple() {
     const [isInviting, setIsInviting] = useState(false);
     const [orderError, setOrderError] = useState('');
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
+    const [siteSettings, setSiteSettings] = useState<any>(null);
+    const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
-    const FREE_DELIVERY_THRESHOLD = 25;
-    const DELIVERY_FEE = 3.5;
+    const FREE_DELIVERY_THRESHOLD = siteSettings?.free_delivery_threshold ?? 25;
+    const DELIVERY_FEE = siteSettings?.delivery_fee ?? 3.5;
+    const MIN_ORDER = siteSettings?.min_order ?? 15;
+    const isStoreClosed = !!siteSettings?.is_store_closed;
+
     const remainingForFreeDelivery = Math.max(0, FREE_DELIVERY_THRESHOLD - total);
     const hasFreeDelivery = total >= FREE_DELIVERY_THRESHOLD;
 
@@ -91,9 +96,22 @@ export default function CartPageSimple() {
     const defaultAddr = user?.addresses?.find(a => a.isDefault) ?? user?.addresses?.[0];
 
     useEffect(() => {
+        loadSettings();
         loadSuggestions();
         loadPopularItems();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const loadSettings = async () => {
+        try {
+            const data = await api.get('/settings');
+            setSiteSettings(data);
+        } catch (err) {
+            console.error('Failed to load settings', err);
+        } finally {
+            setIsLoadingSettings(false);
+        }
+    };
 
     const loadSuggestions = async () => {
         setIsLoadingSuggestions(true);
@@ -161,6 +179,18 @@ export default function CartPageSimple() {
         }
         if (!aptVal) {
             setOrderError('Por favor, indica tu piso/puerta');
+            return;
+        }
+
+        if (total < MIN_ORDER) {
+            setOrderError(`El pedido mínimo es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`);
+            return;
+        }
+
+        if (isStoreClosed) {
+            setOrderError(
+                siteSettings?.closed_message || 'Lo sentimos, la tienda está cerrada ahora mismo.'
+            );
             return;
         }
 
@@ -380,13 +410,26 @@ export default function CartPageSimple() {
         );
     }
 
+    if (cartLoading || isLoadingSettings) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-500 font-medium">Cargando...</p>
+                </div>
+            </div>
+        );
+    }
+
     // ===== EMPTY CART =====
     if (!cartLoading && items.length === 0) {
         return (
             <div className="min-h-screen bg-transparent px-4 py-8 flex items-center">
                 <div className="max-w-4xl mx-auto text-center py-16">
                     <div className="text-8xl mb-4">🛒</div>
-                    <h1 className="text-4xl font-bold mb-4">Tu cesta está vacía</h1>
+                    <h1 className="text-4xl font-bold mb-4 text-gray-900 tracking-tight">
+                        Tu cesta está vacía
+                    </h1>
                     <p className="text-xl text-gray-500 mb-8">
                         Añade platos del menú para hacer tu pedido
                     </p>
@@ -475,6 +518,26 @@ export default function CartPageSimple() {
             />
 
             <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
+                {/* Store Closed Banner */}
+                {isStoreClosed && (
+                    <div className="mb-6 animate-in slide-in-from-top duration-500">
+                        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-4">
+                            <div className="p-3 bg-red-100 text-red-600 rounded-xl shrink-0">
+                                <X size={24} />
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="font-bold text-red-900 leading-tight">
+                                    Tienda Cerrada
+                                </h3>
+                                <p className="text-sm text-red-700">
+                                    {siteSettings?.closed_message ||
+                                        'Nuestra cocina está descansando. No es posible realizar pedidos en este momento.'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                     <h1 className="text-3xl sm:text-4xl font-black text-gray-900 m-0 tracking-tight">
                         Tu cesta

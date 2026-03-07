@@ -11,6 +11,12 @@ export default function AdminSettings() {
         contact_google_maps_url: '',
         contact_schedule: [],
         social_links: [],
+        min_order: 15,
+        delivery_fee: 3.5,
+        free_delivery_threshold: 25,
+        est_delivery_time: '30-60 min',
+        is_store_closed: false,
+        closed_message: 'Lo sentimos, la cocina está cerrada temporalmente.',
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -32,6 +38,13 @@ export default function AdminSettings() {
                 contact_google_maps_url: data.contact_google_maps_url || '',
                 contact_schedule: Array.isArray(data.contact_schedule) ? data.contact_schedule : [],
                 social_links: Array.isArray(data.social_links) ? data.social_links : [],
+                min_order: data.min_order ?? 15,
+                delivery_fee: data.delivery_fee ?? 3.5,
+                free_delivery_threshold: data.free_delivery_threshold ?? 25,
+                est_delivery_time: data.est_delivery_time || '30-60 min',
+                is_store_closed: !!data.is_store_closed,
+                closed_message:
+                    data.closed_message || 'Lo sentimos, la cocina está cerrada temporalmente.',
             });
         } catch (err) {
             console.error(err);
@@ -161,6 +174,94 @@ export default function AdminSettings() {
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                         />
                     </div>
+                </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 className="font-bold text-lg mb-4 text-gray-800">Parámetros de la Tienda</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">
+                            Pedido Mínimo (€)
+                        </label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            value={settings.min_order}
+                            onChange={e =>
+                                setSettings({ ...settings, min_order: parseFloat(e.target.value) })
+                            }
+                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">
+                            Coste de Envío Base (€)
+                        </label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            value={settings.delivery_fee}
+                            onChange={e =>
+                                setSettings({ ...settings, delivery_fee: parseFloat(e.target.value) })
+                            }
+                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">
+                            Umbral Envío Gratis (€)
+                        </label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            value={settings.free_delivery_threshold}
+                            onChange={e =>
+                                setSettings({ ...settings, free_delivery_threshold: parseFloat(e.target.value) })
+                            }
+                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">
+                            Tiempo estimado de entrega
+                        </label>
+                        <input
+                            value={settings.est_delivery_time}
+                            onChange={e =>
+                                setSettings({ ...settings, est_delivery_time: e.target.value })
+                            }
+                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                            placeholder="30-60 min"
+                        />
+                    </div>
+                    <div className="md:col-span-2 flex items-center gap-4 pt-4 border-t border-gray-50 mt-2">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={settings.is_store_closed}
+                                onChange={e =>
+                                    setSettings({ ...settings, is_store_closed: e.target.checked })
+                                }
+                                className="w-5 h-5 accent-red-600"
+                            />
+                            <span className="font-bold text-sm text-red-700">MARCAR TIENDA COMO CERRADA (Emergencia)</span>
+                        </label>
+                    </div>
+                    {settings.is_store_closed && (
+                        <div className="md:col-span-3">
+                            <label className="block text-xs font-bold text-gray-500 mb-1">
+                                Mensaje para los clientes (Cierre)
+                            </label>
+                            <input
+                                value={settings.closed_message}
+                                onChange={e =>
+                                    setSettings({ ...settings, closed_message: e.target.value })
+                                }
+                                className="w-full border rounded-lg px-3 py-2 text-sm outline-none border-red-200 bg-red-50 focus:border-red-500"
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
