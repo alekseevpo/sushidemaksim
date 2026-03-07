@@ -151,7 +151,8 @@ router.post(
             .single();
 
         if (userError || !user) {
-            return res.status(404).json({ error: 'No existe una cuenta con este email' });
+            // Security: Don't leak if email exists. Return 200 in both cases.
+            return res.json({ success: true, message: 'Si tu email está registrado, recibirás un código pronto.' });
         }
 
         // Cooldown: 60 seconds

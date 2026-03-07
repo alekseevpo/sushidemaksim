@@ -42,26 +42,17 @@ router.post(
         let usedPromoId = null;
 
         if (promoCode) {
-            const upperCode = promoCode.toUpperCase();
+            const { data: promo } = await supabase
+                .from('promo_codes')
+                .select('*')
+                .eq('code', promoCode)
+                .eq('is_used', false)
+                .eq('user_id', req.userId)
+                .single();
 
-            // ─── Test Promo Codes ───
-            if (upperCode === 'TEST10') {
-                finalTotal = finalTotal * 0.9; // 10% discount
-            } else if (upperCode === 'TEST50') {
-                finalTotal = finalTotal * 0.5; // 50% discount
-            } else {
-                const { data: promo } = await supabase
-                    .from('promo_codes')
-                    .select('*')
-                    .eq('code', promoCode)
-                    .eq('is_used', false)
-                    .eq('user_id', req.userId)
-                    .single();
-
-                if (promo) {
-                    finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
-                    usedPromoId = promo.id;
-                }
+            if (promo) {
+                finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
+                usedPromoId = promo.id;
             }
         }
 
@@ -207,35 +198,5 @@ router.patch(
     })
 );
 
-// PATCH /api/orders/:id/deliver
-router.patch(
-    '/:id/deliver',
-    asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { data: order, error: fetchError } = await supabase
-            .from('orders')
-            .select('status')
-            .eq('id', req.params.id)
-            .eq('user_id', req.userId)
-            .single();
-
-        if (fetchError || !order) {
-            return res.status(404).json({ error: 'Pedido no encontrado' });
-        }
-
-        if (order.status === 'delivered') {
-            return res.status(400).json({ error: 'El pedido ya fue entregado' });
-        }
-
-        const { data: updated, error: updateError } = await supabase
-            .from('orders')
-            .update({ status: 'delivered' })
-            .eq('id', req.params.id)
-            .select()
-            .single();
-
-        if (updateError) throw updateError;
-        res.json({ order: updated });
-    })
-);
-
+// Note: /deliver and other status updates (except cancel) should be in admin.ts
 export default router;
