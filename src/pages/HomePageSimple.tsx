@@ -228,7 +228,9 @@ export default function HomePageSimple() {
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+                        style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                         className="relative px-4"
                     >
                         <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
@@ -263,7 +265,9 @@ export default function HomePageSimple() {
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.8, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
+                        style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                         className="text-center lg:text-left pt-10 lg:pt-0"
                     >
                         <span className="text-red-600 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] mb-4 block">
@@ -314,7 +318,9 @@ export default function HomePageSimple() {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+                    style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                     className="max-w-5xl mx-auto bg-red-600 rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 text-center text-white relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]"
                 >
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>

@@ -110,10 +110,11 @@ export default function BlogPage() {
                         posts.map((post, index) => (
                             <motion.article
                                 key={post.id}
-                                initial={{ opacity: 0, y: 50 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                viewport={{ once: true, amount: 0.2 }}
+                                transition={{ duration: 0.6, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
+                                style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                                 className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full relative"
                             >
                                 {/* Link overlay for the whole card */}
@@ -186,9 +187,11 @@ export default function BlogPage() {
 
                 {/* Newsletter Subscription (SEO Boost) */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
+                    style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                     className="mt-20 bg-black rounded-[2rem] p-8 md:p-12 text-center relative overflow-hidden shadow-2xl mx-auto w-full"
                 >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
