@@ -414,7 +414,7 @@ export default function MenuPageSimple() {
                                             {EMOJI[item.category] || '🍱'}
                                         </div>
                                     )}
-                                    <div className="absolute top-1.5 left-0 flex flex-col gap-1">
+                                    <div className="absolute top-10 md:top-12 left-0 flex flex-col gap-1 z-10">
                                         {item.is_popular && (
                                             <span className="bg-amber-500 text-white rounded-r-lg pl-1.5 pr-2 py-0.5 text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
                                                 <Sparkles size={10} fill="currentColor" /> Top
