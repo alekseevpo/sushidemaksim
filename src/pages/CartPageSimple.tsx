@@ -482,7 +482,7 @@ export default function CartPageSimple() {
                 description="Finaliza tu pedido de sushi. Revisa tus platos, añade extras и disfruta del mejor sushi a domicilio."
             />
 
-            <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:py-12">
+            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                     <h1 className="text-3xl sm:text-4xl font-black text-gray-900 m-0 tracking-tight">
                         Tu cesta
@@ -593,7 +593,7 @@ export default function CartPageSimple() {
                         </div>
 
                         {/* Delivery info — available for all */}
-                        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 mx-2 md:mx-0 rounded-[28px] md:rounded-xl">
+                        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px] md:rounded-xl">
                             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
                                 <MapPin size={18} className="text-red-600" /> Datos de entrega
                             </h2>
@@ -625,7 +625,7 @@ export default function CartPageSimple() {
                                                 setPhone(prev => prev || addr.phone || '');
                                             }}
                                             type="button"
-                                            className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-4 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
+                                            className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
                                         >
                                             <MapPin size={16} className="shrink-0" />
                                             <span className="truncate">
@@ -653,7 +653,7 @@ export default function CartPageSimple() {
                                                 ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
                                                 : 'Nombre de tu calle'
                                         }
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                     />
                                 </div>
 
@@ -667,7 +667,7 @@ export default function CartPageSimple() {
                                             value={house}
                                             onChange={e => setHouse(e.target.value)}
                                             placeholder="Ej: 15"
-                                            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                         />
                                     </div>
                                     <div>
@@ -679,7 +679,7 @@ export default function CartPageSimple() {
                                             value={apartment}
                                             onChange={e => setApartment(e.target.value)}
                                             placeholder="Ej: 3ºB"
-                                            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                         />
                                     </div>
                                 </div>
@@ -693,7 +693,7 @@ export default function CartPageSimple() {
                                         value={phone}
                                         onChange={e => setPhone(e.target.value)}
                                         placeholder={user?.phone || '+34 600 000 000'}
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                     />
                                 </div>
                             </div>
@@ -731,7 +731,7 @@ export default function CartPageSimple() {
                                     placeholder="Ej. Quitar pepino del rollo California, dejar el pedido en la puerta..."
                                     rows={2}
                                     style={{ resize: 'none' }}
-                                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                                 />
                             </div>
                         </div>
@@ -999,36 +999,35 @@ export default function CartPageSimple() {
             </main>
 
             {/* Sticky Mobile Checkout Bar */}
-            <div className="md:hidden sticky bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-8 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                    <div className="flex flex-col">
-                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                            Total
-                        </span>
-                        <span className="text-xl font-black text-red-600 leading-tight">
-                            {finalTotal.toFixed(2).replace('.', ',')} €
-                        </span>
-                    </div>
+            <div className="md:hidden sticky bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 p-2 pb-6 z-50 animate-in slide-in-from-bottom duration-500">
+                <div className="max-w-7xl mx-auto">
                     {isAuthenticated ? (
                         <button
                             onClick={handleOrder}
                             disabled={isOrdering || items.length === 0}
-                            className="bg-red-600 text-white px-8 py-3 rounded-xl font-black text-sm hover:bg-red-700 transition active:scale-95 disabled:bg-gray-400"
+                            className="w-full bg-red-600 text-white h-14 rounded-2xl font-black text-base hover:bg-red-700 transition active:scale-95 disabled:bg-gray-400 shadow-xl shadow-red-200 flex items-center justify-between px-6"
                         >
-                            {isOrdering ? (
-                                '...'
-                            ) : (
-                                <div className="flex items-center gap-2 text-base">
-                                    Pedir <CheckCircle size={18} />
-                                </div>
-                            )}
+                            <div className="flex items-center gap-2">
+                                {isOrdering ? 'Procesando...' : (
+                                    <>
+                                        <span>Pedir</span>
+                                        <CheckCircle size={20} />
+                                    </>
+                                )}
+                            </div>
+                            <div className="bg-white/20 px-4 py-1.5 rounded-xl text-lg tabular-nums">
+                                {finalTotal.toFixed(2).replace('.', ',')} €
+                            </div>
                         </button>
                     ) : (
                         <Link
                             to="/"
-                            className="bg-gray-900 text-white px-6 py-3 rounded-xl font-black text-sm no-underline active:scale-95"
+                            className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-95 flex items-center justify-between px-6 shadow-xl shadow-gray-200"
                         >
-                            Log In
+                            <span className="flex items-center gap-2">Log In para pedir <ArrowLeft className="rotate-180" size={18} /></span>
+                            <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg">
+                                {finalTotal.toFixed(2).replace('.', ',')} €
+                            </div>
                         </Link>
                     )}
                 </div>

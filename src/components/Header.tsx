@@ -24,6 +24,7 @@ export default function Header() {
     const [isPending, startTransition] = useTransition();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [isCartBumping, setIsCartBumping] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown when clicking outside
@@ -47,6 +48,17 @@ export default function Header() {
         document.addEventListener('custom:openLogin', handleOpenLogin);
         return () => document.removeEventListener('custom:openLogin', handleOpenLogin);
     }, []);
+
+    // Cart bump animation trigger
+    const prevCountRef = useRef(itemCount);
+    useEffect(() => {
+        if (itemCount > prevCountRef.current) {
+            setIsCartBumping(true);
+            const timer = setTimeout(() => setIsCartBumping(false), 300);
+            return () => clearTimeout(timer);
+        }
+        prevCountRef.current = itemCount;
+    }, [itemCount]);
 
     const initials = user
         ? user.name
@@ -212,25 +224,32 @@ export default function Header() {
                             </div>
 
                             {/* Cart */}
-                            <Link
-                                id="cart-icon"
-                                to="/cart"
-                                className="relative p-2.5 no-underline text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+                            <motion.div
+                                animate={isCartBumping ? { scale: [1, 1.2, 1] } : {}}
+                                transition={{ duration: 0.3 }}
                             >
-                                <ShoppingCart size={20} />
-                                <AnimatePresence>
-                                    {itemCount > 0 && (
-                                        <motion.span
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            exit={{ scale: 0 }}
-                                            className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
-                                        >
-                                            {itemCount}
-                                        </motion.span>
-                                    )}
-                                </AnimatePresence>
-                            </Link>
+                                <Link
+                                    id="cart-icon"
+                                    to="/cart"
+                                    className="relative p-2.5 no-underline text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center"
+                                >
+                                    <ShoppingCart size={20} />
+                                    <AnimatePresence>
+                                        {itemCount > 0 && (
+                                            <motion.span
+                                                key={itemCount} // Re-trigger animation on every count change
+                                                initial={{ scale: 0.5, opacity: 0 }}
+                                                animate={{ scale: [0.5, 1.3, 1], opacity: 1 }}
+                                                exit={{ scale: 0, opacity: 0 }}
+                                                transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                                                className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
+                                            >
+                                                {itemCount}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+                                </Link>
+                            </motion.div>
 
                             {/* Mobile burger */}
                             <button
