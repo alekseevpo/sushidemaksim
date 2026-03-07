@@ -8,7 +8,11 @@ import {
     CheckCircle,
     AlertCircle,
     Clock,
+    ArrowUpDown,
+    ChevronUp,
+    ChevronDown,
 } from 'lucide-react';
+
 import { api, ApiError } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -17,16 +21,19 @@ export default function AdminUsers() {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 1 });
+    const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
 
     useEffect(() => {
         loadUsers(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [sort]);
 
     const loadUsers = async (page: number) => {
         setLoading(true);
         try {
-            const data = await api.get(`/admin/users?page=${page}&limit=${pagination.limit}`);
+            const data = await api.get(
+                `/admin/users?page=${page}&limit=${pagination.limit}&sortBy=${sort.field}&order=${sort.order}`
+            );
             setUsers(data.users || []);
             setPagination(data.pagination);
         } catch (err) {
@@ -34,6 +41,13 @@ export default function AdminUsers() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSort = (field: string) => {
+        setSort(prev => ({
+            field,
+            order: prev.field === field && prev.order === 'desc' ? 'asc' : 'desc',
+        }));
     };
 
     const toggleAdminRole = async (userId: number, currentRole: string) => {
@@ -81,18 +95,62 @@ export default function AdminUsers() {
                     <table className="w-full text-left text-sm text-gray-600">
                         <thead className="bg-gray-50 text-gray-700 font-bold border-b border-gray-100">
                             <tr>
-                                <th className="px-6 py-4">ID</th>
+                                <th
+                                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    onClick={() => handleSort('id')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        ID {sort.field === 'id' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                    </div>
+                                </th>
                                 <th className="px-6 py-4">Nombre / Email</th>
                                 <th className="px-6 py-4">Cumpleaños / Verif.</th>
-                                <th className="px-6 py-4 text-center">Pedidos</th>
-                                <th className="px-6 py-4">Última actividad</th>
-                                <th className="px-6 py-4">Registro</th>
-                                <th className="px-6 py-4 text-center">Rol</th>
+                                <th
+                                    className="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    onClick={() => handleSort('orderCount')}
+                                >
+                                    <div className="flex items-center justify-center gap-1">
+                                        Pedidos {sort.field === 'orderCount' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                    </div>
+                                </th>
+                                <th
+                                    className="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    onClick={() => handleSort('totalSpent')}
+                                >
+                                    <div className="flex items-center justify-center gap-1">
+                                        Gastado {sort.field === 'totalSpent' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                    </div>
+                                </th>
+                                <th
+                                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    onClick={() => handleSort('last_seen_at')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        Última actividad {sort.field === 'last_seen_at' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                    </div>
+                                </th>
+                                <th
+                                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    onClick={() => handleSort('created_at')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        Registro {sort.field === 'created_at' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                    </div>
+                                </th>
+                                <th
+                                    className="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    onClick={() => handleSort('role')}
+                                >
+                                    <div className="flex items-center justify-center gap-1">
+                                        Rol {sort.field === 'role' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                    </div>
+                                </th>
                                 {currentUser?.is_superadmin === 1 && (
                                     <th className="px-6 py-4 text-center">Acciones Superadmin</th>
                                 )}
                             </tr>
                         </thead>
+
                         <tbody className="divide-y divide-gray-100">
                             {users.map(user => (
                                 <tr key={user.id} className="hover:bg-gray-50 transition-colors">
@@ -130,8 +188,8 @@ export default function AdminUsers() {
                                                         )
                                                     }
                                                     className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
-                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                            : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
                                                         }`}
                                                 >
                                                     {user.birth_date_verified ? (
@@ -152,6 +210,12 @@ export default function AdminUsers() {
                                             {user.orderCount}
                                         </div>
                                     </td>
+                                    <td className="px-6 py-3 text-center">
+                                        <div className="font-bold text-gray-900">
+                                            {Number(user.totalSpent || 0).toFixed(2).replace('.', ',')} €
+                                        </div>
+                                    </td>
+
                                     <td className="px-6 py-3">
                                         <div className="flex flex-col gap-1">
                                             {user.last_seen_at ? (
@@ -224,8 +288,8 @@ export default function AdminUsers() {
                                                         toggleAdminRole(user.id, user.role)
                                                     }
                                                     className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
-                                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                            : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                                                        ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                        : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
                                                         }`}
                                                 >
                                                     {user.role === 'admin'
@@ -257,8 +321,8 @@ export default function AdminUsers() {
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
                                     className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                            ? 'bg-red-600 text-white'
-                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                        ? 'bg-red-600 text-white'
+                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                                         }`}
                                 >
                                     {pageNum}

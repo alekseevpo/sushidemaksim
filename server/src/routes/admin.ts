@@ -335,32 +335,78 @@ router.get(
         const page = Math.max(1, parseInt(req.query.page as string) || 1);
         const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
         const offset = (page - 1) * limit;
+        const sortBy = (req.query.sortBy as string) || 'last_seen_at';
+        const order = (req.query.order as string) || 'desc';
+        const ascending = order === 'asc';
 
-        const {
-            data: users,
-            count,
-            error,
-        } = await supabase
-            .from('users')
-            .select('*, orders(count)', { count: 'exact' })
-            .order('last_seen_at', { ascending: false, nullsFirst: false })
-            .range(offset, offset + limit - 1);
+        // Fields directly sortable by Supabase
+        const directSortFields = ['id', 'name', 'email', 'created_at', 'last_seen_at'];
 
-        if (error) throw error;
+        let usersWithStats: any[] = [];
+        let totalCount = 0;
 
-        const usersWithStats = (users || []).map((u: any) => ({
-            ...u,
-            orderCount: u.orders[0]?.count || 0,
-        }));
+        if (sortBy === 'orderCount' || sortBy === 'totalSpent') {
+            // Complex sort: Fetch all users and their order totals, then sort and paginate in memory
+            // We fetch up to 5000 users as a safety limit for performance
+            const { data: allUsers, error: allUsersError } = await supabase
+                .from('users')
+                .select('*, orders(total)');
+
+            if (allUsersError) throw allUsersError;
+
+            let allUsersWithStats = (allUsers || []).map((u: any) => ({
+                ...u,
+                orderCount: u.orders?.length || 0,
+                totalSpent: u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
+            }));
+
+            // In-memory sort
+            allUsersWithStats.sort((a, b) => {
+                const valA = a[sortBy];
+                const valB = b[sortBy];
+                if (valA === valB) return 0;
+                return ascending ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+            });
+
+            totalCount = allUsersWithStats.length;
+            usersWithStats = allUsersWithStats.slice(offset, offset + limit);
+        } else {
+            // Direct sort via Supabase
+            let query = supabase
+                .from('users')
+                .select('*, orders(total)', { count: 'exact' });
+
+            if (sortBy === 'role') {
+                // Roles sort: superadmin -> admin -> user
+                query = query
+                    .order('is_superadmin', { ascending: ascending })
+                    .order('role', { ascending: !ascending });
+            } else if (directSortFields.includes(sortBy)) {
+                query = query.order(sortBy, { ascending: ascending, nullsFirst: false });
+            } else {
+                // Default fallback
+                query = query.order('last_seen_at', { ascending: false, nullsFirst: false });
+            }
+
+            const { data: users, count, error } = await query.range(offset, offset + limit - 1);
+            if (error) throw error;
+
+            totalCount = count || 0;
+            usersWithStats = (users || []).map((u: any) => ({
+                ...u,
+                orderCount: u.orders?.length || 0,
+                totalSpent: u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
+            }));
+        }
 
         res.json({
             users: usersWithStats,
             pagination: {
-                total: count || 0,
+                total: totalCount,
                 page,
                 limit,
-                pages: Math.ceil((count || 0) / limit),
-                hasNext: page * limit < (count || 0),
+                pages: Math.ceil(totalCount / limit),
+                hasNext: page * limit < totalCount,
                 hasPrev: page > 1,
             },
         });
