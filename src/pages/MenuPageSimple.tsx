@@ -207,7 +207,7 @@ export default function MenuPageSimple() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent px-4 py-8">
+        <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8">
             <SEO
                 title="Menú y Carta de Sushi"
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
@@ -215,7 +215,7 @@ export default function MenuPageSimple() {
                 schema={menuSchema}
             />
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl text-gray-900 font-bold text-center mb-6">Nuestro Menú</h1>
+                <h1 className="text-2xl md:text-4xl text-gray-900 font-black text-center mb-4 md:mb-6 tracking-tight">Nuestro Menú</h1>
 
                 {/* Search */}
                 <div className="flex justify-center mb-6">
@@ -243,11 +243,11 @@ export default function MenuPageSimple() {
                 </div>
 
                 {/* Category Filter - Sticky and Scrollable on Mobile */}
-                <div className="sticky top-20 z-20 -mx-4 px-4 py-4 bg-gray-50/80 backdrop-blur-md mb-8">
-                    <div className="flex overflow-x-auto no-scrollbar gap-2 max-w-7xl mx-auto flex-nowrap sm:flex-wrap sm:justify-center">
+                <div className="sticky top-20 z-20 -mx-4 px-4 py-3 md:py-4 bg-gray-50/80 backdrop-blur-md mb-6 md:mb-8">
+                    <div className="flex overflow-x-auto no-scrollbar gap-2 md:gap-2 max-w-7xl mx-auto flex-nowrap sm:flex-wrap sm:justify-center">
                         <button
                             onClick={() => setSelectedCategory('all')}
-                            className={`whitespace-nowrap flex-shrink-0 px-5 py-2.5 rounded-full font-bold border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === 'all'
+                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === 'all'
                                 ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
                                 : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
                                 }`}
@@ -258,12 +258,12 @@ export default function MenuPageSimple() {
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-bold border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === cat.id
+                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === cat.id
                                     ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
                                     : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
                                     }`}
                             >
-                                <span>{cat.icon}</span>
+                                <span className="text-sm md:text-base">{cat.icon}</span>
                                 {cat.name}
                             </button>
                         ))}
@@ -272,21 +272,17 @@ export default function MenuPageSimple() {
 
                 {/* Items */}
                 {isLoading ? (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                             <div
                                 key={i}
-                                className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col h-full animate-pulse border border-gray-100"
+                                className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col h-full animate-pulse border border-gray-100"
                             >
-                                <div className="h-[200px] bg-gray-200"></div>
-                                <div className="p-4 flex-1 flex flex-col">
-                                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-full mb-1"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
-                                    <div className="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
-                                        <div className="h-6 bg-gray-200 rounded w-16"></div>
-                                        <div className="h-8 bg-gray-200 rounded-full w-24"></div>
-                                    </div>
+                                <div className="h-[140px] md:h-[200px] bg-gray-200"></div>
+                                <div className="p-3 md:p-4 flex-1 flex flex-col">
+                                    <div className="h-5 md:h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                                    <div className="h-3 md:h-4 bg-gray-200 rounded w-full mb-1"></div>
+                                    <div className="h-3 md:h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
                                 </div>
                             </div>
                         ))}
@@ -300,19 +296,19 @@ export default function MenuPageSimple() {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 lg:gap-8 pb-20">
                         {items.map(item => (
                             <div
                                 key={item.id}
-                                className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] overflow-hidden transition-all duration-300 relative hover:-translate-y-1 hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.15)] flex flex-col group"
+                                className="bg-white rounded-[24px] md:rounded-[32px] shadow-[0_4px_15px_-3px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-300 relative hover:-translate-y-1 hover:shadow-[0_20px_30px_-5px_rgba(0,0,0,0.1)] flex flex-col group border border-gray-50/50"
                             >
                                 {user && (
                                     <button
                                         onClick={() => toggleFavorite(item.id)}
-                                        className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none mix-blend-normal"
+                                        className="absolute top-2 right-2 z-10 w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none mix-blend-normal"
                                     >
                                         <Heart
-                                            size={18}
+                                            size={16}
                                             className={
                                                 favoriteItems.has(item.id)
                                                     ? 'text-red-500'
@@ -326,7 +322,7 @@ export default function MenuPageSimple() {
                                 )}
 
                                 {/* Image */}
-                                <div className="h-[200px] bg-gray-50 rounded-t-xl overflow-hidden relative flex items-center justify-center">
+                                <div className="h-[140px] md:h-[220px] bg-gray-50 overflow-hidden relative flex items-center justify-center">
                                     {!failedImages.has(item.id) ? (
                                         <img
                                             src={item.image}
@@ -339,109 +335,69 @@ export default function MenuPageSimple() {
                                             }
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-4xl md:text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
                                             {EMOJI[item.category] || '🍱'}
                                         </div>
                                     )}
-                                    <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+                                    <div className="absolute top-1.5 left-0 flex flex-col gap-1">
                                         {item.is_popular && (
-                                            <span className="bg-amber-500 text-white rounded-r-lg pl-2 pr-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1 -ml-2">
-                                                <Sparkles size={10} fill="currentColor" /> Top Ventas
-                                            </span>
-                                        )}
-                                        {item.is_chef_choice && (
-                                            <span className="bg-red-600 text-white rounded-r-lg pl-2 pr-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1 -ml-2">
-                                                👨‍🍳 Chef Choice
+                                            <span className="bg-amber-500 text-white rounded-r-lg pl-1.5 pr-2 py-0.5 text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
+                                                <Sparkles size={10} fill="currentColor" /> Top
                                             </span>
                                         )}
                                         {item.is_new && (
-                                            <span className="bg-blue-600 text-white rounded-r-lg pl-2 pr-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1 -ml-2">
+                                            <span className="bg-blue-600 text-white rounded-r-lg pl-1.5 pr-2 py-0.5 text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
                                                 🆕 Nuevo
                                             </span>
                                         )}
-                                        <div className="flex gap-1">
-                                            {item.spicy && (
-                                                <span className="bg-red-100 text-red-800 rounded-full px-2 py-1 text-[9px] font-bold">
-                                                    🌶️ Picante
-                                                </span>
-                                            )}
-                                            {item.is_promo && (
-                                                <span className="bg-green-100 text-green-800 rounded-full px-2 py-1 text-[9px] font-bold">
-                                                    🏷️ Promo
-                                                </span>
-                                            )}
-                                        </div>
+                                    </div>
+                                    <div className="absolute bottom-1.5 right-1.5 flex gap-1">
+                                        {item.spicy && (
+                                            <span className="bg-red-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg" title="Picante">
+                                                🌶️
+                                            </span>
+                                        )}
+                                        {item.vegetarian && (
+                                            <span className="bg-emerald-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg" title="Vegetariano">
+                                                🥬
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="p-5 flex flex-col flex-1">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <h3 className="text-lg font-bold m-0 text-gray-900 leading-tight">
-                                            {item.name}
-                                        </h3>
-                                        <div className="flex gap-1 ml-2 flex-shrink-0">
-                                            {item.vegetarian && (
-                                                <span className="text-emerald-500">🥬</span>
-                                            )}
-                                        </div>
-                                    </div>
+                                <div className="p-3 md:p-5 flex flex-col flex-1">
+                                    <h3 className="text-sm md:text-lg font-black m-0 text-gray-900 leading-tight mb-1 line-clamp-2 md:line-clamp-none">
+                                        {item.name}
+                                    </h3>
 
-                                    {/* FOMO Counter */}
-                                    {(item.is_popular || item.id % 3 === 0) && (
-                                        <div className="flex items-center gap-1.5 text-orange-600 font-bold text-[10px] mb-2 uppercase tracking-tight">
-                                            <span className="w-1.5 h-1.5 bg-orange-600 rounded-full animate-pulse" />
-                                            Pedido {Math.floor(((item.id * 13) % 40) + 12)} veces hoy
-                                        </div>
-                                    )}
-                                    <p className="text-gray-500 text-sm leading-relaxed mb-3 flex-1 m-0">
+                                    <p className="hidden md:block text-gray-500 text-sm leading-relaxed mb-3 flex-1 m-0">
                                         {item.description}
                                     </p>
-                                    {item.pieces && (
-                                        <div className="text-sm text-gray-400 mb-2 font-medium">
-                                            {item.pieces} uds
-                                        </div>
-                                    )}
 
-                                    {/* Allergens Icons */}
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {item.vegetarian && (
-                                            <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-emerald-100 flex items-center gap-1">
-                                                🥬 Veg
-                                            </span>
-                                        )}
-                                        {item.allergens?.includes('gluten') && (
-                                            <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-amber-100 flex items-center gap-1" title="Contiene gluten">
-                                                🌾 Gluten
-                                            </span>
-                                        )}
-                                        {item.allergens?.includes('lactose') && (
-                                            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-blue-100 flex items-center gap-1" title="Contiene lácteos">
-                                                🥛 Lácteo
-                                            </span>
-                                        )}
-                                        {item.allergens?.includes('fish') && (
-                                            <span className="bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded-md text-[10px] font-bold border border-cyan-100 flex items-center gap-1" title="Contiene pescado">
-                                                🐟 Pescado
-                                            </span>
-                                        )}
-                                    </div>
                                     <div className="flex items-center justify-between mt-auto">
-                                        <span className="text-[22px] font-bold text-red-600">
-                                            {item.price.toFixed(2).replace('.', ',')} €
-                                        </span>
+                                        <div className="flex flex-col">
+                                            <span className="text-base md:text-[22px] font-black text-gray-900 leading-none">
+                                                {item.price.toFixed(2).replace('.', ',')} €
+                                            </span>
+                                            {item.pieces && (
+                                                <span className="text-[10px] md:text-xs text-gray-400 font-bold mt-0.5">
+                                                    {item.pieces} uds
+                                                </span>
+                                            )}
+                                        </div>
                                         <button
                                             onClick={e => handleAddToCart(item, e)}
-                                            className={`px-4 py-2.5 rounded-lg font-bold border-none cursor-pointer flex items-center gap-1.5 text-sm outline-none transition-all duration-300 ${addedItems.has(item.id)
+                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${addedItems.has(item.id)
                                                 ? 'bg-green-600 text-white'
-                                                : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'
+                                                : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
                                                 }`}
                                         >
                                             {addedItems.has(item.id) ? (
-                                                <>✓ Añadido</>
+                                                <span className="font-black">✓</span>
                                             ) : (
                                                 <>
-                                                    <Plus size={16} />
-                                                    Añadir
+                                                    <Plus size={18} />
+                                                    <span className="hidden md:inline">Añadir</span>
                                                 </>
                                             )}
                                         </button>
