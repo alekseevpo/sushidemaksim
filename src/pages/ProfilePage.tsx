@@ -129,8 +129,8 @@ export default function ProfilePage() {
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* Navigation Sidebar (Desktop) / Menu (Mobile) */}
-                    <aside className="lg:w-80 shrink-0">
-                        <div className="bg-white/80 md:bg-white backdrop-blur-xl border border-white/50 md:border-white shadow-xl md:shadow-2xl rounded-[28px] md:rounded-[32px] p-2 flex md:block overflow-x-auto no-scrollbar gap-1">
+                    <aside className="lg:w-80 shrink-0 -mx-4 md:mx-0">
+                        <div className="bg-white/80 md:bg-white backdrop-blur-xl border border-white/50 md:border-white shadow-xl md:shadow-2xl rounded-none md:rounded-[32px] p-2 flex md:block overflow-x-auto no-scrollbar gap-1 px-4 md:px-2">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;

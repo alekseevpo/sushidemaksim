@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { Heart, ShoppingBag } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
 
@@ -126,26 +126,26 @@ export default function FavoritesTab() {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5 mb-6">
                 <div>
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">
+                    <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0 flex items-center gap-2">
                         Mis Favoritos
-                        <span className="ml-3 px-3 py-1 bg-red-600 text-white text-xs font-black rounded-full align-middle shadow-md shadow-red-100 italic">
+                        <span className="px-2.5 py-0.5 bg-red-600 text-white text-[10px] md:text-xs font-black rounded-full shadow-md shadow-red-100 italic">
                             {favorites.length}
                         </span>
                     </h2>
-                    <p className="text-gray-500 text-sm mt-1">Tus platos preferidos listos para pedir</p>
+                    <p className="text-gray-500 text-xs md:text-sm mt-1">Tus platos preferidos listos para pedir</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                 {favorites.map(item => (
                     <div
                         key={item.id}
-                        className="bg-white border border-gray-100 rounded-[32px] overflow-hidden hover:shadow-2xl hover:shadow-gray-100 transition-all duration-300 group flex flex-col relative"
+                        className="bg-white border border-gray-50 rounded-[24px] md:rounded-[32px] overflow-hidden hover:shadow-2xl hover:shadow-gray-100 transition-all duration-300 group flex flex-col relative shadow-sm"
                     >
                         {/* Image Container */}
-                        <div className="aspect-[4/3] overflow-hidden relative flex items-center justify-center">
+                        <div className="h-[120px] md:h-[180px] overflow-hidden relative flex items-center justify-center bg-gray-50">
                             {!failedImages.has(item.id) ? (
                                 <img
                                     src={item.image}
@@ -154,40 +154,32 @@ export default function FavoritesTab() {
                                     onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
                                 />
                             ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 transform group-hover:scale-110">
+                                <div className="w-full h-full flex items-center justify-center text-4xl md:text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 transform group-hover:scale-110">
                                     {EMOJI[item.category] ?? '🍣'}
                                 </div>
                             )}
 
                             {/* Tags Overlay */}
-                            <div className="absolute top-4 left-4 flex flex-col gap-2">
+                            <div className="absolute top-2 left-0 flex flex-col gap-1">
                                 {item.spicy && (
-                                    <span className="px-3 py-1 bg-red-600/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-lg">
+                                    <span className="px-2 py-0.5 bg-red-600 text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
                                         🌶️ Picante
                                     </span>
                                 )}
-                                {item.is_promo && (
-                                    <span className="px-3 py-1 bg-green-600/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-lg">
-                                        🏷️ Promo
-                                    </span>
-                                )}
                                 {item.vegetarian && (
-                                    <span className="px-3 py-1 bg-amber-600/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-lg">
+                                    <span className="px-2 py-0.5 bg-emerald-600 text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
                                         🥬 Veggie
                                     </span>
                                 )}
                             </div>
 
                             {/* Actions Overlay */}
-                            <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                            <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 md:opacity-0 md:translate-x-12 md:group-hover:translate-x-0 md:group-hover:opacity-100 transition-all duration-300">
                                 <button
                                     onClick={() => toggleFavorite(item.id)}
-                                    className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md text-red-600 shadow-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all transform hover:scale-110"
+                                    className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white/90 backdrop-blur-sm text-red-600 shadow-lg flex items-center justify-center hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 border-none cursor-pointer"
                                 >
-                                    <Heart size={20} fill="currentColor" />
-                                </button>
-                                <button className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md text-gray-900 shadow-xl flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all transform hover:scale-110">
-                                    <Eye size={20} />
+                                    <Heart size={16} fill="currentColor" />
                                 </button>
                             </div>
 
@@ -210,23 +202,30 @@ export default function FavoritesTab() {
                                 {item.description}
                             </p>
 
-                            <div className="flex items-center justify-between gap-4 mt-auto">
-                                <div className="text-xl font-black text-red-600 italic tracking-tighter">
-                                    {item.price.toFixed(2).replace('.', ',')} €
+                            <div className="flex items-center justify-between gap-2 md:gap-4 mt-auto">
+                                <div className="flex flex-col">
+                                    <span className="text-base md:text-xl font-black text-red-600 italic tracking-tighter">
+                                        {item.price.toFixed(2).replace('.', ',')} €
+                                    </span>
+                                    {item.pieces && (
+                                        <span className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest">
+                                            {item.pieces} uds
+                                        </span>
+                                    )}
                                 </div>
                                 <button
                                     onClick={() => handleAddToCart(item)}
-                                    className={`h-11 px-6 rounded-2xl font-black text-xs transition-all flex items-center gap-2 shadow-xl
+                                    className={`h-9 md:h-11 px-3 md:px-6 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs transition-all flex items-center gap-2 shadow-sm
                                         ${addedItems.has(item.id)
-                                            ? 'bg-green-600 text-white shadow-green-100'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] shadow-gray-200 hover:shadow-red-200'}`}
+                                            ? 'bg-green-600 text-white'
+                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] active:scale-95 shadow-gray-200'}`}
                                 >
                                     {addedItems.has(item.id) ? (
-                                        <>✓ Añadido</>
+                                        <>✓</>
                                     ) : (
                                         <>
                                             <ShoppingBag size={14} />
-                                            Pedir
+                                            <span className="hidden md:inline">Pedir</span>
                                         </>
                                     )}
                                 </button>
