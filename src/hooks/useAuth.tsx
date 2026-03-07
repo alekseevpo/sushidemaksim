@@ -52,6 +52,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loadUser();
     }, []);
 
+    // ─── Activity Heartbeat ───────────────────────────────────────────────────────
+    useEffect(() => {
+        if (!user) return;
+
+        const sendHeartbeat = async () => {
+            try {
+                await api.put('/user/active');
+            } catch (error) {
+                // Silently ignore heartbeat failures
+            }
+        };
+
+        // Initial call
+        sendHeartbeat();
+
+        // Repeat every 30 seconds
+        const interval = setInterval(sendHeartbeat, 30000);
+        return () => clearInterval(interval);
+    }, [user?.id]);
+
     const login = async (email: string, password: string) => {
         try {
             const data = await api.post('/auth/login', { email, password });

@@ -343,7 +343,7 @@ router.get(
         } = await supabase
             .from('users')
             .select('*, orders(count)', { count: 'exact' })
-            .order('created_at', { ascending: false })
+            .order('last_seen_at', { ascending: false, nullsFirst: false })
             .range(offset, offset + limit - 1);
 
         if (error) throw error;

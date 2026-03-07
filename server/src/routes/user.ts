@@ -15,7 +15,7 @@ router.get(
         const { data: user, error: userError } = await supabase
             .from('users')
             .select(
-                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified'
+                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at'
             )
             .eq('id', req.userId)
             .single();
@@ -40,6 +40,7 @@ router.get(
             createdAt: user.created_at,
             birthDate: user.birth_date,
             birthDateVerified: user.birth_date_verified,
+            lastSeenAt: user.last_seen_at,
             addresses: addresses?.map(a => ({
                 ...a,
                 postalCode: a.postal_code,
@@ -94,7 +95,7 @@ router.put(
             .update(updateData)
             .eq('id', req.userId)
             .select(
-                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified'
+                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at'
             )
             .single();
 
@@ -105,6 +106,7 @@ router.put(
                 createdAt: user.created_at,
                 birthDate: user.birth_date,
                 birthDateVerified: user.birth_date_verified,
+                lastSeenAt: user.last_seen_at,
             },
         });
     })
@@ -343,3 +345,25 @@ router.post(
 );
 
 export default router;
+
+// PUT /api/user/active — update last seen timestamp
+router.put(
+    '/active',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { error } = await supabase
+            .from('users')
+            .update({ last_seen_at: new Date().toISOString() })
+            .eq('id', req.userId);
+
+        if (error) {
+            // If column doesn't exist yet, we catch it gracefully on backend
+            // but log it once for dev tracking
+            if (error.code === '42703') {
+                return res.status(200).json({ status: 'waiting_migration' });
+            }
+            throw error;
+        }
+
+        res.json({ success: true });
+    })
+);

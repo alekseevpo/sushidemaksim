@@ -7,6 +7,7 @@ import {
     Calendar,
     CheckCircle,
     AlertCircle,
+    Clock,
 } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
@@ -84,6 +85,7 @@ export default function AdminUsers() {
                                 <th className="px-6 py-4">Nombre / Email</th>
                                 <th className="px-6 py-4">Cumpleaños / Verif.</th>
                                 <th className="px-6 py-4 text-center">Pedidos</th>
+                                <th className="px-6 py-4">Última actividad</th>
                                 <th className="px-6 py-4">Registro</th>
                                 <th className="px-6 py-4 text-center">Rol</th>
                                 {currentUser?.is_superadmin === 1 && (
@@ -127,11 +129,10 @@ export default function AdminUsers() {
                                                             user.birth_date_verified
                                                         )
                                                     }
-                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
-                                                        user.birth_date_verified
+                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
                                                             ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                                             : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {user.birth_date_verified ? (
                                                         <>
@@ -149,6 +150,52 @@ export default function AdminUsers() {
                                     <td className="px-6 py-3 text-center">
                                         <div className="inline-flex items-center justify-center bg-gray-100 text-gray-700 w-8 h-8 rounded-full font-bold">
                                             {user.orderCount}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-3">
+                                        <div className="flex flex-col gap-1">
+                                            {user.last_seen_at ? (
+                                                <>
+                                                    <div className="flex items-center gap-2">
+                                                        {new Date().getTime() -
+                                                            new Date(user.last_seen_at).getTime() <
+                                                            5 * 60 * 1000 ? (
+                                                            <div className="relative flex h-2 w-2">
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="h-2 w-2 rounded-full bg-gray-300"></div>
+                                                        )}
+                                                        <span className="text-gray-900 font-bold text-xs">
+                                                            {new Date(
+                                                                user.last_seen_at
+                                                            ).toLocaleDateString() ===
+                                                                new Date().toLocaleDateString()
+                                                                ? 'Hoy ' +
+                                                                new Date(
+                                                                    user.last_seen_at
+                                                                ).toLocaleTimeString([], {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                })
+                                                                : new Date(
+                                                                    user.last_seen_at
+                                                                ).toLocaleDateString([], {
+                                                                    day: '2-digit',
+                                                                    month: 'short',
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                })}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="flex items-center gap-2 text-gray-400">
+                                                    <Clock size={12} />
+                                                    <span className="text-xs italic">Nunca</span>
+                                                </div>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-3">
@@ -176,11 +223,10 @@ export default function AdminUsers() {
                                                     onClick={() =>
                                                         toggleAdminRole(user.id, user.role)
                                                     }
-                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
-                                                        user.role === 'admin'
+                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
                                                             ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                             : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {user.role === 'admin'
                                                         ? 'Revocar Admin'
@@ -210,11 +256,10 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                        pageNum === pagination.page
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
                                             ? 'bg-red-600 text-white'
                                             : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                    }`}
+                                        }`}
                                 >
                                     {pageNum}
                                 </button>

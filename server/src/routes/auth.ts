@@ -40,6 +40,7 @@ router.post(
                 email: email.toLowerCase().trim(),
                 phone: phone?.trim() || '',
                 password_hash: passwordHash,
+                last_seen_at: new Date().toISOString(),
             })
             .select()
             .single();
@@ -72,6 +73,7 @@ router.post(
             createdAt: newUser.created_at,
             birthDate: newUser.birth_date,
             birthDateVerified: newUser.birth_date_verified,
+            lastSeenAt: newUser.last_seen_at,
         };
 
         res.status(201).json({ token, user });
@@ -129,7 +131,7 @@ router.get(
         const { data: user, error } = await supabase
             .from('users')
             .select(
-                'id, name, email, phone, avatar, role, is_superadmin, created_at, birth_date, birth_date_verified'
+                'id, name, email, phone, avatar, role, is_superadmin, created_at, birth_date, birth_date_verified, last_seen_at'
             )
             .eq('id', req.userId)
             .single();
@@ -151,6 +153,7 @@ router.get(
             createdAt: user.created_at,
             birthDate: user.birth_date,
             birthDateVerified: user.birth_date_verified,
+            lastSeenAt: user.last_seen_at,
             addresses: addresses?.map(a => ({
                 ...a,
                 postalCode: a.postal_code,
