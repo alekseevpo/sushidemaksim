@@ -1,4 +1,5 @@
-import { Router, Response } from 'express';
+import { Router, Response, Request } from 'express';
+import { config } from '../config.js';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
@@ -245,9 +246,9 @@ router.patch(
             return res.status(404).json({ error: 'Pedido no encontrado' });
         }
 
-        if (order.status !== 'pending') {
+        if (order.status !== 'pending' && order.status !== 'waiting_payment') {
             return res.status(400).json({
-                error: 'Solo se pueden cancelar pedidos pendientes. Contacta con nosotros si necesitas ayuda.',
+                error: 'Solo se pueden cancelar pedidos pendientes o en espera de pago.',
             });
         }
 
@@ -260,6 +261,128 @@ router.patch(
 
         if (updateError) throw updateError;
         res.json({ order: updated });
+    })
+);
+
+// POST /api/orders/invite — create a draft order for someone else to pay
+router.post(
+    '/invite',
+    optionalAuthMiddleware,
+    validate({
+        deliveryAddress: { type: 'string', required: true, maxLength: 300 },
+        phoneNumber: { type: 'string', required: true, maxLength: 30 },
+        senderName: { type: 'string', required: false, maxLength: 100 },
+    }),
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems, senderName } = req.body;
+
+        const parser = new UAParser(req.headers['user-agent'] || '');
+        const deviceType = parser.getDevice().type || 'desktop';
+        const osName = parser.getOS().name || 'Unknown';
+
+        // 1. Get items (reuse the same logic as POST /)
+        let cartItems: any[] = [];
+        if (req.userId) {
+            const { data: dbItems } = await supabase
+                .from('cart_items')
+                .select('quantity, menu_item_id, menu_items(name, price, image)')
+                .eq('user_id', req.userId);
+            cartItems = dbItems || [];
+        } else if (guestItems) {
+            const itemIds = guestItems.map((i: any) => i.menuItemId);
+            const { data: menuData } = await supabase.from('menu_items').select('*').in('id', itemIds);
+            cartItems = guestItems.map((gi: any) => {
+                const menuItem = menuData?.find((m: any) => m.id === gi.menuItemId);
+                return menuItem ? { quantity: gi.quantity, menu_item_id: gi.menuItemId, menu_items: menuItem } : null;
+            }).filter((i: any) => i !== null);
+        }
+
+        if (cartItems.length === 0) return res.status(400).json({ error: 'La cesta está vacía' });
+
+        // 2. Calculate total
+        const subtotal = cartItems.reduce((sum, item: any) => sum + item.menu_items.price * item.quantity, 0);
+        let finalTotal = subtotal;
+        // Simple 10% for testing if needed, or proper promo logic
+        if (promoCode === 'TEST10') finalTotal *= 0.9;
+
+        // 3. Create Draft Order
+        const { data: order, error: orderError } = await supabase
+            .from('orders')
+            .insert({
+                user_id: req.userId || null,
+                total: Math.round(finalTotal * 100) / 100,
+                delivery_address: deliveryAddress?.trim() || '',
+                phone_number: phoneNumber?.trim() || '',
+                status: 'waiting_payment',
+                notes: `${notes || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
+                device_type: deviceType,
+                os_name: osName,
+                estimated_delivery_time: '30-60 min'
+            })
+            .select()
+            .single();
+
+        if (orderError) throw orderError;
+
+        // 4. Create Items
+        const itemsToInsert = cartItems.map((item: any) => ({
+            order_id: order.id,
+            menu_item_id: item.menu_item_id,
+            name: item.menu_items.name,
+            quantity: item.quantity,
+            price_at_time: item.menu_items.price,
+            image: item.menu_items.image,
+        }));
+        await supabase.from('order_items').insert(itemsToInsert);
+
+        res.status(201).json({
+            orderId: order.id,
+            shareUrl: `${config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com'}/pay-for-friend/${order.id}`
+        });
+    })
+);
+
+// GET /api/orders/public/:id — get order details for payment link (no auth)
+router.get(
+    '/public/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { data: order, error } = await supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('id', req.params.id)
+            .eq('status', 'waiting_payment')
+            .single();
+
+        if (error || !order) {
+            return res.status(404).json({ error: 'Invitación no encontrada или ya ha sido pagada.' });
+        }
+
+        res.json({ order: { ...order, items: order.order_items } });
+    })
+);
+
+// POST /api/orders/:id/confirm-payment — finalize invitation order
+router.post(
+    '/:id/confirm-payment',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { data: order, error: fetchErr } = await supabase
+            .from('orders')
+            .select('status')
+            .eq('id', req.params.id)
+            .single();
+
+        if (fetchErr || !order) return res.status(404).json({ error: 'Pedido no encontrado' });
+        if (order.status !== 'waiting_payment') return res.status(400).json({ error: 'El pedido ya no está esperando pago' });
+
+        const { data: updated, error: updateErr } = await supabase
+            .from('orders')
+            .update({ status: 'pending' }) // Moves to kitchen
+            .eq('id', req.params.id)
+            .select()
+            .single();
+
+        if (updateErr) throw updateErr;
+        res.json({ success: true, order: updated });
     })
 );
 

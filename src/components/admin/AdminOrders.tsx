@@ -48,6 +48,11 @@ export default function AdminOrders() {
 
     const statusOptions = [
         {
+            value: 'waiting_payment',
+            label: 'Esperando Pago',
+            color: 'bg-gray-100 text-gray-500 border-gray-200',
+        },
+        {
             value: 'pending',
             label: 'Enviado',
             color: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -77,7 +82,11 @@ export default function AdminOrders() {
             label: 'Entregado',
             color: 'bg-green-100 text-green-700 border-green-200',
         },
-        { value: 'cancelled', label: 'Cancelado', color: 'bg-red-100 text-red-700 border-red-200' },
+        {
+            value: 'cancelled',
+            label: 'Cancelado',
+            color: 'bg-red-100 text-red-700 border-red-200'
+        },
     ];
 
     const formatCurrency = (amount: number) => {

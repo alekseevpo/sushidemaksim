@@ -18,6 +18,7 @@ const AdminPage = lazy(() => import('./pages/AdminPage'));
 const ContactsPage = lazy(() => import('./pages/ContactsPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
+const PayForFriendPage = lazy(() => import('./pages/PayForFriendPage'));
 
 function PageLoader() {
     return (
@@ -54,6 +55,7 @@ function App() {
                                 <Route path="/contacts" element={<ContactsPage />} />
                                 <Route path="/blog" element={<BlogPage />} />
                                 <Route path="/blog/:slug" element={<BlogPostPage />} />
+                                <Route path="/pay-for-friend/:id" element={<PayForFriendPage />} />
                             </Routes>
                         </Suspense>
                     </main>

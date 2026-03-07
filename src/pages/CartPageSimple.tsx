@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, MapPin, CheckCircle, Trash2, Plus, Minus, ArrowLeft, X } from 'lucide-react';
+import { Sparkles, MapPin, CheckCircle, Trash2, Plus, Minus, ArrowLeft, X, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -38,6 +38,7 @@ export default function CartPageSimple() {
     const [apartment, setApartment] = useState('');
     const [phone, setPhone] = useState('');
     const [isOrdering, setIsOrdering] = useState(false);
+    const [isInviting, setIsInviting] = useState(false);
     const [orderError, setOrderError] = useState('');
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
 
@@ -200,6 +201,79 @@ export default function CartPageSimple() {
             setOrderError(err instanceof ApiError ? err.message : 'Error al realizar el pedido');
         } finally {
             setIsOrdering(false);
+        }
+    };
+
+    const handleInvite = async () => {
+        if (items.length === 0) return;
+        setOrderError('');
+
+        const streetVal = address.trim();
+        const houseVal = house.trim();
+        const aptVal = apartment.trim();
+
+        if (!streetVal) {
+            setOrderError('Por favor, indica tu calle para el envío');
+            return;
+        }
+        if (!houseVal) {
+            setOrderError('Por favor, indica tu portal/casa');
+            return;
+        }
+        if (!aptVal) {
+            setOrderError('Por favor, indica tu piso/puerta');
+            return;
+        }
+
+        const deliveryAddress = `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
+        const deliveryPhone = phone.trim() || user?.phone || '';
+        if (!deliveryPhone || deliveryPhone.length < 6) {
+            setOrderError('Por favor, introduce un teléfono de contacto válido');
+            return;
+        }
+
+        setIsInviting(true);
+
+        const notesArray = [];
+        if (noCall) notesArray.push('Sin llamada de confirmación');
+        if (noBuzzer) notesArray.push('No llamar al timbre, llamar al móvil');
+        if (customNote.trim()) notesArray.push(customNote.trim());
+        const notes = notesArray.join('. ');
+
+        try {
+            const payload: any = {
+                deliveryAddress,
+                phoneNumber: deliveryPhone,
+                notes,
+                promoCode: appliedPromo?.code || undefined,
+                senderName: user?.name || ''
+            };
+
+            if (!isAuthenticated) {
+                payload.guestItems = items.map(i => ({
+                    menuItemId: parseInt(i.id),
+                    quantity: i.quantity
+                }));
+            }
+
+            const data = await api.post('/orders/invite', payload);
+
+            // Open Native Share
+            if (navigator.share) {
+                await navigator.share({
+                    title: '¡Invítame a Sushi de Maksim! 🍣',
+                    text: `¡Hola! He preparado este pedido de sushi и me encantaría что ты меня угостил(а). ¿Te animas? 🍱✨`,
+                    url: data.shareUrl
+                });
+            } else {
+                // Fallback: Copy to clipboard
+                await navigator.clipboard.writeText(data.shareUrl);
+                alert('¡Enlace de invitación copiado! Envíalo a tu amigo por WhatsApp.');
+            }
+        } catch (err) {
+            setOrderError(err instanceof ApiError ? err.message : 'Error al generar invitación');
+        } finally {
+            setIsInviting(false);
         }
     };
 
@@ -838,10 +912,19 @@ export default function CartPageSimple() {
 
                             <button
                                 onClick={handleOrder}
-                                disabled={isOrdering || items.length === 0}
-                                className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold border-none cursor-pointer w-full mb-4 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                disabled={isOrdering || isInviting || items.length === 0}
+                                className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg shadow-red-100"
                             >
                                 {isOrdering ? 'Procesando...' : 'Realizar pedido →'}
+                            </button>
+
+                            <button
+                                onClick={handleInvite}
+                                disabled={isOrdering || isInviting || items.length === 0}
+                                className="bg-amber-100 text-amber-800 px-6 py-3 rounded-lg font-bold border border-amber-200 cursor-pointer w-full mb-6 text-base hover:bg-amber-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                <Gift size={18} className="text-amber-600" />
+                                {isInviting ? 'Generando Enlace...' : '¡Que me inviten! 🎁'}
                             </button>
 
                             <Link
