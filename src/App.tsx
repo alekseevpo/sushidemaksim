@@ -6,6 +6,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import FloatingCart from './components/FloatingCart';
+import ScrollToTop from './components/ScrollToTop';
 
 // Lazy-loaded pages — each gets its own chunk for faster initial load
 const HomePageSimple = lazy(() => import('./pages/HomePageSimple'));
@@ -37,6 +38,7 @@ function App() {
         <AuthProvider>
             <CartProvider>
                 <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
+                    <ScrollToTop />
                     <CookieConsent />
                     <FloatingCart />
                     {!isAdminRoute && <Header />}
