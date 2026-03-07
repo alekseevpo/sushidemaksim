@@ -154,8 +154,8 @@ export default function AdminPage() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
-                                        ? 'bg-red-50 text-red-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    ? 'bg-red-50 text-red-700'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ export default function AdminPage() {
                 </nav>
                 <div className="p-4 border-t border-gray-100 mt-auto">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate('/menu')}
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-xl font-bold text-sm transition-colors border border-gray-200"
                     >
                         <ArrowLeft size={16} />
@@ -248,7 +248,7 @@ export default function AdminPage() {
                                 <h2 className="text-lg font-bold text-gray-900">Resumen hoy</h2>
                                 <div className="flex items-center gap-4">
                                     <button
-                                        onClick={() => navigate('/')}
+                                        onClick={() => navigate('/menu')}
                                         className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 transition shadow-sm"
                                     >
                                         <ExternalLink size={16} />

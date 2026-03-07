@@ -214,7 +214,7 @@ export default function BlogPage() {
 
                 <div className="mt-12 text-center">
                     <Link
-                        to="/"
+                        to="/menu"
                         className="inline-flex items-center gap-2 text-gray-500 hover:text-red-600 font-bold text-sm transition-colors"
                     >
                         <ArrowLeft size={16} /> Volver a la tienda
