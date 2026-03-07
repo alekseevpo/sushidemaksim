@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
     User,
     Edit3,
@@ -23,22 +24,23 @@ interface Props {
     onSuccess: (msg: string) => void;
 }
 
-const AVATARS = [
-    '🍣',
-    '🍱',
-    '🍙',
-    '🍘',
-    '🍥',
-    '🥢',
-    '🧑',
-    '👧',
-    '👨‍🍳',
-    '🥷',
-    '🐶',
-    '🐱',
-    '🐼',
-    '🦊',
-    '🐉',
+const AVATAR_CATEGORIES = [
+    {
+        name: 'Sushi & Food',
+        icons: ['🍣', '🍱', '🍙', '🍥', '🍜', '🥟', '🍤', '🥢', '🍵', '🍶', '🍱', '🍢', '🍡'],
+    },
+    {
+        name: 'Personajes',
+        icons: ['🥷', '🧑‍🍳', '🦹', '🦸', '🧙', '🧛', '👹', '👺', '👻', '👾', '🤖', '👽', '💀', '🤡'],
+    },
+    {
+        name: 'Animales Cool',
+        icons: ['🐼', '🦊', '🐱', '🐶', '🐉', '🦖', '🦄', '🦁', '🐯', '🐻', '🐒', '🦉', '🦋', '🐟'],
+    },
+    {
+        name: 'Estilo & Japan',
+        icons: ['🏮', '⛩️', '🏯', '🗻', '🚀', '💎', '🔥', '⚡', '🌈', '👑', '🕶️', '🎸', '🎮', '🛹', '🧘'],
+    },
 ];
 
 export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
@@ -120,7 +122,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-4 md:px-0">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-0 md:px-0">
             {/* Header with Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
                 <div className="text-center sm:text-left">
@@ -144,15 +146,15 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         <>
                             <button
                                 onClick={() => setIsEditing(false)}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-[10px] md:text-sm hover:bg-gray-200 transition-all active:scale-95"
                             >
-                                <X size={16} /> <span className="hidden sm:inline">Cancelar</span>
+                                <X size={14} /> <span>CANCELAR</span>
                             </button>
                             <button
                                 onClick={saveProfile}
-                                className="flex-2 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-red-600 text-white rounded-xl font-black text-[10px] md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
                             >
-                                <Save size={16} /> Guardar
+                                <Save size={14} /> GUARDAR
                             </button>
                         </>
                     )}
@@ -190,9 +192,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         label: 'Fecha de Cumpleaños',
                         value: user.birthDate
                             ? (() => {
-                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                  return `${d}/${m}/${y}`;
-                              })()
+                                const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                return `${d}/${m}/${y}`;
+                            })()
                             : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
@@ -244,30 +246,55 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
 
             {/* Avatar Selection (Only when editing) */}
             {isEditing && (
-                <div className="p-6 bg-gray-900 rounded-[32px] text-white overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-600 rounded-full blur-[60px] opacity-20 -mr-16 -mt-16" />
-                    <h3 className="text-sm font-black uppercase tracking-widest text-white/50 mb-6 flex items-center gap-2">
-                        <User size={14} className="text-red-500" /> Elige tu Avatar
+                <div className="px-4 py-8 md:p-10 bg-gray-900 rounded-[40px] text-white overflow-hidden relative shadow-2xl">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-red-600 rounded-full blur-[100px] opacity-20 -mr-32 -mt-32" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 rounded-full blur-[100px] opacity-10 -ml-32 -mb-32" />
+
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/50 mb-8 flex items-center gap-3">
+                        <div className="w-2 h-2 bg-red-600 rounded-full animate-ping" />
+                        Personaliza tu Identidad
                     </h3>
-                    <div className="flex flex-wrap gap-3 relative z-10">
-                        <button
-                            type="button"
-                            onClick={() => setEditAvatar('')}
-                            className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black transition-all border-2
-                                ${editAvatar === '' ? 'bg-red-600 border-white scale-110 shadow-lg' : 'bg-white/10 border-transparent text-white/50 hover:bg-white/20'}`}
-                        >
-                            {editName.substring(0, 2).toUpperCase() || '??'}
-                        </button>
-                        {AVATARS.map(avatar => (
-                            <button
-                                key={avatar}
+
+                    <div className="space-y-8 relative z-10">
+                        {/* Initial Placeholder */}
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 ml-1">Original</p>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 type="button"
-                                onClick={() => setEditAvatar(avatar)}
-                                className={`w-12 h-12 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                    ${editAvatar === avatar ? 'bg-red-600 border-white scale-110 shadow-lg' : 'bg-white/10 border-transparent hover:bg-white/20'}`}
+                                onClick={() => setEditAvatar('')}
+                                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-sm font-black transition-all border-2
+                                    ${editAvatar === '' ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.4)]' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
                             >
-                                {avatar}
-                            </button>
+                                {editName.substring(0, 2).toUpperCase() || '??'}
+                            </motion.button>
+                        </div>
+
+                        {/* Categories */}
+                        {AVATAR_CATEGORIES.map(category => (
+                            <div key={category.name}>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4 ml-1">
+                                    {category.name}
+                                </p>
+                                <div className="flex flex-wrap gap-2 sm:gap-3">
+                                    {category.icons.map(avatar => (
+                                        <motion.button
+                                            key={`${category.name}-${avatar}`}
+                                            whileHover={{ scale: 1.15, rotate: 5 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            type="button"
+                                            onClick={() => setEditAvatar(avatar)}
+                                            className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
+                                                ${editAvatar === avatar
+                                                    ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
+                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'}`}
+                                        >
+                                            {avatar}
+                                        </motion.button>
+                                    ))}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -341,7 +368,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => {},
+                                    toggle: () => { },
                                 },
                             ].map(f => (
                                 <div key={f.label}>

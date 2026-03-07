@@ -752,26 +752,53 @@ router.get(
                 // Generate it now!
                 console.log(`📊 Auto-generating report for ${yesterdayDateStr}...`);
 
-                const [{ data: revenueData }, { count: totalOrders }, { count: newUsers }] =
-                    await Promise.all([
-                        supabase
-                            .from('orders')
-                            .select('total')
-                            .neq('status', 'cancelled')
-                            .gte('created_at', yesterdayISO)
-                            .lt('created_at', todayISO),
-                        supabase
-                            .from('orders')
-                            .select('*', { count: 'exact', head: true })
-                            .neq('status', 'cancelled')
-                            .gte('created_at', yesterdayISO)
-                            .lt('created_at', todayISO),
-                        supabase
-                            .from('users')
-                            .select('*', { count: 'exact', head: true })
-                            .gte('created_at', yesterdayISO)
-                            .lt('created_at', todayISO),
-                    ]);
+                const [
+                    { data: revenueData },
+                    { count: totalOrders },
+                    { count: newUsers },
+                    { count: cancelledCount },
+                    { count: lateCount },
+                    { data: invitationData }
+                ] = await Promise.all([
+                    supabase
+                        .from('orders')
+                        .select('total')
+                        .neq('status', 'cancelled')
+                        .gte('created_at', yesterdayISO)
+                        .lt('created_at', todayISO),
+                    supabase
+                        .from('orders')
+                        .select('*', { count: 'exact', head: true })
+                        .neq('status', 'cancelled')
+                        .gte('created_at', yesterdayISO)
+                        .lt('created_at', todayISO),
+                    supabase
+                        .from('users')
+                        .select('*', { count: 'exact', head: true })
+                        .gte('created_at', yesterdayISO)
+                        .lt('created_at', todayISO),
+                    supabase
+                        .from('orders')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('status', 'cancelled')
+                        .gte('created_at', yesterdayISO)
+                        .lt('created_at', todayISO),
+                    supabase
+                        .from('orders')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('discount_sent', true)
+                        .gte('created_at', yesterdayISO)
+                        .lt('created_at', todayISO),
+                    supabase
+                        .from('orders')
+                        .select('notes')
+                        .gte('created_at', yesterdayISO)
+                        .lt('created_at', todayISO)
+                ]);
+
+                const invitationsCount = invitationData?.filter(o =>
+                    o.notes && o.notes.includes('[De parte de:')
+                ).length || 0;
 
                 const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
                 const avg = totalOrders ? revenue / (totalOrders || 1) : 0;
@@ -783,6 +810,9 @@ router.get(
                         orders_count: totalOrders || 0,
                         new_users_count: newUsers || 0,
                         avg_ticket: Math.round(avg * 100) / 100,
+                        cancelled_count: cancelledCount || 0,
+                        late_count: lateCount || 0,
+                        invitations_count: invitationsCount || 0,
                     },
                     { onConflict: 'date' }
                 );

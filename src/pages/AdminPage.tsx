@@ -161,11 +161,10 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
-                                    isActive
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
                                         ? 'bg-red-50 text-red-700'
                                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon
@@ -437,7 +436,7 @@ export default function AdminPage() {
                                 {loading ? (
                                     <div className="h-32 bg-gray-50 rounded animate-pulse"></div>
                                 ) : !stats?.analytics ||
-                                  Object.keys(stats.analytics.devices).length === 0 ? (
+                                    Object.keys(stats.analytics.devices).length === 0 ? (
                                     <div className="text-center py-10 text-gray-400 text-sm">
                                         No hay suficientes datos registrados
                                     </div>
@@ -552,9 +551,12 @@ export default function AdminPage() {
                                                 <tr className="border-b border-gray-50 text-xs font-bold text-gray-400 uppercase tracking-wider">
                                                     <th className="px-4 py-3">Fecha</th>
                                                     <th className="px-4 py-3">Ingresos</th>
-                                                    <th className="px-4 py-3">Pedidos</th>
-                                                    <th className="px-4 py-3">Nuevos Clientes</th>
-                                                    <th className="px-4 py-3">Ticket Promedio</th>
+                                                    <th className="px-4 py-3">Pedi.</th>
+                                                    <th className="px-4 py-3">Canc.</th>
+                                                    <th className="px-4 py-3">Retra.</th>
+                                                    <th className="px-4 py-3">Invi.</th>
+                                                    <th className="px-4 py-3">Nuevos</th>
+                                                    <th className="px-4 py-3">Ticket</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
@@ -579,6 +581,15 @@ export default function AdminPage() {
                                                         </td>
                                                         <td className="px-4 py-4 text-sm text-gray-600 font-medium">
                                                             {report.orders_count}
+                                                        </td>
+                                                        <td className="px-4 py-4 text-sm text-red-500 font-bold">
+                                                            {report.cancelled_count || 0}
+                                                        </td>
+                                                        <td className="px-4 py-4 text-sm text-orange-500 font-bold">
+                                                            {report.late_count || 0}
+                                                        </td>
+                                                        <td className="px-4 py-4 text-sm text-blue-500 font-bold">
+                                                            {report.invitations_count || 0}
                                                         </td>
                                                         <td className="px-4 py-4 text-sm text-gray-600">
                                                             {report.new_users_count}

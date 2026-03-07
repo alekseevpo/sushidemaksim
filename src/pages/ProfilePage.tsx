@@ -205,7 +205,7 @@ export default function ProfilePage() {
                                 </div>
                             )}
 
-                            <div className="p-2 md:p-8">
+                            <div className="p-0 md:p-8">
                                 {activeTab === 'profile' && (
                                     <ProfileTab
                                         user={user}
