@@ -30,6 +30,11 @@ export default function PayForFriendPage() {
     const [error, setError] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
 
+    // Get current domain for OG tags
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://sushidemaksim.vercel.app';
+    const invitationUrl = `${origin}/pay-for-friend/${id}`;
+    const hungryPandaUrl = `${origin}/hungry-panda.png`;
+
     useEffect(() => {
         loadOrder();
     }, [id]);
@@ -99,7 +104,12 @@ export default function PayForFriendPage() {
 
     return (
         <div className="min-h-screen bg-[#FDFBF7] py-8 md:py-16 px-4">
-            <SEO title={`Invitar a ${senderName} - Sushi de Maksim`} description="¡Sorprende a tu amigo pagando su pedido de sushi favorito!" />
+            <SEO
+                title={`¡Invita a ${senderName}! 🎁`}
+                description={`Te ha enviado esta propuesta de Sushi de Maksim. ¡Sorpréndele con su pedido favorito! 🍣✨`}
+                image={hungryPandaUrl}
+                url={invitationUrl}
+            />
 
             <div className="max-w-2xl mx-auto">
                 <motion.div
@@ -122,7 +132,7 @@ export default function PayForFriendPage() {
                                 className="relative mb-6"
                             >
                                 <motion.img
-                                    src="/hungry-panda.png"
+                                    src={hungryPandaUrl}
                                     alt="Panda hambriento"
                                     animate={{ y: [0, -8, 0] }}
                                     transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
@@ -151,20 +161,34 @@ export default function PayForFriendPage() {
                                 <div className="h-0.5 w-4 bg-gray-200" /> El menú elegido
                             </h2>
                             <div className="space-y-4">
-                                {order.items.map((item) => (
-                                    <div key={item.id} className="flex items-center gap-4 group">
-                                        <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100 group-hover:scale-105 transition-transform">
-                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                {order.items.map((item) => {
+                                    // Ensure image URL is absolute for nested routes
+                                    const itemImage = item.image.startsWith('http')
+                                        ? item.image
+                                        : item.image.startsWith('/') ? item.image : `/${item.image}`;
+
+                                    return (
+                                        <div key={item.id} className="flex items-center gap-4 group">
+                                            <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100 group-hover:scale-105 transition-transform">
+                                                <img
+                                                    src={itemImage}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = '/placeholder-sushi.png';
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="font-black text-gray-900 text-sm leading-tight mb-1">{item.name}</p>
+                                                <p className="text-xs text-gray-400">{item.quantity} ud{item.quantity > 1 ? 's' : ''}</p>
+                                            </div>
+                                            <p className="font-black text-gray-900 text-sm">
+                                                {(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
+                                            </p>
                                         </div>
-                                        <div className="flex-1">
-                                            <p className="font-black text-gray-900 text-sm leading-tight mb-1">{item.name}</p>
-                                            <p className="text-xs text-gray-400">{item.quantity} ud{item.quantity > 1 ? 's' : ''}</p>
-                                        </div>
-                                        <p className="font-black text-gray-900 text-sm">
-                                            {(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
-                                        </p>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
                             <div className="mt-8 pt-6 border-t border-dashed border-gray-200">
