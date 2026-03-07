@@ -756,16 +756,15 @@ export default function CartPageSimple() {
                                 </div>
                             </div>
                         ) : suggestions.length > 0 ? (
-                            <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 animate-in fade-in duration-500">
-                                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                                    <Sparkles size={18} className="text-amber-500" /> Complementos
-                                    populares
+                            <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-2 py-4 md:p-6 animate-in fade-in duration-500">
+                                <h3 className="text-base font-black mb-3 flex items-center gap-2 uppercase tracking-tight">
+                                    <Sparkles size={16} className="text-amber-500" /> Extras
                                 </h3>
-                                <div className="flex flex-col gap-4">
+                                <div className="flex flex-col gap-2">
                                     {suggestions.map(item => (
                                         <div
                                             key={String(item.id)}
-                                            className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-100"
+                                            className="flex items-center gap-2 p-1.5 hover:bg-gray-50 rounded-xl transition-colors border border-transparent hover:border-gray-100"
                                         >
                                             <div className="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100 group/sug">
                                                 {!failedImages.has(item.id) ? (
