@@ -80,19 +80,19 @@ export default function ContactsPage() {
                 keywords="contacto sushi, telefono sushi madrid, direccion maksim, ubicacion sushi"
             />
             {/* Hero Header */}
-            <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-20 pb-28 px-4">
-                <div className="absolute inset-0 bg-black/70"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-50/20 to-transparent"></div>
+            <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-24 pb-32 px-4">
+                <div className="absolute inset-0 bg-black/60"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF7] via-transparent to-transparent"></div>
                 <div className="max-w-4xl mx-auto text-center relative z-10">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Contacto</h1>
-                    <p className="text-gray-300 text-lg font-medium">
+                    <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">Contacto</h1>
+                    <p className="text-gray-200 text-base md:text-xl font-medium max-w-lg mx-auto">
                         Estamos aquí para ayudarte. ¡Hablemos!
                     </p>
                 </div>
             </section>
             {/* Restaurant Photo Section */}
-            <section className="max-w-7xl mx-auto px-4 -mt-16 mb-12 relative z-20">
-                <div className="relative h-[300px] md:h-[450px] w-full rounded-3xl overflow-hidden shadow-2xl">
+            <section className="max-w-7xl mx-auto px-4 -mt-16 md:-mt-20 mb-12 relative z-20">
+                <div className="relative h-[250px] md:h-[450px] w-full rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
                     <img
                         src="https://lh3.googleusercontent.com/gps-cs-s/AHVAwerkdGixMAWgBIMmoJjP1MX7jWMzKqJ7V9vy4jvAQaJRkD1rLfsKxfAkLuD2GL5-Dlv8H-JPqpTtZYfNrw0EwmQxJjmolR9MRhiJOn2PmlUYM-U7hShrCdYQZ_Ns2rut3ZKiQc8=w1200"
                         alt="Interior Sushi de Maksim"
@@ -102,40 +102,37 @@ export default function ContactsPage() {
                     />
 
                     {/* Google Rating Badge */}
-                    <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-sm p-3 md:p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-700">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                    <div className="absolute top-4 right-4 md:top-6 md:right-6 bg-white/95 backdrop-blur-sm p-3 md:p-4 rounded-2xl shadow-xl flex items-center gap-2 md:gap-3 animate-in fade-in zoom-in duration-700">
+                        <div className="w-8 h-8 md:w-12 md:h-12 bg-gray-50 rounded-lg md:rounded-xl flex items-center justify-center">
                             <img
                                 src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png"
                                 alt="Google Rating"
                                 loading="lazy"
                                 decoding="async"
-                                className="w-6 h-6 object-contain"
+                                className="w-5 h-5 md:w-6 md:h-6 object-contain"
                             />
                         </div>
                         <div>
                             <div className="flex items-center gap-1 mb-0.5">
-                                <span className="text-lg md:text-xl font-black text-gray-900">
+                                <span className="text-base md:text-xl font-black text-gray-900">
                                     4.8
                                 </span>
                                 <div className="flex items-center">
-                                    {[1, 2, 3, 4, 5].map(i => (
-                                        <Star
-                                            key={i}
-                                            size={14}
-                                            className="fill-amber-400 text-amber-400"
-                                        />
-                                    ))}
+                                    <Star
+                                        size={12}
+                                        className="fill-amber-400 text-amber-400"
+                                    />
                                 </div>
                             </div>
-                            <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                Puntuación en Maps
+                            <p className="text-[8px] md:text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                Maps
                             </p>
                         </div>
                     </div>
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-8">
-                        <p className="text-white font-medium text-lg">
-                            Nuestro acogedor local en el corazón de Madrid
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 md:p-10">
+                        <p className="text-white font-black text-base md:text-2xl leading-tight max-w-md">
+                            Nuestro rincón japonés <br className="hidden md:block" /> en el corazón de Madrid
                         </p>
                     </div>
                 </div>
@@ -144,33 +141,33 @@ export default function ContactsPage() {
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Contact Info Cards */}
-                    <div className="lg:col-span-1 space-y-6">
-                        <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-6">
+                    <div className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6">
+                        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
+                            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <Phone size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Llámanos</h3>
-                            <p className="text-gray-500 mb-4">
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Llámanos</h3>
+                            <p className="text-gray-500 text-sm mb-4">
                                 Atención al cliente y pedidos por teléfono.
                             </p>
                             <a
                                 href={`tel:${settings.contact_phone?.replace(/\s/g, '')}`}
-                                className="text-lg font-bold text-red-600 hover:text-red-700 transition"
+                                className="text-base md:text-lg font-black text-red-600 hover:text-red-700 transition block"
                             >
                                 {settings.contact_phone}
                             </a>
                         </div>
 
-                        <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-gray-900 text-white rounded-xl flex items-center justify-center mb-6">
+                        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
+                            <div className="w-12 h-12 bg-gray-900 text-white rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <Clock size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Horario</h3>
-                            <div className="space-y-2 text-gray-500 text-sm">
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Horario</h3>
+                            <div className="space-y-2 text-gray-500 text-xs md:text-sm">
                                 {settings.contact_schedule?.map((item: any, idx: number) => (
                                     <div
                                         key={idx}
-                                        className={`flex justify-between font-medium ${item.closed ? 'text-red-500 pt-1' : ''}`}
+                                        className={`flex justify-between font-bold ${item.closed ? 'text-red-500 pt-1' : ''}`}
                                     >
                                         <span>{item.days}</span>
                                         <div
@@ -190,37 +187,35 @@ export default function ContactsPage() {
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-6">
+                        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
+                            <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <Mail size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Escríbenos</h3>
-                            <p className="text-gray-500 mb-4">
-                                Para consultas generales o eventos especiales.
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Escríbenos</h3>
+                            <p className="text-gray-500 text-sm mb-4">
+                                Consultas generales o eventos especiales.
                             </p>
                             <a
                                 href={`mailto:${settings.contact_email}`}
-                                className="text-lg font-bold text-amber-600 hover:text-amber-700 transition"
+                                className="text-base md:text-lg font-black text-amber-600 hover:text-amber-700 transition block break-all"
                             >
                                 {settings.contact_email}
                             </a>
                         </div>
 
-                        <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
+                        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <MapPin size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Encuéntranos</h3>
-                            <p className="text-gray-500 mb-4 leading-relaxed">
-                                {settings.contact_address_line1}
-                                <br />
-                                {settings.contact_address_line2}
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Encuéntranos</h3>
+                            <p className="text-gray-500 text-sm mb-4 leading-relaxed">
+                                {settings.contact_address_line1} {settings.contact_address_line2}
                             </p>
                             <a
                                 href={settings.contact_google_maps_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-sm font-bold text-blue-600 hover:underline inline-flex items-center gap-1"
+                                className="text-sm font-black text-blue-600 hover:underline inline-flex items-center gap-1"
                             >
                                 Ver en Google Maps <ArrowRight size={14} />
                             </a>

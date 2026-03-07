@@ -198,7 +198,7 @@ export default function AddressesTab({
                 {!showAddAddress && (
                     <button
                         onClick={() => setShowAddAddress(true)}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                        className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
                     >
                         <Plus size={16} /> Añadir dirección
                     </button>
@@ -320,16 +320,16 @@ export default function AddressesTab({
                             <span className="text-sm font-black text-gray-600 group-hover:text-gray-900 transition-colors">Establecer como predeterminada</span>
                         </label>
 
-                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                        <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                             <button
                                 onClick={resetForm}
-                                className="flex-1 sm:flex-none px-8 py-3 bg-white border border-gray-200 text-gray-500 rounded-xl font-black text-sm hover:bg-gray-50 transition-all"
+                                className="flex-1 sm:flex-none px-8 py-3.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleSaveAddress}
-                                className="flex-1 sm:flex-none px-8 py-3 bg-red-600 text-white rounded-xl font-black text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                                className="flex-1 sm:flex-none px-8 py-3.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 active:scale-95"
                             >
                                 {editId ? 'Guardar Cambios' : 'Guardar Dirección'}
                             </button>

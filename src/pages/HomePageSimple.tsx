@@ -63,48 +63,50 @@ export default function HomePageSimple() {
             />
 
             {/* Hero Section */}
-            <section className="relative min-h-[85vh] flex items-center justify-center px-4 pt-20 pb-32 bg-[url('/sushi-hero.jpg')] bg-cover bg-center">
+            <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-24 md:pt-20 pb-20 md:pb-32 bg-[url('/sushi-hero.jpg')] bg-cover bg-center">
                 {/* Background Overlay (Filter) */}
-                <div className="absolute inset-0 z-0 bg-black/40"></div>
-                <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
+                <div className="absolute inset-0 z-0 bg-black/50"></div>
+                <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
                 <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                <div className="absolute inset-0 z-0 backdrop-blur-[2px] md:backdrop-blur-none"></div>
 
                 <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8, ease: 'easeOut' }}
+                        className="text-center lg:text-left"
                     >
                         <motion.span
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
-                            className="inline-block px-4 py-1.5 bg-red-600/20 backdrop-blur-md border border-red-500/30 text-red-500 text-xs font-black uppercase tracking-widest rounded-full mb-6"
+                            className="inline-block px-4 py-1.5 bg-red-600/20 backdrop-blur-md border border-red-500/30 text-red-500 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full mb-6"
                         >
                             Artesanía Japonesa en tu Mesa
                         </motion.span>
 
-                        <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-[1.1]">
-                            Sabor que <br />
-                            <span className="text-red-600 italic">Despierta</span> Sentidos
+                        <h1 className="text-4xl md:text-7xl font-black text-white mb-6 leading-[1.1] tracking-tight">
+                            Sabor que <br className="hidden md:block" />
+                            <span className="text-red-500 italic">Despierta</span> Sentidos
                         </h1>
 
-                        <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-lg leading-relaxed font-medium">
+                        <p className="text-base md:text-xl text-gray-300 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
                             Descubre la perfección en cada bocado. Sushi artesanal preparado con los
                             ingredientes más frescos del mercado.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-5">
+                        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start">
                             <Link
                                 to="/menu"
-                                className="btn-premium bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(220,38,38,0.5)] active:scale-95 transition-all"
+                                className="w-full sm:w-auto btn-premium bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(220,38,38,0.5)] active:scale-95 transition-all"
                             >
                                 EXPLORAR MENÚ
                                 <ArrowRight size={18} />
                             </Link>
                             <Link
                                 to="/blog"
-                                className="btn-premium glass-dark text-white border border-white/20 px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 hover:bg-white/10 active:scale-95 transition-all"
+                                className="w-full sm:w-auto btn-premium glass-dark text-white border border-white/20 px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 hover:bg-white/10 active:scale-95 transition-all"
                             >
                                 NUESTRO BLOG
                             </Link>
@@ -135,32 +137,32 @@ export default function HomePageSimple() {
             </section>
 
             {/* Stats/Badge Banner */}
-            <section className="bg-transparent py-10 border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center md:justify-between items-center gap-8">
-                    <div className="flex items-center gap-3">
-                        <div className="text-3xl font-black text-gray-900 italic">9.8</div>
-                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
+            <section className="bg-white/50 backdrop-blur-sm py-8 md:py-10 border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-4 grid grid-cols-3 gap-4 md:flex md:justify-between items-center md:gap-8">
+                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
+                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">9.8</div>
+                        <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
                             Valoración
-                            <br />
-                            Media Clientes
+                            <br className="hidden md:block" />
+                            Media
                         </div>
                     </div>
                     <div className="h-4 w-px bg-gray-200 hidden md:block"></div>
-                    <div className="flex items-center gap-3">
-                        <div className="text-3xl font-black text-gray-900 italic">+2k</div>
-                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
+                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
+                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">+2k</div>
+                        <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
                             Pedidos
-                            <br />
-                            Entregados Hoy
+                            <br className="hidden md:block" />
+                            Hoy
                         </div>
                     </div>
                     <div className="h-4 w-px bg-gray-200 hidden md:block"></div>
-                    <div className="flex items-center gap-3">
-                        <div className="text-3xl font-black text-gray-900 italic">100%</div>
-                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
+                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
+                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">100%</div>
+                        <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
                             Pescado
-                            <br />
-                            Fresco Diario
+                            <br className="hidden md:block" />
+                            Fresco
                         </div>
                     </div>
                 </div>
@@ -212,9 +214,9 @@ export default function HomePageSimple() {
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="relative"
+                        className="relative px-4"
                     >
-                        <div className="rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
+                        <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
                             <img
                                 src="/blog_post_chef_hands.png"
                                 alt="Preparación artesanal de sushi"
@@ -224,20 +226,20 @@ export default function HomePageSimple() {
                             />
                         </div>
                         {/* Floating Badge */}
-                        <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-3xl shadow-2xl border border-gray-100 max-w-[200px] animate-bounce duration-[3000ms]">
-                            <div className="flex gap-1 mb-2">
+                        <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-2xl border border-gray-100 max-w-[160px] md:max-w-[200px] animate-bounce duration-[3000ms]">
+                            <div className="flex gap-1 mb-1 md:mb-2">
                                 {[1, 2, 3, 4, 5].map(i => (
                                     <Star
                                         key={i}
-                                        size={12}
+                                        size={10}
                                         className="fill-amber-400 text-amber-400"
                                     />
                                 ))}
                             </div>
-                            <p className="text-[11px] font-bold text-gray-800 italic">
-                                "El mejor sushi que he probado en todo Madrid. Recomendadísimo."
+                            <p className="text-[9px] md:text-[11px] font-bold text-gray-800 italic leading-tight">
+                                "El mejor sushi que he probado en todo Madrid."
                             </p>
-                            <p className="text-[9px] text-gray-400 mt-1 uppercase font-black">
+                            <p className="text-[7px] md:text-[9px] text-gray-400 mt-1 uppercase font-black">
                                 Pablo G. - Cliente Verificado
                             </p>
                         </div>
@@ -247,12 +249,13 @@ export default function HomePageSimple() {
                         initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
+                        className="text-center lg:text-left pt-10 lg:pt-0"
                     >
-                        <span className="text-red-600 font-black text-xs uppercase tracking-[0.2em] mb-4 block">
+                        <span className="text-red-600 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] mb-4 block">
                             Nuestra Historia
                         </span>
                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tighter">
-                            Más que una Cocina, <br />
+                            Más que una Cocina, <br className="hidden md:block" />
                             Una{' '}
                             <span className="italic underline decoration-red-600 decoration-4 underline-offset-8">
                                 Pasión
@@ -297,18 +300,18 @@ export default function HomePageSimple() {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="max-w-5xl mx-auto bg-red-600 rounded-[3rem] p-12 text-center text-white relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]"
+                    className="max-w-5xl mx-auto bg-red-600 rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 text-center text-white relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]"
                 >
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
-                    <h2 className="text-3xl md:text-5xl font-black mb-6 relative z-10">
+                    <h2 className="text-2xl md:text-5xl font-black mb-6 relative z-10 leading-tight">
                         ¿Hambre de Verdad?
                     </h2>
-                    <p className="text-red-100 mb-10 text-lg md:text-xl font-medium relative z-10 max-w-xl mx-auto">
+                    <p className="text-red-100 mb-10 text-base md:text-xl font-medium relative z-10 max-w-xl mx-auto">
                         Haz tu primer pedido hoy y descubre por qué somos los favoritos del barrio.
                     </p>
                     <Link
                         to="/menu"
-                        className="inline-block bg-white text-red-600 px-12 py-5 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition-transform relative z-10"
+                        className="inline-block w-full sm:w-auto bg-white text-red-600 px-12 py-5 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition-transform relative z-10"
                     >
                         ORDENAR AHORA
                     </Link>

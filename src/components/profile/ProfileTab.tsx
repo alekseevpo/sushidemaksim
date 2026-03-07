@@ -117,7 +117,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                     {!isEditing ? (
                         <button
                             onClick={startEditing}
-                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-gray-900 text-white rounded-xl font-bold text-xs md:text-sm hover:bg-red-600 transition-all shadow-lg shadow-gray-200"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-600 transition-all shadow-lg shadow-gray-200 active:scale-95"
                         >
                             <Edit3 size={16} /> Editar
                         </button>
@@ -125,13 +125,13 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         <>
                             <button
                                 onClick={() => setIsEditing(false)}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-600 rounded-xl font-bold text-xs md:text-sm hover:bg-gray-200 transition-all"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
                             >
                                 <X size={16} /> <span className="hidden xs:inline">Cancelar</span><span className="xs:hidden">X</span>
                             </button>
                             <button
                                 onClick={saveProfile}
-                                className="flex-2 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-red-600 text-white rounded-xl font-bold text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                                className="flex-2 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
                             >
                                 <Save size={16} /> Guardar
                             </button>
@@ -284,15 +284,15 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         <div className="flex flex-col sm:flex-row gap-3 mt-8">
                             <button
                                 onClick={handleChangePassword}
-                                className="px-8 py-3 bg-red-600 text-white rounded-xl font-black text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                                className="flex-1 sm:flex-none px-8 py-3.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 active:scale-95"
                             >
-                                Actualizar Contraseña
+                                ACTUALIZAR
                             </button>
                             <button
                                 onClick={() => setShowChangePassword(false)}
-                                className="px-8 py-3 bg-gray-200 text-gray-600 rounded-xl font-black text-sm hover:bg-gray-300 transition-all"
+                                className="flex-1 sm:flex-none px-8 py-3.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
                             >
-                                Cancelar
+                                CANCELAR
                             </button>
                         </div>
                     </div>
