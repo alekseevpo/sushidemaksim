@@ -9,7 +9,7 @@ import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { AuthRequest } from '../middleware/auth.js';
-import { formatMenuItem, getMadridStartOfDay } from '../utils/helpers.js';
+import { formatMenuItem, getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -731,6 +731,67 @@ router.put(
 router.get(
     '/reports',
     asyncHandler(async (_req: Request, res: Response) => {
+        try {
+            // Check if we need to generate reports for the last 2 days (failsafe for cron)
+            const todayISO = getMadridStartOfDay().toISOString();
+            const startOfYesterday = getMadridYesterdayStartOfDay();
+            const yesterdayISO = startOfYesterday.toISOString();
+
+            const yesterdayDateStr = startOfYesterday.toLocaleDateString('en-CA', {
+                timeZone: 'Europe/Madrid',
+            });
+
+            // Is yesterday's report already there?
+            const { data: existing } = await supabase
+                .from('daily_reports')
+                .select('id')
+                .eq('date', yesterdayDateStr)
+                .maybeSingle();
+
+            if (!existing) {
+                // Generate it now!
+                console.log(`📊 Auto-generating report for ${yesterdayDateStr}...`);
+
+                const [{ data: revenueData }, { count: totalOrders }, { count: newUsers }] =
+                    await Promise.all([
+                        supabase
+                            .from('orders')
+                            .select('total')
+                            .neq('status', 'cancelled')
+                            .gte('created_at', yesterdayISO)
+                            .lt('created_at', todayISO),
+                        supabase
+                            .from('orders')
+                            .select('*', { count: 'exact', head: true })
+                            .neq('status', 'cancelled')
+                            .gte('created_at', yesterdayISO)
+                            .lt('created_at', todayISO),
+                        supabase
+                            .from('users')
+                            .select('*', { count: 'exact', head: true })
+                            .gte('created_at', yesterdayISO)
+                            .lt('created_at', todayISO),
+                    ]);
+
+                const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
+                const avg = totalOrders ? revenue / (totalOrders || 1) : 0;
+
+                await supabase.from('daily_reports').upsert(
+                    {
+                        date: yesterdayDateStr,
+                        total_revenue: Math.round(revenue * 100) / 100,
+                        orders_count: totalOrders || 0,
+                        new_users_count: newUsers || 0,
+                        avg_ticket: Math.round(avg * 100) / 100,
+                    },
+                    { onConflict: 'date' }
+                );
+            }
+        } catch (e) {
+            console.error('📊 Error in auto-report check:', e);
+            // Non-blocking
+        }
+
         const { data: reports, error } = await supabase
             .from('daily_reports')
             .select('*')
@@ -738,7 +799,6 @@ router.get(
             .limit(31);
 
         if (error) {
-            // Graceful return if table doesn't exist yet
             return res.json([]);
         }
         res.json(reports || []);
