@@ -51,33 +51,33 @@ function OrderTimer({ createdAt, status }: { createdAt: string; status: string }
 
 function getStatusBadge(status: string) {
     const styles: Record<string, { bg: string; color: string; label: string; icon?: string }> = {
-        pending: { bg: 'bg-amber-100/50', color: 'text-amber-600', label: 'Enviado', icon: '📨' },
-        received: { bg: 'bg-blue-100/50', color: 'text-blue-600', label: 'Recibido', icon: '👀' },
+        pending: { bg: 'bg-amber-500', color: 'text-white', label: 'Enviado', icon: '📨' },
+        received: { bg: 'bg-blue-500', color: 'text-white', label: 'Recibido', icon: '👀' },
         confirmed: {
-            bg: 'bg-indigo-100/50',
-            color: 'text-indigo-600',
+            bg: 'bg-indigo-500',
+            color: 'text-white',
             label: 'Aceptado',
             icon: '✅',
         },
         preparing: {
-            bg: 'bg-purple-100/50',
-            color: 'text-purple-600',
+            bg: 'bg-purple-500',
+            color: 'text-white',
             label: 'Preparando',
             icon: '👨‍🍳',
         },
-        on_the_way: { bg: 'bg-pink-100/50', color: 'text-pink-600', label: 'En camino', icon: '🛵' },
+        on_the_way: { bg: 'bg-pink-500', color: 'text-white', label: 'En camino', icon: '🛵' },
         delivered: {
-            bg: 'bg-green-100/50',
-            color: 'text-green-600',
+            bg: 'bg-green-500',
+            color: 'text-white',
             label: 'Entregado',
             icon: '🍱',
         },
-        cancelled: { bg: 'bg-gray-100/50', color: 'text-gray-600', label: 'Cancelado', icon: '❌' },
+        cancelled: { bg: 'bg-gray-500', color: 'text-white', label: 'Cancelado', icon: '❌' },
     };
     const s = styles[status] || styles.pending;
     return (
         <span
-            className={`px-2 py-0.5 md:py-1 rounded-lg text-[8px] md:text-[9px] font-black uppercase tracking-wider flex items-center gap-1 ${s.bg} ${s.color}`}
+            className={`px-3 py-1 md:py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm shadow-black/5 ${s.bg} ${s.color}`}
         >
             <span>{s.icon}</span>
             {s.label}
@@ -249,6 +249,14 @@ export default function OrdersTab() {
                                     ) ?? 0}{' '}
                                     unidades
                                 </span>
+                            </div>
+
+                            {/* Prominent Status Label at Bottom */}
+                            <div className="flex flex-col items-end">
+                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                    Estado del Pedido
+                                </span>
+                                {getStatusBadge(order.status)}
                             </div>
                         </div>
 
