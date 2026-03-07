@@ -106,19 +106,76 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
 }
 
 /**
- * Send an order receipt email using React Email.
+ * Send an order receipt email.
  */
-import { render } from '@react-email/render';
-import { OrderReceiptEmail } from './emails/OrderReceiptEmail.js';
-
 export async function sendOrderReceiptEmail(
   to: string,
   orderData: any
 ): Promise<void> {
   const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-  // Render the React component to HTML string
-  const html = await render(OrderReceiptEmail(orderData));
+  const itemsHtml = orderData.items.map((item: any) => `
+    <tr style="border-bottom: 1px solid #e5e7eb;">
+      <td style="padding: 12px 0; color: #374151; font-size: 15px;">${item.quantity}x ${item.name}</td>
+      <td style="padding: 12px 0; text-align: right; color: #374151; font-size: 15px; font-weight: bold;">
+        ${(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
+      </td>
+    </tr>
+  `).join('');
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif;">
+  <div style="max-width:500px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+    <div style="padding:30px 20px;background:#dc2626;text-align:center;">
+      <h1 style="color:#ffffff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+    </div>
+    <div style="padding:30px;">
+      <h2 style="font-size:20px;color:#111827;margin:0 0 15px;">¡Hola ${orderData.customerName}!</h2>
+      <p style="font-size:15px;line-height:1.5;color:#374151;margin:0 0 20px;">
+        Gracias por tu pedido. Hemos recibido tu orden <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> y la estamos preparando.
+      </p>
+      
+      <div style="border-top:1px solid #e5e7eb;margin:20px 0;"></div>
+      
+      <h3 style="font-size:14px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin:0 0 15px;">Resumen de tu pedido:</h3>
+      
+      <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+        ${itemsHtml}
+      </table>
+      
+      <div style="border-top:1px solid #e5e7eb;margin:20px 0;"></div>
+      
+      <table style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td style="font-size:18px;font-weight:bold;color:#111827;">TOTAL</td>
+          <td style="font-size:20px;font-weight:bold;color:#dc2626;text-align:right;">
+            ${orderData.total.toFixed(2).replace('.', ',')} €
+          </td>
+        </tr>
+      </table>
+      
+      <div style="border-top:1px solid #e5e7eb;margin:20px 0;"></div>
+      
+      <h3 style="font-size:14px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin:0 0 15px;">Detalles de entrega:</h3>
+      <p style="font-size:14px;color:#4b5563;margin:4px 0;"><strong>Dirección:</strong> ${orderData.deliveryAddress}</p>
+      <p style="font-size:14px;color:#4b5563;margin:4px 0;"><strong>Teléfono:</strong> ${orderData.phoneNumber}</p>
+      ${orderData.notes ? `<p style="font-size:14px;color:#4b5563;margin:4px 0;"><strong>Notas:</strong> ${orderData.notes}</p>` : ''}
+      
+      <p style="font-size:14px;color:#6b7280;text-align:center;margin-top:40px;font-style:italic;">
+        Tiempo aproximado de entrega: 30-60 minutos.<br />
+        ¡Esperamos que lo disfrutes!
+      </p>
+    </div>
+    <div style="background:#f9fafb;padding:20px;text-align:center;border-top:1px solid #f3f4f6;">
+      <p style="font-size:12px;color:#9ca3af;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
 
   await transporter.sendMail({
     from,
