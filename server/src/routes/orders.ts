@@ -370,26 +370,31 @@ router.get(
 
         const html = `
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
-    <title>¡Invita a ${senderName}! 🎁 — Sushi de Maksim</title>
-    <meta name="description" content="¡Te han enviado un pedido sorpresa! Ayuda a ${senderName} a disfrutar del mejor sushi de Madrid. 🍱✨">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- WhatsApp / Telegram / Facebook -->
-    <meta property="og:type" content="website">
+    <!-- PRIMARY PREVIEW TAGS (Telegram/WhatsApp priority) -->
+    <title>¡Invita a ${senderName}! 🎁 — Sushi de Maksim</title>
+    <meta name="description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
     <meta property="og:title" content="¡Invita a ${senderName}! 🎁">
     <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
     <meta property="og:image" content="${pandaImg}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="1200">
+    <meta property="og:image:secure_url" content="${pandaImg}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="600">
+    <meta property="og:type" content="website">
     <meta property="og:url" content="${finalDest}">
-    <meta property="og:site_name" content="Sushi de Maksim">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="${pandaImg}">
     <meta name="twitter:title" content="¡Invita a ${senderName}! 🎁">
+    <meta name="twitter:description" content="Sorprende a tu amigo(a) con su sushi favorito.">
+    
+    <meta property="og:site_name" content="Sushi de Maksim">
     
     <!-- Redirection -->
     <meta http-equiv="refresh" content="0; url=${finalDest}">

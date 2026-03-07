@@ -258,16 +258,18 @@ export default function CartPageSimple() {
 
             const data = await api.post('/orders/invite', payload);
 
+            const shareUrlWithCacheBust = `${data.shareUrl}?t=${Date.now()}`;
+
             // Open Native Share
             if (navigator.share) {
                 await navigator.share({
                     title: '¡Invítame a Sushi de Maksim! 🍣',
-                    text: `¡Hola! He preparado este pedido de sushi y me encantaría que me invitases. ¿Te animas? 🍱✨\n\n${data.shareUrl}`,
-                    url: data.shareUrl
+                    text: `¡Hola! He preparado este pedido de sushi y me encantaría que me invitases. ¿Te animas? 🍱✨\n\n${shareUrlWithCacheBust}`,
+                    url: shareUrlWithCacheBust
                 });
             } else {
                 // Fallback: Copy to clipboard
-                await navigator.clipboard.writeText(data.shareUrl);
+                await navigator.clipboard.writeText(shareUrlWithCacheBust);
                 alert('¡Enlace de invitación copiado! Envíalo a tu amigo por WhatsApp.');
             }
         } catch (err) {
