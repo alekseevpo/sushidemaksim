@@ -264,38 +264,29 @@ router.patch(
     })
 );
 
-// POST /api/orders/invite — create a draft order for someone else to pay
+// POST /api/orders/invite — create a draft order for someone else to pay (Auth Users Only)
 router.post(
     '/invite',
-    optionalAuthMiddleware,
+    authMiddleware,
     validate({
         deliveryAddress: { type: 'string', required: true, maxLength: 300 },
         phoneNumber: { type: 'string', required: true, maxLength: 30 },
         senderName: { type: 'string', required: false, maxLength: 100 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems, senderName } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, senderName } = req.body;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
         const osName = parser.getOS().name || 'Unknown';
 
-        // 1. Get items (use guestItems if provided, otherwise fallback to DB for logged in users)
-        let cartItems: any[] = [];
-        if (guestItems && Array.isArray(guestItems) && guestItems.length > 0) {
-            const itemIds = guestItems.map((i: any) => i.menuItemId);
-            const { data: menuData } = await supabase.from('menu_items').select('*').in('id', itemIds);
-            cartItems = guestItems.map((gi: any) => {
-                const menuItem = menuData?.find((m: any) => m.id === gi.menuItemId);
-                return menuItem ? { quantity: gi.quantity, menu_item_id: gi.menuItemId, menu_items: menuItem } : null;
-            }).filter((i: any) => i !== null);
-        } else if (req.userId) {
-            const { data: dbItems } = await supabase
-                .from('cart_items')
-                .select('quantity, menu_item_id, menu_items(name, price, image)')
-                .eq('user_id', req.userId);
-            cartItems = dbItems || [];
-        }
+        // 1. Get items from user's cart in DB
+        const { data: dbItems, error: cartError } = await supabase
+            .from('cart_items')
+            .select('quantity, menu_item_id, menu_items(name, price, image)')
+            .eq('user_id', req.userId);
+
+        const cartItems = dbItems || [];
 
         if (cartItems.length === 0) {
             return res.status(400).json({ error: 'La cesta está vacía. Añade algo antes de invitar.' });
