@@ -253,7 +253,7 @@ router.get(
 
         let query = supabase
             .from('orders')
-            .select('*, users(name, email), order_items(*)', { count: 'exact' });
+            .select('*, users(name, email), items:order_items(*)', { count: 'exact' });
 
         if (status) query = query.eq('status', status);
         if (userId) query = query.eq('user_id', userId);
@@ -264,13 +264,16 @@ router.get(
             error,
         } = await query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Error fetching orders:', error);
+            throw error;
+        }
 
         const formattedOrders = (orders || []).map((o: any) => ({
             ...o,
-            user_name: o.users?.name,
-            user_email: o.users?.email,
-            items: o.order_items,
+            user_name: o.users?.name || 'Cliente',
+            user_email: o.users?.email || 'N/A',
+            items: o.items || [],
         }));
 
         res.json({
@@ -455,7 +458,7 @@ router.get(
             supabase
                 .from('orders')
                 .select('*', { count: 'exact', head: true })
-                .eq('status', 'pending'),
+                .in('status', ['pending', 'received']), // Count both as pending attention
             supabase
                 .from('users')
                 .select('*', { count: 'exact', head: true })

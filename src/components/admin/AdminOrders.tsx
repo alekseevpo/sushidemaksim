@@ -6,17 +6,20 @@ import { OrderTimer } from './OrderTimer';
 export default function AdminOrders() {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
 
     const loadOrders = async (page: number = 1) => {
         setLoading(true);
+        setError(null);
         try {
             const data = await api.get(`/admin/orders?page=${page}&limit=${pagination.limit}`);
             setOrders(data.orders || []);
             setPagination(data.pagination);
         } catch (err) {
             console.error('Error fetching admin orders:', err);
+            setError(err instanceof ApiError ? err.message : 'Error al cargar los pedidos');
         } finally {
             setLoading(false);
         }
@@ -116,7 +119,17 @@ export default function AdminOrders() {
                 </button>
             </div>
 
-            {loading && orders.length === 0 ? (
+            {error ? (
+                <div className="bg-red-50 border border-red-100 p-6 rounded-xl text-center">
+                    <p className="text-red-700 font-bold mb-2">¡Ups! {error}</p>
+                    <button
+                        onClick={() => loadOrders(pagination.page)}
+                        className="text-red-600 underline text-sm font-bold"
+                    >
+                        Intentar de nuevo
+                    </button>
+                </div>
+            ) : loading && orders.length === 0 ? (
                 <div className="text-center py-12 text-gray-400">
                     <RefreshCw size={32} className="mx-auto mb-4 animate-spin" />
                     <p>Cargando pedidos...</p>
@@ -330,8 +343,8 @@ export default function AdminOrders() {
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
                             className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                    ? 'bg-red-600 text-white shadow-md'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                ? 'bg-red-600 text-white shadow-md'
+                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                                 }`}
                         >
                             {pageNum}
