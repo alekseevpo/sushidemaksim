@@ -26,7 +26,7 @@ router.get(
 
         const { data: addresses } = await supabase
             .from('user_addresses')
-            .select('id, label, street, city, postal_code, phone, is_default')
+            .select('id, label, street, house, apartment, city, postal_code, phone, is_default')
             .eq('user_id', req.userId)
             .order('is_default', { ascending: false });
 
@@ -148,7 +148,7 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: addresses, error } = await supabase
             .from('user_addresses')
-            .select('id, label, street, city, postal_code, phone, is_default')
+            .select('id, label, street, house, apartment, city, postal_code, phone, is_default')
             .eq('user_id', req.userId)
             .order('is_default', { ascending: false });
 
@@ -170,12 +170,14 @@ router.post(
     validate({
         street: { required: true, type: 'string', minLength: 3, maxLength: 200 },
         label: { type: 'string', maxLength: 50 },
+        house: { type: 'string', maxLength: 50 },
+        apartment: { type: 'string', maxLength: 100 },
         city: { type: 'string', maxLength: 100 },
         postalCode: { type: 'string', maxLength: 20 },
         phone: { type: 'string', maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { label, street, city, postalCode, phone, isDefault } = req.body;
+        const { label, street, house, apartment, city, postalCode, phone, isDefault } = req.body;
 
         if (isDefault) {
             await supabase
@@ -190,6 +192,8 @@ router.post(
                 user_id: req.userId,
                 label: label?.trim() || '',
                 street: street.trim(),
+                house: house?.trim() || '',
+                apartment: apartment?.trim() || '',
                 city: city?.trim() || '',
                 postal_code: postalCode?.trim() || '',
                 phone: phone?.trim() || '',
@@ -216,13 +220,15 @@ router.put(
     validate({
         street: { type: 'string', minLength: 3, maxLength: 200 },
         label: { type: 'string', maxLength: 50 },
+        house: { type: 'string', maxLength: 50 },
+        apartment: { type: 'string', maxLength: 100 },
         city: { type: 'string', maxLength: 100 },
         postalCode: { type: 'string', maxLength: 20 },
         phone: { type: 'string', maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = req.params.id;
-        const { label, street, city, postalCode, phone, isDefault } = req.body;
+        const { label, street, house, apartment, city, postalCode, phone, isDefault } = req.body;
 
         if (isDefault) {
             await supabase
@@ -234,6 +240,8 @@ router.put(
         const updateData: any = {};
         if (label !== undefined) updateData.label = label?.trim() || '';
         if (street !== undefined) updateData.street = street.trim();
+        if (house !== undefined) updateData.house = house?.trim() || '';
+        if (apartment !== undefined) updateData.apartment = apartment?.trim() || '';
         if (city !== undefined) updateData.city = city?.trim() || '';
         if (postalCode !== undefined) updateData.postal_code = postalCode?.trim() || '';
         if (phone !== undefined) updateData.phone = phone?.trim() || '';
