@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, MapPin, Gift, ArrowRight, XCircle, CreditCard, Heart } from 'lucide-react';
+import { CheckCircle, MapPin, ArrowRight, XCircle, CreditCard, Heart } from 'lucide-react';
 import { api, ApiError } from '../utils/api';
 import SEO from '../components/SEO';
 
@@ -116,12 +116,26 @@ export default function PayForFriendPage() {
                         </div>
                         <div className="relative z-10">
                             <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', delay: 0.2 }}
-                                className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-white/50"
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ type: 'spring', delay: 0.1 }}
+                                className="relative mb-6"
                             >
-                                <Gift size={40} className="text-white" />
+                                <motion.img
+                                    src="/hungry-panda.png"
+                                    alt="Panda hambriento"
+                                    animate={{ y: [0, -8, 0] }}
+                                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                                    className="w-32 h-32 mx-auto rounded-full border-4 border-white shadow-2xl object-cover bg-amber-50"
+                                />
+                                <motion.div
+                                    initial={{ scale: 0, rotate: 10 }}
+                                    animate={{ scale: 1, rotate: -5 }}
+                                    transition={{ delay: 0.6, type: "spring" }}
+                                    className="absolute -top-4 right-1/2 translate-x-16 bg-red-600 text-white text-[11px] font-black px-3 py-1.5 rounded-2xl shadow-xl border-2 border-white whitespace-nowrap"
+                                >
+                                    ¡TENGO HAMBRE! 🐼
+                                </motion.div>
                             </motion.div>
                             <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight">¡Momento de invitar!</h1>
                             <p className="text-white/90 font-medium text-lg">
