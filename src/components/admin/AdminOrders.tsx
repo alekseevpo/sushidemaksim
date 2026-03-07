@@ -46,23 +46,28 @@ export default function AdminOrders() {
     const statusOptions = [
         {
             value: 'pending',
-            label: 'Pendiente',
+            label: 'Enviado',
             color: 'bg-amber-100 text-amber-700 border-amber-200',
         },
         {
+            value: 'received',
+            label: 'Recibido',
+            color: 'bg-blue-100 text-blue-700 border-blue-200',
+        },
+        {
             value: 'confirmed',
-            label: 'Confirmado',
+            label: 'Aceptado',
             color: 'bg-indigo-100 text-indigo-700 border-indigo-200',
         },
         {
             value: 'preparing',
             label: 'Preparando',
-            color: 'bg-blue-100 text-blue-700 border-blue-200',
+            color: 'bg-purple-100 text-purple-700 border-purple-200',
         },
         {
             value: 'on_the_way',
             label: 'En camino',
-            color: 'bg-purple-100 text-purple-700 border-purple-200',
+            color: 'bg-pink-100 text-pink-700 border-pink-200',
         },
         {
             value: 'delivered',
@@ -140,12 +145,12 @@ export default function AdminOrders() {
                                                     const d = new Date(order.created_at);
                                                     const validDate = isNaN(d.getTime())
                                                         ? new Date(
-                                                              order.created_at.replace(' ', 'T') +
-                                                                  (order.created_at.includes('Z') ||
-                                                                  order.created_at.includes('+')
-                                                                      ? ''
-                                                                      : 'Z')
-                                                          )
+                                                            order.created_at.replace(' ', 'T') +
+                                                            (order.created_at.includes('Z') ||
+                                                                order.created_at.includes('+')
+                                                                ? ''
+                                                                : 'Z')
+                                                        )
                                                         : d;
                                                     return validDate.toLocaleString('es-ES', {
                                                         hour: '2-digit',
@@ -180,11 +185,10 @@ export default function AdminOrders() {
                                             onChange={e =>
                                                 handleUpdateStatus(order.id, e.target.value)
                                             }
-                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${
-                                                statusOptions.find(
-                                                    opt => opt.value === order.status
-                                                )?.color || 'bg-gray-100'
-                                            }`}
+                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${statusOptions.find(
+                                                opt => opt.value === order.status
+                                            )?.color || 'bg-gray-100'
+                                                }`}
                                         >
                                             {statusOptions.map(opt => (
                                                 <option
@@ -325,11 +329,10 @@ export default function AdminOrders() {
                         <button
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                pageNum === pagination.page
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
                                     ? 'bg-red-600 text-white shadow-md'
                                     : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                            }`}
+                                }`}
                         >
                             {pageNum}
                         </button>

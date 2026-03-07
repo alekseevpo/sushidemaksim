@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, CheckCircle, RefreshCcw, Shield } from 'lucide-react';
+import { Clock, RefreshCcw, Shield } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
 
@@ -15,9 +15,9 @@ function OrderTimer({ createdAt, status }: { createdAt: string; status: string }
             const d = new Date(createdAt);
             const validDate = isNaN(d.getTime())
                 ? new Date(
-                      createdAt.replace(' ', 'T') +
-                          (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
-                  )
+                    createdAt.replace(' ', 'T') +
+                    (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
+                )
                 : d;
             const start = validDate.getTime();
             const end = start + 60 * 60 * 1000; // 60 minutes
@@ -51,11 +51,12 @@ function OrderTimer({ createdAt, status }: { createdAt: string; status: string }
 
 function getStatusBadge(status: string) {
     const styles: Record<string, { bg: string; color: string; label: string; icon?: string }> = {
-        pending: { bg: 'bg-amber-100/50', color: 'text-amber-600', label: 'Pendiente', icon: '⏳' },
+        pending: { bg: 'bg-amber-100/50', color: 'text-amber-600', label: 'Enviado', icon: '📨' },
+        received: { bg: 'bg-blue-100/50', color: 'text-blue-600', label: 'Recibido', icon: '👀' },
         confirmed: {
-            bg: 'bg-blue-100/50',
-            color: 'text-blue-600',
-            label: 'Confirmado',
+            bg: 'bg-indigo-100/50',
+            color: 'text-indigo-600',
+            label: 'Aceptado',
             icon: '✅',
         },
         preparing: {
@@ -64,7 +65,7 @@ function getStatusBadge(status: string) {
             label: 'Preparando',
             icon: '👨‍🍳',
         },
-        on_the_way: { bg: 'bg-red-100/50', color: 'text-red-600', label: 'En camino', icon: '🛵' },
+        on_the_way: { bg: 'bg-pink-100/50', color: 'text-pink-600', label: 'En camino', icon: '🛵' },
         delivered: {
             bg: 'bg-green-100/50',
             color: 'text-green-600',
@@ -117,14 +118,7 @@ export default function OrdersTab() {
         }
     };
 
-    const markDelivered = async (id: number) => {
-        try {
-            await api.patch(`/orders/${id}/deliver`);
-            loadOrders(pagination.page);
-        } catch (e) {
-            alert('Error al actualizar el pedido');
-        }
-    };
+
 
     const handleRepeatOrder = async (order: any) => {
         setIsRepeating(order.id);
@@ -212,12 +206,12 @@ export default function OrdersTab() {
                                         const d = new Date(order.created_at);
                                         const validDate = isNaN(d.getTime())
                                             ? new Date(
-                                                  order.created_at.replace(' ', 'T') +
-                                                      (order.created_at.includes('Z') ||
-                                                      order.created_at.includes('+')
-                                                          ? ''
-                                                          : 'Z')
-                                              )
+                                                order.created_at.replace(' ', 'T') +
+                                                (order.created_at.includes('Z') ||
+                                                    order.created_at.includes('+')
+                                                    ? ''
+                                                    : 'Z')
+                                            )
                                             : d;
                                         return validDate.toLocaleDateString('es-ES', {
                                             day: 'numeric',
@@ -239,7 +233,7 @@ export default function OrdersTab() {
                             )}
                         </div>
 
-                        {/* Order Summary & Delivery Button */}
+                        {/* Order Summary */}
                         <div className="px-4 md:px-5 pb-4 flex items-end justify-between border-b border-gray-50/50">
                             <div>
                                 <div className="text-xl md:text-2xl font-black text-gray-900 flex items-baseline gap-0.5 tracking-tighter">
@@ -256,15 +250,6 @@ export default function OrdersTab() {
                                     unidades
                                 </span>
                             </div>
-
-                            {order.status !== 'delivered' && order.status !== 'cancelled' && (
-                                <button
-                                    onClick={() => markDelivered(order.id)}
-                                    className="h-8 md:h-9 px-3 md:px-4 bg-green-500 text-white rounded-lg md:rounded-xl font-black text-[8px] md:text-[9px] uppercase tracking-widest flex items-center gap-1.5 shadow-lg shadow-green-100 active:scale-95 transition-all"
-                                >
-                                    <CheckCircle size={12} /> Recibido
-                                </button>
-                            )}
                         </div>
 
                         {/* Items List: Minimal, no extra background */}
@@ -306,10 +291,9 @@ export default function OrdersTab() {
                                 onClick={() => handleRepeatOrder(order)}
                                 disabled={isRepeating === order.id}
                                 className={`mt-3 w-full h-10 md:h-11 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all flex items-center justify-center gap-2
-                                    ${
-                                        isRepeating === order.id
-                                            ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
+                                    ${isRepeating === order.id
+                                        ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
+                                        : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
                                     }`}
                             >
                                 <RefreshCcw
@@ -330,10 +314,9 @@ export default function OrdersTab() {
                             key={p}
                             onClick={() => loadOrders(p)}
                             className={`w-9 h-9 rounded-xl font-black text-[11px] transition-all
-                                ${
-                                    p === pagination.page
-                                        ? 'bg-red-600 text-white shadow-lg shadow-red-100'
-                                        : 'bg-white border border-gray-100 text-gray-400'
+                                ${p === pagination.page
+                                    ? 'bg-red-600 text-white shadow-lg shadow-red-100'
+                                    : 'bg-white border border-gray-100 text-gray-400'
                                 }`}
                         >
                             {p}
