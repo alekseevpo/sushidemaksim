@@ -321,14 +321,6 @@ export default function CartPageSimple() {
 
                     <div className="w-24 h-24 bg-green-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 relative shadow-inner border-2 border-white">
                         <CheckCircle size={48} className="text-green-600" />
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: [0, 1.2, 1] }}
-                            transition={{ delay: 0.3, duration: 0.5 }}
-                            className="absolute -top-2 -right-2 bg-amber-400 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg text-lg"
-                        >
-                            🎉
-                        </motion.div>
                     </div>
 
                     <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">
