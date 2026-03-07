@@ -4,11 +4,13 @@ import { Clock, CheckCircle, RefreshCcw, Shield } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
 
-function OrderTimer({ createdAt }: { createdAt: string }) {
+function OrderTimer({ createdAt, status }: { createdAt: string, status: string }) {
     const [timeLeft, setTimeLeft] = useState('');
     const [isLate, setIsLate] = useState(false);
 
     useEffect(() => {
+        if (status === 'delivered' || status === 'cancelled') return;
+
         const calculateTimeLeft = () => {
             const d = new Date(createdAt);
             const validDate = isNaN(d.getTime())
@@ -38,7 +40,11 @@ function OrderTimer({ createdAt }: { createdAt: string }) {
         calculateTimeLeft();
         const interval = setInterval(calculateTimeLeft, 1000);
         return () => clearInterval(interval);
-    }, [createdAt]);
+    }, [createdAt, status]);
+
+    if (status === 'delivered' || status === 'cancelled') {
+        return null;
+    }
 
     return (
         <span className={isLate ? 'text-red-500' : 'text-amber-600'}>
@@ -181,7 +187,7 @@ export default function OrdersTab() {
                             {order.status !== 'delivered' && order.status !== 'cancelled' && (
                                 <div className="bg-amber-50 px-2 py-1 rounded-lg border border-amber-100/50 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black">
                                     <span className="animate-pulse">⏱️</span>
-                                    <OrderTimer createdAt={order.created_at} />
+                                    <OrderTimer createdAt={order.created_at} status={order.status} />
                                 </div>
                             )}
                         </div>
