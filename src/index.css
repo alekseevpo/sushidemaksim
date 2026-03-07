@@ -25,7 +25,8 @@
     }
 
     .premium-card {
-        @apply bg-white rounded-3xl border border-gray-100 transition-[border-color, box-shadow, transform] duration-500 ease-out;
+        @apply bg-white rounded-3xl border border-gray-100 duration-500 ease-out;
+        transition: border-color 500ms ease-out, box-shadow 500ms ease-out, transform 500ms ease-out;
         box-shadow:
             0 4px 6px -1px rgba(0, 0, 0, 0.02),
             0 2px 4px -1px rgba(0, 0, 0, 0.01);
