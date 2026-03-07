@@ -117,6 +117,25 @@ app.get('/api/health', (_req, res) => {
     });
 });
 
+app.get('/api/health/full', async (_req, res) => {
+    try {
+        const { data, error } = await supabase.from('menu_items').select('count').limit(1);
+        if (error) throw error;
+        res.json({
+            status: 'ok',
+            database: 'connected',
+            count: data,
+            config: {
+                hasUrl: !!config.supabase.url,
+                hasKey: !!config.supabase.key,
+                nodeEnv: config.nodeEnv
+            }
+        });
+    } catch (err: any) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+});
+
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((_req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });

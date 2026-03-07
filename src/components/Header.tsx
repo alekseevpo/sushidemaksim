@@ -40,13 +40,19 @@ export default function Header() {
         setShowMobileMenu(false);
     }, [location.pathname]);
 
+    useEffect(() => {
+        const handleOpenLogin = () => setIsLoginModalOpen(true);
+        document.addEventListener('custom:openLogin', handleOpenLogin);
+        return () => document.removeEventListener('custom:openLogin', handleOpenLogin);
+    }, []);
+
     const initials = user
         ? user.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
         : '';
 
     const navLinks = [

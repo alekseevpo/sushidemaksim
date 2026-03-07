@@ -270,13 +270,26 @@ export default function CartPageSimple() {
                     </div>
 
                     <div className="flex flex-col gap-3 relative z-10">
-                        {isAuthenticated && (
+                        {isAuthenticated ? (
                             <button
                                 onClick={() => navigate('/profile', { state: { tab: 'orders' } })}
                                 className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95"
                             >
                                 Ver mis pedidos
                             </button>
+                        ) : (
+                            <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-2 flex flex-col items-center">
+                                <span className="text-amber-600 mb-1">🎁</span>
+                                <p className="text-xs text-amber-800 font-medium mb-3">
+                                    ¡Regístrate ahora y consigue <strong>descuentos exclusivos</strong> en tus próximos pedidos!
+                                </p>
+                                <button
+                                    onClick={() => document.dispatchEvent(new Event('custom:openLogin'))}
+                                    className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-95"
+                                >
+                                    Crear cuenta
+                                </button>
+                            </div>
                         )}
                         <Link
                             to="/menu"
