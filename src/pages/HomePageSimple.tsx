@@ -5,10 +5,11 @@ import SEO from '../components/SEO';
 
 const FeatureCard = ({ icon: Icon, title, desc, colorClass, index }: any) => (
     <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
+        style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
         className="premium-card p-8 text-center group"
     >
         <div
