@@ -42,11 +42,11 @@ export default function Header() {
 
     const initials = user
         ? user.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
         : '';
 
     const navLinks = [
@@ -62,7 +62,11 @@ export default function Header() {
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center justify-between h-20">
                         {/* Logo */}
-                        <Link to="/" className="flex items-center no-underline gap-2 group">
+                        <Link
+                            to="/"
+                            onClick={() => setShowMobileMenu(false)}
+                            className="flex items-center no-underline gap-2 group"
+                        >
                             <div className="bg-red-600 p-1.5 rounded-lg group-hover:rotate-12 transition-transform duration-300">
                                 <img
                                     src="/logo.svg"

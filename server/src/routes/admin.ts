@@ -9,7 +9,7 @@ import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { AuthRequest } from '../middleware/auth.js';
-import { formatMenuItem } from '../utils/helpers.js';
+import { formatMenuItem, getMadridStartOfDay } from '../utils/helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -434,10 +434,8 @@ router.get(
 
         const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
 
-        // 2. Today metrics
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        const todayISO = todayStart.toISOString();
+        // 2. Today metrics (Madrid reset at 0:00)
+        const todayISO = getMadridStartOfDay().toISOString();
 
         const [
             { data: revTodayData },
@@ -485,10 +483,12 @@ router.get(
             user_name: o.users?.name,
         }));
 
-        // 5. Top Items (using order_items)
+        // 5. Top Items (using order_items from last 30 days)
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         const { data: topItemsRaw } = await supabase
             .from('order_items')
-            .select('name, quantity, price_at_time');
+            .select('name, quantity, price_at_time')
+            .gte('created_at', thirtyDaysAgo);
 
         const itemMap: Record<string, { name: string; sold: number; revenue: number }> = {};
         topItemsRaw?.forEach(item => {
@@ -697,6 +697,24 @@ router.put(
         if (error) throw error;
 
         res.json({ success: true });
+    })
+);
+
+// GET /api/admin/reports
+router.get(
+    '/reports',
+    asyncHandler(async (_req: Request, res: Response) => {
+        const { data: reports, error } = await supabase
+            .from('daily_reports')
+            .select('*')
+            .order('date', { ascending: false })
+            .limit(31);
+
+        if (error) {
+            // Graceful return if table doesn't exist yet
+            return res.json([]);
+        }
+        res.json(reports || []);
     })
 );
 

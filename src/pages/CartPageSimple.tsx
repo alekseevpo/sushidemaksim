@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, MapPin, CheckCircle, Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
+import { Sparkles, MapPin, CheckCircle, Trash2, Plus, Minus, ArrowLeft, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -47,6 +47,7 @@ export default function CartPageSimple() {
     const [noCall, setNoCall] = useState(false);
     const [noBuzzer, setNoBuzzer] = useState(false);
     const [customNote, setCustomNote] = useState('');
+    const [failedImages, setFailedImages] = useState<Set<string | number>>(new Set());
 
     // Promo code
     const [promoCodeInput, setPromoCodeInput] = useState('');
@@ -55,6 +56,23 @@ export default function CartPageSimple() {
     );
     const [promoError, setPromoError] = useState('');
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
+    const EMOJI: Record<string, string> = {
+        rolls: '🍣',
+        'rollos-grandes': '🍣',
+        'rolls-calientes': '🍘',
+        sets: '🍱',
+        classic: '🍙',
+        baked: '🍘',
+        sweet: '🍥',
+        sauces: '🥢',
+        extras: '🥢',
+        entrantes: '🥟',
+        postre: '🍰',
+        bebidas: '🥤',
+    };
+
+    const getCategoryEmoji = (category: string) => EMOJI[category] || '🍱';
 
     // Pre-fill from user's default address
     const defaultAddr = user?.addresses?.find(a => a.isDefault) ?? user?.addresses?.[0];
@@ -138,6 +156,12 @@ export default function CartPageSimple() {
                 promoCode: appliedPromo?.code || undefined,
             });
             setOrderSuccess(data.order.id);
+            clearCart();
+
+            // Long haptic feedback for success (2 seconds)
+            if ('vibrate' in navigator) {
+                navigator.vibrate(2000);
+            }
         } catch (err) {
             setOrderError(err instanceof ApiError ? err.message : 'Error al realizar el pedido');
         } finally {
@@ -168,37 +192,56 @@ export default function CartPageSimple() {
     // ===== ORDER SUCCESS STATE =====
     if (orderSuccess !== null) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-                <div className="bg-white rounded-2xl shadow-xl p-10 max-w-md w-full text-center">
-                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={40} className="text-green-600" />
+            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-500">
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    className="bg-white rounded-[40px] shadow-2xl p-10 max-w-md w-full text-center relative overflow-hidden border border-white"
+                >
+                    {/* Decorative Background Elements */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
+
+                    <div className="w-24 h-24 bg-green-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 relative shadow-inner border-2 border-white">
+                        <CheckCircle size={48} className="text-green-600" />
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: [0, 1.2, 1] }}
+                            transition={{ delay: 0.3, duration: 0.5 }}
+                            className="absolute -top-2 -right-2 bg-amber-400 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg text-lg"
+                        >
+                            🎉
+                        </motion.div>
                     </div>
-                    <h1 className="text-2xl font-bold mb-3 text-gray-900">¡Pedido realizado!</h1>
-                    <p className="text-gray-500 mb-2">
-                        Pedido{' '}
-                        <span className="font-bold text-gray-900">
-                            #{String(orderSuccess).padStart(5, '0')}
-                        </span>
+
+                    <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">¡Pedido exitoso!</h1>
+                    <p className="text-gray-500 font-medium mb-6 leading-relaxed">
+                        Tu pedido <span className="text-gray-900 font-black">#{String(orderSuccess).padStart(5, '0')}</span> ha sido recibido y ya estamos preparando tus sushis con amor.
                     </p>
-                    <p className="text-gray-500 mb-8">
-                        Tiempo estimado de entrega:{' '}
-                        <span className="font-bold text-red-600">30–60 min</span>
-                    </p>
-                    <div className="flex flex-col gap-3">
+
+                    <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 mb-8 flex items-center justify-center gap-4">
+                        <div className="flex flex-col items-center">
+                            <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1">Entrega estimada</span>
+                            <span className="text-lg font-black text-red-600">30 – 60 min</span>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 relative z-10">
                         <button
                             onClick={() => navigate('/profile', { state: { tab: 'orders' } })}
-                            className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold border-none cursor-pointer hover:bg-red-700 transition"
+                            className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95"
                         >
                             Ver mis pedidos
                         </button>
                         <Link
                             to="/menu"
-                            className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-bold no-underline text-center hover:bg-gray-200 transition"
+                            className="bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-gray-200 transition-all active:scale-95"
                         >
                             Seguir comprando
                         </Link>
                     </div>
-                </div>
+                </motion.div>
             </div>
         );
     }
@@ -206,7 +249,7 @@ export default function CartPageSimple() {
     // ===== EMPTY CART =====
     if (!cartLoading && items.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-50 px-4 py-8 flex items-center">
+            <div className="min-h-screen bg-transparent px-4 py-8 flex items-center">
                 <div className="max-w-4xl mx-auto text-center py-16">
                     <div className="text-8xl mb-4">🛒</div>
                     <h1 className="text-4xl font-bold mb-4">Tu cesta está vacía</h1>
@@ -227,13 +270,32 @@ export default function CartPageSimple() {
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
                                 {popularItems.map(item => (
                                     <div key={item.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col group">
-                                        <div className="h-32 bg-gray-100 rounded-2xl mb-4 overflow-hidden relative">
-                                            <img
-                                                src={item.image || '/placeholder-sushi.png'}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            />
-                                            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md text-[10px] font-black px-2 py-1 rounded-lg">
+                                        <div className="h-32 bg-gray-50 rounded-2xl mb-4 overflow-hidden relative flex items-center justify-center">
+                                            {!failedImages.has(item.id) ? (
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                    onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
+                                                    {/* Background Pattern */}
+                                                    <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+
+                                                    {/* Glow effect */}
+                                                    <div className="absolute w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
+
+                                                    {/* Emoji with shadow */}
+                                                    <span className="text-5xl relative z-10 drop-shadow-2xl transform group-hover:rotate-12 transition-transform duration-500">
+                                                        {getCategoryEmoji(item.category)}
+                                                    </span>
+
+                                                    {/* Texture overlay */}
+                                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
+                                                </div>
+                                            )}
+                                            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md text-[10px] font-black px-2 py-1 rounded-lg shadow-sm">
                                                 ★ TOP
                                             </div>
                                         </div>
@@ -259,90 +321,101 @@ export default function CartPageSimple() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 px-4 py-8">
+        <div className="min-h-screen bg-transparent flex flex-col">
             <SEO
                 title="Tu Cesta"
-                description="Revisa los productos en tu cesta antes de hacer el pedido."
+                description="Finaliza tu pedido de sushi. Revisa tus platos, añade extras и disfruta del mejor sushi a domicilio."
             />
-            <div className="max-w-5xl mx-auto">
-                <h1 className="text-4xl font-bold mb-8">Tu cesta</h1>
+
+            <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:py-12">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <h1 className="text-3xl sm:text-4xl font-black text-gray-900 m-0 tracking-tight">Tu cesta</h1>
+                    <button
+                        onClick={clearCart}
+                        className="text-sm font-bold text-gray-400 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1 w-fit"
+                    >
+                        <Trash2 size={14} /> Vaciar cesta
+                    </button>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Cart Items */}
-                    <div className="lg:col-span-2 flex flex-col gap-6">
-                        <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-xl font-bold m-0">
+                    <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6 px-0 md:px-0">
+                        <div className="bg-transparent md:bg-white md:rounded-xl md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-0 md:p-6">
+                            <div className="flex items-center justify-between mb-4 md:mb-6 px-4 md:px-0">
+                                <h2 className="text-xl md:text-xl font-black m-0 uppercase tracking-tight">
                                     Productos ({items.length})
                                 </h2>
-                                <button
-                                    onClick={clearCart}
-                                    className="border-none bg-transparent text-red-500 text-sm font-bold cursor-pointer hover:underline"
-                                >
-                                    Vaciar cesta
-                                </button>
                             </div>
 
                             <div className="flex flex-col gap-4">
                                 {items.map(item => (
                                     <div
                                         key={item.id}
-                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
+                                        className="relative flex items-center gap-3 p-3 bg-white border-b border-gray-50 last:border-none animate-in slide-in-from-left duration-300"
                                     >
-                                        <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-gray-200 flex items-center justify-center">
-                                            <img
-                                                src={item.image || '/placeholder-sushi.png'}
-                                                alt={`Producto ${item.name} en el carrito`}
-                                                loading="lazy"
-                                                decoding="async"
-                                                className="w-full h-full object-cover"
-                                                onError={e => {
-                                                    e.currentTarget.src = '/placeholder-sushi.png';
-                                                }}
-                                            />
+                                        <div className="w-16 h-16 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img">
+                                            {!failedImages.has(item.id) ? (
+                                                <img
+                                                    src={item.image}
+                                                    alt={`Producto ${item.name}`}
+                                                    loading="lazy"
+                                                    className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
+                                                    onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover/img:scale-110 transition-transform duration-500">
+                                                    <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                                    <div className="absolute w-12 h-12 bg-red-500/5 rounded-full blur-xl"></div>
+                                                    <span className="text-2xl relative z-10 drop-shadow-md">
+                                                        {getCategoryEmoji(item.category)}
+                                                    </span>
+                                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent"></div>
+                                                </div>
+                                            )}
                                         </div>
 
-                                        <div className="flex-1">
-                                            <h3 className="font-bold m-0 mb-1">{item.name}</h3>
-                                            <p className="text-lg font-bold text-red-600 m-0">
-                                                {item.price.toFixed(2).replace('.', ',')} € ×{' '}
-                                                {item.quantity} ={' '}
-                                                {(item.price * item.quantity)
-                                                    .toFixed(2)
-                                                    .replace('.', ',')}{' '}
-                                                €
-                                            </p>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-bold text-gray-900 leading-tight mb-1 md:mb-2 text-sm md:text-sm truncate">
+                                                {item.name}
+                                            </h3>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center bg-gray-50 rounded-lg p-0.5 border border-gray-100">
+                                                    <button
+                                                        onClick={() =>
+                                                            item.quantity > 1
+                                                                ? updateQuantity(item.id, item.quantity - 1)
+                                                                : removeItem(item.id)
+                                                        }
+                                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
+                                                    >
+                                                        <Minus size={14} />
+                                                    </button>
+                                                    <span className="w-8 md:w-8 text-center font-black text-gray-900 text-sm">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() =>
+                                                            updateQuantity(item.id, item.quantity + 1)
+                                                        }
+                                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
+                                                    >
+                                                        <Plus size={14} />
+                                                    </button>
+                                                </div>
+                                                <span className="text-base md:text-base font-black text-gray-900">
+                                                    {(item.price * item.quantity).toFixed(2).replace('.', ',')} €
+                                                </span>
+                                            </div>
                                         </div>
 
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() =>
-                                                    item.quantity > 1
-                                                        ? updateQuantity(item.id, item.quantity - 1)
-                                                        : removeItem(item.id)
-                                                }
-                                                className="w-8 h-8 rounded-full bg-gray-200 border-none cursor-pointer flex items-center justify-center hover:bg-gray-300 transition"
-                                            >
-                                                <Minus size={16} />
-                                            </button>
-                                            <span className="w-8 text-center font-bold">
-                                                {item.quantity}
-                                            </span>
-                                            <button
-                                                onClick={() =>
-                                                    updateQuantity(item.id, item.quantity + 1)
-                                                }
-                                                className="w-8 h-8 rounded-full bg-gray-200 border-none cursor-pointer flex items-center justify-center hover:bg-gray-300 transition"
-                                            >
-                                                <Plus size={16} />
-                                            </button>
-                                        </div>
-
+                                        {/* Simple Delete Button */}
                                         <button
                                             onClick={() => removeItem(item.id)}
-                                            className="border-none bg-transparent text-red-500 cursor-pointer p-1 hover:bg-red-50 rounded transition"
+                                            className="text-gray-300 hover:text-red-500 cursor-pointer p-1 transition-colors"
+                                            aria-label="Eliminar"
                                         >
-                                            <Trash2 size={20} />
+                                            <X size={16} />
                                         </button>
                                     </div>
                                 ))}
@@ -351,9 +424,9 @@ export default function CartPageSimple() {
 
                         {/* Delivery info — only for logged-in users */}
                         {isAuthenticated && (
-                            <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6">
-                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <MapPin size={20} className="text-red-600" /> Datos de entrega
+                            <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 mx-2 md:mx-0 rounded-[28px] md:rounded-xl">
+                                <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
+                                    <MapPin size={18} className="text-red-600" /> Datos de entrega
                                 </h2>
 
                                 {/* Default address pill */}
@@ -469,19 +542,26 @@ export default function CartPageSimple() {
                                 <div className="flex flex-col gap-4">
                                     {suggestions.map(item => (
                                         <div key={String(item.id)} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-100">
-                                            <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
-                                                <img
-                                                    src={item.image || '/placeholder-sushi.png'}
-                                                    alt={item.name}
-                                                    className="w-full h-full object-cover"
-                                                    onError={e => {
-                                                        e.currentTarget.src = '/placeholder-sushi.png';
-                                                    }}
-                                                />
+                                            <div className="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100 group/sug">
+                                                {!failedImages.has(item.id) ? (
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        className="w-full h-full object-cover group-hover/sug:scale-110 transition-transform duration-500"
+                                                        onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover/sug:scale-110 transition-transform duration-500">
+                                                        <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                                        <span className="text-xl relative z-10 drop-shadow-sm">
+                                                            {getCategoryEmoji(item.category)}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold text-gray-900 truncate m-0">{item.name}</p>
-                                                <p className="text-xs text-red-600 font-bold m-0">{item.price.toFixed(2)} €</p>
+                                            <div className="flex-1 min-w-0 pr-2">
+                                                <p className="text-sm font-bold text-gray-900 truncate m-0 leading-tight">{item.name}</p>
+                                                <p className="text-[11px] text-red-600 font-black m-0">{item.price.toFixed(2).replace('.', ',')} €</p>
                                             </div>
                                             <button
                                                 onClick={() => {
@@ -506,7 +586,7 @@ export default function CartPageSimple() {
                             </div>
                         ) : null}
 
-                        <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 sticky top-24 overflow-hidden">
+                        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 overflow-hidden rounded-t-[32px] md:rounded-xl border-b md:border-none border-gray-50">
                             {/* Free Delivery Progressive Bar */}
                             <div className="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100 relative overflow-hidden">
                                 <div className="flex justify-between items-center mb-2">
@@ -530,7 +610,7 @@ export default function CartPageSimple() {
                                 )}
                             </div>
 
-                            <h2 className="text-xl font-bold mb-6">Resumen</h2>
+                            <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
 
                             <div className="flex flex-col gap-3 mb-6">
                                 <div className="flex justify-between text-gray-500">
@@ -656,7 +736,39 @@ export default function CartPageSimple() {
                         </div>
                     </div>
                 </div>
+            </main>
+
+            {/* Sticky Mobile Checkout Bar */}
+            <div className="md:hidden sticky bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-8 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+                <div className="flex items-center justify-between max-w-7xl mx-auto">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total</span>
+                        <span className="text-xl font-black text-red-600 leading-tight">
+                            {finalTotal.toFixed(2).replace('.', ',')} €
+                        </span>
+                    </div>
+                    {isAuthenticated ? (
+                        <button
+                            onClick={handleOrder}
+                            disabled={isOrdering || items.length === 0}
+                            className="bg-red-600 text-white px-8 py-3 rounded-xl font-black text-sm hover:bg-red-700 transition active:scale-95 disabled:bg-gray-400"
+                        >
+                            {isOrdering ? '...' : (
+                                <div className="flex items-center gap-2 text-base">
+                                    Pedir <CheckCircle size={18} />
+                                </div>
+                            )}
+                        </button>
+                    ) : (
+                        <Link
+                            to="/"
+                            className="bg-gray-900 text-white px-6 py-3 rounded-xl font-black text-sm no-underline active:scale-95"
+                        >
+                            Log In
+                        </Link>
+                    )}
+                </div>
             </div>
-        </div >
+        </div>
     );
 }

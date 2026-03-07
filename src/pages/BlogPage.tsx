@@ -37,7 +37,7 @@ export default function BlogPage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-transparent pb-20">
             <SEO
                 title="Blog"
                 description="Historias, recetas y secretos del mundo del sushi artesanal. Aprende más sobre la comida japonesa con Sushi de Maksim."

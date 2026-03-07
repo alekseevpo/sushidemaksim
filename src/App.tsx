@@ -36,7 +36,7 @@ function App() {
     return (
         <AuthProvider>
             <CartProvider>
-                <div className="min-h-screen bg-gray-50 flex flex-col">
+                <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
                     <CookieConsent />
                     <FloatingCart />
                     {!isAdminRoute && <Header />}

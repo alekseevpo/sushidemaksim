@@ -34,6 +34,7 @@ export default function AdminPage() {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<TabId>('dashboard');
     const [stats, setStats] = useState<any>(null);
+    const [reports, setReports] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showHelp, setShowHelp] = useState(true);
 
@@ -53,8 +54,12 @@ export default function AdminPage() {
     const loadStats = async () => {
         setLoading(true);
         try {
-            const data = await api.get('/admin/stats');
-            setStats(data);
+            const [statsData, reportsData] = await Promise.all([
+                api.get('/admin/stats'),
+                api.get('/admin/reports')
+            ]);
+            setStats(statsData);
+            setReports(reportsData || []);
         } catch (err) {
             console.error('Failed to load stats', err);
         } finally {
@@ -282,11 +287,11 @@ export default function AdminPage() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     <StatCard
-                                        title="Ingresos del día"
+                                        title="Ingresos de hoy"
                                         value={`${(stats?.revenueToday ?? 0).toFixed(2).replace('.', ',')} €`}
                                         icon={DollarSign}
                                         colorClass="bg-green-100 text-green-600"
-                                        desc="Total cobrado en las últimas 24h"
+                                        desc="Total cobrado (Madrid)"
                                     />
                                     <StatCard
                                         title="Nuevos Pedidos"
@@ -462,6 +467,67 @@ export default function AdminPage() {
                                                 ))}
                                             </ul>
                                         </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Daily Reports Section */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8 overflow-hidden">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="font-bold text-gray-900">Historial de Reportes Diarios</h3>
+                                    <span className="text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                                        Últimos 30 días
+                                    </span>
+                                </div>
+
+                                {loading ? (
+                                    <div className="space-y-4">
+                                        {[1, 2, 3].map(i => (
+                                            <div key={i} className="h-10 bg-gray-50 rounded animate-pulse"></div>
+                                        ))}
+                                    </div>
+                                ) : !reports?.length ? (
+                                    <div className="text-center py-12">
+                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <Activity className="text-gray-300" size={32} />
+                                        </div>
+                                        <p className="text-gray-500 text-sm">Aún no se ha generado ningún informe diario.</p>
+                                        <p className="text-gray-400 text-xs mt-1">El primer informe aparecerá mañana a las 00:00.</p>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left">
+                                            <thead>
+                                                <tr className="border-b border-gray-50 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                                    <th className="px-4 py-3">Fecha</th>
+                                                    <th className="px-4 py-3">Ingresos</th>
+                                                    <th className="px-4 py-3">Pedidos</th>
+                                                    <th className="px-4 py-3">Nuevos Clientes</th>
+                                                    <th className="px-4 py-3">Ticket Promedio</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-50">
+                                                {reports.map((report) => (
+                                                    <tr key={report.id} className="hover:bg-gray-50 transition-colors">
+                                                        <td className="px-4 py-4 text-sm font-bold text-gray-900">
+                                                            {new Date(report.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}
+                                                        </td>
+                                                        <td className="px-4 py-4 text-sm font-bold text-green-600">
+                                                            {Number(report.total_revenue).toFixed(2).replace('.', ',')} €
+                                                        </td>
+                                                        <td className="px-4 py-4 text-sm text-gray-600 font-medium">
+                                                            {report.orders_count}
+                                                        </td>
+                                                        <td className="px-4 py-4 text-sm text-gray-600">
+                                                            {report.new_users_count}
+                                                        </td>
+                                                        <td className="px-4 py-4 text-sm text-gray-600">
+                                                            {Number(report.avg_ticket).toFixed(2).replace('.', ',')} €
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 )}
                             </div>

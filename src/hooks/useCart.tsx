@@ -66,6 +66,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
             return;
         }
 
+        // Haptic feedback
+        if ('vibrate' in navigator) {
+            navigator.vibrate(50);
+        }
+
         // Optimistic UI update
         const existing = items.find(i => i.id === item.id);
         if (existing) {

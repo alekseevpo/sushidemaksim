@@ -46,7 +46,7 @@ export default function BlogPostPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+            <div className="min-h-screen bg-transparent flex flex-col items-center justify-center">
                 <RefreshCw size={40} className="animate-spin text-red-600 mb-4" />
                 <p className="text-gray-500 font-medium tracking-wide">Cargando artículo...</p>
             </div>
@@ -55,7 +55,7 @@ export default function BlogPostPage() {
 
     if (error || !post) {
         return (
-            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+            <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-4">
                 <AlertCircle size={60} className="text-red-500 mb-6" />
                 <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">
                     ¡Ups! Algo salió mal
@@ -71,7 +71,7 @@ export default function BlogPostPage() {
     }
 
     return (
-        <article className="min-h-screen bg-white pb-20">
+        <article className="min-h-screen bg-transparent pb-20">
             <SEO
                 title={post.title}
                 description={post.excerpt}

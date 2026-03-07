@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, Plus } from 'lucide-react';
-import { cardStyle } from './profileStyles';
+import { Heart, ShoppingBag, Eye } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
 
@@ -53,7 +52,6 @@ export default function FavoritesTab() {
         try {
             const data = await api.post('/user/favorites', { menuItemId });
             if (!data.isFavorite) {
-                // If unfavorited, immediately remove it from the list here
                 setFavorites(prev => prev.filter(item => item.id !== menuItemId));
             }
         } catch (error) {
@@ -86,25 +84,15 @@ export default function FavoritesTab() {
 
     if (loading) {
         return (
-            <div>
-                <h1
-                    style={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        marginBottom: '20px',
-                        color: '#111827',
-                    }}
-                >
-                    Mis Favoritos
-                </h1>
-                <div style={{ ...cardStyle, textAlign: 'center', padding: '48px 24px' }}>
-                    <div
-                        style={{ fontSize: '32px', marginBottom: '12px' }}
-                        className="animate-pulse"
-                    >
-                        ⏳
+            <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
+                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">Mis Favoritos</h2>
+                </div>
+                <div className="bg-gray-50 rounded-[40px] p-24 text-center border-2 border-gray-100">
+                    <div className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-6 text-2xl animate-spin">
+                        🍣
                     </div>
-                    <p style={{ color: '#6B7280' }}>Cargando favoritos...</p>
+                    <p className="text-gray-500 font-bold">Cargando tus favoritos...</p>
                 </div>
             </div>
         );
@@ -112,132 +100,133 @@ export default function FavoritesTab() {
 
     if (favorites.length === 0) {
         return (
-            <div>
-                <h1
-                    style={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        marginBottom: '20px',
-                        color: '#111827',
-                    }}
-                >
-                    Mis Favoritos
-                </h1>
-                <div style={{ ...cardStyle, textAlign: 'center', padding: '48px 24px' }}>
-                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>❤️</div>
-                    <h3
-                        style={{
-                            fontSize: '18px',
-                            fontWeight: 'bold',
-                            marginBottom: '8px',
-                            color: '#111827',
-                        }}
-                    >
-                        No tienes favoritos aún
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6B7280' }}>
-                        Puedes añadir tus platos preferidos desde el Menú usando el botón del
-                        corazón.
+            <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
+                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">Mis Favoritos</h2>
+                </div>
+                <div className="bg-gray-50 rounded-[40px] p-16 text-center border-2 border-dashed border-gray-200">
+                    <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 text-3xl">
+                        ❤️
+                    </div>
+                    <h3 className="text-xl font-black text-gray-900 mb-2">Aún no tienes favoritos</h3>
+                    <p className="text-gray-500 text-sm max-w-xs mx-auto mb-8 leading-relaxed">
+                        Añade tus platos favoritos desde el menú para tenerlos siempre a mano y realizar pedidos más rápido.
                     </p>
+                    <button
+                        onClick={() => window.location.href = '/menu'}
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                    >
+                        Explorar Menú
+                    </button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div>
-            <h1
-                style={{
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    marginBottom: '20px',
-                    color: '#111827',
-                }}
-            >
-                Mis Favoritos ({favorites.length})
-            </h1>
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
+                <div>
+                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">
+                        Mis Favoritos
+                        <span className="ml-3 px-3 py-1 bg-red-600 text-white text-xs font-black rounded-full align-middle shadow-md shadow-red-100 italic">
+                            {favorites.length}
+                        </span>
+                    </h2>
+                    <p className="text-gray-500 text-sm mt-1">Tus platos preferidos listos para pedir</p>
+                </div>
+            </div>
 
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {favorites.map(item => (
                     <div
                         key={item.id}
-                        className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] overflow-hidden transition-all duration-300 relative hover:-translate-y-1 hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.15)] flex flex-col group"
+                        className="bg-white border border-gray-100 rounded-[32px] overflow-hidden hover:shadow-2xl hover:shadow-gray-100 transition-all duration-300 group flex flex-col relative"
                     >
-                        {/* Favorite Button Overlay  */}
-                        <button
-                            onClick={() => toggleFavorite(item.id)}
-                            className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-red-500 hover:scale-110 transition-transform cursor-pointer border-none mix-blend-normal"
-                        >
-                            <Heart size={18} fill="currentColor" />
-                        </button>
-
-                        {/* Image */}
-                        <div className="h-[180px] bg-gray-100 rounded-t-xl overflow-hidden relative">
+                        {/* Image Container */}
+                        <div className="aspect-[4/3] overflow-hidden relative flex items-center justify-center">
                             {!failedImages.has(item.id) ? (
                                 <img
                                     src={item.image}
                                     alt={item.name}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                    onError={() =>
-                                        setFailedImages(prev => new Set(prev).add(item.id))
-                                    }
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                    <span className="text-6xl">{EMOJI[item.category] ?? '🍣'}</span>
+                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 transform group-hover:scale-110">
+                                    {EMOJI[item.category] ?? '🍣'}
                                 </div>
                             )}
-                            <div className="absolute top-2 left-2 flex gap-1">
+
+                            {/* Tags Overlay */}
+                            <div className="absolute top-4 left-4 flex flex-col gap-2">
                                 {item.spicy && (
-                                    <span className="bg-red-100 text-red-800 rounded-full px-2 py-1 text-xs font-semibold">
+                                    <span className="px-3 py-1 bg-red-600/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-lg">
                                         🌶️ Picante
                                     </span>
                                 )}
                                 {item.is_promo && (
-                                    <span className="bg-green-100 text-green-800 rounded-full px-2 py-1 text-xs font-bold">
+                                    <span className="px-3 py-1 bg-green-600/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-lg">
                                         🏷️ Promo
                                     </span>
                                 )}
+                                {item.vegetarian && (
+                                    <span className="px-3 py-1 bg-amber-600/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-lg">
+                                        🥬 Veggie
+                                    </span>
+                                )}
                             </div>
+
+                            {/* Actions Overlay */}
+                            <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                <button
+                                    onClick={() => toggleFavorite(item.id)}
+                                    className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md text-red-600 shadow-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all transform hover:scale-110"
+                                >
+                                    <Heart size={20} fill="currentColor" />
+                                </button>
+                                <button className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md text-gray-900 shadow-xl flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all transform hover:scale-110">
+                                    <Eye size={20} />
+                                </button>
+                            </div>
+
+                            {/* Glassmorphism Bottom Border */}
+                            <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                         </div>
 
-                        <div className="p-4 flex flex-col flex-1">
-                            <div className="flex items-start justify-between mb-2">
-                                <h3 className="text-[17px] font-bold m-0 text-gray-900 leading-tight">
+                        {/* Content */}
+                        <div className="p-6 flex flex-col flex-1">
+                            <div className="flex justify-between items-start gap-4 mb-2">
+                                <h3 className="text-lg font-black text-gray-900 m-0 leading-tight">
                                     {item.name}
                                 </h3>
-                                <div className="flex gap-1 ml-2 flex-shrink-0">
-                                    {item.vegetarian && (
-                                        <span className="text-emerald-500 text-sm">🥬</span>
-                                    )}
+                                <div className="text-xs font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded-md">
+                                    {item.pieces ? `${item.pieces} uds` : 'unidad'}
                                 </div>
                             </div>
-                            <p className="text-gray-500 text-[13px] leading-relaxed mb-3 flex-1 m-0">
+
+                            <p className="text-gray-500 text-xs font-medium leading-relaxed mb-6 flex-1 italic group-hover:text-gray-700 transition-colors">
                                 {item.description}
                             </p>
-                            {item.pieces && (
-                                <div className="text-[13px] text-gray-400 mb-3 font-medium">
-                                    {item.pieces} uds
-                                </div>
-                            )}
-                            <div className="flex items-center justify-between mt-auto">
-                                <span className="text-[20px] font-bold text-red-600">
+
+                            <div className="flex items-center justify-between gap-4 mt-auto">
+                                <div className="text-xl font-black text-red-600 italic tracking-tighter">
                                     {item.price.toFixed(2).replace('.', ',')} €
-                                </span>
+                                </div>
                                 <button
                                     onClick={() => handleAddToCart(item)}
-                                    className={`px-3 py-2 rounded-lg font-bold border-none cursor-pointer flex items-center gap-1.5 text-[13px] outline-none transition-all duration-300 ${
-                                        addedItems.has(item.id)
-                                            ? 'bg-green-600 text-white'
-                                            : 'bg-red-600 text-white hover:bg-red-700 shadow-sm'
-                                    }`}
+                                    className={`h-11 px-6 rounded-2xl font-black text-xs transition-all flex items-center gap-2 shadow-xl
+                                        ${addedItems.has(item.id)
+                                            ? 'bg-green-600 text-white shadow-green-100'
+                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] shadow-gray-200 hover:shadow-red-200'}`}
                                 >
                                     {addedItems.has(item.id) ? (
                                         <>✓ Añadido</>
                                     ) : (
                                         <>
-                                            <Plus size={14} />
-                                            Añadir
+                                            <ShoppingBag size={14} />
+                                            Pedir
                                         </>
                                     )}
                                 </button>

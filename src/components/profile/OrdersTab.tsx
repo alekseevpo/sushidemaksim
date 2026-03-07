@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, CheckCircle, RefreshCcw } from 'lucide-react';
+import { Clock, CheckCircle, RefreshCcw, Shield } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
-import { cardStyle } from './profileStyles';
 
 function OrderTimer({ createdAt }: { createdAt: string }) {
     const [timeLeft, setTimeLeft] = useState('');
@@ -25,7 +24,7 @@ function OrderTimer({ createdAt }: { createdAt: string }) {
 
             if (diff <= 0) {
                 setIsLate(true);
-                setTimeLeft('00:00 (Atrasado)');
+                setTimeLeft('00:00');
             } else {
                 setIsLate(false);
                 const minutes = Math.floor(diff / (1000 * 60));
@@ -42,33 +41,25 @@ function OrderTimer({ createdAt }: { createdAt: string }) {
     }, [createdAt]);
 
     return (
-        <span style={{ color: isLate ? '#DC2626' : '#D97706', fontWeight: 'bold' }}>
-            ⏱️ {timeLeft}
+        <span className={isLate ? 'text-red-500' : 'text-amber-600'}>
+            {timeLeft}
         </span>
     );
 }
 
 function getStatusBadge(status: string) {
-    const styles: Record<string, { bg: string; color: string; label: string }> = {
-        pending: { bg: '#FEF3C7', color: '#D97706', label: 'Pendiente' },
-        confirmed: { bg: '#DBEAFE', color: '#2563EB', label: 'Confirmado' },
-        preparing: { bg: '#EDE9FE', color: '#7C3AED', label: 'Preparando' },
-        on_the_way: { bg: '#FEE2E2', color: '#DC2626', label: 'En camino 🛵' },
-        delivered: { bg: '#D1FAE5', color: '#059669', label: 'Entregado' },
-        cancelled: { bg: '#F3F4F6', color: '#6B7280', label: 'Cancelado' },
+    const styles: Record<string, { bg: string; color: string; label: string; icon?: string }> = {
+        pending: { bg: 'bg-amber-100/50', color: 'text-amber-600', label: 'Pendiente', icon: '⏳' },
+        confirmed: { bg: 'bg-blue-100/50', color: 'text-blue-600', label: 'Confirmado', icon: '✅' },
+        preparing: { bg: 'bg-purple-100/50', color: 'text-purple-600', label: 'Preparando', icon: '👨‍🍳' },
+        on_the_way: { bg: 'bg-red-100/50', color: 'text-red-600', label: 'En camino', icon: '🛵' },
+        delivered: { bg: 'bg-green-100/50', color: 'text-green-600', label: 'Entregado', icon: '🍱' },
+        cancelled: { bg: 'bg-gray-100/50', color: 'text-gray-600', label: 'Cancelado', icon: '❌' },
     };
     const s = styles[status] || styles.pending;
     return (
-        <span
-            style={{
-                backgroundColor: s.bg,
-                color: s.color,
-                padding: '4px 12px',
-                borderRadius: '9999px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-            }}
-        >
+        <span className={`px-2 py-0.5 md:py-1 rounded-lg text-[8px] md:text-[9px] font-black uppercase tracking-wider flex items-center gap-1 ${s.bg} ${s.color}`}>
+            <span>{s.icon}</span>
             {s.label}
         </span>
     );
@@ -113,7 +104,7 @@ export default function OrdersTab() {
         try {
             for (const item of order.items) {
                 await addItem({
-                    id: String(item.menu_item_id || item.id), // Handle both potential naming conventions
+                    id: String(item.menu_item_id || item.id),
                     name: item.name,
                     description: item.description || '',
                     price: item.price,
@@ -123,7 +114,7 @@ export default function OrdersTab() {
             }
             navigate('/cart');
         } catch (e) {
-            alert('Error al repetir el pedido. Por favor, inténtalo de nuevo.');
+            alert('Error al repetir el pedido.');
         } finally {
             setIsRepeating(null);
         }
@@ -131,22 +122,10 @@ export default function OrdersTab() {
 
     if (loading) {
         return (
-            <div>
-                <h1
-                    style={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        marginBottom: '20px',
-                        color: '#111827',
-                    }}
-                >
-                    Mis Pedidos
-                </h1>
-                <div
-                    style={{ ...cardStyle, textAlign: 'center', padding: '48px', color: '#6B7280' }}
-                >
-                    <div style={{ fontSize: '32px', marginBottom: '12px' }}>⏳</div>
-                    Cargando pedidos...
+            <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="bg-white rounded-[32px] p-20 text-center border border-gray-100 shadow-sm">
+                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl animate-spin">🍣</div>
+                    <p className="text-gray-400 text-sm font-bold tracking-tight">Cargando historial...</p>
                 </div>
             </div>
         );
@@ -154,379 +133,128 @@ export default function OrdersTab() {
 
     if (orders.length === 0) {
         return (
-            <div>
-                <h1
-                    style={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        marginBottom: '20px',
-                        color: '#111827',
-                    }}
-                >
-                    Mis Pedidos
-                </h1>
-                <div style={{ ...cardStyle, textAlign: 'center', padding: '48px 24px' }}>
-                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
-                    <h3
-                        style={{
-                            fontSize: '18px',
-                            fontWeight: 'bold',
-                            marginBottom: '8px',
-                            color: '#111827',
-                        }}
-                    >
-                        No tienes pedidos todavía
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6B7280', marginBottom: '20px' }}>
-                        ¡Haz tu primer pedido y aparecerá aquí!
-                    </p>
-                    <button
-                        onClick={() => navigate('/menu')}
-                        style={{
-                            backgroundColor: '#DC2626',
-                            color: 'white',
-                            padding: '10px 24px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            fontWeight: 'bold',
-                            fontSize: '14px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        Ver menú
-                    </button>
-                </div>
+            <div className="text-center py-12">
+                <div className="text-4xl mb-4 grayscale opacity-30">📦</div>
+                <h3 className="text-lg font-black text-gray-900 mb-2">Sin pedidos aún</h3>
+                <p className="text-gray-400 text-sm mb-6 max-w-[200px] mx-auto leading-relaxed">Tus pedidos aparecerán aquí una vez realices tu primera compra.</p>
+                <button onClick={() => navigate('/menu')} className="bg-red-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100">
+                    Comenzar
+                </button>
             </div>
         );
     }
 
     return (
-        <div>
-            <h1
-                style={{
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    marginBottom: '20px',
-                    color: '#111827',
-                }}
-            >
-                Mis Pedidos
-            </h1>
+        <div className="space-y-4 md:space-y-5 animate-in fade-in duration-500 pb-10">
+            <div className="px-4 md:px-1 border-b border-gray-100 pb-4 mb-2">
+                <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">Mis Pedidos</h2>
+                <p className="text-gray-400 text-[10px] md:text-xs font-medium">Historial и seguimiento в реальном времени</p>
+            </div>
 
-            {orders.map(order => (
-                <div key={order.id} style={cardStyle}>
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            marginBottom: '16px',
-                        }}
-                    >
-                        <div>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px',
-                                    marginBottom: '4px',
-                                }}
-                            >
-                                <h3
-                                    style={{
-                                        fontSize: '16px',
-                                        fontWeight: 'bold',
-                                        margin: 0,
-                                        color: '#111827',
-                                    }}
-                                >
-                                    Pedido #{String(order.id).padStart(5, '0')}
-                                </h3>
-                                {getStatusBadge(order.status)}
+            <div className="space-y-3 md:space-y-4 px-2 md:px-0">
+                {orders.map(order => (
+                    <div key={order.id} className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                        {/* Header: More compact, no background */}
+                        <div className="px-4 md:px-5 pt-4 md:pt-5 pb-2 md:pb-3 flex items-start justify-between">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">#{String(order.id).padStart(5, '0')}</span>
+                                    {getStatusBadge(order.status)}
+                                </div>
+                                <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-gray-400 opacity-80">
+                                    <Clock size={10} />
+                                    {(() => {
+                                        const d = new Date(order.created_at);
+                                        const validDate = isNaN(d.getTime()) ? new Date(order.created_at.replace(' ', 'T') + (order.created_at.includes('Z') || order.created_at.includes('+') ? '' : 'Z')) : d;
+                                        return validDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                                    })()}
+                                </div>
                             </div>
-                            <p
-                                style={{
-                                    fontSize: '13px',
-                                    color: '#6B7280',
-                                    margin: 0,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                }}
-                            >
-                                <Clock size={12} />
-                                {(() => {
-                                    const d = new Date(order.created_at);
-                                    const validDate = isNaN(d.getTime())
-                                        ? new Date(
-                                            order.created_at.replace(' ', 'T') +
-                                            (order.created_at.includes('Z') ||
-                                                order.created_at.includes('+')
-                                                ? ''
-                                                : 'Z')
-                                        )
-                                        : d;
-                                    return validDate.toLocaleDateString('es-ES', {
-                                        day: 'numeric',
-                                        month: 'long',
-                                        year: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    });
-                                })()}
-                            </p>
                             {order.status !== 'delivered' && order.status !== 'cancelled' && (
-                                <p style={{ fontSize: '13px', margin: '4px 0 0 0' }}>
-                                    Tiempo restante: <OrderTimer createdAt={order.created_at} />
-                                </p>
+                                <div className="bg-amber-50 px-2 py-1 rounded-lg border border-amber-100/50 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black">
+                                    <span className="animate-pulse">⏱️</span>
+                                    <OrderTimer createdAt={order.created_at} />
+                                </div>
                             )}
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#DC2626' }}>
-                                {order.total.toFixed(2).replace('.', ',')} €
-                            </div>
-                            <div style={{ fontSize: '12px', color: '#6B7280' }}>
-                                {order.items?.reduce((s: number, i: any) => s + i.quantity, 0) ?? 0}{' '}
-                                productos
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        style={{
-                            marginBottom: order.notes ? '16px' : '12px',
-                            backgroundColor: '#F9FAFB',
-                            borderRadius: '12px',
-                            padding: '16px',
-                            border: '1px solid #F3F4F6',
-                        }}
-                    >
-                        <h4
-                            style={{
-                                fontSize: '14px',
-                                fontWeight: 'bold',
-                                color: '#374151',
-                                marginBottom: '12px',
-                                paddingBottom: '8px',
-                                borderBottom: '1px solid #E5E7EB',
-                            }}
-                        >
-                            Detalles del pedido
-                        </h4>
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '8px',
-                                marginBottom: '12px',
-                            }}
-                        >
-                            {order.items?.map((item: any, i: number) => (
-                                <div
-                                    key={i}
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        fontSize: '14px',
-                                        color: '#4B5563',
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            gap: '8px',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <span
-                                            style={{
-                                                fontWeight: 'bold',
-                                                color: '#111827',
-                                                minWidth: '24px',
-                                            }}
-                                        >
-                                            x{item.quantity}
-                                        </span>
-                                        <span>{item.name}</span>
-                                    </div>
-                                    <div style={{ fontWeight: 'medium' }}>
-                                        {(item.price_at_time * item.quantity)
-                                            .toFixed(2)
-                                            .replace('.', ',')}{' '}
-                                        €
-                                    </div>
+
+                        {/* Order Summary & Delivery Button */}
+                        <div className="px-4 md:px-5 pb-4 flex items-end justify-between border-b border-gray-50/50">
+                            <div>
+                                <div className="text-xl md:text-2xl font-black text-gray-900 flex items-baseline gap-0.5 tracking-tighter">
+                                    {order.total.toFixed(2).replace('.', ',')}
+                                    <span className="text-xs text-red-600 font-black italic">€</span>
                                 </div>
-                            ))}
-                        </div>
-
-                        <div
-                            style={{
-                                paddingTop: '12px',
-                                borderTop: '1px dashed #D1D5DB',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '6px',
-                            }}
-                        >
-                            {/* Calculate subtotal from items if possible, otherwise rely on order total */}
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    fontSize: '14px',
-                                    color: '#6B7280',
-                                }}
-                            >
-                                <span>Subtotal:</span>
-                                <span>
-                                    {order.items
-                                        ?.reduce(
-                                            (s: number, i: any) => s + i.price_at_time * i.quantity,
-                                            0
-                                        )
-                                        .toFixed(2)
-                                        .replace('.', ',')}{' '}
-                                    €
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                                    {order.items?.reduce((s: number, i: any) => s + i.quantity, 0) ?? 0} unidades
                                 </span>
                             </div>
 
-                            {order.items?.reduce(
-                                (s: number, i: any) => s + i.price_at_time * i.quantity,
-                                0
-                            ) > order.total && (
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            fontSize: '14px',
-                                            color: '#10B981',
-                                            fontWeight: 'bold',
-                                        }}
-                                    >
-                                        <span>Descuento aplicado:</span>
-                                        <span>
-                                            -
-                                            {(
-                                                order.items?.reduce(
-                                                    (s: number, i: any) =>
-                                                        s + i.price_at_time * i.quantity,
-                                                    0
-                                                ) - order.total
-                                            )
-                                                .toFixed(2)
-                                                .replace('.', ',')}{' '}
-                                            €
+                            {order.status !== 'delivered' && order.status !== 'cancelled' && (
+                                <button
+                                    onClick={() => markDelivered(order.id)}
+                                    className="h-8 md:h-9 px-3 md:px-4 bg-green-500 text-white rounded-lg md:rounded-xl font-black text-[8px] md:text-[9px] uppercase tracking-widest flex items-center gap-1.5 shadow-lg shadow-green-100 active:scale-95 transition-all"
+                                >
+                                    <CheckCircle size={12} /> Recibido
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Items List: Minimal, no extra background */}
+                        <div className="px-4 md:px-5 py-4 md:py-5 space-y-3">
+                            <div className="space-y-2">
+                                {order.items?.map((item: any, i: number) => (
+                                    <div key={i} className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            <span className="text-[9px] md:text-[10px] font-black text-gray-400 shrink-0 w-4 text-center">
+                                                {item.quantity}
+                                            </span>
+                                            <span className="text-[11px] md:text-xs font-bold text-gray-600 truncate opacity-80 group-hover:opacity-100">
+                                                {item.name}
+                                            </span>
+                                        </div>
+                                        <span className="text-[11px] md:text-xs font-black text-gray-300 shrink-0 tabular-nums">
+                                            {(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
                                         </span>
                                     </div>
-                                )}
-
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    fontSize: '16px',
-                                    color: '#111827',
-                                    fontWeight: 'bold',
-                                    marginTop: '4px',
-                                    paddingTop: '8px',
-                                    borderTop: '1px solid #E5E7EB',
-                                }}
-                            >
-                                <span>Total Pagado:</span>
-                                <span style={{ color: '#DC2626' }}>
-                                    {order.total.toFixed(2).replace('.', ',')} €
-                                </span>
+                                ))}
                             </div>
-                        </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #F3F4F6' }}>
+                            {order.notes && (
+                                <div className="mt-2 py-2 px-3 bg-amber-50/50 rounded-xl border-l-2 border-amber-300 flex items-start gap-2">
+                                    <Shield size={10} className="text-amber-500 shrink-0 mt-0.5" />
+                                    <p className="text-[9px] md:text-[10px] font-bold text-amber-700 m-0 leading-relaxed italic opacity-90 truncate">
+                                        {order.notes}
+                                    </p>
+                                </div>
+                            )}
+
                             <button
                                 onClick={() => handleRepeatOrder(order)}
                                 disabled={isRepeating === order.id}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    backgroundColor: '#111827',
-                                    color: 'white',
-                                    padding: '10px 20px',
-                                    borderRadius: '10px',
-                                    border: 'none',
-                                    fontWeight: 'bold',
-                                    fontSize: '14px',
-                                    cursor: isRepeating === order.id ? 'not-allowed' : 'pointer',
-                                    opacity: isRepeating === order.id ? 0.7 : 1,
-                                    transition: 'all 0.2s',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                                }}
+                                className={`mt-3 w-full h-10 md:h-11 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all flex items-center justify-center gap-2
+                                    ${isRepeating === order.id
+                                        ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
+                                        : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'}`}
                             >
-                                <RefreshCcw size={16} className={isRepeating === order.id ? 'animate-spin' : ''} />
-                                {isRepeating === order.id ? 'Añadiendo...' : 'Repetir Pedido'}
+                                <RefreshCcw size={14} className={isRepeating === order.id ? 'animate-spin' : ''} />
+                                {isRepeating === order.id ? 'Añadiendo...' : 'Repetir'}
                             </button>
                         </div>
                     </div>
-                    {order.notes && (
-                        <div
-                            style={{
-                                backgroundColor: '#FEF2F2',
-                                padding: '10px 12px',
-                                borderRadius: '8px',
-                                fontSize: '13px',
-                                color: '#B91C1C',
-                                borderLeft: '3px solid #DC2626',
-                                marginBottom: '12px',
-                            }}
-                        >
-                            <span style={{ fontWeight: 'bold' }}>Notas:</span> {order.notes}
-                        </div>
-                    )}
-                    {order.status !== 'delivered' && order.status !== 'cancelled' && (
-                        <button
-                            onClick={() => markDelivered(order.id)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '8px 16px',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                backgroundColor: '#10B981',
-                                color: 'white',
-                                fontSize: '13px',
-                                fontWeight: 'bold',
-                                width: 'fit-content',
-                            }}
-                        >
-                            <CheckCircle size={14} /> Marcar como entregado (Detener timer)
-                        </button>
-                    )}
-                </div>
-            ))}
+                ))}
+            </div>
 
-            {/* Pagination */}
             {pagination.pages > 1 && (
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        marginTop: '8px',
-                    }}
-                >
+                <div className="flex justify-center items-center gap-2 pt-4">
                     {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(p => (
                         <button
                             key={p}
                             onClick={() => loadOrders(p)}
-                            style={{
-                                padding: '6px 14px',
-                                border: '1px solid #E5E7EB',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                backgroundColor: p === pagination.page ? '#DC2626' : 'white',
-                                color: p === pagination.page ? 'white' : '#374151',
-                                fontWeight: p === pagination.page ? 'bold' : 'normal',
-                            }}
+                            className={`w-9 h-9 rounded-xl font-black text-[11px] transition-all
+                                ${p === pagination.page
+                                    ? 'bg-red-600 text-white shadow-lg shadow-red-100'
+                                    : 'bg-white border border-gray-100 text-gray-400'}`}
                         >
                             {p}
                         </button>

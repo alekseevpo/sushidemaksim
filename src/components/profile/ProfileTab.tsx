@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { User, Edit3, Save, X, Clock, Phone, Mail, Shield, Lock, Eye, EyeOff, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Edit3, Save, X, Phone, Mail, Shield, Eye, EyeOff, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
 import { User as UserType } from '../../types';
-import { cardStyle, inputStyle, handleInputFocus, handleInputBlur } from './profileStyles';
 
 interface Props {
     user: UserType;
@@ -100,537 +99,199 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
     };
 
     return (
-        <div>
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '20px',
-                }}
-            >
-                <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#111827' }}>
-                    Mi Perfil
-                </h1>
-                {!isEditing ? (
-                    <button
-                        onClick={startEditing}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '8px 16px',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: 'white',
-                            fontSize: '14px',
-                            color: '#374151',
-                            fontWeight: 'bold',
-                        }}
-                    >
-                        <Edit3 size={14} /> Editar
-                    </button>
-                ) : (
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <button
-                            onClick={() => setIsEditing(false)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '8px 16px',
-                                border: '1px solid #E5E7EB',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                backgroundColor: 'white',
-                                fontSize: '14px',
-                                color: '#6B7280',
-                            }}
-                        >
-                            <X size={14} /> Cancelar
-                        </button>
-                        <button
-                            onClick={saveProfile}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '8px 16px',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                backgroundColor: '#DC2626',
-                                fontSize: '14px',
-                                color: 'white',
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            <Save size={14} /> Guardar
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            {/* Personal Info */}
-            <div style={cardStyle}>
-                <h3
-                    style={{
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        marginBottom: '20px',
-                        color: '#111827',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                    }}
-                >
-                    <User size={18} color="#DC2626" /> Información personal
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div>
-                        <label
-                            style={{
-                                display: 'block',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                color: '#6B7280',
-                                marginBottom: '6px',
-                            }}
-                        >
-                            Nombre
-                        </label>
-                        {isEditing ? (
-                            <input
-                                value={editName}
-                                onChange={e => setEditName(e.target.value)}
-                                style={inputStyle}
-                                onFocus={handleInputFocus}
-                                onBlur={handleInputBlur}
-                            />
-                        ) : (
-                            <p
-                                style={{
-                                    margin: 0,
-                                    fontSize: '15px',
-                                    color: '#111827',
-                                    fontWeight: '500',
-                                }}
-                            >
-                                {user.name}
-                            </p>
-                        )}
-                    </div>
-                    <div>
-                        <label
-                            style={{
-                                display: 'block',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                color: '#6B7280',
-                                marginBottom: '6px',
-                            }}
-                        >
-                            Email
-                        </label>
-                        {isEditing ? (
-                            <input
-                                type="email"
-                                value={editEmail}
-                                onChange={e => setEditEmail(e.target.value)}
-                                style={inputStyle}
-                                onFocus={handleInputFocus}
-                                onBlur={handleInputBlur}
-                            />
-                        ) : (
-                            <p
-                                style={{
-                                    margin: 0,
-                                    fontSize: '15px',
-                                    color: '#111827',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                }}
-                            >
-                                <Mail size={14} color="#6B7280" /> {user.email}
-                            </p>
-                        )}
-                    </div>
-                    <div>
-                        <label
-                            style={{
-                                display: 'block',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                color: '#6B7280',
-                                marginBottom: '6px',
-                            }}
-                        >
-                            Teléfono
-                        </label>
-                        {isEditing ? (
-                            <input
-                                type="tel"
-                                value={editPhone}
-                                onChange={e => setEditPhone(e.target.value)}
-                                style={inputStyle}
-                                onFocus={handleInputFocus}
-                                onBlur={handleInputBlur}
-                            />
-                        ) : (
-                            <p
-                                style={{
-                                    margin: 0,
-                                    fontSize: '15px',
-                                    color: '#111827',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                }}
-                            >
-                                <Phone size={14} color="#6B7280" /> {user.phone || 'No añadido'}
-                            </p>
-                        )}
-                    </div>
-                    <div>
-                        <label
-                            style={{
-                                display: 'block',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                color: '#6B7280',
-                                marginBottom: '6px',
-                            }}
-                        >
-                            Miembro desde
-                        </label>
-                        <p
-                            style={{
-                                margin: 0,
-                                fontSize: '15px',
-                                color: '#111827',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                            }}
-                        >
-                            <Clock size={14} color="#6B7280" />
-                            {new Date(
-                                user.createdAt?.replace(' ', 'T') || Date.now()
-                            ).toLocaleDateString('es-ES', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',
-                            })}
-                        </p>
-                    </div>
-                    <div>
-                        <label
-                            style={{
-                                display: 'block',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                color: '#6B7280',
-                                marginBottom: '6px',
-                            }}
-                        >
-                            Fecha de nacimiento
-                        </label>
-                        {isEditing && !user.birthDateVerified ? (
-                            <div>
-                                <input
-                                    type="date"
-                                    value={editBirthDate}
-                                    onChange={e => setEditBirthDate(e.target.value)}
-                                    style={inputStyle}
-                                    onFocus={handleInputFocus}
-                                    onBlur={handleInputBlur}
-                                />
-                                <p style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
-                                    Recibirás nuestra regalo sorpresa el día de tu cumpleaños.
-                                </p>
-                            </div>
-                        ) : (
-                            <div>
-                                <p
-                                    style={{
-                                        margin: 0,
-                                        fontSize: '15px',
-                                        color: '#111827',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        marginBottom: '4px'
-                                    }}
-                                >
-                                    <Calendar size={14} color="#6B7280" />
-                                    {user.birthDate ? new Date(user.birthDate).toLocaleDateString('es-ES') : 'No añadida'}
-                                </p>
-                                {user.birthDate && !user.birthDateVerified && (
-                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', backgroundColor: '#FEF9C3', color: '#854D0E', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
-                                        <AlertCircle size={10} /> Pendiente de revisar (muestra ID al repartidor)
-                                    </span>
-                                )}
-                                {user.birthDateVerified && (
-                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', backgroundColor: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
-                                        <CheckCircle size={10} /> Confirmada
-                                    </span>
-                                )}
-                            </div>
-                        )}
-                    </div>
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-4 md:px-0">
+            {/* Header with Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
+                <div className="text-center sm:text-left">
+                    <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">
+                        {isEditing ? 'Editar Perfil' : 'Datos Personales'}
+                    </h2>
+                    <p className="text-gray-500 text-[11px] md:text-sm mt-1">
+                        Gestiona tu información básica y seguridad
+                    </p>
                 </div>
 
-                {isEditing && (
-                    <div
-                        style={{
-                            marginTop: '20px',
-                            borderTop: '1px solid #F3F4F6',
-                            paddingTop: '20px',
-                        }}
-                    >
-                        <label
-                            style={{
-                                display: 'block',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                color: '#6B7280',
-                                marginBottom: '10px',
-                            }}
+                <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+                    {!isEditing ? (
+                        <button
+                            onClick={startEditing}
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-gray-900 text-white rounded-xl font-bold text-xs md:text-sm hover:bg-red-600 transition-all shadow-lg shadow-gray-200"
                         >
-                            Elige tu avatar
-                        </label>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                            {/* Empty avatar option to allow resetting it */}
+                            <Edit3 size={16} /> Editar
+                        </button>
+                    ) : (
+                        <>
                             <button
-                                type="button"
-                                onClick={() => setEditAvatar('')}
-                                style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    fontSize: '18px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    border:
-                                        editAvatar === ''
-                                            ? '2px solid #DC2626'
-                                            : '1px solid #E5E7EB',
-                                    borderRadius: '50%',
-                                    backgroundColor: editAvatar === '' ? '#FEE2E2' : 'white',
-                                    cursor: 'pointer',
-                                    color: '#6B7280',
-                                    fontWeight: 'bold',
-                                }}
+                                onClick={() => setIsEditing(false)}
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-600 rounded-xl font-bold text-xs md:text-sm hover:bg-gray-200 transition-all"
                             >
-                                {editName.substring(0, 2).toUpperCase() || 'AB'}
+                                <X size={16} /> <span className="hidden xs:inline">Cancelar</span><span className="xs:hidden">X</span>
                             </button>
-
-                            {AVATARS.map(avatar => (
-                                <button
-                                    key={avatar}
-                                    type="button"
-                                    onClick={() => setEditAvatar(avatar)}
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        fontSize: '22px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border:
-                                            editAvatar === avatar
-                                                ? '2px solid #DC2626'
-                                                : '1px solid #E5E7EB',
-                                        borderRadius: '50%',
-                                        backgroundColor:
-                                            editAvatar === avatar ? '#FEE2E2' : 'white',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        transform:
-                                            editAvatar === avatar ? 'scale(1.1)' : 'scale(1)',
-                                    }}
-                                >
-                                    {avatar}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                            <button
+                                onClick={saveProfile}
+                                className="flex-2 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2.5 bg-red-600 text-white rounded-xl font-bold text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                            >
+                                <Save size={16} /> Guardar
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
 
-            {/* Security */}
-            <div style={cardStyle}>
-                <h3
-                    style={{
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        marginBottom: '16px',
-                        color: '#111827',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                    }}
-                >
-                    <Shield size={18} color="#DC2626" /> Seguridad
-                </h3>
-                {!showChangePassword ? (
-                    <button
-                        onClick={() => setShowChangePassword(true)}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '10px 20px',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: 'white',
-                            fontSize: '14px',
-                            color: '#374151',
-                        }}
-                    >
-                        <Lock size={14} /> Cambiar contraseña
-                    </button>
-                ) : (
-                    <div>
-                        {pwdError && (
-                            <div
-                                style={{
-                                    backgroundColor: '#FEF2F2',
-                                    border: '1px solid #FECACA',
-                                    borderRadius: '8px',
-                                    padding: '10px 14px',
-                                    marginBottom: '12px',
-                                    color: '#DC2626',
-                                    fontSize: '13px',
-                                }}
-                            >
-                                ⚠️ {pwdError}
+            {/* Information Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                    { label: 'Nombre Completo', value: user.name, editedValue: editName, setter: setEditName, icon: User, type: 'text' },
+                    { label: 'Correo Electrónico', value: user.email, editedValue: editEmail, setter: setEditEmail, icon: Mail, type: 'email' },
+                    { label: 'Teléfono', value: user.phone || 'No añadido', editedValue: editPhone, setter: setEditPhone, icon: Phone, type: 'tel' },
+                    { label: 'Fecha de Cumpleaños', value: user.birthDate ? new Date(user.birthDate).toLocaleDateString('es-ES') : 'No añadida', editedValue: editBirthDate, setter: setEditBirthDate, icon: Calendar, type: 'date' },
+                ].map((field) => (
+                    <div key={field.label} className="group p-4 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300">
+                        <label className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 group-hover:text-red-500 transition-colors">
+                            <field.icon size={12} />
+                            {field.label}
+                        </label>
+
+                        {isEditing ? (
+                            <div className="relative">
+                                <input
+                                    type={field.type}
+                                    value={field.editedValue}
+                                    onChange={(e) => field.setter(e.target.value)}
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 outline-none transition-all shadow-sm"
+                                    placeholder={`Introduce tu ${field.label.toLowerCase()}`}
+                                />
+                                {field.label.includes('Cumpleaños') && (
+                                    <p className="text-[10px] text-gray-500 mt-2 font-medium">
+                                        🎁 ¡Te enviaremos un regalo especial en tu día!
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm font-black text-gray-900 m-0">
+                                    {field.value}
+                                </p>
+                                {field.label === 'Fecha de Cumpleaños' && user.birthDate && (
+                                    <div className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.birthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                        {user.birthDateVerified ? 'Verificado' : 'Pendiente'}
+                                    </div>
+                                )}
                             </div>
                         )}
-                        {pwdSuccess && (
-                            <div
-                                style={{
-                                    backgroundColor: '#F0FDF4',
-                                    border: '1px solid #BBF7D0',
-                                    borderRadius: '8px',
-                                    padding: '10px 14px',
-                                    marginBottom: '12px',
-                                    color: '#16A34A',
-                                    fontSize: '13px',
-                                }}
-                            >
-                                ✓ {pwdSuccess}
-                            </div>
-                        )}
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '12px',
-                                maxWidth: '400px',
-                            }}
+                    </div>
+                ))}
+            </div>
+
+            {/* Avatar Selection (Only when editing) */}
+            {isEditing && (
+                <div className="p-6 bg-gray-900 rounded-[32px] text-white overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-600 rounded-full blur-[60px] opacity-20 -mr-16 -mt-16" />
+                    <h3 className="text-sm font-black uppercase tracking-widest text-white/50 mb-6 flex items-center gap-2">
+                        <User size={14} className="text-red-500" /> Elige tu Avatar
+                    </h3>
+                    <div className="flex flex-wrap gap-3 relative z-10">
+                        <button
+                            type="button"
+                            onClick={() => setEditAvatar('')}
+                            className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black transition-all border-2
+                                ${editAvatar === '' ? 'bg-red-600 border-white scale-110 shadow-lg' : 'bg-white/10 border-transparent text-white/50 hover:bg-white/20'}`}
                         >
+                            {editName.substring(0, 2).toUpperCase() || '??'}
+                        </button>
+                        {AVATARS.map(avatar => (
+                            <button
+                                key={avatar}
+                                type="button"
+                                onClick={() => setEditAvatar(avatar)}
+                                className={`w-12 h-12 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
+                                    ${editAvatar === avatar ? 'bg-red-600 border-white scale-110 shadow-lg' : 'bg-white/10 border-transparent hover:bg-white/20'}`}
+                            >
+                                {avatar}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Security Section */}
+            <div className="pt-8 border-t border-gray-100">
+                {!showChangePassword ? (
+                    <div className="bg-amber-50 rounded-[32px] p-6 flex flex-col sm:flex-row items-center justify-between gap-6 border border-amber-100">
+                        <div className="flex items-center gap-4 text-center sm:text-left">
+                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                                <Shield size={24} />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight m-0">Seguridad de la cuenta</h4>
+                                <p className="text-xs text-amber-700 mt-0.5 m-0 opacity-80">Tu contraseña se actualizó hace tiempo</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setShowChangePassword(true)}
+                            className="w-full sm:w-auto px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-200"
+                        >
+                            Cambiar Contraseña
+                        </button>
+                    </div>
+                ) : (
+                    <div className="bg-gray-50 rounded-[32px] p-8 border border-gray-100">
+                        <div className="flex items-center justify-between mb-8">
+                            <h4 className="text-lg font-black text-gray-900 m-0">Cambio de Contraseña</h4>
+                            <button onClick={() => setShowChangePassword(false)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {(pwdError || pwdSuccess) && (
+                            <div className={`p-4 rounded-2xl mb-6 text-sm font-bold flex items-center gap-2 ${pwdError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
+                                {pwdError ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
+                                {pwdError || pwdSuccess}
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
                             {[
-                                {
-                                    label: 'Contraseña actual',
-                                    val: currentPassword,
-                                    set: setCurrentPassword,
-                                    show: showCurrPwd,
-                                    toggle: () => setShowCurrPwd(p => !p),
-                                },
-                                {
-                                    label: 'Nueva contraseña',
-                                    val: newPassword,
-                                    set: setNewPassword,
-                                    show: showNewPwd,
-                                    toggle: () => setShowNewPwd(p => !p),
-                                },
-                                {
-                                    label: 'Confirmar nueva contraseña',
-                                    val: confirmNewPassword,
-                                    set: setConfirmNewPassword,
-                                    show: showNewPwd,
-                                    toggle: () => { },
-                                },
-                            ].map(({ label, val, set, show, toggle }) => (
-                                <div key={label}>
-                                    <label
-                                        style={{
-                                            display: 'block',
-                                            fontSize: '13px',
-                                            fontWeight: '600',
-                                            color: '#6B7280',
-                                            marginBottom: '4px',
-                                        }}
-                                    >
-                                        {label}
-                                    </label>
-                                    <div style={{ position: 'relative' }}>
+                                { label: 'Contraseña Actual', value: currentPassword, setter: setCurrentPassword, show: showCurrPwd, toggle: setShowCurrPwd },
+                                { label: 'Nueva Contraseña', value: newPassword, setter: setNewPassword, show: showNewPwd, toggle: setShowNewPwd },
+                                { label: 'Confirmar Nueva Contraseña', value: confirmNewPassword, setter: setConfirmNewPassword, show: showNewPwd, toggle: () => { } }
+                            ].map((f) => (
+                                <div key={f.label}>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 px-1">{f.label}</label>
+                                    <div className="relative">
                                         <input
-                                            type={show ? 'text' : 'password'}
-                                            value={val}
-                                            onChange={e => set(e.target.value)}
-                                            style={{ ...inputStyle, paddingRight: '40px' }}
-                                            onFocus={handleInputFocus}
-                                            onBlur={handleInputBlur}
+                                            type={f.show ? 'text' : 'password'}
+                                            value={f.value}
+                                            onChange={(e) => f.setter(e.target.value)}
+                                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                         />
-                                        <button
-                                            type="button"
-                                            onClick={toggle}
-                                            style={{
-                                                position: 'absolute',
-                                                right: '10px',
-                                                top: '50%',
-                                                transform: 'translateY(-50%)',
-                                                border: 'none',
-                                                background: 'none',
-                                                cursor: 'pointer',
-                                                color: '#9CA3AF',
-                                            }}
-                                        >
-                                            {show ? <EyeOff size={16} /> : <Eye size={16} />}
-                                        </button>
+                                        {f.label !== 'Confirmar Nueva Contraseña' && (
+                                            <button
+                                                type="button"
+                                                onClick={() => f.toggle(!f.show)}
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                            >
+                                                {f.show ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}
-                            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                                <button
-                                    onClick={() => {
-                                        setShowChangePassword(false);
-                                        setPwdError('');
-                                        setPwdSuccess('');
-                                    }}
-                                    style={{
-                                        padding: '8px 16px',
-                                        border: '1px solid #E5E7EB',
-                                        borderRadius: '8px',
-                                        cursor: 'pointer',
-                                        backgroundColor: 'white',
-                                        fontSize: '14px',
-                                        color: '#6B7280',
-                                    }}
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    onClick={handleChangePassword}
-                                    style={{
-                                        padding: '8px 16px',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        cursor: 'pointer',
-                                        backgroundColor: '#DC2626',
-                                        fontSize: '14px',
-                                        color: 'white',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    Guardar
-                                </button>
-                            </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                            <button
+                                onClick={handleChangePassword}
+                                className="px-8 py-3 bg-red-600 text-white rounded-xl font-black text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                            >
+                                Actualizar Contraseña
+                            </button>
+                            <button
+                                onClick={() => setShowChangePassword(false)}
+                                className="px-8 py-3 bg-gray-200 text-gray-600 rounded-xl font-black text-sm hover:bg-gray-300 transition-all"
+                            >
+                                Cancelar
+                            </button>
                         </div>
                     </div>
                 )}

@@ -20,3 +20,50 @@ export function formatMenuItem(item: any) {
         allergens: Array.isArray(item.allergens) ? item.allergens : [],
     };
 }
+
+/**
+ * Returns a JS Date object representing 00:00:00 of the current day in Madrid (Europe/Madrid).
+ * Use this to fetch "Today" records from Supabase correctly.
+ */
+export function getMadridStartOfDay() {
+    // Current time specifically in Madrid timezone
+    const madridNowString = new Date().toLocaleString('en-US', {
+        timeZone: 'Europe/Madrid',
+        hour12: false,
+    });
+    // This creates a date object that "thinks" its local time is Madrid time
+    const madridDate = new Date(madridNowString);
+
+    // Set it to midnight
+    const madridMidnight = new Date(madridDate);
+    madridMidnight.setHours(0, 0, 0, 0);
+
+    // Calculate how many milliseconds have passed since midnight IN MADRID
+    const msSinceMidnightInMadrid = madridDate.getTime() - madridMidnight.getTime();
+
+    // Subtract those milliseconds from the TRUE global now (Date.now())
+    // This gives us the global UTC time corresponding to 00:00:00 Madrid time
+    return new Date(Date.now() - msSinceMidnightInMadrid);
+}
+
+/** 
+ * Returns a JS Date object representing 00:00:00 of YESTERDAY in Madrid. 
+ * Perfect for daily CRON reports that run at 0:01 AM.
+ */
+export function getMadridYesterdayStartOfDay() {
+    const today = getMadridStartOfDay();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    return yesterday;
+}
+
+/** Get the current hour in Madrid (0-23) */
+export function getMadridHour() {
+    return parseInt(
+        new Date().toLocaleString('en-GB', {
+            timeZone: 'Europe/Madrid',
+            hour: '2-digit',
+            hour12: false,
+        })
+    );
+}

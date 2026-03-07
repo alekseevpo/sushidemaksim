@@ -207,7 +207,7 @@ export default function MenuPageSimple() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 px-4 py-8">
+        <div className="min-h-screen bg-transparent px-4 py-8">
             <SEO
                 title="Menú y Carta de Sushi"
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
@@ -242,30 +242,32 @@ export default function MenuPageSimple() {
                     </div>
                 </div>
 
-                {/* Category Filter */}
-                <div className="flex flex-wrap justify-center gap-2 mb-8">
-                    <button
-                        onClick={() => setSelectedCategory('all')}
-                        className={`px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${selectedCategory === 'all'
-                            ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                            : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                            }`}
-                    >
-                        Todos
-                    </button>
-                    {CATEGORIES.map(cat => (
+                {/* Category Filter - Sticky and Scrollable on Mobile */}
+                <div className="sticky top-20 z-20 -mx-4 px-4 py-4 bg-gray-50/80 backdrop-blur-md mb-8">
+                    <div className="flex overflow-x-auto no-scrollbar gap-2 max-w-7xl mx-auto flex-nowrap sm:flex-wrap sm:justify-center">
                         <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold border-none cursor-pointer transition-all duration-200 ${selectedCategory === cat.id
+                            onClick={() => setSelectedCategory('all')}
+                            className={`whitespace-nowrap flex-shrink-0 px-5 py-2.5 rounded-full font-bold border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === 'all'
                                 ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
                                 : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
                                 }`}
                         >
-                            <span>{cat.icon}</span>
-                            {cat.name}
+                            Todos
                         </button>
-                    ))}
+                        {CATEGORIES.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-bold border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === cat.id
+                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                                    }`}
+                            >
+                                <span>{cat.icon}</span>
+                                {cat.name}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Items */}
@@ -324,17 +326,23 @@ export default function MenuPageSimple() {
                                 )}
 
                                 {/* Image */}
-                                <div className="h-[200px] bg-gray-100 rounded-t-xl overflow-hidden relative">
-                                    <img
-                                        src={!failedImages.has(item.id) && item.image ? item.image : '/placeholder-sushi.png'}
-                                        alt={`Sushi ${item.name} - ${item.category}`}
-                                        loading="lazy"
-                                        decoding="async"
-                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                        onError={() =>
-                                            setFailedImages(prev => new Set(prev).add(item.id))
-                                        }
-                                    />
+                                <div className="h-[200px] bg-gray-50 rounded-t-xl overflow-hidden relative flex items-center justify-center">
+                                    {!failedImages.has(item.id) ? (
+                                        <img
+                                            src={item.image}
+                                            alt={`Sushi ${item.name} - ${item.category}`}
+                                            loading="lazy"
+                                            decoding="async"
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            onError={() =>
+                                                setFailedImages(prev => new Set(prev).add(item.id))
+                                            }
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                                            {EMOJI[item.category] || '🍱'}
+                                        </div>
+                                    )}
                                     <div className="absolute top-2 left-2 flex flex-col gap-1.5">
                                         {item.is_popular && (
                                             <span className="bg-amber-500 text-white rounded-r-lg pl-2 pr-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1 -ml-2">

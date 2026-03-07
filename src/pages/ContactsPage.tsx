@@ -73,7 +73,7 @@ export default function ContactsPage() {
     }, []);
 
     return (
-        <div className="flex-1 bg-white">
+        <div className="flex-1 bg-transparent">
             <SEO
                 title="Contacto"
                 description="Contacta con Sushi de Maksim. Llámanos, visítanos o síguenos en nuestras redes sociales para estar al día de las últimas novedades."

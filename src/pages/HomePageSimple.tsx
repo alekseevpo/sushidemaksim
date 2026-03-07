@@ -135,7 +135,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Stats/Badge Banner */}
-            <section className="bg-white py-10 border-b border-gray-100">
+            <section className="bg-transparent py-10 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center md:justify-between items-center gap-8">
                     <div className="flex items-center gap-3">
                         <div className="text-3xl font-black text-gray-900 italic">9.8</div>
@@ -167,7 +167,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Features Section */}
-            <section className="py-24 px-4 bg-gray-50">
+            <section className="py-24 px-4 bg-transparent">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-4 tracking-tighter">
@@ -206,7 +206,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Blog Teaser / SEO Section */}
-            <section className="py-24 bg-white px-4 border-t border-gray-100">
+            <section className="py-24 bg-transparent px-4 border-t border-gray-100">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}

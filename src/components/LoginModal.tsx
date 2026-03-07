@@ -220,11 +220,19 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                         {isForgotOrReset ? (
                             <span className="text-[44px]">{mode === 'forgot' ? '🔑' : '🔒'}</span>
                         ) : (
-                            <img
-                                src="/logo.svg"
-                                alt="Sushi de Maksim"
-                                className="w-[120px] h-[120px] object-contain"
-                            />
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                    navigate('/');
+                                }}
+                                className="border-none bg-transparent cursor-pointer p-0 hover:scale-105 transition-transform"
+                            >
+                                <img
+                                    src="/logo.svg"
+                                    alt="Sushi de Maksim"
+                                    className="w-[120px] h-[120px] object-contain"
+                                />
+                            </button>
                         )}
                     </div>
                     <h2 className="text-xl font-bold mb-1 text-gray-900">{getTitle()}</h2>
@@ -366,8 +374,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                             {isLoading
                                 ? '...'
                                 : mode === 'login'
-                                  ? 'Iniciar sesión'
-                                  : 'Crear cuenta'}
+                                    ? 'Iniciar sesión'
+                                    : 'Crear cuenta'}
                         </button>
                     </form>
                 )}

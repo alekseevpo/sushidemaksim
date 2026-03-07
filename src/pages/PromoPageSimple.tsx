@@ -58,7 +58,7 @@ export default function PromoPageSimple() {
     };
 
     return (
-        <div className="flex-1 bg-white">
+        <div className="flex-1 bg-transparent">
             <SEO
                 title="Ofertas y Promociones"
                 description="Descubre nuestras promociones exclusivas, combos especiales de sushi con descuentos y ofertas limitadas. ¡Pide online ahora!"
@@ -219,7 +219,7 @@ export default function PromoPageSimple() {
                                     key={item.id}
                                     className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/40 overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col group border border-gray-50"
                                 >
-                                    <div className="h-56 bg-gray-100 overflow-hidden relative">
+                                    <div className="h-56 bg-gray-50 overflow-hidden relative flex items-center justify-center">
                                         {!failedImages.has(item.id) ? (
                                             <img
                                                 src={item.image}
@@ -234,8 +234,13 @@ export default function PromoPageSimple() {
                                                 }
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-6xl">
-                                                🎁
+                                            <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
+                                                <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                                <div className="absolute w-32 h-32 bg-red-500/10 rounded-full blur-3xl"></div>
+                                                <span className="text-6xl relative z-10 drop-shadow-2xl transform group-hover:rotate-12 transition-transform duration-500">
+                                                    🎁
+                                                </span>
+                                                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
                                             </div>
                                         )}
                                         <span className="absolute top-4 left-4 bg-black/80 backdrop-blur-md text-white text-xs uppercase tracking-wider font-black px-3 py-1.5 rounded-full">
@@ -255,11 +260,10 @@ export default function PromoPageSimple() {
                                             </span>
                                             <button
                                                 onClick={() => handleAdd(item)}
-                                                className={`flex items-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${
-                                                    addedItems.has(item.id)
-                                                        ? 'bg-green-500 text-white shadow-lg shadow-green-500/30'
-                                                        : 'bg-red-600 text-white hover:bg-red-700 shadow-xl shadow-red-600/20'
-                                                }`}
+                                                className={`flex items-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${addedItems.has(item.id)
+                                                    ? 'bg-green-500 text-white shadow-lg shadow-green-500/30'
+                                                    : 'bg-red-600 text-white hover:bg-red-700 shadow-xl shadow-red-600/20'
+                                                    }`}
                                             >
                                                 {addedItems.has(item.id) ? (
                                                     '✓ Añadido'

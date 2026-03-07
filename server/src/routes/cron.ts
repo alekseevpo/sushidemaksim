@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { supabase } from '../db/supabase.js';
+import { getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
 
 const router = Router();
 
@@ -111,6 +112,73 @@ router.post('/check-birthdays', async (req, res) => {
 
         res.json({ success: true, processed: results.length, notifications: results });
     } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+
+// Daily report generation (to be called at ~0:05 AM)
+router.post('/generate-daily-report', async (req, res) => {
+    const cronSecret = req.headers['x-cron-secret'];
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const startOfToday = getMadridStartOfDay();
+        const startOfYesterday = getMadridYesterdayStartOfDay();
+
+        const yesterdayISO = startOfYesterday.toISOString();
+        const todayISO = startOfToday.toISOString();
+
+        // 1. Fetch yesterday's metrics
+        const [
+            { data: revenueData },
+            { count: totalOrders },
+            { count: newUsers }
+        ] = await Promise.all([
+            supabase
+                .from('orders')
+                .select('total')
+                .neq('status', 'cancelled')
+                .gte('created_at', yesterdayISO)
+                .lt('created_at', todayISO),
+            supabase
+                .from('orders')
+                .select('*', { count: 'exact', head: true })
+                .neq('status', 'cancelled')
+                .gte('created_at', yesterdayISO)
+                .lt('created_at', todayISO),
+            supabase
+                .from('users')
+                .select('*', { count: 'exact', head: true })
+                .gte('created_at', yesterdayISO)
+                .lt('created_at', todayISO)
+        ]);
+
+        const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
+        const avg = totalOrders ? revenue / (totalOrders || 1) : 0;
+
+        // 2. Insert Report
+        const reportDate = startOfYesterday.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+        const { error: reportError } = await supabase
+            .from('daily_reports')
+            .upsert({
+                date: reportDate,
+                total_revenue: Math.round(revenue * 100) / 100,
+                orders_count: totalOrders || 0,
+                new_users_count: newUsers || 0,
+                avg_ticket: Math.round(avg * 100) / 100,
+            }, { onConflict: 'date' });
+
+        if (reportError) {
+            // If table doesn't exist yet, we catch it but don't crash
+            console.warn('⚠️ Could not save daily report - check if table "daily_reports" exists.');
+        }
+
+        res.json({ success: true, date: reportDate, revenue, orders: totalOrders });
+    } catch (e: any) {
+        console.error('❌ Daily report cron error:', e);
         res.status(500).json({ error: e.message });
     }
 });
