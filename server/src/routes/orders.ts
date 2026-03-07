@@ -335,9 +335,10 @@ router.post(
         }));
         await supabase.from('order_items').insert(itemsToInsert);
 
+        const frontendUrl = (req.headers.origin as string) || (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
         res.status(201).json({
             orderId: order.id,
-            shareUrl: `${config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com'}/pay-for-friend/${order.id}`
+            shareUrl: `${frontendUrl}/pay-for-friend/${order.id}`
         });
     })
 );

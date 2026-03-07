@@ -262,7 +262,7 @@ export default function CartPageSimple() {
             if (navigator.share) {
                 await navigator.share({
                     title: '¡Invítame a Sushi de Maksim! 🍣',
-                    text: `¡Hola! He preparado este pedido de sushi и me encantaría что ты меня угостил(а). ¿Te animas? 🍱✨`,
+                    text: `¡Hola! He preparado este pedido de sushi y me encantaría que me invitases. ¿Te animas? 🍱✨\n\n${data.shareUrl}`,
                     url: data.shareUrl
                 });
             } else {
