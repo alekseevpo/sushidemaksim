@@ -280,24 +280,26 @@ router.post(
         const deviceType = parser.getDevice().type || 'desktop';
         const osName = parser.getOS().name || 'Unknown';
 
-        // 1. Get items (reuse the same logic as POST /)
+        // 1. Get items (use guestItems if provided, otherwise fallback to DB for logged in users)
         let cartItems: any[] = [];
-        if (req.userId) {
-            const { data: dbItems } = await supabase
-                .from('cart_items')
-                .select('quantity, menu_item_id, menu_items(name, price, image)')
-                .eq('user_id', req.userId);
-            cartItems = dbItems || [];
-        } else if (guestItems) {
+        if (guestItems && Array.isArray(guestItems) && guestItems.length > 0) {
             const itemIds = guestItems.map((i: any) => i.menuItemId);
             const { data: menuData } = await supabase.from('menu_items').select('*').in('id', itemIds);
             cartItems = guestItems.map((gi: any) => {
                 const menuItem = menuData?.find((m: any) => m.id === gi.menuItemId);
                 return menuItem ? { quantity: gi.quantity, menu_item_id: gi.menuItemId, menu_items: menuItem } : null;
             }).filter((i: any) => i !== null);
+        } else if (req.userId) {
+            const { data: dbItems } = await supabase
+                .from('cart_items')
+                .select('quantity, menu_item_id, menu_items(name, price, image)')
+                .eq('user_id', req.userId);
+            cartItems = dbItems || [];
         }
 
-        if (cartItems.length === 0) return res.status(400).json({ error: 'La cesta está vacía' });
+        if (cartItems.length === 0) {
+            return res.status(400).json({ error: 'La cesta está vacía. Añade algo antes de invitar.' });
+        }
 
         // 2. Calculate total
         const subtotal = cartItems.reduce((sum, item: any) => sum + item.menu_items.price * item.quantity, 0);
@@ -354,15 +356,17 @@ router.get(
             .eq('id', id)
             .single();
 
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
         const host = req.get('host');
-        const protocol = req.protocol;
         const fullOrigin = `${protocol}://${host}`;
 
         // Extract sender name from notes [De parte de: Name]
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
         const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
-        const pandaImg = `${fullOrigin}/hungry-panda.png`;
-        const finalDest = `${fullOrigin}/pay-for-friend/${id}`;
+
+        // Ensure image URL is absolute and uses HTTPS for Telegram
+        const pandaImg = `https://${host}/hungry-panda.png`;
+        const finalDest = `https://${host}/pay-for-friend/${id}`;
 
         const html = `
 <!DOCTYPE html>
