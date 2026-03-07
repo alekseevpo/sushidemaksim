@@ -15,6 +15,10 @@
     ],
     "rewrites": [
         {
+            "source": "/invitacion/(.*)",
+            "destination": "server/src/index.ts"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "server/src/index.ts"
         },

@@ -340,7 +340,7 @@ router.post(
         const origin = (req.headers.origin as string) || (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
         res.status(201).json({
             orderId: order.id,
-            shareUrl: `${origin}/api/orders/share/${order.id}`
+            shareUrl: `${origin}/invitacion/${order.id}`
         });
     })
 );

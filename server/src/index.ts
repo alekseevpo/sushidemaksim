@@ -108,6 +108,72 @@ app.use('/api/cron', cronRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/settings', settingsRoutes);
 
+// ─── Invitations Social Preview (Priority) ────────────────────────────────────
+// Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them
+app.get(['/invitacion/:id', '/api/orders/share/:id'], async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data: order } = await supabase
+            .from('orders')
+            .select('notes, total')
+            .eq('id', id)
+            .single();
+
+        const host = req.get('host') || 'sushidemaksim.vercel.app';
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+        const fullOrigin = `${protocol}://${host}`;
+
+        const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
+        const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
+        const pandaImg = `https://${host}/hungry-panda.png`;
+        const finalDest = `${fullOrigin}/pay-for-friend/${id}`;
+
+        const html = `<!DOCTYPE html>
+<html lang="es" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Invita a ${senderName}! 🎁 — Sushi de Maksim</title>
+    <meta name="description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
+    
+    <!-- WhatsApp / Telegram / Facebook Priority -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="¡Invita a ${senderName}! 🎁">
+    <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
+    <meta property="og:image" content="${pandaImg}">
+    <meta property="og:image:secure_url" content="${pandaImg}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="600">
+    <meta property="og:url" content="${finalDest}">
+    
+    <!-- Twitter / Telegram Card (Summary Large) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="${pandaImg}">
+    <meta name="twitter:title" content="¡Invita a ${senderName}! 🎁">
+    <meta name="twitter:description" content="Sorprende a tu amigo con el mejor sushi de Madrid.">
+    <meta property="og:site_name" content="Sushi de Maksim">
+    
+    <!-- Redirect to React App -->
+    <meta http-equiv="refresh" content="0; url=${finalDest}">
+    <script>window.location.href = "${finalDest}";</script>
+</head>
+<body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fdfbf7;">
+    <div style="text-align: center;">
+        <h1 style="font-size: 60px; margin: 0;">🍣</h1>
+        <p style="color: #666;">Redirigiendo a la sorpresa...</p>
+    </div>
+</body>
+</html>`;
+
+        res.set('Content-Type', 'text/html');
+        return res.send(html);
+    } catch (e) {
+        // Fallback to home on error
+        return res.redirect('/');
+    }
+});
+
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
     res.json({
