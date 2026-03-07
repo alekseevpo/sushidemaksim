@@ -23,6 +23,8 @@ interface MenuItem {
     vegetarian?: boolean;
     is_promo?: boolean;
     is_popular?: boolean;
+    is_chef_choice?: boolean;
+    is_new?: boolean;
     allergens?: string[];
 }
 
@@ -77,6 +79,8 @@ export default function AdminMenu() {
             vegetarian: false,
             is_promo: false,
             is_popular: false,
+            is_chef_choice: false,
+            is_new: false,
             allergens: [],
         });
         setError('');
@@ -255,14 +259,19 @@ export default function AdminMenu() {
                                                         Veggie
                                                     </span>
                                                 )}
-                                                {item.is_promo && (
-                                                    <span className="text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-1 rounded-full">
-                                                        Promo
-                                                    </span>
-                                                )}
                                                 {item.is_popular && (
                                                     <span className="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-1 rounded-full">
                                                         Top
+                                                    </span>
+                                                )}
+                                                {item.is_chef_choice && (
+                                                    <span className="text-[10px] bg-purple-100 text-purple-700 font-bold px-2 py-1 rounded-full">
+                                                        Chef
+                                                    </span>
+                                                )}
+                                                {item.is_new && (
+                                                    <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded-full">
+                                                        Nuevo
                                                     </span>
                                                 )}
                                                 {item.allergens && item.allergens.length > 0 && (
@@ -562,6 +571,38 @@ export default function AdminMenu() {
                                         />
                                         <span className="text-sm font-medium text-gray-700">
                                             🔥 Popular (Top)
+                                        </span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.is_chef_choice}
+                                            onChange={e =>
+                                                setFormData({
+                                                    ...formData,
+                                                    is_chef_choice: e.target.checked,
+                                                })
+                                            }
+                                            className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">
+                                            👨‍🍳 Selección del Chef
+                                        </span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.is_new}
+                                            onChange={e =>
+                                                setFormData({
+                                                    ...formData,
+                                                    is_new: e.target.checked,
+                                                })
+                                            }
+                                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">
+                                            🆕 Nuevo Producto
                                         </span>
                                     </label>
                                 </div>

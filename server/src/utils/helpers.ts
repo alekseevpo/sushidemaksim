@@ -13,6 +13,10 @@ export function formatMenuItem(item: any) {
         isPromo: !!item.is_promo,
         is_popular: !!item.is_popular,
         isPopular: !!item.is_popular,
+        is_chef_choice: !!item.is_chef_choice,
+        isChefChoice: !!item.is_chef_choice,
+        is_new: !!item.is_new,
+        isNew: !!item.is_new,
         allergens: Array.isArray(item.allergens) ? item.allergens : [],
     };
 }

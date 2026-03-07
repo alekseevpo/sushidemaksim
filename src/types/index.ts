@@ -20,6 +20,8 @@ export interface SushiItem {
     isPromo?: boolean;
     allergens?: string[];
     isPopular?: boolean;
+    isChefChoice?: boolean;
+    isNew?: boolean;
 }
 
 export interface CartItem extends SushiItem {
