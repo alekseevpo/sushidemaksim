@@ -125,17 +125,17 @@ export default function CartPageSimple() {
         setOrderError('');
         const deliveryAddress =
             address.trim() ||
-            (defaultAddr
-                ? `${defaultAddr.street}, ${defaultAddr.postalCode} ${defaultAddr.city}`
+            (defaultAddr && defaultAddr.street
+                ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
                 : '');
         const deliveryPhone = phone.trim() || user?.phone || '';
 
-        if (!deliveryAddress) {
-            setOrderError('Por favor, introduce una dirección de entrega');
+        if (!deliveryAddress || deliveryAddress.length < 5 || deliveryAddress.includes('undefined')) {
+            setOrderError('Por favor, introduce una dirección de entrega válida');
             return;
         }
-        if (!deliveryPhone) {
-            setOrderError('Por favor, introduce un teléfono de contacto');
+        if (!deliveryPhone || deliveryPhone.length < 6) {
+            setOrderError('Por favor, introduce un teléfono de contacto válido');
             return;
         }
 
@@ -430,17 +430,17 @@ export default function CartPageSimple() {
                                 </h2>
 
                                 {/* Default address pill */}
-                                {defaultAddr && (
+                                {defaultAddr && defaultAddr.street && (
                                     <button
                                         onClick={() => {
                                             setAddress(
-                                                `${defaultAddr.street}, ${defaultAddr.postalCode} ${defaultAddr.city}`
+                                                `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
                                             );
                                             setPhone(prev => prev || defaultAddr.phone);
                                         }}
                                         className="mb-4 flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-full px-4 py-2 cursor-pointer hover:bg-red-100 transition font-medium"
                                     >
-                                        <MapPin size={14} /> Usar "{defaultAddr.label}":{' '}
+                                        <MapPin size={14} /> Usar "{defaultAddr.label || 'Mi dirección'}":{' '}
                                         {defaultAddr.street}
                                     </button>
                                 )}
@@ -455,8 +455,8 @@ export default function CartPageSimple() {
                                             value={address}
                                             onChange={e => setAddress(e.target.value)}
                                             placeholder={
-                                                defaultAddr
-                                                    ? `${defaultAddr.street}, ${defaultAddr.postalCode} ${defaultAddr.city}`
+                                                defaultAddr && defaultAddr.street
+                                                    ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
                                                     : 'Calle, número, piso, ciudad'
                                             }
                                             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"

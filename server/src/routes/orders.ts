@@ -12,8 +12,8 @@ router.use(authMiddleware);
 router.post(
     '/',
     validate({
-        deliveryAddress: { type: 'string', maxLength: 300 },
-        phoneNumber: { type: 'string', maxLength: 30 },
+        deliveryAddress: { type: 'string', required: true, maxLength: 300 },
+        phoneNumber: { type: 'string', required: true, maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { deliveryAddress, phoneNumber, notes, promoCode } = req.body;
