@@ -10,7 +10,9 @@ const jwtSecret = process.env.JWT_SECRET || DEFAULT_JWT_SECRET;
 const nodeEnv = process.env.NODE_ENV || 'development';
 
 if (nodeEnv === 'production' && jwtSecret === DEFAULT_JWT_SECRET) {
-    console.warn('⚠️ WARNING: JWT_SECRET should be set in production environment for better security.');
+    console.warn(
+        '⚠️ WARNING: JWT_SECRET should be set in production environment for better security.'
+    );
 }
 
 export const config = {

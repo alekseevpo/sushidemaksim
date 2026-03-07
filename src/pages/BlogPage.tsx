@@ -113,8 +113,15 @@ export default function BlogPage() {
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, amount: 0.2 }}
-                                transition={{ duration: 0.6, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-                                style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: index * 0.1,
+                                    ease: [0.21, 0.47, 0.32, 0.98],
+                                }}
+                                style={{
+                                    willChange: 'opacity, transform',
+                                    backfaceVisibility: 'hidden',
+                                }}
                                 className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full relative"
                             >
                                 {/* Link overlay for the whole card */}

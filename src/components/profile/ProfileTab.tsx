@@ -188,10 +188,12 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                     },
                     {
                         label: 'Fecha de Cumpleaños',
-                        value: user.birthDate ? (() => {
-                            const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                            return `${d}/${m}/${y}`;
-                        })() : 'No añadida',
+                        value: user.birthDate
+                            ? (() => {
+                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                  return `${d}/${m}/${y}`;
+                              })()
+                            : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
                         icon: Calendar,
@@ -339,7 +341,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => { },
+                                    toggle: () => {},
                                 },
                             ].map(f => (
                                 <div key={f.label}>

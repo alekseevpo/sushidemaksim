@@ -75,7 +75,10 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
     }
 
     if (!response.ok) {
-        throw new ApiError(data?.error || `Error ${response.status}: Ha ocurrido un problema con el servidor.`, response.status);
+        throw new ApiError(
+            data?.error || `Error ${response.status}: Ha ocurrido un problema con el servidor.`,
+            response.status
+        );
     }
 
     return data;

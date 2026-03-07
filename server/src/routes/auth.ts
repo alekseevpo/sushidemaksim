@@ -104,8 +104,8 @@ router.post(
                 ...userRest,
                 createdAt: created_at,
                 birthDate: birth_date,
-                birthDateVerified: birth_date_verified
-            }
+                birthDateVerified: birth_date_verified,
+            },
         });
     })
 );

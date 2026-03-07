@@ -196,8 +196,8 @@ app.get('/api/health/full', async (_req, res) => {
             config: {
                 hasUrl: !!config.supabase.url,
                 hasKey: !!config.supabase.key,
-                nodeEnv: config.nodeEnv
-            }
+                nodeEnv: config.nodeEnv,
+            },
         });
     } catch (err: any) {
         res.status(500).json({ status: 'error', message: err.message });

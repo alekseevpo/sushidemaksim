@@ -67,9 +67,9 @@ export default function AddressesTab({
             try {
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?` +
-                    `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
-                    `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
-                    `&q=${encodeURIComponent(searchQuery)}`
+                        `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
+                        `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
+                        `&q=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await res.json();
                 setSuggestions(data);
@@ -278,7 +278,9 @@ export default function AddressesTab({
                             </label>
                             <input
                                 value={newAddress.house}
-                                onChange={e => setNewAddress(p => ({ ...p, house: e.target.value }))}
+                                onChange={e =>
+                                    setNewAddress(p => ({ ...p, house: e.target.value }))
+                                }
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                 placeholder="Ej: 12"
                             />
@@ -289,7 +291,9 @@ export default function AddressesTab({
                             </label>
                             <input
                                 value={newAddress.apartment}
-                                onChange={e => setNewAddress(p => ({ ...p, apartment: e.target.value }))}
+                                onChange={e =>
+                                    setNewAddress(p => ({ ...p, apartment: e.target.value }))
+                                }
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                 placeholder="Piso 3, Puerta A..."
                             />
@@ -376,9 +380,10 @@ export default function AddressesTab({
                         <div
                             key={addr.id}
                             className={`group p-6 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row gap-6
-                                ${addr.isDefault
-                                    ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
-                                    : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
+                                ${
+                                    addr.isDefault
+                                        ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
+                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
                                 }`}
                         >
                             <div

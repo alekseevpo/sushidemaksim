@@ -86,7 +86,7 @@ export default function AdminOrders() {
         {
             value: 'cancelled',
             label: 'Cancelado',
-            color: 'bg-red-100 text-red-700 border-red-200'
+            color: 'bg-red-100 text-red-700 border-red-200',
         },
     ];
 
@@ -105,7 +105,8 @@ export default function AdminOrders() {
         // 2. Search Filter
         const matchesSearch =
             String(o.id).includes(search) ||
-            (o.delivery_address && o.delivery_address.toLowerCase().includes(search.toLowerCase())) ||
+            (o.delivery_address &&
+                o.delivery_address.toLowerCase().includes(search.toLowerCase())) ||
             (o.phone_number && o.phone_number.includes(search)) ||
             (o.promocode && o.promocode.toLowerCase().includes(search.toLowerCase()));
 
@@ -144,15 +145,16 @@ export default function AdminOrders() {
                     {[
                         { id: 'active', label: 'Activos' },
                         { id: 'invitations', label: 'Invitaciones' },
-                        { id: 'all', label: 'Todos' }
-                    ].map((tab) => (
+                        { id: 'all', label: 'Todos' },
+                    ].map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setFilter(tab.id as any)}
-                            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition ${filter === tab.id
+                            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition ${
+                                filter === tab.id
                                     ? 'bg-white text-red-600 shadow-sm'
                                     : 'text-gray-400 hover:text-gray-600'
-                                }`}
+                            }`}
                         >
                             {tab.label}
                         </button>
@@ -204,12 +206,12 @@ export default function AdminOrders() {
                                                     const d = new Date(order.created_at);
                                                     const validDate = isNaN(d.getTime())
                                                         ? new Date(
-                                                            order.created_at.replace(' ', 'T') +
-                                                            (order.created_at.includes('Z') ||
-                                                                order.created_at.includes('+')
-                                                                ? ''
-                                                                : 'Z')
-                                                        )
+                                                              order.created_at.replace(' ', 'T') +
+                                                                  (order.created_at.includes('Z') ||
+                                                                  order.created_at.includes('+')
+                                                                      ? ''
+                                                                      : 'Z')
+                                                          )
                                                         : d;
                                                     return validDate.toLocaleString('es-ES', {
                                                         hour: '2-digit',
@@ -244,10 +246,11 @@ export default function AdminOrders() {
                                             onChange={e =>
                                                 handleUpdateStatus(order.id, e.target.value)
                                             }
-                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${statusOptions.find(
-                                                opt => opt.value === order.status
-                                            )?.color || 'bg-gray-100'
-                                                }`}
+                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${
+                                                statusOptions.find(
+                                                    opt => opt.value === order.status
+                                                )?.color || 'bg-gray-100'
+                                            }`}
                                         >
                                             {statusOptions.map(opt => (
                                                 <option
@@ -388,10 +391,11 @@ export default function AdminOrders() {
                         <button
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                ? 'bg-red-600 text-white shadow-md'
-                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                }`}
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                pageNum === pagination.page
+                                    ? 'bg-red-600 text-white shadow-md'
+                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                            }`}
                         >
                             {pageNum}
                         </button>

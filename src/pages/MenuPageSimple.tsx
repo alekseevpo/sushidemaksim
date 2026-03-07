@@ -126,7 +126,10 @@ export default function MenuPageSimple() {
                     if (el) {
                         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         el.classList.add('ring-2', 'ring-red-500', 'ring-offset-4');
-                        setTimeout(() => el.classList.remove('ring-2', 'ring-red-500', 'ring-offset-4'), 3000);
+                        setTimeout(
+                            () => el.classList.remove('ring-2', 'ring-red-500', 'ring-offset-4'),
+                            3000
+                        );
                     }
                 }, 500);
             }
@@ -311,10 +314,11 @@ export default function MenuPageSimple() {
                     <div className="flex overflow-x-auto no-scrollbar gap-2 md:gap-2 max-w-7xl mx-auto flex-nowrap sm:flex-wrap sm:justify-center">
                         <button
                             onClick={() => setSelectedCategory('all')}
-                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === 'all'
-                                ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                                }`}
+                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
+                                selectedCategory === 'all'
+                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                            }`}
                         >
                             Todos
                         </button>
@@ -322,10 +326,11 @@ export default function MenuPageSimple() {
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === cat.id
-                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                                    }`}
+                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
+                                    selectedCategory === cat.id
+                                        ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                        : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                                }`}
                             >
                                 <span className="text-sm md:text-base">{cat.icon}</span>
                                 {cat.name}
@@ -369,7 +374,7 @@ export default function MenuPageSimple() {
                             >
                                 <div className="absolute top-2 left-2 right-2 z-10 flex justify-between items-center pointer-events-none">
                                     <button
-                                        onClick={(e) => handleShare(item, e)}
+                                        onClick={e => handleShare(item, e)}
                                         className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none mix-blend-normal pointer-events-auto"
                                         title="Compartir"
                                     >
@@ -389,7 +394,9 @@ export default function MenuPageSimple() {
                                                         : 'text-gray-400'
                                                 }
                                                 fill={
-                                                    favoriteItems.has(item.id) ? 'currentColor' : 'none'
+                                                    favoriteItems.has(item.id)
+                                                        ? 'currentColor'
+                                                        : 'none'
                                                 }
                                             />
                                         </button>
@@ -473,10 +480,11 @@ export default function MenuPageSimple() {
                                         </div>
                                         <button
                                             onClick={e => handleAddToCart(item, e)}
-                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${addedItems.has(item.id)
-                                                ? 'bg-green-600 text-white'
-                                                : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
-                                                }`}
+                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${
+                                                addedItems.has(item.id)
+                                                    ? 'bg-green-600 text-white'
+                                                    : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
+                                            }`}
                                         >
                                             {addedItems.has(item.id) ? (
                                                 <span className="font-black">✓</span>
@@ -514,7 +522,9 @@ export default function MenuPageSimple() {
                         >
                             <div className="p-6">
                                 <div className="flex justify-between items-center mb-6">
-                                    <h3 className="text-xl font-black text-gray-900">Compartir 🍣</h3>
+                                    <h3 className="text-xl font-black text-gray-900">
+                                        Compartir 🍣
+                                    </h3>
                                     <button
                                         onClick={() => setSharingItem(null)}
                                         className="p-2 hover:bg-gray-100 rounded-full transition-colors border-none bg-transparent cursor-pointer"
@@ -526,12 +536,22 @@ export default function MenuPageSimple() {
                                 {/* Preview Card Style */}
                                 <div className="bg-gray-50 rounded-2xl p-4 mb-6 flex gap-4 border border-gray-100">
                                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shadow-sm flex-shrink-0">
-                                        <img src={sharingItem.image} alt="" className="w-full h-full object-cover" />
+                                        <img
+                                            src={sharingItem.image}
+                                            alt=""
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="font-black text-gray-900 text-sm leading-tight mb-1">{sharingItem.name}</p>
-                                        <p className="text-xs text-gray-500 line-clamp-1">{sharingItem.description}</p>
-                                        <p className="text-red-600 font-black text-sm mt-1">{sharingItem.price.toFixed(2).replace('.', ',')} €</p>
+                                        <p className="font-black text-gray-900 text-sm leading-tight mb-1">
+                                            {sharingItem.name}
+                                        </p>
+                                        <p className="text-xs text-gray-500 line-clamp-1">
+                                            {sharingItem.description}
+                                        </p>
+                                        <p className="text-red-600 font-black text-sm mt-1">
+                                            {sharingItem.price.toFixed(2).replace('.', ',')} €
+                                        </p>
                                     </div>
                                 </div>
 
@@ -543,7 +563,12 @@ export default function MenuPageSimple() {
                                         className="flex flex-col items-center justify-center gap-2 p-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-2xl transition-colors no-underline"
                                     >
                                         <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-200">
-                                            <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /></svg>
+                                            <svg
+                                                className="w-6 h-6 fill-current"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                                            </svg>
                                         </div>
                                         <span className="text-xs font-black">WhatsApp</span>
                                     </a>
@@ -554,14 +579,23 @@ export default function MenuPageSimple() {
                                         className="flex flex-col items-center justify-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-2xl transition-colors no-underline"
                                     >
                                         <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-200">
-                                            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-2.003 9.464c-.149.659-.54 1.222-1.096 1.222-.359 0-.615-.152-.862-.323l-3.111-2.274-1.503 1.447c-.161.163-.362.253-.59.253-.105 0-.211-.02-.315-.062-.352-.142-.587-.487-.587-.866v-2.592l7.103-6.197c.18-.163.076-.254-.15-.125l-8.791 5.485-2.528-.8c-.546-.174-.558-.547.115-.8l9.885-3.815c.458-.19.914-.078 1.223.232.31.31.391.751.232 1.206z" /></svg>
+                                            <svg
+                                                className="w-5 h-5 fill-current"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-2.003 9.464c-.149.659-.54 1.222-1.096 1.222-.359 0-.615-.152-.862-.323l-3.111-2.274-1.503 1.447c-.161.163-.362.253-.59.253-.105 0-.211-.02-.315-.062-.352-.142-.587-.487-.587-.866v-2.592l7.103-6.197c.18-.163.076-.254-.15-.125l-8.791 5.485-2.528-.8c-.546-.174-.558-.547.115-.8l9.885-3.815c.458-.19.914-.078 1.223.232.31.31.391.751.232 1.206z" />
+                                            </svg>
                                         </div>
                                         <span className="text-xs font-black">Telegram</span>
                                     </a>
                                 </div>
 
                                 <button
-                                    onClick={() => copyToClipboard(`${window.location.origin}/menu?id=${sharingItem.id}`)}
+                                    onClick={() =>
+                                        copyToClipboard(
+                                            `${window.location.origin}/menu?id=${sharingItem.id}`
+                                        )
+                                    }
                                     className={`w-full flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm transition-all border-none cursor-pointer ${copying ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                                 >
                                     {copying ? (

@@ -296,7 +296,15 @@ router.patch(
     validate({
         status: {
             required: true,
-            enum: ['pending', 'received', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'],
+            enum: [
+                'pending',
+                'received',
+                'confirmed',
+                'preparing',
+                'on_the_way',
+                'delivered',
+                'cancelled',
+            ],
         },
     }),
     asyncHandler(async (req: Request, res: Response) => {

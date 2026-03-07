@@ -29,7 +29,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 try {
                     const parsed = JSON.parse(localCart);
                     setItems(parsed);
-                    const localTotal = parsed.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+                    const localTotal = parsed.reduce(
+                        (sum: number, item: any) => sum + item.price * item.quantity,
+                        0
+                    );
                     setTotal(localTotal);
                 } catch (e) {
                     setItems([]);

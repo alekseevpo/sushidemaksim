@@ -45,19 +45,23 @@ router.post(
 
             if (menuErr) throw menuErr;
 
-            cartItems = guestItems.map((gi: any) => {
-                const menuItem = menuData?.find((m: any) => m.id === gi.menuItemId);
-                if (!menuItem) return null;
-                return {
-                    quantity: gi.quantity,
-                    menu_item_id: gi.menuItemId,
-                    menu_items: menuItem
-                };
-            }).filter((i: any) => i !== null);
+            cartItems = guestItems
+                .map((gi: any) => {
+                    const menuItem = menuData?.find((m: any) => m.id === gi.menuItemId);
+                    if (!menuItem) return null;
+                    return {
+                        quantity: gi.quantity,
+                        menu_item_id: gi.menuItemId,
+                        menu_items: menuItem,
+                    };
+                })
+                .filter((i: any) => i !== null);
         }
 
         if (cartItems.length === 0) {
-            return res.status(400).json({ error: 'La cesta está vacía o artículos no encontrados' });
+            return res
+                .status(400)
+                .json({ error: 'La cesta está vacía o artículos no encontrados' });
         }
 
         // 2. Calculate total
@@ -281,19 +285,23 @@ router.post(
         const osName = parser.getOS().name || 'Unknown';
 
         // 1. Get items from user's cart in DB
-        const { data: dbItems, error: cartError } = await supabase
-            .from('cart_items')
+        const { data: dbItems } = await supabase.from('cart_items')
             .select('quantity, menu_item_id, menu_items(name, price, image)')
             .eq('user_id', req.userId);
 
         const cartItems = dbItems || [];
 
         if (cartItems.length === 0) {
-            return res.status(400).json({ error: 'La cesta está vacía. Añade algo antes de invitar.' });
+            return res
+                .status(400)
+                .json({ error: 'La cesta está vacía. Añade algo antes de invitar.' });
         }
 
         // 2. Calculate total
-        const subtotal = cartItems.reduce((sum, item: any) => sum + item.menu_items.price * item.quantity, 0);
+        const subtotal = cartItems.reduce(
+            (sum, item: any) => sum + item.menu_items.price * item.quantity,
+            0
+        );
         let finalTotal = subtotal;
         // Simple 10% for testing if needed, or proper promo logic
         if (promoCode === 'TEST10') finalTotal *= 0.9;
@@ -310,7 +318,7 @@ router.post(
                 notes: `${notes || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
                 device_type: deviceType,
                 os_name: osName,
-                estimated_delivery_time: '30-60 min'
+                estimated_delivery_time: '30-60 min',
             })
             .select()
             .single();
@@ -328,10 +336,12 @@ router.post(
         }));
         await supabase.from('order_items').insert(itemsToInsert);
 
-        const origin = (req.headers.origin as string) || (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
+        const origin =
+            (req.headers.origin as string) ||
+            (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
         res.status(201).json({
             orderId: order.id,
-            shareUrl: `${origin}/invitacion/${order.id}`
+            shareUrl: `${origin}/invitacion/${order.id}`,
         });
     })
 );
@@ -349,7 +359,6 @@ router.get(
 
         const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
         const host = req.get('host');
-        const fullOrigin = `${protocol}://${host}`;
 
         // Extract sender name from notes [De parte de: Name]
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
@@ -420,7 +429,9 @@ router.get(
             .single();
 
         if (error || !order) {
-            return res.status(404).json({ error: 'Invitación no encontrada или ya ha sido pagada.' });
+            return res
+                .status(404)
+                .json({ error: 'Invitación no encontrada или ya ha sido pagada.' });
         }
 
         res.json({ order: { ...order, items: order.order_items } });
@@ -438,7 +449,8 @@ router.post(
             .single();
 
         if (fetchErr || !order) return res.status(404).json({ error: 'Pedido no encontrado' });
-        if (order.status !== 'waiting_payment') return res.status(400).json({ error: 'El pedido ya no está esperando pago' });
+        if (order.status !== 'waiting_payment')
+            return res.status(400).json({ error: 'El pedido ya no está esperando pago' });
 
         const { data: updated, error: updateErr } = await supabase
             .from('orders')

@@ -74,7 +74,10 @@ function App() {
                                     <Route path="/contacts" element={<ContactsPage />} />
                                     <Route path="/blog" element={<BlogPage />} />
                                     <Route path="/blog/:slug" element={<BlogPostPage />} />
-                                    <Route path="/pay-for-friend/:id" element={<PayForFriendPage />} />
+                                    <Route
+                                        path="/pay-for-friend/:id"
+                                        element={<PayForFriendPage />}
+                                    />
                                 </Routes>
                             </Suspense>
                         </main>

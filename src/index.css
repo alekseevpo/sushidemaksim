@@ -26,7 +26,10 @@
 
     .premium-card {
         @apply bg-white rounded-3xl border border-gray-100 duration-500 ease-out;
-        transition: border-color 500ms ease-out, box-shadow 500ms ease-out, transform 500ms ease-out;
+        transition:
+            border-color 500ms ease-out,
+            box-shadow 500ms ease-out,
+            transform 500ms ease-out;
         box-shadow:
             0 4px 6px -1px rgba(0, 0, 0, 0.02),
             0 2px 4px -1px rgba(0, 0, 0, 0.01);
@@ -149,13 +152,12 @@
 
 /* Fix iOS Auto-Zoom on Inputs */
 @media screen and (max-width: 768px) {
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="tel"],
-    input[type="number"],
-    input[type="search"],
+    input[type='text'],
+    input[type='email'],
+    input[type='password'],
+    input[type='tel'],
+    input[type='number'],
+    input[type='search'],
     textarea,
     select {
         font-size: 16px !important;

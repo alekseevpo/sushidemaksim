@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, MapPin, CheckCircle, Trash2, Plus, Minus, ArrowLeft, X, Gift } from 'lucide-react';
+import {
+    Sparkles,
+    MapPin,
+    CheckCircle,
+    Trash2,
+    Plus,
+    Minus,
+    ArrowLeft,
+    X,
+    Gift,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -141,11 +151,7 @@ export default function CartPageSimple() {
         const houseVal = house.trim();
         const aptVal = apartment.trim();
 
-        if (
-            !streetVal ||
-            streetVal.length < 3 ||
-            streetVal.includes('undefined')
-        ) {
+        if (!streetVal || streetVal.length < 3 || streetVal.includes('undefined')) {
             setOrderError('Por favor, indica tu calle / dirección');
             return;
         }
@@ -185,7 +191,7 @@ export default function CartPageSimple() {
             if (!isAuthenticated) {
                 orderPayload.guestItems = items.map(i => ({
                     menuItemId: parseInt(i.id),
-                    quantity: i.quantity
+                    quantity: i.quantity,
                 }));
             }
 
@@ -246,13 +252,13 @@ export default function CartPageSimple() {
                 phoneNumber: deliveryPhone,
                 notes,
                 promoCode: appliedPromo?.code || undefined,
-                senderName: user?.name || ''
+                senderName: user?.name || '',
             };
 
             if (!isAuthenticated) {
                 payload.guestItems = items.map(i => ({
                     menuItemId: parseInt(i.id),
-                    quantity: i.quantity
+                    quantity: i.quantity,
                 }));
             }
 
@@ -265,7 +271,7 @@ export default function CartPageSimple() {
                 await navigator.share({
                     title: '¡Invítame a Sushi de Maksim! 🍣',
                     text: `¡Hola! He preparado este pedido de sushi y me encantaría que me invitases. ¿Te animas? 🍱✨\n\n${shareUrlWithCacheBust}`,
-                    url: shareUrlWithCacheBust
+                    url: shareUrlWithCacheBust,
                 });
             } else {
                 // Fallback: Copy to clipboard
@@ -357,10 +363,13 @@ export default function CartPageSimple() {
                             <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-2 flex flex-col items-center">
                                 <span className="text-amber-600 mb-1">🎁</span>
                                 <p className="text-xs text-amber-800 font-medium mb-3">
-                                    ¡Regístrate ahora y consigue <strong>descuentos exclusivos</strong> en tus próximos pedidos!
+                                    ¡Regístrate ahora y consigue{' '}
+                                    <strong>descuentos exclusivos</strong> en tus próximos pedidos!
                                 </p>
                                 <button
-                                    onClick={() => document.dispatchEvent(new Event('custom:openLogin'))}
+                                    onClick={() =>
+                                        document.dispatchEvent(new Event('custom:openLogin'))
+                                    }
                                     className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-95"
                                 >
                                     Crear cuenta
@@ -537,9 +546,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                    item.id,
-                                                                    item.quantity - 1
-                                                                )
+                                                                      item.id,
+                                                                      item.quantity - 1
+                                                                  )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -592,7 +601,7 @@ export default function CartPageSimple() {
                             {/* User addresses pills */}
                             {user?.addresses && user.addresses.length > 0 && (
                                 <div className="flex flex-col gap-2 mb-4">
-                                    {user.addresses.map((addr) => (
+                                    {user.addresses.map(addr => (
                                         <button
                                             key={addr.id}
                                             onClick={() => {
@@ -605,7 +614,8 @@ export default function CartPageSimple() {
                                                     if (pts.length >= 2) {
                                                         s = pts[0];
                                                         h = pts[1];
-                                                        if (pts.length >= 3) a = pts.slice(2).join(', ');
+                                                        if (pts.length >= 3)
+                                                            a = pts.slice(2).join(', ');
                                                     }
                                                 }
 
@@ -621,7 +631,8 @@ export default function CartPageSimple() {
                                             <span className="truncate">
                                                 Usar "{addr.label || 'Mi dirección'}": {addr.street}
                                                 {addr.house && `, Portal/Casa ${addr.house}`}
-                                                {addr.apartment && `, Piso/Puerta ${addr.apartment}`}
+                                                {addr.apartment &&
+                                                    `, Piso/Puerta ${addr.apartment}`}
                                             </span>
                                         </button>
                                     ))}
@@ -954,9 +965,14 @@ export default function CartPageSimple() {
                                 </button>
                             ) : (
                                 <div className="mb-6 p-4 bg-amber-50 rounded-xl border border-amber-100 text-center">
-                                    <p className="text-xs text-amber-800 font-bold mb-2 uppercase tracking-wider">¿Quieres que te inviten? 🎁</p>
+                                    <p className="text-xs text-amber-800 font-bold mb-2 uppercase tracking-wider">
+                                        ¿Quieres que te inviten? 🎁
+                                    </p>
                                     <p className="text-[11px] text-amber-600 leading-tight">
-                                        <Link to="/" className="underline font-black">Regístrate или inicia sesión</Link> para usar esta función y compartir tu cesta con amigos.
+                                        <Link to="/" className="underline font-black">
+                                            Regístrate или inicia sesión
+                                        </Link>{' '}
+                                        para usar esta función y compartir tu cesta con amigos.
                                     </p>
                                 </div>
                             )}

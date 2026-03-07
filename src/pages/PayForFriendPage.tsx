@@ -31,7 +31,8 @@ export default function PayForFriendPage() {
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Get current domain for OG tags
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://sushidemaksim.vercel.app';
+    const origin =
+        typeof window !== 'undefined' ? window.location.origin : 'https://sushidemaksim.vercel.app';
     const invitationUrl = `${origin}/pay-for-friend/${id}`;
     const hungryPandaUrl = `${origin}/hungry-panda.png`;
 
@@ -72,7 +73,7 @@ export default function PayForFriendPage() {
                 <div className="text-center">
                     <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                        transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
                         className="text-4xl mb-4"
                     >
                         🍣
@@ -88,9 +89,16 @@ export default function PayForFriendPage() {
             <div className="min-h-screen flex items-center justify-center p-6 bg-[#FDFBF7]">
                 <div className="max-w-md w-full bg-white rounded-[32px] p-8 shadow-xl text-center border border-gray-100">
                     <XCircle size={64} className="text-red-500 mx-auto mb-6" />
-                    <h2 className="text-2xl font-black mb-4 text-gray-900">¡Vaya! Algo salió mal</h2>
-                    <p className="text-gray-500 mb-8">{error || 'Esta invitación ya не существует или ya ha sido pagada.'}</p>
-                    <Link to="/menu" className="inline-block bg-gray-900 text-white px-8 py-3 rounded-2xl font-bold no-underline hover:bg-gray-800 transition">
+                    <h2 className="text-2xl font-black mb-4 text-gray-900">
+                        ¡Vaya! Algo salió mal
+                    </h2>
+                    <p className="text-gray-500 mb-8">
+                        {error || 'Esta invitación ya не существует или ya ha sido pagada.'}
+                    </p>
+                    <Link
+                        to="/menu"
+                        className="inline-block bg-gray-900 text-white px-8 py-3 rounded-2xl font-bold no-underline hover:bg-gray-800 transition"
+                    >
                         Ir al menú
                     </Link>
                 </div>
@@ -121,7 +129,11 @@ export default function PayForFriendPage() {
                     <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-8 md:p-12 text-center text-white relative">
                         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
                             <div className="grid grid-cols-4 gap-4 p-4 opacity-50">
-                                {[...Array(8)].map((_, i) => <span key={i} className="text-4xl text-center">🍣</span>)}
+                                {[...Array(8)].map((_, i) => (
+                                    <span key={i} className="text-4xl text-center">
+                                        🍣
+                                    </span>
+                                ))}
                             </div>
                         </div>
                         <div className="relative z-10">
@@ -135,21 +147,30 @@ export default function PayForFriendPage() {
                                     src={hungryPandaUrl}
                                     alt="Panda hambriento"
                                     animate={{ y: [0, -8, 0] }}
-                                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                                    transition={{
+                                        repeat: Infinity,
+                                        duration: 4,
+                                        ease: 'easeInOut',
+                                    }}
                                     className="w-32 h-32 mx-auto rounded-full border-4 border-white shadow-2xl object-cover bg-amber-50"
                                 />
                                 <motion.div
                                     initial={{ scale: 0, rotate: 10 }}
                                     animate={{ scale: 1, rotate: -5 }}
-                                    transition={{ delay: 0.6, type: "spring" }}
+                                    transition={{ delay: 0.6, type: 'spring' }}
                                     className="absolute -top-4 right-1/2 translate-x-16 bg-red-600 text-white text-[11px] font-black px-3 py-1.5 rounded-2xl shadow-xl border-2 border-white whitespace-nowrap"
                                 >
                                     ¡TENGO HAMBRE! 🐼
                                 </motion.div>
                             </motion.div>
-                            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight">¡Momento de invitar!</h1>
+                            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight">
+                                ¡Momento de invitar!
+                            </h1>
                             <p className="text-white/90 font-medium text-lg">
-                                <span className="underline decoration-white/40 decoration-2">{senderName}</span> ha seleccionado sus platos favoritos.
+                                <span className="underline decoration-white/40 decoration-2">
+                                    {senderName}
+                                </span>{' '}
+                                ha seleccionado sus platos favoritos.
                             </p>
                         </div>
                     </div>
@@ -161,30 +182,43 @@ export default function PayForFriendPage() {
                                 <div className="h-0.5 w-4 bg-gray-200" /> El menú elegido
                             </h2>
                             <div className="space-y-4">
-                                {order.items.map((item) => {
+                                {order.items.map(item => {
                                     // Ensure image URL is absolute for nested routes
                                     const itemImage = item.image.startsWith('http')
                                         ? item.image
-                                        : item.image.startsWith('/') ? item.image : `/${item.image}`;
+                                        : item.image.startsWith('/')
+                                          ? item.image
+                                          : `/${item.image}`;
 
                                     return (
-                                        <div key={item.id} className="flex items-center gap-4 group">
+                                        <div
+                                            key={item.id}
+                                            className="flex items-center gap-4 group"
+                                        >
                                             <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100 group-hover:scale-105 transition-transform">
                                                 <img
                                                     src={itemImage}
                                                     alt={item.name}
                                                     className="w-full h-full object-cover"
-                                                    onError={(e) => {
-                                                        (e.target as HTMLImageElement).src = '/placeholder-sushi.png';
+                                                    onError={e => {
+                                                        (e.target as HTMLImageElement).src =
+                                                            '/placeholder-sushi.png';
                                                     }}
                                                 />
                                             </div>
                                             <div className="flex-1">
-                                                <p className="font-black text-gray-900 text-sm leading-tight mb-1">{item.name}</p>
-                                                <p className="text-xs text-gray-400">{item.quantity} ud{item.quantity > 1 ? 's' : ''}</p>
+                                                <p className="font-black text-gray-900 text-sm leading-tight mb-1">
+                                                    {item.name}
+                                                </p>
+                                                <p className="text-xs text-gray-400">
+                                                    {item.quantity} ud{item.quantity > 1 ? 's' : ''}
+                                                </p>
                                             </div>
                                             <p className="font-black text-gray-900 text-sm">
-                                                {(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
+                                                {(item.price_at_time * item.quantity)
+                                                    .toFixed(2)
+                                                    .replace('.', ',')}{' '}
+                                                €
                                             </p>
                                         </div>
                                     );
@@ -194,14 +228,17 @@ export default function PayForFriendPage() {
                             <div className="mt-8 pt-6 border-t border-dashed border-gray-200">
                                 <div className="flex justify-between items-center bg-gray-50 p-6 rounded-3xl">
                                     <div>
-                                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Total a pagar</p>
+                                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
+                                            Total a pagar
+                                        </p>
                                         <p className="text-3xl font-black text-red-600 tracking-tighter">
                                             {order.total.toFixed(2).replace('.', ',')} €
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <div className="flex items-center gap-2 text-xs font-bold text-gray-500 mb-1">
-                                            <MapPin size={14} className="text-red-500" /> Entrega en:
+                                            <MapPin size={14} className="text-red-500" /> Entrega
+                                            en:
                                         </div>
                                         <p className="text-[10px] text-gray-400 font-medium max-w-[150px] leading-tight">
                                             {order.delivery_address}
@@ -229,7 +266,8 @@ export default function PayForFriendPage() {
                                 )}
                             </button>
                             <p className="text-center text-[11px] text-gray-400 mt-4 font-medium italic">
-                                * Este es un pedido especial. Al pagar, el restaurante recibirá el pedido inmediatamente.
+                                * Este es un pedido especial. Al pagar, el restaurante recibirá el
+                                pedido inmediatamente.
                             </p>
                         </div>
                     </div>
@@ -238,7 +276,9 @@ export default function PayForFriendPage() {
                 {/* Secure Badge */}
                 <div className="flex items-center justify-center gap-2 mt-8 text-gray-400 grayscale">
                     <CheckCircle size={16} />
-                    <span className="text-[10px] uppercase font-black tracking-widest">Pago 100% Seguro</span>
+                    <span className="text-[10px] uppercase font-black tracking-widest">
+                        Pago 100% Seguro
+                    </span>
                 </div>
             </div>
 
@@ -259,17 +299,25 @@ export default function PayForFriendPage() {
                             <Heart size={64} fill="white" />
                         </motion.div>
 
-                        <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter">¡Eres Genial! 🌟</h2>
+                        <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter">
+                            ¡Eres Genial! 🌟
+                        </h2>
                         <p className="text-xl text-gray-500 max-w-sm mx-auto mb-10 leading-relaxed">
-                            Has pagado el pedido de <span className="text-gray-900 font-bold">{senderName}</span>.
-                            Seguro que le has alegrado el día.
+                            Has pagado el pedido de{' '}
+                            <span className="text-gray-900 font-bold">{senderName}</span>. Seguro
+                            que le has alegrado el día.
                         </p>
 
                         <div className="flex flex-col gap-4 w-full max-w-xs">
-                            <Link to="/menu" className="bg-red-600 text-white py-4 rounded-2xl font-black no-underline shadow-xl shadow-red-100 hover:bg-red-700 transition transform active:scale-95">
+                            <Link
+                                to="/menu"
+                                className="bg-red-600 text-white py-4 rounded-2xl font-black no-underline shadow-xl shadow-red-100 hover:bg-red-700 transition transform active:scale-95"
+                            >
                                 Pedir sushi para mí 🍣
                             </Link>
-                            <p className="text-gray-400 text-sm">Gracias por usar Sushi de Maksim</p>
+                            <p className="text-gray-400 text-sm">
+                                Gracias por usar Sushi de Maksim
+                            </p>
                         </div>
 
                         {/* Small confetti effect simulation */}
@@ -280,18 +328,18 @@ export default function PayForFriendPage() {
                                     initial={{
                                         top: '100%',
                                         left: `${Math.random() * 100}%`,
-                                        rotate: 0
+                                        rotate: 0,
                                     }}
                                     animate={{
                                         top: '-10%',
                                         rotate: 360,
-                                        left: `${Math.random() * 100}%`
+                                        left: `${Math.random() * 100}%`,
                                     }}
                                     transition={{
                                         duration: 2 + Math.random() * 3,
                                         repeat: Infinity,
-                                        ease: "linear",
-                                        delay: Math.random() * 2
+                                        ease: 'linear',
+                                        delay: Math.random() * 2,
                                     }}
                                     className="absolute text-2xl opacity-20"
                                 >

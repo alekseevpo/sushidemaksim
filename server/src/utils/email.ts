@@ -2,26 +2,26 @@ import nodemailer from 'nodemailer';
 import { config } from '../config.js';
 
 const transporter = nodemailer.createTransport({
-  host: config.smtp.host,
-  port: config.smtp.port,
-  secure: false, // STARTTLS on port 587
-  auth: {
-    user: config.smtp.user,
-    pass: config.smtp.pass,
-  },
+    host: config.smtp.host,
+    port: config.smtp.port,
+    secure: false, // STARTTLS on port 587
+    auth: {
+        user: config.smtp.user,
+        pass: config.smtp.pass,
+    },
 });
 
 /**
  * Send a password-reset email with a 6-digit code.
  */
 export async function sendResetCodeEmail(to: string, code: string): Promise<void> {
-  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-  await transporter.sendMail({
-    from,
-    to,
-    subject: 'Código de recuperación — Sushi de Maksim',
-    html: `
+    await transporter.sendMail({
+        from,
+        to,
+        subject: 'Código de recuperación — Sushi de Maksim',
+        html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -51,20 +51,20 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
   </div>
 </body>
 </html>`,
-  });
+    });
 }
 
 /**
  * Send a birthday gift email with a 10% discount code.
  */
 export async function sendBirthdayGiftEmail(to: string, name: string, code: string): Promise<void> {
-  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-  await transporter.sendMail({
-    from,
-    to,
-    subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
-    html: `
+    await transporter.sendMail({
+        from,
+        to,
+        subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
+        html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -102,28 +102,29 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
   </div>
 </body>
 </html>`,
-  });
+    });
 }
 
 /**
  * Send an order receipt email.
  */
-export async function sendOrderReceiptEmail(
-  to: string,
-  orderData: any
-): Promise<void> {
-  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+export async function sendOrderReceiptEmail(to: string, orderData: any): Promise<void> {
+    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-  const itemsHtml = orderData.items.map((item: any) => `
+    const itemsHtml = orderData.items
+        .map(
+            (item: any) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
       <td style="padding: 12px 0; color: #374151; font-size: 15px;">${item.quantity}x ${item.name}</td>
       <td style="padding: 12px 0; text-align: right; color: #374151; font-size: 15px; font-weight: bold;">
         ${(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
       </td>
     </tr>
-  `).join('');
+  `
+        )
+        .join('');
 
-  const html = `
+    const html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -177,10 +178,10 @@ export async function sendOrderReceiptEmail(
 </html>
   `;
 
-  await transporter.sendMail({
-    from,
-    to,
-    subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
-    html,
-  });
+    await transporter.sendMail({
+        from,
+        to,
+        subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
+        html,
+    });
 }
