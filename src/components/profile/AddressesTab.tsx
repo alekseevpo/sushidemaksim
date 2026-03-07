@@ -38,13 +38,13 @@ export default function AddressesTab({
     const [newAddress, setNewAddress] = useState({
         label: '',
         street: '',
+        house: '',
+        apartment: '',
         city: 'Madrid',
         postalCode: '',
         phone: '',
         isDefault: false,
     });
-    const [houseNumber, setHouseNumber] = useState('');
-    const [details, setDetails] = useState('');
 
     // Autocomplete state
     const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
@@ -67,9 +67,9 @@ export default function AddressesTab({
             try {
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?` +
-                        `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
-                        `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
-                        `&q=${encodeURIComponent(searchQuery)}`
+                    `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
+                    `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
+                    `&q=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await res.json();
                 setSuggestions(data);
@@ -98,12 +98,12 @@ export default function AddressesTab({
     const handleSelectSuggestion = (s: AddressSuggestion) => {
         const addr = s.address;
         const street = addr.road || s.display_name.split(',')[0] || '';
-        const hNum = addr.house_number || '';
+        const house = addr.house_number || '';
         const city = addr.city || addr.town || addr.village || '';
         const postalCode = addr.postcode || '';
+        const apartment = addr.suburb || ''; // Some regions use suburb as extra info
 
-        setNewAddress(p => ({ ...p, street, city, postalCode }));
-        setHouseNumber(hNum);
+        setNewAddress(p => ({ ...p, street, house, city, postalCode, apartment }));
         setSearchQuery(street);
         setShowSuggestions(false);
         setSuggestions([]);
@@ -117,30 +117,17 @@ export default function AddressesTab({
     const startEditing = (addr: UserAddress) => {
         setEditId(addr.id);
 
-        // Try to parse street, house number and details from the saved string
-        // Assuming format: "Street Name, Number, Details" or just "Street Name"
-        let streetExtracted = addr.street;
-        let houseNumExtracted = '';
-        let detailsExtracted = '';
-
-        const parts = addr.street.split(',').map(s => s.trim());
-        if (parts.length > 0) {
-            streetExtracted = parts[0];
-            if (parts.length > 1) houseNumExtracted = parts[1];
-            if (parts.length > 2) detailsExtracted = parts.slice(2).join(', ');
-        }
-
         setNewAddress({
             label: addr.label,
-            street: streetExtracted,
+            street: addr.street,
+            house: addr.house || '',
+            apartment: addr.apartment || '',
             city: addr.city,
             postalCode: addr.postalCode || '',
             phone: addr.phone || '',
             isDefault: addr.isDefault,
         });
-        setSearchQuery(streetExtracted);
-        setHouseNumber(houseNumExtracted);
-        setDetails(detailsExtracted);
+        setSearchQuery(addr.street);
         setShowAddAddress(true);
     };
 
@@ -148,14 +135,14 @@ export default function AddressesTab({
         setNewAddress({
             label: '',
             street: '',
+            house: '',
+            apartment: '',
             city: 'Madrid',
             postalCode: '',
             phone: '',
             isDefault: false,
         });
         setSearchQuery('');
-        setHouseNumber('');
-        setDetails('');
         setEditId(null);
         setShowAddAddress(false);
     };
@@ -164,15 +151,11 @@ export default function AddressesTab({
         if (!newAddress.label || !newAddress.street || !newAddress.postalCode || !newAddress.phone)
             return;
         try {
-            const finalStreet = [newAddress.street, houseNumber.trim(), details.trim()]
-                .filter(Boolean)
-                .join(', ');
-
             if (editId && editAddress) {
-                await editAddress(editId, { ...newAddress, street: finalStreet });
+                await editAddress(editId, newAddress);
                 onSuccess('Dirección actualizada');
             } else {
-                await addAddress({ ...newAddress, street: finalStreet });
+                await addAddress(newAddress);
                 onSuccess('Dirección añadida');
             }
             resetForm();
@@ -294,8 +277,8 @@ export default function AddressesTab({
                                 Número
                             </label>
                             <input
-                                value={houseNumber}
-                                onChange={e => setHouseNumber(e.target.value)}
+                                value={newAddress.house}
+                                onChange={e => setNewAddress(p => ({ ...p, house: e.target.value }))}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                 placeholder="Ej: 12"
                             />
@@ -305,8 +288,8 @@ export default function AddressesTab({
                                 Piso, Escalera, Puerta
                             </label>
                             <input
-                                value={details}
-                                onChange={e => setDetails(e.target.value)}
+                                value={newAddress.apartment}
+                                onChange={e => setNewAddress(p => ({ ...p, apartment: e.target.value }))}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                 placeholder="Piso 3, Puerta A..."
                             />
@@ -393,10 +376,9 @@ export default function AddressesTab({
                         <div
                             key={addr.id}
                             className={`group p-6 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row gap-6
-                                ${
-                                    addr.isDefault
-                                        ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
-                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
+                                ${addr.isDefault
+                                    ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
+                                    : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
                                 }`}
                         >
                             <div
@@ -419,6 +401,8 @@ export default function AddressesTab({
                                 </div>
                                 <p className="text-[13px] font-bold text-gray-900 m-0 mb-1 leading-relaxed">
                                     {addr.street}
+                                    {addr.house && `, ${addr.house}`}
+                                    {addr.apartment && `, ${addr.apartment}`}
                                 </p>
                                 <p className="text-xs font-medium text-gray-500 m-0">
                                     {addr.postalCode} • {addr.city}

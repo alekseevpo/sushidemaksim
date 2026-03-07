@@ -593,15 +593,15 @@ export default function CartPageSimple() {
                             {defaultAddr && defaultAddr.street && (
                                 <button
                                     onClick={() => {
-                                        setAddress(
-                                            `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
-                                        );
-                                        setPhone(prev => prev || defaultAddr.phone);
+                                        setAddress(defaultAddr.street || '');
+                                        setHouse(defaultAddr.house || '');
+                                        setApartment(defaultAddr.apartment || '');
+                                        setPhone(prev => prev || defaultAddr.phone || '');
                                     }}
-                                    className="mb-4 flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-full px-4 py-2 cursor-pointer hover:bg-red-100 transition font-medium"
+                                    type="button"
+                                    className="mb-4 flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-full px-4 py-2 cursor-pointer hover:bg-red-100 transition font-medium text-left"
                                 >
-                                    <MapPin size={14} /> Usar "
-                                    {defaultAddr.label || 'Mi dirección'}": {defaultAddr.street}
+                                    <MapPin size={14} /> Usar "{defaultAddr.label || 'Mi dirección'}": {defaultAddr.street}
                                 </button>
                             )}
 
