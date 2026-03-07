@@ -20,6 +20,13 @@ interface BlogPost {
 export default function BlogPage() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isSubscribed, setIsSubscribed] = useState(false);
+
+    const handleSubscribe = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Simulation of subscription
+        setIsSubscribed(true);
+    };
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -37,7 +44,7 @@ export default function BlogPage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-transparent pb-20">
+        <div className="min-h-screen bg-transparent pb-20 overflow-x-hidden">
             <SEO
                 title="Blog"
                 description="Historias, recetas y secretos del mundo del sushi artesanal. Aprende más sobre la comida japonesa con Sushi de Maksim."
@@ -182,33 +189,53 @@ export default function BlogPage() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="mt-20 bg-black rounded-[2rem] p-8 md:p-12 text-center relative overflow-hidden shadow-2xl"
+                    className="mt-20 bg-black rounded-[2rem] p-8 md:p-12 text-center relative overflow-hidden shadow-2xl mx-auto w-full"
                 >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-600/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
 
                     <div className="relative z-10 max-w-2xl mx-auto">
-                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-                            ¿Quieres recibir ofertas{' '}
-                            <span className="text-red-500">exclusivas</span>?
-                        </h2>
-                        <p className="text-gray-400 mb-8 text-sm md:text-base leading-relaxed">
-                            Únete a nuestro club de amantes del sushi y recibe historias del blog y
-                            promociones directamente en tu email.
-                        </p>
-                        <form
-                            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-                            onSubmit={e => e.preventDefault()}
-                        >
-                            <input
-                                type="email"
-                                placeholder="Tu mejor email..."
-                                className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                            />
-                            <button className="bg-red-600 hover:bg-red-700 text-white font-black px-8 py-3.5 rounded-xl text-sm transition-all shadow-lg active:scale-95">
-                                ¡SUSCRIBIRME!
-                            </button>
-                        </form>
+                        {!isSubscribed ? (
+                            <>
+                                <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                                    ¿Quieres recibir ofertas{' '}
+                                    <span className="text-red-500">exclusivas</span>?
+                                </h2>
+                                <p className="text-gray-400 mb-8 text-sm md:text-base leading-relaxed">
+                                    Únete a nuestro club de amantes del sushi и recibe истории блога и
+                                    промоакции прямо на твой email.
+                                </p>
+                                <form
+                                    className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+                                    onSubmit={handleSubscribe}
+                                >
+                                    <input
+                                        type="email"
+                                        required
+                                        placeholder="Tu mejor email..."
+                                        className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-3.5 text-white text-base md:text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="bg-red-600 hover:bg-red-700 text-white font-black px-8 py-3.5 rounded-xl text-sm transition-all shadow-lg active:scale-95 whitespace-nowrap"
+                                    >
+                                        ¡SUSCRIBIRME!
+                                    </button>
+                                </form>
+                            </>
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="py-4"
+                            >
+                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <ChevronRight size={32} className="text-green-500" />
+                                </div>
+                                <h3 className="text-2xl font-black text-white mb-2">¡Bienvenido al Club!</h3>
+                                <p className="text-gray-400">Revisa tu bandeja de entrada pronto. 🍣</p>
+                            </motion.div>
+                        )}
                     </div>
                 </motion.div>
 
