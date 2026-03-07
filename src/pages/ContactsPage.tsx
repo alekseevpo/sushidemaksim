@@ -84,7 +84,9 @@ export default function ContactsPage() {
                 <div className="absolute inset-0 bg-black/60"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF7] via-transparent to-transparent"></div>
                 <div className="max-w-4xl mx-auto text-center relative z-10">
-                    <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">Contacto</h1>
+                    <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">
+                        Contacto
+                    </h1>
                     <p className="text-gray-200 text-base md:text-xl font-medium max-w-lg mx-auto">
                         Estamos aquí para ayudarte. ¡Hablemos!
                     </p>
@@ -118,10 +120,7 @@ export default function ContactsPage() {
                                     4.8
                                 </span>
                                 <div className="flex items-center">
-                                    <Star
-                                        size={12}
-                                        className="fill-amber-400 text-amber-400"
-                                    />
+                                    <Star size={12} className="fill-amber-400 text-amber-400" />
                                 </div>
                             </div>
                             <p className="text-[8px] md:text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -132,7 +131,8 @@ export default function ContactsPage() {
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 md:p-10">
                         <p className="text-white font-black text-base md:text-2xl leading-tight max-w-md">
-                            Nuestro rincón japonés <br className="hidden md:block" /> en el corazón de Madrid
+                            Nuestro rincón japonés <br className="hidden md:block" /> en el corazón
+                            de Madrid
                         </p>
                     </div>
                 </div>
@@ -146,7 +146,9 @@ export default function ContactsPage() {
                             <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <Phone size={24} />
                             </div>
-                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Llámanos</h3>
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
+                                Llámanos
+                            </h3>
                             <p className="text-gray-500 text-sm mb-4">
                                 Atención al cliente y pedidos por teléfono.
                             </p>
@@ -162,7 +164,9 @@ export default function ContactsPage() {
                             <div className="w-12 h-12 bg-gray-900 text-white rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <Clock size={24} />
                             </div>
-                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Horario</h3>
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
+                                Horario
+                            </h3>
                             <div className="space-y-2 text-gray-500 text-xs md:text-sm">
                                 {settings.contact_schedule?.map((item: any, idx: number) => (
                                     <div
@@ -191,7 +195,9 @@ export default function ContactsPage() {
                             <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <Mail size={24} />
                             </div>
-                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Escríbenos</h3>
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
+                                Escríbenos
+                            </h3>
                             <p className="text-gray-500 text-sm mb-4">
                                 Consultas generales o eventos especiales.
                             </p>
@@ -207,7 +213,9 @@ export default function ContactsPage() {
                             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
                                 <MapPin size={24} />
                             </div>
-                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">Encuéntranos</h3>
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
+                                Encuéntranos
+                            </h3>
                             <p className="text-gray-500 text-sm mb-4 leading-relaxed">
                                 {settings.contact_address_line1} {settings.contact_address_line2}
                             </p>

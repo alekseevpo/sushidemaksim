@@ -608,27 +608,42 @@ export default function AdminMenu() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700">Alérgenos</label>
+                                    <label className="text-sm font-semibold text-gray-700">
+                                        Alérgenos
+                                    </label>
                                     <div className="flex flex-wrap gap-3">
-                                        {['gluten', 'lactose', 'fish', 'soy', 'nuts'].map(allergen => (
-                                            <label key={allergen} className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={formData.allergens?.includes(allergen)}
-                                                    onChange={e => {
-                                                        const current = formData.allergens || [];
-                                                        const updated = e.target.checked
-                                                            ? [...current, allergen]
-                                                            : current.filter(a => a !== allergen);
-                                                        setFormData({ ...formData, allergens: updated });
-                                                    }}
-                                                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                                />
-                                                <span className="text-xs font-medium text-gray-600 capitalize">
-                                                    {allergen}
-                                                </span>
-                                            </label>
-                                        ))}
+                                        {['gluten', 'lactose', 'fish', 'soy', 'nuts'].map(
+                                            allergen => (
+                                                <label
+                                                    key={allergen}
+                                                    className="flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.allergens?.includes(
+                                                            allergen
+                                                        )}
+                                                        onChange={e => {
+                                                            const current =
+                                                                formData.allergens || [];
+                                                            const updated = e.target.checked
+                                                                ? [...current, allergen]
+                                                                : current.filter(
+                                                                      a => a !== allergen
+                                                                  );
+                                                            setFormData({
+                                                                ...formData,
+                                                                allergens: updated,
+                                                            });
+                                                        }}
+                                                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                                    />
+                                                    <span className="text-xs font-medium text-gray-600 capitalize">
+                                                        {allergen}
+                                                    </span>
+                                                </label>
+                                            )
+                                        )}
                                     </div>
                                 </div>
                             </form>

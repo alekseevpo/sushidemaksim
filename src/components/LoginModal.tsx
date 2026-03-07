@@ -374,8 +374,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                             {isLoading
                                 ? '...'
                                 : mode === 'login'
-                                    ? 'Iniciar sesión'
-                                    : 'Crear cuenta'}
+                                  ? 'Iniciar sesión'
+                                  : 'Crear cuenta'}
                         </button>
                     </form>
                 )}

@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Shield, Users as UsersIcon, RefreshCw, Crown, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+    Shield,
+    Users as UsersIcon,
+    RefreshCw,
+    Crown,
+    Calendar,
+    CheckCircle,
+    AlertCircle,
+} from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -43,8 +51,14 @@ export default function AdminUsers() {
 
     const toggleBirthdayVerified = async (userId: number, currentVerified: boolean) => {
         try {
-            await api.patch(`/admin/users/${userId}/verify-birthday`, { verified: !currentVerified });
-            setUsers(users.map(u => (u.id === userId ? { ...u, birth_date_verified: !currentVerified } : u)));
+            await api.patch(`/admin/users/${userId}/verify-birthday`, {
+                verified: !currentVerified,
+            });
+            setUsers(
+                users.map(u =>
+                    u.id === userId ? { ...u, birth_date_verified: !currentVerified } : u
+                )
+            );
         } catch (err) {
             alert('Error updating verification');
         }
@@ -100,16 +114,24 @@ export default function AdminUsers() {
                                                     {new Date(user.birth_date).toLocaleDateString()}
                                                 </div>
                                             ) : (
-                                                <span className="text-xs text-gray-400">Sin fecha</span>
+                                                <span className="text-xs text-gray-400">
+                                                    Sin fecha
+                                                </span>
                                             )}
 
                                             {user.birth_date && (
                                                 <button
-                                                    onClick={() => toggleBirthdayVerified(user.id, user.birth_date_verified)}
-                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
+                                                    onClick={() =>
+                                                        toggleBirthdayVerified(
+                                                            user.id,
+                                                            user.birth_date_verified
+                                                        )
+                                                    }
+                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
+                                                        user.birth_date_verified
                                                             ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                                             : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     {user.birth_date_verified ? (
                                                         <>
@@ -154,10 +176,11 @@ export default function AdminUsers() {
                                                     onClick={() =>
                                                         toggleAdminRole(user.id, user.role)
                                                     }
-                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
+                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
+                                                        user.role === 'admin'
                                                             ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                             : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     {user.role === 'admin'
                                                         ? 'Revocar Admin'
@@ -187,10 +210,11 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                        pageNum === pagination.page
                                             ? 'bg-red-600 text-white'
                                             : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                        }`}
+                                    }`}
                                 >
                                     {pageNum}
                                 </button>

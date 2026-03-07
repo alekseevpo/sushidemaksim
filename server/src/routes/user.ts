@@ -14,7 +14,9 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: user, error: userError } = await supabase
             .from('users')
-            .select('id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified')
+            .select(
+                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified'
+            )
             .eq('id', req.userId)
             .single();
 
@@ -90,11 +92,20 @@ router.put(
             .from('users')
             .update(updateData)
             .eq('id', req.userId)
-            .select('id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified')
+            .select(
+                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified'
+            )
             .single();
 
         if (error) throw error;
-        res.json({ user: { ...user, createdAt: user.created_at, birthDate: user.birth_date, birthDateVerified: user.birth_date_verified } });
+        res.json({
+            user: {
+                ...user,
+                createdAt: user.created_at,
+                birthDate: user.birth_date,
+                birthDateVerified: user.birth_date_verified,
+            },
+        });
     })
 );
 

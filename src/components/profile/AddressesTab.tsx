@@ -16,7 +16,6 @@ interface AddressSuggestion {
     };
 }
 
-
 interface Props {
     addresses: UserAddress[];
     addAddress: (data: any) => Promise<void>;
@@ -68,9 +67,9 @@ export default function AddressesTab({
             try {
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?` +
-                    `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
-                    `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
-                    `&q=${encodeURIComponent(searchQuery)}`
+                        `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
+                        `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
+                        `&q=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await res.json();
                 setSuggestions(data);
@@ -214,33 +213,46 @@ export default function AddressesTab({
                         <h3 className="text-lg font-black text-gray-900 m-0">
                             {editId ? 'Editar dirección' : 'Nueva dirección'}
                         </h3>
-                        <button onClick={resetForm} className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <button
+                            onClick={resetForm}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                        >
                             <X size={20} />
                         </button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Etiqueta (ej: Casa, Oficina)</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Etiqueta (ej: Casa, Oficina)
+                            </label>
                             <input
                                 value={newAddress.label}
-                                onChange={e => setNewAddress(p => ({ ...p, label: e.target.value }))}
+                                onChange={e =>
+                                    setNewAddress(p => ({ ...p, label: e.target.value }))
+                                }
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                 placeholder="Casa"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Teléfono de contacto</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Teléfono de contacto
+                            </label>
                             <input
                                 value={newAddress.phone}
-                                onChange={e => setNewAddress(p => ({ ...p, phone: e.target.value }))}
+                                onChange={e =>
+                                    setNewAddress(p => ({ ...p, phone: e.target.value }))
+                                }
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                 placeholder="+34 600 000 000"
                             />
                         </div>
 
                         <div className="md:col-span-2 space-y-2 relative" ref={suggestionsRef}>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Calle / Avenida</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Calle / Avenida
+                            </label>
                             <div className="relative">
                                 <input
                                     value={searchQuery || newAddress.street}
@@ -249,7 +261,10 @@ export default function AddressesTab({
                                     placeholder="Ej: Calle Gran Vía..."
                                     autoComplete="off"
                                 />
-                                <MapPin size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                                <MapPin
+                                    size={16}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none"
+                                />
                             </div>
 
                             {showSuggestions && suggestions.length > 0 && (
@@ -261,7 +276,10 @@ export default function AddressesTab({
                                             onClick={() => handleSelectSuggestion(s)}
                                             className="flex items-start gap-3 w-full p-4 text-left hover:bg-red-50 transition-colors group border-b last:border-0 border-gray-50"
                                         >
-                                            <MapPin size={14} className="mt-1 text-gray-300 group-hover:text-red-500 transition-colors shrink-0" />
+                                            <MapPin
+                                                size={14}
+                                                className="mt-1 text-gray-300 group-hover:text-red-500 transition-colors shrink-0"
+                                            />
                                             <span className="text-xs font-bold text-gray-700 group-hover:text-red-600 line-clamp-2 leading-relaxed">
                                                 {s.display_name}
                                             </span>
@@ -272,7 +290,9 @@ export default function AddressesTab({
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Número</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Número
+                            </label>
                             <input
                                 value={houseNumber}
                                 onChange={e => setHouseNumber(e.target.value)}
@@ -281,7 +301,9 @@ export default function AddressesTab({
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Piso, Escalera, Puerta</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Piso, Escalera, Puerta
+                            </label>
                             <input
                                 value={details}
                                 onChange={e => setDetails(e.target.value)}
@@ -291,7 +313,9 @@ export default function AddressesTab({
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Ciudad</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Ciudad
+                            </label>
                             <input
                                 value={newAddress.city}
                                 onChange={e => setNewAddress(p => ({ ...p, city: e.target.value }))}
@@ -299,10 +323,14 @@ export default function AddressesTab({
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Código Postal</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Código Postal
+                            </label>
                             <input
                                 value={newAddress.postalCode}
-                                onChange={e => setNewAddress(p => ({ ...p, postalCode: e.target.value }))}
+                                onChange={e =>
+                                    setNewAddress(p => ({ ...p, postalCode: e.target.value }))
+                                }
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                 placeholder="28001"
                             />
@@ -314,10 +342,14 @@ export default function AddressesTab({
                             <input
                                 type="checkbox"
                                 checked={newAddress.isDefault}
-                                onChange={e => setNewAddress(p => ({ ...p, isDefault: e.target.checked }))}
+                                onChange={e =>
+                                    setNewAddress(p => ({ ...p, isDefault: e.target.checked }))
+                                }
                                 className="w-5 h-5 rounded-lg border-2 border-gray-300 text-red-600 focus:ring-red-600 transition-all cursor-pointer"
                             />
-                            <span className="text-sm font-black text-gray-600 group-hover:text-gray-900 transition-colors">Establecer como predeterminada</span>
+                            <span className="text-sm font-black text-gray-600 group-hover:text-gray-900 transition-colors">
+                                Establecer como predeterminada
+                            </span>
                         </label>
 
                         <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
@@ -361,18 +393,24 @@ export default function AddressesTab({
                         <div
                             key={addr.id}
                             className={`group p-6 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row gap-6
-                                ${addr.isDefault
-                                    ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
-                                    : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'}`}
+                                ${
+                                    addr.isDefault
+                                        ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
+                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
+                                }`}
                         >
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-sm
-                                ${addr.isDefault ? 'bg-red-600 text-white shadow-red-200' : 'bg-gray-100 text-gray-400'}`}>
+                            <div
+                                className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-sm
+                                ${addr.isDefault ? 'bg-red-600 text-white shadow-red-200' : 'bg-gray-100 text-gray-400'}`}
+                            >
                                 <MapPin size={24} />
                             </div>
 
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center flex-wrap gap-2 mb-2">
-                                    <h4 className="text-lg font-black text-gray-900 m-0 truncate">{addr.label}</h4>
+                                    <h4 className="text-lg font-black text-gray-900 m-0 truncate">
+                                        {addr.label}
+                                    </h4>
                                     {addr.isDefault && (
                                         <div className="bg-green-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg shadow-green-100">
                                             Predeterminada

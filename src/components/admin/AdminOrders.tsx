@@ -140,12 +140,12 @@ export default function AdminOrders() {
                                                     const d = new Date(order.created_at);
                                                     const validDate = isNaN(d.getTime())
                                                         ? new Date(
-                                                            order.created_at.replace(' ', 'T') +
-                                                            (order.created_at.includes('Z') ||
-                                                                order.created_at.includes('+')
-                                                                ? ''
-                                                                : 'Z')
-                                                        )
+                                                              order.created_at.replace(' ', 'T') +
+                                                                  (order.created_at.includes('Z') ||
+                                                                  order.created_at.includes('+')
+                                                                      ? ''
+                                                                      : 'Z')
+                                                          )
                                                         : d;
                                                     return validDate.toLocaleString('es-ES', {
                                                         hour: '2-digit',
@@ -180,10 +180,11 @@ export default function AdminOrders() {
                                             onChange={e =>
                                                 handleUpdateStatus(order.id, e.target.value)
                                             }
-                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${statusOptions.find(
-                                                opt => opt.value === order.status
-                                            )?.color || 'bg-gray-100'
-                                                }`}
+                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${
+                                                statusOptions.find(
+                                                    opt => opt.value === order.status
+                                                )?.color || 'bg-gray-100'
+                                            }`}
                                         >
                                             {statusOptions.map(opt => (
                                                 <option
@@ -316,27 +317,25 @@ export default function AdminOrders() {
                         ))
                     )}
                 </div>
-            )
-            }
+            )}
 
-            {
-                !loading && pagination.pages > 1 && (
-                    <div className="mt-6 flex justify-center gap-2">
-                        {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
-                            <button
-                                key={pageNum}
-                                onClick={() => loadOrders(pageNum)}
-                                className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
+            {!loading && pagination.pages > 1 && (
+                <div className="mt-6 flex justify-center gap-2">
+                    {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
+                        <button
+                            key={pageNum}
+                            onClick={() => loadOrders(pageNum)}
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                pageNum === pagination.page
                                     ? 'bg-red-600 text-white shadow-md'
                                     : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                    }`}
-                            >
-                                {pageNum}
-                            </button>
-                        ))}
-                    </div>
-                )
-            }
-        </div >
+                            }`}
+                        >
+                            {pageNum}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 }

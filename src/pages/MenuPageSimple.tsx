@@ -183,27 +183,27 @@ export default function MenuPageSimple() {
     };
 
     const menuSchema = {
-        "@context": "https://schema.org",
-        "@type": "Menu",
-        "name": "Menú Sushi de Maksim",
-        "mainEntityOfPage": "https://sushidemaksim.com/menu",
-        "hasMenuSection": CATEGORIES.map(cat => ({
-            "@type": "MenuSection",
-            "name": cat.name,
-            "hasMenuItem": items
+        '@context': 'https://schema.org',
+        '@type': 'Menu',
+        name: 'Menú Sushi de Maksim',
+        mainEntityOfPage: 'https://sushidemaksim.com/menu',
+        hasMenuSection: CATEGORIES.map(cat => ({
+            '@type': 'MenuSection',
+            name: cat.name,
+            hasMenuItem: items
                 .filter(item => item.category === cat.id)
                 .map(item => ({
-                    "@type": "MenuItem",
-                    "name": item.name,
-                    "description": item.description,
-                    "offers": {
-                        "@type": "Offer",
-                        "price": item.price,
-                        "priceCurrency": "EUR"
+                    '@type': 'MenuItem',
+                    name: item.name,
+                    description: item.description,
+                    offers: {
+                        '@type': 'Offer',
+                        price: item.price,
+                        priceCurrency: 'EUR',
                     },
-                    "image": item.image
-                }))
-        }))
+                    image: item.image,
+                })),
+        })),
     };
 
     return (
@@ -215,7 +215,9 @@ export default function MenuPageSimple() {
                 schema={menuSchema}
             />
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-2xl md:text-4xl text-gray-900 font-black text-center mb-4 md:mb-6 tracking-tight">Nuestro Menú</h1>
+                <h1 className="text-2xl md:text-4xl text-gray-900 font-black text-center mb-4 md:mb-6 tracking-tight">
+                    Nuestro Menú
+                </h1>
 
                 {/* Search */}
                 <div className="flex justify-center mb-6">
@@ -247,10 +249,11 @@ export default function MenuPageSimple() {
                     <div className="flex overflow-x-auto no-scrollbar gap-2 md:gap-2 max-w-7xl mx-auto flex-nowrap sm:flex-wrap sm:justify-center">
                         <button
                             onClick={() => setSelectedCategory('all')}
-                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === 'all'
-                                ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                                }`}
+                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
+                                selectedCategory === 'all'
+                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                            }`}
                         >
                             Todos
                         </button>
@@ -258,10 +261,11 @@ export default function MenuPageSimple() {
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${selectedCategory === cat.id
-                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                                    }`}
+                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
+                                    selectedCategory === cat.id
+                                        ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
+                                        : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
+                                }`}
                             >
                                 <span className="text-sm md:text-base">{cat.icon}</span>
                                 {cat.name}
@@ -353,12 +357,18 @@ export default function MenuPageSimple() {
                                     </div>
                                     <div className="absolute bottom-1.5 right-1.5 flex gap-1">
                                         {item.spicy && (
-                                            <span className="bg-red-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg" title="Picante">
+                                            <span
+                                                className="bg-red-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
+                                                title="Picante"
+                                            >
                                                 🌶️
                                             </span>
                                         )}
                                         {item.vegetarian && (
-                                            <span className="bg-emerald-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg" title="Vegetariano">
+                                            <span
+                                                className="bg-emerald-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
+                                                title="Vegetariano"
+                                            >
                                                 🥬
                                             </span>
                                         )}
@@ -387,10 +397,11 @@ export default function MenuPageSimple() {
                                         </div>
                                         <button
                                             onClick={e => handleAddToCart(item, e)}
-                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${addedItems.has(item.id)
-                                                ? 'bg-green-600 text-white'
-                                                : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
-                                                }`}
+                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${
+                                                addedItems.has(item.id)
+                                                    ? 'bg-green-600 text-white'
+                                                    : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
+                                            }`}
                                         >
                                             {addedItems.has(item.id) ? (
                                                 <span className="font-black">✓</span>

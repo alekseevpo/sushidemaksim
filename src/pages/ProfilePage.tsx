@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User, MapPin, Package, LogOut, ChevronRight, Heart, Sparkles, CheckCircle } from 'lucide-react';
+import {
+    User,
+    MapPin,
+    Package,
+    LogOut,
+    ChevronRight,
+    Heart,
+    Sparkles,
+    CheckCircle,
+} from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import ProfileTab from '../components/profile/ProfileTab';
@@ -41,9 +50,12 @@ export default function ProfilePage() {
                     <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
                         🔒
                     </div>
-                    <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Inicia sesión</h1>
+                    <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">
+                        Inicia sesión
+                    </h1>
                     <p className="text-gray-500 font-medium mb-10 leading-relaxed italic">
-                        Inicia sesión para poder gestionar tu perfil, direcciones y ver tu historial de pedidos.
+                        Inicia sesión para poder gestionar tu perfil, direcciones y ver tu historial
+                        de pedidos.
                     </p>
                     <button
                         onClick={() => navigate('/')}
@@ -82,7 +94,10 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-transparent flex flex-col">
-            <SEO title="Mi Perfil" description="Gestiona tu cuenta, direcciones y pedidos en Sushi de Maksim." />
+            <SEO
+                title="Mi Perfil"
+                description="Gestiona tu cuenta, direcciones y pedidos en Sushi de Maksim."
+            />
 
             {/* Header Section */}
             <div className="bg-red-600 pt-12 pb-24 px-4 relative overflow-hidden">
@@ -110,7 +125,11 @@ export default function ProfilePage() {
                             </p>
                             <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-white border border-white/10">
                                 <Sparkles size={12} className="text-amber-400" />
-                                Miembro desde {new Date(user.createdAt || Date.now()).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+                                Miembro desde{' '}
+                                {new Date(user.createdAt || Date.now()).toLocaleDateString(
+                                    'es-ES',
+                                    { month: 'long', year: 'numeric' }
+                                )}
                             </div>
                         </div>
 
@@ -127,7 +146,6 @@ export default function ProfilePage() {
             {/* Main Content Area */}
             <main className="flex-1 max-w-7xl mx-auto w-full px-4 -mt-16 pb-20 relative z-20">
                 <div className="flex flex-col lg:flex-row gap-8">
-
                     {/* Navigation Sidebar (Desktop) / Menu (Mobile) */}
                     <aside className="lg:w-80 shrink-0 -mx-4 md:mx-0">
                         <div className="bg-white/80 md:bg-white backdrop-blur-xl border border-white/50 md:border-white shadow-xl md:shadow-2xl rounded-none md:rounded-[32px] p-2 flex md:block overflow-x-auto no-scrollbar gap-1 px-4 md:px-2">
@@ -139,18 +157,27 @@ export default function ProfilePage() {
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`shrink-0 md:w-full flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl transition-all duration-300 group
-                                            ${isActive
-                                                ? 'bg-red-50 text-red-600 shadow-sm'
-                                                : 'hover:bg-gray-50 text-gray-600 hover:text-gray-900'}`}
+                                            ${
+                                                isActive
+                                                    ? 'bg-red-50 text-red-600 shadow-sm'
+                                                    : 'hover:bg-gray-50 text-gray-600 hover:text-gray-900'
+                                            }`}
                                     >
-                                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
-                                            ${isActive ? 'bg-red-600 text-white shadow-lg shadow-red-200' : 'bg-gray-100 text-gray-500'}`}>
+                                        <div
+                                            className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
+                                            ${isActive ? 'bg-red-600 text-white shadow-lg shadow-red-200' : 'bg-gray-100 text-gray-500'}`}
+                                        >
                                             <Icon size={18} />
                                         </div>
-                                        <span className={`font-bold text-xs md:text-sm whitespace-nowrap ${isActive ? 'translate-x-1' : ''} transition-transform`}>
+                                        <span
+                                            className={`font-bold text-xs md:text-sm whitespace-nowrap ${isActive ? 'translate-x-1' : ''} transition-transform`}
+                                        >
                                             {tab.label}
                                         </span>
-                                        <ChevronRight size={14} className={`hidden md:block ml-auto transition-all ${isActive ? 'rotate-90 opacity-100' : 'opacity-20'}`} />
+                                        <ChevronRight
+                                            size={14}
+                                            className={`hidden md:block ml-auto transition-all ${isActive ? 'rotate-90 opacity-100' : 'opacity-20'}`}
+                                        />
                                     </button>
                                 );
                             })}
@@ -181,7 +208,11 @@ export default function ProfilePage() {
 
                             <div className="p-0 md:p-8">
                                 {activeTab === 'profile' && (
-                                    <ProfileTab user={user} updateProfile={updateProfile} onSuccess={showToast} />
+                                    <ProfileTab
+                                        user={user}
+                                        updateProfile={updateProfile}
+                                        onSuccess={showToast}
+                                    />
                                 )}
                                 {activeTab === 'addresses' && (
                                     <AddressesTab

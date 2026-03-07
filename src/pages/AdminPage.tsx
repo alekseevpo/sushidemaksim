@@ -59,7 +59,7 @@ export default function AdminPage() {
         try {
             const [statsData, reportsData] = await Promise.all([
                 api.get('/admin/stats'),
-                api.get('/admin/reports')
+                api.get('/admin/reports'),
             ]);
             setStats(statsData);
             setReports(reportsData || []);
@@ -161,10 +161,11 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
-                                    ? 'bg-red-50 text-red-700'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
+                                    isActive
+                                        ? 'bg-red-50 text-red-700'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon
@@ -430,44 +431,82 @@ export default function AdminPage() {
 
                             {/* Device Analytics */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
-                                <h3 className="font-bold text-gray-900 mb-6">Analítica de Dispositivos (Pedidos Registrados)</h3>
+                                <h3 className="font-bold text-gray-900 mb-6">
+                                    Analítica de Dispositivos (Pedidos Registrados)
+                                </h3>
                                 {loading ? (
                                     <div className="h-32 bg-gray-50 rounded animate-pulse"></div>
-                                ) : !stats?.analytics || Object.keys(stats.analytics.devices).length === 0 ? (
-                                    <div className="text-center py-10 text-gray-400 text-sm">No hay suficientes datos registrados</div>
+                                ) : !stats?.analytics ||
+                                  Object.keys(stats.analytics.devices).length === 0 ? (
+                                    <div className="text-center py-10 text-gray-400 text-sm">
+                                        No hay suficientes datos registrados
+                                    </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                         <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Por Tipo de Dispositivo</h4>
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
+                                                Por Tipo de Dispositivo
+                                            </h4>
                                             <ul className="space-y-3">
-                                                {Object.entries(stats.analytics.devices).sort((a: any, b: any) => b[1] - a[1]).map(([name, count]: any) => (
-                                                    <li key={name} className="flex justify-between items-center text-sm">
-                                                        <span className="text-gray-600 capitalize">{name}</span>
-                                                        <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">{count}</span>
-                                                    </li>
-                                                ))}
+                                                {Object.entries(stats.analytics.devices)
+                                                    .sort((a: any, b: any) => b[1] - a[1])
+                                                    .map(([name, count]: any) => (
+                                                        <li
+                                                            key={name}
+                                                            className="flex justify-between items-center text-sm"
+                                                        >
+                                                            <span className="text-gray-600 capitalize">
+                                                                {name}
+                                                            </span>
+                                                            <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                                                                {count}
+                                                            </span>
+                                                        </li>
+                                                    ))}
                                             </ul>
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Por Sistema Operativo</h4>
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
+                                                Por Sistema Operativo
+                                            </h4>
                                             <ul className="space-y-3">
-                                                {Object.entries(stats.analytics.os).sort((a: any, b: any) => b[1] - a[1]).map(([name, count]: any) => (
-                                                    <li key={name} className="flex justify-between items-center text-sm">
-                                                        <span className="text-gray-600">{name}</span>
-                                                        <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">{count}</span>
-                                                    </li>
-                                                ))}
+                                                {Object.entries(stats.analytics.os)
+                                                    .sort((a: any, b: any) => b[1] - a[1])
+                                                    .map(([name, count]: any) => (
+                                                        <li
+                                                            key={name}
+                                                            className="flex justify-between items-center text-sm"
+                                                        >
+                                                            <span className="text-gray-600">
+                                                                {name}
+                                                            </span>
+                                                            <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                                                                {count}
+                                                            </span>
+                                                        </li>
+                                                    ))}
                                             </ul>
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">Por Navegador Web</h4>
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
+                                                Por Navegador Web
+                                            </h4>
                                             <ul className="space-y-3">
-                                                {Object.entries(stats.analytics.browsers).sort((a: any, b: any) => b[1] - a[1]).map(([name, count]: any) => (
-                                                    <li key={name} className="flex justify-between items-center text-sm">
-                                                        <span className="text-gray-600">{name}</span>
-                                                        <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">{count}</span>
-                                                    </li>
-                                                ))}
+                                                {Object.entries(stats.analytics.browsers)
+                                                    .sort((a: any, b: any) => b[1] - a[1])
+                                                    .map(([name, count]: any) => (
+                                                        <li
+                                                            key={name}
+                                                            className="flex justify-between items-center text-sm"
+                                                        >
+                                                            <span className="text-gray-600">
+                                                                {name}
+                                                            </span>
+                                                            <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                                                                {count}
+                                                            </span>
+                                                        </li>
+                                                    ))}
                                             </ul>
                                         </div>
                                     </div>
@@ -477,7 +516,9 @@ export default function AdminPage() {
                             {/* Daily Reports Section */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8 overflow-hidden">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h3 className="font-bold text-gray-900">Historial de Reportes Diarios</h3>
+                                    <h3 className="font-bold text-gray-900">
+                                        Historial de Reportes Diarios
+                                    </h3>
                                     <span className="text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
                                         Últimos 30 días
                                     </span>
@@ -486,7 +527,10 @@ export default function AdminPage() {
                                 {loading ? (
                                     <div className="space-y-4">
                                         {[1, 2, 3].map(i => (
-                                            <div key={i} className="h-10 bg-gray-50 rounded animate-pulse"></div>
+                                            <div
+                                                key={i}
+                                                className="h-10 bg-gray-50 rounded animate-pulse"
+                                            ></div>
                                         ))}
                                     </div>
                                 ) : !reports?.length ? (
@@ -494,8 +538,12 @@ export default function AdminPage() {
                                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                             <Activity className="text-gray-300" size={32} />
                                         </div>
-                                        <p className="text-gray-500 text-sm">Aún no se ha generado ningún informe diario.</p>
-                                        <p className="text-gray-400 text-xs mt-1">El primer informe aparecerá mañana a las 00:00.</p>
+                                        <p className="text-gray-500 text-sm">
+                                            Aún no se ha generado ningún informe diario.
+                                        </p>
+                                        <p className="text-gray-400 text-xs mt-1">
+                                            El primer informe aparecerá mañana a las 00:00.
+                                        </p>
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
@@ -510,13 +558,24 @@ export default function AdminPage() {
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
-                                                {reports.map((report) => (
-                                                    <tr key={report.id} className="hover:bg-gray-50 transition-colors">
+                                                {reports.map(report => (
+                                                    <tr
+                                                        key={report.id}
+                                                        className="hover:bg-gray-50 transition-colors"
+                                                    >
                                                         <td className="px-4 py-4 text-sm font-bold text-gray-900">
-                                                            {new Date(report.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}
+                                                            {new Date(
+                                                                report.date
+                                                            ).toLocaleDateString('es-ES', {
+                                                                day: 'numeric',
+                                                                month: 'long',
+                                                            })}
                                                         </td>
                                                         <td className="px-4 py-4 text-sm font-bold text-green-600">
-                                                            {Number(report.total_revenue).toFixed(2).replace('.', ',')} €
+                                                            {Number(report.total_revenue)
+                                                                .toFixed(2)
+                                                                .replace('.', ',')}{' '}
+                                                            €
                                                         </td>
                                                         <td className="px-4 py-4 text-sm text-gray-600 font-medium">
                                                             {report.orders_count}
@@ -525,7 +584,10 @@ export default function AdminPage() {
                                                             {report.new_users_count}
                                                         </td>
                                                         <td className="px-4 py-4 text-sm text-gray-600">
-                                                            {Number(report.avg_ticket).toFixed(2).replace('.', ',')} €
+                                                            {Number(report.avg_ticket)
+                                                                .toFixed(2)
+                                                                .replace('.', ',')}{' '}
+                                                            €
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -534,7 +596,6 @@ export default function AdminPage() {
                                     </div>
                                 )}
                             </div>
-
                         </div>
                     )}
 

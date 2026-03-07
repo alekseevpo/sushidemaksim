@@ -29,8 +29,12 @@ export default function FloatingCart() {
                         </span>
                     </div>
                     <div className="flex flex-col items-start leading-none">
-                        <span className="text-[10px] font-black uppercase tracking-wider opacity-70 mb-1">Tu Pedido</span>
-                        <span className="text-base font-black">{total.toFixed(2).replace('.', ',')} €</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider opacity-70 mb-1">
+                            Tu Pedido
+                        </span>
+                        <span className="text-base font-black">
+                            {total.toFixed(2).replace('.', ',')} €
+                        </span>
                     </div>
                 </Link>
             </motion.div>

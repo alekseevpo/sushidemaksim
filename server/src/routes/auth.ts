@@ -152,7 +152,10 @@ router.post(
 
         if (userError || !user) {
             // Security: Don't leak if email exists. Return 200 in both cases.
-            return res.json({ success: true, message: 'Si tu email está registrado, recibirás un código pronto.' });
+            return res.json({
+                success: true,
+                message: 'Si tu email está registrado, recibirás un código pronto.',
+            });
         }
 
         // Cooldown: 60 seconds

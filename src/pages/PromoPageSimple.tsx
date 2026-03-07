@@ -123,8 +123,7 @@ export default function PromoPageSimple() {
                                         className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-xs md:text-sm text-white transition-all hover:opacity-95 active:scale-95 shadow-lg shadow-gray-200"
                                         style={{ backgroundColor: promo.color }}
                                     >
-                                        Ver menú{' '}
-                                        <ArrowRight size={16} />
+                                        Ver menú <ArrowRight size={16} />
                                     </Link>
                                 </div>
                             </div>
@@ -236,16 +235,20 @@ export default function PromoPageSimple() {
                                             </span>
                                             <button
                                                 onClick={() => handleAdd(item)}
-                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${addedItems.has(item.id)
-                                                    ? 'bg-green-500 text-white shadow-lg'
-                                                    : 'bg-red-600 text-white hover:bg-red-700 shadow-xl'
-                                                    }`}
+                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${
+                                                    addedItems.has(item.id)
+                                                        ? 'bg-green-500 text-white shadow-lg'
+                                                        : 'bg-red-600 text-white hover:bg-red-700 shadow-xl'
+                                                }`}
                                             >
                                                 {addedItems.has(item.id) ? (
                                                     '✓'
                                                 ) : (
                                                     <>
-                                                        <Plus size={14} className="md:w-4 md:h-4" /> <span className="hidden md:inline">Añadir</span>
+                                                        <Plus size={14} className="md:w-4 md:h-4" />{' '}
+                                                        <span className="hidden md:inline">
+                                                            Añadir
+                                                        </span>
                                                     </>
                                                 )}
                                             </button>

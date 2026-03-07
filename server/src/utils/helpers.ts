@@ -46,8 +46,8 @@ export function getMadridStartOfDay() {
     return new Date(Date.now() - msSinceMidnightInMadrid);
 }
 
-/** 
- * Returns a JS Date object representing 00:00:00 of YESTERDAY in Madrid. 
+/**
+ * Returns a JS Date object representing 00:00:00 of YESTERDAY in Madrid.
  * Perfect for daily CRON reports that run at 0:01 AM.
  */
 export function getMadridYesterdayStartOfDay() {

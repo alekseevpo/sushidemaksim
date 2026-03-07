@@ -29,36 +29,44 @@ export default function HomePageSimple() {
                 description="El mejor sushi artesanal de Madrid. Entrega rápida, atún Balfegó y salmón noruego. Pide online ahora y disfruta de la experiencia Maksim en tu casa."
                 keywords="sushi, madrid, delivery, pedido a domicilio, rollo, maksim, atun balfego"
                 schema={{
-                    "@context": "https://schema.org",
-                    "@type": "FoodEstablishment",
-                    "name": "Sushi de Maksim",
-                    "image": "https://sushidemaksim.com/sushi-hero.jpg",
-                    "@id": "https://sushidemaksim.com",
-                    "url": "https://sushidemaksim.com",
-                    "telephone": "+34600000000",
-                    "priceRange": "$$",
-                    "address": {
-                        "@type": "PostalAddress",
-                        "streetAddress": "Calle de la Infanta Mercedes, 62",
-                        "addressLocality": "Madrid",
-                        "postalCode": "28020",
-                        "addressCountry": "ES"
+                    '@context': 'https://schema.org',
+                    '@type': 'FoodEstablishment',
+                    name: 'Sushi de Maksim',
+                    image: 'https://sushidemaksim.com/sushi-hero.jpg',
+                    '@id': 'https://sushidemaksim.com',
+                    url: 'https://sushidemaksim.com',
+                    telephone: '+34600000000',
+                    priceRange: '$$',
+                    address: {
+                        '@type': 'PostalAddress',
+                        streetAddress: 'Calle de la Infanta Mercedes, 62',
+                        addressLocality: 'Madrid',
+                        postalCode: '28020',
+                        addressCountry: 'ES',
                     },
-                    "geo": {
-                        "@type": "GeoCoordinates",
-                        "latitude": 40.4571,
-                        "longitude": -3.7037
+                    geo: {
+                        '@type': 'GeoCoordinates',
+                        latitude: 40.4571,
+                        longitude: -3.7037,
                     },
-                    "openingHoursSpecification": [
+                    openingHoursSpecification: [
                         {
-                            "@type": "OpeningHoursSpecification",
-                            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-                            "opens": "12:00",
-                            "closes": "22:00"
-                        }
+                            '@type': 'OpeningHoursSpecification',
+                            dayOfWeek: [
+                                'Monday',
+                                'Tuesday',
+                                'Wednesday',
+                                'Thursday',
+                                'Friday',
+                                'Saturday',
+                                'Sunday',
+                            ],
+                            opens: '12:00',
+                            closes: '22:00',
+                        },
                     ],
-                    "servesCuisine": "Japanese, Sushi",
-                    "acceptsReservations": "false"
+                    servesCuisine: 'Japanese, Sushi',
+                    acceptsReservations: 'false',
                 }}
             />
 
@@ -140,7 +148,9 @@ export default function HomePageSimple() {
             <section className="bg-white/50 backdrop-blur-sm py-8 md:py-10 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 grid grid-cols-3 gap-4 md:flex md:justify-between items-center md:gap-8">
                     <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
-                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">9.8</div>
+                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">
+                            9.8
+                        </div>
                         <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
                             Valoración
                             <br className="hidden md:block" />
@@ -149,7 +159,9 @@ export default function HomePageSimple() {
                     </div>
                     <div className="h-4 w-px bg-gray-200 hidden md:block"></div>
                     <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
-                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">+2k</div>
+                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">
+                            +2k
+                        </div>
                         <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
                             Pedidos
                             <br className="hidden md:block" />
@@ -158,7 +170,9 @@ export default function HomePageSimple() {
                     </div>
                     <div className="h-4 w-px bg-gray-200 hidden md:block"></div>
                     <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
-                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">100%</div>
+                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">
+                            100%
+                        </div>
                         <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
                             Pescado
                             <br className="hidden md:block" />

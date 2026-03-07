@@ -44,11 +44,12 @@ export default function SEO({
             <meta name="twitter:image" content={image} />
 
             {/* Structured Data (Schema.org) */}
-            {schema && (Array.isArray(schema) ? schema : [schema]).map((s, i) => (
-                <script key={i} type="application/ld+json">
-                    {JSON.stringify(s)}
-                </script>
-            ))}
+            {schema &&
+                (Array.isArray(schema) ? schema : [schema]).map((s, i) => (
+                    <script key={i} type="application/ld+json">
+                        {JSON.stringify(s)}
+                    </script>
+                ))}
         </Helmet>
     );
 }

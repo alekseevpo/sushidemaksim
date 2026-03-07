@@ -4,6 +4,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { UAParser } from 'ua-parser-js';
+import { sendOrderReceiptEmail } from '../utils/email.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -43,7 +44,7 @@ router.post(
 
         if (promoCode) {
             if (promoCode === 'TEST10') {
-                finalTotal = finalTotal * 0.90; // 10% discount
+                finalTotal = finalTotal * 0.9; // 10% discount
             } else {
                 const { data: promo } = await supabase
                     .from('promo_codes')
@@ -105,6 +106,29 @@ router.post(
             .select('*, order_items(*)')
             .eq('id', order.id)
             .single();
+
+        // 6. Send Receipt Email
+        try {
+            const { data: userData } = await supabase
+                .from('users')
+                .select('email, name')
+                .eq('id', req.userId)
+                .single();
+
+            if (userData && userData.email) {
+                await sendOrderReceiptEmail(userData.email, {
+                    orderId: order.id,
+                    customerName: userData.name || 'Cliente',
+                    items: orderItemsToInsert,
+                    total: finalTotal,
+                    deliveryAddress,
+                    phoneNumber,
+                    notes,
+                });
+            }
+        } catch (emailErr) {
+            console.error('Failed to send receipt email:', emailErr);
+        }
 
         res.status(201).json({ order: { ...fullOrder, items: fullOrder.order_items } });
     })

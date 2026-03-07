@@ -40,10 +40,16 @@ export default function CookieConsent() {
                         </div>
 
                         <div className="flex-1 text-center md:text-left">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Tu privacidad es importante</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                Tu privacidad es importante
+                            </h3>
                             <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
-                                Utilizamos cookies propias и de terceros para mejorar tu experiencia, analizar el tráfico и personalizar el contenido de <span className="font-bold text-gray-900 underline decoration-red-500/30">Sushi de Maksim</span>.
-                                Al hacer clic en "Aceptar", consientes su uso.
+                                Utilizamos cookies propias и de terceros para mejorar tu
+                                experiencia, analizar el tráfico и personalizar el contenido de{' '}
+                                <span className="font-bold text-gray-900 underline decoration-red-500/30">
+                                    Sushi de Maksim
+                                </span>
+                                . Al hacer clic en "Aceptar", consientes su uso.
                             </p>
                         </div>
 
@@ -59,7 +65,10 @@ export default function CookieConsent() {
                                 className="w-full sm:w-auto px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-red-200 transition-all active:scale-95 flex items-center justify-center gap-2 group"
                             >
                                 Aceptar todas
-                                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                <ChevronRight
+                                    size={16}
+                                    className="group-hover:translate-x-1 transition-transform"
+                                />
                             </button>
                         </div>
 

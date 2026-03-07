@@ -1,5 +1,18 @@
 import { useState } from 'react';
-import { User, Edit3, Save, X, Phone, Mail, Shield, Eye, EyeOff, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
+import {
+    User,
+    Edit3,
+    Save,
+    X,
+    Phone,
+    Mail,
+    Shield,
+    Eye,
+    EyeOff,
+    Calendar,
+    AlertCircle,
+    CheckCircle,
+} from 'lucide-react';
 import { User as UserType } from '../../types';
 
 interface Props {
@@ -127,7 +140,8 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                 onClick={() => setIsEditing(false)}
                                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
                             >
-                                <X size={16} /> <span className="hidden xs:inline">Cancelar</span><span className="xs:hidden">X</span>
+                                <X size={16} /> <span className="hidden xs:inline">Cancelar</span>
+                                <span className="xs:hidden">X</span>
                             </button>
                             <button
                                 onClick={saveProfile}
@@ -143,12 +157,45 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
             {/* Information Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
-                    { label: 'Nombre Completo', value: user.name, editedValue: editName, setter: setEditName, icon: User, type: 'text' },
-                    { label: 'Correo Electrónico', value: user.email, editedValue: editEmail, setter: setEditEmail, icon: Mail, type: 'email' },
-                    { label: 'Teléfono', value: user.phone || 'No añadido', editedValue: editPhone, setter: setEditPhone, icon: Phone, type: 'tel' },
-                    { label: 'Fecha de Cumpleaños', value: user.birthDate ? new Date(user.birthDate).toLocaleDateString('es-ES') : 'No añadida', editedValue: editBirthDate, setter: setEditBirthDate, icon: Calendar, type: 'date' },
-                ].map((field) => (
-                    <div key={field.label} className="group p-4 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300">
+                    {
+                        label: 'Nombre Completo',
+                        value: user.name,
+                        editedValue: editName,
+                        setter: setEditName,
+                        icon: User,
+                        type: 'text',
+                    },
+                    {
+                        label: 'Correo Electrónico',
+                        value: user.email,
+                        editedValue: editEmail,
+                        setter: setEditEmail,
+                        icon: Mail,
+                        type: 'email',
+                    },
+                    {
+                        label: 'Teléfono',
+                        value: user.phone || 'No añadido',
+                        editedValue: editPhone,
+                        setter: setEditPhone,
+                        icon: Phone,
+                        type: 'tel',
+                    },
+                    {
+                        label: 'Fecha de Cumpleaños',
+                        value: user.birthDate
+                            ? new Date(user.birthDate).toLocaleDateString('es-ES')
+                            : 'No añadida',
+                        editedValue: editBirthDate,
+                        setter: setEditBirthDate,
+                        icon: Calendar,
+                        type: 'date',
+                    },
+                ].map(field => (
+                    <div
+                        key={field.label}
+                        className="group p-4 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300"
+                    >
                         <label className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 group-hover:text-red-500 transition-colors">
                             <field.icon size={12} />
                             {field.label}
@@ -159,7 +206,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                 <input
                                     type={field.type}
                                     value={field.editedValue}
-                                    onChange={(e) => field.setter(e.target.value)}
+                                    onChange={e => field.setter(e.target.value)}
                                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 outline-none transition-all shadow-sm"
                                     placeholder={`Introduce tu ${field.label.toLowerCase()}`}
                                 />
@@ -175,7 +222,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     {field.value}
                                 </p>
                                 {field.label === 'Fecha de Cumpleaños' && user.birthDate && (
-                                    <div className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.birthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                    <div
+                                        className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.birthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}
+                                    >
                                         {user.birthDateVerified ? 'Verificado' : 'Pendiente'}
                                     </div>
                                 )}
@@ -225,8 +274,12 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                 <Shield size={24} />
                             </div>
                             <div>
-                                <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight m-0">Seguridad de la cuenta</h4>
-                                <p className="text-xs text-amber-700 mt-0.5 m-0 opacity-80">Tu contraseña se actualizó hace tiempo</p>
+                                <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight m-0">
+                                    Seguridad de la cuenta
+                                </h4>
+                                <p className="text-xs text-amber-700 mt-0.5 m-0 opacity-80">
+                                    Tu contraseña se actualizó hace tiempo
+                                </p>
                             </div>
                         </div>
                         <button
@@ -239,14 +292,21 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                 ) : (
                     <div className="bg-gray-50 rounded-[32px] p-8 border border-gray-100">
                         <div className="flex items-center justify-between mb-8">
-                            <h4 className="text-lg font-black text-gray-900 m-0">Cambio de Contraseña</h4>
-                            <button onClick={() => setShowChangePassword(false)} className="text-gray-400 hover:text-gray-600">
+                            <h4 className="text-lg font-black text-gray-900 m-0">
+                                Cambio de Contraseña
+                            </h4>
+                            <button
+                                onClick={() => setShowChangePassword(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
                                 <X size={20} />
                             </button>
                         </div>
 
                         {(pwdError || pwdSuccess) && (
-                            <div className={`p-4 rounded-2xl mb-6 text-sm font-bold flex items-center gap-2 ${pwdError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
+                            <div
+                                className={`p-4 rounded-2xl mb-6 text-sm font-bold flex items-center gap-2 ${pwdError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}
+                            >
                                 {pwdError ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
                                 {pwdError || pwdSuccess}
                             </div>
@@ -254,17 +314,37 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
                             {[
-                                { label: 'Contraseña Actual', value: currentPassword, setter: setCurrentPassword, show: showCurrPwd, toggle: setShowCurrPwd },
-                                { label: 'Nueva Contraseña', value: newPassword, setter: setNewPassword, show: showNewPwd, toggle: setShowNewPwd },
-                                { label: 'Confirmar Nueva Contraseña', value: confirmNewPassword, setter: setConfirmNewPassword, show: showNewPwd, toggle: () => { } }
-                            ].map((f) => (
+                                {
+                                    label: 'Contraseña Actual',
+                                    value: currentPassword,
+                                    setter: setCurrentPassword,
+                                    show: showCurrPwd,
+                                    toggle: setShowCurrPwd,
+                                },
+                                {
+                                    label: 'Nueva Contraseña',
+                                    value: newPassword,
+                                    setter: setNewPassword,
+                                    show: showNewPwd,
+                                    toggle: setShowNewPwd,
+                                },
+                                {
+                                    label: 'Confirmar Nueva Contraseña',
+                                    value: confirmNewPassword,
+                                    setter: setConfirmNewPassword,
+                                    show: showNewPwd,
+                                    toggle: () => {},
+                                },
+                            ].map(f => (
                                 <div key={f.label}>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 px-1">{f.label}</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 px-1">
+                                        {f.label}
+                                    </label>
                                     <div className="relative">
                                         <input
                                             type={f.show ? 'text' : 'password'}
                                             value={f.value}
-                                            onChange={(e) => f.setter(e.target.value)}
+                                            onChange={e => f.setter(e.target.value)}
                                             className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
                                         />
                                         {f.label !== 'Confirmar Nueva Contraseña' && (

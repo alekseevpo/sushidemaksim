@@ -4,7 +4,7 @@ import { Clock, CheckCircle, RefreshCcw, Shield } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
 
-function OrderTimer({ createdAt, status }: { createdAt: string, status: string }) {
+function OrderTimer({ createdAt, status }: { createdAt: string; status: string }) {
     const [timeLeft, setTimeLeft] = useState('');
     const [isLate, setIsLate] = useState(false);
 
@@ -15,9 +15,9 @@ function OrderTimer({ createdAt, status }: { createdAt: string, status: string }
             const d = new Date(createdAt);
             const validDate = isNaN(d.getTime())
                 ? new Date(
-                    createdAt.replace(' ', 'T') +
-                    (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
-                )
+                      createdAt.replace(' ', 'T') +
+                          (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
+                  )
                 : d;
             const start = validDate.getTime();
             const end = start + 60 * 60 * 1000; // 60 minutes
@@ -46,25 +46,38 @@ function OrderTimer({ createdAt, status }: { createdAt: string, status: string }
         return null;
     }
 
-    return (
-        <span className={isLate ? 'text-red-500' : 'text-amber-600'}>
-            {timeLeft}
-        </span>
-    );
+    return <span className={isLate ? 'text-red-500' : 'text-amber-600'}>{timeLeft}</span>;
 }
 
 function getStatusBadge(status: string) {
     const styles: Record<string, { bg: string; color: string; label: string; icon?: string }> = {
         pending: { bg: 'bg-amber-100/50', color: 'text-amber-600', label: 'Pendiente', icon: '⏳' },
-        confirmed: { bg: 'bg-blue-100/50', color: 'text-blue-600', label: 'Confirmado', icon: '✅' },
-        preparing: { bg: 'bg-purple-100/50', color: 'text-purple-600', label: 'Preparando', icon: '👨‍🍳' },
+        confirmed: {
+            bg: 'bg-blue-100/50',
+            color: 'text-blue-600',
+            label: 'Confirmado',
+            icon: '✅',
+        },
+        preparing: {
+            bg: 'bg-purple-100/50',
+            color: 'text-purple-600',
+            label: 'Preparando',
+            icon: '👨‍🍳',
+        },
         on_the_way: { bg: 'bg-red-100/50', color: 'text-red-600', label: 'En camino', icon: '🛵' },
-        delivered: { bg: 'bg-green-100/50', color: 'text-green-600', label: 'Entregado', icon: '🍱' },
+        delivered: {
+            bg: 'bg-green-100/50',
+            color: 'text-green-600',
+            label: 'Entregado',
+            icon: '🍱',
+        },
         cancelled: { bg: 'bg-gray-100/50', color: 'text-gray-600', label: 'Cancelado', icon: '❌' },
     };
     const s = styles[status] || styles.pending;
     return (
-        <span className={`px-2 py-0.5 md:py-1 rounded-lg text-[8px] md:text-[9px] font-black uppercase tracking-wider flex items-center gap-1 ${s.bg} ${s.color}`}>
+        <span
+            className={`px-2 py-0.5 md:py-1 rounded-lg text-[8px] md:text-[9px] font-black uppercase tracking-wider flex items-center gap-1 ${s.bg} ${s.color}`}
+        >
             <span>{s.icon}</span>
             {s.label}
         </span>
@@ -123,7 +136,7 @@ export default function OrdersTab() {
                     description: item.description || '',
                     price: item.price,
                     image: item.image || '',
-                    category: (item.category as any) || 'rollos-grandes'
+                    category: (item.category as any) || 'rollos-grandes',
                 });
             }
             navigate('/cart');
@@ -138,8 +151,12 @@ export default function OrdersTab() {
         return (
             <div className="space-y-6 animate-in fade-in duration-500">
                 <div className="bg-white rounded-[32px] p-20 text-center border border-gray-100 shadow-sm">
-                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl animate-spin">🍣</div>
-                    <p className="text-gray-400 text-sm font-bold tracking-tight">Cargando historial...</p>
+                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl animate-spin">
+                        🍣
+                    </div>
+                    <p className="text-gray-400 text-sm font-bold tracking-tight">
+                        Cargando historial...
+                    </p>
                 </div>
             </div>
         );
@@ -150,8 +167,13 @@ export default function OrdersTab() {
             <div className="text-center py-12">
                 <div className="text-4xl mb-4 grayscale opacity-30">📦</div>
                 <h3 className="text-lg font-black text-gray-900 mb-2">Sin pedidos aún</h3>
-                <p className="text-gray-400 text-sm mb-6 max-w-[200px] mx-auto leading-relaxed">Tus pedidos aparecerán aquí una vez realices tu primera compra.</p>
-                <button onClick={() => navigate('/menu')} className="bg-red-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100">
+                <p className="text-gray-400 text-sm mb-6 max-w-[200px] mx-auto leading-relaxed">
+                    Tus pedidos aparecerán aquí una vez realices tu primera compra.
+                </p>
+                <button
+                    onClick={() => navigate('/menu')}
+                    className="bg-red-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100"
+                >
                     Comenzar
                 </button>
             </div>
@@ -161,33 +183,58 @@ export default function OrdersTab() {
     return (
         <div className="space-y-4 md:space-y-5 animate-in fade-in duration-500 pb-10">
             <div className="px-4 md:px-1 border-b border-gray-100 pb-4 mb-2">
-                <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">Mis Pedidos</h2>
-                <p className="text-gray-400 text-[10px] md:text-xs font-medium">Historial и seguimiento в реальном времени</p>
+                <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">
+                    Mis Pedidos
+                </h2>
+                <p className="text-gray-400 text-[10px] md:text-xs font-medium">
+                    Historial и seguimiento в реальном времени
+                </p>
             </div>
 
             <div className="space-y-3 md:space-y-4 px-2 md:px-0">
                 {orders.map(order => (
-                    <div key={order.id} className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                    <div
+                        key={order.id}
+                        className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+                    >
                         {/* Header: More compact, no background */}
                         <div className="px-4 md:px-5 pt-4 md:pt-5 pb-2 md:pb-3 flex items-start justify-between">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">#{String(order.id).padStart(5, '0')}</span>
+                                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                        #{String(order.id).padStart(5, '0')}
+                                    </span>
                                     {getStatusBadge(order.status)}
                                 </div>
                                 <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-gray-400 opacity-80">
                                     <Clock size={10} />
                                     {(() => {
                                         const d = new Date(order.created_at);
-                                        const validDate = isNaN(d.getTime()) ? new Date(order.created_at.replace(' ', 'T') + (order.created_at.includes('Z') || order.created_at.includes('+') ? '' : 'Z')) : d;
-                                        return validDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                                        const validDate = isNaN(d.getTime())
+                                            ? new Date(
+                                                  order.created_at.replace(' ', 'T') +
+                                                      (order.created_at.includes('Z') ||
+                                                      order.created_at.includes('+')
+                                                          ? ''
+                                                          : 'Z')
+                                              )
+                                            : d;
+                                        return validDate.toLocaleDateString('es-ES', {
+                                            day: 'numeric',
+                                            month: 'short',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        });
                                     })()}
                                 </div>
                             </div>
                             {order.status !== 'delivered' && order.status !== 'cancelled' && (
                                 <div className="bg-amber-50 px-2 py-1 rounded-lg border border-amber-100/50 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black">
                                     <span className="animate-pulse">⏱️</span>
-                                    <OrderTimer createdAt={order.created_at} status={order.status} />
+                                    <OrderTimer
+                                        createdAt={order.created_at}
+                                        status={order.status}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -197,10 +244,16 @@ export default function OrdersTab() {
                             <div>
                                 <div className="text-xl md:text-2xl font-black text-gray-900 flex items-baseline gap-0.5 tracking-tighter">
                                     {order.total.toFixed(2).replace('.', ',')}
-                                    <span className="text-xs text-red-600 font-black italic">€</span>
+                                    <span className="text-xs text-red-600 font-black italic">
+                                        €
+                                    </span>
                                 </div>
                                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">
-                                    {order.items?.reduce((s: number, i: any) => s + i.quantity, 0) ?? 0} unidades
+                                    {order.items?.reduce(
+                                        (s: number, i: any) => s + i.quantity,
+                                        0
+                                    ) ?? 0}{' '}
+                                    unidades
                                 </span>
                             </div>
 
@@ -218,7 +271,10 @@ export default function OrdersTab() {
                         <div className="px-4 md:px-5 py-4 md:py-5 space-y-3">
                             <div className="space-y-2">
                                 {order.items?.map((item: any, i: number) => (
-                                    <div key={i} className="flex items-center justify-between text-xs">
+                                    <div
+                                        key={i}
+                                        className="flex items-center justify-between text-xs"
+                                    >
                                         <div className="flex items-center gap-2 overflow-hidden">
                                             <span className="text-[9px] md:text-[10px] font-black text-gray-400 shrink-0 w-4 text-center">
                                                 {item.quantity}
@@ -228,7 +284,10 @@ export default function OrdersTab() {
                                             </span>
                                         </div>
                                         <span className="text-[11px] md:text-xs font-black text-gray-300 shrink-0 tabular-nums">
-                                            {(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
+                                            {(item.price_at_time * item.quantity)
+                                                .toFixed(2)
+                                                .replace('.', ',')}{' '}
+                                            €
                                         </span>
                                     </div>
                                 ))}
@@ -247,11 +306,16 @@ export default function OrdersTab() {
                                 onClick={() => handleRepeatOrder(order)}
                                 disabled={isRepeating === order.id}
                                 className={`mt-3 w-full h-10 md:h-11 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all flex items-center justify-center gap-2
-                                    ${isRepeating === order.id
-                                        ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
-                                        : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'}`}
+                                    ${
+                                        isRepeating === order.id
+                                            ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
+                                            : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
+                                    }`}
                             >
-                                <RefreshCcw size={14} className={isRepeating === order.id ? 'animate-spin' : ''} />
+                                <RefreshCcw
+                                    size={14}
+                                    className={isRepeating === order.id ? 'animate-spin' : ''}
+                                />
                                 {isRepeating === order.id ? 'Añadiendo...' : 'Repetir'}
                             </button>
                         </div>
@@ -266,9 +330,11 @@ export default function OrdersTab() {
                             key={p}
                             onClick={() => loadOrders(p)}
                             className={`w-9 h-9 rounded-xl font-black text-[11px] transition-all
-                                ${p === pagination.page
-                                    ? 'bg-red-600 text-white shadow-lg shadow-red-100'
-                                    : 'bg-white border border-gray-100 text-gray-400'}`}
+                                ${
+                                    p === pagination.page
+                                        ? 'bg-red-600 text-white shadow-lg shadow-red-100'
+                                        : 'bg-white border border-gray-100 text-gray-400'
+                                }`}
                         >
                             {p}
                         </button>

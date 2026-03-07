@@ -89,14 +89,18 @@ router.post('/check-birthdays', async (req, res) => {
                 const code = `BDAY-${user.id.substring(0, 4).toUpperCase()}-${type === 'day-of' ? 'HOY' : 'WEEK'}`;
 
                 // Ensure duplicate code is not created accidentally (simple check)
-                const { data: existing } = await supabase.from('promo_codes').select('id').eq('code', code).maybeSingle();
+                const { data: existing } = await supabase
+                    .from('promo_codes')
+                    .select('id')
+                    .eq('code', code)
+                    .maybeSingle();
 
                 if (!existing) {
                     await supabase.from('promo_codes').insert({
                         code,
                         discount_percentage: 10,
                         user_id: user.id,
-                        is_used: false
+                        is_used: false,
                     });
 
                     results.push({
@@ -108,9 +112,14 @@ router.post('/check-birthdays', async (req, res) => {
 
                     try {
                         await sendBirthdayGiftEmail(user.email, user.name, code);
-                        console.log(`📧 CRON (Birthday): Send email to ${user.email} -> Feliz Cumpleaños! Tu código es ${code}.`);
+                        console.log(
+                            `📧 CRON (Birthday): Send email to ${user.email} -> Feliz Cumpleaños! Tu código es ${code}.`
+                        );
                     } catch (emailErr) {
-                        console.error(`❌ CRON (Birthday): Failed to send email to ${user.email}:`, emailErr);
+                        console.error(
+                            `❌ CRON (Birthday): Failed to send email to ${user.email}:`,
+                            emailErr
+                        );
                     }
                 }
             }
@@ -121,7 +130,6 @@ router.post('/check-birthdays', async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
-
 
 // Daily report generation (to be called at ~0:05 AM)
 router.post('/generate-daily-report', async (req, res) => {
@@ -138,44 +146,44 @@ router.post('/generate-daily-report', async (req, res) => {
         const todayISO = startOfToday.toISOString();
 
         // 1. Fetch yesterday's metrics
-        const [
-            { data: revenueData },
-            { count: totalOrders },
-            { count: newUsers }
-        ] = await Promise.all([
-            supabase
-                .from('orders')
-                .select('total')
-                .neq('status', 'cancelled')
-                .gte('created_at', yesterdayISO)
-                .lt('created_at', todayISO),
-            supabase
-                .from('orders')
-                .select('*', { count: 'exact', head: true })
-                .neq('status', 'cancelled')
-                .gte('created_at', yesterdayISO)
-                .lt('created_at', todayISO),
-            supabase
-                .from('users')
-                .select('*', { count: 'exact', head: true })
-                .gte('created_at', yesterdayISO)
-                .lt('created_at', todayISO)
-        ]);
+        const [{ data: revenueData }, { count: totalOrders }, { count: newUsers }] =
+            await Promise.all([
+                supabase
+                    .from('orders')
+                    .select('total')
+                    .neq('status', 'cancelled')
+                    .gte('created_at', yesterdayISO)
+                    .lt('created_at', todayISO),
+                supabase
+                    .from('orders')
+                    .select('*', { count: 'exact', head: true })
+                    .neq('status', 'cancelled')
+                    .gte('created_at', yesterdayISO)
+                    .lt('created_at', todayISO),
+                supabase
+                    .from('users')
+                    .select('*', { count: 'exact', head: true })
+                    .gte('created_at', yesterdayISO)
+                    .lt('created_at', todayISO),
+            ]);
 
         const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
         const avg = totalOrders ? revenue / (totalOrders || 1) : 0;
 
         // 2. Insert Report
-        const reportDate = startOfYesterday.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
-        const { error: reportError } = await supabase
-            .from('daily_reports')
-            .upsert({
+        const reportDate = startOfYesterday.toLocaleDateString('en-CA', {
+            timeZone: 'Europe/Madrid',
+        });
+        const { error: reportError } = await supabase.from('daily_reports').upsert(
+            {
                 date: reportDate,
                 total_revenue: Math.round(revenue * 100) / 100,
                 orders_count: totalOrders || 0,
                 new_users_count: newUsers || 0,
                 avg_ticket: Math.round(avg * 100) / 100,
-            }, { onConflict: 'date' });
+            },
+            { onConflict: 'date' }
+        );
 
         if (reportError) {
             // If table doesn't exist yet, we catch it but don't crash

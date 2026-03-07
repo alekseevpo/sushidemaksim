@@ -86,7 +86,9 @@ export default function FavoritesTab() {
         return (
             <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">Mis Favoritos</h2>
+                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">
+                        Mis Favoritos
+                    </h2>
                 </div>
                 <div className="bg-gray-50 rounded-[40px] p-24 text-center border-2 border-gray-100">
                     <div className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-6 text-2xl animate-spin">
@@ -102,18 +104,23 @@ export default function FavoritesTab() {
         return (
             <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">Mis Favoritos</h2>
+                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">
+                        Mis Favoritos
+                    </h2>
                 </div>
                 <div className="bg-gray-50 rounded-[40px] p-16 text-center border-2 border-dashed border-gray-200">
                     <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 text-3xl">
                         ❤️
                     </div>
-                    <h3 className="text-xl font-black text-gray-900 mb-2">Aún no tienes favoritos</h3>
+                    <h3 className="text-xl font-black text-gray-900 mb-2">
+                        Aún no tienes favoritos
+                    </h3>
                     <p className="text-gray-500 text-sm max-w-xs mx-auto mb-8 leading-relaxed">
-                        Añade tus platos favoritos desde el menú para tenerlos siempre a mano y realizar pedidos más rápido.
+                        Añade tus platos favoritos desde el menú para tenerlos siempre a mano y
+                        realizar pedidos más rápido.
                     </p>
                     <button
-                        onClick={() => window.location.href = '/menu'}
+                        onClick={() => (window.location.href = '/menu')}
                         className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
                     >
                         Explorar Menú
@@ -134,7 +141,9 @@ export default function FavoritesTab() {
                             {favorites.length}
                         </span>
                     </h2>
-                    <p className="text-gray-500 text-xs md:text-sm mt-1">Tus platos preferidos listos para pedir</p>
+                    <p className="text-gray-500 text-xs md:text-sm mt-1">
+                        Tus platos preferidos listos para pedir
+                    </p>
                 </div>
             </div>
 
@@ -151,7 +160,9 @@ export default function FavoritesTab() {
                                     src={item.image}
                                     alt={item.name}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
+                                    onError={() =>
+                                        setFailedImages(prev => new Set(prev).add(item.id))
+                                    }
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-4xl md:text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 transform group-hover:scale-110">
@@ -216,9 +227,11 @@ export default function FavoritesTab() {
                                 <button
                                     onClick={() => handleAddToCart(item)}
                                     className={`h-9 md:h-11 px-3 md:px-6 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs transition-all flex items-center gap-2 shadow-sm
-                                        ${addedItems.has(item.id)
-                                            ? 'bg-green-600 text-white'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] active:scale-95 shadow-gray-200'}`}
+                                        ${
+                                            addedItems.has(item.id)
+                                                ? 'bg-green-600 text-white'
+                                                : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] active:scale-95 shadow-gray-200'
+                                        }`}
                                 >
                                     {addedItems.has(item.id) ? (
                                         <>✓</>

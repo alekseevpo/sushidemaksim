@@ -91,8 +91,14 @@ export default function CartPageSimple() {
                 api.get('/menu?category=postre'),
             ]);
 
-            const all = [...(extras.items || []), ...(beverages.items || []), ...(desserts.items || [])];
-            const filtered = all.filter(item => !items.find(cartItem => cartItem.id === String(item.id))).slice(0, 8);
+            const all = [
+                ...(extras.items || []),
+                ...(beverages.items || []),
+                ...(desserts.items || []),
+            ];
+            const filtered = all
+                .filter(item => !items.find(cartItem => cartItem.id === String(item.id)))
+                .slice(0, 8);
             setSuggestions(filtered);
         } catch (err) {
             console.error('Failed to load suggestions', err);
@@ -130,7 +136,11 @@ export default function CartPageSimple() {
                 : '');
         const deliveryPhone = phone.trim() || user?.phone || '';
 
-        if (!deliveryAddress || deliveryAddress.length < 5 || deliveryAddress.includes('undefined')) {
+        if (
+            !deliveryAddress ||
+            deliveryAddress.length < 5 ||
+            deliveryAddress.includes('undefined')
+        ) {
             setOrderError('Por favor, introduce una dirección de entrega válida');
             return;
         }
@@ -196,7 +206,7 @@ export default function CartPageSimple() {
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                     className="bg-white rounded-[40px] shadow-2xl p-10 max-w-md w-full text-center relative overflow-hidden border border-white"
                 >
                     {/* Decorative Background Elements */}
@@ -215,14 +225,22 @@ export default function CartPageSimple() {
                         </motion.div>
                     </div>
 
-                    <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">¡Pedido exitoso!</h1>
+                    <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">
+                        ¡Pedido exitoso!
+                    </h1>
                     <p className="text-gray-500 font-medium mb-6 leading-relaxed">
-                        Tu pedido <span className="text-gray-900 font-black">#{String(orderSuccess).padStart(5, '0')}</span> ha sido recibido y ya estamos preparando tus sushis con amor.
+                        Tu pedido{' '}
+                        <span className="text-gray-900 font-black">
+                            #{String(orderSuccess).padStart(5, '0')}
+                        </span>{' '}
+                        ha sido recibido y ya estamos preparando tus sushis con amor.
                     </p>
 
                     <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 mb-8 flex items-center justify-center gap-4">
                         <div className="flex flex-col items-center">
-                            <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1">Entrega estimada</span>
+                            <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1">
+                                Entrega estimada
+                            </span>
                             <span className="text-lg font-black text-red-600">30 – 60 min</span>
                         </div>
                     </div>
@@ -269,14 +287,21 @@ export default function CartPageSimple() {
                             <h2 className="text-2xl font-black mb-8">Nuestros favoritos hoy 🔥</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
                                 {popularItems.map(item => (
-                                    <div key={item.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col group">
+                                    <div
+                                        key={item.id}
+                                        className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col group"
+                                    >
                                         <div className="h-32 bg-gray-50 rounded-2xl mb-4 overflow-hidden relative flex items-center justify-center">
                                             {!failedImages.has(item.id) ? (
                                                 <img
                                                     src={item.image}
                                                     alt={item.name}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                    onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
+                                                    onError={() =>
+                                                        setFailedImages(prev =>
+                                                            new Set(prev).add(item.id)
+                                                        )
+                                                    }
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
@@ -299,10 +324,16 @@ export default function CartPageSimple() {
                                                 ★ TOP
                                             </div>
                                         </div>
-                                        <h3 className="font-bold text-gray-900 mb-1">{item.name}</h3>
-                                        <p className="text-gray-500 text-xs mb-4 flex-1 line-clamp-2">{item.description}</p>
+                                        <h3 className="font-bold text-gray-900 mb-1">
+                                            {item.name}
+                                        </h3>
+                                        <p className="text-gray-500 text-xs mb-4 flex-1 line-clamp-2">
+                                            {item.description}
+                                        </p>
                                         <div className="flex items-center justify-between">
-                                            <span className="font-bold text-red-600">{item.price.toFixed(2)} €</span>
+                                            <span className="font-bold text-red-600">
+                                                {item.price.toFixed(2)} €
+                                            </span>
                                             <button
                                                 onClick={() => handleAddToCart(item)}
                                                 className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center border-none cursor-pointer hover:bg-red-700 active:scale-90 transition-all"
@@ -329,7 +360,9 @@ export default function CartPageSimple() {
 
             <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:py-12">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                    <h1 className="text-3xl sm:text-4xl font-black text-gray-900 m-0 tracking-tight">Tu cesta</h1>
+                    <h1 className="text-3xl sm:text-4xl font-black text-gray-900 m-0 tracking-tight">
+                        Tu cesta
+                    </h1>
                     <button
                         onClick={clearCart}
                         className="text-sm font-bold text-gray-400 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1 w-fit"
@@ -361,7 +394,11 @@ export default function CartPageSimple() {
                                                     alt={`Producto ${item.name}`}
                                                     loading="lazy"
                                                     className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
-                                                    onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
+                                                    onError={() =>
+                                                        setFailedImages(prev =>
+                                                            new Set(prev).add(item.id)
+                                                        )
+                                                    }
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover/img:scale-110 transition-transform duration-500">
@@ -384,7 +421,10 @@ export default function CartPageSimple() {
                                                     <button
                                                         onClick={() =>
                                                             item.quantity > 1
-                                                                ? updateQuantity(item.id, item.quantity - 1)
+                                                                ? updateQuantity(
+                                                                      item.id,
+                                                                      item.quantity - 1
+                                                                  )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -396,7 +436,10 @@ export default function CartPageSimple() {
                                                     </span>
                                                     <button
                                                         onClick={() =>
-                                                            updateQuantity(item.id, item.quantity + 1)
+                                                            updateQuantity(
+                                                                item.id,
+                                                                item.quantity + 1
+                                                            )
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
                                                     >
@@ -404,7 +447,10 @@ export default function CartPageSimple() {
                                                     </button>
                                                 </div>
                                                 <span className="text-base md:text-base font-black text-gray-900">
-                                                    {(item.price * item.quantity).toFixed(2).replace('.', ',')} €
+                                                    {(item.price * item.quantity)
+                                                        .toFixed(2)
+                                                        .replace('.', ',')}{' '}
+                                                    €
                                                 </span>
                                             </div>
                                         </div>
@@ -440,8 +486,8 @@ export default function CartPageSimple() {
                                         }}
                                         className="mb-4 flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-full px-4 py-2 cursor-pointer hover:bg-red-100 transition font-medium"
                                     >
-                                        <MapPin size={14} /> Usar "{defaultAddr.label || 'Mi dirección'}":{' '}
-                                        {defaultAddr.street}
+                                        <MapPin size={14} /> Usar "
+                                        {defaultAddr.label || 'Mi dirección'}": {defaultAddr.street}
                                     </button>
                                 )}
 
@@ -537,18 +583,26 @@ export default function CartPageSimple() {
                         ) : suggestions.length > 0 ? (
                             <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 animate-in fade-in duration-500">
                                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                                    <Sparkles size={18} className="text-amber-500" /> Complementos populares
+                                    <Sparkles size={18} className="text-amber-500" /> Complementos
+                                    populares
                                 </h3>
                                 <div className="flex flex-col gap-4">
                                     {suggestions.map(item => (
-                                        <div key={String(item.id)} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-100">
+                                        <div
+                                            key={String(item.id)}
+                                            className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-100"
+                                        >
                                             <div className="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100 group/sug">
                                                 {!failedImages.has(item.id) ? (
                                                     <img
                                                         src={item.image}
                                                         alt={item.name}
                                                         className="w-full h-full object-cover group-hover/sug:scale-110 transition-transform duration-500"
-                                                        onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
+                                                        onError={() =>
+                                                            setFailedImages(prev =>
+                                                                new Set(prev).add(item.id)
+                                                            )
+                                                        }
                                                     />
                                                 ) : (
                                                     <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover/sug:scale-110 transition-transform duration-500">
@@ -560,8 +614,12 @@ export default function CartPageSimple() {
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0 pr-2">
-                                                <p className="text-sm font-bold text-gray-900 truncate m-0 leading-tight">{item.name}</p>
-                                                <p className="text-[11px] text-red-600 font-black m-0">{item.price.toFixed(2).replace('.', ',')} €</p>
+                                                <p className="text-sm font-bold text-gray-900 truncate m-0 leading-tight">
+                                                    {item.name}
+                                                </p>
+                                                <p className="text-[11px] text-red-600 font-black m-0">
+                                                    {item.price.toFixed(2).replace('.', ',')} €
+                                                </p>
                                             </div>
                                             <button
                                                 onClick={() => {
@@ -571,9 +629,11 @@ export default function CartPageSimple() {
                                                         description: item.description || '',
                                                         price: item.price,
                                                         image: item.image,
-                                                        category: item.category as any
+                                                        category: item.category as any,
                                                     });
-                                                    setSuggestions(prev => prev.filter(p => p.id !== item.id));
+                                                    setSuggestions(prev =>
+                                                        prev.filter(p => p.id !== item.id)
+                                                    );
                                                 }}
                                                 className="bg-gray-900 text-white rounded-full p-1.5 hover:bg-red-600 transition-all shadow-sm flex items-center justify-center"
                                                 title="Añadir al pedido"
@@ -591,15 +651,25 @@ export default function CartPageSimple() {
                             <div className="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100 relative overflow-hidden">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        {hasFreeDelivery ? '🎉 ¡Envío gratis conseguido!' : `Faltan ${remainingForFreeDelivery.toFixed(2)} € para envío GRATIS`}
+                                        {hasFreeDelivery
+                                            ? '🎉 ¡Envío gratis conseguido!'
+                                            : `Faltan ${remainingForFreeDelivery.toFixed(2)} € para envío GRATIS`}
                                     </span>
-                                    <span className="text-xs font-bold text-gray-900">{Math.min(100, Math.round((total / FREE_DELIVERY_THRESHOLD) * 100))}%</span>
+                                    <span className="text-xs font-bold text-gray-900">
+                                        {Math.min(
+                                            100,
+                                            Math.round((total / FREE_DELIVERY_THRESHOLD) * 100)
+                                        )}
+                                        %
+                                    </span>
                                 </div>
                                 <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
                                     <motion.div
                                         initial={{ width: 0 }}
-                                        animate={{ width: `${Math.min(100, (total / FREE_DELIVERY_THRESHOLD) * 100)}%` }}
-                                        transition={{ duration: 0.8, ease: "easeOut" }}
+                                        animate={{
+                                            width: `${Math.min(100, (total / FREE_DELIVERY_THRESHOLD) * 100)}%`,
+                                        }}
+                                        transition={{ duration: 0.8, ease: 'easeOut' }}
                                         className={`h-full ${hasFreeDelivery ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)]' : 'bg-red-600'}`}
                                     />
                                 </div>
@@ -610,7 +680,9 @@ export default function CartPageSimple() {
                                 )}
                             </div>
 
-                            <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
+                            <h2 className="text-lg font-black mb-4 uppercase tracking-tight">
+                                Resumen
+                            </h2>
 
                             <div className="flex flex-col gap-3 mb-6">
                                 <div className="flex justify-between text-gray-500">
@@ -623,8 +695,12 @@ export default function CartPageSimple() {
                                 </div>
                                 <div className="flex justify-between text-gray-500">
                                     <span>Envío</span>
-                                    <span className={`font-bold ${hasFreeDelivery ? 'text-green-600' : 'text-gray-900'}`}>
-                                        {hasFreeDelivery ? 'Gratis' : `${DELIVERY_FEE.toFixed(2)} €`}
+                                    <span
+                                        className={`font-bold ${hasFreeDelivery ? 'text-green-600' : 'text-gray-900'}`}
+                                    >
+                                        {hasFreeDelivery
+                                            ? 'Gratis'
+                                            : `${DELIVERY_FEE.toFixed(2)} €`}
                                     </span>
                                 </div>
                                 <div className="border-t border-gray-200 pt-3 mt-1">
@@ -742,7 +818,9 @@ export default function CartPageSimple() {
             <div className="md:hidden sticky bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-8 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center justify-between max-w-7xl mx-auto">
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total</span>
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                            Total
+                        </span>
                         <span className="text-xl font-black text-red-600 leading-tight">
                             {finalTotal.toFixed(2).replace('.', ',')} €
                         </span>
@@ -753,7 +831,9 @@ export default function CartPageSimple() {
                             disabled={isOrdering || items.length === 0}
                             className="bg-red-600 text-white px-8 py-3 rounded-xl font-black text-sm hover:bg-red-700 transition active:scale-95 disabled:bg-gray-400"
                         >
-                            {isOrdering ? '...' : (
+                            {isOrdering ? (
+                                '...'
+                            ) : (
                                 <div className="flex items-center gap-2 text-base">
                                     Pedir <CheckCircle size={18} />
                                 </div>

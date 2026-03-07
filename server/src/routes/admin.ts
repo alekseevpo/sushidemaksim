@@ -502,7 +502,9 @@ router.get(
             .slice(0, 5);
 
         // 6. Device/OS breakdown
-        const { data: devicesData } = await supabase.from('orders').select('device_type, os_name, browser_name');
+        const { data: devicesData } = await supabase
+            .from('orders')
+            .select('device_type, os_name, browser_name');
 
         const analytics = {
             devices: {} as Record<string, number>,

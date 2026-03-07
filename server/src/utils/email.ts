@@ -104,3 +104,26 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
 </html>`,
   });
 }
+
+/**
+ * Send an order receipt email using React Email.
+ */
+import { render } from '@react-email/render';
+import { OrderReceiptEmail } from './emails/OrderReceiptEmail.js';
+
+export async function sendOrderReceiptEmail(
+  to: string,
+  orderData: any
+): Promise<void> {
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+
+  // Render the React component to HTML string
+  const html = await render(OrderReceiptEmail(orderData));
+
+  await transporter.sendMail({
+    from,
+    to,
+    subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
+    html,
+  });
+}

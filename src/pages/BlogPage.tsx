@@ -202,8 +202,8 @@ export default function BlogPage() {
                                     <span className="text-red-500">exclusivas</span>?
                                 </h2>
                                 <p className="text-gray-400 mb-8 text-sm md:text-base leading-relaxed">
-                                    Únete a nuestro club de amantes del sushi и recibe истории блога и
-                                    промоакции прямо на твой email.
+                                    Únete a nuestro club de amantes del sushi и recibe истории блога
+                                    и промоакции прямо на твой email.
                                 </p>
                                 <form
                                     className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
@@ -232,8 +232,12 @@ export default function BlogPage() {
                                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <ChevronRight size={32} className="text-green-500" />
                                 </div>
-                                <h3 className="text-2xl font-black text-white mb-2">¡Bienvenido al Club!</h3>
-                                <p className="text-gray-400">Revisa tu bandeja de entrada pronto. 🍣</p>
+                                <h3 className="text-2xl font-black text-white mb-2">
+                                    ¡Bienvenido al Club!
+                                </h3>
+                                <p className="text-gray-400">
+                                    Revisa tu bandeja de entrada pronto. 🍣
+                                </p>
                             </motion.div>
                         )}
                     </div>
