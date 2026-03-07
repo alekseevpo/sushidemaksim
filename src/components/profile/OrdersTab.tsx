@@ -74,19 +74,27 @@ export default function OrdersTab() {
     const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
     useEffect(() => {
-        loadOrders(1);
-    }, []);
+        loadOrders(pagination.page);
 
-    const loadOrders = async (page: number) => {
-        setLoading(true);
+        // Polling every 30 seconds so order status updates instantly
+        const interval = setInterval(() => {
+            loadOrders(pagination.page, true);
+        }, 30000);
+
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pagination.page]);
+
+    const loadOrders = async (page: number, isPolling: boolean = false) => {
+        if (!isPolling) setLoading(true);
         try {
             const data = await api.get(`/orders?page=${page}&limit=10`);
             setOrders(data.orders);
             setPagination(data.pagination);
         } catch {
-            setOrders([]);
+            if (!isPolling) setOrders([]);
         } finally {
-            setLoading(false);
+            if (!isPolling) setLoading(false);
         }
     };
 

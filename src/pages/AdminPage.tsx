@@ -46,13 +46,16 @@ export default function AdminPage() {
     }, [isAuthenticated, user, navigate]);
 
     useEffect(() => {
-        if (user?.role === 'admin') {
+        if (user?.role === 'admin' && activeTab === 'dashboard') {
             loadStats();
+            // Polling every 60 seconds to keep stats updated without skeleton
+            const interval = setInterval(() => loadStats(true), 60000);
+            return () => clearInterval(interval);
         }
-    }, [user]);
+    }, [user, activeTab]);
 
-    const loadStats = async () => {
-        setLoading(true);
+    const loadStats = async (isPolling: boolean = false) => {
+        if (!isPolling) setLoading(true);
         try {
             const [statsData, reportsData] = await Promise.all([
                 api.get('/admin/stats'),
@@ -63,7 +66,7 @@ export default function AdminPage() {
         } catch (err) {
             console.error('Failed to load stats', err);
         } finally {
-            setLoading(false);
+            if (!isPolling) setLoading(false);
         }
     };
 
@@ -260,7 +263,7 @@ export default function AdminPage() {
                                         Ver Tienda
                                     </button>
                                     <button
-                                        onClick={loadStats}
+                                        onClick={() => loadStats()}
                                         className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition"
                                     >
                                         <RefreshCw
