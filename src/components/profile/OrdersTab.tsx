@@ -15,9 +15,9 @@ function OrderTimer({ createdAt, status }: { createdAt: string; status: string }
             const d = new Date(createdAt);
             const validDate = isNaN(d.getTime())
                 ? new Date(
-                      createdAt.replace(' ', 'T') +
-                          (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
-                  )
+                    createdAt.replace(' ', 'T') +
+                    (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
+                )
                 : d;
             const start = validDate.getTime();
             const end = start + 60 * 60 * 1000; // 60 minutes
@@ -174,23 +174,23 @@ export default function OrdersTab() {
 
     return (
         <div className="space-y-4 md:space-y-5 animate-in fade-in duration-500 pb-10">
-            <div className="px-4 md:px-1 border-b border-gray-100 pb-4 mb-2">
+            <div className="px-0 md:px-1 border-b border-gray-100 pb-4 mb-2">
                 <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">
                     Mis Pedidos
                 </h2>
                 <p className="text-gray-400 text-[10px] md:text-xs font-medium">
-                    Historial и seguimiento в реальном времени
+                    Historial y seguimiento en tiempo real
                 </p>
             </div>
 
-            <div className="space-y-3 md:space-y-4 px-2 md:px-0">
+            <div className="space-y-3 md:space-y-4 px-0 md:px-0">
                 {orders.map(order => (
                     <div
                         key={order.id}
                         className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                     >
                         {/* Header: More compact, no background */}
-                        <div className="px-4 md:px-5 pt-4 md:pt-5 pb-2 md:pb-3 flex items-start justify-between">
+                        <div className="px-3 md:px-5 pt-4 md:pt-5 pb-2 md:pb-3 flex items-start justify-between">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">
@@ -204,12 +204,12 @@ export default function OrdersTab() {
                                         const d = new Date(order.created_at);
                                         const validDate = isNaN(d.getTime())
                                             ? new Date(
-                                                  order.created_at.replace(' ', 'T') +
-                                                      (order.created_at.includes('Z') ||
-                                                      order.created_at.includes('+')
-                                                          ? ''
-                                                          : 'Z')
-                                              )
+                                                order.created_at.replace(' ', 'T') +
+                                                (order.created_at.includes('Z') ||
+                                                    order.created_at.includes('+')
+                                                    ? ''
+                                                    : 'Z')
+                                            )
                                             : d;
                                         return validDate.toLocaleDateString('es-ES', {
                                             day: 'numeric',
@@ -232,7 +232,7 @@ export default function OrdersTab() {
                         </div>
 
                         {/* Order Summary */}
-                        <div className="px-4 md:px-5 pb-4 flex items-end justify-between border-b border-gray-50/50">
+                        <div className="px-3 md:px-5 pb-4 flex items-end justify-between border-b border-gray-50/50">
                             <div>
                                 <div className="text-xl md:text-2xl font-black text-gray-900 flex items-baseline gap-0.5 tracking-tighter">
                                     {order.total.toFixed(2).replace('.', ',')}
@@ -259,7 +259,7 @@ export default function OrdersTab() {
                         </div>
 
                         {/* Items List: Minimal, no extra background */}
-                        <div className="px-4 md:px-5 py-4 md:py-5 space-y-3">
+                        <div className="px-3 md:px-5 py-4 md:py-5 space-y-3">
                             <div className="space-y-2">
                                 {order.items?.map((item: any, i: number) => (
                                     <div
@@ -287,7 +287,7 @@ export default function OrdersTab() {
                             {order.notes && (
                                 <div className="mt-2 py-2 px-3 bg-amber-50/50 rounded-xl border-l-2 border-amber-300 flex items-start gap-2">
                                     <Shield size={10} className="text-amber-500 shrink-0 mt-0.5" />
-                                    <p className="text-[9px] md:text-[10px] font-bold text-amber-700 m-0 leading-relaxed italic opacity-90 truncate">
+                                    <p className="text-[9px] md:text-[10px] font-bold text-amber-700 m-0 leading-relaxed italic opacity-90">
                                         {order.notes}
                                     </p>
                                 </div>
@@ -297,10 +297,9 @@ export default function OrdersTab() {
                                 onClick={() => handleRepeatOrder(order)}
                                 disabled={isRepeating === order.id}
                                 className={`mt-3 w-full h-10 md:h-11 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all flex items-center justify-center gap-2
-                                    ${
-                                        isRepeating === order.id
-                                            ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
+                                    ${isRepeating === order.id
+                                        ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
+                                        : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
                                     }`}
                             >
                                 <RefreshCcw
@@ -321,10 +320,9 @@ export default function OrdersTab() {
                             key={p}
                             onClick={() => loadOrders(p)}
                             className={`w-9 h-9 rounded-xl font-black text-[11px] transition-all
-                                ${
-                                    p === pagination.page
-                                        ? 'bg-red-600 text-white shadow-lg shadow-red-100'
-                                        : 'bg-white border border-gray-100 text-gray-400'
+                                ${p === pagination.page
+                                    ? 'bg-red-600 text-white shadow-lg shadow-red-100'
+                                    : 'bg-white border border-gray-100 text-gray-400'
                                 }`}
                         >
                             {p}

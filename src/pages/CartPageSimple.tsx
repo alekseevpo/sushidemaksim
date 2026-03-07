@@ -546,9 +546,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                      item.id,
-                                                                      item.quantity - 1
-                                                                  )
+                                                                    item.id,
+                                                                    item.quantity - 1
+                                                                )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -961,7 +961,7 @@ export default function CartPageSimple() {
                                     className="bg-amber-100 text-amber-800 px-6 py-3 rounded-lg font-bold border border-amber-200 cursor-pointer w-full mb-6 text-base hover:bg-amber-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     <Gift size={18} className="text-amber-600" />
-                                    {isInviting ? 'Generando Enlace...' : '¡Que me inviten! 🎁'}
+                                    {isInviting ? 'Generando Enlace...' : '¡Que me inviten!'}
                                 </button>
                             ) : (
                                 <div className="mb-6 p-4 bg-amber-50 rounded-xl border border-amber-100 text-center">

@@ -137,7 +137,7 @@ export default function FavoritesTab() {
                 <div>
                     <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0 flex items-center gap-2">
                         Mis Favoritos
-                        <span className="px-2.5 py-0.5 bg-red-600 text-white text-[10px] md:text-xs font-black rounded-full shadow-md shadow-red-100 italic">
+                        <span className="w-5 h-5 md:w-6 md:h-6 bg-red-600 text-white text-[10px] md:text-xs font-black rounded-full shadow-md shadow-red-100 flex items-center justify-center shrink-0 not-italic">
                             {favorites.length}
                         </span>
                     </h2>
@@ -198,39 +198,34 @@ export default function FavoritesTab() {
                             <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                         </div>
 
-                        {/* Content */}
-                        <div className="p-6 flex flex-col flex-1">
-                            <div className="flex justify-between items-start gap-4 mb-2">
-                                <h3 className="text-lg font-black text-gray-900 m-0 leading-tight">
-                                    {item.name}
-                                </h3>
-                                <div className="text-xs font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded-md">
-                                    {item.pieces ? `${item.pieces} uds` : 'unidad'}
+                        <div className="p-3 md:p-6 flex flex-col flex-1">
+                            <div className="flex flex-col gap-1 mb-3">
+                                <div className="flex justify-between items-start gap-2">
+                                    <h3 className="text-sm md:text-lg font-black text-gray-900 m-0 leading-tight line-clamp-2">
+                                        {item.name}
+                                    </h3>
+                                    <div className="text-[8px] md:text-xs font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-1.5 py-0.5 rounded-md shrink-0">
+                                        {item.pieces ? `${item.pieces} pzs` : '1 ud'}
+                                    </div>
                                 </div>
                             </div>
 
-                            <p className="text-gray-500 text-xs font-medium leading-relaxed mb-6 flex-1 italic group-hover:text-gray-700 transition-colors">
+                            <p className="text-gray-500 text-[10px] md:text-xs font-medium leading-relaxed mb-4 flex-1 italic group-hover:text-gray-700 transition-colors line-clamp-2 md:line-clamp-none">
                                 {item.description}
                             </p>
 
                             <div className="flex items-center justify-between gap-2 md:gap-4 mt-auto">
-                                <div className="flex flex-col">
-                                    <span className="text-base md:text-xl font-black text-red-600 italic tracking-tighter">
+                                <div className="flex flex-col shrink-0">
+                                    <span className="text-sm md:text-xl font-black text-red-600 italic tracking-tighter">
                                         {item.price.toFixed(2).replace('.', ',')} €
                                     </span>
-                                    {item.pieces && (
-                                        <span className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest">
-                                            {item.pieces} uds
-                                        </span>
-                                    )}
                                 </div>
                                 <button
                                     onClick={() => handleAddToCart(item)}
-                                    className={`h-9 md:h-11 px-3 md:px-6 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs transition-all flex items-center gap-2 shadow-sm
-                                        ${
-                                            addedItems.has(item.id)
-                                                ? 'bg-green-600 text-white'
-                                                : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] active:scale-95 shadow-gray-200'
+                                    className={`h-8 md:h-11 px-2.5 md:px-6 rounded-lg md:rounded-2xl font-black text-[9px] md:text-xs transition-all flex items-center justify-center gap-2 shadow-sm shrink-0
+                                        ${addedItems.has(item.id)
+                                            ? 'bg-green-600 text-white'
+                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] active:scale-95 shadow-gray-200'
                                         }`}
                                 >
                                     {addedItems.has(item.id) ? (
