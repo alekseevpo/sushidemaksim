@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, Plus, Check } from 'lucide-react';
+
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
 
@@ -147,14 +148,14 @@ export default function FavoritesTab() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 lg:gap-6">
                 {favorites.map(item => (
                     <div
                         key={item.id}
-                        className="bg-white border border-gray-50 rounded-[24px] md:rounded-[32px] overflow-hidden hover:shadow-2xl hover:shadow-gray-100 transition-all duration-300 group flex flex-col relative shadow-sm"
+                        className="bg-white border border-gray-100 rounded-[24px] md:rounded-[32px] overflow-hidden hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] transition-all duration-500 group flex flex-col relative shadow-sm"
                     >
                         {/* Image Container */}
-                        <div className="h-[120px] md:h-[180px] overflow-hidden relative flex items-center justify-center bg-gray-50">
+                        <div className="h-[130px] md:h-[190px] overflow-hidden relative flex items-center justify-center bg-gray-50/50">
                             {!failedImages.has(item.id) ? (
                                 <img
                                     src={item.image}
@@ -171,69 +172,72 @@ export default function FavoritesTab() {
                             )}
 
                             {/* Tags Overlay */}
-                            <div className="absolute top-2 left-0 flex flex-col gap-1">
+                            <div className="absolute top-2 left-0 flex flex-col gap-1 z-10">
                                 {item.spicy && (
-                                    <span className="px-2 py-0.5 bg-red-600 text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
+                                    <span className="px-2 py-0.5 bg-red-600/90 backdrop-blur-sm text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
                                         🌶️ Picante
                                     </span>
                                 )}
                                 {item.vegetarian && (
-                                    <span className="px-2 py-0.5 bg-emerald-600 text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
+                                    <span className="px-2 py-0.5 bg-emerald-600/90 backdrop-blur-sm text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
                                         🥬 Veggie
                                     </span>
                                 )}
                             </div>
 
                             {/* Actions Overlay */}
-                            <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 md:opacity-0 md:translate-x-12 md:group-hover:translate-x-0 md:group-hover:opacity-100 transition-all duration-300">
+                            <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
                                 <button
                                     onClick={() => toggleFavorite(item.id)}
-                                    className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white/90 backdrop-blur-sm text-red-600 shadow-lg flex items-center justify-center hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 border-none cursor-pointer"
+                                    className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/95 backdrop-blur-sm text-red-600 shadow-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 border-none cursor-pointer group/fav"
                                 >
-                                    <Heart size={16} fill="currentColor" />
+                                    <Heart size={16} fill="currentColor" className="transition-transform group-hover/fav:scale-110" />
                                 </button>
                             </div>
 
-                            {/* Glassmorphism Bottom Border */}
-                            <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                            {/* Bottom Shadow Gradient */}
+                            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-gray-900/10 to-transparent pointer-events-none" />
                         </div>
 
-                        <div className="p-3 md:p-6 flex flex-col flex-1">
-                            <div className="flex flex-col gap-1 mb-3">
-                                <div className="flex justify-between items-start gap-2">
-                                    <h3 className="text-sm md:text-lg font-black text-gray-900 m-0 leading-tight line-clamp-2">
+                        <div className="p-4 md:p-6 flex flex-col flex-1">
+                            <div className="mb-2 md:mb-3">
+                                <div className="flex justify-between items-start gap-2 mb-1">
+                                    <h3 className="text-[13px] md:text-base font-black text-gray-900 m-0 leading-tight line-clamp-2 group-hover:text-red-600 transition-colors">
                                         {item.name}
                                     </h3>
-                                    <div className="text-[8px] md:text-xs font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-1.5 py-0.5 rounded-md shrink-0">
+                                    <div className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded-full shrink-0">
                                         {item.pieces ? `${item.pieces} pzs` : '1 ud'}
                                     </div>
                                 </div>
+                                <p className="text-gray-500 text-[10px] md:text-xs font-medium leading-relaxed m-0 italic line-clamp-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                                    {item.description}
+                                </p>
                             </div>
 
-                            <p className="text-gray-500 text-[10px] md:text-xs font-medium leading-relaxed mb-4 flex-1 italic group-hover:text-gray-700 transition-colors line-clamp-2 md:line-clamp-none">
-                                {item.description}
-                            </p>
-
-                            <div className="flex items-center justify-between gap-2 md:gap-4 mt-auto">
-                                <div className="flex flex-col shrink-0">
-                                    <span className="text-sm md:text-xl font-black text-red-600 italic tracking-tighter">
-                                        {item.price.toFixed(2).replace('.', ',')} €
+                            <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between gap-3">
+                                <div className="flex flex-col">
+                                    <span className="text-base md:text-xl font-black text-gray-900 italic tracking-tighter">
+                                        {item.price.toFixed(2).replace('.', ',')}
+                                        <span className="text-[10px] md:text-xs ml-0.5 not-italic">€</span>
                                     </span>
                                 </div>
+
                                 <button
                                     onClick={() => handleAddToCart(item)}
-                                    className={`h-8 md:h-11 px-2.5 md:px-6 rounded-lg md:rounded-2xl font-black text-[9px] md:text-xs transition-all flex items-center justify-center gap-2 shadow-sm shrink-0
+                                    className={`h-9 md:h-11 px-3 md:px-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-100/50 shrink-0
                                         ${addedItems.has(item.id)
-                                            ? 'bg-green-600 text-white'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:scale-[1.02] active:scale-95 shadow-gray-200'
+                                            ? 'bg-green-600 text-white pointer-events-none'
+                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-red-100 hover:-translate-y-0.5 active:scale-95'
                                         }`}
                                 >
                                     {addedItems.has(item.id) ? (
-                                        <>✓</>
+                                        <span className="flex items-center gap-1.5">
+                                            <Check size={14} strokeWidth={4} />
+                                        </span>
                                     ) : (
                                         <>
-                                            <ShoppingBag size={14} />
-                                            <span className="hidden md:inline">Pedir</span>
+                                            <Plus size={16} />
+                                            <span className="hidden sm:inline">Pedir</span>
                                         </>
                                     )}
                                 </button>
@@ -242,6 +246,7 @@ export default function FavoritesTab() {
                     </div>
                 ))}
             </div>
+
         </div>
     );
 }
