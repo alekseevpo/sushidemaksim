@@ -336,10 +336,11 @@ export default function AdminMenu() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-sm font-semibold text-gray-700">
+                                        <label htmlFor="item-name" className="text-sm font-semibold text-gray-700">
                                             Nombre *
                                         </label>
                                         <input
+                                            id="item-name"
                                             required
                                             type="text"
                                             value={formData.name}
@@ -350,10 +351,11 @@ export default function AdminMenu() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-sm font-semibold text-gray-700">
+                                        <label htmlFor="item-category" className="text-sm font-semibold text-gray-700">
                                             Categoría *
                                         </label>
                                         <select
+                                            id="item-category"
                                             required
                                             value={formData.category}
                                             onChange={e =>
@@ -375,10 +377,11 @@ export default function AdminMenu() {
                                         </select>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-sm font-semibold text-gray-700">
+                                        <label htmlFor="item-price" className="text-sm font-semibold text-gray-700">
                                             Precio (€) *
                                         </label>
                                         <input
+                                            id="item-price"
                                             required
                                             type="number"
                                             step="0.01"
@@ -413,10 +416,11 @@ export default function AdminMenu() {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-sm font-semibold text-gray-700">
+                                    <label htmlFor="item-description" className="text-sm font-semibold text-gray-700">
                                         Descripción *
                                     </label>
                                     <textarea
+                                        id="item-description"
                                         required
                                         rows={3}
                                         value={formData.description}
@@ -629,8 +633,8 @@ export default function AdminMenu() {
                                                             const updated = e.target.checked
                                                                 ? [...current, allergen]
                                                                 : current.filter(
-                                                                      a => a !== allergen
-                                                                  );
+                                                                    a => a !== allergen
+                                                                );
                                                             setFormData({
                                                                 ...formData,
                                                                 allergens: updated,
