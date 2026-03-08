@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -9,5 +10,12 @@ export default defineConfig({
         proxy: {
             '/api': 'http://localhost:3001',
         },
+    },
+    // @ts-ignore: Vitest types sometimes conflict with Vite types depending on exact versions
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './src/test/setup.ts',
+        include: ['src/**/*.{test,spec}.{ts,tsx}'],
     },
 });
