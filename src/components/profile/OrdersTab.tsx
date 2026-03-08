@@ -248,14 +248,6 @@ export default function OrdersTab() {
                                     unidades
                                 </span>
                             </div>
-
-                            {/* Prominent Status Label at Bottom */}
-                            <div className="flex flex-col items-end">
-                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">
-                                    Estado del Pedido
-                                </span>
-                                {getStatusBadge(order.status)}
-                            </div>
                         </div>
 
                         {/* Items List: Minimal, no extra background */}
