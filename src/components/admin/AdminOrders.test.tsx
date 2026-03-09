@@ -45,7 +45,7 @@ describe('AdminOrders (Integration)', () => {
         render(
             <AdminOrders
                 isGlobalSoundEnabled={false}
-                setIsGlobalSoundEnabled={() => {}}
+                setIsGlobalSoundEnabled={() => { }}
                 globalPendingCount={0}
             />
         );
@@ -64,15 +64,15 @@ describe('AdminOrders (Integration)', () => {
         render(
             <AdminOrders
                 isGlobalSoundEnabled={false}
-                setIsGlobalSoundEnabled={() => {}}
+                setIsGlobalSoundEnabled={() => { }}
                 globalPendingCount={0}
             />
         );
 
         await waitFor(() => expect(screen.getByText(/00123/)).toBeInTheDocument());
 
-        const statusButton = screen.getByText('Preparando');
-        fireEvent.click(statusButton);
+        const statusSelect = screen.getByRole('combobox');
+        fireEvent.change(statusSelect, { target: { value: 'preparing' } });
 
         await waitFor(() => {
             expect(api.patch).toHaveBeenCalledWith('/admin/orders/123/status', {
@@ -85,7 +85,7 @@ describe('AdminOrders (Integration)', () => {
         render(
             <AdminOrders
                 isGlobalSoundEnabled={false}
-                setIsGlobalSoundEnabled={() => {}}
+                setIsGlobalSoundEnabled={() => { }}
                 globalPendingCount={0}
             />
         );

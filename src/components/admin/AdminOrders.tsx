@@ -187,11 +187,10 @@ export default function AdminOrders({
                         </div>
                         <button
                             onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
-                            className={`p-2 rounded-lg transition border ${
-                                isGlobalSoundEnabled
+                            className={`p-2 rounded-lg transition border ${isGlobalSoundEnabled
                                     ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
                                     : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
-                            }`}
+                                }`}
                             title={isGlobalSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
                         >
                             {isGlobalSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
@@ -228,11 +227,10 @@ export default function AdminOrders({
                                     setFilter(tab.id);
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
-                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${
-                                    filter === tab.id
+                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${filter === tab.id
                                         ? 'bg-white text-red-600 shadow-sm border border-gray-100'
                                         : 'text-gray-400 hover:text-gray-600'
-                                }`}
+                                    }`}
                             >
                                 {tab.label}
                                 {tab.badge && (
@@ -288,11 +286,10 @@ export default function AdminOrders({
                                                     Pedido #{String(order.id).padStart(5, '0')}
                                                 </h4>
                                                 <span
-                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                                                        statusOptions.find(
-                                                            s => s.value === order.status
-                                                        )?.color || ''
-                                                    }`}
+                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusOptions.find(
+                                                        s => s.value === order.status
+                                                    )?.color || ''
+                                                        }`}
                                                 >
                                                     {statusOptions.find(
                                                         s => s.value === order.status
@@ -323,7 +320,7 @@ export default function AdminOrders({
                                                 Total
                                             </p>
                                             <p className="text-lg font-black text-gray-900">
-                                                {formatCurrency(order.total_amount)}
+                                                {formatCurrency(order.total)}
                                             </p>
                                         </div>
                                     </div>
@@ -366,82 +363,78 @@ export default function AdminOrders({
                                         </div>
                                     </div>
 
-                                    {/* Comuna / Plataforma */}
-                                    <div className="space-y-4">
-                                        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
-                                                <Globe size={14} />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">
-                                                    Origen del Pedido
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                                                <p className="text-xs font-bold text-gray-700">
-                                                    Web Directa • Sushi de Maksim
-                                                </p>
-                                            </div>
+                                    {/* Items del pedido (Colapsable o scrollable) */}
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            Productos ({order.items?.length || 0})
+                                        </p>
+                                        <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {order.items?.map((item: any, idx: number) => (
+                                                <div
+                                                    key={idx}
+                                                    className="flex items-center justify-between gap-3 group bg-gray-50/50 p-2 rounded-lg border border-transparent hover:border-gray-100 transition-colors"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="flex items-center justify-center bg-white border border-gray-100 text-[10px] font-black w-6 h-6 rounded-md text-red-600 shadow-sm">
+                                                            {item.quantity}
+                                                        </span>
+                                                        <span className="text-xs font-bold text-gray-700 group-hover:text-red-600 transition-colors line-clamp-1">
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-[10px] font-bold text-gray-400">
+                                                        {formatCurrency(item.price_at_time)}
+                                                    </span>
+                                                </div>
+                                            ))}
                                         </div>
-
-                                        {order.promocode && (
-                                            <div className="bg-red-50 rounded-xl p-3 border border-red-100">
-                                                <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">
-                                                    Promo Aplicada
-                                                </p>
-                                                <p className="text-xs font-black text-red-600">
-                                                    {order.promocode.toUpperCase()}
-                                                </p>
-                                            </div>
-                                        )}
                                     </div>
 
                                     {/* Acciones de Estatus */}
-                                    <div className="lg:border-l border-gray-50 lg:pl-8 flex flex-col justify-between">
-                                        <div>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
-                                                Cambiar Estado
-                                            </p>
-                                            <div className="flex flex-wrap gap-2">
+                                    <div className="lg:border-l border-gray-100 lg:pl-8 flex flex-col justify-start">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                                            Estado del Pedido
+                                        </p>
+                                        <div className="relative">
+                                            <select
+                                                value={order.status}
+                                                onChange={e =>
+                                                    handleUpdateStatus(order.id, e.target.value)
+                                                }
+                                                className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${statusOptions.find(
+                                                    s => s.value === order.status
+                                                )?.color || 'bg-white border-gray-200 text-gray-700'
+                                                    }`}
+                                            >
                                                 {statusOptions.map(opt => (
-                                                    <button
+                                                    <option
                                                         key={opt.value}
-                                                        onClick={() =>
-                                                            handleUpdateStatus(order.id, opt.value)
-                                                        }
-                                                        disabled={order.status === opt.value}
-                                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                                                            order.status === opt.value
-                                                                ? `${opt.color} opacity-100 scale-100 shadow-sm`
-                                                                : 'bg-white text-gray-400 border border-gray-100 hover:border-gray-300 hover:text-gray-600 shadow-sm hover:shadow-md'
-                                                        }`}
+                                                        value={opt.value}
+                                                        className="bg-white text-gray-900 font-medium"
                                                     >
                                                         {opt.label}
-                                                    </button>
+                                                    </option>
                                                 ))}
+                                            </select>
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                                                <RefreshCw size={14} />
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                {/* Items del pedido (Colapsable o scrollable) */}
-                                <div className="bg-gray-50/50 px-4 py-3 border-t border-gray-50">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                                        Productos ({order.items?.length || 0})
-                                    </p>
-                                    <div className="flex flex-wrap gap-x-6 gap-y-2">
-                                        {order.items?.map((item: any, idx: number) => (
-                                            <div
-                                                key={idx}
-                                                className="flex items-center gap-2 group"
-                                            >
-                                                <span className="flex items-center justify-center bg-white border border-gray-100 text-[10px] font-black w-5 h-5 rounded-md text-red-600">
-                                                    {item.quantity}
-                                                </span>
-                                                <span className="text-sm font-bold text-gray-700 group-hover:text-red-600 transition-colors">
-                                                    {item.name}
+                                        <div className="mt-4 pt-4 border-t border-gray-50">
+                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
+                                                <Globe size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">
+                                                    Origen
                                                 </span>
                                             </div>
-                                        ))}
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                <p className="text-[11px] font-bold text-gray-500">
+                                                    Web Directa
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -456,11 +449,10 @@ export default function AdminOrders({
                         <button
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                pageNum === pagination.page
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
                                     ? 'bg-red-600 text-white shadow-md'
                                     : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                            }`}
+                                }`}
                         >
                             {pageNum}
                         </button>

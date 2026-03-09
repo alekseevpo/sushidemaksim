@@ -258,10 +258,9 @@ export default function AdminPage() {
                                     }
                                 }}
                                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors relative group
-                                    ${
-                                        isActive
-                                            ? 'text-red-700'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    ${isActive
+                                        ? 'text-red-700'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 {isActive && (
@@ -287,12 +286,6 @@ export default function AdminPage() {
                                         </span>
                                     )}
                                 </div>
-                                {isActive && (
-                                    <ChevronRight
-                                        size={16}
-                                        className="text-red-400 relative z-10"
-                                    />
-                                )}
                             </button>
                         );
                     })}
