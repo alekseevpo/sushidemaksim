@@ -22,8 +22,10 @@ const mockOrders = [
         total: 25.5,
         status: 'pending',
         created_at: '2023-01-01 10:00:00',
-        user_name: 'John Doe',
-        user_email: 'john@example.com',
+        users: {
+            name: 'John Doe',
+            email: 'john@example.com',
+        },
         delivery_address: 'Calle Falsa 123',
         phone_number: '123456789',
         items: [{ id: 1, name: 'Sushi Set', quantity: 1, price_at_time: 25.5 }],
@@ -69,8 +71,8 @@ describe('AdminOrders (Integration)', () => {
 
         await waitFor(() => expect(screen.getByText(/00123/)).toBeInTheDocument());
 
-        const statusSelect = screen.getByRole('combobox');
-        fireEvent.change(statusSelect, { target: { value: 'preparing' } });
+        const statusButton = screen.getByText('Preparando');
+        fireEvent.click(statusButton);
 
         await waitFor(() => {
             expect(api.patch).toHaveBeenCalledWith('/admin/orders/123/status', {
