@@ -1,12 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Critical E2E: Guest Checkout', () => {
-
     test('SUCCESS: should place an order when above 20€ threshold', async ({ page }) => {
         await page.goto('/menu');
 
         // Find specifically the "Gyozas con carne" section and its button
-        const card = page.locator('div#item-17, div#item-16, div.bg-white').filter({ hasText: 'Gyozas con carne' }).first();
+        const card = page
+            .locator('div#item-17, div#item-16, div.bg-white')
+            .filter({ hasText: 'Gyozas con carne' })
+            .first();
         const addButton = card.getByRole('button', { name: /Añadir/i }).first();
 
         // Add 4 items
@@ -28,13 +30,18 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await submitBtn.click();
 
         // 20s timeout and look for specific heading
-        await expect(page.locator('h1', { hasText: /¡Pedido exitoso!/i })).toBeVisible({ timeout: 20000 });
+        await expect(page.locator('h1', { hasText: /¡Pedido exitoso!/i })).toBeVisible({
+            timeout: 20000,
+        });
     });
 
     test('FAILURE: should show error when below 20€ threshold', async ({ page }) => {
         await page.goto('/menu');
         const card = page.locator('div.bg-white', { hasText: 'Gyozas con carne' }).first();
-        await card.getByRole('button', { name: /Añadir/i }).first().click();
+        await card
+            .getByRole('button', { name: /Añadir/i })
+            .first()
+            .click();
 
         await page.goto('/cart');
         await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Error Test');

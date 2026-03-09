@@ -100,7 +100,16 @@ export default function AdminUsers() {
                                     onClick={() => handleSort('id')}
                                 >
                                     <div className="flex items-center gap-1">
-                                        ID {sort.field === 'id' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                        ID{' '}
+                                        {sort.field === 'id' ? (
+                                            sort.order === 'desc' ? (
+                                                <ChevronDown size={14} />
+                                            ) : (
+                                                <ChevronUp size={14} />
+                                            )
+                                        ) : (
+                                            <ArrowUpDown size={12} className="opacity-30" />
+                                        )}
                                     </div>
                                 </th>
                                 <th className="px-6 py-4">Nombre / Email</th>
@@ -110,7 +119,16 @@ export default function AdminUsers() {
                                     onClick={() => handleSort('orderCount')}
                                 >
                                     <div className="flex items-center justify-center gap-1">
-                                        Pedidos {sort.field === 'orderCount' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                        Pedidos{' '}
+                                        {sort.field === 'orderCount' ? (
+                                            sort.order === 'desc' ? (
+                                                <ChevronDown size={14} />
+                                            ) : (
+                                                <ChevronUp size={14} />
+                                            )
+                                        ) : (
+                                            <ArrowUpDown size={12} className="opacity-30" />
+                                        )}
                                     </div>
                                 </th>
                                 <th
@@ -118,7 +136,16 @@ export default function AdminUsers() {
                                     onClick={() => handleSort('totalSpent')}
                                 >
                                     <div className="flex items-center justify-center gap-1">
-                                        Gastado {sort.field === 'totalSpent' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                        Gastado{' '}
+                                        {sort.field === 'totalSpent' ? (
+                                            sort.order === 'desc' ? (
+                                                <ChevronDown size={14} />
+                                            ) : (
+                                                <ChevronUp size={14} />
+                                            )
+                                        ) : (
+                                            <ArrowUpDown size={12} className="opacity-30" />
+                                        )}
                                     </div>
                                 </th>
                                 <th
@@ -126,7 +153,16 @@ export default function AdminUsers() {
                                     onClick={() => handleSort('last_seen_at')}
                                 >
                                     <div className="flex items-center gap-1">
-                                        Última actividad {sort.field === 'last_seen_at' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                        Última actividad{' '}
+                                        {sort.field === 'last_seen_at' ? (
+                                            sort.order === 'desc' ? (
+                                                <ChevronDown size={14} />
+                                            ) : (
+                                                <ChevronUp size={14} />
+                                            )
+                                        ) : (
+                                            <ArrowUpDown size={12} className="opacity-30" />
+                                        )}
                                     </div>
                                 </th>
                                 <th
@@ -134,7 +170,16 @@ export default function AdminUsers() {
                                     onClick={() => handleSort('created_at')}
                                 >
                                     <div className="flex items-center gap-1">
-                                        Registro {sort.field === 'created_at' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                        Registro{' '}
+                                        {sort.field === 'created_at' ? (
+                                            sort.order === 'desc' ? (
+                                                <ChevronDown size={14} />
+                                            ) : (
+                                                <ChevronUp size={14} />
+                                            )
+                                        ) : (
+                                            <ArrowUpDown size={12} className="opacity-30" />
+                                        )}
                                     </div>
                                 </th>
                                 <th
@@ -142,7 +187,16 @@ export default function AdminUsers() {
                                     onClick={() => handleSort('role')}
                                 >
                                     <div className="flex items-center justify-center gap-1">
-                                        Rol {sort.field === 'role' ? (sort.order === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />) : <ArrowUpDown size={12} className="opacity-30" />}
+                                        Rol{' '}
+                                        {sort.field === 'role' ? (
+                                            sort.order === 'desc' ? (
+                                                <ChevronDown size={14} />
+                                            ) : (
+                                                <ChevronUp size={14} />
+                                            )
+                                        ) : (
+                                            <ArrowUpDown size={12} className="opacity-30" />
+                                        )}
                                     </div>
                                 </th>
                                 {currentUser?.is_superadmin === 1 && (
@@ -159,13 +213,21 @@ export default function AdminUsers() {
                                     </td>
                                     <td className="px-6 py-3">
                                         <div className="flex items-center gap-2">
-                                            <div className="font-bold text-gray-900">{user.name}</div>
+                                            <div className="font-bold text-gray-900">
+                                                {user.name}
+                                            </div>
                                             {user.is_verified ? (
-                                                <span title="Email verificado" className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100">
+                                                <span
+                                                    title="Email verificado"
+                                                    className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100"
+                                                >
                                                     <CheckCircle size={12} />
                                                 </span>
                                             ) : (
-                                                <span title="Email pendiente de verificación" className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100">
+                                                <span
+                                                    title="Email pendiente de verificación"
+                                                    className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100"
+                                                >
                                                     <Clock size={12} />
                                                 </span>
                                             )}
@@ -198,10 +260,11 @@ export default function AdminUsers() {
                                                             user.birth_date_verified
                                                         )
                                                     }
-                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
-                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                                        }`}
+                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
+                                                        user.birth_date_verified
+                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                            : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                                    }`}
                                                 >
                                                     {user.birth_date_verified ? (
                                                         <>
@@ -223,7 +286,10 @@ export default function AdminUsers() {
                                     </td>
                                     <td className="px-6 py-3 text-center">
                                         <div className="font-bold text-gray-900">
-                                            {Number(user.totalSpent || 0).toFixed(2).replace('.', ',')} €
+                                            {Number(user.totalSpent || 0)
+                                                .toFixed(2)
+                                                .replace('.', ',')}{' '}
+                                            €
                                         </div>
                                     </td>
 
@@ -234,7 +300,7 @@ export default function AdminUsers() {
                                                     <div className="flex items-center gap-2">
                                                         {new Date().getTime() -
                                                             new Date(user.last_seen_at).getTime() <
-                                                            5 * 60 * 1000 ? (
+                                                        5 * 60 * 1000 ? (
                                                             <div className="relative flex h-2 w-2">
                                                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -246,22 +312,22 @@ export default function AdminUsers() {
                                                             {new Date(
                                                                 user.last_seen_at
                                                             ).toLocaleDateString() ===
-                                                                new Date().toLocaleDateString()
+                                                            new Date().toLocaleDateString()
                                                                 ? 'Hoy ' +
-                                                                new Date(
-                                                                    user.last_seen_at
-                                                                ).toLocaleTimeString([], {
-                                                                    hour: '2-digit',
-                                                                    minute: '2-digit',
-                                                                })
+                                                                  new Date(
+                                                                      user.last_seen_at
+                                                                  ).toLocaleTimeString([], {
+                                                                      hour: '2-digit',
+                                                                      minute: '2-digit',
+                                                                  })
                                                                 : new Date(
-                                                                    user.last_seen_at
-                                                                ).toLocaleDateString([], {
-                                                                    day: '2-digit',
-                                                                    month: 'short',
-                                                                    hour: '2-digit',
-                                                                    minute: '2-digit',
-                                                                })}
+                                                                      user.last_seen_at
+                                                                  ).toLocaleDateString([], {
+                                                                      day: '2-digit',
+                                                                      month: 'short',
+                                                                      hour: '2-digit',
+                                                                      minute: '2-digit',
+                                                                  })}
                                                         </span>
                                                     </div>
                                                 </>
@@ -298,10 +364,11 @@ export default function AdminUsers() {
                                                     onClick={() =>
                                                         toggleAdminRole(user.id, user.role)
                                                     }
-                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
-                                                        ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                        : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                                        }`}
+                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
+                                                        user.role === 'admin'
+                                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                            : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                                                    }`}
                                                 >
                                                     {user.role === 'admin'
                                                         ? 'Revocar Admin'
@@ -331,10 +398,11 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                        }`}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                        pageNum === pagination.page
+                                            ? 'bg-red-600 text-white'
+                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
                                 >
                                     {pageNum}
                                 </button>

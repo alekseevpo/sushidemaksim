@@ -42,7 +42,9 @@ export default function VerifyPage() {
                     <div className="flex flex-col items-center">
                         <Loader2 size={64} className="text-red-600 animate-spin mb-6" />
                         <h1 className="text-2xl font-black text-gray-900 mb-2">Verificando...</h1>
-                        <p className="text-gray-500 font-medium">Estamos validando tu enlace de activación.</p>
+                        <p className="text-gray-500 font-medium">
+                            Estamos validando tu enlace de activación.
+                        </p>
                     </div>
                 )}
 
@@ -87,9 +89,7 @@ export default function VerifyPage() {
                         <h1 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">
                             Error de Activación
                         </h1>
-                        <p className="text-red-600 font-medium mb-10 leading-relaxed">
-                            {message}
-                        </p>
+                        <p className="text-red-600 font-medium mb-10 leading-relaxed">{message}</p>
                         <button
                             onClick={() => navigate('/')}
                             className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-2"

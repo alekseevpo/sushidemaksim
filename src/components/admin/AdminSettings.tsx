@@ -207,7 +207,10 @@ export default function AdminSettings() {
                             step="0.01"
                             value={settings.delivery_fee}
                             onChange={e =>
-                                setSettings({ ...settings, delivery_fee: parseFloat(e.target.value) })
+                                setSettings({
+                                    ...settings,
+                                    delivery_fee: parseFloat(e.target.value),
+                                })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                         />
@@ -221,7 +224,10 @@ export default function AdminSettings() {
                             step="0.01"
                             value={settings.free_delivery_threshold}
                             onChange={e =>
-                                setSettings({ ...settings, free_delivery_threshold: parseFloat(e.target.value) })
+                                setSettings({
+                                    ...settings,
+                                    free_delivery_threshold: parseFloat(e.target.value),
+                                })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                         />
@@ -249,7 +255,9 @@ export default function AdminSettings() {
                                 }
                                 className="w-5 h-5 accent-red-600"
                             />
-                            <span className="font-bold text-sm text-red-700">MARCAR TIENDA COMO CERRADA (Emergencia)</span>
+                            <span className="font-bold text-sm text-red-700">
+                                MARCAR TIENDA COMO CERRADA (Emergencia)
+                            </span>
                         </label>
                     </div>
                     {settings.is_store_closed && (
@@ -378,10 +386,11 @@ export default function AdminSettings() {
                         className="fixed bottom-8 right-8 z-50"
                     >
                         <div
-                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${saveStatus === 'success'
-                                ? 'bg-green-600 border-green-500 text-white'
-                                : 'bg-red-600 border-red-500 text-white'
-                                }`}
+                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${
+                                saveStatus === 'success'
+                                    ? 'bg-green-600 border-green-500 text-white'
+                                    : 'bg-red-600 border-red-500 text-white'
+                            }`}
                         >
                             {saveStatus === 'success' ? (
                                 <CheckCircle2 size={24} className="animate-bounce" />

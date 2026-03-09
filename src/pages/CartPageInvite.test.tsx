@@ -26,7 +26,7 @@ vi.mock('../utils/api', () => ({
         constructor(public message: string) {
             super(message);
         }
-    }
+    },
 }));
 
 const mockCartItems = [
@@ -37,8 +37,8 @@ const mockCartItems = [
         quantity: 2,
         image: '',
         category: 'rollos-grandes' as const,
-        description: ''
-    }
+        description: '',
+    },
 ];
 
 describe('CartPageSimple - Invitations (Integration)', () => {
@@ -58,7 +58,12 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         });
 
         vi.mocked(api.get).mockImplementation((url: string) => {
-            if (url === '/settings') return Promise.resolve({ min_order: 15, free_delivery_threshold: 25, delivery_fee: 3.5 });
+            if (url === '/settings')
+                return Promise.resolve({
+                    min_order: 15,
+                    free_delivery_threshold: 25,
+                    delivery_fee: 3.5,
+                });
             if (url.includes('/menu')) return Promise.resolve({ items: [] });
             return Promise.resolve({});
         });
@@ -67,21 +72,26 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         if (typeof navigator !== 'undefined') {
             (navigator as any).share = vi.fn().mockResolvedValue(undefined);
             (navigator as any).clipboard = {
-                writeText: vi.fn().mockResolvedValue(undefined)
+                writeText: vi.fn().mockResolvedValue(undefined),
             };
         }
     });
 
-    const renderPage = () => render(
-        <HelmetProvider>
-            <BrowserRouter>
-                <CartPageSimple />
-            </BrowserRouter>
-        </HelmetProvider>
-    );
+    const renderPage = () =>
+        render(
+            <HelmetProvider>
+                <BrowserRouter>
+                    <CartPageSimple />
+                </BrowserRouter>
+            </HelmetProvider>
+        );
 
     it('shows invitation block for guests', async () => {
-        vi.mocked(useAuth).mockReturnValue({ isAuthenticated: false, user: null, loading: false } as any);
+        vi.mocked(useAuth).mockReturnValue({
+            isAuthenticated: false,
+            user: null,
+            loading: false,
+        } as any);
 
         renderPage();
 
@@ -94,7 +104,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
             user: { name: 'Test User', phone: '123456789' },
-            loading: false
+            loading: false,
         } as any);
 
         vi.mocked(api.post).mockResolvedValue({ shareUrl: 'http://localhost/pay-for-friend/123' });
@@ -114,10 +124,13 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         fireEvent.click(inviteBtn);
 
         await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith('/orders/invite', expect.objectContaining({
-                deliveryAddress: 'Calle Principal, Portal/Casa: 1, Piso/Puerta: A',
-                senderName: 'Test User'
-            }));
+            expect(api.post).toHaveBeenCalledWith(
+                '/orders/invite',
+                expect.objectContaining({
+                    deliveryAddress: 'Calle Principal, Portal/Casa: 1, Piso/Puerta: A',
+                    senderName: 'Test User',
+                })
+            );
             expect(navigator.share).toHaveBeenCalled();
         });
     });
@@ -126,7 +139,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: true,
             user: { name: 'Test User' },
-            loading: false
+            loading: false,
         } as any);
 
         renderPage();
@@ -135,7 +148,9 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         fireEvent.click(inviteBtn);
 
         await waitFor(() => {
-            expect(screen.getByText(/Por favor, indica tu calle para el envío/i)).toBeInTheDocument();
+            expect(
+                screen.getByText(/Por favor, indica tu calle para el envío/i)
+            ).toBeInTheDocument();
         });
     });
 });

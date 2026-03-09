@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Feature: Invite a Friend (Invitaciones)', () => {
-
     test('SUCCESS: Create invitation and pay as friend', async ({ page, context }) => {
         const randomId = Math.floor(Math.random() * 100000);
         const email = `sender${randomId}@test.com`;
@@ -38,9 +37,15 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
 
         // Check if logged in (user initials or name in header)
         // If not logged in, perform login
-        const isUserButtonVisible = await page.locator('header button').filter({ hasText: name }).isVisible();
+        const isUserButtonVisible = await page
+            .locator('header button')
+            .filter({ hasText: name })
+            .isVisible();
         if (!isUserButtonVisible) {
-            await page.getByRole('button', { name: /ACCEDER/i }).first().click();
+            await page
+                .getByRole('button', { name: /ACCEDER/i })
+                .first()
+                .click();
             await page.getByPlaceholder(/tu@email.com/i).fill(email);
             await page.getByPlaceholder(/Tu contraseña/i).fill(pass);
             await page.getByRole('button', { name: /Iniciar sesión/i }).click();
@@ -101,14 +106,18 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
             const recipientPage = await context.newPage();
             await recipientPage.goto(`/pay-for-friend/${orderId}`);
 
-            await expect(recipientPage.locator('h1', { hasText: '¡Momento de invitar!' })).toBeVisible({ timeout: 20000 });
+            await expect(
+                recipientPage.locator('h1', { hasText: '¡Momento de invitar!' })
+            ).toBeVisible({ timeout: 20000 });
             await expect(recipientPage.locator('text=Gyozas con carne')).toBeVisible();
 
             // 5. Pay as friend
             const payBtn = recipientPage.getByRole('button', { name: /Confirmar y Pagar/i });
             await payBtn.click();
 
-            await expect(recipientPage.locator('h2', { hasText: '¡Eres Genial!' })).toBeVisible({ timeout: 25000 });
+            await expect(recipientPage.locator('h2', { hasText: '¡Eres Genial!' })).toBeVisible({
+                timeout: 25000,
+            });
         } else {
             throw new Error('Could not find created order ID in profile');
         }
@@ -117,7 +126,10 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
     test('PROTECTION: Guests cannot invite friends (prompt to login)', async ({ page }) => {
         await page.goto('/menu');
         const card = page.locator('div.bg-white').filter({ hasText: 'Gyozas con carne' }).first();
-        await card.getByRole('button', { name: /Añadir/i }).first().click();
+        await card
+            .getByRole('button', { name: /Añadir/i })
+            .first()
+            .click();
 
         await page.goto('/cart');
 

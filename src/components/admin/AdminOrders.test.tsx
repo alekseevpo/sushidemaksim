@@ -13,7 +13,7 @@ vi.mock('../../utils/api', () => ({
         constructor(public message: string) {
             super(message);
         }
-    }
+    },
 }));
 
 const mockOrders = [
@@ -26,8 +26,8 @@ const mockOrders = [
         user_email: 'john@example.com',
         delivery_address: 'Calle Falsa 123',
         phone_number: '123456789',
-        items: [{ id: 1, name: 'Sushi Set', quantity: 1, price_at_time: 25.5 }]
-    }
+        items: [{ id: 1, name: 'Sushi Set', quantity: 1, price_at_time: 25.5 }],
+    },
 ];
 
 describe('AdminOrders (Integration)', () => {
@@ -35,18 +35,21 @@ describe('AdminOrders (Integration)', () => {
         vi.clearAllMocks();
         vi.mocked(api.get).mockResolvedValue({
             orders: mockOrders,
-            pagination: { page: 1, limit: 10, total: 1, pages: 1 }
+            pagination: { page: 1, limit: 10, total: 1, pages: 1 },
         });
     });
 
     it('renders the orders list', async () => {
         render(<AdminOrders />);
 
-        await waitFor(() => {
-            // Check for order ID and user name separately
-            expect(screen.getByText(/00123/)).toBeInTheDocument();
-            expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
-        }, { timeout: 2000 });
+        await waitFor(
+            () => {
+                // Check for order ID and user name separately
+                expect(screen.getByText(/00123/)).toBeInTheDocument();
+                expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
+            },
+            { timeout: 2000 }
+        );
     });
 
     it('updates order status', async () => {
@@ -58,7 +61,9 @@ describe('AdminOrders (Integration)', () => {
         fireEvent.change(statusSelect, { target: { value: 'preparing' } });
 
         await waitFor(() => {
-            expect(api.patch).toHaveBeenCalledWith('/admin/orders/123/status', { status: 'preparing' });
+            expect(api.patch).toHaveBeenCalledWith('/admin/orders/123/status', {
+                status: 'preparing',
+            });
         });
     });
 

@@ -39,7 +39,23 @@ const AVATAR_CATEGORIES = [
     },
     {
         name: 'Estilo & Japan',
-        icons: ['🏮', '⛩️', '🏯', '🗻', '🚀', '💎', '🔥', '⚡', '🌈', '👑', '🕶️', '🎸', '🎮', '🛹', '🧘'],
+        icons: [
+            '🏮',
+            '⛩️',
+            '🏯',
+            '🗻',
+            '🚀',
+            '💎',
+            '🔥',
+            '⚡',
+            '🌈',
+            '👑',
+            '🕶️',
+            '🎸',
+            '🎮',
+            '🛹',
+            '🧘',
+        ],
     },
 ];
 
@@ -192,9 +208,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         label: 'Fecha de Cumpleaños',
                         value: user.birthDate
                             ? (() => {
-                                const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                return `${d}/${m}/${y}`;
-                            })()
+                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                  return `${d}/${m}/${y}`;
+                              })()
                             : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
@@ -258,7 +274,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                     <div className="space-y-8 relative z-10">
                         {/* Initial Placeholder */}
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 ml-1">Original</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 ml-1">
+                                Original
+                            </p>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -286,9 +304,11 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                             type="button"
                                             onClick={() => setEditAvatar(avatar)}
                                             className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                                ${editAvatar === avatar
-                                                    ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
-                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'}`}
+                                                ${
+                                                    editAvatar === avatar
+                                                        ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
+                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                                }`}
                                         >
                                             {avatar}
                                         </motion.button>
@@ -368,7 +388,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => { },
+                                    toggle: () => {},
                                 },
                             ].map(f => (
                                 <div key={f.label}>

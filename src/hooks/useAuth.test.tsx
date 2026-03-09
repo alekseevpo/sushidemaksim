@@ -10,7 +10,7 @@ vi.mock('../utils/api', () => ({
         get: vi.fn(),
         post: vi.fn(),
         put: vi.fn(),
-    }
+    },
 }));
 
 describe('useAuth hook', () => {

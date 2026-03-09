@@ -227,10 +227,14 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
 /**
  * Send an email activation link to a new user.
  */
-export async function sendVerificationEmail(to: string, name: string, token: string, promoCode: string): Promise<void> {
+export async function sendVerificationEmail(
+  to: string,
+  name: string,
+  token: string,
+  promoCode: string
+): Promise<void> {
   const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
   const activationUrl = `https://sushidemaksim.vercel.app/verify?token=${token}`;
-  const logoUrl = 'https://sushidemaksim.vercel.app/logo.svg';
 
   await transporter.sendMail({
     from,

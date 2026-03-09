@@ -15,9 +15,9 @@ function OrderTimer({ createdAt, status }: { createdAt: string; status: string }
             const d = new Date(createdAt);
             const validDate = isNaN(d.getTime())
                 ? new Date(
-                    createdAt.replace(' ', 'T') +
-                    (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
-                )
+                      createdAt.replace(' ', 'T') +
+                          (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
+                  )
                 : d;
             const start = validDate.getTime();
             const end = start + 60 * 60 * 1000; // 60 minutes
@@ -204,12 +204,12 @@ export default function OrdersTab() {
                                         const d = new Date(order.created_at);
                                         const validDate = isNaN(d.getTime())
                                             ? new Date(
-                                                order.created_at.replace(' ', 'T') +
-                                                (order.created_at.includes('Z') ||
-                                                    order.created_at.includes('+')
-                                                    ? ''
-                                                    : 'Z')
-                                            )
+                                                  order.created_at.replace(' ', 'T') +
+                                                      (order.created_at.includes('Z') ||
+                                                      order.created_at.includes('+')
+                                                          ? ''
+                                                          : 'Z')
+                                              )
                                             : d;
                                         return validDate.toLocaleDateString('es-ES', {
                                             day: 'numeric',
@@ -289,9 +289,10 @@ export default function OrdersTab() {
                                 onClick={() => handleRepeatOrder(order)}
                                 disabled={isRepeating === order.id}
                                 className={`mt-3 w-full h-10 md:h-11 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all flex items-center justify-center gap-2
-                                    ${isRepeating === order.id
-                                        ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
-                                        : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
+                                    ${
+                                        isRepeating === order.id
+                                            ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
+                                            : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
                                     }`}
                             >
                                 <RefreshCcw
@@ -312,9 +313,10 @@ export default function OrdersTab() {
                             key={p}
                             onClick={() => loadOrders(p)}
                             className={`w-9 h-9 rounded-xl font-black text-[11px] transition-all
-                                ${p === pagination.page
-                                    ? 'bg-red-600 text-white shadow-lg shadow-red-100'
-                                    : 'bg-white border border-gray-100 text-gray-400'
+                                ${
+                                    p === pagination.page
+                                        ? 'bg-red-600 text-white shadow-lg shadow-red-100'
+                                        : 'bg-white border border-gray-100 text-gray-400'
                                 }`}
                         >
                             {p}

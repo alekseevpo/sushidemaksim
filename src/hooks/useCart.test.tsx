@@ -10,7 +10,7 @@ vi.mock('../utils/api', () => ({
         post: vi.fn(),
         put: vi.fn(),
         delete: vi.fn(),
-    }
+    },
 }));
 
 // Mock useAuth to control authentication state
@@ -49,7 +49,7 @@ describe('useCart Hook (Integration)', () => {
             price: 10,
             category: 'rolls' as any,
             image: '',
-            description: ''
+            description: '',
         };
 
         await act(async () => {
@@ -64,7 +64,14 @@ describe('useCart Hook (Integration)', () => {
 
     it('should increment quantity when adding same item twice', async () => {
         const { result } = renderHook(() => useCart(), { wrapper });
-        const testItem = { id: '1', name: 'Sushi', price: 5, category: 'sushi' as any, image: '', description: '' };
+        const testItem = {
+            id: '1',
+            name: 'Sushi',
+            price: 5,
+            category: 'sushi' as any,
+            image: '',
+            description: '',
+        };
 
         await act(async () => {
             await result.current.addItem(testItem);
@@ -80,7 +87,14 @@ describe('useCart Hook (Integration)', () => {
 
     it('should update quantity manually', async () => {
         const { result } = renderHook(() => useCart(), { wrapper });
-        const testItem = { id: '1', name: 'Sushi', price: 5, category: 'sushi' as any, image: '', description: '' };
+        const testItem = {
+            id: '1',
+            name: 'Sushi',
+            price: 5,
+            category: 'sushi' as any,
+            image: '',
+            description: '',
+        };
 
         await act(async () => {
             await result.current.addItem(testItem);
@@ -96,7 +110,14 @@ describe('useCart Hook (Integration)', () => {
 
     it('should remove an item', async () => {
         const { result } = renderHook(() => useCart(), { wrapper });
-        const testItem = { id: '1', name: 'Sushi', price: 5, category: 'sushi' as any, image: '', description: '' };
+        const testItem = {
+            id: '1',
+            name: 'Sushi',
+            price: 5,
+            category: 'sushi' as any,
+            image: '',
+            description: '',
+        };
 
         await act(async () => {
             await result.current.addItem(testItem);
@@ -113,8 +134,22 @@ describe('useCart Hook (Integration)', () => {
     it('should clear the cart', async () => {
         const { result } = renderHook(() => useCart(), { wrapper });
         await act(async () => {
-            await result.current.addItem({ id: '1', name: 'A', price: 1, category: 'sushi' as any, image: '', description: '' });
-            await result.current.addItem({ id: '2', name: 'B', price: 2, category: 'sushi' as any, image: '', description: '' });
+            await result.current.addItem({
+                id: '1',
+                name: 'A',
+                price: 1,
+                category: 'sushi' as any,
+                image: '',
+                description: '',
+            });
+            await result.current.addItem({
+                id: '2',
+                name: 'B',
+                price: 2,
+                category: 'sushi' as any,
+                image: '',
+                description: '',
+            });
             await result.current.clearCart();
         });
 

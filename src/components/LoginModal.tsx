@@ -36,7 +36,9 @@ const LoginForm = memo(
             <>
                 <form onSubmit={e => onLogin(e, email, password)} className="mb-4">
                     <div className="mb-3">
-                        <label className="block mb-1 text-xs font-semibold text-gray-700">Email</label>
+                        <label className="block mb-1 text-xs font-semibold text-gray-700">
+                            Email
+                        </label>
                         <div className="relative">
                             <Mail
                                 size={15}
@@ -138,7 +140,9 @@ const RegisterForm = memo(
                     className="mb-4"
                 >
                     <div className="mb-3">
-                        <label className="block mb-1 text-xs font-semibold text-gray-700">Nombre</label>
+                        <label className="block mb-1 text-xs font-semibold text-gray-700">
+                            Nombre
+                        </label>
                         <div className="relative">
                             <User
                                 size={15}
@@ -174,7 +178,9 @@ const RegisterForm = memo(
                         </div>
                     </div>
                     <div className="mb-3">
-                        <label className="block mb-1 text-xs font-semibold text-gray-700">Email</label>
+                        <label className="block mb-1 text-xs font-semibold text-gray-700">
+                            Email
+                        </label>
                         <div className="relative">
                             <Mail
                                 size={15}
@@ -284,7 +290,13 @@ const ForgotForm = memo(
                         className={`w-full text-white py-2.5 px-4 rounded-lg font-bold text-[13px] border-none cursor-pointer transition-all duration-200 flex items-center justify-center gap-2
                 ${isLoading ? 'bg-gray-400 cursor-wait' : 'bg-amber-500 hover:bg-amber-600'}`}
                     >
-                        {isLoading ? 'Verificando...' : <><KeyRound size={15} /> Recuperar acceso</>}
+                        {isLoading ? (
+                            'Verificando...'
+                        ) : (
+                            <>
+                                <KeyRound size={15} /> Recuperar acceso
+                            </>
+                        )}
                     </button>
                 </form>
                 <div className="text-center">
@@ -382,7 +394,9 @@ const ResetForm = memo(
                             />
                         </div>
                         {confirm && password !== confirm && (
-                            <p className="text-red-600 text-xs mt-1">Las contraseñas no coinciden</p>
+                            <p className="text-red-600 text-xs mt-1">
+                                Las contraseñas no coinciden
+                            </p>
                         )}
                     </div>
                     <button
@@ -419,7 +433,8 @@ const VerifySentMessage = memo(({ email, onBack }: { email: string; onBack: () =
             <strong className="text-gray-900">{email}</strong>.
             <br />
             <br />
-            Por favor, revisa tu bandeja de entrada (y <strong className="text-red-600">la carpeta de spam</strong>) para activar tu cuenta.
+            Por favor, revisa tu bandeja de entrada (y{' '}
+            <strong className="text-red-600">la carpeta de spam</strong>) para activar tu cuenta.
         </p>
         <button
             onClick={onBack}
@@ -668,10 +683,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     />
                 )}
                 {mode === 'verify-sent' && (
-                    <VerifySentMessage
-                        email={registeredEmail}
-                        onBack={() => switchMode('login')}
-                    />
+                    <VerifySentMessage email={registeredEmail} onBack={() => switchMode('login')} />
                 )}
             </div>
         </div>

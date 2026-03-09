@@ -11,7 +11,7 @@ vi.mock('../utils/api', () => ({
     api: {
         get: vi.fn(),
         post: vi.fn(),
-    }
+    },
 }));
 
 // Mock useCart hook
@@ -32,8 +32,22 @@ vi.mock('../hooks/useAuth', () => ({
 }));
 
 const mockItems = [
-    { id: 1, name: 'Salmon Roll', description: 'Delicious', price: 10, category: 'rollos-grandes', image: '' },
-    { id: 2, name: 'Tuna Roll', description: 'Fresh', price: 12, category: 'rollos-grandes', image: '' },
+    {
+        id: 1,
+        name: 'Salmon Roll',
+        description: 'Delicious',
+        price: 10,
+        category: 'rollos-grandes',
+        image: '',
+    },
+    {
+        id: 2,
+        name: 'Tuna Roll',
+        description: 'Fresh',
+        price: 12,
+        category: 'rollos-grandes',
+        image: '',
+    },
 ];
 
 describe('MenuPageSimple (Integration)', () => {
@@ -42,13 +56,14 @@ describe('MenuPageSimple (Integration)', () => {
         (api.get as any).mockResolvedValue({ items: mockItems });
     });
 
-    const renderMenu = () => render(
-        <HelmetProvider>
-            <BrowserRouter>
-                <MenuPageSimple />
-            </BrowserRouter>
-        </HelmetProvider>
-    );
+    const renderMenu = () =>
+        render(
+            <HelmetProvider>
+                <BrowserRouter>
+                    <MenuPageSimple />
+                </BrowserRouter>
+            </HelmetProvider>
+        );
 
     it('renders the menu items', async () => {
         renderMenu();
@@ -66,7 +81,9 @@ describe('MenuPageSimple (Integration)', () => {
         fireEvent.click(categoryBtn);
 
         await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith(expect.stringContaining('category=rollos-grandes'));
+            expect(api.get).toHaveBeenCalledWith(
+                expect.stringContaining('category=rollos-grandes')
+            );
         });
     });
 
@@ -77,9 +94,12 @@ describe('MenuPageSimple (Integration)', () => {
         fireEvent.change(searchInput, { target: { value: 'Salmon' } });
 
         // Wait for debounce (350ms)
-        await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=Salmon'));
-        }, { timeout: 2000 });
+        await waitFor(
+            () => {
+                expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=Salmon'));
+            },
+            { timeout: 2000 }
+        );
     });
 
     it('adds an item to cart when clicking the button', async () => {
@@ -88,9 +108,11 @@ describe('MenuPageSimple (Integration)', () => {
         const addBtn = await screen.findAllByText(/Añadir/i);
         fireEvent.click(addBtn[0]);
 
-        expect(mockAddItem).toHaveBeenCalledWith(expect.objectContaining({
-            id: '1',
-            name: 'Salmon Roll'
-        }));
+        expect(mockAddItem).toHaveBeenCalledWith(
+            expect.objectContaining({
+                id: '1',
+                name: 'Salmon Roll',
+            })
+        );
     });
 });

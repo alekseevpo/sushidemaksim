@@ -23,7 +23,8 @@ router.get(
             // Convert array of rows to a single object map
             const settingsMap = settings.reduce((acc: any, curr: any) => {
                 try {
-                    acc[curr.key] = typeof curr.value === 'string' ? JSON.parse(curr.value) : curr.value;
+                    acc[curr.key] =
+                        typeof curr.value === 'string' ? JSON.parse(curr.value) : curr.value;
                 } catch {
                     acc[curr.key] = curr.value;
                 }

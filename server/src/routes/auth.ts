@@ -64,7 +64,7 @@ router.post(
             code: promoCode,
             discount_percentage: 5,
             user_id: newUser.id,
-            is_used: false
+            is_used: false,
         });
 
         // Send verification email
@@ -77,13 +77,13 @@ router.post(
             console.error('SMTP Config check:', {
                 host: config.smtp.host,
                 user: config.smtp.user,
-                hasPass: !!config.smtp.pass
+                hasPass: !!config.smtp.pass,
             });
         }
 
         res.status(201).json({
             success: true,
-            message: 'Usuario registrado. Por favor, verifica tu email.'
+            message: 'Usuario registrado. Por favor, verifica tu email.',
         });
     })
 );
@@ -125,7 +125,10 @@ router.get(
 
             if (updateError) throw updateError;
 
-            res.json({ success: true, message: '¡Cuenta activada con éxito! Ya puedes iniciar sesión.' });
+            res.json({
+                success: true,
+                message: '¡Cuenta activada con éxito! Ya puedes iniciar sesión.',
+            });
         } catch (err) {
             res.status(400).json({ error: 'El enlace de activación ha expirado o es inválido.' });
         }
@@ -154,7 +157,7 @@ router.post(
 
         if (user.is_verified === false) {
             return res.status(403).json({
-                error: 'Por favor, activa tu cuenta. Revisa tu email para el enlace de confirmación.'
+                error: 'Por favor, activa tu cuenta. Revisa tu email para el enlace de confirmación.',
             });
         }
 

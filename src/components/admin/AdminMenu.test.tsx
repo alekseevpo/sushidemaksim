@@ -15,7 +15,7 @@ vi.mock('../../utils/api', () => ({
         constructor(public message: string) {
             super(message);
         }
-    }
+    },
 }));
 
 const mockItems = [
@@ -59,7 +59,9 @@ describe('AdminMenu (Integration)', () => {
     });
 
     it('submits the form to add a new item', async () => {
-        vi.mocked(api.post).mockResolvedValue({ item: { id: 2, name: 'New Roll', category: 'menus', price: 10 } });
+        vi.mocked(api.post).mockResolvedValue({
+            item: { id: 2, name: 'New Roll', category: 'menus', price: 10 },
+        });
 
         render(<AdminMenu />);
 
@@ -75,10 +77,13 @@ describe('AdminMenu (Integration)', () => {
         fireEvent.click(saveBtn);
 
         await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith('/admin/menu', expect.objectContaining({
-                name: 'New Roll',
-                price: 10
-            }));
+            expect(api.post).toHaveBeenCalledWith(
+                '/admin/menu',
+                expect.objectContaining({
+                    name: 'New Roll',
+                    price: 10,
+                })
+            );
             expect(screen.getByText('New Roll')).toBeInTheDocument();
         });
     });

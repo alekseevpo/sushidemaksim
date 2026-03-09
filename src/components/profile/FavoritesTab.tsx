@@ -191,7 +191,11 @@ export default function FavoritesTab() {
                                     onClick={() => toggleFavorite(item.id)}
                                     className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/95 backdrop-blur-sm text-red-600 shadow-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 border-none cursor-pointer group/fav"
                                 >
-                                    <Heart size={16} fill="currentColor" className="transition-transform group-hover/fav:scale-110" />
+                                    <Heart
+                                        size={16}
+                                        fill="currentColor"
+                                        className="transition-transform group-hover/fav:scale-110"
+                                    />
                                 </button>
                             </div>
 
@@ -218,16 +222,19 @@ export default function FavoritesTab() {
                                 <div className="flex flex-col">
                                     <span className="text-base md:text-xl font-black text-gray-900 italic tracking-tighter">
                                         {item.price.toFixed(2).replace('.', ',')}
-                                        <span className="text-[10px] md:text-xs ml-0.5 not-italic">€</span>
+                                        <span className="text-[10px] md:text-xs ml-0.5 not-italic">
+                                            €
+                                        </span>
                                     </span>
                                 </div>
 
                                 <button
                                     onClick={() => handleAddToCart(item)}
                                     className={`h-9 md:h-11 px-3 md:px-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-100/50 shrink-0
-                                        ${addedItems.has(item.id)
-                                            ? 'bg-green-600 text-white pointer-events-none'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-red-100 hover:-translate-y-0.5 active:scale-95'
+                                        ${
+                                            addedItems.has(item.id)
+                                                ? 'bg-green-600 text-white pointer-events-none'
+                                                : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-red-100 hover:-translate-y-0.5 active:scale-95'
                                         }`}
                                 >
                                     {addedItems.has(item.id) ? (
@@ -246,7 +253,6 @@ export default function FavoritesTab() {
                     </div>
                 ))}
             </div>
-
         </div>
     );
 }

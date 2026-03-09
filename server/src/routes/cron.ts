@@ -152,7 +152,7 @@ router.post('/generate-daily-report', async (req, res) => {
             { count: newUsers },
             { count: cancelledCount },
             { count: lateCount },
-            { data: invitationData }
+            { data: invitationData },
         ] = await Promise.all([
             supabase
                 .from('orders')
@@ -187,12 +187,11 @@ router.post('/generate-daily-report', async (req, res) => {
                 .from('orders')
                 .select('notes')
                 .gte('created_at', yesterdayISO)
-                .lt('created_at', todayISO)
+                .lt('created_at', todayISO),
         ]);
 
-        const invitationsCount = invitationData?.filter(o =>
-            o.notes && o.notes.includes('[De parte de:')
-        ).length || 0;
+        const invitationsCount =
+            invitationData?.filter(o => o.notes && o.notes.includes('[De parte de:')).length || 0;
 
         const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
         const avg = totalOrders ? revenue / (totalOrders || 1) : 0;

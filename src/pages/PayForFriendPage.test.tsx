@@ -15,19 +15,19 @@ vi.mock('../utils/api', () => ({
         constructor(public message: string) {
             super(message);
         }
-    }
+    },
 }));
 
 const mockOrder = {
     id: 123,
-    total: 45.50,
+    total: 45.5,
     status: 'waiting_payment',
     delivery_address: 'Calle Mayor 10, Madrid',
     notes: '[De parte de: Maksim] Por favor extra jengibre',
     items: [
-        { id: 1, name: 'Dragon Roll', quantity: 2, price_at_time: 15.00, image: '/dragon.jpg' },
-        { id: 2, name: 'Miso Soup', quantity: 1, price_at_time: 5.50, image: '/miso.jpg' }
-    ]
+        { id: 1, name: 'Dragon Roll', quantity: 2, price_at_time: 15.0, image: '/dragon.jpg' },
+        { id: 2, name: 'Miso Soup', quantity: 1, price_at_time: 5.5, image: '/miso.jpg' },
+    ],
 };
 
 describe('PayForFriendPage (Integration)', () => {
@@ -43,15 +43,16 @@ describe('PayForFriendPage (Integration)', () => {
         }
     });
 
-    const renderWithRouter = (id: string) => render(
-        <HelmetProvider>
-            <MemoryRouter initialEntries={[`/pay-for-friend/${id}`]}>
-                <Routes>
-                    <Route path="/pay-for-friend/:id" element={<PayForFriendPage />} />
-                </Routes>
-            </MemoryRouter>
-        </HelmetProvider>
-    );
+    const renderWithRouter = (id: string) =>
+        render(
+            <HelmetProvider>
+                <MemoryRouter initialEntries={[`/pay-for-friend/${id}`]}>
+                    <Routes>
+                        <Route path="/pay-for-friend/:id" element={<PayForFriendPage />} />
+                    </Routes>
+                </MemoryRouter>
+            </HelmetProvider>
+        );
 
     it('loads and displays order details', async () => {
         vi.mocked(api.get).mockResolvedValue({ order: mockOrder });
@@ -70,7 +71,10 @@ describe('PayForFriendPage (Integration)', () => {
 
     it('handles payment confirmation', async () => {
         vi.mocked(api.get).mockResolvedValue({ order: mockOrder });
-        vi.mocked(api.post).mockResolvedValue({ success: true, order: { ...mockOrder, status: 'pending' } });
+        vi.mocked(api.post).mockResolvedValue({
+            success: true,
+            order: { ...mockOrder, status: 'pending' },
+        });
 
         renderWithRouter('123');
 
@@ -78,14 +82,19 @@ describe('PayForFriendPage (Integration)', () => {
         fireEvent.click(payBtn);
 
         // Increased timeout because of framer-motion animations
-        await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith('/orders/123/confirm-payment');
-            expect(screen.getByText(/¡Eres Genial!/i)).toBeInTheDocument();
-        }, { timeout: 3000 });
+        await waitFor(
+            () => {
+                expect(api.post).toHaveBeenCalledWith('/orders/123/confirm-payment');
+                expect(screen.getByText(/¡Eres Genial!/i)).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
     });
 
     it('shows error if order not found or already paid', async () => {
-        vi.mocked(api.get).mockRejectedValue(new ApiError('Invitación no encontrada или ya ha sido pagada.'));
+        vi.mocked(api.get).mockRejectedValue(
+            new ApiError('Invitación no encontrada или ya ha sido pagada.')
+        );
 
         renderWithRouter('999');
 

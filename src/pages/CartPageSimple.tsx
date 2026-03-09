@@ -601,9 +601,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                    item.id,
-                                                                    item.quantity - 1
-                                                                )
+                                                                      item.id,
+                                                                      item.quantity - 1
+                                                                  )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -1062,7 +1062,9 @@ export default function CartPageSimple() {
                             className="w-full bg-red-600 text-white h-14 rounded-2xl font-black text-base hover:bg-red-700 transition active:scale-95 disabled:bg-gray-400 shadow-xl shadow-red-200 flex items-center justify-between px-6"
                         >
                             <div className="flex items-center gap-2">
-                                {isOrdering ? 'Procesando...' : (
+                                {isOrdering ? (
+                                    'Procesando...'
+                                ) : (
                                     <>
                                         <span>Pedir</span>
                                         <CheckCircle size={20} />
@@ -1078,7 +1080,9 @@ export default function CartPageSimple() {
                             to="/"
                             className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-95 flex items-center justify-between px-6 shadow-xl shadow-gray-200"
                         >
-                            <span className="flex items-center gap-2">Log In para pedir <ArrowLeft className="rotate-180" size={18} /></span>
+                            <span className="flex items-center gap-2">
+                                Log In para pedir <ArrowLeft className="rotate-180" size={18} />
+                            </span>
                             <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg">
                                 {finalTotal.toFixed(2).replace('.', ',')} €
                             </div>

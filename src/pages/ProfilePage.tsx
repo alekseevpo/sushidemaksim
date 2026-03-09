@@ -157,9 +157,10 @@ export default function ProfilePage() {
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start
-                                            ${isActive
-                                                ? 'bg-red-600 text-white shadow-lg shadow-red-200 ring-4 ring-red-600/5'
-                                                : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
+                                            ${
+                                                isActive
+                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-200 ring-4 ring-red-600/5'
+                                                    : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
                                             }`}
                                     >
                                         <div
@@ -190,7 +191,9 @@ export default function ProfilePage() {
                                 <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-red-500 shadow-sm">
                                     <LogOut size={16} />
                                 </div>
-                                <span className="font-extrabold text-[11px] uppercase tracking-wider">Salir</span>
+                                <span className="font-extrabold text-[11px] uppercase tracking-wider">
+                                    Salir
+                                </span>
                             </button>
                         </div>
                     </aside>

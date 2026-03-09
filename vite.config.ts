@@ -11,7 +11,7 @@ export default defineConfig({
             '/api': 'http://localhost:3001',
         },
     },
-    // @ts-ignore: Vitest types sometimes conflict with Vite types depending on exact versions
+    // @ts-expect-error: Vitest types sometimes conflict with Vite types depending on exact versions
     test: {
         globals: true,
         environment: 'jsdom',

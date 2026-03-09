@@ -11,14 +11,22 @@ vi.mock('../utils/api', () => ({
     api: {
         get: vi.fn(),
         post: vi.fn(),
-    }
+    },
 }));
 
 // Mock useCart
 vi.mock('../hooks/useCart', () => ({
     useCart: () => ({
         items: [
-            { id: '1', name: 'Sushi A', price: 10, quantity: 1, category: 'rollos-grandes', image: '', description: '' },
+            {
+                id: '1',
+                name: 'Sushi A',
+                price: 10,
+                quantity: 1,
+                category: 'rollos-grandes',
+                image: '',
+                description: '',
+            },
         ],
         total: 10,
         updateQuantity: vi.fn(),
@@ -43,23 +51,25 @@ describe('CartPageSimple (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         (api.get as any).mockImplementation((url: string) => {
-            if (url === '/settings') return Promise.resolve({
-                min_order: 20,
-                delivery_fee: 3.5,
-                free_delivery_threshold: 25,
-                is_store_closed: false
-            });
+            if (url === '/settings')
+                return Promise.resolve({
+                    min_order: 20,
+                    delivery_fee: 3.5,
+                    free_delivery_threshold: 25,
+                    is_store_closed: false,
+                });
             return Promise.resolve({ items: [] });
         });
     });
 
-    const renderCart = () => render(
-        <HelmetProvider>
-            <BrowserRouter>
-                <CartPageSimple />
-            </BrowserRouter>
-        </HelmetProvider>
-    );
+    const renderCart = () =>
+        render(
+            <HelmetProvider>
+                <BrowserRouter>
+                    <CartPageSimple />
+                </BrowserRouter>
+            </HelmetProvider>
+        );
 
     it('renders the cart content', async () => {
         renderCart();
@@ -82,10 +92,14 @@ describe('CartPageSimple (Integration)', () => {
         renderCart();
         await waitFor(() => expect(api.get).toHaveBeenCalledWith('/settings'));
 
-        fireEvent.change(screen.getByPlaceholderText(/Nombre de tu calle/i), { target: { value: 'Calle Real' } });
+        fireEvent.change(screen.getByPlaceholderText(/Nombre de tu calle/i), {
+            target: { value: 'Calle Real' },
+        });
         fireEvent.change(screen.getByPlaceholderText(/Ej: 15/i), { target: { value: '10' } });
         fireEvent.change(screen.getByPlaceholderText(/Ej: 3ºB/i), { target: { value: 'B' } });
-        fireEvent.change(screen.getByPlaceholderText(/\+34 600 000 000/i), { target: { value: '600000000' } });
+        fireEvent.change(screen.getByPlaceholderText(/\+34 600 000 000/i), {
+            target: { value: '600000000' },
+        });
 
         // Find the button and click it
         const orderButton = screen.getAllByRole('button', { name: /Realizar pedido/i })[0];

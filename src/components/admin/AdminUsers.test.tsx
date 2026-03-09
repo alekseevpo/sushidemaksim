@@ -13,7 +13,7 @@ vi.mock('../../utils/api', () => ({
         constructor(public message: string) {
             super(message);
         }
-    }
+    },
 }));
 
 // Mock useAuth
@@ -24,7 +24,15 @@ vi.mock('../../hooks/useAuth', () => ({
 }));
 
 const mockUsers = [
-    { id: 10, name: 'Customer A', email: 'a@test.com', role: 'user', orderCount: 5, totalSpent: 100, created_at: '2023-01-01' },
+    {
+        id: 10,
+        name: 'Customer A',
+        email: 'a@test.com',
+        role: 'user',
+        orderCount: 5,
+        totalSpent: 100,
+        created_at: '2023-01-01',
+    },
 ];
 
 describe('AdminUsers (Integration)', () => {
@@ -34,7 +42,7 @@ describe('AdminUsers (Integration)', () => {
             if (url.includes('/admin/users')) {
                 return Promise.resolve({
                     users: mockUsers,
-                    pagination: { page: 1, limit: 20, total: 1, pages: 1 }
+                    pagination: { page: 1, limit: 20, total: 1, pages: 1 },
                 });
             }
             return Promise.resolve({});

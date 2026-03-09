@@ -9,7 +9,11 @@ import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { AuthRequest } from '../middleware/auth.js';
-import { formatMenuItem, getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
+import {
+    formatMenuItem,
+    getMadridStartOfDay,
+    getMadridYesterdayStartOfDay,
+} from '../utils/helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -354,10 +358,11 @@ router.get(
 
             if (allUsersError) throw allUsersError;
 
-            let allUsersWithStats = (allUsers || []).map((u: any) => ({
+            const allUsersWithStats = (allUsers || []).map((u: any) => ({
                 ...u,
                 orderCount: u.orders?.length || 0,
-                totalSpent: u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
+                totalSpent:
+                    u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
             }));
 
             // In-memory sort
@@ -365,16 +370,14 @@ router.get(
                 const valA = a[sortBy];
                 const valB = b[sortBy];
                 if (valA === valB) return 0;
-                return ascending ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+                return ascending ? (valA > valB ? 1 : -1) : valA < valB ? 1 : -1;
             });
 
             totalCount = allUsersWithStats.length;
             usersWithStats = allUsersWithStats.slice(offset, offset + limit);
         } else {
             // Direct sort via Supabase
-            let query = supabase
-                .from('users')
-                .select('*, orders(total)', { count: 'exact' });
+            let query = supabase.from('users').select('*, orders(total)', { count: 'exact' });
 
             if (sortBy === 'role') {
                 // Roles sort: superadmin -> admin -> user
@@ -395,7 +398,8 @@ router.get(
             usersWithStats = (users || []).map((u: any) => ({
                 ...u,
                 orderCount: u.orders?.length || 0,
-                totalSpent: u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
+                totalSpent:
+                    u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
             }));
         }
 
@@ -804,7 +808,7 @@ router.get(
                     { count: newUsers },
                     { count: cancelledCount },
                     { count: lateCount },
-                    { data: invitationData }
+                    { data: invitationData },
                 ] = await Promise.all([
                     supabase
                         .from('orders')
@@ -839,12 +843,12 @@ router.get(
                         .from('orders')
                         .select('notes')
                         .gte('created_at', yesterdayISO)
-                        .lt('created_at', todayISO)
+                        .lt('created_at', todayISO),
                 ]);
 
-                const invitationsCount = invitationData?.filter(o =>
-                    o.notes && o.notes.includes('[De parte de:')
-                ).length || 0;
+                const invitationsCount =
+                    invitationData?.filter(o => o.notes && o.notes.includes('[De parte de:'))
+                        .length || 0;
 
                 const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
                 const avg = totalOrders ? revenue / (totalOrders || 1) : 0;

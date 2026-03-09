@@ -285,7 +285,8 @@ router.post(
         const osName = parser.getOS().name || 'Unknown';
 
         // 1. Get items from user's cart in DB
-        const { data: dbItems } = await supabase.from('cart_items')
+        const { data: dbItems } = await supabase
+            .from('cart_items')
             .select('quantity, menu_item_id, menu_items(name, price, image)')
             .eq('user_id', req.userId);
 
@@ -357,7 +358,6 @@ router.get(
             .eq('id', id)
             .single();
 
-        const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
         const host = req.get('host');
 
         // Extract sender name from notes [De parte de: Name]

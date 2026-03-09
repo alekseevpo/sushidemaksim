@@ -62,11 +62,11 @@ export default function Header() {
 
     const initials = user
         ? user.name
-            .split(' ')
-            .map(n => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2)
+              .split(' ')
+              .map(n => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)
         : '';
 
     const navLinks = [
@@ -214,7 +214,9 @@ export default function Header() {
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={() => startTransition(() => setIsLoginModalOpen(true))}
+                                        onClick={() =>
+                                            startTransition(() => setIsLoginModalOpen(true))
+                                        }
                                         className="btn-premium bg-gray-900 text-white px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 disabled:opacity-50"
                                         disabled={isPending}
                                     >
@@ -241,7 +243,11 @@ export default function Header() {
                                                 initial={{ scale: 0.5, opacity: 0 }}
                                                 animate={{ scale: [0.5, 1.3, 1], opacity: 1 }}
                                                 exit={{ scale: 0, opacity: 0 }}
-                                                transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                                                transition={{
+                                                    type: 'spring',
+                                                    stiffness: 500,
+                                                    damping: 15,
+                                                }}
                                                 className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
                                             >
                                                 {itemCount}
