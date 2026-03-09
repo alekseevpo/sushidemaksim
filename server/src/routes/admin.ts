@@ -301,6 +301,7 @@ router.patch(
         status: {
             required: true,
             enum: [
+                'waiting_payment',
                 'pending',
                 'received',
                 'confirmed',
