@@ -51,6 +51,7 @@ export default function AdminOrders() {
 
     useEffect(() => {
         loadOrders(pagination.page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
         // Refresh every minute to keep up to date
         const intervalId = setInterval(() => {
@@ -186,8 +187,8 @@ export default function AdminOrders() {
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
                                 className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${filter === tab.id
-                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                        : 'text-gray-400 hover:text-gray-600'
+                                    ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                    : 'text-gray-400 hover:text-gray-600'
                                     }`}
                             >
                                 {tab.label}
@@ -426,8 +427,8 @@ export default function AdminOrders() {
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
                             className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                    ? 'bg-red-600 text-white shadow-md'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                ? 'bg-red-600 text-white shadow-md'
+                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                                 }`}
                         >
                             {pageNum}
