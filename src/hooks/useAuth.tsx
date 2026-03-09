@@ -6,7 +6,10 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (email: string, password: string) => Promise<{ success: boolean; error?: string; wasReactivated?: boolean }>;
+    login: (
+        email: string,
+        password: string
+    ) => Promise<{ success: boolean; error?: string; wasReactivated?: boolean }>;
     register: (
         name: string,
         email: string,

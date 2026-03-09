@@ -448,6 +448,7 @@ router.patch(
             .select('id, name, email, role, is_superadmin')
             .single();
 
+        if (error) throw error;
         res.json({ user });
     })
 );

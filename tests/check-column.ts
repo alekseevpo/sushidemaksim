@@ -8,10 +8,7 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KE
 
 async function checkColumn() {
     // Try to select the column
-    const { data, error } = await supabase
-        .from('users')
-        .select('deleted_at')
-        .limit(1);
+    const { error } = await supabase.from('users').select('deleted_at').limit(1);
 
     if (error) {
         if (error.message.includes('column "deleted_at" does not exist')) {

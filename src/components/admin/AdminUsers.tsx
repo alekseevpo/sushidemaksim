@@ -272,10 +272,11 @@ export default function AdminUsers() {
                                                             user.birth_date_verified
                                                         )
                                                     }
-                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
-                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                                        }`}
+                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
+                                                        user.birth_date_verified
+                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                            : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                                    }`}
                                                 >
                                                     {user.birth_date_verified ? (
                                                         <>
@@ -311,7 +312,7 @@ export default function AdminUsers() {
                                                     <div className="flex items-center gap-2">
                                                         {new Date().getTime() -
                                                             new Date(user.last_seen_at).getTime() <
-                                                            5 * 60 * 1000 ? (
+                                                        5 * 60 * 1000 ? (
                                                             <div className="relative flex h-2 w-2">
                                                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -323,22 +324,22 @@ export default function AdminUsers() {
                                                             {new Date(
                                                                 user.last_seen_at
                                                             ).toLocaleDateString() ===
-                                                                new Date().toLocaleDateString()
+                                                            new Date().toLocaleDateString()
                                                                 ? 'Hoy ' +
-                                                                new Date(
-                                                                    user.last_seen_at
-                                                                ).toLocaleTimeString([], {
-                                                                    hour: '2-digit',
-                                                                    minute: '2-digit',
-                                                                })
+                                                                  new Date(
+                                                                      user.last_seen_at
+                                                                  ).toLocaleTimeString([], {
+                                                                      hour: '2-digit',
+                                                                      minute: '2-digit',
+                                                                  })
                                                                 : new Date(
-                                                                    user.last_seen_at
-                                                                ).toLocaleDateString([], {
-                                                                    day: '2-digit',
-                                                                    month: 'short',
-                                                                    hour: '2-digit',
-                                                                    minute: '2-digit',
-                                                                })}
+                                                                      user.last_seen_at
+                                                                  ).toLocaleDateString([], {
+                                                                      day: '2-digit',
+                                                                      month: 'short',
+                                                                      hour: '2-digit',
+                                                                      minute: '2-digit',
+                                                                  })}
                                                         </span>
                                                     </div>
                                                 </>
@@ -376,10 +377,11 @@ export default function AdminUsers() {
                                                         onClick={() =>
                                                             toggleAdminRole(user.id, user.role)
                                                         }
-                                                        className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
-                                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                            : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                                            }`}
+                                                        className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
+                                                            user.role === 'admin'
+                                                                ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                                : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                                                        }`}
                                                     >
                                                         {user.role === 'admin'
                                                             ? 'Revocar Admin'
@@ -417,10 +419,11 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                        }`}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                        pageNum === pagination.page
+                                            ? 'bg-red-600 text-white'
+                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
                                 >
                                     {pageNum}
                                 </button>
@@ -446,9 +449,15 @@ export default function AdminUsers() {
                                 ¿Eliminar permanentemente?
                             </h3>
                             <p className="text-sm text-gray-500 font-medium mb-6">
-                                Estás a punto de borrar a <span className="text-red-600 font-black">{userToDelete.name} (ID: #{userToDelete.id})</span>.
-                                <br /><br />
-                                Esta acción <span className="font-black">ELIMINARÁ TODOS</span> los pedidos, direcciones y datos asociados de forma definitiva.
+                                Estás a punto de borrar a{' '}
+                                <span className="text-red-600 font-black">
+                                    {userToDelete.name} (ID: #{userToDelete.id})
+                                </span>
+                                .
+                                <br />
+                                <br />
+                                Esta acción <span className="font-black">ELIMINARÁ TODOS</span> los
+                                pedidos, direcciones y datos asociados de forma definitiva.
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button

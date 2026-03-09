@@ -254,10 +254,7 @@ router.post('/cleanup-deleted-users', async (req, res) => {
                 }
 
                 // Delete user
-                const { error: delError } = await supabase
-                    .from('users')
-                    .delete()
-                    .eq('id', user.id);
+                const { error: delError } = await supabase.from('users').delete().eq('id', user.id);
 
                 if (!delError) results.push(user.id);
             }

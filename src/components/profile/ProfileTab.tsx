@@ -212,9 +212,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         label: 'Fecha de Cumpleaños',
                         value: user.birthDate
                             ? (() => {
-                                const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                return `${d}/${m}/${y}`;
-                            })()
+                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                  return `${d}/${m}/${y}`;
+                              })()
                             : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
@@ -308,9 +308,10 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                             type="button"
                                             onClick={() => setEditAvatar(avatar)}
                                             className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                                ${editAvatar === avatar
-                                                    ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
-                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                                ${
+                                                    editAvatar === avatar
+                                                        ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
+                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
                                                 }`}
                                         >
                                             {avatar}
@@ -391,7 +392,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => { },
+                                    toggle: () => {},
                                 },
                             ].map(f => (
                                 <div key={f.label}>
@@ -482,7 +483,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                 ¿Estás seguro?
                             </h3>
                             <p className="text-gray-500 font-medium mb-8">
-                                Tu cuenta no se borrará hoy. Tendrás <span className="text-red-600 font-black">30 días</span> para reactivarla. Si no lo haces, tus datos se perderán para siempre.
+                                Tu cuenta no se borrará hoy. Tendrás{' '}
+                                <span className="text-red-600 font-black">30 días</span> para
+                                reactivarla. Si no lo haces, tus datos se perderán para siempre.
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button

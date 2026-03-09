@@ -5,14 +5,14 @@ export interface SushiItem {
     price: number;
     image: string;
     category:
-    | 'entrantes'
-    | 'rollos-grandes'
-    | 'rollos-clasicos'
-    | 'rollos-fritos'
-    | 'sopas'
-    | 'menus'
-    | 'extras'
-    | 'postre';
+        | 'entrantes'
+        | 'rollos-grandes'
+        | 'rollos-clasicos'
+        | 'rollos-fritos'
+        | 'sopas'
+        | 'menus'
+        | 'extras'
+        | 'postre';
     weight?: string;
     pieces?: number;
     spicy?: boolean;
