@@ -36,5 +36,5 @@ export const config = {
         url: process.env.SUPABASE_URL || '',
         key: process.env.SUPABASE_KEY || '',
     },
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+    frontendUrl: process.env.FRONTEND_URL || 'https://sushidemaksim.vercel.app',
 };
