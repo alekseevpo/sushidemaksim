@@ -19,7 +19,7 @@ vi.mock('../../utils/api', () => ({
 // Mock useAuth
 vi.mock('../../hooks/useAuth', () => ({
     useAuth: () => ({
-        user: { id: 1, name: 'SuperAdmin', is_superadmin: 1 },
+        user: { id: 1, name: 'SuperAdmin', is_superadmin: true },
     }),
 }));
 

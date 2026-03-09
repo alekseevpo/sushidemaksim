@@ -211,7 +211,7 @@ export default function AdminUsers() {
                                         )}
                                     </div>
                                 </th>
-                                {currentUser?.is_superadmin === 1 && (
+                                {currentUser?.is_superadmin && (
                                     <th className="px-6 py-4 text-center">Acciones Superadmin</th>
                                 )}
                             </tr>
@@ -354,7 +354,7 @@ export default function AdminUsers() {
                                         {new Date(user.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="px-6 py-3 text-center">
-                                        {user.is_superadmin === 1 ? (
+                                        {user.is_superadmin ? (
                                             <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold text-xs">
                                                 <Crown size={12} /> Owner
                                             </span>
@@ -368,9 +368,9 @@ export default function AdminUsers() {
                                             </span>
                                         )}
                                     </td>
-                                    {currentUser?.is_superadmin === 1 && (
+                                    {currentUser?.is_superadmin && (
                                         <td className="px-6 py-3 text-center flex items-center justify-center gap-2">
-                                            {user.is_superadmin !== 1 && (
+                                            {!user.is_superadmin && (
                                                 <>
                                                     <button
                                                         onClick={() =>
