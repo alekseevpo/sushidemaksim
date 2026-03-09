@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     ShieldCheck,
     LayoutDashboard,
@@ -32,7 +32,12 @@ type TabId = 'dashboard' | 'orders' | 'menu' | 'users' | 'promos' | 'blog' | 'se
 export default function AdminPage() {
     const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<TabId>('dashboard');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = (searchParams.get('tab') as TabId) || 'dashboard';
+
+    const setActiveTab = (tab: TabId) => {
+        setSearchParams({ tab });
+    };
     const [stats, setStats] = useState<any>(null);
     const [reports, setReports] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
