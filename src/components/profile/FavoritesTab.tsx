@@ -230,7 +230,7 @@ export default function FavoritesTab() {
 
                                 <button
                                     onClick={() => handleAddToCart(item)}
-                                    className={`h-9 md:h-11 px-3 md:px-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-100/50 shrink-0
+                                    className={`h-9 md:h-11 w-9 md:w-11 rounded-xl md:rounded-full font-black text-[10px] md:text-sm transition-all flex items-center justify-center shadow-lg shadow-gray-100/50 shrink-0
                                         ${
                                             addedItems.has(item.id)
                                                 ? 'bg-green-600 text-white pointer-events-none'
@@ -238,14 +238,9 @@ export default function FavoritesTab() {
                                         }`}
                                 >
                                     {addedItems.has(item.id) ? (
-                                        <span className="flex items-center gap-1.5">
-                                            <Check size={14} strokeWidth={4} />
-                                        </span>
+                                        <Check size={18} strokeWidth={4} />
                                     ) : (
-                                        <>
-                                            <Plus size={16} />
-                                            <span className="hidden sm:inline">Pedir</span>
-                                        </>
+                                        <Plus size={20} />
                                     )}
                                 </button>
                             </div>
