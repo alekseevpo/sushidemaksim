@@ -163,7 +163,9 @@ router.get(
             }
 
             if (user.pending_email !== payload.newEmail) {
-                return res.status(400).json({ error: 'Este enlace de verificación ya no es válido.' });
+                return res
+                    .status(400)
+                    .json({ error: 'Este enlace de verificación ya no es válido.' });
             }
 
             const { error: updateError } = await supabase

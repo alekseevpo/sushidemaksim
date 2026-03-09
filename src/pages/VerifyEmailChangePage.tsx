@@ -35,7 +35,10 @@ export default function VerifyEmailChangePage() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-6">
-            <SEO title="Verificar nuevo email" description="Confirmación de cambio de correo electrónico" />
+            <SEO
+                title="Verificar nuevo email"
+                description="Confirmación de cambio de correo electrónico"
+            />
 
             <div className="max-w-md w-full bg-white rounded-[32px] p-8 md:p-12 shadow-2xl text-center border border-gray-100 animate-in fade-in zoom-in duration-500">
                 {status === 'loading' && (

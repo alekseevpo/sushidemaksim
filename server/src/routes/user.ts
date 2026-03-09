@@ -118,7 +118,11 @@ router.put(
             );
 
             try {
-                await sendEmailChangeVerificationEmail(newEmail, currentUser.name, verificationToken);
+                await sendEmailChangeVerificationEmail(
+                    newEmail,
+                    currentUser.name,
+                    verificationToken
+                );
                 updateData.pending_email = newEmail;
                 emailChangePending = true;
             } catch (err) {
