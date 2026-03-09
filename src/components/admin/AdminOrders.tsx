@@ -187,10 +187,11 @@ export default function AdminOrders({
                         </div>
                         <button
                             onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
-                            className={`p-2 rounded-lg transition border ${isGlobalSoundEnabled
-                                ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
-                                : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
-                                }`}
+                            className={`p-2 rounded-lg transition border ${
+                                isGlobalSoundEnabled
+                                    ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
+                                    : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
+                            }`}
                             title={isGlobalSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
                         >
                             {isGlobalSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
@@ -227,10 +228,11 @@ export default function AdminOrders({
                                     setFilter(tab.id);
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
-                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${filter === tab.id
-                                    ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                    : 'text-gray-400 hover:text-gray-600'
-                                    }`}
+                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${
+                                    filter === tab.id
+                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                        : 'text-gray-400 hover:text-gray-600'
+                                }`}
                             >
                                 {tab.label}
                                 {tab.badge && (
@@ -286,10 +288,11 @@ export default function AdminOrders({
                                                     Pedido #{String(order.id).padStart(5, '0')}
                                                 </h4>
                                                 <span
-                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusOptions.find(
-                                                        s => s.value === order.status
-                                                    )?.color || ''
-                                                        }`}
+                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                        statusOptions.find(
+                                                            s => s.value === order.status
+                                                        )?.color || ''
+                                                    }`}
                                                 >
                                                     {statusOptions.find(
                                                         s => s.value === order.status
@@ -401,10 +404,12 @@ export default function AdminOrders({
                                                 onChange={e =>
                                                     handleUpdateStatus(order.id, e.target.value)
                                                 }
-                                                className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${statusOptions.find(
-                                                    s => s.value === order.status
-                                                )?.color || 'bg-white border-gray-200 text-gray-700'
-                                                    }`}
+                                                className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${
+                                                    statusOptions.find(
+                                                        s => s.value === order.status
+                                                    )?.color ||
+                                                    'bg-white border-gray-200 text-gray-700'
+                                                }`}
                                             >
                                                 {statusOptions.map(opt => (
                                                     <option
@@ -449,10 +454,11 @@ export default function AdminOrders({
                         <button
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                ? 'bg-red-600 text-white shadow-md'
-                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                }`}
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                pageNum === pagination.page
+                                    ? 'bg-red-600 text-white shadow-md'
+                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                            }`}
                         >
                             {pageNum}
                         </button>

@@ -45,7 +45,7 @@ describe('AdminOrders (Integration)', () => {
         render(
             <AdminOrders
                 isGlobalSoundEnabled={false}
-                setIsGlobalSoundEnabled={() => { }}
+                setIsGlobalSoundEnabled={() => {}}
                 globalPendingCount={0}
             />
         );
@@ -64,7 +64,7 @@ describe('AdminOrders (Integration)', () => {
         render(
             <AdminOrders
                 isGlobalSoundEnabled={false}
-                setIsGlobalSoundEnabled={() => { }}
+                setIsGlobalSoundEnabled={() => {}}
                 globalPendingCount={0}
             />
         );
@@ -85,7 +85,7 @@ describe('AdminOrders (Integration)', () => {
         render(
             <AdminOrders
                 isGlobalSoundEnabled={false}
-                setIsGlobalSoundEnabled={() => { }}
+                setIsGlobalSoundEnabled={() => {}}
                 globalPendingCount={0}
             />
         );

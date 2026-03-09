@@ -258,9 +258,10 @@ export default function AdminPage() {
                                     }
                                 }}
                                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors relative group
-                                    ${isActive
-                                        ? 'text-red-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    ${
+                                        isActive
+                                            ? 'text-red-700'
+                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 {isActive && (
@@ -402,7 +403,9 @@ export default function AdminPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     <StatCard
                                         title="Ingresos de hoy"
-                                        value={`${Number(stats?.revenueToday || 0).toFixed(2).replace('.', ',')} €`}
+                                        value={`${Number(stats?.revenueToday || 0)
+                                            .toFixed(2)
+                                            .replace('.', ',')} €`}
                                         icon={DollarSign}
                                         colorClass="bg-green-100 text-green-600"
                                         desc="Total cobrado (Madrid)"
@@ -632,8 +635,8 @@ export default function AdminPage() {
                                                             <span className="text-sm font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg border border-green-100/50">
                                                                 {Number(
                                                                     report.total_revenue ??
-                                                                    report.total ??
-                                                                    0
+                                                                        report.total ??
+                                                                        0
                                                                 )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
@@ -644,9 +647,9 @@ export default function AdminPage() {
                                                             <span className="text-xs font-bold text-gray-600">
                                                                 {Number(
                                                                     report.avg_ticket ??
-                                                                    report.average_ticket ??
-                                                                    report.avg_price ??
-                                                                    0
+                                                                        report.average_ticket ??
+                                                                        report.avg_price ??
+                                                                        0
                                                                 )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
