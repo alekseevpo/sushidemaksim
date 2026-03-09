@@ -40,7 +40,13 @@ describe('AdminOrders (Integration)', () => {
     });
 
     it('renders the orders list', async () => {
-        render(<AdminOrders />);
+        render(
+            <AdminOrders
+                isGlobalSoundEnabled={false}
+                setIsGlobalSoundEnabled={() => {}}
+                globalPendingCount={0}
+            />
+        );
 
         await waitFor(
             () => {
@@ -53,7 +59,13 @@ describe('AdminOrders (Integration)', () => {
     });
 
     it('updates order status', async () => {
-        render(<AdminOrders />);
+        render(
+            <AdminOrders
+                isGlobalSoundEnabled={false}
+                setIsGlobalSoundEnabled={() => {}}
+                globalPendingCount={0}
+            />
+        );
 
         await waitFor(() => expect(screen.getByText(/00123/)).toBeInTheDocument());
 
@@ -68,7 +80,13 @@ describe('AdminOrders (Integration)', () => {
     });
 
     it('filters by search ID', async () => {
-        render(<AdminOrders />);
+        render(
+            <AdminOrders
+                isGlobalSoundEnabled={false}
+                setIsGlobalSoundEnabled={() => {}}
+                globalPendingCount={0}
+            />
+        );
 
         const searchInput = await screen.findByPlaceholderText(/Buscar ID, Teléfono, Promo/i);
 
