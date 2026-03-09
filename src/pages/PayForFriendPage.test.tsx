@@ -4,7 +4,6 @@ import PayForFriendPage from './PayForFriendPage';
 import { api, ApiError } from '../utils/api';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import React from 'react';
 
 // Mock API
 vi.mock('../utils/api', () => ({

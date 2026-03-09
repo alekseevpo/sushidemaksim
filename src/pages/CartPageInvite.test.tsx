@@ -3,10 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CartPageSimple from './CartPageSimple';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
-import { api, ApiError } from '../utils/api';
+import { api } from '../utils/api';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import React from 'react';
 
 // Mock hooks
 vi.mock('../hooks/useCart', () => ({
@@ -31,7 +30,15 @@ vi.mock('../utils/api', () => ({
 }));
 
 const mockCartItems = [
-    { id: '1', name: 'Sushi Roll', price: 10, quantity: 2, image: '', category: 'rolls' }
+    {
+        id: '1',
+        name: 'Sushi Roll',
+        price: 10,
+        quantity: 2,
+        image: '',
+        category: 'rollos-grandes' as const,
+        description: ''
+    }
 ];
 
 describe('CartPageSimple - Invitations (Integration)', () => {
@@ -42,6 +49,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         vi.mocked(useCart).mockReturnValue({
             items: mockCartItems,
             total: 20,
+            itemCount: 2,
             updateQuantity: vi.fn(),
             removeItem: vi.fn(),
             clearCart: vi.fn(),

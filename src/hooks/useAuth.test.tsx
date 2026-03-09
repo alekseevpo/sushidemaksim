@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { AuthProvider, useAuth } from './useAuth';
 import { api } from '../utils/api';
-import React from 'react';
+import { ReactNode } from 'react';
 
 // Mock API
 vi.mock('../utils/api', () => ({
@@ -19,7 +19,7 @@ describe('useAuth hook', () => {
         localStorage.clear();
     });
 
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
         <AuthProvider>{children}</AuthProvider>
     );
 
@@ -69,9 +69,8 @@ describe('useAuth hook', () => {
 
     it('should logout and clear state', async () => {
         // Mock window.location.href
-        const originalLocation = window.location;
-        delete (window as any).location;
-        window.location = { ...originalLocation, href: '' } as any;
+        const locationMock = { assign: vi.fn() };
+        vi.stubGlobal('location', locationMock);
 
         const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -82,6 +81,6 @@ describe('useAuth hook', () => {
         expect(result.current.user).toBeNull();
         expect(localStorage.getItem('sushi_token')).toBeNull();
 
-        window.location = originalLocation;
+        vi.unstubAllGlobals();
     });
 });

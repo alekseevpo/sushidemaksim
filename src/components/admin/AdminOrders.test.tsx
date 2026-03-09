@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AdminOrders from './AdminOrders';
 import { api } from '../../utils/api';
-import React from 'react';
 
 // Mock API
 vi.mock('../../utils/api', () => ({
