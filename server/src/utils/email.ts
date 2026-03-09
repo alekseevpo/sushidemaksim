@@ -223,3 +223,43 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
 </html>`,
   });
 }
+
+/**
+ * Send an email activation link to a new user.
+ */
+export async function sendVerificationEmail(to: string, name: string, token: string): Promise<void> {
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const activationUrl = `https://sushidemaksim.vercel.app/verify?token=${token}`;
+
+  await transporter.sendMail({
+    from,
+    to,
+    subject: '¡Activa tu cuenta en Sushi de Maksim! 🍣',
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
+  <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:32px;text-align:center;">
+      <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+    </div>
+    <div style="padding:32px;text-align:center;">
+      <h2 style="color:#111827;margin:0 0 16px;font-size:20px;">¡Hola ${name}!</h2>
+      <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 24px;">
+        Para empezar a disfrutar de nuestra carta, necesitamos que actives tu cuenta haciendo clic en el siguiente botón:
+      </p>
+      <a href="${activationUrl}" style="display:inline-block;background:#DC2626;color:#fff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.2);">ACTIVAR MI CUENTA</a>
+      <p style="color:#6B7280;font-size:14px;margin:24px 0 0;">
+        Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+        <span style="color:#DC2626;word-break:break-all;">${activationUrl}</span>
+      </p>
+    </div>
+    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+    </div>
+  </div>
+</body>
+</html>`,
+  });
+}

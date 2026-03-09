@@ -86,10 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const register = async (name: string, email: string, phone: string, password: string) => {
         try {
-            const data = await api.post('/auth/register', { name, email, phone, password });
-            localStorage.setItem('sushi_token', data.token);
-            setUser(data.user);
-            await loadUser();
+            await api.post('/auth/register', { name, email, phone, password });
+            // Since activation is required, we don't log in here.
+            // The LoginModal will show the success message.
             return { success: true };
         } catch (error: any) {
             return { success: false, error: error.message };

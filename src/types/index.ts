@@ -5,14 +5,14 @@ export interface SushiItem {
     price: number;
     image: string;
     category:
-        | 'entrantes'
-        | 'rollos-grandes'
-        | 'rollos-clasicos'
-        | 'rollos-fritos'
-        | 'sopas'
-        | 'menus'
-        | 'extras'
-        | 'postre';
+    | 'entrantes'
+    | 'rollos-grandes'
+    | 'rollos-clasicos'
+    | 'rollos-fritos'
+    | 'sopas'
+    | 'menus'
+    | 'extras'
+    | 'postre';
     weight?: string;
     pieces?: number;
     spicy?: boolean;
@@ -74,4 +74,5 @@ export interface User {
     createdAt: string;
     role?: 'user' | 'admin';
     is_superadmin?: number;
+    isVerified?: boolean;
 }

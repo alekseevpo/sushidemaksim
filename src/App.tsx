@@ -37,6 +37,7 @@ const ContactsPage = lazyRetry(() => import('./pages/ContactsPage'));
 const BlogPage = lazyRetry(() => import('./pages/BlogPage'));
 const BlogPostPage = lazyRetry(() => import('./pages/BlogPostPage'));
 const PayForFriendPage = lazyRetry(() => import('./pages/PayForFriendPage'));
+const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 
 function PageLoader() {
     return (
@@ -78,6 +79,7 @@ function App() {
                                         path="/pay-for-friend/:id"
                                         element={<PayForFriendPage />}
                                     />
+                                    <Route path="/verify" element={<VerifyPage />} />
                                 </Routes>
                             </Suspense>
                         </main>

@@ -47,36 +47,72 @@ router.post(
 
         if (insertError) throw insertError;
 
-        const token = jwt.sign({ userId: newUser.id }, config.jwtSecret, {
-            expiresIn: config.jwtExpiresIn,
-        });
+        // Generate verification token (JWT)
+        const verificationToken = jwt.sign(
+            { userId: newUser.id, purpose: 'email_verification' },
+            config.jwtSecret,
+            { expiresIn: '24h' }
+        );
 
-        // Send welcome email (asynchronously, don't block response)
+        // Send verification email
         try {
-            const { sendWelcomeEmail } = await import('../utils/email.js');
-            sendWelcomeEmail(newUser.email, newUser.name).catch(e =>
-                console.error('Failed to send welcome email:', e)
+            const { sendVerificationEmail } = await import('../utils/email.js');
+            sendVerificationEmail(newUser.email, newUser.name, verificationToken).catch(e =>
+                console.error('Failed to send verification email:', e)
             );
-            console.log(`📧 Welcome email triggered for ${newUser.email}`);
+            console.log(`📧 Verification email triggered for ${newUser.email}`);
         } catch (e) {
             console.error('Could not import email utility:', e);
         }
 
-        const user = {
-            id: newUser.id,
-            name: newUser.name,
-            email: newUser.email,
-            phone: newUser.phone,
-            avatar: newUser.avatar,
-            role: newUser.role,
-            is_superadmin: newUser.is_superadmin,
-            createdAt: newUser.created_at,
-            birthDate: newUser.birth_date,
-            birthDateVerified: newUser.birth_date_verified,
-            lastSeenAt: newUser.last_seen_at,
-        };
+        res.status(201).json({
+            success: true,
+            message: 'Usuario registrado. Por favor, verifica tu email.'
+        });
+    })
+);
 
-        res.status(201).json({ token, user });
+// GET /api/auth/verify/:token
+router.get(
+    '/verify/:token',
+    asyncHandler(async (req, res: Response) => {
+        const { token } = req.params;
+
+        try {
+            const payload = jwt.verify(token, config.jwtSecret) as {
+                userId: string;
+                purpose: string;
+            };
+
+            if (payload.purpose !== 'email_verification') {
+                return res.status(400).json({ error: 'Token inválido' });
+            }
+
+            const { data: user, error: findError } = await supabase
+                .from('users')
+                .select('id, is_verified')
+                .eq('id', payload.userId)
+                .single();
+
+            if (findError || !user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
+            }
+
+            if (user.is_verified) {
+                return res.json({ success: true, message: 'La cuenta ya estaba verificada.' });
+            }
+
+            const { error: updateError } = await supabase
+                .from('users')
+                .update({ is_verified: true })
+                .eq('id', user.id);
+
+            if (updateError) throw updateError;
+
+            res.json({ success: true, message: '¡Cuenta activada con éxito! Ya puedes iniciar sesión.' });
+        } catch (err) {
+            res.status(400).json({ error: 'El enlace de activación ha expirado o es inválido.' });
+        }
     })
 );
 
@@ -98,6 +134,12 @@ router.post(
 
         if (error || !user) {
             return res.status(401).json({ error: 'Email o contraseña incorrectos' });
+        }
+
+        if (user.is_verified === false) {
+            return res.status(403).json({
+                error: 'Por favor, activa tu cuenta. Revisa tu email para el enlace de confirmación.'
+            });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
