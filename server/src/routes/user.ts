@@ -80,7 +80,6 @@ router.put(
         if (fetchError || !currentUser) throw new Error('Usuario no encontrado');
 
         const updateData: any = {};
-        let emailChangePending = false;
 
         if (email && email.toLowerCase().trim() !== currentUser.email.toLowerCase()) {
             const newEmail = email.toLowerCase().trim();
@@ -112,25 +111,10 @@ router.put(
                 return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
             }
 
-            // Start verification flow
-            const verificationToken = jwt.sign(
-                { userId: req.userId, purpose: 'email_change', newEmail },
-                config.jwtSecret,
-                { expiresIn: '24h' }
-            );
-
-            try {
-                await sendEmailChangeVerificationEmail(
-                    newEmail,
-                    currentUser.name,
-                    verificationToken
-                );
-                updateData.pending_email = newEmail;
-                emailChangePending = true;
-            } catch (err) {
-                console.error('Failed to send verification email', err);
-                return res.status(500).json({ error: 'Error al enviar el email de verificación' });
-            }
+            // [MOD] Instant email update — no verification needed
+            updateData.email = newEmail.toLowerCase().trim();
+            updateData.pending_email = null;
+            updateData.email_last_changed_at = new Date().toISOString();
         }
 
         if (name) updateData.name = name.trim();
@@ -160,10 +144,7 @@ router.put(
                 birthDateVerified: user.birth_date_verified,
                 lastSeenAt: user.last_seen_at,
             },
-            emailChangePending,
-            message: emailChangePending
-                ? 'Perfil actualizado. Por favor, verifica tu nuevo email.'
-                : 'Perfil actualizado correctamente',
+            message: 'Perfil actualizado correctamente',
         });
     })
 );

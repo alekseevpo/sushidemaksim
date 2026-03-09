@@ -182,6 +182,31 @@ app.get('/api/health/full', async (_req, res) => {
 });
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
+app.get('/api/health/smtp', async (_req, res) => {
+    try {
+        const { transporter } = await import('./utils/email.js');
+        await transporter.verify();
+        res.json({
+            status: 'ok',
+            message: 'SMTP connection verified',
+            user: config.smtp.user,
+            host: config.smtp.host,
+            port: config.smtp.port
+        });
+    } catch (err: any) {
+        res.status(500).json({
+            status: 'error',
+            error: err.message || err,
+            config: {
+                user: config.smtp.user,
+                host: config.smtp.host,
+                port: config.smtp.port,
+                hasPass: !!config.smtp.pass
+            }
+        });
+    }
+});
+
 app.use((_req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });
 });
