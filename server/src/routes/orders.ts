@@ -6,12 +6,14 @@ import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { UAParser } from 'ua-parser-js';
 import { sendOrderReceiptEmail } from '../utils/email.js';
+import { orderLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
 
 // POST /api/orders — create order from current cart (supports Guests and Users)
 router.post(
     '/',
+    orderLimiter,
     optionalAuthMiddleware,
     validate({
         deliveryAddress: { type: 'string', required: true, maxLength: 300 },
@@ -271,6 +273,7 @@ router.patch(
 // POST /api/orders/invite — create a draft order for someone else to pay (Auth Users Only)
 router.post(
     '/invite',
+    orderLimiter,
     authMiddleware,
     validate({
         deliveryAddress: { type: 'string', required: true, maxLength: 300 },

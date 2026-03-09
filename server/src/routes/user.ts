@@ -7,6 +7,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, passwordRule } from '../middleware/validate.js';
 import { sendEmailChangeVerificationEmail } from '../utils/email.js';
+import { strictLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -59,6 +60,7 @@ router.get(
 // PUT /api/user/profile
 router.put(
     '/profile',
+    strictLimiter,
     validate({
         name: { type: 'string', minLength: 2, maxLength: 80 },
         email: { type: 'string', match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },

@@ -7,12 +7,14 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, emailRule, passwordRule } from '../middleware/validate.js';
 import { sendVerificationEmail } from '../utils/email.js';
+import { authLimiter, strictLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
 
 // POST /api/auth/register
 router.post(
     '/register',
+    authLimiter,
     validate({
         name: { required: true, type: 'string', minLength: 2, maxLength: 80 },
         email: emailRule,
@@ -193,6 +195,7 @@ router.get(
 // POST /api/auth/login
 router.post(
     '/login',
+    authLimiter,
     validate({
         email: { ...emailRule, message: 'Email inválido' },
         password: { required: true, type: 'string' },
@@ -292,6 +295,7 @@ router.get(
 // POST /api/auth/forgot-password
 router.post(
     '/forgot-password',
+    strictLimiter,
     validate({ email: emailRule }),
     asyncHandler(async (req, res: Response) => {
         const { email } = req.body;
@@ -359,6 +363,7 @@ router.post(
 // POST /api/auth/reset-password
 router.post(
     '/reset-password',
+    strictLimiter,
     validate({
         email: emailRule,
         code: { required: true, type: 'string', minLength: 6, maxLength: 6 },

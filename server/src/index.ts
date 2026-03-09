@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { rateLimit } from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
@@ -23,6 +22,9 @@ import settingsRoutes from './routes/settings.js';
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Trust proxy for correct IP detection behind Vercel, Nginx, etc.
+app.set('trust proxy', 1);
 
 // ─── Static Files for Uploads ──────────────────────────────────────────────────
 app.use('/api/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
@@ -60,37 +62,10 @@ app.use(
     })
 );
 
-// ─── Rate Limiting ─────────────────────────────────────────────────────────────
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 20,
-    message: { error: 'Demasiados intentos. Inténtalo de nuevo en 15 minutos.' },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
+import { generalLimiter } from './middleware/rateLimiters.js';
 
-const resetLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 3,
-    message: { error: 'Demasiados intentos de recuperación. Espera 15 minutos.' },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
-const generalLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: 120,
-    message: { error: 'Demasiadas solicitudes. Inténtalo más tarde.' },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
-if (!config.isDev) {
-    app.use('/api/auth/forgot-password', resetLimiter);
-    app.use('/api/auth/reset-password', resetLimiter);
-    app.use('/api/auth', authLimiter);
-    app.use('/api', generalLimiter);
-}
+// Apply general limiter to all API routes
+app.use('/api', generalLimiter);
 
 // ─── Logging ───────────────────────────────────────────────────────────────────
 app.use(morgan(config.isDev ? 'dev' : 'combined'));

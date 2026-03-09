@@ -3,12 +3,14 @@ import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
+import { promoLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
 router.use(authMiddleware);
 
 router.post(
     '/validate',
+    promoLimiter,
     validate({ code: { required: true, type: 'string' } }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { code } = req.body;
