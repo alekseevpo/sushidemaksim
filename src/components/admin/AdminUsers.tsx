@@ -31,10 +31,10 @@ const UserRow = memo(
     }: {
         user: any;
         currentUser: any;
-        onToggleRole: (id: number, role: string) => void;
+        onToggleRole: (user: any) => void;
         onDelete: (user: any) => void;
         onToggleBirthday: (id: number, verified: boolean) => void;
-        onVerifyEmail: (id: number, verified: boolean) => void;
+        onVerifyEmail: (user: any) => void;
     }) => {
         const isOnline = user.last_seen_at
             ? new Date().getTime() - new Date(user.last_seen_at).getTime() < 5 * 60 * 1000
@@ -87,7 +87,7 @@ const UserRow = memo(
                                     <Clock size={12} />
                                 </span>
                                 <button
-                                    onClick={() => onVerifyEmail(user.id, true)}
+                                    onClick={() => onVerifyEmail(user)}
                                     className="px-1.5 py-0.5 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded text-[9px] font-bold uppercase transition-colors"
                                     title="Verificar email manualmente"
                                 >
@@ -191,7 +191,7 @@ const UserRow = memo(
                         {!user.is_superadmin && (
                             <>
                                 <button
-                                    onClick={() => onToggleRole(user.id, user.role)}
+                                    onClick={() => onToggleRole(user)}
                                     className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
                                         user.role === 'admin'
                                             ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -223,6 +223,8 @@ export default function AdminUsers() {
     const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 1 });
     const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
     const [userToDelete, setUserToDelete] = useState<any>(null);
+    const [userToChangeRole, setUserToChangeRole] = useState<any>(null);
+    const [userToVerify, setUserToVerify] = useState<any>(null);
 
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -274,19 +276,19 @@ export default function AdminUsers() {
         }
     }, []);
 
-    const toggleAdminRole = useCallback(async (userId: number, currentRole: string) => {
-        if (!window.confirm('¿Seguro que deseas cambiar los permisos de este usuario?')) return;
-
+    const confirmToggleRole = async () => {
+        if (!userToChangeRole) return;
+        const { id, role: currentRole } = userToChangeRole;
         const newRole = currentRole === 'admin' ? 'user' : 'admin';
         try {
-            await api.patch(`/admin/users/${userId}/role`, { role: newRole });
-
-            // Update local state
-            setUsers(prev => prev.map(u => (u.id === userId ? { ...u, role: newRole } : u)));
+            await api.patch(`/admin/users/${id}/role`, { role: newRole });
+            setUsers(prev => prev.map(u => (u.id === id ? { ...u, role: newRole } : u)));
         } catch (err) {
             alert(err instanceof ApiError ? err.message : 'Error al cambiar rol');
+        } finally {
+            setUserToChangeRole(null);
         }
-    }, []);
+    };
 
     const toggleBirthdayVerified = useCallback(async (userId: number, currentVerified: boolean) => {
         try {
@@ -303,18 +305,20 @@ export default function AdminUsers() {
         }
     }, []);
 
-    const toggleEmailVerified = useCallback(async (userId: number, isVerified: boolean) => {
+    const confirmVerifyEmail = async () => {
+        if (!userToVerify) return;
+        const { id } = userToVerify;
         try {
-            await api.patch(`/admin/users/${userId}/verify-email`, {
-                is_verified: isVerified,
+            await api.patch(`/admin/users/${id}/verify-email`, {
+                is_verified: true,
             });
-            setUsers(prev =>
-                prev.map(u => (u.id === userId ? { ...u, is_verified: isVerified } : u))
-            );
+            setUsers(prev => prev.map(u => (u.id === id ? { ...u, is_verified: true } : u)));
         } catch (err) {
             alert('Error updating email verification');
+        } finally {
+            setUserToVerify(null);
         }
-    }, []);
+    };
 
     if (loading && users.length === 0) {
         return (
@@ -475,10 +479,10 @@ export default function AdminUsers() {
                                     key={user.id}
                                     user={user}
                                     currentUser={currentUser}
-                                    onToggleRole={toggleAdminRole}
+                                    onToggleRole={setUserToChangeRole}
                                     onDelete={setUserToDelete}
                                     onToggleBirthday={toggleBirthdayVerified}
-                                    onVerifyEmail={toggleEmailVerified}
+                                    onVerifyEmail={setUserToVerify}
                                 />
                             ))}
                         </tbody>
@@ -553,6 +557,100 @@ export default function AdminUsers() {
                                 </button>
                                 <button
                                     onClick={() => setUserToDelete(null)}
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200"
+                                >
+                                    CANCELAR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Role Change Confirmation Modal */}
+            {userToChangeRole && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setUserToChangeRole(null)}
+                    />
+                    <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Shield size={32} />
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">
+                                {userToChangeRole.role === 'admin'
+                                    ? '¿Revocar permisos de Admin?'
+                                    : '¿Asignar como Administrador?'}
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium mb-6 text-pretty">
+                                ¿Deseas realmente{' '}
+                                <span className="font-black text-red-600">
+                                    {userToChangeRole.role === 'admin' ? 'QUITAR' : 'OTORGAR'}
+                                </span>{' '}
+                                permisos de administración a:
+                                <br />
+                                <span className="block mt-2 font-black text-gray-900 text-base">
+                                    {userToChangeRole.name}
+                                </span>
+                                <span className="block text-gray-400 text-xs">
+                                    {userToChangeRole.email}
+                                </span>
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={confirmToggleRole}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all"
+                                >
+                                    SÍ, CAMBIAR PERMISOS
+                                </button>
+                                <button
+                                    onClick={() => setUserToChangeRole(null)}
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200"
+                                >
+                                    CANCELAR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Email Verify Confirmation Modal */}
+            {userToVerify && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setUserToVerify(null)}
+                    />
+                    <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <CheckCircle size={32} />
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">
+                                ¿Verificar Email Manualmente?
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium mb-6 text-pretty">
+                                Estás a punto de verificar manualmente la cuenta de:
+                                <br />
+                                <span className="block mt-2 font-black text-gray-900 text-base">
+                                    {userToVerify.name}
+                                </span>
+                                <span className="block text-gray-400 text-xs">
+                                    {userToVerify.email}
+                                </span>
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={confirmVerifyEmail}
+                                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all"
+                                >
+                                    SÍ, VERIFICAR AHORA
+                                </button>
+                                <button
+                                    onClick={() => setUserToVerify(null)}
                                     className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200"
                                 >
                                     CANCELAR
