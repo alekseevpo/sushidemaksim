@@ -694,18 +694,31 @@ export default function AdminPage() {
                                                             {
                                                                 name: 'Móvil',
                                                                 value:
-                                                                    stats?.deviceStats?.mobile || 0,
+                                                                    stats?.analytics?.devices
+                                                                        ?.mobile ||
+                                                                    stats?.analytics?.devices
+                                                                        ?.Mobile ||
+                                                                    0,
                                                             },
                                                             {
                                                                 name: 'Escritorio',
                                                                 value:
-                                                                    stats?.deviceStats?.desktop ||
+                                                                    stats?.analytics?.devices
+                                                                        ?.desktop ||
+                                                                    stats?.analytics?.devices
+                                                                        ?.Desktop ||
+                                                                    stats?.analytics?.devices
+                                                                        ?.Unknown ||
                                                                     0,
                                                             },
                                                             {
                                                                 name: 'Tablet',
                                                                 value:
-                                                                    stats?.deviceStats?.tablet || 0,
+                                                                    stats?.analytics?.devices
+                                                                        ?.tablet ||
+                                                                    stats?.analytics?.devices
+                                                                        ?.Tablet ||
+                                                                    0,
                                                             },
                                                         ]}
                                                         cx="50%"
