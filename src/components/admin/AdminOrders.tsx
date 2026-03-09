@@ -186,10 +186,11 @@ export default function AdminOrders() {
                                     setFilter(tab.id);
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
-                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${filter === tab.id
-                                    ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                    : 'text-gray-400 hover:text-gray-600'
-                                    }`}
+                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${
+                                    filter === tab.id
+                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                        : 'text-gray-400 hover:text-gray-600'
+                                }`}
                             >
                                 {tab.label}
                             </button>
@@ -242,12 +243,12 @@ export default function AdminOrders() {
                                                     const d = new Date(order.created_at);
                                                     const validDate = isNaN(d.getTime())
                                                         ? new Date(
-                                                            order.created_at.replace(' ', 'T') +
-                                                            (order.created_at.includes('Z') ||
-                                                                order.created_at.includes('+')
-                                                                ? ''
-                                                                : 'Z')
-                                                        )
+                                                              order.created_at.replace(' ', 'T') +
+                                                                  (order.created_at.includes('Z') ||
+                                                                  order.created_at.includes('+')
+                                                                      ? ''
+                                                                      : 'Z')
+                                                          )
                                                         : d;
                                                     return validDate.toLocaleString('es-ES', {
                                                         hour: '2-digit',
@@ -282,10 +283,11 @@ export default function AdminOrders() {
                                             onChange={e =>
                                                 handleUpdateStatus(order.id, e.target.value)
                                             }
-                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${statusOptions.find(
-                                                opt => opt.value === order.status
-                                            )?.color || 'bg-gray-100'
-                                                }`}
+                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${
+                                                statusOptions.find(
+                                                    opt => opt.value === order.status
+                                                )?.color || 'bg-gray-100'
+                                            }`}
                                         >
                                             {statusOptions.map(opt => (
                                                 <option
@@ -426,10 +428,11 @@ export default function AdminOrders() {
                         <button
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                ? 'bg-red-600 text-white shadow-md'
-                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                }`}
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                pageNum === pagination.page
+                                    ? 'bg-red-600 text-white shadow-md'
+                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                            }`}
                         >
                             {pageNum}
                         </button>
