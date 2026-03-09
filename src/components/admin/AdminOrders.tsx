@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Package, Search, RefreshCw, Smartphone, Monitor, Globe } from 'lucide-react';
+import { Package, Search, RefreshCw, Smartphone, Monitor, Globe, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
 import { OrderTimer } from './OrderTimer';
 
@@ -10,6 +11,11 @@ export default function AdminOrders() {
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<'active' | 'invitations' | 'all'>('active');
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
+    const [notification, setNotification] = useState<{
+        id: number;
+        oldStatus: string;
+        newStatus: string;
+    } | null>(null);
 
     const loadOrders = async (page: number = 1) => {
         setLoading(true);
@@ -39,9 +45,17 @@ export default function AdminOrders() {
     }, [pagination.page]);
 
     const handleUpdateStatus = async (id: number, newStatus: string) => {
+        const order = orders.find(o => o.id === id);
+        const oldStatus = order?.status;
+
         try {
             await api.patch(`/admin/orders/${id}/status`, { status: newStatus });
             setOrders(orders.map(o => (o.id === id ? { ...o, status: newStatus } : o)));
+
+            // Show notification
+            setNotification({ id, oldStatus: oldStatus || '?', newStatus });
+            // Hide notification after 4 seconds
+            setTimeout(() => setNotification(null), 4000);
         } catch (err) {
             alert(err instanceof ApiError ? err.message : 'Error al actualizar status');
         }
@@ -402,6 +416,37 @@ export default function AdminOrders() {
                     ))}
                 </div>
             )}
+
+            {/* Notification Toast */}
+            <AnimatePresence>
+                {notification && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, x: 50, scale: 0.8 }}
+                        animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+                        className="fixed bottom-6 right-6 z-[100] flex items-center gap-3 bg-gray-900 text-white px-5 py-4 rounded-2xl shadow-2xl border border-white/10"
+                    >
+                        <div className="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center shrink-0">
+                            <CheckCircle2 size={24} />
+                        </div>
+                        <div className="flex flex-col">
+                            <p className="font-black text-sm">Estado actualizado</p>
+                            <p className="text-xs text-gray-400">
+                                Pedido <span className="text-white">#{notification.id}</span>:
+                                <span className="mx-1 line-through opacity-50">
+                                    {statusOptions.find(opt => opt.value === notification.oldStatus)
+                                        ?.label || notification.oldStatus}
+                                </span>
+                                →
+                                <span className="ml-1 text-green-400 font-bold">
+                                    {statusOptions.find(opt => opt.value === notification.newStatus)
+                                        ?.label || notification.newStatus}
+                                </span>
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
