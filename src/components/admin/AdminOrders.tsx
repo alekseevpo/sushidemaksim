@@ -188,8 +188,8 @@ export default function AdminOrders({
                         <button
                             onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
                             className={`p-2 rounded-lg transition border ${isGlobalSoundEnabled
-                                    ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
-                                    : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
+                                ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
+                                : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
                                 }`}
                             title={isGlobalSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
                         >
@@ -228,8 +228,8 @@ export default function AdminOrders({
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
                                 className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${filter === tab.id
-                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                        : 'text-gray-400 hover:text-gray-600'
+                                    ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                    : 'text-gray-400 hover:text-gray-600'
                                     }`}
                             >
                                 {tab.label}
@@ -363,26 +363,26 @@ export default function AdminOrders({
                                         </div>
                                     </div>
 
-                                    {/* Items del pedido (Colapsable o scrollable) */}
-                                    <div className="space-y-3">
+                                    {/* Items del pedido (Compact Receipt Style) */}
+                                    <div className="space-y-2">
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                             Productos ({order.items?.length || 0})
                                         </p>
-                                        <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
+                                        <div className="space-y-0.5 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
                                             {order.items?.map((item: any, idx: number) => (
                                                 <div
                                                     key={idx}
-                                                    className="flex items-center justify-between gap-3 group bg-gray-50/50 p-2 rounded-lg border border-transparent hover:border-gray-100 transition-colors"
+                                                    className="flex items-center justify-between gap-2 py-1.5 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 px-1 rounded transition-colors"
                                                 >
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="flex items-center justify-center bg-white border border-gray-100 text-[10px] font-black w-6 h-6 rounded-md text-red-600 shadow-sm">
-                                                            {item.quantity}
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[11px] font-black text-red-600 min-w-[18px]">
+                                                            {item.quantity}x
                                                         </span>
-                                                        <span className="text-xs font-bold text-gray-700 group-hover:text-red-600 transition-colors line-clamp-1">
+                                                        <span className="text-[11px] font-bold text-gray-700 line-clamp-1">
                                                             {item.name}
                                                         </span>
                                                     </div>
-                                                    <span className="text-[10px] font-bold text-gray-400">
+                                                    <span className="text-[10px] font-bold text-gray-400 tabular-nums">
                                                         {formatCurrency(item.price_at_time)}
                                                     </span>
                                                 </div>
@@ -450,8 +450,8 @@ export default function AdminOrders({
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
                             className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                    ? 'bg-red-600 text-white shadow-md'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                ? 'bg-red-600 text-white shadow-md'
+                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                                 }`}
                         >
                             {pageNum}
