@@ -402,14 +402,14 @@ export default function AdminPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     <StatCard
                                         title="Ingresos de hoy"
-                                        value={`${(stats?.revenueToday ?? 0).toFixed(2).replace('.', ',')} €`}
+                                        value={`${Number(stats?.revenueToday || 0).toFixed(2).replace('.', ',')} €`}
                                         icon={DollarSign}
                                         colorClass="bg-green-100 text-green-600"
                                         desc="Total cobrado (Madrid)"
                                     />
                                     <StatCard
                                         title="Nuevos Pedidos"
-                                        value={stats?.ordersToday ?? 0}
+                                        value={Number(stats?.ordersToday || 0)}
                                         icon={ShoppingBag}
                                         colorClass="bg-blue-100 text-blue-600"
                                         desc="Pedidos recibidos hoy"
@@ -423,7 +423,7 @@ export default function AdminPage() {
                                     />
                                     <StatCard
                                         title="Nuevos Clientes"
-                                        value={stats?.usersToday ?? 0}
+                                        value={stats?.usersToday || 0}
                                         icon={TrendingUp}
                                         colorClass="bg-purple-100 text-purple-600"
                                         desc="Usuarios registrados hoy"
@@ -619,7 +619,9 @@ export default function AdminPage() {
                                                         <td className="px-4 py-4">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-sm font-black text-gray-900">
-                                                                    {report.order_count}
+                                                                    {report.orders_count ??
+                                                                        report.order_count ??
+                                                                        0}
                                                                 </span>
                                                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                                     pedidos
@@ -628,7 +630,11 @@ export default function AdminPage() {
                                                         </td>
                                                         <td className="px-4 py-4">
                                                             <span className="text-sm font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg border border-green-100/50">
-                                                                {Number(report.total_revenue)
+                                                                {Number(
+                                                                    report.total_revenue ??
+                                                                    report.total ??
+                                                                    0
+                                                                )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
                                                                 €
@@ -636,7 +642,12 @@ export default function AdminPage() {
                                                         </td>
                                                         <td className="px-4 py-4">
                                                             <span className="text-xs font-bold text-gray-600">
-                                                                {Number(report.average_ticket)
+                                                                {Number(
+                                                                    report.avg_ticket ??
+                                                                    report.average_ticket ??
+                                                                    report.avg_price ??
+                                                                    0
+                                                                )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
                                                                 €
