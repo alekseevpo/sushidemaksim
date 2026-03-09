@@ -108,7 +108,7 @@ export default function AdminUsers() {
                         <thead className="bg-gray-50 text-gray-700 font-bold border-b border-gray-100">
                             <tr>
                                 <th
-                                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
                                     onClick={() => handleSort('id')}
                                 >
                                     <div className="flex items-center gap-1">
@@ -124,10 +124,10 @@ export default function AdminUsers() {
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-6 py-4">Nombre / Email</th>
-                                <th className="px-6 py-4">Cumpleaños / Verif.</th>
+                                <th className="px-4 py-3 whitespace-nowrap">Nombre / Email</th>
+                                <th className="px-4 py-3 whitespace-nowrap">Cumple / Verif.</th>
                                 <th
-                                    className="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-4 py-3 text-center cursor-pointer hover:bg-gray-100 transition"
                                     onClick={() => handleSort('orderCount')}
                                 >
                                     <div className="flex items-center justify-center gap-1">
@@ -144,7 +144,7 @@ export default function AdminUsers() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-4 py-3 text-center cursor-pointer hover:bg-gray-100 transition"
                                     onClick={() => handleSort('totalSpent')}
                                 >
                                     <div className="flex items-center justify-center gap-1">
@@ -161,11 +161,11 @@ export default function AdminUsers() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
                                     onClick={() => handleSort('last_seen_at')}
                                 >
                                     <div className="flex items-center gap-1">
-                                        Última actividad{' '}
+                                        Actividad{' '}
                                         {sort.field === 'last_seen_at' ? (
                                             sort.order === 'desc' ? (
                                                 <ChevronDown size={14} />
@@ -178,11 +178,11 @@ export default function AdminUsers() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
                                     onClick={() => handleSort('created_at')}
                                 >
                                     <div className="flex items-center gap-1">
-                                        Registro{' '}
+                                        Reg.{' '}
                                         {sort.field === 'created_at' ? (
                                             sort.order === 'desc' ? (
                                                 <ChevronDown size={14} />
@@ -195,7 +195,7 @@ export default function AdminUsers() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-4 py-3 text-center cursor-pointer hover:bg-gray-100 transition"
                                     onClick={() => handleSort('role')}
                                 >
                                     <div className="flex items-center justify-center gap-1">
@@ -212,7 +212,9 @@ export default function AdminUsers() {
                                     </div>
                                 </th>
                                 {currentUser?.is_superadmin && (
-                                    <th className="px-6 py-4 text-center">Acciones Superadmin</th>
+                                    <th className="px-4 py-3 text-center whitespace-nowrap">
+                                        Acciones
+                                    </th>
                                 )}
                             </tr>
                         </thead>
@@ -220,10 +222,10 @@ export default function AdminUsers() {
                         <tbody className="divide-y divide-gray-100">
                             {users.map(user => (
                                 <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-3 font-semibold text-gray-900">
+                                    <td className="px-4 py-2 font-semibold text-gray-900">
                                         #{user.id}
                                     </td>
-                                    <td className="px-6 py-3">
+                                    <td className="px-4 py-2">
                                         <div className="flex items-center gap-2">
                                             <div className="font-bold text-gray-900">
                                                 {user.name}
@@ -251,7 +253,7 @@ export default function AdminUsers() {
                                             </div>
                                         )}
                                     </td>
-                                    <td className="px-6 py-3">
+                                    <td className="px-4 py-2">
                                         <div className="flex flex-col gap-1.5">
                                             {user.birth_date ? (
                                                 <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
@@ -291,12 +293,12 @@ export default function AdminUsers() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-3 text-center">
+                                    <td className="px-4 py-2 text-center">
                                         <div className="inline-flex items-center justify-center bg-gray-100 text-gray-700 w-8 h-8 rounded-full font-bold">
                                             {user.orderCount}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-3 text-center">
+                                    <td className="px-4 py-2 text-center">
                                         <div className="font-bold text-gray-900">
                                             {Number(user.totalSpent || 0)
                                                 .toFixed(2)
@@ -305,7 +307,7 @@ export default function AdminUsers() {
                                         </div>
                                     </td>
 
-                                    <td className="px-6 py-3">
+                                    <td className="px-4 py-2">
                                         <div className="flex flex-col gap-1">
                                             {user.last_seen_at ? (
                                                 <>
@@ -351,10 +353,10 @@ export default function AdminUsers() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-3">
+                                    <td className="px-4 py-2">
                                         {new Date(user.created_at).toLocaleDateString()}
                                     </td>
-                                    <td className="px-6 py-3 text-center">
+                                    <td className="px-4 py-2 text-center">
                                         {user.is_superadmin ? (
                                             <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold text-xs">
                                                 <Crown size={12} /> Owner
@@ -370,26 +372,26 @@ export default function AdminUsers() {
                                         )}
                                     </td>
                                     {currentUser?.is_superadmin && (
-                                        <td className="px-6 py-3 text-center flex items-center justify-center gap-2">
+                                        <td className="px-4 py-2 text-center flex items-center justify-center gap-1.5 min-w-[140px]">
                                             {!user.is_superadmin && (
                                                 <>
                                                     <button
                                                         onClick={() =>
                                                             toggleAdminRole(user.id, user.role)
                                                         }
-                                                        className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
+                                                        className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
                                                             user.role === 'admin'
                                                                 ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                                 : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
                                                         }`}
                                                     >
                                                         {user.role === 'admin'
-                                                            ? 'Revocar Admin'
+                                                            ? 'Revocar'
                                                             : 'Hacer Admin'}
                                                     </button>
                                                     <button
                                                         onClick={() => setUserToDelete(user)}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 transition"
+                                                        className="p-1 text-gray-400 hover:text-red-600 transition"
                                                         title="Eliminar permanentemente"
                                                     >
                                                         <Trash2 size={16} />
