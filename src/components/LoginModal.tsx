@@ -413,19 +413,19 @@ const VerifySentMessage = memo(({ email, onBack }: { email: string; onBack: () =
         <div className="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-green-500 shadow-inner border-2 border-white">
             <Mail size={40} />
         </div>
-        <h3 className="text-lg font-bold text-gray-900 mb-3">Почти готово!</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-3">¡Casi listo!</h3>
         <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-            Мы отправили ссылку для активации на <br />
+            Hemos enviado un enlace de activación a <br />
             <strong className="text-gray-900">{email}</strong>.
             <br />
             <br />
-            Пожалуйста, проверьте ваш почтовый ящик (и папку СПАМ), чтобы активировать аккаунт.
+            Por favor, revisa tu bandeja de entrada (y <strong className="text-red-600">la carpeta de spam</strong>) para activar tu cuenta.
         </p>
         <button
             onClick={onBack}
             className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
         >
-            <ArrowLeft size={16} /> Вернуться к началу
+            <ArrowLeft size={16} /> Volver al inicio
         </button>
     </div>
 ));

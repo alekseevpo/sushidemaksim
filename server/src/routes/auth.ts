@@ -57,11 +57,16 @@ router.post(
 
         // Send verification email
         try {
+            console.log(`📡 [REGISTER] Attempting to send email to ${newUser.email}...`);
             await sendVerificationEmail(newUser.email, newUser.name, verificationToken);
-            console.log(`✅ [REGISTER] Verification email sent to ${newUser.email}`);
-        } catch (e) {
-            console.error('❌ [REGISTER] SMTP ERROR:', e);
-            // We still proceed since user is created, but they might need to resend
+            console.log(`✅ [REGISTER] Verification email SENT to ${newUser.email}`);
+        } catch (e: any) {
+            console.error('❌ [REGISTER] SMTP ERROR:', e.message || e);
+            console.error('SMTP Config check:', {
+                host: config.smtp.host,
+                user: config.smtp.user,
+                hasPass: !!config.smtp.pass
+            });
         }
 
         res.status(201).json({
