@@ -52,9 +52,15 @@ export default function AddressesTab({
     const [searchQuery, setSearchQuery] = useState('');
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+    const ignoreNextSearchRef = useRef(false);
 
     // Debounced Nominatim search
     useEffect(() => {
+        if (ignoreNextSearchRef.current) {
+            ignoreNextSearchRef.current = false;
+            return;
+        }
+
         if (searchQuery.length < 3) {
             setSuggestions([]);
             setShowSuggestions(false);
@@ -104,6 +110,7 @@ export default function AddressesTab({
         const apartment = addr.suburb || ''; // Some regions use suburb as extra info
 
         setNewAddress(p => ({ ...p, street, house, city, postalCode, apartment }));
+        ignoreNextSearchRef.current = true;
         setSearchQuery(street);
         setShowSuggestions(false);
         setSuggestions([]);
@@ -127,6 +134,7 @@ export default function AddressesTab({
             phone: addr.phone || '',
             isDefault: addr.isDefault,
         });
+        ignoreNextSearchRef.current = true;
         setSearchQuery(addr.street);
         setShowAddAddress(true);
     };
