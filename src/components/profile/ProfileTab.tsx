@@ -11,11 +11,10 @@ import {
     Eye,
     EyeOff,
     Calendar,
-    AlertCircle,
-    CheckCircle,
     Trash2,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../context/ToastContext';
 import { User as UserType } from '../../types';
 
 interface Props {
@@ -23,7 +22,6 @@ interface Props {
     updateProfile: (
         data: Partial<Pick<UserType, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
     ) => Promise<void>;
-    onSuccess: (msg: string) => void;
 }
 
 const AVATAR_CATEGORIES = [
@@ -33,7 +31,7 @@ const AVATAR_CATEGORIES = [
     },
     {
         name: 'Personajes',
-        icons: ['🥷', '🧑‍🍳', '🦹', '🦸', '🧙', '🧛', '👹', '👺', '👻', '👾', '🤖', '👽', '💀', '🤡'],
+        icons: ['🥷', '🧑‍🍳', '🦹', '🦸', '🧙', '🧙', '🧛', '👹', '👺', '👻', '👾', '🤖', '👽', '💀', '🤡'],
     },
     {
         name: 'Animales Cool',
@@ -61,7 +59,7 @@ const AVATAR_CATEGORIES = [
     },
 ];
 
-export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
+export default function ProfileTab({ user, updateProfile }: Props) {
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState('');
     const [editPhone, setEditPhone] = useState('');
@@ -76,10 +74,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [showCurrPwd, setShowCurrPwd] = useState(false);
     const [showNewPwd, setShowNewPwd] = useState(false);
-    const [pwdError, setPwdError] = useState('');
-    const [pwdSuccess, setPwdSuccess] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const { deleteAccount } = useAuth();
+    const { success, error } = useToast();
 
     const startEditing = () => {
         setEditName(user.name);
@@ -87,9 +84,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
         setEditEmail(user.email);
         setEditAvatar(user.avatar || '');
 
-        // Format birthDate to YYYY-MM-DD safely for input type="date"
         if (user.birthDate) {
-            // If it's already YYYY-MM-DD (standard DATE from Postgres), use it directly
             const dateStr = user.birthDate.split('T')[0];
             setEditBirthDate(dateStr);
         } else {
@@ -108,36 +103,31 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                 birthDate: editBirthDate,
             })) as any;
             setIsEditing(false);
-            onSuccess(res?.message || 'Perfil actualizado');
+            success(res?.message || '¡Perfil actualizado con éxito! 🍣');
         } catch (err: any) {
-            alert(err.message || 'Error al actualizar el perfil');
+            error(err.message || 'Error al actualizar el perfil');
         }
     };
 
     const handleChangePassword = async () => {
-        setPwdError('');
-        setPwdSuccess('');
         if (newPassword.length < 6) {
-            setPwdError('La contraseña debe tener al menos 6 caracteres');
+            error('La contraseña debe tener al menos 6 caracteres');
             return;
         }
         if (newPassword !== confirmNewPassword) {
-            setPwdError('Las contraseñas no coinciden');
+            error('Las contraseñas no coinciden');
             return;
         }
         try {
             const { api } = await import('../../utils/api');
             await api.put('/user/change-password', { currentPassword, newPassword });
-            setPwdSuccess('¡Contraseña actualizada correctamente!');
+            success('¡Contraseña actualizada correctamente! 🔐');
             setCurrentPassword('');
             setNewPassword('');
             setConfirmNewPassword('');
-            setTimeout(() => {
-                setShowChangePassword(false);
-                setPwdSuccess('');
-            }, 2000);
+            setShowChangePassword(false);
         } catch (err: any) {
-            setPwdError(err.message || 'Error al cambiar la contraseña');
+            error(err.message || 'Error al cambiar la contraseña');
         }
     };
 
@@ -150,7 +140,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         {isEditing ? 'Editar Perfil' : 'Datos Personales'}
                     </h2>
                     <p className="text-gray-500 text-[11px] md:text-sm mt-1">
-                        Gestiona tu información básica y seguridad
+                        Gestiona tu información básica и seguridad
                     </p>
                 </div>
 
@@ -212,9 +202,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         label: 'Fecha de Cumpleaños',
                         value: user.birthDate
                             ? (() => {
-                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                  return `${d}/${m}/${y}`;
-                              })()
+                                const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                return `${d}/${m}/${y}`;
+                            })()
                             : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
@@ -276,7 +266,6 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                     </h3>
 
                     <div className="space-y-8 relative z-10">
-                        {/* Initial Placeholder */}
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 ml-1">
                                 Original
@@ -293,7 +282,6 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                             </motion.button>
                         </div>
 
-                        {/* Categories */}
                         {AVATAR_CATEGORIES.map(category => (
                             <div key={category.name}>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4 ml-1">
@@ -308,10 +296,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                             type="button"
                                             onClick={() => setEditAvatar(avatar)}
                                             className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                                ${
-                                                    editAvatar === avatar
-                                                        ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
-                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                                ${editAvatar === avatar
+                                                    ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
+                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
                                                 }`}
                                         >
                                             {avatar}
@@ -362,15 +349,6 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                             </button>
                         </div>
 
-                        {(pwdError || pwdSuccess) && (
-                            <div
-                                className={`p-4 rounded-2xl mb-6 text-sm font-bold flex items-center gap-2 ${pwdError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}
-                            >
-                                {pwdError ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
-                                {pwdError || pwdSuccess}
-                            </div>
-                        )}
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
                             {[
                                 {
@@ -392,7 +370,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => {},
+                                    toggle: () => { },
                                 },
                             ].map(f => (
                                 <div key={f.label}>
@@ -493,7 +471,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                         try {
                                             await deleteAccount();
                                         } catch {
-                                            alert('Error al procesar la solicitud');
+                                            error('Error al procesar la solicitud');
                                         }
                                     }}
                                     className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"

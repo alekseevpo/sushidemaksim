@@ -8,6 +8,7 @@ import CookieConsent from './components/CookieConsent';
 import FloatingCart from './components/FloatingCart';
 import ScrollToTop from './components/ScrollToTop';
 import ErrorBoundary from './components/ErrorBoundary';
+import { ToastProvider } from './context/ToastContext';
 
 // Lazy-loaded pages with retry logic
 const lazyRetry = (componentImport: any) => {
@@ -57,41 +58,43 @@ function App() {
 
     return (
         <ErrorBoundary>
-            <AuthProvider>
-                <CartProvider>
-                    <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
-                        <ScrollToTop />
-                        <CookieConsent />
-                        <FloatingCart />
-                        {!isAdminRoute && <Header />}
-                        <main className="flex-1 flex flex-col relative">
-                            <Suspense fallback={<PageLoader />}>
-                                <Routes>
-                                    <Route path="/" element={<HomePageSimple />} />
-                                    <Route path="/menu" element={<MenuPageSimple />} />
-                                    <Route path="/cart" element={<CartPageSimple />} />
-                                    <Route path="/promo" element={<PromoPageSimple />} />
-                                    <Route path="/profile" element={<ProfilePage />} />
-                                    <Route path="/admin" element={<AdminPage />} />
-                                    <Route path="/contacts" element={<ContactsPage />} />
-                                    <Route path="/blog" element={<BlogPage />} />
-                                    <Route path="/blog/:slug" element={<BlogPostPage />} />
-                                    <Route
-                                        path="/pay-for-friend/:id"
-                                        element={<PayForFriendPage />}
-                                    />
-                                    <Route path="/verify" element={<VerifyPage />} />
-                                    <Route
-                                        path="/verify-email-change"
-                                        element={<VerifyEmailChangePage />}
-                                    />
-                                </Routes>
-                            </Suspense>
-                        </main>
-                        {!isAdminRoute && <Footer />}
-                    </div>
-                </CartProvider>
-            </AuthProvider>
+            <ToastProvider>
+                <AuthProvider>
+                    <CartProvider>
+                        <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
+                            <ScrollToTop />
+                            <CookieConsent />
+                            <FloatingCart />
+                            {!isAdminRoute && <Header />}
+                            <main className="flex-1 flex flex-col relative">
+                                <Suspense fallback={<PageLoader />}>
+                                    <Routes>
+                                        <Route path="/" element={<HomePageSimple />} />
+                                        <Route path="/menu" element={<MenuPageSimple />} />
+                                        <Route path="/cart" element={<CartPageSimple />} />
+                                        <Route path="/promo" element={<PromoPageSimple />} />
+                                        <Route path="/profile" element={<ProfilePage />} />
+                                        <Route path="/admin" element={<AdminPage />} />
+                                        <Route path="/contacts" element={<ContactsPage />} />
+                                        <Route path="/blog" element={<BlogPage />} />
+                                        <Route path="/blog/:slug" element={<BlogPostPage />} />
+                                        <Route
+                                            path="/pay-for-friend/:id"
+                                            element={<PayForFriendPage />}
+                                        />
+                                        <Route path="/verify" element={<VerifyPage />} />
+                                        <Route
+                                            path="/verify-email-change"
+                                            element={<VerifyEmailChangePage />}
+                                        />
+                                    </Routes>
+                                </Suspense>
+                            </main>
+                            {!isAdminRoute && <Footer />}
+                        </div>
+                    </CartProvider>
+                </AuthProvider>
+            </ToastProvider>
         </ErrorBoundary>
     );
 }

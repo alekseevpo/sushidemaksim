@@ -15,6 +15,7 @@ import { motion } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api, ApiError } from '../utils/api';
+import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 
 interface MenuItem {
@@ -37,6 +38,7 @@ export default function CartPageSimple() {
     } = useCart();
     const { isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
+    const { success: showSuccess, error: showError, info: showInfo } = useToast();
 
     const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
     const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
@@ -49,7 +51,6 @@ export default function CartPageSimple() {
     const [phone, setPhone] = useState('');
     const [isOrdering, setIsOrdering] = useState(false);
     const [isInviting, setIsInviting] = useState(false);
-    const [orderError, setOrderError] = useState('');
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
     const [siteSettings, setSiteSettings] = useState<any>(null);
     const [isLoadingSettings, setIsLoadingSettings] = useState(true);
@@ -72,7 +73,6 @@ export default function CartPageSimple() {
     const [appliedPromo, setAppliedPromo] = useState<{ code: string; percentage: number } | null>(
         null
     );
-    const [promoError, setPromoError] = useState('');
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
     const EMOJI: Record<string, string> = {
@@ -159,7 +159,6 @@ export default function CartPageSimple() {
     };
 
     const handleOrder = async () => {
-        setOrderError('');
         const streetVal =
             address.trim() ||
             (defaultAddr && defaultAddr.street
@@ -170,25 +169,25 @@ export default function CartPageSimple() {
         const aptVal = apartment.trim();
 
         if (!streetVal || streetVal.length < 3 || streetVal.includes('undefined')) {
-            setOrderError('Por favor, indica tu calle / dirección');
+            showError('Por favor, indica tu calle / dirección');
             return;
         }
         if (!houseVal) {
-            setOrderError('Por favor, indica tu portal/casa');
+            showError('Por favor, indica tu portal/casa');
             return;
         }
         if (!aptVal) {
-            setOrderError('Por favor, indica tu piso/puerta');
+            showError('Por favor, indica tu piso/puerta');
             return;
         }
 
         if (total < MIN_ORDER) {
-            setOrderError(`El pedido mínimo es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`);
+            showError(`El pedido mínimo es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`);
             return;
         }
 
         if (isStoreClosed) {
-            setOrderError(
+            showError(
                 siteSettings?.closed_message || 'Lo sentimos, la tienda está cerrada ahora mismo.'
             );
             return;
@@ -197,13 +196,12 @@ export default function CartPageSimple() {
         const deliveryAddress = `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
         const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 6) {
-            setOrderError('Por favor, introduce un teléfono de contacto válido');
+            showError('Por favor, introduce un teléfono de contacto válido');
             return;
         }
 
         setIsOrdering(true);
 
-        // Build notes from checkboxes and custom comment
         const notesArray = [];
         if (noCall) notesArray.push('Sin llamada de confirmación');
         if (noBuzzer) notesArray.push('No llamar al timbre, llamar al móvil');
@@ -228,13 +226,13 @@ export default function CartPageSimple() {
             const data = await api.post('/orders', orderPayload);
             setOrderSuccess(data.order.id);
             clearCart();
+            showSuccess('¡Pedido realizado con éxito! 🍣');
 
-            // Long haptic feedback for success (2 seconds)
             if ('vibrate' in navigator) {
                 navigator.vibrate(2000);
             }
         } catch (err) {
-            setOrderError(err instanceof ApiError ? err.message : 'Error al realizar el pedido');
+            showError(err instanceof ApiError ? err.message : 'Error al realizar el pedido');
         } finally {
             setIsOrdering(false);
         }
@@ -242,29 +240,28 @@ export default function CartPageSimple() {
 
     const handleInvite = async () => {
         if (items.length === 0) return;
-        setOrderError('');
 
         const streetVal = address.trim();
         const houseVal = house.trim();
         const aptVal = apartment.trim();
 
         if (!streetVal) {
-            setOrderError('Por favor, indica tu calle para el envío');
+            showError('Por favor, indica tu calle para el envío');
             return;
         }
         if (!houseVal) {
-            setOrderError('Por favor, indica tu portal/casa');
+            showError('Por favor, indica tu portal/casa');
             return;
         }
         if (!aptVal) {
-            setOrderError('Por favor, indica tu piso/puerta');
+            showError('Por favor, indica tu piso/puerta');
             return;
         }
 
         const deliveryAddress = `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
         const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 6) {
-            setOrderError('Por favor, introduce un teléfono de contacto válido');
+            showError('Por favor, introduce un teléfono de contacto válido');
             return;
         }
 
@@ -296,7 +293,6 @@ export default function CartPageSimple() {
 
             const shareUrlWithCacheBust = `${data.shareUrl}?t=${Date.now()}`;
 
-            // Open Native Share
             if (navigator.share) {
                 await navigator.share({
                     title: '¡Invítame a Sushi de Maksim! 🍣',
@@ -304,12 +300,11 @@ export default function CartPageSimple() {
                     url: shareUrlWithCacheBust,
                 });
             } else {
-                // Fallback: Copy to clipboard
                 await navigator.clipboard.writeText(shareUrlWithCacheBust);
-                alert('¡Enlace de invitación copiado! Envíalo a tu amigo por WhatsApp.');
+                showInfo('¡Enlace de invitación copiado! ✨');
             }
         } catch (err) {
-            setOrderError(err instanceof ApiError ? err.message : 'Error al generar invitación');
+            showError(err instanceof ApiError ? err.message : 'Error al generar invitación');
         } finally {
             setIsInviting(false);
         }
@@ -317,15 +312,15 @@ export default function CartPageSimple() {
 
     const handleApplyPromo = async () => {
         if (!promoCodeInput.trim()) return;
-        setPromoError('');
         setIsApplyingPromo(true);
 
         try {
             const res = await api.post('/promo/validate', { code: promoCodeInput.trim() });
             setAppliedPromo({ code: promoCodeInput.trim(), percentage: res.percentage });
             setPromoCodeInput('');
+            showSuccess(`¡Código ${promoCodeInput.trim()} aplicado! 🎉`);
         } catch (err) {
-            setPromoError(err instanceof ApiError ? err.message : 'Código inválido');
+            showError(err instanceof ApiError ? err.message : 'Código inválido');
         } finally {
             setIsApplyingPromo(false);
         }
@@ -345,7 +340,6 @@ export default function CartPageSimple() {
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                     className="bg-white rounded-[40px] shadow-2xl p-10 max-w-md w-full text-center relative overflow-hidden border border-white"
                 >
-                    {/* Decorative Background Elements */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
 
@@ -421,7 +415,6 @@ export default function CartPageSimple() {
         );
     }
 
-    // ===== EMPTY CART =====
     if (!cartLoading && items.length === 0) {
         return (
             <div className="min-h-screen bg-transparent px-4 py-8 flex items-center">
@@ -464,18 +457,11 @@ export default function CartPageSimple() {
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
-                                                    {/* Background Pattern */}
                                                     <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-
-                                                    {/* Glow effect */}
                                                     <div className="absolute w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
-
-                                                    {/* Emoji with shadow */}
                                                     <span className="text-5xl relative z-10 drop-shadow-2xl transform group-hover:rotate-12 transition-transform duration-500">
                                                         {getCategoryEmoji(item.category)}
                                                     </span>
-
-                                                    {/* Texture overlay */}
                                                     <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
                                                 </div>
                                             )}
@@ -518,7 +504,6 @@ export default function CartPageSimple() {
             />
 
             <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
-                {/* Store Closed Banner */}
                 {isStoreClosed && (
                     <div className="mb-6 animate-in slide-in-from-top duration-500">
                         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-4">
@@ -551,7 +536,6 @@ export default function CartPageSimple() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Cart Items */}
                     <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6 px-0 md:px-0">
                         <div className="bg-transparent md:bg-white md:rounded-xl md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-0 md:p-6">
                             <div className="flex items-center justify-between mb-4 md:mb-6 px-4 md:px-0">
@@ -601,9 +585,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                      item.id,
-                                                                      item.quantity - 1
-                                                                  )
+                                                                    item.id,
+                                                                    item.quantity - 1
+                                                                )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -634,7 +618,6 @@ export default function CartPageSimple() {
                                             </div>
                                         </div>
 
-                                        {/* Simple Delete Button */}
                                         <button
                                             onClick={() => removeItem(item.id)}
                                             className="text-gray-300 hover:text-red-500 cursor-pointer p-1 transition-colors"
@@ -647,13 +630,11 @@ export default function CartPageSimple() {
                             </div>
                         </div>
 
-                        {/* Delivery info — available for all */}
                         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px] md:rounded-xl">
                             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
                                 <MapPin size={18} className="text-red-600" /> Datos de entrega
                             </h2>
 
-                            {/* User addresses pills */}
                             {user?.addresses && user.addresses.length > 0 && (
                                 <div className="flex flex-col gap-2 mb-4">
                                     {user.addresses.map(addr => (
@@ -753,7 +734,6 @@ export default function CartPageSimple() {
                                 </div>
                             </div>
 
-                            {/* Checkboxes */}
                             <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-100">
                                 <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
                                     <input
@@ -775,7 +755,6 @@ export default function CartPageSimple() {
                                 </label>
                             </div>
 
-                            {/* Custom Note */}
                             <div className="mt-4 pt-4 border-t border-gray-100">
                                 <label className="block text-sm font-semibold text-gray-600 mb-1">
                                     Comentario para el pedido (Opcional)
@@ -792,9 +771,7 @@ export default function CartPageSimple() {
                         </div>
                     </div>
 
-                    {/* Order Summary */}
                     <div className="flex flex-col gap-8">
-                        {/* Upselling Suggestions */}
                         {isLoadingSuggestions ? (
                             <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6">
                                 <div className="h-6 w-32 bg-gray-100 animate-pulse rounded mb-4"></div>
@@ -876,7 +853,6 @@ export default function CartPageSimple() {
                         ) : null}
 
                         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 overflow-hidden rounded-t-[32px] md:rounded-xl border-b md:border-none border-gray-50">
-                            {/* Free Delivery Progressive Bar */}
                             <div className="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100 relative overflow-hidden">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -949,7 +925,6 @@ export default function CartPageSimple() {
                                 </div>
                             </div>
 
-                            {/* Promo code input */}
                             <div className="mb-6 pb-6 border-b border-gray-100">
                                 <label className="block text-sm font-semibold text-gray-600 mb-2">
                                     Código promocional
@@ -961,7 +936,6 @@ export default function CartPageSimple() {
                                             value={promoCodeInput}
                                             onChange={e => {
                                                 setPromoCodeInput(e.target.value.toUpperCase());
-                                                setPromoError('');
                                             }}
                                             placeholder="Ej. LATE-20..."
                                             className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition"
@@ -988,17 +962,7 @@ export default function CartPageSimple() {
                                         </button>
                                     </div>
                                 )}
-                                {promoError && (
-                                    <p className="text-red-600 text-xs mt-2">{promoError}</p>
-                                )}
                             </div>
-
-                            {/* Error */}
-                            {orderError && (
-                                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                                    ⚠️ {orderError}
-                                </div>
-                            )}
 
                             <button
                                 onClick={handleOrder}
@@ -1052,7 +1016,6 @@ export default function CartPageSimple() {
                 </div>
             </main>
 
-            {/* Sticky Mobile Checkout Bar */}
             <div className="md:hidden sticky bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 p-2 pb-6 z-50 animate-in slide-in-from-bottom duration-500">
                 <div className="max-w-7xl mx-auto">
                     {isAuthenticated ? (

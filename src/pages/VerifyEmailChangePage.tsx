@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { CheckCircle, XCircle, Loader2, Home, User } from 'lucide-react';
 import { api } from '../utils/api';
+import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 
 export default function VerifyEmailChangePage() {
@@ -11,6 +12,7 @@ export default function VerifyEmailChangePage() {
 
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [message, setMessage] = useState('');
+    const { success: showSuccess, error: showError } = useToast();
 
     useEffect(() => {
         if (!token) {
@@ -23,15 +25,20 @@ export default function VerifyEmailChangePage() {
             try {
                 const response = await api.get(`/auth/verify-email-change/${token}`);
                 setStatus('success');
-                setMessage(response.message || '¡Email actualizado con éxito!');
+                const msg = response.message || '¡Email actualizado con éxito!';
+                setMessage(msg);
+                showSuccess(msg);
             } catch (err: any) {
                 setStatus('error');
-                setMessage(err.message || 'El enlace ha expirado o no es válido.');
+                const msg = err.message || 'El enlace ha expirado o no es válido.';
+                setMessage(msg);
+                showError(msg);
             }
         };
 
         verifyEmailChange();
-    }, [token]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [token, showSuccess, showError]);
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-6">

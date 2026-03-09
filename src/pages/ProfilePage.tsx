@@ -8,7 +8,6 @@ import {
     ChevronRight,
     Heart,
     Sparkles,
-    CheckCircle,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -19,7 +18,6 @@ import FavoritesTab from '../components/profile/FavoritesTab';
 
 type TabId = 'profile' | 'addresses' | 'orders' | 'favorites';
 
-// Latest version with fix for editAddress unused error
 export default function ProfilePage() {
     const {
         user,
@@ -35,7 +33,6 @@ export default function ProfilePage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState<TabId>((location.state as any)?.tab || 'profile');
-    const [saveSuccess, setSaveSuccess] = useState('');
 
     useEffect(() => {
         if ((location.state as any)?.tab) {
@@ -73,11 +70,6 @@ export default function ProfilePage() {
         navigate('/');
     };
 
-    const showToast = (msg: string) => {
-        setSaveSuccess(msg);
-        setTimeout(() => setSaveSuccess(''), 2000);
-    };
-
     const initials = user.name
         .split(' ')
         .map(n => n[0])
@@ -89,7 +81,7 @@ export default function ProfilePage() {
         { id: 'profile', label: 'Mi Perfil', icon: User, color: 'bg-blue-500' },
         { id: 'addresses', label: 'Direcciones', icon: MapPin, color: 'bg-green-500' },
         { id: 'orders', label: 'Mis Pedidos', icon: Package, color: 'bg-amber-500' },
-        { id: 'favorites', label: 'Favoritos', icon: Heart, color: 'bg-red-500' },
+        { id: 'favorites', label: 'Favoritos', icon: Heart, color: 'bg-red-50' },
     ];
 
     return (
@@ -146,7 +138,7 @@ export default function ProfilePage() {
             {/* Main Content Area */}
             <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-16 pb-20 relative z-20">
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Navigation Sidebar (Desktop) / Menu (Mobile) */}
+                    {/* Navigation Sidebar */}
                     <aside className="lg:w-80 shrink-0 -mx-2 md:mx-0 sticky top-[80px] md:relative z-30 mb-4 md:mb-0">
                         <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-lg md:shadow-2xl rounded-none md:rounded-[32px] p-2 flex md:block overflow-x-auto no-scrollbar gap-1.5 px-3 md:px-2 snap-x snap-mandatory">
                             {tabs.map(tab => {
@@ -157,10 +149,9 @@ export default function ProfilePage() {
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start
-                                            ${
-                                                isActive
-                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-200 ring-4 ring-red-600/5'
-                                                    : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
+                                            ${isActive
+                                                ? 'bg-red-600 text-white shadow-lg shadow-red-200 ring-4 ring-red-600/5'
+                                                : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
                                             }`}
                                     >
                                         <div
@@ -181,40 +172,15 @@ export default function ProfilePage() {
                                     </button>
                                 );
                             })}
-
-                            <div className="hidden md:block h-px bg-gray-100 mx-4 my-2" />
-
-                            <button
-                                onClick={handleLogout}
-                                className="shrink-0 flex items-center gap-2.5 p-2.5 rounded-2xl text-red-500 bg-red-50 hover:bg-red-100 transition-colors md:hidden border border-red-100"
-                            >
-                                <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-red-500 shadow-sm">
-                                    <LogOut size={16} />
-                                </div>
-                                <span className="font-extrabold text-[11px] uppercase tracking-wider">
-                                    Salir
-                                </span>
-                            </button>
                         </div>
                     </aside>
 
                     {/* Content Section */}
                     <div className="flex-1 min-w-0">
                         <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-[32px] overflow-hidden">
-                            {saveSuccess && (
-                                <div className="bg-green-600 text-white p-4 flex items-center gap-2 animate-in slide-in-from-top duration-300">
-                                    <CheckCircle size={18} />
-                                    <span className="font-bold text-sm">{saveSuccess}</span>
-                                </div>
-                            )}
-
                             <div className="p-0 md:p-8">
                                 {activeTab === 'profile' && (
-                                    <ProfileTab
-                                        user={user}
-                                        updateProfile={updateProfile}
-                                        onSuccess={showToast}
-                                    />
+                                    <ProfileTab user={user} updateProfile={updateProfile} />
                                 )}
                                 {activeTab === 'addresses' && (
                                     <AddressesTab
@@ -223,7 +189,6 @@ export default function ProfilePage() {
                                         editAddress={editAddress}
                                         removeAddress={removeAddress}
                                         setDefaultAddress={setDefaultAddress}
-                                        onSuccess={showToast}
                                     />
                                 )}
                                 {activeTab === 'orders' && <OrdersTab />}

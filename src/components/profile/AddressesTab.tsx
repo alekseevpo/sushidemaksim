@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MapPin, Plus, Star, Trash2, Pencil, X, Phone } from 'lucide-react';
 import { UserAddress } from '../../types';
+import { useToast } from '../../context/ToastContext';
 
 interface AddressSuggestion {
     display_name: string;
@@ -22,7 +23,6 @@ interface Props {
     editAddress?: (id: string, data: any) => Promise<void>;
     removeAddress: (id: string) => Promise<void>;
     setDefaultAddress: (id: string) => Promise<void>;
-    onSuccess: (msg: string) => void;
 }
 
 export default function AddressesTab({
@@ -31,8 +31,8 @@ export default function AddressesTab({
     editAddress,
     removeAddress,
     setDefaultAddress,
-    onSuccess,
 }: Props) {
+    const { success, error } = useToast();
     const [showAddAddress, setShowAddAddress] = useState(false);
     const [editId, setEditId] = useState<string | null>(null);
     const [newAddress, setNewAddress] = useState({
@@ -73,9 +73,9 @@ export default function AddressesTab({
             try {
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?` +
-                        `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
-                        `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
-                        `&q=${encodeURIComponent(searchQuery)}`
+                    `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
+                    `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
+                    `&q=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await res.json();
                 setSuggestions(data);
@@ -161,14 +161,14 @@ export default function AddressesTab({
         try {
             if (editId && editAddress) {
                 await editAddress(editId, newAddress);
-                onSuccess('Dirección actualizada');
+                success('¡Dirección actualizada con éxito! 📍');
             } else {
                 await addAddress(newAddress);
-                onSuccess('Dirección añadida');
+                success('¡Dirección añadida con éxito! 🏠');
             }
             resetForm();
-        } catch {
-            alert('Error al guardar la dirección');
+        } catch (err: any) {
+            error(err.message || 'Error al guardar la dirección');
         }
     };
 
@@ -388,10 +388,9 @@ export default function AddressesTab({
                         <div
                             key={addr.id}
                             className={`group p-6 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row gap-6
-                                ${
-                                    addr.isDefault
-                                        ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
-                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
+                                ${addr.isDefault
+                                    ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
+                                    : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
                                 }`}
                         >
                             <div
