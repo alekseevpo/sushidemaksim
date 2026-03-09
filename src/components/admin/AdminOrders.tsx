@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Package,
     Search,
@@ -14,7 +14,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
 import { OrderTimer } from './OrderTimer';
 
-export default function AdminOrders() {
+interface AdminOrdersProps {
+    isGlobalSoundEnabled: boolean;
+    setIsGlobalSoundEnabled: (enabled: boolean) => void;
+    globalPendingCount: number;
+}
+
+export default function AdminOrders({
+    isGlobalSoundEnabled,
+    setIsGlobalSoundEnabled,
+    globalPendingCount,
+}: AdminOrdersProps) {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -26,10 +36,6 @@ export default function AdminOrders() {
         oldStatus: string;
         newStatus: string;
     } | null>(null);
-    const [isSoundEnabled, setIsSoundEnabled] = useState(false);
-    const pendingReminders = useRef<Map<number, number>>(new Map()); // id -> lastNotifiedAt
-    const isFirstLoad = useRef(true);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const loadOrders = async (
         page: number = 1,
@@ -57,56 +63,8 @@ export default function AdminOrders() {
             }
 
             const data = await api.get(url);
-            const fetchedOrders = data.orders || [];
-
-            // Sound Notification Logic (Repeat every 2 minutes if still pending)
-            if (isSoundEnabled) {
-                const pendingOrders = fetchedOrders.filter((o: any) => o.status === 'pending');
-                let shouldPlaySound = false;
-                const now = Date.now();
-
-                // 1. Check for new or overdue pending orders
-                pendingOrders.forEach((order: any) => {
-                    const lastNotified = pendingReminders.current.get(order.id);
-
-                    if (!lastNotified) {
-                        // Brand new pending order
-                        if (!isFirstLoad.current) {
-                            shouldPlaySound = true;
-                        }
-                        pendingReminders.current.set(order.id, now);
-                    } else if (now - lastNotified >= 120000) {
-                        // Existing pending order, but 2 minutes have passed
-                        shouldPlaySound = true;
-                        pendingReminders.current.set(order.id, now);
-                    }
-                });
-
-                // 2. Cleanup: Remove orders that are no longer pending
-                const pendingIds = new Set(pendingOrders.map((o: any) => o.id));
-                for (const id of pendingReminders.current.keys()) {
-                    if (!pendingIds.has(id)) {
-                        pendingReminders.current.delete(id);
-                    }
-                }
-
-                if (shouldPlaySound && audioRef.current) {
-                    audioRef.current.play().catch(e => console.error('Audio play failed:', e));
-                }
-            } else {
-                // Keep the tracking updated even if sound is off to avoid a "blast" of old alerts when turning it on
-                fetchedOrders.forEach((order: any) => {
-                    if (order.status === 'pending' && !pendingReminders.current.has(order.id)) {
-                        pendingReminders.current.set(order.id, Date.now());
-                    } else if (order.status !== 'pending') {
-                        pendingReminders.current.delete(order.id);
-                    }
-                });
-            }
-
-            setOrders(fetchedOrders);
+            setOrders(data.orders || []);
             setPagination(data.pagination);
-            isFirstLoad.current = false;
         } catch (err) {
             console.error('Error fetching admin orders:', err);
             if (!isPolling)
@@ -120,14 +78,14 @@ export default function AdminOrders() {
         loadOrders(pagination.page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Refresh every 30 seconds to keep up to date (faster for sound alerts)
+        // Refresh every 30 seconds
         const intervalId = setInterval(() => {
             loadOrders(pagination.page, filter, true);
         }, 30000);
 
         return () => clearInterval(intervalId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pagination.page, filter, isSoundEnabled]);
+    }, [pagination.page, filter]);
 
     const handleUpdateStatus = async (id: number, newStatus: string) => {
         const order = orders.find(o => o.id === id);
@@ -210,13 +168,6 @@ export default function AdminOrders() {
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Audio element for notifications */}
-            <audio
-                ref={audioRef}
-                src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
-                preload="auto"
-            />
-
             {/* Top Controls */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 space-y-4">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -235,15 +186,15 @@ export default function AdminOrders() {
                             />
                         </div>
                         <button
-                            onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                            onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
                             className={`p-2 rounded-lg transition border ${
-                                isSoundEnabled
+                                isGlobalSoundEnabled
                                     ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
                                     : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
                             }`}
-                            title={isSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
+                            title={isGlobalSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
                         >
-                            {isSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                            {isGlobalSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
                         </button>
                     </div>
                     <button
@@ -259,7 +210,11 @@ export default function AdminOrders() {
                 <div className="flex bg-gray-50 p-1 rounded-xl w-full overflow-x-auto no-scrollbar">
                     <div className="flex gap-1 min-w-max">
                         {[
-                            { id: 'active', label: 'Activos' },
+                            {
+                                id: 'active',
+                                label: 'POR HACER (TODO)',
+                                badge: globalPendingCount > 0,
+                            },
                             { id: 'unpaid', label: 'Por Pagar' },
                             { id: 'preparing', label: 'Cocinando' },
                             { id: 'on_the_way', label: 'En Camino' },
@@ -273,234 +228,220 @@ export default function AdminOrders() {
                                     setFilter(tab.id);
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
-                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${
+                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${
                                     filter === tab.id
                                         ? 'bg-white text-red-600 shadow-sm border border-gray-100'
                                         : 'text-gray-400 hover:text-gray-600'
                                 }`}
                             >
                                 {tab.label}
+                                {tab.badge && (
+                                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border border-white"></span>
+                                    </span>
+                                )}
                             </button>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {error ? (
-                <div className="bg-red-50 border border-red-100 p-6 rounded-xl text-center">
-                    <p className="text-red-700 font-bold mb-2">¡Ups! {error}</p>
-                    <button
-                        onClick={() => loadOrders(pagination.page)}
-                        className="text-red-600 underline text-sm font-bold"
-                    >
-                        Intentar de nuevo
-                    </button>
+            {error && (
+                <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100 flex items-center gap-3">
+                    <RefreshCw className="animate-spin" size={18} />
+                    <p className="font-medium">{error}</p>
                 </div>
-            ) : loading && orders.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
-                    <RefreshCw size={32} className="mx-auto mb-4 animate-spin" />
-                    <p>Cargando pedidos...</p>
+            )}
+
+            {!loading && filteredOrders.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center">
+                    <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Package size={32} />
+                    </div>
+                    <h3 className="text-gray-500 font-medium tracking-tight">
+                        No se encontraron pedidos.
+                    </h3>
                 </div>
             ) : (
-                <div className="space-y-4">
-                    {filteredOrders.length === 0 ? (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-                            <Package size={40} className="text-gray-300 mx-auto mb-3" />
-                            <p className="text-gray-500 font-bold">No se encontraron pedidos.</p>
+                <div className="grid gap-4">
+                    {loading && filteredOrders.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                            <RefreshCw className="animate-spin text-red-600 mb-4" size={32} />
+                            <p className="text-gray-500 font-medium">Cargando pedidos...</p>
                         </div>
                     ) : (
                         filteredOrders.map(order => (
                             <div
                                 key={order.id}
-                                className="bg-white border text-left border-gray-200 shadow-sm rounded-xl overflow-hidden hover:shadow-md transition"
+                                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
                             >
-                                <div className="p-4 sm:p-5 bg-gray-50 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-1">
-                                            <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-                                                Pedido #{String(order.id).padStart(5, '0')}
-                                                {order.status === 'waiting_payment' && (
-                                                    <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded border border-amber-200 uppercase font-black">
-                                                        Invitación / Borrador
-                                                    </span>
-                                                )}
-                                            </h3>
-                                            <span className="text-sm text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full font-medium">
-                                                {(() => {
-                                                    const d = new Date(order.created_at);
-                                                    const validDate = isNaN(d.getTime())
-                                                        ? new Date(
-                                                              order.created_at.replace(' ', 'T') +
-                                                                  (order.created_at.includes('Z') ||
-                                                                  order.created_at.includes('+')
-                                                                      ? ''
-                                                                      : 'Z')
-                                                          )
-                                                        : d;
-                                                    return validDate.toLocaleString('es-ES', {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
+                                {/* Header del pedido */}
+                                <div className="p-4 sm:p-5 border-b border-gray-50 bg-gray-50/30 flex flex-wrap items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                            <Package className="text-red-500" size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <h4 className="font-bold text-gray-900">
+                                                    Pedido #{String(order.id).padStart(5, '0')}
+                                                </h4>
+                                                <span
+                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                        statusOptions.find(
+                                                            s => s.value === order.status
+                                                        )?.color || ''
+                                                    }`}
+                                                >
+                                                    {statusOptions.find(
+                                                        s => s.value === order.status
+                                                    )?.label || order.status}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 font-medium">
+                                                {new Date(order.created_at).toLocaleString(
+                                                    'es-ES',
+                                                    {
                                                         day: '2-digit',
                                                         month: 'short',
-                                                    });
-                                                })()}
-                                            </span>
-                                        </div>
-                                        <div className="text-sm font-medium text-gray-600">
-                                            <strong>Total:</strong>{' '}
-                                            <span className="text-red-600 font-bold">
-                                                {formatCurrency(order.total)}
-                                            </span>
-                                            {order.promocode && (
-                                                <span className="ml-2 bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">
-                                                    Promo: {order.promocode}
-                                                </span>
-                                            )}
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    }
+                                                )}
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+                                    <div className="flex items-center gap-4 ml-auto sm:ml-0">
                                         <OrderTimer
                                             createdAt={order.created_at}
                                             status={order.status}
                                         />
-
-                                        <select
-                                            value={order.status}
-                                            onChange={e =>
-                                                handleUpdateStatus(order.id, e.target.value)
-                                            }
-                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${
-                                                statusOptions.find(
-                                                    opt => opt.value === order.status
-                                                )?.color || 'bg-gray-100'
-                                            }`}
-                                        >
-                                            {statusOptions.map(opt => (
-                                                <option
-                                                    key={opt.value}
-                                                    value={opt.value}
-                                                    className="bg-white text-gray-900 font-medium"
-                                                >
-                                                    {opt.label}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div className="text-right">
+                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">
+                                                Total
+                                            </p>
+                                            <p className="text-lg font-black text-gray-900">
+                                                {formatCurrency(order.total_amount)}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="p-4 sm:p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Cuerpo del pedido */}
+                                <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                                    {/* Info Cliente */}
                                     <div className="space-y-4">
                                         <div>
-                                            <h4 className="text-xs uppercase font-bold text-gray-400 mb-2">
-                                                Cliente y Entrega
-                                            </h4>
-                                            <div className="bg-gray-50 rounded-lg p-3 text-sm flex flex-col gap-1 border border-gray-100">
-                                                <span>
-                                                    <strong>Nombre:</strong> {order.user_name}
+                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
+                                                <Smartphone size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">
+                                                    Cliente y Contacto
                                                 </span>
-                                                <span>
-                                                    <strong>Email:</strong>{' '}
-                                                    <span className="text-gray-500">
-                                                        {order.user_email}
-                                                    </span>
+                                            </div>
+                                            <p className="font-bold text-gray-900 text-sm mb-1">
+                                                {order.users?.name || 'Invitado'}
+                                            </p>
+                                            <p className="text-xs text-gray-600 font-medium">
+                                                {order.phone_number}
+                                            </p>
+                                            {order.users?.email && (
+                                                <p className="text-[10px] text-gray-400 mt-1">
+                                                    {order.users.email}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
+                                                <Monitor size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">
+                                                    Dirección de Entrega
                                                 </span>
-                                                <span>
-                                                    <strong>Dirección:</strong>{' '}
-                                                    {order.delivery_address}
+                                            </div>
+                                            <p className="text-sm text-gray-700 leading-relaxed font-medium">
+                                                {order.delivery_address}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Comuna / Plataforma */}
+                                    <div className="space-y-4">
+                                        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
+                                                <Globe size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">
+                                                    Origen del Pedido
                                                 </span>
-                                                <span>
-                                                    <strong>Teléfono:</strong>{' '}
-                                                    <a
-                                                        href={`tel:${order.phone_number}`}
-                                                        className="text-blue-600 hover:underline"
-                                                    >
-                                                        {order.phone_number}
-                                                    </a>
-                                                </span>
-                                                {(order.device_type || order.os_name) && (
-                                                    <div className="mt-2 pt-2 border-t border-gray-100 flex flex-wrap gap-3">
-                                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                                                            {order.device_type === 'mobile' ? (
-                                                                <Smartphone size={10} />
-                                                            ) : (
-                                                                <Monitor size={10} />
-                                                            )}
-                                                            {order.device_type || 'PC'}
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                                                            <div className="w-2.5 h-2.5 rounded-full bg-gray-200 flex items-center justify-center text-[8px] text-gray-500">
-                                                                OS
-                                                            </div>
-                                                            {order.os_name || 'N/A'}
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                                                            <Globe size={10} />
-                                                            {order.browser_name || 'Browser'}
-                                                        </div>
-                                                    </div>
-                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                                                <p className="text-xs font-bold text-gray-700">
+                                                    Web Directa • Sushi de Maksim
+                                                </p>
                                             </div>
                                         </div>
-                                        {order.notes && (
-                                            <div>
-                                                <h4 className="text-xs uppercase font-bold text-gray-400 mb-2">
-                                                    Comentarios
-                                                </h4>
-                                                <div className="bg-amber-50 rounded-lg p-3 text-sm text-amber-900 border border-amber-200 italic shadow-sm">
-                                                    "{order.notes}"
-                                                </div>
+
+                                        {order.promocode && (
+                                            <div className="bg-red-50 rounded-xl p-3 border border-red-100">
+                                                <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">
+                                                    Promo Aplicada
+                                                </p>
+                                                <p className="text-xs font-black text-red-600">
+                                                    {order.promocode.toUpperCase()}
+                                                </p>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div>
-                                        <h4 className="text-xs uppercase font-bold text-gray-400 mb-2">
-                                            Artículos ({order.items?.length || 0})
-                                        </h4>
-                                        <div className="bg-gray-50 border border-gray-100 rounded-lg divide-y divide-gray-200">
-                                            {order.items?.map((item: any) => (
-                                                <div
-                                                    key={item.id}
-                                                    className="p-3 flex items-center justify-between text-sm"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-200 flex items-center justify-center">
-                                                            {item.image ? (
-                                                                <img
-                                                                    src={item.image}
-                                                                    alt=""
-                                                                    className="w-full h-full object-cover"
-                                                                    onError={e => {
-                                                                        e.currentTarget.style.display =
-                                                                            'none';
-                                                                        const p =
-                                                                            e.currentTarget
-                                                                                .parentElement;
-                                                                        if (p)
-                                                                            p.innerHTML =
-                                                                                '<span class="text-xs">🍣</span>';
-                                                                    }}
-                                                                />
-                                                            ) : (
-                                                                <span className="text-xs">🍣</span>
-                                                            )}
-                                                        </div>
-                                                        <span className="font-bold text-gray-800">
-                                                            {item.name}{' '}
-                                                            <span className="text-gray-400 font-normal">
-                                                                x{item.quantity}
-                                                            </span>
-                                                        </span>
-                                                    </div>
-                                                    <span className="font-bold text-gray-600">
-                                                        {formatCurrency(
-                                                            item.price_at_time * item.quantity
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            ))}
+                                    {/* Acciones de Estatus */}
+                                    <div className="lg:border-l border-gray-50 lg:pl-8 flex flex-col justify-between">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                                                Cambiar Estado
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {statusOptions.map(opt => (
+                                                    <button
+                                                        key={opt.value}
+                                                        onClick={() =>
+                                                            handleUpdateStatus(order.id, opt.value)
+                                                        }
+                                                        disabled={order.status === opt.value}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                                            order.status === opt.value
+                                                                ? `${opt.color} opacity-100 scale-100 shadow-sm`
+                                                                : 'bg-white text-gray-400 border border-gray-100 hover:border-gray-300 hover:text-gray-600 shadow-sm hover:shadow-md'
+                                                        }`}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/* Items del pedido (Colapsable o scrollable) */}
+                                <div className="bg-gray-50/50 px-4 py-3 border-t border-gray-50">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                                        Productos ({order.items?.length || 0})
+                                    </p>
+                                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                                        {order.items?.map((item: any, idx: number) => (
+                                            <div
+                                                key={idx}
+                                                className="flex items-center gap-2 group"
+                                            >
+                                                <span className="flex items-center justify-center bg-white border border-gray-100 text-[10px] font-black w-5 h-5 rounded-md text-red-600">
+                                                    {item.quantity}
+                                                </span>
+                                                <span className="text-sm font-bold text-gray-700 group-hover:text-red-600 transition-colors">
+                                                    {item.name}
+                                                </span>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -527,32 +468,30 @@ export default function AdminOrders() {
                 </div>
             )}
 
-            {/* Notification Toast */}
             <AnimatePresence>
                 {notification && (
                     <motion.div
-                        initial={{ opacity: 0, y: 50, x: 50, scale: 0.8 }}
-                        animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-                        className="fixed bottom-6 right-6 z-[100] flex items-center gap-3 bg-gray-900 text-white px-5 py-4 rounded-2xl shadow-2xl border border-white/10"
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        className="fixed bottom-6 right-6 z-50 pointer-events-none"
                     >
-                        <div className="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center shrink-0">
-                            <CheckCircle2 size={24} />
-                        </div>
-                        <div className="flex flex-col">
-                            <p className="font-black text-sm">Estado actualizado</p>
-                            <p className="text-xs text-gray-400">
-                                Pedido <span className="text-white">#{notification.id}</span>:
-                                <span className="mx-1 line-through opacity-50">
-                                    {statusOptions.find(opt => opt.value === notification.oldStatus)
-                                        ?.label || notification.oldStatus}
-                                </span>
-                                →
-                                <span className="ml-1 text-green-400 font-bold">
-                                    {statusOptions.find(opt => opt.value === notification.newStatus)
-                                        ?.label || notification.newStatus}
-                                </span>
-                            </p>
+                        <div className="bg-gray-900/95 backdrop-blur-md text-white rounded-2xl shadow-2xl p-5 border border-white/10 flex items-center gap-4 min-w-[320px]">
+                            <div className="bg-green-500/20 text-green-400 p-2.5 rounded-xl border border-green-500/20">
+                                <CheckCircle2 size={24} />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
+                                    Pedido #{String(notification.id).padStart(5, '0')}
+                                </p>
+                                <p className="text-sm font-bold leading-tight">
+                                    Estado actualizado a{' '}
+                                    <span className="text-green-400">
+                                        {statusOptions.find(s => s.value === notification.newStatus)
+                                            ?.label || notification.newStatus}
+                                    </span>
+                                </p>
+                            </div>
                         </div>
                     </motion.div>
                 )}

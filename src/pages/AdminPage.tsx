@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -67,6 +67,64 @@ export default function AdminPage() {
     const [reports, setReports] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showHelp, setShowHelp] = useState(true);
+
+    // Global Sound & Pending Orders Monitoring
+    const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+    const [pendingCount, setPendingCount] = useState(0);
+    const pendingReminders = useRef<Map<number, number>>(new Map());
+    const isFirstLoad = useRef(true);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const checkGlobalOrders = async () => {
+        try {
+            // Fetch all pending orders for global alert
+            const data = await api.get('/admin/orders?status=pending&limit=100');
+            const pendingOrders = data.orders || [];
+            setPendingCount(data.pagination?.total || pendingOrders.length);
+
+            if (isSoundEnabled) {
+                let shouldPlaySound = false;
+                const now = Date.now();
+
+                pendingOrders.forEach((order: any) => {
+                    const lastNotified = pendingReminders.current.get(order.id);
+                    if (!lastNotified) {
+                        if (!isFirstLoad.current) shouldPlaySound = true;
+                        pendingReminders.current.set(order.id, now);
+                    } else if (now - lastNotified >= 120000) {
+                        shouldPlaySound = true;
+                        pendingReminders.current.set(order.id, now);
+                    }
+                });
+
+                // Cleanup
+                const pendingIds = new Set(pendingOrders.map((o: any) => o.id));
+                for (const id of pendingReminders.current.keys()) {
+                    if (!pendingIds.has(id)) pendingReminders.current.delete(id);
+                }
+
+                if (shouldPlaySound && audioRef.current) {
+                    audioRef.current.play().catch(e => console.error('Sound alert failed:', e));
+                }
+            } else {
+                pendingOrders.forEach((order: any) => {
+                    if (!pendingReminders.current.has(order.id)) {
+                        pendingReminders.current.set(order.id, Date.now());
+                    }
+                });
+            }
+            isFirstLoad.current = false;
+        } catch (err) {
+            console.error('Global orders check failed', err);
+        }
+    };
+
+    useEffect(() => {
+        checkGlobalOrders();
+        const interval = setInterval(checkGlobalOrders, 30000);
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSoundEnabled]);
 
     // Authorization Check
     useEffect(() => {
@@ -148,10 +206,15 @@ export default function AdminPage() {
         );
     }
 
-    const navLinks: { id: TabId; label: string; icon: any }[] = [
+    const navLinks = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'analytics', label: 'Analítica Avanzada', icon: BarChart3 },
-        { id: 'orders', label: 'Gestión de Pedidos', icon: Package },
+        {
+            id: 'orders',
+            label: 'Gestión de Pedidos',
+            icon: Package,
+            badge: pendingCount > 0 ? pendingCount : null,
+        },
         { id: 'menu', label: 'Gestión de Menú', icon: MenuIcon },
         { id: 'users', label: 'Usuarios y Clientes', icon: Users },
         { id: 'promos', label: 'Gestión de Promociones', icon: ShoppingBag },
@@ -176,6 +239,11 @@ export default function AdminPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+            <audio
+                ref={audioRef}
+                src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+                preload="auto"
+            />
             {/* Sidebar */}
             <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col md:fixed h-full z-10">
                 <div className="p-6 border-b border-gray-100 flex items-center gap-3">
@@ -195,7 +263,7 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => {
-                                    setActiveTab(tab.id);
+                                    setActiveTab(tab.id as TabId);
                                     if (typeof navigator !== 'undefined' && navigator.vibrate) {
                                         navigator.vibrate(5);
                                     }
@@ -224,6 +292,11 @@ export default function AdminPage() {
                                         className={isActive ? 'text-red-600' : 'text-gray-400'}
                                     />
                                     {tab.label}
+                                    {(tab as any).badge && (
+                                        <span className="ml-auto bg-red-600 text-white text-[10px] h-5 w-5 flex items-center justify-center rounded-full font-bold animate-pulse">
+                                            {(tab as any).badge}
+                                        </span>
+                                    )}
                                 </div>
                                 {isActive && (
                                     <ChevronRight
@@ -1020,7 +1093,13 @@ export default function AdminPage() {
 
                     {activeTab === 'menu' && <AdminMenu />}
                     {activeTab === 'users' && <AdminUsers />}
-                    {activeTab === 'orders' && <AdminOrders />}
+                    {activeTab === 'orders' && (
+                        <AdminOrders
+                            isGlobalSoundEnabled={isSoundEnabled}
+                            setIsGlobalSoundEnabled={setIsSoundEnabled}
+                            globalPendingCount={pendingCount}
+                        />
+                    )}
                     {activeTab === 'settings' && <AdminSettings />}
                     {activeTab === 'promos' && <AdminPromos />}
                     {activeTab === 'blog' && <AdminBlog />}
