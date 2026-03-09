@@ -156,7 +156,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         {isEditing ? 'Editar Perfil' : 'Datos Personales'}
                     </h2>
                     <p className="text-gray-500 text-[11px] md:text-sm mt-1">
-                        Gestiona tu información básica и seguridad
+                        Gestiona tu información básica y seguridad
                     </p>
                 </div>
 
@@ -218,9 +218,9 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         label: 'Fecha de Cumpleaños',
                         value: user.birthDate
                             ? (() => {
-                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                  return `${d}/${m}/${y}`;
-                              })()
+                                const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                return `${d}/${m}/${y}`;
+                            })()
                             : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
@@ -312,10 +312,9 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                             type="button"
                                             onClick={() => setEditAvatar(avatar)}
                                             className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                                ${
-                                                    editAvatar === avatar
-                                                        ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
-                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                                ${editAvatar === avatar
+                                                    ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
+                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
                                                 }`}
                                         >
                                             {avatar}
@@ -387,7 +386,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => {},
+                                    toggle: () => { },
                                 },
                             ].map(f => (
                                 <div key={f.label}>
