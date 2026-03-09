@@ -259,7 +259,13 @@ router.get(
             .from('orders')
             .select('*, users(name, email), items:order_items(*)', { count: 'exact' });
 
-        if (status) query = query.eq('status', status);
+        if (status) {
+            if (status.includes(',')) {
+                query = query.in('status', status.split(','));
+            } else {
+                query = query.eq('status', status);
+            }
+        }
         if (userId) query = query.eq('user_id', userId);
 
         const {

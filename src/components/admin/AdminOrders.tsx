@@ -17,11 +17,28 @@ export default function AdminOrders() {
         newStatus: string;
     } | null>(null);
 
-    const loadOrders = async (page: number = 1) => {
+    const loadOrders = async (page: number = 1, currentFilter: string = filter) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await api.get(`/admin/orders?page=${page}&limit=${pagination.limit}`);
+            let url = `/admin/orders?page=${page}&limit=${pagination.limit}`;
+
+            // Map frontend filters to backend status strings
+            const filterMap: Record<string, string> = {
+                active: 'pending,received,confirmed,preparing,on_the_way',
+                unpaid: 'waiting_payment',
+                preparing: 'confirmed,preparing',
+                on_the_way: 'on_the_way',
+                delivered: 'delivered',
+                cancelled: 'cancelled',
+            };
+
+            const statusParam = filterMap[currentFilter];
+            if (statusParam) {
+                url += `&status=${statusParam}`;
+            }
+
+            const data = await api.get(url);
             setOrders(data.orders || []);
             setPagination(data.pagination);
         } catch (err) {
@@ -42,7 +59,7 @@ export default function AdminOrders() {
 
         return () => clearInterval(intervalId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pagination.page]);
+    }, [pagination.page, filter]);
 
     const handleUpdateStatus = async (id: number, newStatus: string) => {
         const order = orders.find(o => o.id === id);
@@ -109,22 +126,10 @@ export default function AdminOrders() {
     };
 
     const filteredOrders = orders.filter(o => {
-        // 1. Status Filter
-        if (filter === 'active') {
-            if (['delivered', 'cancelled', 'waiting_payment'].includes(o.status)) return false;
-        } else if (filter === 'unpaid') {
-            if (o.status !== 'waiting_payment') return false;
-        } else if (filter === 'preparing') {
-            if (!['confirmed', 'preparing'].includes(o.status)) return false;
-        } else if (filter === 'on_the_way') {
-            if (o.status !== 'on_the_way') return false;
-        } else if (filter === 'delivered') {
-            if (o.status !== 'delivered') return false;
-        } else if (filter === 'cancelled') {
-            if (o.status !== 'cancelled') return false;
-        }
+        // Since status filtering is now handled by the backend,
+        // we only perform frontend filtering for the SEARCH string.
+        if (!search) return true;
 
-        // 2. Search Filter
         const matchesSearch =
             String(o.id).includes(search) ||
             (o.delivery_address &&
@@ -176,12 +181,14 @@ export default function AdminOrders() {
                         ].map(tab => (
                             <button
                                 key={tab.id}
-                                onClick={() => setFilter(tab.id)}
-                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${
-                                    filter === tab.id
+                                onClick={() => {
+                                    setFilter(tab.id);
+                                    setPagination(prev => ({ ...prev, page: 1 }));
+                                }}
+                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${filter === tab.id
                                         ? 'bg-white text-red-600 shadow-sm border border-gray-100'
                                         : 'text-gray-400 hover:text-gray-600'
-                                }`}
+                                    }`}
                             >
                                 {tab.label}
                             </button>
@@ -234,12 +241,12 @@ export default function AdminOrders() {
                                                     const d = new Date(order.created_at);
                                                     const validDate = isNaN(d.getTime())
                                                         ? new Date(
-                                                              order.created_at.replace(' ', 'T') +
-                                                                  (order.created_at.includes('Z') ||
-                                                                  order.created_at.includes('+')
-                                                                      ? ''
-                                                                      : 'Z')
-                                                          )
+                                                            order.created_at.replace(' ', 'T') +
+                                                            (order.created_at.includes('Z') ||
+                                                                order.created_at.includes('+')
+                                                                ? ''
+                                                                : 'Z')
+                                                        )
                                                         : d;
                                                     return validDate.toLocaleString('es-ES', {
                                                         hour: '2-digit',
@@ -274,11 +281,10 @@ export default function AdminOrders() {
                                             onChange={e =>
                                                 handleUpdateStatus(order.id, e.target.value)
                                             }
-                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${
-                                                statusOptions.find(
-                                                    opt => opt.value === order.status
-                                                )?.color || 'bg-gray-100'
-                                            }`}
+                                            className={`text-sm font-bold border-2 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 transition appearance-none cursor-pointer ${statusOptions.find(
+                                                opt => opt.value === order.status
+                                            )?.color || 'bg-gray-100'
+                                                }`}
                                         >
                                             {statusOptions.map(opt => (
                                                 <option
@@ -413,17 +419,16 @@ export default function AdminOrders() {
                 </div>
             )}
 
-            {!loading && pagination.pages > 1 && (
+            {!loading && filteredOrders.length > 0 && pagination.pages > 1 && (
                 <div className="mt-6 flex justify-center gap-2">
                     {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
                         <button
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                pageNum === pagination.page
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
                                     ? 'bg-red-600 text-white shadow-md'
                                     : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                            }`}
+                                }`}
                         >
                             {pageNum}
                         </button>
