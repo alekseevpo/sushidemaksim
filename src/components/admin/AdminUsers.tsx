@@ -12,6 +12,8 @@ import {
     ChevronUp,
     ChevronDown,
     Trash2,
+    Search,
+    X,
 } from 'lucide-react';
 
 import { api, ApiError } from '../../utils/api';
@@ -25,16 +27,26 @@ export default function AdminUsers() {
     const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
     const [userToDelete, setUserToDelete] = useState<any>(null);
 
+    const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [search]);
+
     useEffect(() => {
         loadUsers(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sort]);
+    }, [sort, debouncedSearch]);
 
     const loadUsers = async (page: number) => {
         setLoading(true);
         try {
             const data = await api.get(
-                `/admin/users?page=${page}&limit=${pagination.limit}&sortBy=${sort.field}&order=${sort.order}`
+                `/admin/users?page=${page}&limit=${pagination.limit}&sortBy=${sort.field}&order=${sort.order}&search=${debouncedSearch}`
             );
             setUsers(data.users || []);
             setPagination(data.pagination);
@@ -102,6 +114,31 @@ export default function AdminUsers() {
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Search Bar */}
+            <div className="mb-6 flex justify-end">
+                <div className="relative w-full max-w-md">
+                    <Search
+                        size={18}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Buscar por ID, nombre o email..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="w-full pl-10 pr-10 py-2 border border-gray-100 rounded-xl bg-white shadow-sm outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                    />
+                    {search && (
+                        <button
+                            onClick={() => setSearch('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
+            </div>
+
             <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm text-gray-600">

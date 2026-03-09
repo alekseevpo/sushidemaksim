@@ -341,6 +341,7 @@ router.get(
         const offset = (page - 1) * limit;
         const sortBy = (req.query.sortBy as string) || 'last_seen_at';
         const order = (req.query.order as string) || 'desc';
+        const search = (req.query.search as string) || '';
         const ascending = order === 'asc';
 
         // Fields directly sortable by Supabase
@@ -351,10 +352,18 @@ router.get(
 
         if (sortBy === 'orderCount' || sortBy === 'totalSpent') {
             // Complex sort: Fetch all users and their order totals, then sort and paginate in memory
-            // We fetch up to 5000 users as a safety limit for performance
-            const { data: allUsers, error: allUsersError } = await supabase
-                .from('users')
-                .select('*, orders(total)');
+            let query = supabase.from('users').select('*, orders(total)');
+
+            if (search) {
+                const searchNum = parseInt(search);
+                if (!isNaN(searchNum) && searchNum.toString() === search) {
+                    query = query.eq('id', searchNum);
+                } else {
+                    query = query.or(`email.ilike.%${search}%,name.ilike.%${search}%`);
+                }
+            }
+
+            const { data: allUsers, error: allUsersError } = await query;
 
             if (allUsersError) throw allUsersError;
 
@@ -378,6 +387,15 @@ router.get(
         } else {
             // Direct sort via Supabase
             let query = supabase.from('users').select('*, orders(total)', { count: 'exact' });
+
+            if (search) {
+                const searchNum = parseInt(search);
+                if (!isNaN(searchNum) && searchNum.toString() === search) {
+                    query = query.eq('id', searchNum);
+                } else {
+                    query = query.or(`email.ilike.%${search}%,name.ilike.%${search}%`);
+                }
+            }
 
             if (sortBy === 'role') {
                 // Roles sort: superadmin -> admin -> user
