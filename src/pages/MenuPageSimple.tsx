@@ -441,7 +441,7 @@ export default function MenuPageSimple() {
                                     <div className="absolute bottom-1.5 right-1.5 flex gap-1">
                                         {item.spicy && (
                                             <span
-                                                className="bg-red-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
+                                                className="bg-white border-2 border-red-500 text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
                                                 title="Picante"
                                             >
                                                 🌶️
@@ -449,7 +449,7 @@ export default function MenuPageSimple() {
                                         )}
                                         {item.vegetarian && (
                                             <span
-                                                className="bg-emerald-600/90 backdrop-blur-sm text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
+                                                className="bg-white border-2 border-emerald-500 text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
                                                 title="Vegetariano"
                                             >
                                                 🥬
