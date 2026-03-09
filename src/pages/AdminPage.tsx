@@ -35,8 +35,6 @@ import {
     Legend,
     AreaChart,
     Area,
-    LineChart,
-    Line,
 } from 'recharts';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
