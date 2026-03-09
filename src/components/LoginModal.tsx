@@ -491,7 +491,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         await new Promise(r => setTimeout(r, 400));
         const result = await register(data.name, data.email, data.phone, data.password);
         if (result.success) {
+            console.log('✅ Registration success. Mode switched to verify-sent.');
             setRegisteredEmail(data.email);
+            setSuccess('Cuenta creada con éxito. Por favor, revisa tu email.');
             setMode('verify-sent');
             setIsLoading(false);
         } else {

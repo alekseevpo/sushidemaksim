@@ -6,6 +6,7 @@ import { config } from '../config.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, emailRule, passwordRule } from '../middleware/validate.js';
+import { sendVerificationEmail } from '../utils/email.js';
 
 const router = Router();
 
@@ -56,13 +57,11 @@ router.post(
 
         // Send verification email
         try {
-            const { sendVerificationEmail } = await import('../utils/email.js');
-            sendVerificationEmail(newUser.email, newUser.name, verificationToken).catch(e =>
-                console.error('Failed to send verification email:', e)
-            );
-            console.log(`📧 Verification email triggered for ${newUser.email}`);
+            await sendVerificationEmail(newUser.email, newUser.name, verificationToken);
+            console.log(`✅ [REGISTER] Verification email sent to ${newUser.email}`);
         } catch (e) {
-            console.error('Could not import email utility:', e);
+            console.error('❌ [REGISTER] SMTP ERROR:', e);
+            // We still proceed since user is created, but they might need to resend
         }
 
         res.status(201).json({
