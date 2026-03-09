@@ -27,7 +27,7 @@ export default function AdminOrders() {
         newStatus: string;
     } | null>(null);
     const [isSoundEnabled, setIsSoundEnabled] = useState(false);
-    const processedOrderIds = useRef<Set<number>>(new Set());
+    const pendingReminders = useRef<Map<number, number>>(new Map()); // id -> lastNotifiedAt
     const isFirstLoad = useRef(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -59,26 +59,49 @@ export default function AdminOrders() {
             const data = await api.get(url);
             const fetchedOrders = data.orders || [];
 
-            // Sound Notification Logic
+            // Sound Notification Logic (Repeat every 2 minutes if still pending)
             if (isSoundEnabled) {
                 const pendingOrders = fetchedOrders.filter((o: any) => o.status === 'pending');
-                let hasNewPending = false;
+                let shouldPlaySound = false;
+                const now = Date.now();
 
+                // 1. Check for new or overdue pending orders
                 pendingOrders.forEach((order: any) => {
-                    if (!processedOrderIds.current.has(order.id)) {
+                    const lastNotified = pendingReminders.current.get(order.id);
+
+                    if (!lastNotified) {
+                        // Brand new pending order
                         if (!isFirstLoad.current) {
-                            hasNewPending = true;
+                            shouldPlaySound = true;
                         }
-                        processedOrderIds.current.add(order.id);
+                        pendingReminders.current.set(order.id, now);
+                    } else if (now - lastNotified >= 120000) {
+                        // Existing pending order, but 2 minutes have passed
+                        shouldPlaySound = true;
+                        pendingReminders.current.set(order.id, now);
                     }
                 });
 
-                if (hasNewPending && audioRef.current) {
+                // 2. Cleanup: Remove orders that are no longer pending
+                const pendingIds = new Set(pendingOrders.map((o: any) => o.id));
+                for (const id of pendingReminders.current.keys()) {
+                    if (!pendingIds.has(id)) {
+                        pendingReminders.current.delete(id);
+                    }
+                }
+
+                if (shouldPlaySound && audioRef.current) {
                     audioRef.current.play().catch(e => console.error('Audio play failed:', e));
                 }
             } else {
-                // Keep IDs updated even if sound is off to avoid a "blast" when turning it on
-                fetchedOrders.forEach((order: any) => processedOrderIds.current.add(order.id));
+                // Keep the tracking updated even if sound is off to avoid a "blast" of old alerts when turning it on
+                fetchedOrders.forEach((order: any) => {
+                    if (order.status === 'pending' && !pendingReminders.current.has(order.id)) {
+                        pendingReminders.current.set(order.id, Date.now());
+                    } else if (order.status !== 'pending') {
+                        pendingReminders.current.delete(order.id);
+                    }
+                });
             }
 
             setOrders(fetchedOrders);
