@@ -191,8 +191,8 @@ export default function AdminPage() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 p-6 md:p-10">
-                <div className="max-w-6xl mx-auto">
+            <main className="flex-1 md:ml-64 p-4 md:p-8">
+                <div className="w-full">
                     {/* Top Bar */}
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
