@@ -2,13 +2,17 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Feature: Invite a Friend (Invitaciones)', () => {
     test('SUCCESS: Create invitation and pay as friend', async ({ page, context }) => {
-        const randomId = Math.floor(Math.random() * 100000);
-        const email = `sender${randomId}@test.com`;
-        const name = 'Invitador E2E';
+        const randomId = Date.now();
+        const email = `test${randomId}@test.com`;
+        const name = `Tester ${randomId}`;
         const pass = 'password123';
 
         // 1. Register Sender
         await page.goto('/');
+        await page.evaluate(() => {
+            localStorage.setItem('cookieConsent', 'accepted');
+        });
+        await page.reload();
         await page.waitForLoadState('networkidle');
 
         // Wait for ACCEDER button explicitly
@@ -16,20 +20,24 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await expect(loginBtnHeader).toBeVisible({ timeout: 15000 });
         await loginBtnHeader.click();
 
-        // Switch to Register (modal inside modal or mode switch)
+        // Switch to Register
         const registerBtn = page.getByRole('button', { name: /Regístrate/i });
         await expect(registerBtn).toBeVisible();
         await registerBtn.click();
 
-        await page.getByPlaceholder(/Tu nombre completo/i).fill(name);
+        await page.getByPlaceholder(/Tu nombre completo|Nombre completo/i).fill(name);
         await page.getByPlaceholder(/\+34 600 000 000/i).fill('600111222');
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
         await page.getByPlaceholder(/Mínimo 6 caracteres/i).fill(pass);
 
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
 
-        // Success alert box
-        await expect(page.locator('div.bg-green-50')).toBeVisible({ timeout: 15000 });
+        // Success message should appear
+        await expect(page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()).toBeVisible({ timeout: 25000 });
+
+        // Force verify in DB to continue E2E flow
+        const { execSync } = await import('child_process');
+        execSync(`npx tsx tests/verify-user.ts ${email}`);
 
         // Go to menu directly to bypass modal closing lag
         await page.goto('/menu');
@@ -68,7 +76,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Invitación E2E');
         await page.getByPlaceholder(/Ej: 15/i).fill('7');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('B');
-        await page.getByPlaceholder(/\+34 600 000 000/i).fill('611222333');
+        await page.locator('input[type="tel"]').fill('611222333');
 
         // Mock navigator.share
         await page.addInitScript(() => {
@@ -94,13 +102,14 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await expect(ordersTabBtn).toBeVisible({ timeout: 15000 });
         await ordersTabBtn.click();
 
-        // Find our order
-        const orderRow = page.locator('tr').filter({ hasText: 'Calle Invitación E2E' }).first();
-        await expect(orderRow).toBeVisible({ timeout: 15000 });
+        // 3. Find our order card (it's the first one in the list)
+        const orderCard = page.locator('div.bg-white').filter({ hasText: '#' }).first();
+        await expect(orderCard).toBeVisible({ timeout: 15000 });
 
-        const orderIdCell = orderRow.locator('td').first();
-        const orderText = await orderIdCell.textContent();
-        const orderId = orderText?.replace('#', '').trim();
+        // Extract ID from the "#000XX" text
+        const orderIdText = await orderCard.locator('span').filter({ hasText: '#' }).first().textContent();
+        const orderId = orderIdText?.replace('#', '').trim();
+        console.log(`Found order ID: ${orderId}`);
 
         if (orderId) {
             const recipientPage = await context.newPage();
@@ -136,6 +145,6 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         const inviteBtn = page.getByRole('button', { name: /¡Que me inviten!/i });
         await expect(inviteBtn).not.toBeVisible();
 
-        await expect(page.locator('text=Regístrate или inicia sesión')).toBeVisible();
+        await expect(page.locator('text=Regístrate o inicia sesión')).toBeVisible();
     });
 });

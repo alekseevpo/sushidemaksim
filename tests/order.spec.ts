@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Critical E2E: Guest Checkout', () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto('/');
+        await page.evaluate(() => {
+            localStorage.setItem('cookieConsent', 'accepted');
+        });
+    });
+
     test('SUCCESS: should place an order when above 20€ threshold', async ({ page }) => {
         await page.goto('/menu');
 
@@ -24,7 +31,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle E2E Verified');
         await page.getByPlaceholder(/Ej: 15/i).fill('1');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('A');
-        await page.getByPlaceholder(/\+34 600 000 000/i).fill(randomPhone);
+        await page.locator('input[type="tel"]').fill(randomPhone);
 
         const submitBtn = page.getByRole('button', { name: /Realizar pedido/i }).first();
         await submitBtn.click();
@@ -47,7 +54,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Error Test');
         await page.getByPlaceholder(/Ej: 15/i).fill('1');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('A');
-        await page.getByPlaceholder(/\+34 600 000 000/i).fill('600999888');
+        await page.locator('input[type="tel"]').fill('600999888');
 
         const submitBtn = page.getByRole('button', { name: /Realizar pedido/i }).first();
         await submitBtn.click();

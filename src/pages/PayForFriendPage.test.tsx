@@ -93,7 +93,7 @@ describe('PayForFriendPage (Integration)', () => {
 
     it('shows error if order not found or already paid', async () => {
         vi.mocked(api.get).mockRejectedValue(
-            new ApiError('Invitación no encontrada или ya ha sido pagada.')
+            new ApiError('Invitación no encontrada o ya ha sido pagada.')
         );
 
         renderWithRouter('999');

@@ -93,7 +93,7 @@ export default function PayForFriendPage() {
                         ¡Vaya! Algo salió mal
                     </h2>
                     <p className="text-gray-500 mb-8">
-                        {error || 'Esta invitación ya не существует или ya ha sido pagada.'}
+                        {error || 'Esta invitación no existe o ya ha sido pagada.'}
                     </p>
                     <Link
                         to="/menu"
@@ -187,8 +187,8 @@ export default function PayForFriendPage() {
                                     const itemImage = item.image.startsWith('http')
                                         ? item.image
                                         : item.image.startsWith('/')
-                                          ? item.image
-                                          : `/${item.image}`;
+                                            ? item.image
+                                            : `/${item.image}`;
 
                                     return (
                                         <div

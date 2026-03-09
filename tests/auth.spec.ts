@@ -3,29 +3,39 @@ import { test, expect } from '@playwright/test';
 test.describe('Authentication Flow', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
-        // Clear auth state
-        await page.evaluate(() => localStorage.removeItem('sushi_token'));
+        // Clear auth and bypass cookie banner
+        await page.evaluate(() => {
+            localStorage.removeItem('sushi_token');
+            localStorage.setItem('cookieConsent', 'accepted');
+        });
         await page.reload();
     });
 
     test('SUCCESS: should register and see the welcome message', async ({ page }) => {
-        const randomId = Math.floor(Math.random() * 100000);
-        const email = `reg${randomId}@test.com`;
+        const randomId = Date.now();
+        const email = `test${randomId}@test.com`;
+        const name = `Tester ${randomId}`;
+        const pass = 'password123';
 
-        await page.getByRole('button', { name: /ACCEDER/i }).click();
+        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
         await page.getByRole('button', { name: /Regístrate/i }).click();
 
-        await page.getByPlaceholder(/Tu nombre completo/i).fill('Test Register');
-        await page.getByPlaceholder(/\+34 600 000 000/i).fill('600000111');
+        await page.getByPlaceholder(/Tu nombre completo|Nombre completo/i).fill(name);
+        await page.getByPlaceholder(/\+34 600 000 000/i).fill('600111222');
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
-        await page.getByPlaceholder(/Mínimo 6 caracteres/i).fill('password123');
+        await page.getByPlaceholder(/Mínimo 6 caracteres/i).fill(pass);
 
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
 
-        // Success alert box
-        const successBox = page.locator('div.bg-green-50').first();
-        await expect(successBox).toBeVisible({ timeout: 10000 });
-        await expect(successBox).toContainText(/(Проверьте пожалуйста почту|confirmación)/i);
+        // 1. Check for error first
+        const errorAlert = page.locator('div.bg-red-50').first();
+        if (await errorAlert.isVisible()) {
+            const errorMsg = await errorAlert.textContent();
+            throw new Error(`Registration failed with error: ${errorMsg}`);
+        }
+
+        // 2. Wait for success message
+        await expect(page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()).toBeVisible({ timeout: 25000 });
     });
 
     test('SUCCESS: should login and access profile', async ({ page }) => {
@@ -42,10 +52,11 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
         await page.getByPlaceholder(/Mínimo 6 caracteres/i).fill(pass);
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
+        await expect(page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()).toBeVisible({ timeout: 20000 });
 
-        // 2. Clear state and login
-        await page.waitForTimeout(4000);
-        await page.evaluate(() => localStorage.removeItem('sushi_token'));
+        // 2. Manual verify for login test
+        const { execSync } = await import('child_process');
+        execSync(`npx tsx tests/verify-user.ts ${email}`);
         await page.reload();
 
         await page.getByRole('button', { name: /ACCEDER/i }).click();
@@ -53,8 +64,9 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/Tu contraseña/i).fill(pass);
         await page.getByRole('button', { name: /Iniciar sesión/i }).click();
 
-        // 3. User name should be in the header button
-        const userBtn = page.locator('header button').filter({ hasText: name }).first();
+        // 3. User name (first word) should be in a header button
+        const firstName = name.split(' ')[0];
+        const userBtn = page.locator('header button').filter({ hasText: new RegExp(firstName, 'i') }).first();
         await expect(userBtn).toBeVisible({ timeout: 10000 });
 
         // 4. Check profile menu

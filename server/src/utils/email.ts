@@ -91,7 +91,7 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
         *Válido para tu próximo pedido desde hoy. Solo tienes que introducir el código al finalizar tu compra.
       </p>
 
-      <a href="https://sushidemaksim.vercel.app/menu" style="display:inline-block;background:#DC2626;color:#white;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);color:#ffffff;">CANJEAR MI REGALO</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#white;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);color:#ffffff;">CANJEAR MI REGALO</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
@@ -213,7 +213,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
       <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 32px;">
         Prepárate para disfrutar del mejor sushi artesanal directamente en tu mesa. ¡Explora nuestro menú y haz tu primer pedido hoy mismo!
       </p>
-      <a href="https://sushidemaksim.vercel.app/menu" style="display:inline-block;background:#DC2626;color:#fff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.2);">VER EL MENÚ</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#fff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.2);">VER EL MENÚ</a>
     </div>
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
       <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
@@ -234,7 +234,7 @@ export async function sendVerificationEmail(
   promoCode: string
 ): Promise<void> {
   const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-  const activationUrl = `https://sushidemaksim.vercel.app/verify?token=${token}`;
+  const activationUrl = `${config.frontendUrl}/verify?token=${token}`;
 
   await transporter.sendMail({
     from,

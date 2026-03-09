@@ -514,7 +514,7 @@ export default function CartPageSimple() {
         <div className="min-h-screen bg-transparent flex flex-col">
             <SEO
                 title="Tu Cesta"
-                description="Finaliza tu pedido de sushi. Revisa tus platos, añade extras и disfruta del mejor sushi a domicilio."
+                description="Finaliza tu pedido de sushi. Revisa tus platos, añade extras y disfruta del mejor sushi a domicilio."
             />
 
             <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
@@ -601,9 +601,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                      item.id,
-                                                                      item.quantity - 1
-                                                                  )
+                                                                    item.id,
+                                                                    item.quantity - 1
+                                                                )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -1024,7 +1024,7 @@ export default function CartPageSimple() {
                                     </p>
                                     <p className="text-[11px] text-amber-600 leading-tight">
                                         <Link to="/" className="underline font-black">
-                                            Regístrate или inicia sesión
+                                            Regístrate o inicia sesión
                                         </Link>{' '}
                                         para usar esta función y compartir tu cesta con amigos.
                                     </p>

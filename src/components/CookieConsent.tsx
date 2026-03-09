@@ -44,8 +44,8 @@ export default function CookieConsent() {
                                 Tu privacidad es importante
                             </h3>
                             <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
-                                Utilizamos cookies propias и de terceros para mejorar tu
-                                experiencia, analizar el tráfico и personalizar el contenido de{' '}
+                                Utilizamos cookies propias y de terceros para mejorar tu
+                                experiencia, analizar el tráfico y personalizar el contenido de{' '}
                                 <span className="font-bold text-gray-900 underline decoration-red-500/30">
                                     Sushi de Maksim
                                 </span>

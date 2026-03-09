@@ -431,7 +431,7 @@ router.get(
         if (error || !order) {
             return res
                 .status(404)
-                .json({ error: 'Invitación no encontrada или ya ha sido pagada.' });
+                .json({ error: 'Invitación no encontrada o ya ha sido pagada.' });
         }
 
         res.json({ order: { ...order, items: order.order_items } });

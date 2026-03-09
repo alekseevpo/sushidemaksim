@@ -85,10 +85,12 @@ const generalLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-app.use('/api/auth/forgot-password', resetLimiter);
-app.use('/api/auth/reset-password', resetLimiter);
-app.use('/api/auth', authLimiter);
-app.use('/api', generalLimiter);
+if (!config.isDev) {
+    app.use('/api/auth/forgot-password', resetLimiter);
+    app.use('/api/auth/reset-password', resetLimiter);
+    app.use('/api/auth', authLimiter);
+    app.use('/api', generalLimiter);
+}
 
 // ─── Logging ───────────────────────────────────────────────────────────────────
 app.use(morgan(config.isDev ? 'dev' : 'combined'));
