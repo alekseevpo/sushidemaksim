@@ -59,7 +59,12 @@ export default function VerifyPage() {
                         </p>
                         <div className="grid grid-cols-1 gap-4 w-full">
                             <button
-                                onClick={() => navigate('/')}
+                                onClick={() => {
+                                    navigate('/');
+                                    setTimeout(() => {
+                                        document.dispatchEvent(new CustomEvent('custom:openLogin'));
+                                    }, 100);
+                                }}
                                 className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
                             >
                                 <LogIn size={18} /> Iniciar sesión
