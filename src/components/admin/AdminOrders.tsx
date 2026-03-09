@@ -9,7 +9,7 @@ export default function AdminOrders() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState<'active' | 'invitations' | 'all'>('active');
+    const [filter, setFilter] = useState<string>('active');
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
     const [notification, setNotification] = useState<{
         id: number;
@@ -112,8 +112,16 @@ export default function AdminOrders() {
         // 1. Status Filter
         if (filter === 'active') {
             if (['delivered', 'cancelled', 'waiting_payment'].includes(o.status)) return false;
-        } else if (filter === 'invitations') {
+        } else if (filter === 'unpaid') {
             if (o.status !== 'waiting_payment') return false;
+        } else if (filter === 'preparing') {
+            if (!['confirmed', 'preparing'].includes(o.status)) return false;
+        } else if (filter === 'on_the_way') {
+            if (o.status !== 'on_the_way') return false;
+        } else if (filter === 'delivered') {
+            if (o.status !== 'delivered') return false;
+        } else if (filter === 'cancelled') {
+            if (o.status !== 'cancelled') return false;
         }
 
         // 2. Search Filter
@@ -155,24 +163,30 @@ export default function AdminOrders() {
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="flex bg-gray-50 p-1 rounded-xl w-full sm:w-fit">
-                    {[
-                        { id: 'active', label: 'Activos' },
-                        { id: 'invitations', label: 'Invitaciones' },
-                        { id: 'all', label: 'Todos' },
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setFilter(tab.id as any)}
-                            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition ${
-                                filter === tab.id
-                                    ? 'bg-white text-red-600 shadow-sm'
-                                    : 'text-gray-400 hover:text-gray-600'
-                            }`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+                <div className="flex bg-gray-50 p-1 rounded-xl w-full overflow-x-auto no-scrollbar">
+                    <div className="flex gap-1 min-w-max">
+                        {[
+                            { id: 'active', label: 'Activos' },
+                            { id: 'unpaid', label: 'Por Pagar' },
+                            { id: 'preparing', label: 'Cocinando' },
+                            { id: 'on_the_way', label: 'En Camino' },
+                            { id: 'delivered', label: 'Entregados' },
+                            { id: 'cancelled', label: 'Cancelados' },
+                            { id: 'all', label: 'Todos' },
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setFilter(tab.id)}
+                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap ${
+                                    filter === tab.id
+                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                        : 'text-gray-400 hover:text-gray-600'
+                                }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
