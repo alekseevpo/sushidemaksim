@@ -1,9 +1,12 @@
 import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { supabase } from '../db/supabase.js';
+import { config } from '../config.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, passwordRule } from '../middleware/validate.js';
+import { sendEmailChangeVerificationEmail } from '../utils/email.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -66,22 +69,65 @@ router.put(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { name, email, phone, avatar, birthDate } = req.body;
 
-        if (email) {
+        const { data: currentUser, error: fetchError } = await supabase
+            .from('users')
+            .select('email, email_last_changed_at, name')
+            .eq('id', req.userId)
+            .single();
+
+        if (fetchError || !currentUser) throw new Error('Usuario no encontrado');
+
+        const updateData: any = {};
+        let emailChangePending = false;
+
+        if (email && email.toLowerCase().trim() !== currentUser.email.toLowerCase()) {
+            const newEmail = email.toLowerCase().trim();
+
+            // Check 30-day limit
+            if (currentUser.email_last_changed_at) {
+                const lastChanged = new Date(currentUser.email_last_changed_at);
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+                if (lastChanged > thirtyDaysAgo) {
+                    const nextAllowed = new Date(lastChanged);
+                    nextAllowed.setDate(nextAllowed.getDate() + 30);
+                    return res.status(429).json({
+                        error: `Solo puedes cambiar tu email una vez cada 30 días. Próximo cambio disponible: ${nextAllowed.toLocaleDateString('es-ES')}`,
+                    });
+                }
+            }
+
+            // Check if email already exists
             const { data: existing } = await supabase
                 .from('users')
                 .select('id')
-                .ilike('email', email.trim())
+                .ilike('email', newEmail)
                 .neq('id', req.userId)
                 .maybeSingle();
 
             if (existing) {
                 return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
             }
+
+            // Start verification flow
+            const verificationToken = jwt.sign(
+                { userId: req.userId, purpose: 'email_change', newEmail },
+                config.jwtSecret,
+                { expiresIn: '24h' }
+            );
+
+            try {
+                await sendEmailChangeVerificationEmail(newEmail, currentUser.name, verificationToken);
+                updateData.pending_email = newEmail;
+                emailChangePending = true;
+            } catch (err) {
+                console.error('Failed to send verification email', err);
+                return res.status(500).json({ error: 'Error al enviar el email de verificación' });
+            }
         }
 
-        const updateData: any = {};
         if (name) updateData.name = name.trim();
-        if (email) updateData.email = email.toLowerCase().trim();
         if (phone !== undefined) updateData.phone = phone?.trim() || '';
         if (avatar !== undefined) updateData.avatar = avatar?.trim() || '';
         if (birthDate !== undefined) updateData.birth_date = birthDate || null;
@@ -108,6 +154,10 @@ router.put(
                 birthDateVerified: user.birth_date_verified,
                 lastSeenAt: user.last_seen_at,
             },
+            emailChangePending,
+            message: emailChangePending
+                ? 'Perfil actualizado. Por favor, verifica tu nuevo email.'
+                : 'Perfil actualizado correctamente',
         });
     })
 );

@@ -135,6 +135,59 @@ router.get(
     })
 );
 
+// GET /api/auth/verify-email-change/:token
+router.get(
+    '/verify-email-change/:token',
+    asyncHandler(async (req, res: Response) => {
+        const { token } = req.params;
+
+        try {
+            const payload = jwt.verify(token, config.jwtSecret) as {
+                userId: string;
+                purpose: string;
+                newEmail: string;
+            };
+
+            if (payload.purpose !== 'email_change') {
+                return res.status(400).json({ error: 'Token inválido' });
+            }
+
+            const { data: user, error: findError } = await supabase
+                .from('users')
+                .select('id, email, pending_email')
+                .eq('id', payload.userId)
+                .single();
+
+            if (findError || !user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
+            }
+
+            if (user.pending_email !== payload.newEmail) {
+                return res.status(400).json({ error: 'Este enlace de verificación ya no es válido.' });
+            }
+
+            const { error: updateError } = await supabase
+                .from('users')
+                .update({
+                    old_email: user.email,
+                    email: payload.newEmail,
+                    pending_email: null,
+                    email_last_changed_at: new Date().toISOString(),
+                })
+                .eq('id', user.id);
+
+            if (updateError) throw updateError;
+
+            res.json({
+                success: true,
+                message: '¡Tu email ha sido actualizado con éxito!',
+            });
+        } catch (err) {
+            res.status(400).json({ error: 'El enlace de verificación ha expirado o es inválido.' });
+        }
+    })
+);
+
 // POST /api/auth/login
 router.post(
     '/login',

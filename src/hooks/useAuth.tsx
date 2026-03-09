@@ -109,8 +109,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
     ) => {
         try {
-            await api.put('/user/profile', data);
+            const response = await api.put('/user/profile', data);
             await loadUser(); // refresh
+            return response;
         } catch (error) {
             console.error('Failed to update profile', error);
             throw error;

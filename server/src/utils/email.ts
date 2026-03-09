@@ -2,26 +2,26 @@ import nodemailer from 'nodemailer';
 import { config } from '../config.js';
 
 const transporter = nodemailer.createTransport({
-    host: config.smtp.host,
-    port: config.smtp.port,
-    secure: false, // STARTTLS on port 587
-    auth: {
-        user: config.smtp.user,
-        pass: config.smtp.pass,
-    },
+  host: config.smtp.host,
+  port: config.smtp.port,
+  secure: false, // STARTTLS on port 587
+  auth: {
+    user: config.smtp.user,
+    pass: config.smtp.pass,
+  },
 });
 
 /**
  * Send a password-reset email with a 6-digit code.
  */
 export async function sendResetCodeEmail(to: string, code: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: 'Código de recuperación — Sushi de Maksim',
-        html: `
+  await transporter.sendMail({
+    from,
+    to,
+    subject: 'Código de recuperación — Sushi de Maksim',
+    html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -51,20 +51,20 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
   </div>
 </body>
 </html>`,
-    });
+  });
 }
 
 /**
  * Send a birthday gift email with a 10% discount code.
  */
 export async function sendBirthdayGiftEmail(to: string, name: string, code: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
-        html: `
+  await transporter.sendMail({
+    from,
+    to,
+    subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
+    html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -102,18 +102,18 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
   </div>
 </body>
 </html>`,
-    });
+  });
 }
 
 /**
  * Send an order receipt email.
  */
 export async function sendOrderReceiptEmail(to: string, orderData: any): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-    const itemsHtml = orderData.items
-        .map(
-            (item: any) => `
+  const itemsHtml = orderData.items
+    .map(
+      (item: any) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
       <td style="padding: 12px 0; color: #374151; font-size: 15px;">${item.quantity}x ${item.name}</td>
       <td style="padding: 12px 0; text-align: right; color: #374151; font-size: 15px; font-weight: bold;">
@@ -121,10 +121,10 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       </td>
     </tr>
   `
-        )
-        .join('');
+    )
+    .join('');
 
-    const html = `
+  const html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -178,25 +178,25 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
 </html>
   `;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
-        html,
-    });
+  await transporter.sendMail({
+    from,
+    to,
+    subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
+    html,
+  });
 }
 
 /**
  * Send a welcome email to a new user.
  */
 export async function sendWelcomeEmail(to: string, name: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Bienvenido a Sushi de Maksim! 🍣',
-        html: `
+  await transporter.sendMail({
+    from,
+    to,
+    subject: '¡Bienvenido a Sushi de Maksim! 🍣',
+    html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -221,26 +221,26 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
   </div>
 </body>
 </html>`,
-    });
+  });
 }
 
 /**
  * Send an email activation link to a new user.
  */
 export async function sendVerificationEmail(
-    to: string,
-    name: string,
-    token: string,
-    promoCode: string
+  to: string,
+  name: string,
+  token: string,
+  promoCode: string
 ): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-    const activationUrl = `${config.frontendUrl}/verify?token=${token}`;
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const activationUrl = `${config.frontendUrl}/verify?token=${token}`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Activa tu cuenta y recibe un regalo! 🎁 — Sushi de Maksim',
-        html: `
+  await transporter.sendMail({
+    from,
+    to,
+    subject: '¡Activa tu cuenta y recibe un regalo! 🎁 — Sushi de Maksim',
+    html: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -299,5 +299,64 @@ export async function sendVerificationEmail(
   </div>
 </body>
 </html>`,
-    });
+  });
+}
+
+/**
+ * Send an email change verification link to a user.
+ */
+export async function sendEmailChangeVerificationEmail(
+  to: string,
+  name: string,
+  token: string
+): Promise<void> {
+  const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+  const activationUrl = `${config.frontendUrl}/verify-email-change?token=${token}`;
+
+  await transporter.sendMail({
+    from,
+    to,
+    subject: 'Confirma tu nuevo correo electrónico — Sushi de Maksim',
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);">
+    
+    <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
+      <div style="margin-bottom: 16px;">
+        <span style="background-color: #dc2626; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
+        MAKSIM<span style="color:#dc2626;">.</span>
+      </h1>
+      <p style="color: #6b7280; margin: 5px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Confirmación de Email</p>
+    </div>
+
+    <div style="padding: 40px; text-align: center;">
+      <h2 style="color: #111827; margin: 0 0 16px; font-size: 28px; font-weight: 800; line-height: 1.2;">¡Hola ${name}!</h2>
+      <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
+        Has solicitado cambiar tu correo electrónico en Sushi de Maksim. Para completar el proceso, por favor haz clic en el botón de abajo.
+      </p>
+
+      <a href="${activationUrl}" style="display:inline-block;background:#dc2626;color:#ffffff;padding:18px 40px;border-radius:18px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 8px 25px rgba(220,38,38,0.25);margin-bottom:32px;">
+        CONFIRMAR NUEVO EMAIL
+      </a>
+
+      <p style="color: #9ca3af; font-size: 13px; line-height: 1.5; margin: 0;">
+        Este enlace es válido durante 24 horas. Si no has solicitado este cambio, puedes ignorar este mensaje de forma segura.
+      </p>
+    </div>
+
+    <div style="background-color: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+      <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+    </div>
+  </div>
+</body>
+</html>`,
+  });
 }
