@@ -408,12 +408,34 @@ const ResetForm = memo(
     }
 );
 
+const VerifySentMessage = memo(({ email, onBack }: { email: string; onBack: () => void }) => (
+    <div className="text-center py-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-green-500 shadow-inner border-2 border-white">
+            <Mail size={40} />
+        </div>
+        <h3 className="text-lg font-bold text-gray-900 mb-3">¡Casi listo!</h3>
+        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+            Hemos enviado un enlace de activación a <br />
+            <strong className="text-gray-900">{email}</strong>.
+            <br />
+            <br />
+            Por favor, revisa tu bandeja de entrada (и папку спам) para activar tu cuenta.
+        </p>
+        <button
+            onClick={onBack}
+            className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+        >
+            <ArrowLeft size={16} /> Volver al inicio
+        </button>
+    </div>
+));
+
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type ModalMode = 'login' | 'register' | 'forgot' | 'reset';
+type ModalMode = 'login' | 'register' | 'forgot' | 'reset' | 'verify-sent';
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     const { login, register, user } = useAuth();
@@ -423,6 +445,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [recoveryEmail, setRecoveryEmail] = useState('');
+    const [registeredEmail, setRegisteredEmail] = useState('');
 
     useEffect(() => {
         if (isOpen) {
@@ -468,11 +491,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         await new Promise(r => setTimeout(r, 400));
         const result = await register(data.name, data.email, data.phone, data.password);
         if (result.success) {
-            setSuccess('Проверьте пожалуйста почту для подтверждения регистрации. 🤍');
-            setTimeout(() => {
-                onClose();
-                setMode('login');
-            }, 3000);
+            setRegisteredEmail(data.email);
+            setMode('verify-sent');
+            setIsLoading(false);
         } else {
             setError(result.error || 'Error de registro');
             setIsLoading(false);
@@ -535,6 +556,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 return 'Recuperar contraseña';
             case 'reset':
                 return 'Nueva contraseña';
+            case 'verify-sent':
+                return 'Verifica tu email';
         }
     };
 
@@ -548,10 +571,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 return 'Introduce tu email para recuperar el acceso';
             case 'reset':
                 return `Establece una nueva contraseña para ${recoveryEmail}`;
+            case 'verify-sent':
+                return 'Te hemos enviado un enlace de activación';
         }
     };
 
-    const isForgotOrReset = mode === 'forgot' || mode === 'reset';
+    const isForgotOrReset = mode === 'forgot' || mode === 'reset' || mode === 'verify-sent';
 
     return (
         <div
@@ -573,7 +598,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <div className="text-center mb-5">
                     <div className="w-[120px] h-[120px] rounded-2xl flex items-center justify-center mx-auto -mt-4 mb-3 bg-white">
                         {isForgotOrReset ? (
-                            <span className="text-[44px]">{mode === 'forgot' ? '🔑' : '🔒'}</span>
+                            <span className="text-[44px]">
+                                {mode === 'forgot' ? '🔑' : mode === 'verify-sent' ? '📧' : '🔒'}
+                            </span>
                         ) : (
                             <button
                                 onClick={() => {
@@ -636,6 +663,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                         onReset={handleReset}
                         onSwitchLogin={() => switchMode('login')}
                         isLoading={isLoading}
+                    />
+                )}
+                {mode === 'verify-sent' && (
+                    <VerifySentMessage
+                        email={registeredEmail}
+                        onBack={() => switchMode('login')}
                     />
                 )}
             </div>
