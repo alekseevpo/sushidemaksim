@@ -59,9 +59,8 @@ test.describe('Critical E2E: Guest Checkout', () => {
         const submitBtn = page.getByRole('button', { name: /Realizar pedido/i }).first();
         await submitBtn.click();
 
-        // Use the specific alert class to avoid strict mode issues
-        const errorAlert = page.locator('div.bg-red-50').first();
-        await expect(errorAlert).toBeVisible();
-        await expect(errorAlert).toContainText('20,00');
+        // Error toast
+        const errorToast = page.getByText(/El pedido mínimo es de 20,00/i).first();
+        await expect(errorToast).toBeVisible();
     });
 });

@@ -37,7 +37,6 @@ export default function VerifyPage() {
         };
 
         verifyToken();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token, showSuccess, showError]);
 
     return (

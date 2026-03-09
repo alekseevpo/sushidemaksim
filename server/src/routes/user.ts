@@ -171,6 +171,7 @@ router.put(
 // PUT /api/user/change-password
 router.put(
     '/change-password',
+    strictLimiter,
     validate({
         currentPassword: { required: true, type: 'string' },
         newPassword: { ...passwordRule, required: true },

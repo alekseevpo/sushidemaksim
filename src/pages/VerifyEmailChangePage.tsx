@@ -37,7 +37,6 @@ export default function VerifyEmailChangePage() {
         };
 
         verifyEmailChange();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token, showSuccess, showError]);
 
     return (

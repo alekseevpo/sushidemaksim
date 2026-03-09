@@ -16,6 +16,18 @@ vi.mock('../hooks/useAuth', () => ({
     useAuth: vi.fn(),
 }));
 
+// Mock useToast - we'll capture the functions to assert on them later
+const mockError = vi.fn();
+vi.mock('../context/ToastContext', () => ({
+    useToast: () => ({
+        success: vi.fn(),
+        error: mockError,
+        info: vi.fn(),
+        warning: vi.fn(),
+        showToast: vi.fn(),
+    }),
+}));
+
 // Mock API
 vi.mock('../utils/api', () => ({
     api: {
@@ -148,9 +160,9 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         fireEvent.click(inviteBtn);
 
         await waitFor(() => {
-            expect(
-                screen.getByText(/Por favor, indica tu calle para el envío/i)
-            ).toBeInTheDocument();
+            expect(mockError).toHaveBeenCalledWith(
+                expect.stringMatching(/Por favor, indica tu calle para el envío/i)
+            );
         });
     });
 });

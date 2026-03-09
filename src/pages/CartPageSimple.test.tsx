@@ -47,6 +47,17 @@ vi.mock('../hooks/useAuth', () => ({
     AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+// Mock useToast - we'll capture the functions to assert on them later
+const mockError = vi.fn();
+vi.mock('../context/ToastContext', () => ({
+    useToast: () => ({
+        success: vi.fn(),
+        error: mockError,
+        info: vi.fn(),
+        warning: vi.fn(),
+    }),
+}));
+
 describe('CartPageSimple (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -106,7 +117,7 @@ describe('CartPageSimple (Integration)', () => {
         fireEvent.click(orderButton);
 
         await waitFor(() => {
-            expect(screen.getByText(/El pedido mínimo es de 20,00/i)).toBeInTheDocument();
+            expect(mockError).toHaveBeenCalledWith(expect.stringMatching(/El pedido mínimo es de 20,00/i));
         });
     });
 });

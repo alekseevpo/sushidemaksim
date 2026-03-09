@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-    User,
-    MapPin,
-    Package,
-    LogOut,
-    ChevronRight,
-    Heart,
-    Sparkles,
-} from 'lucide-react';
+import { User, MapPin, Package, LogOut, ChevronRight, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import ProfileTab from '../components/profile/ProfileTab';
@@ -149,9 +141,10 @@ export default function ProfilePage() {
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start
-                                            ${isActive
-                                                ? 'bg-red-600 text-white shadow-lg shadow-red-200 ring-4 ring-red-600/5'
-                                                : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
+                                            ${
+                                                isActive
+                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-200 ring-4 ring-red-600/5'
+                                                    : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
                                             }`}
                                     >
                                         <div

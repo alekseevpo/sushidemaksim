@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Package, MapPin, Phone, Info, ChevronLeft, ArrowRight } from 'lucide-react';
 import { api } from '../utils/api';
@@ -15,14 +15,7 @@ export default function OrderTrackingPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchOrder();
-
-        const interval = setInterval(fetchOrder, 30000);
-        return () => clearInterval(interval);
-    }, [id, phone]);
-
-    const fetchOrder = async () => {
+    const fetchOrder = useCallback(async () => {
         try {
             const data = await api.get(`/orders/track/${id}?phone=${encodeURIComponent(phone)}`);
             setOrder(data.order);
@@ -32,7 +25,14 @@ export default function OrderTrackingPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, phone]);
+
+    useEffect(() => {
+        fetchOrder();
+
+        const interval = setInterval(fetchOrder, 30000);
+        return () => clearInterval(interval);
+    }, [fetchOrder]);
 
     if (loading) {
         return (
@@ -85,7 +85,10 @@ export default function OrderTrackingPage() {
                     onClick={() => navigate(-1)}
                     className="group flex items-center gap-2 text-gray-400 hover:text-red-600 transition-colors mb-8 font-black text-xs uppercase tracking-widest"
                 >
-                    <ChevronLeft size={18} className="transition-transform group-hover:-translate-x-1" />
+                    <ChevronLeft
+                        size={18}
+                        className="transition-transform group-hover:-translate-x-1"
+                    />
                     Volver
                 </button>
 
@@ -107,7 +110,9 @@ export default function OrderTrackingPage() {
                                 <span className="block text-[10px] uppercase font-black tracking-widest opacity-80 mb-1">
                                     Entrega Estimada
                                 </span>
-                                <span className="text-2xl font-black">{order.estimated_delivery_time || '30-45'} min</span>
+                                <span className="text-2xl font-black">
+                                    {order.estimated_delivery_time || '30-45'} min
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -153,22 +158,32 @@ export default function OrderTrackingPage() {
 
                                 <div className="space-y-4 mb-8">
                                     {order.items?.map((item: any, idx: number) => (
-                                        <div key={idx} className="flex justify-between items-center text-sm">
+                                        <div
+                                            key={idx}
+                                            className="flex justify-between items-center text-sm"
+                                        >
                                             <div className="flex items-center gap-3">
                                                 <span className="w-6 h-6 bg-white rounded-lg flex items-center justify-center font-black text-xs text-red-600 shadow-sm">
                                                     {item.quantity}
                                                 </span>
-                                                <span className="font-bold text-gray-700">{item.name}</span>
+                                                <span className="font-bold text-gray-700">
+                                                    {item.name}
+                                                </span>
                                             </div>
                                             <span className="font-black text-gray-400">
-                                                {(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
+                                                {(item.price_at_time * item.quantity)
+                                                    .toFixed(2)
+                                                    .replace('.', ',')}{' '}
+                                                €
                                             </span>
                                         </div>
                                     ))}
                                 </div>
 
                                 <div className="pt-6 border-t border-gray-200 flex justify-between items-end">
-                                    <span className="text-xs uppercase font-black text-gray-400 tracking-widest">Total pagado</span>
+                                    <span className="text-xs uppercase font-black text-gray-400 tracking-widest">
+                                        Total pagado
+                                    </span>
                                     <div className="text-3xl font-black text-gray-900 tracking-tighter">
                                         {Number(order.total).toFixed(2).replace('.', ',')}
                                         <span className="text-sm text-red-600 italic ml-1">€</span>
@@ -184,8 +199,12 @@ export default function OrderTrackingPage() {
                                     <Phone size={24} />
                                 </div>
                                 <div className="text-left">
-                                    <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">¿Dudas? Contáctanos</span>
-                                    <span className="font-black text-gray-900">+34 912 345 678</span>
+                                    <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                        ¿Dudas? Contáctanos
+                                    </span>
+                                    <span className="font-black text-gray-900">
+                                        +34 912 345 678
+                                    </span>
                                 </div>
                             </div>
                             <button
@@ -193,7 +212,10 @@ export default function OrderTrackingPage() {
                                 className="group flex items-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-black transition-all shadow-xl shadow-gray-100"
                             >
                                 Seguir comprando
-                                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                                <ArrowRight
+                                    size={18}
+                                    className="transition-transform group-hover:translate-x-1"
+                                />
                             </button>
                         </div>
                     </div>

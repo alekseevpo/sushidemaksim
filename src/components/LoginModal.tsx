@@ -1,14 +1,5 @@
-import { useState, useEffect, memo } from 'react';
-import {
-    Mail,
-    Lock,
-    User,
-    Phone,
-    Eye,
-    EyeOff,
-    ArrowLeft,
-    KeyRound,
-} from 'lucide-react';
+import React, { useState, useEffect, memo } from 'react';
+import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowLeft, KeyRound, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
 import { api } from '../utils/api';
@@ -37,7 +28,10 @@ const LoginForm = memo(
         };
 
         return (
-            <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <form
+                onSubmit={handleSubmit}
+                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
                 <div className="space-y-1">
                     <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
                         Email
@@ -51,7 +45,7 @@ const LoginForm = memo(
                             name="email"
                             required
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={e => setEmail(e.target.value)}
                             className="w-full pl-11 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
                             placeholder="tu@email.com"
                         />
@@ -80,9 +74,9 @@ const LoginForm = memo(
                             name="password"
                             required
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={e => setPassword(e.target.value)}
                             className="w-full pl-11 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
-                            placeholder="••••••••"
+                            placeholder="Tu contraseña"
                         />
                         <button
                             type="button"
@@ -99,7 +93,7 @@ const LoginForm = memo(
                     disabled={isLoading}
                     className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2"
                 >
-                    {isLoading ? 'Iniciando sesión...' : 'Entrar ahora'}
+                    {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
                 </button>
 
                 <div className="pt-4 text-center">
@@ -132,7 +126,10 @@ const RegisterForm = memo(
         const [showPassword, setShowPassword] = useState(false);
 
         return (
-            <form onSubmit={onRegister} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <form
+                onSubmit={onRegister}
+                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
                 <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
@@ -147,7 +144,7 @@ const RegisterForm = memo(
                                 name="name"
                                 required
                                 className="w-full pl-11 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
-                                placeholder="Tu nombre"
+                                placeholder="Tu nombre completo"
                             />
                         </div>
                     </div>
@@ -202,7 +199,7 @@ const RegisterForm = memo(
                             name="password"
                             required
                             className="w-full pl-11 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
-                            placeholder="Mínimo 8 caracteres"
+                            placeholder="Mínimo 6 caracteres"
                         />
                         <button
                             type="button"
@@ -250,10 +247,14 @@ const ForgotPasswordForm = memo(
         isLoading: boolean;
     }) => {
         return (
-            <form onSubmit={onForgot} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <form
+                onSubmit={onForgot}
+                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
                 <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl mb-2">
                     <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                        Introduce tu email y te enviaremos las instrucciones para restablecer tu contraseña.
+                        Introduce tu email y te enviaremos las instrucciones para restablecer tu
+                        contraseña.
                     </p>
                 </div>
                 <div className="space-y-1">
@@ -307,7 +308,10 @@ const ResetPasswordForm = memo(
         const [showPassword, setShowPassword] = useState(false);
 
         return (
-            <form onSubmit={onReset} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <form
+                onSubmit={onReset}
+                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
                 <input type="hidden" name="token" value={token} />
                 <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl mb-2 flex items-center gap-3">
                     <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
@@ -330,7 +334,7 @@ const ResetPasswordForm = memo(
                             name="password"
                             required
                             className="w-full pl-11 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
-                            placeholder="Mínimo 8 caracteres"
+                            placeholder="Mínimo 6 caracteres"
                         />
                         <button
                             type="button"
@@ -374,9 +378,16 @@ const ResetPasswordForm = memo(
 
 // ========== MAIN COMPONENT ==========
 
-export default function LoginModal() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'>('login');
+export default function LoginModal({
+    isOpen,
+    onClose,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+}) {
+    const [mode, setMode] = useState<
+        'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'
+    >('login');
     const [isLoading, setIsLoading] = useState(false);
     const [resetToken, setResetToken] = useState('');
     const { login, register } = useAuth();
@@ -384,7 +395,6 @@ export default function LoginModal() {
 
     useEffect(() => {
         const handleOpen = (e: any) => {
-            setIsOpen(true);
             if (e.detail?.mode) setMode(e.detail.mode);
             if (e.detail?.token) {
                 setMode('reset-password');
@@ -393,7 +403,6 @@ export default function LoginModal() {
         };
 
         const handleForceOpen = () => {
-            setIsOpen(true);
             setMode('login');
         };
 
@@ -413,11 +422,15 @@ export default function LoginModal() {
         const password = (form.elements.namedItem('password') as HTMLInputElement).value;
 
         try {
-            await login(email, password);
-            setIsOpen(false);
-            showSuccess('¡Bienvenido de nuevo! 🍣');
+            const res = await login(email, password);
+            if (res.success) {
+                onClose();
+                showSuccess('¡Bienvenido de nuevo! 🍣');
+            } else {
+                showError(res.error || 'Error al iniciar sesión');
+            }
         } catch (err: any) {
-            showError(err.message || 'Error al iniciar sesión');
+            showError(err.message || 'Error inesperado');
         } finally {
             setIsLoading(false);
         }
@@ -433,11 +446,15 @@ export default function LoginModal() {
         const password = (form.elements.namedItem('password') as HTMLInputElement).value;
 
         try {
-            await register(email, password, name, phone);
-            setMode('verify-sent');
-            showSuccess('¡Cuenta creada! Verifica tu email.');
+            const res = await register(name, email, phone, password);
+            if (res.success) {
+                setMode('verify-sent');
+                showSuccess('¡Cuenta creada! Verifica tu email.');
+            } else {
+                showError(res.error || 'Error al registrarse');
+            }
         } catch (err: any) {
-            showError(err.message || 'Error al registrarse');
+            showError(err.message || 'Error inesperado');
         } finally {
             setIsLoading(false);
         }
@@ -465,7 +482,8 @@ export default function LoginModal() {
         setIsLoading(true);
         const form = e.target as HTMLFormElement;
         const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-        const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement).value;
+        const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement)
+            .value;
         const token = (form.elements.namedItem('token') as HTMLInputElement).value;
 
         if (password !== confirmPassword) {
@@ -491,12 +509,12 @@ export default function LoginModal() {
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div
                 className="absolute inset-0 cursor-pointer"
-                onClick={() => !isLoading && setIsOpen(false)}
+                onClick={() => !isLoading && onClose()}
             />
             <div className="relative max-w-md w-full bg-white rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20">
                 {/* Close Button */}
                 <button
-                    onClick={() => setIsOpen(false)}
+                    onClick={onClose}
                     className="absolute top-6 right-6 p-2 rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all z-20"
                 >
                     <X size={20} />
@@ -555,8 +573,13 @@ export default function LoginModal() {
                     {mode === 'verify-sent' && (
                         <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="bg-green-50 text-green-700 p-6 rounded-3xl border border-green-100 font-medium text-sm leading-relaxed">
-                                <p>Hemos enviado un email de confirmación. Por favor, revisa tu bandeja de entrada y pulsa en el enlace para continuar.</p>
-                                <p className="mt-2 text-xs opacity-75 italic">(No olvides revisar la carpeta de SPAM)</p>
+                                <p>
+                                    Hemos enviado un email de confirmación. Por favor, revisa tu
+                                    bandeja de entrada y pulsa en el enlace para continuar.
+                                </p>
+                                <p className="mt-2 text-xs opacity-75 italic">
+                                    (No olvides revisar la carpeta de SPAM)
+                                </p>
                             </div>
                             <button
                                 onClick={() => setMode('login')}
@@ -577,26 +600,5 @@ export default function LoginModal() {
                 </div>
             </div>
         </div>
-    );
-}
-
-// Re-using X icon as it was missing from the import list in my manual reconstruction
-function X({ size, className }: { size: number; className?: string }) {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={size}
-            height={size}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={className}
-        >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-        </svg>
     );
 }

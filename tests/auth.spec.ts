@@ -31,9 +31,9 @@ test.describe('Authentication Flow', () => {
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
 
         // 1. Check for error first
-        const errorAlert = page.locator('div.bg-red-50').first();
-        if (await errorAlert.isVisible()) {
-            const errorMsg = await errorAlert.textContent();
+        const errorToast = page.getByText(/email ya está registrado|error/i).first();
+        if (await errorToast.isVisible()) {
+            const errorMsg = await errorToast.textContent();
             throw new Error(`Registration failed with error: ${errorMsg}`);
         }
 
@@ -50,8 +50,8 @@ test.describe('Authentication Flow', () => {
         const pass = 'testpass123';
 
         // 1. Create a user (Register)
-        await page.getByRole('button', { name: /ACCEDER/i }).click();
-        await page.getByRole('button', { name: /Regístrate/i }).click();
+        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
+        await page.getByRole('button', { name: /Regístrate/i }).first().click();
         await page.getByPlaceholder(/Tu nombre completo/i).fill(name);
         await page.getByPlaceholder(/\+34 600 000 000/i).fill('600222333');
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
@@ -66,10 +66,10 @@ test.describe('Authentication Flow', () => {
         execSync(`npx tsx tests/verify-user.ts ${email}`);
         await page.reload();
 
-        await page.getByRole('button', { name: /ACCEDER/i }).click();
+        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
         await page.getByPlaceholder(/Tu contraseña/i).fill(pass);
-        await page.getByRole('button', { name: /Iniciar sesión/i }).click();
+        await page.getByRole('button', { name: /Iniciar sesión/i }).first().click();
 
         // 3. User name (first word) should be in a header button
         const firstName = name.split(' ')[0];
@@ -86,15 +86,14 @@ test.describe('Authentication Flow', () => {
     });
 
     test('FAILURE: should show error on invalid credentials', async ({ page }) => {
-        await page.getByRole('button', { name: /ACCEDER/i }).click();
+        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
 
         await page.getByPlaceholder(/tu@email.com/i).fill('wrong@email.com');
         await page.getByPlaceholder(/Tu contraseña/i).fill('wrongpassword');
         await page.getByRole('button', { name: /Iniciar sesión/i }).click();
 
-        // Error alert box (prefixed with ⚠️)
-        const errorAlert = page.locator('div.bg-red-50').filter({ hasText: /⚠️/ }).first();
-        await expect(errorAlert).toBeVisible();
-        await expect(errorAlert).toContainText(/incorrectos|inválidas/i);
+        // Error toast
+        const errorToast = page.getByText(/incorrectos|inválidas/i).first();
+        await expect(errorToast).toBeVisible();
     });
 });

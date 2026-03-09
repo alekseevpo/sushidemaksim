@@ -21,7 +21,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await loginBtnHeader.click();
 
         // Switch to Register
-        const registerBtn = page.getByRole('button', { name: /Regístrate/i });
+        const registerBtn = page.getByRole('button', { name: /Regístrate/i }).first();
         await expect(registerBtn).toBeVisible();
         await registerBtn.click();
 

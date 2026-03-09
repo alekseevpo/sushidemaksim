@@ -1,3 +1,4 @@
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     ShoppingCart,
@@ -9,19 +10,16 @@ import {
     ShieldCheck,
     ChevronRight,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
-import { useState, useRef, useEffect, lazy, Suspense, useTransition } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const LoginModal = lazy(() => import('./LoginModal'));
+import LoginModal from './LoginModal';
 
 export default function Header() {
     const { itemCount } = useCart();
     const { user, isAuthenticated, logout } = useAuth();
     const location = useLocation();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const [isPending, startTransition] = useTransition();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [isCartBumping, setIsCartBumping] = useState(false);
@@ -44,7 +42,7 @@ export default function Header() {
     }, [location.pathname]);
 
     useEffect(() => {
-        const handleOpenLogin = () => startTransition(() => setIsLoginModalOpen(true));
+        const handleOpenLogin = () => setIsLoginModalOpen(true);
         document.addEventListener('custom:openLogin', handleOpenLogin);
         return () => document.removeEventListener('custom:openLogin', handleOpenLogin);
     }, []);
@@ -62,11 +60,11 @@ export default function Header() {
 
     const initials = user
         ? user.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
         : '';
 
     const navLinks = [
@@ -214,13 +212,10 @@ export default function Header() {
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={() =>
-                                            startTransition(() => setIsLoginModalOpen(true))
-                                        }
-                                        className="btn-premium bg-gray-900 text-white px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 disabled:opacity-50"
-                                        disabled={isPending}
+                                        onClick={() => setIsLoginModalOpen(true)}
+                                        className="btn-premium bg-gray-900 text-white px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95"
                                     >
-                                        {isPending ? '...' : 'ACCEDER'}
+                                        ACCEDER
                                     </button>
                                 )}
                             </div>
@@ -330,12 +325,11 @@ export default function Header() {
                                     <button
                                         onClick={() => {
                                             setShowMobileMenu(false);
-                                            startTransition(() => setIsLoginModalOpen(true));
+                                            setIsLoginModalOpen(true);
                                         }}
-                                        className="w-full py-4 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-sm shadow-xl active:scale-95 disabled:opacity-50"
-                                        disabled={isPending}
+                                        className="w-full py-4 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-sm shadow-xl active:scale-95"
                                     >
-                                        {isPending ? '...' : 'INICIAR SESIÓN'}
+                                        ACCEDER
                                     </button>
                                 )}
                             </div>
@@ -344,14 +338,12 @@ export default function Header() {
                 </AnimatePresence>
             </header>
 
-            <Suspense fallback={null}>
-                {isLoginModalOpen && (
-                    <LoginModal
-                        isOpen={isLoginModalOpen}
-                        onClose={() => setIsLoginModalOpen(false)}
-                    />
-                )}
-            </Suspense>
+            {isLoginModalOpen && (
+                <LoginModal
+                    isOpen={isLoginModalOpen}
+                    onClose={() => setIsLoginModalOpen(false)}
+                />
+            )}
         </>
     );
 }

@@ -371,7 +371,9 @@ export default function CartPageSimple() {
                         {isAuthenticated ? (
                             <div className="flex flex-col gap-3">
                                 <button
-                                    onClick={() => navigate('/profile', { state: { tab: 'orders' } })}
+                                    onClick={() =>
+                                        navigate('/profile', { state: { tab: 'orders' } })
+                                    }
                                     className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95 flex items-center justify-center gap-2"
                                 >
                                     Mis Pedidos
@@ -395,7 +397,8 @@ export default function CartPageSimple() {
                                     <span className="text-amber-600 mb-1">🎁</span>
                                     <p className="text-xs text-amber-800 font-medium mb-3">
                                         ¡Regístrate ahora y consigue{' '}
-                                        <strong>descuentos exclusivos</strong> en tus próximos pedidos!
+                                        <strong>descuentos exclusivos</strong> en tus próximos
+                                        pedidos!
                                     </p>
                                     <button
                                         onClick={() =>
@@ -601,9 +604,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                    item.id,
-                                                                    item.quantity - 1
-                                                                )
+                                                                      item.id,
+                                                                      item.quantity - 1
+                                                                  )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"

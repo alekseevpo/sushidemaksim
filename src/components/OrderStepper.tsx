@@ -4,7 +4,13 @@ import { motion } from 'framer-motion';
 const STEPS = [
     { status: 'received', label: 'Recibido', icon: Clock, color: 'text-blue-500' },
     { status: 'confirmed', label: 'Confirmado', icon: CheckCircle, color: 'text-indigo-500' },
-    { status: 'preparing', label: 'En Cocina', icon: Package, iconLabel: '👨‍🍳', color: 'text-purple-500' },
+    {
+        status: 'preparing',
+        label: 'En Cocina',
+        icon: Package,
+        iconLabel: '👨‍🍳',
+        color: 'text-purple-500',
+    },
     { status: 'on_the_way', label: 'En Camino', icon: Truck, color: 'text-pink-500' },
     { status: 'delivered', label: 'Entregado', icon: CheckCircle2, color: 'text-green-500' },
 ];
@@ -36,7 +42,9 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                 </div>
                 <div className="text-center">
                     <h3 className="text-xl font-black text-gray-900">Esperando pago</h3>
-                    <p className="text-gray-500 text-sm">Completa el pago para empezar a cocinar.</p>
+                    <p className="text-gray-500 text-sm">
+                        Completa el pago para empezar a cocinar.
+                    </p>
                 </div>
             </div>
         );
@@ -62,23 +70,34 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                     const Icon = step.icon;
 
                     return (
-                        <div key={idx} className="flex flex-row md:flex-col items-center gap-4 md:gap-3 flex-1">
+                        <div
+                            key={idx}
+                            className="flex flex-row md:flex-col items-center gap-4 md:gap-3 flex-1"
+                        >
                             <motion.div
                                 animate={isCurrent ? { scale: [1, 1.15, 1] } : {}}
                                 transition={isCurrent ? { repeat: Infinity, duration: 2 } : {}}
-                                className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 ${isCurrent
+                                className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 ${
+                                    isCurrent
                                         ? 'bg-red-600 text-white border-red-200'
                                         : isActive
-                                            ? 'bg-white text-red-600 border-red-600'
-                                            : 'bg-white text-gray-300 border-gray-100'
-                                    }`}
+                                          ? 'bg-white text-red-600 border-red-600'
+                                          : 'bg-white text-gray-300 border-gray-100'
+                                }`}
                             >
-                                {step.iconLabel ? <span className="text-lg">{step.iconLabel}</span> : <Icon size={20} />}
+                                {step.iconLabel ? (
+                                    <span className="text-lg">{step.iconLabel}</span>
+                                ) : (
+                                    <Icon size={20} />
+                                )}
                             </motion.div>
 
                             <div className="text-left md:text-center">
-                                <span className={`block font-black text-[10px] uppercase tracking-widest ${isActive ? 'text-gray-900' : 'text-gray-400'
-                                    }`}>
+                                <span
+                                    className={`block font-black text-[10px] uppercase tracking-widest ${
+                                        isActive ? 'text-gray-900' : 'text-gray-400'
+                                    }`}
+                                >
                                     {step.label}
                                 </span>
                                 {isCurrent && (

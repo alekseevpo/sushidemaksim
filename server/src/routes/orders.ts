@@ -464,7 +464,10 @@ router.get(
         const cleanOrderPhone = order.phone_number.replace(/\D/g, '');
         const cleanProvidedPhone = phone.replace(/\D/g, '');
 
-        if (!cleanOrderPhone.endsWith(cleanProvidedPhone) && !cleanProvidedPhone.endsWith(cleanOrderPhone)) {
+        if (
+            !cleanOrderPhone.endsWith(cleanProvidedPhone) &&
+            !cleanProvidedPhone.endsWith(cleanOrderPhone)
+        ) {
             return res.status(403).json({ error: 'El teléfono no coincide con el pedido.' });
         }
 
