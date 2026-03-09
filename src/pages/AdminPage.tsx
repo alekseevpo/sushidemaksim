@@ -75,7 +75,10 @@ export default function AdminPage() {
     }, [isAuthenticated, user, navigate]);
 
     useEffect(() => {
-        if (user?.role === 'admin' && activeTab === 'dashboard') {
+        const authorized = user?.role === 'admin' || user?.is_superadmin;
+        const needsStats = activeTab === 'dashboard' || activeTab === 'analytics';
+
+        if (authorized && needsStats) {
             loadStats();
             // Polling every 60 seconds to keep stats updated without skeleton
             const interval = setInterval(() => loadStats(true), 60000);
@@ -191,11 +194,10 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
-                                    isActive
-                                        ? 'bg-red-50 text-red-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
+                                    ? 'bg-red-50 text-red-700'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon
@@ -269,6 +271,8 @@ export default function AdminPage() {
                                             'Gestiona tus ofertas estáticas aquí. Crea banners promocionales con diferentes colores, iconos y ofertas.'}
                                         {activeTab === 'blog' &&
                                             'Maneja tu blog aquí. Crea artículos nuevos, edita los existentes o cambia su estado de publicación.'}
+                                        {activeTab === 'analytics' &&
+                                            'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes (móviles vs ordenador), a qué horas prefieres pedir y qué días de la semana tienes más trabajo. Úsalo para planificar turnos de personal o lanzar promociones en horas bajas.'}
                                         {activeTab === 'settings' &&
                                             'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails y redes sociales en un solo lugar.'}
                                     </p>
@@ -573,7 +577,7 @@ export default function AdminPage() {
                                 {loading ? (
                                     <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
                                 ) : !stats?.analytics ||
-                                  Object.keys(stats.analytics.devices).length === 0 ? (
+                                    Object.keys(stats.analytics.devices).length === 0 ? (
                                     <div className="text-center py-10 text-gray-400 text-sm">
                                         No hay suficientes datos registrados
                                     </div>
