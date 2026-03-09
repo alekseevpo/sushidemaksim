@@ -158,7 +158,18 @@ export default function AdminUsers() {
                                         #{user.id}
                                     </td>
                                     <td className="px-6 py-3">
-                                        <div className="font-bold text-gray-900">{user.name}</div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="font-bold text-gray-900">{user.name}</div>
+                                            {user.is_verified ? (
+                                                <span title="Email verificado" className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100">
+                                                    <CheckCircle size={12} />
+                                                </span>
+                                            ) : (
+                                                <span title="Email pendiente de verificación" className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100">
+                                                    <Clock size={12} />
+                                                </span>
+                                            )}
+                                        </div>
                                         <div className="text-gray-500 text-xs">{user.email}</div>
                                         {user.phone && (
                                             <div className="text-gray-400 text-xs">
