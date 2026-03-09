@@ -9,7 +9,6 @@ import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { AuthRequest } from '../middleware/auth.js';
-import { strictLimiter } from '../middleware/rateLimiters.js';
 import {
     formatMenuItem,
     getMadridStartOfDay,
@@ -35,7 +34,6 @@ router.use(authMiddleware, adminMiddleware);
 // POST /api/admin/menu/upload-image (to Supabase Storage)
 router.post(
     '/menu/upload-image',
-    strictLimiter,
     upload.single('image'),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         if (!req.file) {
@@ -88,7 +86,6 @@ router.get(
 // POST /api/admin/menu
 router.post(
     '/menu',
-    strictLimiter,
     validate({
         name: { required: true, type: 'string', minLength: 2, maxLength: 200 },
         price: { required: true, type: 'number', min: 0.01 },
@@ -156,7 +153,6 @@ router.post(
 // PUT /api/admin/menu/:id
 router.put(
     '/menu/:id',
-    strictLimiter,
     validate({
         name: { type: 'string', minLength: 2, maxLength: 200 },
         price: { type: 'number', min: 0.01 },
@@ -239,7 +235,6 @@ router.put(
 // DELETE /api/admin/menu/:id
 router.delete(
     '/menu/:id',
-    strictLimiter,
     asyncHandler(async (req: Request, res: Response) => {
         const { error } = await supabase.from('menu_items').delete().eq('id', req.params.id);
 
@@ -302,7 +297,6 @@ router.get(
 // PATCH /api/admin/orders/:id/status
 router.patch(
     '/orders/:id/status',
-    strictLimiter,
     validate({
         status: {
             required: true,
@@ -759,7 +753,6 @@ router.get(
 
 router.post(
     '/promos',
-    strictLimiter,
     asyncHandler(async (req: Request, res: Response) => {
         const { title, description, discount, valid_until, icon, color, bg, is_active } = req.body;
         const { data: promo, error } = await supabase
@@ -811,7 +804,6 @@ router.get(
 
 router.post(
     '/blog_posts',
-    strictLimiter,
     asyncHandler(async (req: Request, res: Response) => {
         const { title, slug, excerpt, content, image_url, author, category, read_time, published } =
             req.body;
@@ -837,7 +829,6 @@ router.post(
 
 router.put(
     '/blog_posts/:id',
-    strictLimiter,
     asyncHandler(async (req: Request, res: Response) => {
         const { title, slug, excerpt, content, image_url, author, category, read_time, published } =
             req.body;
