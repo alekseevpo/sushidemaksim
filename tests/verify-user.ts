@@ -16,7 +16,10 @@ if (!email) {
 }
 
 async function verify() {
-    const { error } = await supabase.from('users').update({ is_verified: true }).eq('email', email);
+    const { error } = await supabase
+        .from('users')
+        .update({ is_verified: true, birth_date_verified: true })
+        .eq('email', email);
 
     if (error) {
         console.error('Error verifying user:', error.message);

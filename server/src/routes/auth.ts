@@ -120,7 +120,7 @@ router.get(
 
             const { error: updateError } = await supabase
                 .from('users')
-                .update({ is_verified: true })
+                .update({ is_verified: true, birth_date_verified: true })
                 .eq('id', user.id);
 
             if (updateError) throw updateError;

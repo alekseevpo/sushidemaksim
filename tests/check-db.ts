@@ -10,8 +10,7 @@ async function check() {
     const { data, error } = await supabase
         .from('users')
         .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5);
+        .eq('email', 'pabloescobarg1985@gmail.com');
     if (error) console.error(error);
     else console.log(JSON.stringify(data, null, 2));
 }

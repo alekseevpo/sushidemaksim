@@ -60,11 +60,12 @@ describe('useAuth hook', () => {
         const { result } = renderHook(() => useAuth(), { wrapper });
 
         await act(async () => {
-            await result.current.register('New User', 'new@test.com', '123456', 'pass');
+            const res = await result.current.register('New User', 'new@test.com', '123456', 'pass');
+            expect(res.success).toBe(true);
         });
 
-        expect(result.current.user?.name).toBe('New User');
-        expect(localStorage.getItem('sushi_token')).toBe('new-token');
+        expect(result.current.user).toBeNull();
+        expect(localStorage.getItem('sushi_token')).toBeNull();
     });
 
     it('should logout and clear state', async () => {
