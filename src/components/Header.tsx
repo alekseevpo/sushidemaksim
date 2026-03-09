@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     ShoppingCart,
@@ -339,10 +339,7 @@ export default function Header() {
             </header>
 
             {isLoginModalOpen && (
-                <LoginModal
-                    isOpen={isLoginModalOpen}
-                    onClose={() => setIsLoginModalOpen(false)}
-                />
+                <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
             )}
         </>
     );

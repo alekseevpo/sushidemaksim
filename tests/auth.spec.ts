@@ -50,8 +50,14 @@ test.describe('Authentication Flow', () => {
         const pass = 'testpass123';
 
         // 1. Create a user (Register)
-        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
-        await page.getByRole('button', { name: /Regístrate/i }).first().click();
+        await page
+            .getByRole('button', { name: /ACCEDER/i })
+            .first()
+            .click();
+        await page
+            .getByRole('button', { name: /Regístrate/i })
+            .first()
+            .click();
         await page.getByPlaceholder(/Tu nombre completo/i).fill(name);
         await page.getByPlaceholder(/\+34 600 000 000/i).fill('600222333');
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
@@ -66,10 +72,16 @@ test.describe('Authentication Flow', () => {
         execSync(`npx tsx tests/verify-user.ts ${email}`);
         await page.reload();
 
-        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
+        await page
+            .getByRole('button', { name: /ACCEDER/i })
+            .first()
+            .click();
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
         await page.getByPlaceholder(/Tu contraseña/i).fill(pass);
-        await page.getByRole('button', { name: /Iniciar sesión/i }).first().click();
+        await page
+            .getByRole('button', { name: /Iniciar sesión/i })
+            .first()
+            .click();
 
         // 3. User name (first word) should be in a header button
         const firstName = name.split(' ')[0];
@@ -86,7 +98,10 @@ test.describe('Authentication Flow', () => {
     });
 
     test('FAILURE: should show error on invalid credentials', async ({ page }) => {
-        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
+        await page
+            .getByRole('button', { name: /ACCEDER/i })
+            .first()
+            .click();
 
         await page.getByPlaceholder(/tu@email.com/i).fill('wrong@email.com');
         await page.getByPlaceholder(/Tu contraseña/i).fill('wrongpassword');

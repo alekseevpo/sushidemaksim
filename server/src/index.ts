@@ -191,7 +191,7 @@ app.get('/api/health/smtp', async (_req, res) => {
             message: 'SMTP connection verified',
             user: config.smtp.user,
             host: config.smtp.host,
-            port: config.smtp.port
+            port: config.smtp.port,
         });
     } catch (err: any) {
         res.status(500).json({
@@ -201,8 +201,8 @@ app.get('/api/health/smtp', async (_req, res) => {
                 user: config.smtp.user,
                 host: config.smtp.host,
                 port: config.smtp.port,
-                hasPass: !!config.smtp.pass
-            }
+                hasPass: !!config.smtp.pass,
+            },
         });
     }
 });

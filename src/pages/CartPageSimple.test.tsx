@@ -117,7 +117,9 @@ describe('CartPageSimple (Integration)', () => {
         fireEvent.click(orderButton);
 
         await waitFor(() => {
-            expect(mockError).toHaveBeenCalledWith(expect.stringMatching(/El pedido mínimo es de 20,00/i));
+            expect(mockError).toHaveBeenCalledWith(
+                expect.stringMatching(/El pedido mínimo es de 20,00/i)
+            );
         });
     });
 });

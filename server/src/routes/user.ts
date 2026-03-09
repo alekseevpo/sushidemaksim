@@ -1,12 +1,9 @@
 import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { supabase } from '../db/supabase.js';
-import { config } from '../config.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, passwordRule } from '../middleware/validate.js';
-import { sendEmailChangeVerificationEmail } from '../utils/email.js';
 import { strictLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
