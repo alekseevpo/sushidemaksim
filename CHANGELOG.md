@@ -1,5 +1,15 @@
 # Журнал разработки (Changelog)
 
+## [2026-03-09] - Testing & Quality Assurance (Invitations)
+
+### 🧪 Тестирование и Надежность
+
+- **Integration Testing Suite**: Разработана и внедрена система интеграционных тестов для функции «Пригласи друга».
+    - **Cart Invitation Logic**: Тесты для `CartPageSimple` проверяют корректность генерации ссылок, валидацию полей и логику отображения для гостей.
+    - **Payment Flow Verification**: Тесты для `PayForFriendPage` гарантируют корректную загрузку данных заказа и успешную имитацию оплаты.
+- **End-to-End (E2E) Scenarios**: Создан набор сценариев Playwright для проверки полного пути: Регистрация → Корзина → Генерация ссылки → Оплата другом.
+- **Stability Enhancements**: Оптимизированы таймауты и селекторы для стабильной работы тестов с анимациями `framer-motion`.
+
 ## [2026-03-07] - SEO, UX, Compliance & Mobile-First Adaptation
 
 ### 🐛 Bugfixes & Mobile Stability (Hotfixes)
