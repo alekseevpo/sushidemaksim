@@ -27,12 +27,14 @@ const UserRow = memo(
         onToggleRole,
         onDelete,
         onToggleBirthday,
+        onVerifyEmail,
     }: {
         user: any;
         currentUser: any;
         onToggleRole: (id: number, role: string) => void;
         onDelete: (user: any) => void;
         onToggleBirthday: (id: number, verified: boolean) => void;
+        onVerifyEmail: (id: number, verified: boolean) => void;
     }) => {
         const isOnline = user.last_seen_at
             ? new Date().getTime() - new Date(user.last_seen_at).getTime() < 5 * 60 * 1000
@@ -77,12 +79,21 @@ const UserRow = memo(
                                 <CheckCircle size={12} />
                             </span>
                         ) : (
-                            <span
-                                title="Email pendiente de verificación"
-                                className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100"
-                            >
-                                <Clock size={12} />
-                            </span>
+                            <div className="flex items-center gap-1">
+                                <span
+                                    title="Email pendiente de verificación"
+                                    className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100"
+                                >
+                                    <Clock size={12} />
+                                </span>
+                                <button
+                                    onClick={() => onVerifyEmail(user.id, true)}
+                                    className="px-1.5 py-0.5 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded text-[9px] font-bold uppercase transition-colors"
+                                    title="Verificar email manualmente"
+                                >
+                                    Verificar
+                                </button>
+                            </div>
                         )}
                     </div>
                     <div className="text-gray-500 text-xs">{user.email}</div>
@@ -292,6 +303,19 @@ export default function AdminUsers() {
         }
     }, []);
 
+    const toggleEmailVerified = useCallback(async (userId: number, isVerified: boolean) => {
+        try {
+            await api.patch(`/admin/users/${userId}/verify-email`, {
+                is_verified: isVerified,
+            });
+            setUsers(prev =>
+                prev.map(u => (u.id === userId ? { ...u, is_verified: isVerified } : u))
+            );
+        } catch (err) {
+            alert('Error updating email verification');
+        }
+    }, []);
+
     if (loading && users.length === 0) {
         return (
             <div className="text-center py-12 text-gray-400">
@@ -454,6 +478,7 @@ export default function AdminUsers() {
                                     onToggleRole={toggleAdminRole}
                                     onDelete={setUserToDelete}
                                     onToggleBirthday={toggleBirthdayVerified}
+                                    onVerifyEmail={toggleEmailVerified}
                                 />
                             ))}
                         </tbody>

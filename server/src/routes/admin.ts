@@ -478,6 +478,23 @@ router.patch(
     })
 );
 
+// PATCH /api/admin/users/:id/verify-email
+router.patch(
+    '/users/:id/verify-email',
+    validate({
+        is_verified: { required: true, type: 'boolean' },
+    }),
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const id = parseInt(req.params.id);
+        const { is_verified } = req.body;
+
+        const { error } = await supabase.from('users').update({ is_verified }).eq('id', id);
+
+        if (error) throw error;
+        res.json({ success: true });
+    })
+);
+
 // DELETE /api/admin/users/:id — Permanent hard delete (Admin only)
 router.delete(
     '/users/:id',
