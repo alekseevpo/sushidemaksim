@@ -32,6 +32,15 @@ router.post(
             return res.status(400).json({ error: 'Código inválido o ya utilizado' });
         }
 
+        // ─── 24h Expiry Check for Welcome Promos ───
+        if (promo.code.startsWith('NUEVO5')) {
+            const createdAt = new Date(promo.created_at);
+            const expiredAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+            if (new Date() > expiredAt) {
+                return res.status(400).json({ error: 'Este código de bienvenida ha expirado (válido 24h)' });
+            }
+        }
+
         res.json({ percentage: promo.discount_percentage });
     })
 );

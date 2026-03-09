@@ -55,10 +55,20 @@ router.post(
             { expiresIn: '24h' }
         );
 
+        // Create welcome promo code (5% discount, valid for 1 day)
+        // We use a prefix so we can easily check expiration in the promo route
+        const promoCode = `NUEVO5-${newUser.id.slice(0, 4).toUpperCase()}`;
+        await supabase.from('promo_codes').insert({
+            code: promoCode,
+            discount_percentage: 5,
+            user_id: newUser.id,
+            is_used: false
+        });
+
         // Send verification email
         try {
             console.log(`📡 [REGISTER] Attempting to send email to ${newUser.email}...`);
-            await sendVerificationEmail(newUser.email, newUser.name, verificationToken);
+            await sendVerificationEmail(newUser.email, newUser.name, verificationToken, promoCode);
             console.log(`✅ [REGISTER] Verification email SENT to ${newUser.email}`);
         } catch (e: any) {
             console.error('❌ [REGISTER] SMTP ERROR:', e.message || e);

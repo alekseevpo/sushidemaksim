@@ -227,37 +227,70 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
 /**
  * Send an email activation link to a new user.
  */
-export async function sendVerificationEmail(to: string, name: string, token: string): Promise<void> {
+export async function sendVerificationEmail(to: string, name: string, token: string, promoCode: string): Promise<void> {
   const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
   const activationUrl = `https://sushidemaksim.vercel.app/verify?token=${token}`;
+  const logoUrl = 'https://sushidemaksim.vercel.app/logo.svg';
 
   await transporter.sendMail({
     from,
     to,
-    subject: '¡Activa tu cuenta en Sushi de Maksim! 🍣',
+    subject: '¡Activa tu cuenta и recibe un regalo! 🎁 — Sushi de Maksim',
     html: `
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
-  <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:32px;text-align:center;">
-      <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);">
+    
+    <!-- Header with Logo -->
+    <div style="background: linear-gradient(135deg, #111827 0%, #1f2937 100%); padding: 40px 20px; text-align: center;">
+      <div style="display: inline-block; background: #dc2626; padding: 12px; border-radius: 16px; margin-bottom: 16px;">
+        <img src="${logoUrl}" alt="Maksim Logo" style="height: 32px; width: auto; display: block; filter: brightness(0) invert(1);">
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; text-transform: uppercase;">
+        Sushi de Maksim<span style="color:#dc2626;">.</span>
+      </h1>
     </div>
-    <div style="padding:32px;text-align:center;">
-      <h2 style="color:#111827;margin:0 0 16px;font-size:20px;">¡Hola ${name}!</h2>
-      <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 24px;">
-        Para empezar a disfrutar de nuestra carta, necesitamos que actives tu cuenta haciendo clic en el siguiente botón:
+
+    <!-- Content -->
+    <div style="padding: 40px; text-align: center;">
+      <h2 style="color: #111827; margin: 0 0 16px; font-size: 28px; font-weight: 800; line-height: 1.2;">¡Hola ${name}!</h2>
+      <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
+        Estamos muy felices de tenerte con nosotros. Para empezar a disfrutar del mejor sushi artesanal, activa tu cuenta и desbloquea tu regalo de bienvenida.
       </p>
-      <a href="${activationUrl}" style="display:inline-block;background:#DC2626;color:#fff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.2);">ACTIVAR MI CUENTA</a>
-      <p style="color:#6B7280;font-size:14px;margin:24px 0 0;">
+
+      <!-- Welcome Gift Section -->
+      <div style="background: #fff1f2; border: 2px dashed #fecdd3; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
+        <p style="color: #be123c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">Tu подарок (-5%)</p>
+        <div style="color: #dc2626; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
+        <p style="color: #9f1239; font-size: 14px; font-weight: bold; margin: 0;">
+          ⚠️ Válido solo durante <strong>24 horas</strong>
+        </p>
+      </div>
+
+      <!-- Activation Button -->
+      <a href="${activationUrl}" style="display:inline-block;background:#dc2626;color:#ffffff;padding:18px 40px;border-radius:18px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 8px 25px rgba(220,38,38,0.25);margin-bottom:32px;">
+        ACTIVAR MI CUENTA
+      </a>
+
+      <p style="color: #9ca3af; font-size: 13px; line-height: 1.5; margin: 0;">
         Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
-        <span style="color:#DC2626;word-break:break-all;">${activationUrl}</span>
+        <a href="${activationUrl}" style="color: #dc2626; text-decoration: none;">${activationUrl}</a>
       </p>
     </div>
-    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
-      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+
+    <!-- Footer -->
+    <div style="background-color: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+      <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+      <div style="color: #e5e7eb; font-size: 11px;">
+        Recibiste este correo porque te registraste en sushidemaksim.com
+      </div>
     </div>
+
   </div>
 </body>
 </html>`,
