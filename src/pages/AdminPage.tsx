@@ -17,6 +17,19 @@ import {
     ArrowLeft,
     ExternalLink,
 } from 'lucide-react';
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    Cell,
+    PieChart,
+    Pie,
+    Legend,
+} from 'recharts';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import AdminMenu from '../components/admin/AdminMenu';
@@ -434,85 +447,134 @@ export default function AdminPage() {
                                 </div>
                             </div>
 
-                            {/* Device Analytics */}
+                            {/* Device Analytics with Charts */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mt-6">
                                 <h3 className="font-bold text-gray-900 mb-6">
                                     Analítica de Dispositivos (Pedidos Registrados)
                                 </h3>
                                 {loading ? (
-                                    <div className="h-32 bg-gray-50 rounded animate-pulse"></div>
+                                    <div className="h-64 bg-gray-50 rounded animate-pulse"></div>
                                 ) : !stats?.analytics ||
                                   Object.keys(stats.analytics.devices).length === 0 ? (
                                     <div className="text-center py-10 text-gray-400 text-sm">
                                         No hay suficientes datos registrados
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
-                                                Por Tipo de Dispositivo
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* Device Types Pie Chart */}
+                                        <div className="h-64 flex flex-col">
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-2 text-center">
+                                                Tipo de Dispositivo
                                             </h4>
-                                            <ul className="space-y-3">
-                                                {Object.entries(stats.analytics.devices)
-                                                    .sort((a: any, b: any) => b[1] - a[1])
-                                                    .map(([name, count]: any) => (
-                                                        <li
-                                                            key={name}
-                                                            className="flex justify-between items-center text-sm"
-                                                        >
-                                                            <span className="text-gray-600 capitalize">
-                                                                {name}
-                                                            </span>
-                                                            <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">
-                                                                {count}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                            </ul>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart>
+                                                    <Pie
+                                                        data={Object.entries(
+                                                            stats.analytics.devices
+                                                        ).map(([name, value]) => ({
+                                                            name,
+                                                            value,
+                                                        }))}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        innerRadius={60}
+                                                        outerRadius={80}
+                                                        paddingAngle={5}
+                                                        dataKey="value"
+                                                    >
+                                                        {[
+                                                            '#EF4444',
+                                                            '#3B82F6',
+                                                            '#10B981',
+                                                            '#F59E0B',
+                                                        ].map((color, index) => (
+                                                            <Cell
+                                                                key={`cell-${index}`}
+                                                                fill={color}
+                                                            />
+                                                        ))}
+                                                    </Pie>
+                                                    <Tooltip />
+                                                    <Legend />
+                                                </PieChart>
+                                            </ResponsiveContainer>
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
-                                                Por Sistema Operativo
+
+                                        {/* OS Distribution Bar Chart */}
+                                        <div className="h-64 flex flex-col">
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-2 text-center">
+                                                Sistemas Operativos
                                             </h4>
-                                            <ul className="space-y-3">
-                                                {Object.entries(stats.analytics.os)
-                                                    .sort((a: any, b: any) => b[1] - a[1])
-                                                    .map(([name, count]: any) => (
-                                                        <li
-                                                            key={name}
-                                                            className="flex justify-between items-center text-sm"
-                                                        >
-                                                            <span className="text-gray-600">
-                                                                {name}
-                                                            </span>
-                                                            <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">
-                                                                {count}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                            </ul>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart
+                                                    data={Object.entries(stats.analytics.os)
+                                                        .sort((a: any, b: any) => b[1] - a[1])
+                                                        .map(([name, count]) => ({ name, count }))}
+                                                    layout="vertical"
+                                                    margin={{ left: 0, right: 30 }}
+                                                >
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        horizontal={true}
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis type="number" hide />
+                                                    <YAxis
+                                                        dataKey="name"
+                                                        type="category"
+                                                        width={80}
+                                                        fontSize={10}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <Tooltip />
+                                                    <Bar
+                                                        dataKey="count"
+                                                        fill="#3B82F6"
+                                                        radius={[0, 4, 4, 0]}
+                                                        barSize={20}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
-                                                Por Navegador Web
+
+                                        {/* Browser Distribution Bar Chart */}
+                                        <div className="h-64 flex flex-col">
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-2 text-center">
+                                                Navegadores
                                             </h4>
-                                            <ul className="space-y-3">
-                                                {Object.entries(stats.analytics.browsers)
-                                                    .sort((a: any, b: any) => b[1] - a[1])
-                                                    .map(([name, count]: any) => (
-                                                        <li
-                                                            key={name}
-                                                            className="flex justify-between items-center text-sm"
-                                                        >
-                                                            <span className="text-gray-600">
-                                                                {name}
-                                                            </span>
-                                                            <span className="font-bold text-gray-900 bg-gray-100 px-2.5 py-0.5 rounded-full">
-                                                                {count}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                            </ul>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart
+                                                    data={Object.entries(stats.analytics.browsers)
+                                                        .sort((a: any, b: any) => b[1] - a[1])
+                                                        .map(([name, count]) => ({ name, count }))}
+                                                >
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis
+                                                        dataKey="name"
+                                                        fontSize={10}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <YAxis
+                                                        fontSize={10}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <Tooltip />
+                                                    <Bar
+                                                        dataKey="count"
+                                                        fill="#F59E0B"
+                                                        radius={[4, 4, 0, 0]}
+                                                        barSize={25}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
                                         </div>
                                     </div>
                                 )}
