@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -18,6 +18,7 @@ import {
     ArrowLeft,
     ExternalLink,
     BarChart3,
+    Monitor,
 } from 'lucide-react';
 import {
     BarChart,
@@ -30,8 +31,6 @@ import {
     Cell,
     PieChart,
     Pie,
-    AreaChart,
-    Area,
     Legend,
 } from 'recharts';
 import { useAuth } from '../hooks/useAuth';
@@ -54,6 +53,21 @@ type TabId =
     | 'settings'
     | 'analytics';
 
+const StatCard = ({ title, value, icon: Icon, colorClass, desc }: any) => (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between">
+        <div className="flex justify-between items-start mb-4">
+            <div>
+                <p className="text-sm font-semibold text-gray-500 mb-1">{title}</p>
+                <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+            </div>
+            <div className={`p-2.5 rounded-lg ${colorClass}`}>
+                <Icon size={20} />
+            </div>
+        </div>
+        <p className="text-[11px] text-gray-400 line-clamp-1">{desc}</p>
+    </div>
+);
+
 export default function AdminPage() {
     const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
@@ -75,12 +89,32 @@ export default function AdminPage() {
     const isFirstLoad = useRef(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    const navLinks = useMemo(
+        () => [
+            { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { id: 'analytics', label: 'Analítica Avanzada', icon: BarChart3 },
+            {
+                id: 'orders',
+                label: 'Gestión de Pedidos', // Renaming happens in the component tab, this is sidebar
+                icon: Package,
+                badge: pendingCount > 0 ? pendingCount : null,
+            },
+            { id: 'menu', label: 'Gestión de Menú', icon: MenuIcon },
+            { id: 'users', label: 'Usuarios y Clientes', icon: Users },
+            { id: 'promos', label: 'Gestión de Promociones', icon: ShoppingBag },
+            { id: 'blog', label: 'Gestión de Blog', icon: Activity },
+            { id: 'settings', label: 'Ajustes de Contacto', icon: DollarSign },
+        ],
+        [pendingCount]
+    );
+
     const checkGlobalOrders = async () => {
         try {
             // Fetch all pending orders for global alert
             const data = await api.get('/admin/orders?status=pending&limit=100');
             const pendingOrders = data.orders || [];
-            setPendingCount(data.pagination?.total || pendingOrders.length);
+            const totalPending = data.pagination?.total || pendingOrders.length;
+            setPendingCount(totalPending);
 
             if (isSoundEnabled) {
                 let shouldPlaySound = false;
@@ -163,28 +197,14 @@ export default function AdminPage() {
 
     if (!isAuthenticated || (user?.role !== 'admin' && !user?.is_superadmin)) {
         return (
-            <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '32px 16px' }}>
-                <div
-                    style={{
-                        maxWidth: '600px',
-                        margin: '0 auto',
-                        textAlign: 'center',
-                        padding: '80px 0',
-                    }}
-                >
-                    <div style={{ fontSize: '80px', marginBottom: '24px' }}>🔒</div>
-                    <h1
-                        style={{
-                            fontSize: '28px',
-                            fontWeight: 'bold',
-                            marginBottom: '12px',
-                            color: '#111827',
-                        }}
-                    >
-                        Acceso restringido
-                    </h1>
-                    <p style={{ fontSize: '16px', color: '#6B7280', marginBottom: '32px' }}>
-                        No tienes permisos para acceder a este panel general.
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl shadow-xl p-10 max-w-md w-full text-center border border-gray-100">
+                    <div className="w-20 h-20 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <ShieldCheck size={40} />
+                    </div>
+                    <h2 className="text-2xl font-black text-gray-900 mb-2">Acceso Restringido</h2>
+                    <p className="text-gray-500 mb-8 font-medium">
+                        Lo sentimos, pero necesitas permisos de administrador para ver esta página.
                     </p>
                     <button
                         onClick={() => navigate('/')}
@@ -205,37 +225,6 @@ export default function AdminPage() {
             </div>
         );
     }
-
-    const navLinks = [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'analytics', label: 'Analítica Avanzada', icon: BarChart3 },
-        {
-            id: 'orders',
-            label: 'Gestión de Pedidos',
-            icon: Package,
-            badge: pendingCount > 0 ? pendingCount : null,
-        },
-        { id: 'menu', label: 'Gestión de Menú', icon: MenuIcon },
-        { id: 'users', label: 'Usuarios y Clientes', icon: Users },
-        { id: 'promos', label: 'Gestión de Promociones', icon: ShoppingBag },
-        { id: 'blog', label: 'Gestión de Blog', icon: Activity },
-        { id: 'settings', label: 'Ajustes de Contacto', icon: DollarSign },
-    ];
-
-    const StatCard = ({ title, value, icon: Icon, colorClass, desc }: any) => (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between">
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <p className="text-sm font-semibold text-gray-500 mb-1">{title}</p>
-                    <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
-                </div>
-                <div className={`p-2.5 rounded-lg ${colorClass}`}>
-                    <Icon size={20} />
-                </div>
-            </div>
-            <p className="text-[11px] text-gray-400 line-clamp-1">{desc}</p>
-        </div>
-    );
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -359,19 +348,19 @@ export default function AdminPage() {
                                         {activeTab === 'dashboard' &&
                                             'Esta es tu pantalla principal. Aquí verás un resumen rápido del estado de tu negocio: cuánto dinero has ganado hoy, cuántos pedidos están pendientes y las tendencias generales. Es ideal para tener una visión rápida al principio del día.'}
                                         {activeTab === 'orders' &&
-                                            'Aquí gestionas los pedidos. Consejo: Presta atención a los pedidos con estado "Pendiente". Puedes cambiar su estado a "Preparando" para que el cliente sepa que ya estás en ello, y luego a "En camino" o "Entregado".'}
+                                            'Aquí gestionas los pedidos. Consejo: Preста atención a los pedidos con estado "Pendiente". Puedes cambiar su estado a "Preparando" para que el cliente sepa que ya estás en ello, y luego a "En camino" o "Entregado".'}
                                         {activeTab === 'menu' &&
                                             'Desde aquí puedes añadir nuevos platos, cambiar precios o marcar platos con promociones. Si un plato se agota, puedes ocultarlo temporalmente para que los clientes no puedan pedirlo.'}
                                         {activeTab === 'users' &&
-                                            'Este es el directorio de tus clientes. Puedes ver quiénes son tus mejores compradores y analizar su historial de pedidos.'}
+                                            'Este es el directorio de tus clientes. Puedes ver quiénes son tus mejores compradores и analizar su historial de pedidos.'}
                                         {activeTab === 'promos' &&
-                                            'Gestiona tus ofertas estáticas aquí. Crea banners promocionales con diferentes colores, iconos y ofertas.'}
+                                            'Gestiona tus ofertas estáticas aquí. Crea banners promocionales con diferentes colores, iconos и ofertas.'}
                                         {activeTab === 'blog' &&
                                             'Maneja tu blog aquí. Crea artículos nuevos, edita los existentes o cambia su estado de publicación.'}
                                         {activeTab === 'analytics' &&
-                                            'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes (móviles vs ordenador), a qué horas prefieres pedir y qué días de la semana tienes más trabajo. Úsalo para planificar turnos de personal o lanzar promociones en horas bajas.'}
+                                            'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes (móviles vs ordenador), a qué horas prefieren pedir и qué días de la semana tienes más trabajo. Úsalo para planificar turnos de personal o lanzar promociones en horas bajas.'}
                                         {activeTab === 'settings' &&
-                                            'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails y redes sociales en un solo lugar.'}
+                                            'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails и redes sociales en un solo lugar.'}
                                     </p>
                                 </div>
                             </div>
@@ -570,7 +559,7 @@ export default function AdminPage() {
 
                                 {loading ? (
                                     <div className="space-y-4">
-                                        {[1, 2, 3].map(i => (
+                                        {[1, 2, 3, 4, 5].map(i => (
                                             <div
                                                 key={i}
                                                 className="h-10 bg-gray-50 rounded animate-pulse"
@@ -580,70 +569,91 @@ export default function AdminPage() {
                                 ) : !reports?.length ? (
                                     <div className="text-center py-12">
                                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Activity className="text-gray-300" size={32} />
+                                            <RefreshCw className="text-gray-300" size={32} />
                                         </div>
-                                        <p className="text-gray-500 text-sm">
-                                            Aún no se ha generado ningún informe diario.
-                                        </p>
-                                        <p className="text-gray-400 text-xs mt-1">
-                                            El primer informe aparecerá mañana a las 00:00.
+                                        <p className="text-gray-500">
+                                            No hay reportes disponibles todavía.
                                         </p>
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left">
                                             <thead>
-                                                <tr className="border-b border-gray-50 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                                    <th className="px-4 py-3">Fecha</th>
-                                                    <th className="px-4 py-3">Ingresos</th>
-                                                    <th className="px-4 py-3">Pedi.</th>
-                                                    <th className="px-4 py-3">Canc.</th>
-                                                    <th className="px-4 py-3">Retra.</th>
-                                                    <th className="px-4 py-3">Invi.</th>
-                                                    <th className="px-4 py-3">Nuevos</th>
-                                                    <th className="px-4 py-3">Ticket</th>
+                                                <tr className="text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-50/50">
+                                                    <th className="px-4 py-3 pb-4">Día</th>
+                                                    <th className="px-4 py-3 pb-4">Pedidos</th>
+                                                    <th className="px-4 py-3 pb-4">Ingresos</th>
+                                                    <th className="px-4 py-3 pb-4">Ticket Medio</th>
+                                                    <th className="px-4 py-3 pb-4 text-right">
+                                                        Detalles
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
-                                                {reports.map(report => (
+                                                {reports.map((report: any) => (
                                                     <tr
-                                                        key={report.id}
-                                                        className="hover:bg-gray-50 transition-colors"
+                                                        key={report.date}
+                                                        className="hover:bg-gray-50/80 transition-colors group"
                                                     >
-                                                        <td className="px-4 py-4 text-sm font-bold text-gray-900">
-                                                            {new Date(
-                                                                report.date
-                                                            ).toLocaleDateString('es-ES', {
-                                                                day: 'numeric',
-                                                                month: 'long',
-                                                            })}
+                                                        <td className="px-4 py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex flex-col items-center justify-center">
+                                                                    <span className="text-[10px] font-bold text-gray-400 uppercase leading-none mb-1">
+                                                                        {new Date(
+                                                                            report.date
+                                                                        ).toLocaleDateString(
+                                                                            'es-ES',
+                                                                            {
+                                                                                month: 'short',
+                                                                            }
+                                                                        )}
+                                                                    </span>
+                                                                    <span className="text-sm font-black text-gray-900 leading-none">
+                                                                        {new Date(
+                                                                            report.date
+                                                                        ).getDate()}
+                                                                    </span>
+                                                                </div>
+                                                                <span className="text-xs font-bold text-gray-700 capitalize">
+                                                                    {new Date(
+                                                                        report.date
+                                                                    ).toLocaleDateString('es-ES', {
+                                                                        weekday: 'long',
+                                                                    })}
+                                                                </span>
+                                                            </div>
                                                         </td>
-                                                        <td className="px-4 py-4 text-sm font-bold text-green-600">
-                                                            {Number(report.total_revenue)
-                                                                .toFixed(2)
-                                                                .replace('.', ',')}{' '}
-                                                            €
+                                                        <td className="px-4 py-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-sm font-black text-gray-900">
+                                                                    {report.order_count}
+                                                                </span>
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                                                                    pedidos
+                                                                </span>
+                                                            </div>
                                                         </td>
-                                                        <td className="px-4 py-4 text-sm text-gray-600 font-medium">
-                                                            {report.orders_count}
+                                                        <td className="px-4 py-4">
+                                                            <span className="text-sm font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg border border-green-100/50">
+                                                                {Number(report.total_revenue)
+                                                                    .toFixed(2)
+                                                                    .replace('.', ',')}{' '}
+                                                                €
+                                                            </span>
                                                         </td>
-                                                        <td className="px-4 py-4 text-sm text-red-500 font-bold">
-                                                            {report.cancelled_count || 0}
+                                                        <td className="px-4 py-4">
+                                                            <span className="text-xs font-bold text-gray-600">
+                                                                {Number(report.average_ticket)
+                                                                    .toFixed(2)
+                                                                    .replace('.', ',')}{' '}
+                                                                €
+                                                            </span>
                                                         </td>
-                                                        <td className="px-4 py-4 text-sm text-orange-500 font-bold">
-                                                            {report.late_count || 0}
-                                                        </td>
-                                                        <td className="px-4 py-4 text-sm text-blue-500 font-bold">
-                                                            {report.invitations_count || 0}
-                                                        </td>
-                                                        <td className="px-4 py-4 text-sm text-gray-600">
-                                                            {report.new_users_count}
-                                                        </td>
-                                                        <td className="px-4 py-4 text-sm text-gray-600">
-                                                            {Number(report.avg_ticket)
-                                                                .toFixed(2)
-                                                                .replace('.', ',')}{' '}
-                                                            €
+                                                        <td className="px-4 py-4 text-right">
+                                                            <ChevronRight
+                                                                size={16}
+                                                                className="text-gray-300 group-hover:text-red-500 group-hover:translate-x-1 transition-all inline-block"
+                                                            />
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -656,44 +666,41 @@ export default function AdminPage() {
                     )}
 
                     {activeTab === 'analytics' && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-lg font-bold text-gray-900">
-                                    Analítica de Comportamiento
-                                </h2>
-                                <div className="text-xs text-gray-400 font-medium">
-                                    Datos de los últimos 90 días
-                                </div>
-                            </div>
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+                            <h2 className="text-lg font-bold text-gray-900">Analítica Avanzada</h2>
 
-                            {/* Device Analytics with Charts */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                <h3 className="font-bold text-gray-900 mb-6 text-sm">
-                                    Analítica de Dispositivos (Pedidos)
-                                </h3>
-                                {loading ? (
-                                    <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
-                                ) : !stats?.analytics ||
-                                  Object.keys(stats.analytics.devices).length === 0 ? (
-                                    <div className="text-center py-10 text-gray-400 text-sm">
-                                        No hay suficientes datos registrados
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        {/* Device Types Pie Chart */}
-                                        <div className="h-48 flex flex-col">
-                                            <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 text-center tracking-wider">
-                                                Dispositivos
-                                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {/* Device Distribution */}
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                                        <Monitor size={16} className="text-blue-500" />
+                                        Dispositivo Principal (30d)
+                                    </h3>
+                                    {loading ? (
+                                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
+                                    ) : (
+                                        <div className="h-48">
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <PieChart>
                                                     <Pie
-                                                        data={Object.entries(
-                                                            stats.analytics.devices
-                                                        ).map(([name, value]) => ({
-                                                            name,
-                                                            value,
-                                                        }))}
+                                                        data={[
+                                                            {
+                                                                name: 'Móvil',
+                                                                value:
+                                                                    stats?.deviceStats?.mobile || 0,
+                                                            },
+                                                            {
+                                                                name: 'Escritorio',
+                                                                value:
+                                                                    stats?.deviceStats?.desktop ||
+                                                                    0,
+                                                            },
+                                                            {
+                                                                name: 'Tablet',
+                                                                value:
+                                                                    stats?.deviceStats?.tablet || 0,
+                                                            },
+                                                        ]}
                                                         cx="50%"
                                                         cy="50%"
                                                         innerRadius={45}
@@ -701,284 +708,22 @@ export default function AdminPage() {
                                                         paddingAngle={5}
                                                         dataKey="value"
                                                     >
-                                                        {[
-                                                            '#EF4444',
-                                                            '#3B82F6',
-                                                            '#10B981',
-                                                            '#F59E0B',
-                                                        ].map((color, index) => (
-                                                            <Cell
-                                                                key={`cell-${index}`}
-                                                                fill={color}
-                                                            />
-                                                        ))}
+                                                        <Cell fill="#3B82F6" />
+                                                        <Cell fill="#10B981" />
+                                                        <Cell fill="#F59E0B" />
                                                     </Pie>
                                                     <Tooltip />
                                                     <Legend wrapperStyle={{ fontSize: '9px' }} />
                                                 </PieChart>
                                             </ResponsiveContainer>
                                         </div>
-
-                                        {/* OS Distribution Bar Chart */}
-                                        <div className="h-48 flex flex-col">
-                                            <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 text-center tracking-wider">
-                                                Sistemas OP
-                                            </h4>
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart
-                                                    data={Object.entries(stats.analytics.os)
-                                                        .sort((a: any, b: any) => b[1] - a[1])
-                                                        .map(([name, count]) => ({ name, count }))}
-                                                    layout="vertical"
-                                                    margin={{ left: 0, right: 30 }}
-                                                >
-                                                    <CartesianGrid
-                                                        strokeDasharray="3 3"
-                                                        horizontal={true}
-                                                        vertical={false}
-                                                        stroke="#f0f0f0"
-                                                    />
-                                                    <XAxis type="number" hide />
-                                                    <YAxis
-                                                        dataKey="name"
-                                                        type="category"
-                                                        width={60}
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <Tooltip />
-                                                    <Bar
-                                                        dataKey="count"
-                                                        fill="#3B82F6"
-                                                        radius={[0, 4, 4, 0]}
-                                                        barSize={15}
-                                                    />
-                                                </BarChart>
-                                            </ResponsiveContainer>
-                                        </div>
-
-                                        {/* Browser Distribution Bar Chart */}
-                                        <div className="h-48 flex flex-col">
-                                            <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 text-center tracking-wider">
-                                                Navegadores
-                                            </h4>
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart
-                                                    data={Object.entries(stats.analytics.browsers)
-                                                        .sort((a: any, b: any) => b[1] - a[1])
-                                                        .map(([name, count]) => ({ name, count }))}
-                                                >
-                                                    <CartesianGrid
-                                                        strokeDasharray="3 3"
-                                                        vertical={false}
-                                                        stroke="#f0f0f0"
-                                                    />
-                                                    <XAxis
-                                                        dataKey="name"
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                        interval={0}
-                                                        tickFormatter={val =>
-                                                            val
-                                                                .replace('Mobile ', 'M. ')
-                                                                .replace('Chrome', 'Chr')
-                                                                .replace('Safari', 'Saf')
-                                                        }
-                                                    />
-                                                    <YAxis
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <Tooltip />
-                                                    <Bar
-                                                        dataKey="count"
-                                                        fill="#F59E0B"
-                                                        radius={[4, 4, 0, 0]}
-                                                        barSize={20}
-                                                    />
-                                                </BarChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Peak Hours Heatmap */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Activity size={16} className="text-red-500" />
-                                        Horas Pico (90d)
-                                    </h3>
-                                    {loading ? (
-                                        <div className="h-36 bg-gray-50 rounded animate-pulse"></div>
-                                    ) : (
-                                        <div className="h-36">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart
-                                                    data={stats?.heatmap?.hourly?.map(
-                                                        (val: number, hour: number) => ({
-                                                            hour: `${hour}:00`,
-                                                            pedidos: val,
-                                                        })
-                                                    )}
-                                                >
-                                                    <CartesianGrid
-                                                        strokeDasharray="3 3"
-                                                        vertical={false}
-                                                        stroke="#f0f0f0"
-                                                    />
-                                                    <XAxis
-                                                        dataKey="hour"
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                        interval={3}
-                                                    />
-                                                    <YAxis
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <Tooltip />
-                                                    <Bar
-                                                        dataKey="pedidos"
-                                                        fill="#EF4444"
-                                                        radius={[4, 4, 0, 0]}
-                                                    />
-                                                </BarChart>
-                                            </ResponsiveContainer>
-                                        </div>
                                     )}
                                 </div>
 
+                                {/* Customer Retention */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <TrendingUp size={16} className="text-blue-500" />
-                                        Días Оcupados
-                                    </h3>
-                                    {loading ? (
-                                        <div className="h-36 bg-gray-50 rounded animate-pulse"></div>
-                                    ) : (
-                                        <div className="h-36">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart
-                                                    data={stats?.heatmap?.daily?.map(
-                                                        (val: number, day: number) => ({
-                                                            day: [
-                                                                'Dom',
-                                                                'Lun',
-                                                                'Mar',
-                                                                'Mié',
-                                                                'Jue',
-                                                                'Vie',
-                                                                'Sáb',
-                                                            ][day],
-                                                            pedidos: val,
-                                                        })
-                                                    )}
-                                                >
-                                                    <CartesianGrid
-                                                        strokeDasharray="3 3"
-                                                        vertical={false}
-                                                        stroke="#f0f0f0"
-                                                    />
-                                                    <XAxis
-                                                        dataKey="day"
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <YAxis
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <Tooltip />
-                                                    <Bar
-                                                        dataKey="pedidos"
-                                                        fill="#3B82F6"
-                                                        radius={[4, 4, 0, 0]}
-                                                    />
-                                                </BarChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Growth & Retention */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <DollarSign size={16} className="text-emerald-500" />
-                                        Ingresos (30d)
-                                    </h3>
-                                    {loading ? (
-                                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
-                                    ) : (
-                                        <div className="h-48">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <AreaChart data={stats?.growth}>
-                                                    <defs>
-                                                        <linearGradient
-                                                            id="colorRevenue"
-                                                            x1="0"
-                                                            y1="0"
-                                                            x2="0"
-                                                            y2="1"
-                                                        >
-                                                            <stop
-                                                                offset="5%"
-                                                                stopColor="#10B981"
-                                                                stopOpacity={0.1}
-                                                            />
-                                                            <stop
-                                                                offset="95%"
-                                                                stopColor="#10B981"
-                                                                stopOpacity={0}
-                                                            />
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <CartesianGrid
-                                                        strokeDasharray="3 3"
-                                                        vertical={false}
-                                                        stroke="#f0f0f0"
-                                                    />
-                                                    <XAxis
-                                                        dataKey="date"
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                        tickFormatter={str => str.split('-')[2]}
-                                                    />
-                                                    <YAxis
-                                                        fontSize={9}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                        tickFormatter={val => `${val}€`}
-                                                    />
-                                                    <Tooltip />
-                                                    <Area
-                                                        type="monotone"
-                                                        dataKey="revenue"
-                                                        stroke="#10B981"
-                                                        fillOpacity={1}
-                                                        fill="url(#colorRevenue)"
-                                                        strokeWidth={2}
-                                                    />
-                                                </AreaChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Users size={16} className="text-violet-500" />
+                                        <Users size={16} className="text-purple-500" />
                                         Nuevos vs Recur.
                                     </h3>
                                     {loading ? (
@@ -1020,73 +765,73 @@ export default function AdminPage() {
                                         Basado en pedidos realizados en los últimos 30 días.
                                     </p>
                                 </div>
-                            </div>
 
-                            {/* Category Performance */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                    <Activity size={16} className="text-red-500" />
-                                    Performance por Categoría (30d)
-                                </h3>
-                                {loading ? (
-                                    <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
-                                ) : (
-                                    <div className="h-48">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={stats?.categoryStats}>
-                                                <CartesianGrid
-                                                    strokeDasharray="3 3"
-                                                    vertical={false}
-                                                    stroke="#f0f0f0"
-                                                />
-                                                <XAxis
-                                                    dataKey="name"
-                                                    fontSize={9}
-                                                    axisLine={false}
-                                                    tickLine={false}
-                                                    tickFormatter={str =>
-                                                        str.length > 10
-                                                            ? str.substring(0, 8) + '..'
-                                                            : str
-                                                    }
-                                                />
-                                                <YAxis
-                                                    yAxisId="left"
-                                                    fontSize={9}
-                                                    axisLine={false}
-                                                    tickLine={false}
-                                                    tickFormatter={val => `${val}€`}
-                                                />
-                                                <YAxis
-                                                    yAxisId="right"
-                                                    orientation="right"
-                                                    fontSize={9}
-                                                    axisLine={false}
-                                                    tickLine={false}
-                                                    tickFormatter={val => `${val}€`}
-                                                />
-                                                <Tooltip />
-                                                <Legend wrapperStyle={{ fontSize: '9px' }} />
-                                                <Bar
-                                                    yAxisId="left"
-                                                    name="Ventas"
-                                                    dataKey="revenue"
-                                                    fill="#3B82F6"
-                                                    radius={[4, 4, 0, 0]}
-                                                    barSize={20}
-                                                />
-                                                <Bar
-                                                    yAxisId="right"
-                                                    name="Ticket"
-                                                    dataKey="avgPrice"
-                                                    fill="#F59E0B"
-                                                    radius={[4, 4, 0, 0]}
-                                                    barSize={20}
-                                                />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                )}
+                                {/* Category Performance */}
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                                        <Activity size={16} className="text-red-500" />
+                                        Performance por Categoría (30d)
+                                    </h3>
+                                    {loading ? (
+                                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
+                                    ) : (
+                                        <div className="h-48">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart data={stats?.categoryStats}>
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis
+                                                        dataKey="name"
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                        tickFormatter={str =>
+                                                            str.length > 10
+                                                                ? str.substring(0, 8) + '..'
+                                                                : str
+                                                        }
+                                                    />
+                                                    <YAxis
+                                                        yAxisId="left"
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                        tickFormatter={val => `${val}€`}
+                                                    />
+                                                    <YAxis
+                                                        yAxisId="right"
+                                                        orientation="right"
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                        tickFormatter={val => `${val}€`}
+                                                    />
+                                                    <Tooltip />
+                                                    <Legend wrapperStyle={{ fontSize: '9px' }} />
+                                                    <Bar
+                                                        yAxisId="left"
+                                                        name="Ventas"
+                                                        dataKey="revenue"
+                                                        fill="#3B82F6"
+                                                        radius={[4, 4, 0, 0]}
+                                                        barSize={20}
+                                                    />
+                                                    <Bar
+                                                        yAxisId="right"
+                                                        name="Ticket"
+                                                        dataKey="avgPrice"
+                                                        fill="#F59E0B"
+                                                        radius={[4, 4, 0, 0]}
+                                                        barSize={20}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
