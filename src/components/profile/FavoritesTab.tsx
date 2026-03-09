@@ -52,6 +52,9 @@ export default function FavoritesTab() {
     const toggleFavorite = async (menuItemId: number) => {
         try {
             const data = await api.post('/user/favorites', { menuItemId });
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                navigator.vibrate(10);
+            }
             if (!data.isFavorite) {
                 setFavorites(prev => prev.filter(item => item.id !== menuItemId));
             }
@@ -61,6 +64,9 @@ export default function FavoritesTab() {
     };
 
     const handleAddToCart = (item: MenuItem) => {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(10);
+        }
         addItem({
             id: String(item.id),
             name: item.name,

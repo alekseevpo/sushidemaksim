@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { User, MapPin, Package, LogOut, ChevronRight, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -58,6 +59,9 @@ export default function ProfilePage() {
     }
 
     const handleLogout = () => {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate([10, 30, 10]);
+        }
         logout();
         navigate('/');
     };
@@ -139,22 +143,41 @@ export default function ProfilePage() {
                                 return (
                                     <button
                                         key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start
+                                        onClick={() => {
+                                            setActiveTab(tab.id);
+                                            if (
+                                                typeof navigator !== 'undefined' &&
+                                                navigator.vibrate
+                                            ) {
+                                                navigator.vibrate(5);
+                                            }
+                                        }}
+                                        className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start relative
                                             ${
                                                 isActive
-                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-200 ring-4 ring-red-600/5'
+                                                    ? 'text-white'
                                                     : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
                                             }`}
                                     >
+                                        {isActive && (
+                                            <motion.div
+                                                layoutId="profile-tab-active"
+                                                className="absolute inset-0 bg-red-600 shadow-lg shadow-red-200 ring-4 ring-red-600/5 rounded-2xl"
+                                                transition={{
+                                                    type: 'spring',
+                                                    bounce: 0.2,
+                                                    duration: 0.6,
+                                                }}
+                                            />
+                                        )}
                                         <div
-                                            className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
+                                            className={`relative z-10 w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
                                             ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'}`}
                                         >
                                             <Icon size={16} />
                                         </div>
                                         <span
-                                            className={`font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider ${isActive ? 'translate-x-0.5' : ''} transition-transform`}
+                                            className={`relative z-10 font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider ${isActive ? 'translate-x-0.5' : ''} transition-transform`}
                                         >
                                             {tab.label}
                                         </span>

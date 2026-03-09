@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
     ShieldCheck,
     LayoutDashboard,
@@ -193,21 +194,43 @@ export default function AdminPage() {
                         return (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
-                                    isActive
-                                        ? 'bg-red-50 text-red-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                                onClick={() => {
+                                    setActiveTab(tab.id);
+                                    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                                        navigator.vibrate(5);
+                                    }
+                                }}
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors relative group
+                                    ${
+                                        isActive
+                                            ? 'text-red-700'
+                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    }`}
                             >
-                                <div className="flex items-center gap-3">
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="admin-nav-active"
+                                        className="absolute inset-0 bg-red-50 rounded-xl"
+                                        transition={{
+                                            type: 'spring',
+                                            bounce: 0.2,
+                                            duration: 0.6,
+                                        }}
+                                    />
+                                )}
+                                <div className="flex items-center gap-3 relative z-10">
                                     <Icon
                                         size={18}
                                         className={isActive ? 'text-red-600' : 'text-gray-400'}
                                     />
                                     {tab.label}
                                 </div>
-                                {isActive && <ChevronRight size={16} className="text-red-400" />}
+                                {isActive && (
+                                    <ChevronRight
+                                        size={16}
+                                        className="text-red-400 relative z-10"
+                                    />
+                                )}
                             </button>
                         );
                     })}

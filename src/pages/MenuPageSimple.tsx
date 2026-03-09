@@ -209,6 +209,11 @@ export default function MenuPageSimple() {
             setFlyingItems(prev => prev.filter(f => f.id !== animId));
         }, 1200);
 
+        // Haptic feedback
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(10);
+        }
+
         // Add to real cart
         addItem({
             id: String(item.id),
@@ -238,8 +243,12 @@ export default function MenuPageSimple() {
             const data = await api.post('/user/favorites', { menuItemId: itemId });
             setFavoriteItems(prev => {
                 const next = new Set(prev);
-                if (data.isFavorite) next.add(itemId);
-                else next.delete(itemId);
+                if (data.isFavorite) {
+                    next.add(itemId);
+                    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                        navigator.vibrate(10);
+                    }
+                } else next.delete(itemId);
                 return next;
             });
         } catch (error) {
