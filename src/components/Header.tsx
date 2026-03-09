@@ -60,11 +60,11 @@ export default function Header() {
 
     const initials = user
         ? user.name
-            .split(' ')
-            .map(n => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2)
+              .split(' ')
+              .map(n => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)
         : '';
 
     const navLinks = [
