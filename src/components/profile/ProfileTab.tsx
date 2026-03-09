@@ -13,7 +13,9 @@ import {
     Calendar,
     AlertCircle,
     CheckCircle,
+    Trash2,
 } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 import { User as UserType } from '../../types';
 
 interface Props {
@@ -76,6 +78,8 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
     const [showNewPwd, setShowNewPwd] = useState(false);
     const [pwdError, setPwdError] = useState('');
     const [pwdSuccess, setPwdSuccess] = useState('');
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const { deleteAccount } = useAuth();
 
     const startEditing = () => {
         setEditName(user.name);
@@ -208,9 +212,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                         label: 'Fecha de Cumpleaños',
                         value: user.birthDate
                             ? (() => {
-                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                  return `${d}/${m}/${y}`;
-                              })()
+                                const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                return `${d}/${m}/${y}`;
+                            })()
                             : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
@@ -304,10 +308,9 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                             type="button"
                                             onClick={() => setEditAvatar(avatar)}
                                             className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                                ${
-                                                    editAvatar === avatar
-                                                        ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
-                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                                ${editAvatar === avatar
+                                                    ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
+                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
                                                 }`}
                                         >
                                             {avatar}
@@ -388,7 +391,7 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => {},
+                                    toggle: () => { },
                                 },
                             ].map(f => (
                                 <div key={f.label}>
@@ -433,6 +436,78 @@ export default function ProfileTab({ user, updateProfile, onSuccess }: Props) {
                     </div>
                 )}
             </div>
+
+            {/* Danger Zone */}
+            <div className="pt-12 border-t border-gray-100">
+                <div className="bg-red-50 rounded-[32px] p-8 border border-red-100 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="text-center md:text-left">
+                        <h4 className="text-lg font-black text-red-900 m-0 flex items-center gap-2 justify-center md:justify-start">
+                            <Trash2 size={20} /> ZONA DE PELIGRO
+                        </h4>
+                        <p className="text-sm text-red-700 mt-2 m-0 font-medium">
+                            Tu cuenta se marcará para eliminación. Tienes 30 días para recuperarla
+                            simplemente iniciando sesión.
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="w-full md:w-auto px-8 py-3.5 bg-white text-red-600 border-2 border-red-200 hover:border-red-600 hover:bg-red-600 hover:text-white rounded-xl font-black text-xs md:text-sm transition-all shadow-lg shadow-red-100 active:scale-95 whitespace-nowrap"
+                    >
+                        Eliminar mi cuenta
+                    </button>
+                </div>
+            </div>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                    />
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="relative bg-white rounded-[40px] p-8 md:p-10 max-w-md w-full shadow-2xl overflow-hidden"
+                    >
+                        <div className="absolute top-0 left-0 w-full h-2 bg-red-600" />
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Trash2 size={32} />
+                            </div>
+                            <h3 className="text-2xl font-black text-gray-900 mb-2">
+                                ¿Estás seguro?
+                            </h3>
+                            <p className="text-gray-500 font-medium mb-8">
+                                Tu cuenta no se borrará hoy. Tendrás <span className="text-red-600 font-black">30 días</span> para reactivarla. Si no lo haces, tus datos se perderán para siempre.
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            await deleteAccount();
+                                        } catch {
+                                            alert('Error al procesar la solicitud');
+                                        }
+                                    }}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"
+                                >
+                                    SÍ, ELIMINAR CUENTA
+                                </button>
+                                <button
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all active:scale-95"
+                                >
+                                    CANCELAR
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }

@@ -6,7 +6,7 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    login: (email: string, password: string) => Promise<{ success: boolean; error?: string; wasReactivated?: boolean }>;
     register: (
         name: string,
         email: string,
@@ -21,6 +21,7 @@ interface AuthContextType {
     editAddress: (id: string, address: Partial<Omit<UserAddress, 'id'>>) => Promise<void>;
     removeAddress: (id: string) => Promise<void>;
     setDefaultAddress: (id: string) => Promise<void>;
+    deleteAccount: () => Promise<void>;
     addOrder: (order: Order) => void;
 }
 
@@ -78,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.setItem('sushi_token', data.token);
             setUser(data.user);
             await loadUser(); // load addresses and full profile
-            return { success: true };
+            return { success: true, wasReactivated: data.wasReactivated };
         } catch (error: any) {
             return { success: false, error: error.message };
         }
@@ -157,6 +158,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(prev => (prev ? { ...prev, orders: [order, ...prev.orders] } : null));
     };
 
+    const deleteAccount = async () => {
+        try {
+            await api.delete('/user/profile');
+            logout();
+        } catch (error) {
+            console.error('Failed to delete account', error);
+            throw error;
+        }
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -171,6 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 editAddress,
                 removeAddress,
                 setDefaultAddress,
+                deleteAccount,
                 addOrder,
             }}
         >

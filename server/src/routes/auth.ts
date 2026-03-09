@@ -161,6 +161,13 @@ router.post(
             });
         }
 
+        // Reactivate account if it was marked for deletion
+        let wasDeleted = false;
+        if (user.deleted_at) {
+            await supabase.from('users').update({ deleted_at: null }).eq('id', user.id);
+            wasDeleted = true;
+        }
+
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Email o contraseña incorrectos' });
@@ -174,6 +181,7 @@ router.post(
         const { password_hash, created_at, birth_date, birth_date_verified, ...userRest } = user;
         res.json({
             token,
+            wasReactivated: wasDeleted,
             user: {
                 ...userRest,
                 createdAt: created_at,

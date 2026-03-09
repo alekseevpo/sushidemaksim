@@ -344,6 +344,20 @@ router.post(
     })
 );
 
+// DELETE /api/user/profile — request account deletion (soft delete)
+router.delete(
+    '/profile',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { error } = await supabase
+            .from('users')
+            .update({ deleted_at: new Date().toISOString() })
+            .eq('id', req.userId);
+
+        if (error) throw error;
+        res.json({ success: true, message: 'Su cuenta ha sido marcada para eliminación.' });
+    })
+);
+
 export default router;
 
 // PUT /api/user/active — update last seen timestamp

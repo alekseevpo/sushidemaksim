@@ -487,7 +487,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         await new Promise(r => setTimeout(r, 400));
         const result = await login(email, pass);
         if (result.success) {
-            setSuccess(`¡Hola${user ? ' ' + user.name : ''}! Bienvenido de vuelta.`);
+            if (result.wasReactivated) {
+                setSuccess('¡Bienvenido de nuevo! Tu cuenta ha sido reactivada.');
+            } else {
+                setSuccess(`¡Hola${user ? ' ' + user.name : ''}! Bienvenido de vuelta.`);
+            }
             setTimeout(() => {
                 onClose();
                 setMode('login');

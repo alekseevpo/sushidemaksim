@@ -11,6 +11,7 @@ import {
     ArrowUpDown,
     ChevronUp,
     ChevronDown,
+    Trash2,
 } from 'lucide-react';
 
 import { api, ApiError } from '../../utils/api';
@@ -22,6 +23,7 @@ export default function AdminUsers() {
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 1 });
     const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
+    const [userToDelete, setUserToDelete] = useState<any>(null);
 
     useEffect(() => {
         loadUsers(1);
@@ -48,6 +50,16 @@ export default function AdminUsers() {
             field,
             order: prev.field === field && prev.order === 'desc' ? 'asc' : 'desc',
         }));
+    };
+
+    const deleteUser = async (userId: number) => {
+        try {
+            await api.delete(`/admin/users/${userId}`);
+            // Success! Reload users or update state
+            setUsers(prev => prev.filter(u => u.id !== userId));
+        } catch (err) {
+            alert(err instanceof ApiError ? err.message : 'Error al eliminar usuario');
+        }
     };
 
     const toggleAdminRole = async (userId: number, currentRole: string) => {
@@ -260,11 +272,10 @@ export default function AdminUsers() {
                                                             user.birth_date_verified
                                                         )
                                                     }
-                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
-                                                        user.birth_date_verified
-                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                            : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                                    }`}
+                                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
+                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                                        }`}
                                                 >
                                                     {user.birth_date_verified ? (
                                                         <>
@@ -300,7 +311,7 @@ export default function AdminUsers() {
                                                     <div className="flex items-center gap-2">
                                                         {new Date().getTime() -
                                                             new Date(user.last_seen_at).getTime() <
-                                                        5 * 60 * 1000 ? (
+                                                            5 * 60 * 1000 ? (
                                                             <div className="relative flex h-2 w-2">
                                                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -312,22 +323,22 @@ export default function AdminUsers() {
                                                             {new Date(
                                                                 user.last_seen_at
                                                             ).toLocaleDateString() ===
-                                                            new Date().toLocaleDateString()
+                                                                new Date().toLocaleDateString()
                                                                 ? 'Hoy ' +
-                                                                  new Date(
-                                                                      user.last_seen_at
-                                                                  ).toLocaleTimeString([], {
-                                                                      hour: '2-digit',
-                                                                      minute: '2-digit',
-                                                                  })
+                                                                new Date(
+                                                                    user.last_seen_at
+                                                                ).toLocaleTimeString([], {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                })
                                                                 : new Date(
-                                                                      user.last_seen_at
-                                                                  ).toLocaleDateString([], {
-                                                                      day: '2-digit',
-                                                                      month: 'short',
-                                                                      hour: '2-digit',
-                                                                      minute: '2-digit',
-                                                                  })}
+                                                                    user.last_seen_at
+                                                                ).toLocaleDateString([], {
+                                                                    day: '2-digit',
+                                                                    month: 'short',
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                })}
                                                         </span>
                                                     </div>
                                                 </>
@@ -358,22 +369,30 @@ export default function AdminUsers() {
                                         )}
                                     </td>
                                     {currentUser?.is_superadmin === 1 && (
-                                        <td className="px-6 py-3 text-center">
+                                        <td className="px-6 py-3 text-center flex items-center justify-center gap-2">
                                             {user.is_superadmin !== 1 && (
-                                                <button
-                                                    onClick={() =>
-                                                        toggleAdminRole(user.id, user.role)
-                                                    }
-                                                    className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${
-                                                        user.role === 'admin'
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            toggleAdminRole(user.id, user.role)
+                                                        }
+                                                        className={`px-4 py-1.5 rounded-lg font-bold text-xs transition ${user.role === 'admin'
                                                             ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                             : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                                    }`}
-                                                >
-                                                    {user.role === 'admin'
-                                                        ? 'Revocar Admin'
-                                                        : 'Hacer Admin'}
-                                                </button>
+                                                            }`}
+                                                    >
+                                                        {user.role === 'admin'
+                                                            ? 'Revocar Admin'
+                                                            : 'Hacer Admin'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setUserToDelete(user)}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 transition"
+                                                        title="Eliminar permanentemente"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </>
                                             )}
                                         </td>
                                     )}
@@ -398,11 +417,10 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                        pageNum === pagination.page
-                                            ? 'bg-red-600 text-white'
-                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                    }`}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
+                                        ? 'bg-red-600 text-white'
+                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                        }`}
                                 >
                                     {pageNum}
                                 </button>
@@ -411,6 +429,49 @@ export default function AdminUsers() {
                     </div>
                 )}
             </div>
+
+            {/* Permanent Delete Confirmation Modal */}
+            {userToDelete && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setUserToDelete(null)}
+                    />
+                    <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Trash2 size={32} />
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">
+                                ¿Eliminar permanentemente?
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium mb-6">
+                                Estás a punto de borrar a <span className="text-red-600 font-black">{userToDelete.name} (ID: #{userToDelete.id})</span>.
+                                <br /><br />
+                                Esta acción <span className="font-black">ELIMINARÁ TODOS</span> los pedidos, direcciones y datos asociados de forma definitiva.
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={() => {
+                                        const id = userToDelete.id;
+                                        setUserToDelete(null);
+                                        deleteUser(id);
+                                    }}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all"
+                                >
+                                    SÍ, ELIMINAR AHORA
+                                </button>
+                                <button
+                                    onClick={() => setUserToDelete(null)}
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200"
+                                >
+                                    CANCELAR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

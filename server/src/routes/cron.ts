@@ -226,4 +226,47 @@ router.post('/generate-daily-report', async (req, res) => {
     }
 });
 
+// CRON job to permanently delete accounts marked for deletion > 30 days ago
+router.post('/cleanup-deleted-users', async (req, res) => {
+    const cronSecret = req.headers['x-cron-secret'];
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+        // 1. Find users to delete
+        const { data: usersToDelete, error: findError } = await supabase
+            .from('users')
+            .select('id')
+            .lt('deleted_at', thirtyDaysAgo);
+
+        if (findError) throw findError;
+
+        const results = [];
+        if (usersToDelete && usersToDelete.length > 0) {
+            for (const user of usersToDelete) {
+                // Delete related
+                const tables = ['user_addresses', 'user_favorites', 'orders', 'promo_codes'];
+                for (const table of tables) {
+                    await supabase.from(table).delete().eq('user_id', user.id);
+                }
+
+                // Delete user
+                const { error: delError } = await supabase
+                    .from('users')
+                    .delete()
+                    .eq('id', user.id);
+
+                if (!delError) results.push(user.id);
+            }
+        }
+
+        res.json({ success: true, permanentlyDeleted: results.length, ids: results });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 export default router;

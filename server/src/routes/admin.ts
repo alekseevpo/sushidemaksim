@@ -448,8 +448,30 @@ router.patch(
             .select('id, name, email, role, is_superadmin')
             .single();
 
-        if (error) throw error;
         res.json({ user });
+    })
+);
+
+// DELETE /api/admin/users/:id — Permanent hard delete (Admin only)
+router.delete(
+    '/users/:id',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const id = parseInt(req.params.id);
+
+        if (id === req.userId) {
+            return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
+        }
+
+        // Delete related data first (optional if CASCADE is set, but better safe)
+        const tables = ['user_addresses', 'user_favorites', 'orders', 'promo_codes'];
+        for (const table of tables) {
+            await supabase.from(table).delete().eq('user_id', id);
+        }
+
+        const { error } = await supabase.from('users').delete().eq('id', id);
+
+        if (error) throw error;
+        res.json({ success: true, message: `Usuario #${id} eliminado permanentemente` });
     })
 );
 
