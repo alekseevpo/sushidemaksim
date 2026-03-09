@@ -235,7 +235,7 @@ export async function sendVerificationEmail(to: string, name: string, token: str
   await transporter.sendMail({
     from,
     to,
-    subject: '¡Activa tu cuenta и recibe un regalo! 🎁 — Sushi de Maksim',
+    subject: '¡Activa tu cuenta y recibe un regalo! 🎁 — Sushi de Maksim',
     html: `
 <!DOCTYPE html>
 <html>
@@ -246,26 +246,27 @@ export async function sendVerificationEmail(to: string, name: string, token: str
 <body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
   <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);">
     
-    <!-- Header with Logo -->
-    <div style="background: linear-gradient(135deg, #111827 0%, #1f2937 100%); padding: 40px 20px; text-align: center;">
-      <div style="display: inline-block; background: #dc2626; padding: 12px; border-radius: 16px; margin-bottom: 16px;">
-        <img src="${logoUrl}" alt="Maksim Logo" style="height: 32px; width: auto; display: block; filter: brightness(0) invert(1);">
+    <!-- Header with Stylized Logo -->
+    <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
+      <div style="margin-bottom: 16px;">
+        <span style="background-color: #dc2626; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
       </div>
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; text-transform: uppercase;">
-        Sushi de Maksim<span style="color:#dc2626;">.</span>
+      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
+        MAKSIM<span style="color:#dc2626;">.</span>
       </h1>
+      <p style="color: #6b7280; margin: 5px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Sushi de Autor</p>
     </div>
 
     <!-- Content -->
     <div style="padding: 40px; text-align: center;">
       <h2 style="color: #111827; margin: 0 0 16px; font-size: 28px; font-weight: 800; line-height: 1.2;">¡Hola ${name}!</h2>
       <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
-        Estamos muy felices de tenerte con nosotros. Para empezar a disfrutar del mejor sushi artesanal, activa tu cuenta и desbloquea tu regalo de bienvenida.
+        Estamos muy felices de tenerte con nosotros. Para empezar a disfrutar del mejor sushi artesanal, activa tu cuenta y desbloquea tu regalo de bienvenida.
       </p>
 
       <!-- Welcome Gift Section -->
       <div style="background: #fff1f2; border: 2px dashed #fecdd3; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
-        <p style="color: #be123c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">Tu подарок (-5%)</p>
+        <p style="color: #be123c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-5%)</p>
         <div style="color: #dc2626; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
         <p style="color: #9f1239; font-size: 14px; font-weight: bold; margin: 0;">
           ⚠️ Válido solo durante <strong>24 horas</strong>
