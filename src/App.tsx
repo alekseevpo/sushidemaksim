@@ -40,6 +40,7 @@ const BlogPostPage = lazyRetry(() => import('./pages/BlogPostPage'));
 const PayForFriendPage = lazyRetry(() => import('./pages/PayForFriendPage'));
 const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
+const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 
 function PageLoader() {
     return (
@@ -87,6 +88,7 @@ function App() {
                                             path="/verify-email-change"
                                             element={<VerifyEmailChangePage />}
                                         />
+                                        <Route path="/track/:id" element={<OrderTrackingPage />} />
                                     </Routes>
                                 </Suspense>
                             </main>

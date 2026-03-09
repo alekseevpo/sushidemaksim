@@ -439,6 +439,39 @@ router.get(
     })
 );
 
+// GET /api/orders/track/:id — public tracking (requires phone match for security)
+router.get(
+    '/track/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const phone = req.query.phone as string;
+
+        if (!phone) {
+            return res.status(400).json({ error: 'Se requiere el teléfono para el seguimiento.' });
+        }
+
+        const { data: order, error } = await supabase
+            .from('orders')
+            .select('*, items:order_items(*)')
+            .eq('id', id)
+            .single();
+
+        if (error || !order) {
+            return res.status(404).json({ error: 'Pedido no encontrado' });
+        }
+
+        // Basic security: match last 4 digits or full phone (clean common chars)
+        const cleanOrderPhone = order.phone_number.replace(/\D/g, '');
+        const cleanProvidedPhone = phone.replace(/\D/g, '');
+
+        if (!cleanOrderPhone.endsWith(cleanProvidedPhone) && !cleanProvidedPhone.endsWith(cleanOrderPhone)) {
+            return res.status(403).json({ error: 'El teléfono no coincide con el pedido.' });
+        }
+
+        res.json({ order });
+    })
+);
+
 // POST /api/orders/:id/confirm-payment — finalize invitation order
 router.post(
     '/:id/confirm-payment',
