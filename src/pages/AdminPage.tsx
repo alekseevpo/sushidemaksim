@@ -126,17 +126,17 @@ export default function AdminPage() {
     ];
 
     const StatCard = ({ title, value, icon: Icon, colorClass, desc }: any) => (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between">
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <p className="text-sm font-semibold text-gray-500 mb-1">{title}</p>
-                    <h3 className="text-3xl font-bold text-gray-900">{value}</h3>
+                    <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
                 </div>
-                <div className={`p-3 rounded-lg ${colorClass}`}>
-                    <Icon size={24} />
+                <div className={`p-2.5 rounded-lg ${colorClass}`}>
+                    <Icon size={20} />
                 </div>
             </div>
-            <p className="text-sm text-gray-500">{desc}</p>
+            <p className="text-[11px] text-gray-400 line-clamp-1">{desc}</p>
         </div>
     );
 
@@ -191,7 +191,7 @@ export default function AdminPage() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 p-4 md:p-8">
+            <main className="flex-1 md:ml-64 p-3 md:p-6">
                 <div className="w-full">
                     {/* Top Bar */}
                     <div className="flex justify-between items-center mb-8">
@@ -252,7 +252,7 @@ export default function AdminPage() {
                     {activeTab === 'promos' && <AdminPromos />}
                     {activeTab === 'blog' && <AdminBlog />}
                     {activeTab === 'dashboard' && (
-                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-bold text-gray-900">Resumen hoy</h2>
                                 <div className="flex items-center gap-4">
@@ -277,7 +277,7 @@ export default function AdminPage() {
                             </div>
 
                             {loading ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     {[1, 2, 3, 4].map(i => (
                                         <div
                                             key={i}
@@ -289,7 +289,7 @@ export default function AdminPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     <StatCard
                                         title="Ingresos de hoy"
                                         value={`${(stats?.revenueToday ?? 0).toFixed(2).replace('.', ',')} €`}
@@ -321,8 +321,8 @@ export default function AdminPage() {
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="font-bold text-gray-900">Últimos Pedidos</h3>
                                         <button
@@ -379,7 +379,7 @@ export default function AdminPage() {
                                     )}
                                 </div>
 
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-4">
                                         Top Productos Mensuales
                                     </h3>
@@ -430,7 +430,7 @@ export default function AdminPage() {
                             </div>
 
                             {/* Device Analytics */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mt-6">
                                 <h3 className="font-bold text-gray-900 mb-6">
                                     Analítica de Dispositivos (Pedidos Registrados)
                                 </h3>
@@ -514,7 +514,7 @@ export default function AdminPage() {
                             </div>
 
                             {/* Daily Reports Section */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8 overflow-hidden">
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mt-6 overflow-hidden">
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="font-bold text-gray-900">
                                         Historial de Reportes Diarios
