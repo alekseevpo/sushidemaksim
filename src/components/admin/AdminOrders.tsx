@@ -1,5 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Package, Search, RefreshCw, Smartphone, Monitor, Globe, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import {
+    Package,
+    Search,
+    RefreshCw,
+    Smartphone,
+    Monitor,
+    Globe,
+    CheckCircle2,
+    Volume2,
+    VolumeX,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
 import { OrderTimer } from './OrderTimer';
@@ -16,9 +26,17 @@ export default function AdminOrders() {
         oldStatus: string;
         newStatus: string;
     } | null>(null);
+    const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+    const processedOrderIds = useRef<Set<number>>(new Set());
+    const isFirstLoad = useRef(true);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    const loadOrders = async (page: number = 1, currentFilter: string = filter) => {
-        setLoading(true);
+    const loadOrders = async (
+        page: number = 1,
+        currentFilter: string = filter,
+        isPolling: boolean = false
+    ) => {
+        if (!isPolling) setLoading(true);
         setError(null);
         try {
             let url = `/admin/orders?page=${page}&limit=${pagination.limit}`;
@@ -39,13 +57,39 @@ export default function AdminOrders() {
             }
 
             const data = await api.get(url);
-            setOrders(data.orders || []);
+            const fetchedOrders = data.orders || [];
+
+            // Sound Notification Logic
+            if (isSoundEnabled) {
+                const pendingOrders = fetchedOrders.filter((o: any) => o.status === 'pending');
+                let hasNewPending = false;
+
+                pendingOrders.forEach((order: any) => {
+                    if (!processedOrderIds.current.has(order.id)) {
+                        if (!isFirstLoad.current) {
+                            hasNewPending = true;
+                        }
+                        processedOrderIds.current.add(order.id);
+                    }
+                });
+
+                if (hasNewPending && audioRef.current) {
+                    audioRef.current.play().catch(e => console.error('Audio play failed:', e));
+                }
+            } else {
+                // Keep IDs updated even if sound is off to avoid a "blast" when turning it on
+                fetchedOrders.forEach((order: any) => processedOrderIds.current.add(order.id));
+            }
+
+            setOrders(fetchedOrders);
             setPagination(data.pagination);
+            isFirstLoad.current = false;
         } catch (err) {
             console.error('Error fetching admin orders:', err);
-            setError(err instanceof ApiError ? err.message : 'Error al cargar los pedidos');
+            if (!isPolling)
+                setError(err instanceof ApiError ? err.message : 'Error al cargar los pedidos');
         } finally {
-            setLoading(false);
+            if (!isPolling) setLoading(false);
         }
     };
 
@@ -53,14 +97,14 @@ export default function AdminOrders() {
         loadOrders(pagination.page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Refresh every minute to keep up to date
+        // Refresh every 30 seconds to keep up to date (faster for sound alerts)
         const intervalId = setInterval(() => {
-            loadOrders(pagination.page);
-        }, 60000);
+            loadOrders(pagination.page, filter, true);
+        }, 30000);
 
         return () => clearInterval(intervalId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pagination.page, filter]);
+    }, [pagination.page, filter, isSoundEnabled]);
 
     const handleUpdateStatus = async (id: number, newStatus: string) => {
         const order = orders.find(o => o.id === id);
@@ -143,21 +187,41 @@ export default function AdminOrders() {
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Audio element for notifications */}
+            <audio
+                ref={audioRef}
+                src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+                preload="auto"
+            />
+
             {/* Top Controls */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 space-y-4">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                    <div className="relative w-full sm:w-96">
-                        <Search
-                            size={18}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Buscar ID, Teléfono, Promo..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
-                        />
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                        <div className="relative flex-1 sm:w-96">
+                            <Search
+                                size={18}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Buscar ID, Teléfono, Promo..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
+                            />
+                        </div>
+                        <button
+                            onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                            className={`p-2 rounded-lg transition border ${
+                                isSoundEnabled
+                                    ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
+                                    : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
+                            }`}
+                            title={isSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
+                        >
+                            {isSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                        </button>
                     </div>
                     <button
                         onClick={() => loadOrders(pagination.page)}
