@@ -688,7 +688,6 @@ router.get(
             dailyStats[d] = { date: d, revenue: 0, orders: 0 };
         }
 
-        const userOrderCounts: Record<number, number> = {};
         let newUsers = 0;
         let returningUsers = 0;
         const seenUsers = new Set();

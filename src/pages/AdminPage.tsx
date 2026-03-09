@@ -43,7 +43,15 @@ import AdminBlog from '../components/admin/AdminBlog';
 import AdminSettings from '../components/admin/AdminSettings';
 import { OrderTimer } from '../components/admin/OrderTimer';
 
-type TabId = 'dashboard' | 'orders' | 'menu' | 'users' | 'promos' | 'blog' | 'settings' | 'analytics';
+type TabId =
+    | 'dashboard'
+    | 'orders'
+    | 'menu'
+    | 'users'
+    | 'promos'
+    | 'blog'
+    | 'settings'
+    | 'analytics';
 
 export default function AdminPage() {
     const { user, isAuthenticated } = useAuth();
@@ -183,10 +191,11 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
-                                    ? 'bg-red-50 text-red-700'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
+                                    isActive
+                                        ? 'bg-red-50 text-red-700'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon
@@ -548,8 +557,12 @@ export default function AdminPage() {
                     {activeTab === 'analytics' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-lg font-bold text-gray-900">Analítica de Comportamiento</h2>
-                                <div className="text-xs text-gray-400 font-medium">Datos de los últimos 90 días</div>
+                                <h2 className="text-lg font-bold text-gray-900">
+                                    Analítica de Comportamiento
+                                </h2>
+                                <div className="text-xs text-gray-400 font-medium">
+                                    Datos de los últimos 90 días
+                                </div>
                             </div>
 
                             {/* Device Analytics with Charts */}
@@ -560,7 +573,7 @@ export default function AdminPage() {
                                 {loading ? (
                                     <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
                                 ) : !stats?.analytics ||
-                                    Object.keys(stats.analytics.devices).length === 0 ? (
+                                  Object.keys(stats.analytics.devices).length === 0 ? (
                                     <div className="text-center py-10 text-gray-400 text-sm">
                                         No hay suficientes datos registrados
                                     </div>
@@ -666,8 +679,9 @@ export default function AdminPage() {
                                                         axisLine={false}
                                                         tickLine={false}
                                                         interval={0}
-                                                        tickFormatter={(val) =>
-                                                            val.replace('Mobile ', 'M. ')
+                                                        tickFormatter={val =>
+                                                            val
+                                                                .replace('Mobile ', 'M. ')
                                                                 .replace('Chrome', 'Chr')
                                                                 .replace('Safari', 'Saf')
                                                         }
@@ -983,7 +997,7 @@ export default function AdminPage() {
                     {activeTab === 'promos' && <AdminPromos />}
                     {activeTab === 'blog' && <AdminBlog />}
                 </div>
-            </main >
-        </div >
+            </main>
+        </div>
     );
 }
