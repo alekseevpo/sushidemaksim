@@ -586,7 +586,7 @@ router.get(
             user_name: o.users?.name,
         }));
 
-        // 5. Top Items (using order_items from last 30 days)
+        // 5. Top Items & Category Stats (using order_items from last 30 days)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
         // 5a. First find orders in that range
@@ -602,21 +602,36 @@ router.get(
         if (ids.length > 0) {
             const { data } = await supabase
                 .from('order_items')
-                .select('name, quantity, price_at_time')
+                .select('name, quantity, price_at_time, menu_items(category)')
                 .in('order_id', ids);
             topItemsRaw = data;
         }
 
         const itemMap: Record<string, { name: string; sold: number; revenue: number }> = {};
+        const categoryMap: Record<string, { total: number; count: number }> = {};
+
         topItemsRaw?.forEach(item => {
+            // Item stats
             if (!itemMap[item.name]) itemMap[item.name] = { name: item.name, sold: 0, revenue: 0 };
             itemMap[item.name].sold += item.quantity;
             itemMap[item.name].revenue += item.quantity * item.price_at_time;
+
+            // Category stats
+            const cat = item.menu_items?.category || 'Otros';
+            if (!categoryMap[cat]) categoryMap[cat] = { total: 0, count: 0 };
+            categoryMap[cat].total += item.quantity * item.price_at_time;
+            categoryMap[cat].count += item.quantity;
         });
 
         const topItems = Object.values(itemMap)
             .sort((a, b) => b.sold - a.sold)
             .slice(0, 5);
+
+        const categoryStats = Object.entries(categoryMap).map(([name, data]) => ({
+            name,
+            avgPrice: Math.round((data.total / data.count) * 100) / 100,
+            revenue: Math.round(data.total * 100) / 100,
+        }));
 
         // 6. Device/OS breakdown
         const { data: devicesData } = await supabase
@@ -638,6 +653,63 @@ router.get(
             analytics.browsers[b] = (analytics.browsers[b] || 0) + 1;
         });
 
+        // 7. Time-based Heatmap (Last 90 days)
+        const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+        const { data: heatmapData } = await supabase
+            .from('orders')
+            .select('created_at')
+            .gte('created_at', ninetyDaysAgo)
+            .neq('status', 'cancelled');
+
+        const hourlyDistribution = Array(24).fill(0);
+        const dailyDistribution = Array(7).fill(0);
+
+        heatmapData?.forEach(o => {
+            const date = new Date(o.created_at);
+            // Adjust to Madrid time if needed, but JS Date parsed from ISO is usually UTC.
+            // Let's assume the server/client handles local display, but for stats we can use local hour
+            const hour = date.getHours();
+            const day = date.getDay(); // 0 (Sun) to 6 (Sat)
+            hourlyDistribution[hour]++;
+            dailyDistribution[day]++;
+        });
+
+        // 8. Daily Growth & Retention (Last 30 days)
+        const dailyStats: Record<string, { date: string; revenue: number; orders: number }> = {};
+        const { data: recentOrdersFull } = await supabase
+            .from('orders')
+            .select('total, created_at, user_id')
+            .gte('created_at', thirtyDaysAgo)
+            .neq('status', 'cancelled');
+
+        // Initialize last 30 days
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            dailyStats[d] = { date: d, revenue: 0, orders: 0 };
+        }
+
+        const userOrderCounts: Record<number, number> = {};
+        let newUsers = 0;
+        let returningUsers = 0;
+        const seenUsers = new Set();
+
+        recentOrdersFull?.forEach(o => {
+            const d = new Date(o.created_at).toISOString().split('T')[0];
+            if (dailyStats[d]) {
+                dailyStats[d].revenue += Number(o.total);
+                dailyStats[d].orders += 1;
+            }
+
+            if (o.user_id) {
+                if (seenUsers.has(o.user_id)) {
+                    returningUsers++;
+                } else {
+                    newUsers++;
+                    seenUsers.add(o.user_id);
+                }
+            }
+        });
+
         res.json({
             revenueToday: Math.round(revenueToday * 100) / 100,
             ordersToday,
@@ -653,6 +725,16 @@ router.get(
             recentOrders: formattedRecent,
             topItems,
             analytics,
+            heatmap: {
+                hourly: hourlyDistribution,
+                daily: dailyDistribution,
+            },
+            growth: Object.values(dailyStats),
+            retention: {
+                new: newUsers,
+                returning: returningUsers,
+            },
+            categoryStats,
         });
     })
 );

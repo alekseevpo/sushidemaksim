@@ -16,6 +16,7 @@ import {
     X,
     ArrowLeft,
     ExternalLink,
+    BarChart3,
 } from 'lucide-react';
 import {
     BarChart,
@@ -28,6 +29,8 @@ import {
     Cell,
     PieChart,
     Pie,
+    AreaChart,
+    Area,
     Legend,
 } from 'recharts';
 import { useAuth } from '../hooks/useAuth';
@@ -40,7 +43,7 @@ import AdminBlog from '../components/admin/AdminBlog';
 import AdminSettings from '../components/admin/AdminSettings';
 import { OrderTimer } from '../components/admin/OrderTimer';
 
-type TabId = 'dashboard' | 'orders' | 'menu' | 'users' | 'promos' | 'blog' | 'settings';
+type TabId = 'dashboard' | 'orders' | 'menu' | 'users' | 'promos' | 'blog' | 'settings' | 'analytics';
 
 export default function AdminPage() {
     const { user, isAuthenticated } = useAuth();
@@ -135,6 +138,7 @@ export default function AdminPage() {
 
     const navLinks: { id: TabId; label: string; icon: any }[] = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'analytics', label: 'Analítica Avanzada', icon: BarChart3 },
         { id: 'orders', label: 'Gestión de Pedidos', icon: Package },
         { id: 'menu', label: 'Gestión de Menú', icon: MenuIcon },
         { id: 'users', label: 'Usuarios y Clientes', icon: Users },
@@ -179,11 +183,10 @@ export default function AdminPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${
-                                    isActive
-                                        ? 'bg-red-50 text-red-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors ${isActive
+                                    ? 'bg-red-50 text-red-700'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon
@@ -266,9 +269,6 @@ export default function AdminPage() {
                     )}
 
                     {/* Tab Contents */}
-                    {activeTab === 'settings' && <AdminSettings />}
-                    {activeTab === 'promos' && <AdminPromos />}
-                    {activeTab === 'blog' && <AdminBlog />}
                     {activeTab === 'dashboard' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center justify-between">
@@ -447,139 +447,6 @@ export default function AdminPage() {
                                 </div>
                             </div>
 
-                            {/* Device Analytics with Charts */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mt-6">
-                                <h3 className="font-bold text-gray-900 mb-6">
-                                    Analítica de Dispositivos (Pedidos Registrados)
-                                </h3>
-                                {loading ? (
-                                    <div className="h-64 bg-gray-50 rounded animate-pulse"></div>
-                                ) : !stats?.analytics ||
-                                  Object.keys(stats.analytics.devices).length === 0 ? (
-                                    <div className="text-center py-10 text-gray-400 text-sm">
-                                        No hay suficientes datos registrados
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        {/* Device Types Pie Chart */}
-                                        <div className="h-64 flex flex-col">
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-2 text-center">
-                                                Tipo de Dispositivo
-                                            </h4>
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <PieChart>
-                                                    <Pie
-                                                        data={Object.entries(
-                                                            stats.analytics.devices
-                                                        ).map(([name, value]) => ({
-                                                            name,
-                                                            value,
-                                                        }))}
-                                                        cx="50%"
-                                                        cy="50%"
-                                                        innerRadius={60}
-                                                        outerRadius={80}
-                                                        paddingAngle={5}
-                                                        dataKey="value"
-                                                    >
-                                                        {[
-                                                            '#EF4444',
-                                                            '#3B82F6',
-                                                            '#10B981',
-                                                            '#F59E0B',
-                                                        ].map((color, index) => (
-                                                            <Cell
-                                                                key={`cell-${index}`}
-                                                                fill={color}
-                                                            />
-                                                        ))}
-                                                    </Pie>
-                                                    <Tooltip />
-                                                    <Legend />
-                                                </PieChart>
-                                            </ResponsiveContainer>
-                                        </div>
-
-                                        {/* OS Distribution Bar Chart */}
-                                        <div className="h-64 flex flex-col">
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-2 text-center">
-                                                Sistemas Operativos
-                                            </h4>
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart
-                                                    data={Object.entries(stats.analytics.os)
-                                                        .sort((a: any, b: any) => b[1] - a[1])
-                                                        .map(([name, count]) => ({ name, count }))}
-                                                    layout="vertical"
-                                                    margin={{ left: 0, right: 30 }}
-                                                >
-                                                    <CartesianGrid
-                                                        strokeDasharray="3 3"
-                                                        horizontal={true}
-                                                        vertical={false}
-                                                        stroke="#f0f0f0"
-                                                    />
-                                                    <XAxis type="number" hide />
-                                                    <YAxis
-                                                        dataKey="name"
-                                                        type="category"
-                                                        width={80}
-                                                        fontSize={10}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <Tooltip />
-                                                    <Bar
-                                                        dataKey="count"
-                                                        fill="#3B82F6"
-                                                        radius={[0, 4, 4, 0]}
-                                                        barSize={20}
-                                                    />
-                                                </BarChart>
-                                            </ResponsiveContainer>
-                                        </div>
-
-                                        {/* Browser Distribution Bar Chart */}
-                                        <div className="h-64 flex flex-col">
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-2 text-center">
-                                                Navegadores
-                                            </h4>
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart
-                                                    data={Object.entries(stats.analytics.browsers)
-                                                        .sort((a: any, b: any) => b[1] - a[1])
-                                                        .map(([name, count]) => ({ name, count }))}
-                                                >
-                                                    <CartesianGrid
-                                                        strokeDasharray="3 3"
-                                                        vertical={false}
-                                                        stroke="#f0f0f0"
-                                                    />
-                                                    <XAxis
-                                                        dataKey="name"
-                                                        fontSize={10}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <YAxis
-                                                        fontSize={10}
-                                                        axisLine={false}
-                                                        tickLine={false}
-                                                    />
-                                                    <Tooltip />
-                                                    <Bar
-                                                        dataKey="count"
-                                                        fill="#F59E0B"
-                                                        radius={[4, 4, 0, 0]}
-                                                        barSize={25}
-                                                    />
-                                                </BarChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
                             {/* Daily Reports Section */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mt-6 overflow-hidden">
                                 <div className="flex items-center justify-between mb-6">
@@ -678,13 +545,445 @@ export default function AdminPage() {
                         </div>
                     )}
 
+                    {activeTab === 'analytics' && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-lg font-bold text-gray-900">Analítica de Comportamiento</h2>
+                                <div className="text-xs text-gray-400 font-medium">Datos de los últimos 90 días</div>
+                            </div>
+
+                            {/* Device Analytics with Charts */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                <h3 className="font-bold text-gray-900 mb-6 text-sm">
+                                    Analítica de Dispositivos (Pedidos)
+                                </h3>
+                                {loading ? (
+                                    <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
+                                ) : !stats?.analytics ||
+                                    Object.keys(stats.analytics.devices).length === 0 ? (
+                                    <div className="text-center py-10 text-gray-400 text-sm">
+                                        No hay suficientes datos registrados
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* Device Types Pie Chart */}
+                                        <div className="h-48 flex flex-col">
+                                            <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 text-center tracking-wider">
+                                                Dispositivos
+                                            </h4>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart>
+                                                    <Pie
+                                                        data={Object.entries(
+                                                            stats.analytics.devices
+                                                        ).map(([name, value]) => ({
+                                                            name,
+                                                            value,
+                                                        }))}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        innerRadius={45}
+                                                        outerRadius={65}
+                                                        paddingAngle={5}
+                                                        dataKey="value"
+                                                    >
+                                                        {[
+                                                            '#EF4444',
+                                                            '#3B82F6',
+                                                            '#10B981',
+                                                            '#F59E0B',
+                                                        ].map((color, index) => (
+                                                            <Cell
+                                                                key={`cell-${index}`}
+                                                                fill={color}
+                                                            />
+                                                        ))}
+                                                    </Pie>
+                                                    <Tooltip />
+                                                    <Legend wrapperStyle={{ fontSize: '9px' }} />
+                                                </PieChart>
+                                            </ResponsiveContainer>
+                                        </div>
+
+                                        {/* OS Distribution Bar Chart */}
+                                        <div className="h-48 flex flex-col">
+                                            <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 text-center tracking-wider">
+                                                Sistemas OP
+                                            </h4>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart
+                                                    data={Object.entries(stats.analytics.os)
+                                                        .sort((a: any, b: any) => b[1] - a[1])
+                                                        .map(([name, count]) => ({ name, count }))}
+                                                    layout="vertical"
+                                                    margin={{ left: 0, right: 30 }}
+                                                >
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        horizontal={true}
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis type="number" hide />
+                                                    <YAxis
+                                                        dataKey="name"
+                                                        type="category"
+                                                        width={60}
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <Tooltip />
+                                                    <Bar
+                                                        dataKey="count"
+                                                        fill="#3B82F6"
+                                                        radius={[0, 4, 4, 0]}
+                                                        barSize={15}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+
+                                        {/* Browser Distribution Bar Chart */}
+                                        <div className="h-48 flex flex-col">
+                                            <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 text-center tracking-wider">
+                                                Navegadores
+                                            </h4>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart
+                                                    data={Object.entries(stats.analytics.browsers)
+                                                        .sort((a: any, b: any) => b[1] - a[1])
+                                                        .map(([name, count]) => ({ name, count }))}
+                                                >
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis
+                                                        dataKey="name"
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                        interval={0}
+                                                        tickFormatter={(val) =>
+                                                            val.replace('Mobile ', 'M. ')
+                                                                .replace('Chrome', 'Chr')
+                                                                .replace('Safari', 'Saf')
+                                                        }
+                                                    />
+                                                    <YAxis
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <Tooltip />
+                                                    <Bar
+                                                        dataKey="count"
+                                                        fill="#F59E0B"
+                                                        radius={[4, 4, 0, 0]}
+                                                        barSize={20}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Peak Hours Heatmap */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                                        <Activity size={16} className="text-red-500" />
+                                        Horas Pico (90d)
+                                    </h3>
+                                    {loading ? (
+                                        <div className="h-36 bg-gray-50 rounded animate-pulse"></div>
+                                    ) : (
+                                        <div className="h-36">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart
+                                                    data={stats?.heatmap?.hourly?.map(
+                                                        (val: number, hour: number) => ({
+                                                            hour: `${hour}:00`,
+                                                            pedidos: val,
+                                                        })
+                                                    )}
+                                                >
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis
+                                                        dataKey="hour"
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                        interval={3}
+                                                    />
+                                                    <YAxis
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <Tooltip />
+                                                    <Bar
+                                                        dataKey="pedidos"
+                                                        fill="#EF4444"
+                                                        radius={[4, 4, 0, 0]}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                                        <TrendingUp size={16} className="text-blue-500" />
+                                        Días Оcupados
+                                    </h3>
+                                    {loading ? (
+                                        <div className="h-36 bg-gray-50 rounded animate-pulse"></div>
+                                    ) : (
+                                        <div className="h-36">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart
+                                                    data={stats?.heatmap?.daily?.map(
+                                                        (val: number, day: number) => ({
+                                                            day: [
+                                                                'Dom',
+                                                                'Lun',
+                                                                'Mar',
+                                                                'Mié',
+                                                                'Jue',
+                                                                'Vie',
+                                                                'Sáb',
+                                                            ][day],
+                                                            pedidos: val,
+                                                        })
+                                                    )}
+                                                >
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis
+                                                        dataKey="day"
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <YAxis
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                    />
+                                                    <Tooltip />
+                                                    <Bar
+                                                        dataKey="pedidos"
+                                                        fill="#3B82F6"
+                                                        radius={[4, 4, 0, 0]}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Growth & Retention */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                                        <DollarSign size={16} className="text-emerald-500" />
+                                        Ingresos (30d)
+                                    </h3>
+                                    {loading ? (
+                                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
+                                    ) : (
+                                        <div className="h-48">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <AreaChart data={stats?.growth}>
+                                                    <defs>
+                                                        <linearGradient
+                                                            id="colorRevenue"
+                                                            x1="0"
+                                                            y1="0"
+                                                            x2="0"
+                                                            y2="1"
+                                                        >
+                                                            <stop
+                                                                offset="5%"
+                                                                stopColor="#10B981"
+                                                                stopOpacity={0.1}
+                                                            />
+                                                            <stop
+                                                                offset="95%"
+                                                                stopColor="#10B981"
+                                                                stopOpacity={0}
+                                                            />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        vertical={false}
+                                                        stroke="#f0f0f0"
+                                                    />
+                                                    <XAxis
+                                                        dataKey="date"
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                        tickFormatter={str => str.split('-')[2]}
+                                                    />
+                                                    <YAxis
+                                                        fontSize={9}
+                                                        axisLine={false}
+                                                        tickLine={false}
+                                                        tickFormatter={val => `${val}€`}
+                                                    />
+                                                    <Tooltip />
+                                                    <Area
+                                                        type="monotone"
+                                                        dataKey="revenue"
+                                                        stroke="#10B981"
+                                                        fillOpacity={1}
+                                                        fill="url(#colorRevenue)"
+                                                        strokeWidth={2}
+                                                    />
+                                                </AreaChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                                        <Users size={16} className="text-violet-500" />
+                                        Nuevos vs Recur.
+                                    </h3>
+                                    {loading ? (
+                                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
+                                    ) : (
+                                        <div className="h-48">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart>
+                                                    <Pie
+                                                        data={[
+                                                            {
+                                                                name: 'Nuevos',
+                                                                value: stats?.retention?.new || 0,
+                                                            },
+                                                            {
+                                                                name: 'Recur.',
+                                                                value:
+                                                                    stats?.retention?.returning ||
+                                                                    0,
+                                                            },
+                                                        ]}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        innerRadius={45}
+                                                        outerRadius={65}
+                                                        paddingAngle={5}
+                                                        dataKey="value"
+                                                    >
+                                                        <Cell fill="#3B82F6" />
+                                                        <Cell fill="#8B5CF6" />
+                                                    </Pie>
+                                                    <Tooltip />
+                                                    <Legend wrapperStyle={{ fontSize: '9px' }} />
+                                                </PieChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    )}
+                                    <p className="text-[10px] text-center text-gray-400 mt-4 px-4">
+                                        Basado en pedidos realizados en los últimos 30 días.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Category Performance */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                                    <Activity size={16} className="text-red-500" />
+                                    Performance por Categoría (30d)
+                                </h3>
+                                {loading ? (
+                                    <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
+                                ) : (
+                                    <div className="h-48">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={stats?.categoryStats}>
+                                                <CartesianGrid
+                                                    strokeDasharray="3 3"
+                                                    vertical={false}
+                                                    stroke="#f0f0f0"
+                                                />
+                                                <XAxis
+                                                    dataKey="name"
+                                                    fontSize={9}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tickFormatter={str =>
+                                                        str.length > 10
+                                                            ? str.substring(0, 8) + '..'
+                                                            : str
+                                                    }
+                                                />
+                                                <YAxis
+                                                    yAxisId="left"
+                                                    fontSize={9}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tickFormatter={val => `${val}€`}
+                                                />
+                                                <YAxis
+                                                    yAxisId="right"
+                                                    orientation="right"
+                                                    fontSize={9}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tickFormatter={val => `${val}€`}
+                                                />
+                                                <Tooltip />
+                                                <Legend wrapperStyle={{ fontSize: '9px' }} />
+                                                <Bar
+                                                    yAxisId="left"
+                                                    name="Ventas"
+                                                    dataKey="revenue"
+                                                    fill="#3B82F6"
+                                                    radius={[4, 4, 0, 0]}
+                                                    barSize={20}
+                                                />
+                                                <Bar
+                                                    yAxisId="right"
+                                                    name="Ticket"
+                                                    dataKey="avgPrice"
+                                                    fill="#F59E0B"
+                                                    radius={[4, 4, 0, 0]}
+                                                    barSize={20}
+                                                />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                     {activeTab === 'menu' && <AdminMenu />}
-
                     {activeTab === 'users' && <AdminUsers />}
-
                     {activeTab === 'orders' && <AdminOrders />}
+                    {activeTab === 'settings' && <AdminSettings />}
+                    {activeTab === 'promos' && <AdminPromos />}
+                    {activeTab === 'blog' && <AdminBlog />}
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }
