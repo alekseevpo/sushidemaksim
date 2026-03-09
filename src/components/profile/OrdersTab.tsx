@@ -102,7 +102,6 @@ export default function OrdersTab() {
         }, 30000);
 
         return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pagination.page]);
 
     const loadOrders = async (page: number, isPolling: boolean = false) => {

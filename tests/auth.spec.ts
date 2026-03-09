@@ -17,7 +17,10 @@ test.describe('Authentication Flow', () => {
         const name = `Tester ${randomId}`;
         const pass = 'password123';
 
-        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
+        await page
+            .getByRole('button', { name: /ACCEDER/i })
+            .first()
+            .click();
         await page.getByRole('button', { name: /Regístrate/i }).click();
 
         await page.getByPlaceholder(/Tu nombre completo|Nombre completo/i).fill(name);
@@ -35,7 +38,9 @@ test.describe('Authentication Flow', () => {
         }
 
         // 2. Wait for success message
-        await expect(page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()).toBeVisible({ timeout: 25000 });
+        await expect(
+            page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()
+        ).toBeVisible({ timeout: 25000 });
     });
 
     test('SUCCESS: should login and access profile', async ({ page }) => {
@@ -52,7 +57,9 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/tu@email.com/i).fill(email);
         await page.getByPlaceholder(/Mínimo 6 caracteres/i).fill(pass);
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
-        await expect(page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()).toBeVisible({ timeout: 20000 });
+        await expect(
+            page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()
+        ).toBeVisible({ timeout: 20000 });
 
         // 2. Manual verify for login test
         const { execSync } = await import('child_process');
@@ -66,7 +73,10 @@ test.describe('Authentication Flow', () => {
 
         // 3. User name (first word) should be in a header button
         const firstName = name.split(' ')[0];
-        const userBtn = page.locator('header button').filter({ hasText: new RegExp(firstName, 'i') }).first();
+        const userBtn = page
+            .locator('header button')
+            .filter({ hasText: new RegExp(firstName, 'i') })
+            .first();
         await expect(userBtn).toBeVisible({ timeout: 10000 });
 
         // 4. Check profile menu

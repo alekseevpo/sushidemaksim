@@ -601,9 +601,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                    item.id,
-                                                                    item.quantity - 1
-                                                                )
+                                                                      item.id,
+                                                                      item.quantity - 1
+                                                                  )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"

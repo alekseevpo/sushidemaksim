@@ -212,8 +212,8 @@ export default function BlogPage() {
                                     <span className="text-red-500">exclusivas</span>?
                                 </h2>
                                 <p className="text-gray-400 mb-8 text-sm md:text-base leading-relaxed">
-                                    Únete a nuestro club de amantes del sushi y recibe historias del blog,
-                                    ofertas y promociones directamente en tu email.
+                                    Únete a nuestro club de amantes del sushi y recibe historias del
+                                    blog, ofertas y promociones directamente en tu email.
                                 </p>
                                 <form
                                     className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"

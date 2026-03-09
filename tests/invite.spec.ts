@@ -33,7 +33,9 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
 
         // Success message should appear
-        await expect(page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()).toBeVisible({ timeout: 25000 });
+        await expect(
+            page.getByText(/Casi listo|enviado un enlace|revisa tu email/i).first()
+        ).toBeVisible({ timeout: 25000 });
 
         // Force verify in DB to continue E2E flow
         const { execSync } = await import('child_process');
@@ -107,7 +109,11 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await expect(orderCard).toBeVisible({ timeout: 15000 });
 
         // Extract ID from the "#000XX" text
-        const orderIdText = await orderCard.locator('span').filter({ hasText: '#' }).first().textContent();
+        const orderIdText = await orderCard
+            .locator('span')
+            .filter({ hasText: '#' })
+            .first()
+            .textContent();
         const orderId = orderIdText?.replace('#', '').trim();
         console.log(`Found order ID: ${orderId}`);
 

@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Repeat every 30 seconds
         const interval = setInterval(sendHeartbeat, 30000);
         return () => clearInterval(interval);
-    }, [user?.id]);
+    }, [user]);
 
     const login = async (email: string, password: string) => {
         try {

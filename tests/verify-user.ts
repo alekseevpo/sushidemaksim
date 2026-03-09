@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -17,10 +16,7 @@ if (!email) {
 }
 
 async function verify() {
-    const { error } = await supabase
-        .from('users')
-        .update({ is_verified: true })
-        .eq('email', email);
+    const { error } = await supabase.from('users').update({ is_verified: true }).eq('email', email);
 
     if (error) {
         console.error('Error verifying user:', error.message);

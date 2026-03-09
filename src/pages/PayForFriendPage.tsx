@@ -38,6 +38,7 @@ export default function PayForFriendPage() {
 
     useEffect(() => {
         loadOrder();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const loadOrder = async () => {
@@ -187,8 +188,8 @@ export default function PayForFriendPage() {
                                     const itemImage = item.image.startsWith('http')
                                         ? item.image
                                         : item.image.startsWith('/')
-                                            ? item.image
-                                            : `/${item.image}`;
+                                          ? item.image
+                                          : `/${item.image}`;
 
                                     return (
                                         <div

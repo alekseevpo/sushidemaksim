@@ -90,14 +90,14 @@ export default function MenuPageSimple() {
         if (!isLoading) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    }, [selectedCategory]);
+    }, [selectedCategory, isLoading]);
 
     // Scroll to top on search only if there are results and search is not empty
     useEffect(() => {
         if (debouncedSearch && !isLoading && items.length > 0) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    }, [debouncedSearch]);
+    }, [debouncedSearch, isLoading, items.length]);
 
     const loadMenu = async () => {
         setIsLoading(true);
