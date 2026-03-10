@@ -47,7 +47,7 @@ export default function BlogPostPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-transparent flex flex-col items-center justify-center">
-                <RefreshCw size={40} className="animate-spin text-red-600 mb-4" />
+                <RefreshCw size={40} strokeWidth={1.5} className="animate-spin text-red-600 mb-4" />
                 <p className="text-gray-500 font-medium tracking-wide">Cargando artículo...</p>
             </div>
         );
@@ -56,7 +56,7 @@ export default function BlogPostPage() {
     if (error || !post) {
         return (
             <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-4">
-                <AlertCircle size={60} className="text-red-500 mb-6" />
+                <AlertCircle size={60} strokeWidth={1.5} className="text-red-500 mb-6" />
                 <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">
                     ¡Ups! Algo salió mal
                 </h1>
@@ -84,7 +84,7 @@ export default function BlogPostPage() {
                     to="/blog"
                     className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-red-600"
                 >
-                    <ArrowLeft size={16} /> Volver
+                    <ArrowLeft size={16} strokeWidth={1.5} /> Volver
                 </Link>
             </div>
 
@@ -114,11 +114,11 @@ export default function BlogPostPage() {
                         </h1>
                         <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm font-medium">
                             <span className="flex items-center gap-2">
-                                <Calendar size={16} className="text-red-500" />
+                                <Calendar size={16} strokeWidth={1.5} className="text-red-500" />
                                 {new Date(post.created_at).toLocaleDateString()}
                             </span>
                             <span className="flex items-center gap-2">
-                                <Clock size={16} className="text-red-500" />
+                                <Clock size={16} strokeWidth={1.5} className="text-red-500" />
                                 {post.read_time || '5 min'} de lectura
                             </span>
                         </div>

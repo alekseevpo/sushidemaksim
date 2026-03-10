@@ -24,7 +24,7 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
         return (
             <div className="flex flex-col items-center gap-4 py-8">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
-                    <XCircle size={32} />
+                    <XCircle size={32} strokeWidth={1.5} />
                 </div>
                 <div className="text-center">
                     <h3 className="text-xl font-black text-gray-900">Pedido cancelado</h3>
@@ -38,7 +38,7 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
         return (
             <div className="flex flex-col items-center gap-4 py-8">
                 <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 animate-pulse">
-                    <Clock size={32} />
+                    <Clock size={32} strokeWidth={1.5} />
                 </div>
                 <div className="text-center">
                     <h3 className="text-xl font-black text-gray-900">Esperando pago</h3>
@@ -77,26 +77,24 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                             <motion.div
                                 animate={isCurrent ? { scale: [1, 1.15, 1] } : {}}
                                 transition={isCurrent ? { repeat: Infinity, duration: 2 } : {}}
-                                className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 ${
-                                    isCurrent
+                                className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 ${isCurrent
                                         ? 'bg-red-600 text-white border-red-200'
                                         : isActive
-                                          ? 'bg-white text-red-600 border-red-600'
-                                          : 'bg-white text-gray-300 border-gray-100'
-                                }`}
+                                            ? 'bg-white text-red-600 border-red-600'
+                                            : 'bg-white text-gray-300 border-gray-100'
+                                    }`}
                             >
                                 {step.iconLabel ? (
                                     <span className="text-lg">{step.iconLabel}</span>
                                 ) : (
-                                    <Icon size={20} />
+                                    <Icon size={20} strokeWidth={1.5} />
                                 )}
                             </motion.div>
 
                             <div className="text-left md:text-center">
                                 <span
-                                    className={`block font-black text-[10px] uppercase tracking-widest ${
-                                        isActive ? 'text-gray-900' : 'text-gray-400'
-                                    }`}
+                                    className={`block font-black text-[10px] uppercase tracking-widest ${isActive ? 'text-gray-900' : 'text-gray-400'
+                                        }`}
                                 >
                                     {step.label}
                                 </span>

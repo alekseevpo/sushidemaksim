@@ -73,9 +73,9 @@ export default function AddressesTab({
             try {
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?` +
-                        `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
-                        `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
-                        `&q=${encodeURIComponent(searchQuery)}`
+                    `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
+                    `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
+                    `&q=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await res.json();
                 setSuggestions(data);
@@ -190,7 +190,7 @@ export default function AddressesTab({
                         onClick={() => setShowAddAddress(true)}
                         className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
                     >
-                        <Plus size={16} /> Añadir dirección
+                        <Plus size={16} strokeWidth={1.5} /> Añadir dirección
                     </button>
                 )}
             </div>
@@ -208,7 +208,7 @@ export default function AddressesTab({
                             onClick={resetForm}
                             className="text-gray-400 hover:text-gray-600 transition-colors"
                         >
-                            <X size={20} />
+                            <X size={20} strokeWidth={1.5} />
                         </button>
                     </div>
 
@@ -254,6 +254,7 @@ export default function AddressesTab({
                                 />
                                 <MapPin
                                     size={16}
+                                    strokeWidth={1.5}
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none"
                                 />
                             </div>
@@ -269,6 +270,7 @@ export default function AddressesTab({
                                         >
                                             <MapPin
                                                 size={14}
+                                                strokeWidth={1.5}
                                                 className="mt-1 text-gray-300 group-hover:text-red-500 transition-colors shrink-0"
                                             />
                                             <span className="text-xs font-bold text-gray-700 group-hover:text-red-600 line-clamp-2 leading-relaxed">
@@ -380,7 +382,7 @@ export default function AddressesTab({
                             onClick={() => setShowAddAddress(true)}
                             className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all"
                         >
-                            <Plus size={18} /> Añadir ahora
+                            <Plus size={18} strokeWidth={1.5} /> Añadir ahora
                         </button>
                     </div>
                 ) : (
@@ -388,17 +390,16 @@ export default function AddressesTab({
                         <div
                             key={addr.id}
                             className={`group p-6 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row gap-6
-                                ${
-                                    addr.isDefault
-                                        ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
-                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
+                                ${addr.isDefault
+                                    ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
+                                    : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
                                 }`}
                         >
                             <div
                                 className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-sm
                                 ${addr.isDefault ? 'bg-red-600 text-white shadow-red-200' : 'bg-gray-100 text-gray-400'}`}
                             >
-                                <MapPin size={24} />
+                                <MapPin size={24} strokeWidth={1.5} />
                             </div>
 
                             <div className="flex-1 min-w-0">
@@ -422,7 +423,7 @@ export default function AddressesTab({
                                 </p>
                                 <div className="flex items-center gap-4 mt-3">
                                     <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
-                                        <Phone size={12} /> {addr.phone}
+                                        <Phone size={12} strokeWidth={1.5} /> {addr.phone}
                                     </div>
                                 </div>
                             </div>
@@ -433,20 +434,20 @@ export default function AddressesTab({
                                         onClick={() => setDefaultAddress(addr.id)}
                                         className="h-10 px-4 bg-white border border-gray-200 text-gray-500 rounded-xl text-xs font-black hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-all flex items-center gap-2"
                                     >
-                                        <Star size={14} /> Predeterminar
+                                        <Star size={14} strokeWidth={1.5} /> Predeterminar
                                     </button>
                                 )}
                                 <button
                                     onClick={() => startEditing(addr)}
                                     className="h-10 w-10 flex items-center justify-center bg-white border border-gray-200 text-gray-400 rounded-xl hover:text-gray-900 hover:border-gray-900 transition-all"
                                 >
-                                    <Pencil size={14} />
+                                    <Pencil size={14} strokeWidth={1.5} />
                                 </button>
                                 <button
                                     onClick={() => removeAddress(addr.id)}
                                     className="h-10 w-10 flex items-center justify-center bg-red-50 text-red-400 border border-red-100 rounded-xl hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
                                 >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={14} strokeWidth={1.5} />
                                 </button>
                             </div>
                         </div>

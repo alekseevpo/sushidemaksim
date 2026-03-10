@@ -12,7 +12,7 @@ const iconMap: Record<string, any> = {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             {...props}
@@ -29,7 +29,7 @@ const iconMap: Record<string, any> = {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             {...props}
@@ -120,7 +120,7 @@ export default function ContactsPage() {
                                     4.8
                                 </span>
                                 <div className="flex items-center">
-                                    <Star size={12} className="fill-amber-400 text-amber-400" />
+                                    <Star size={12} strokeWidth={1.5} className="text-amber-400" />
                                 </div>
                             </div>
                             <p className="text-[8px] md:text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -144,7 +144,7 @@ export default function ContactsPage() {
                     <div className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6">
                         <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
                             <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
-                                <Phone size={24} />
+                                <Phone size={24} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
                                 Llámanos
@@ -162,7 +162,7 @@ export default function ContactsPage() {
 
                         <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
                             <div className="w-12 h-12 bg-gray-900 text-white rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
-                                <Clock size={24} />
+                                <Clock size={24} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
                                 Horario
@@ -193,7 +193,7 @@ export default function ContactsPage() {
 
                         <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
                             <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
-                                <Mail size={24} />
+                                <Mail size={24} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
                                 Escríbenos
@@ -211,7 +211,7 @@ export default function ContactsPage() {
 
                         <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 group">
                             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform">
-                                <MapPin size={24} />
+                                <MapPin size={24} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-lg md:text-xl font-black text-gray-900 mb-2">
                                 Encuéntranos
@@ -225,7 +225,7 @@ export default function ContactsPage() {
                                 rel="noopener noreferrer"
                                 className="text-sm font-black text-blue-600 hover:underline inline-flex items-center gap-1"
                             >
-                                Ver en Google Maps <ArrowRight size={14} />
+                                Ver en Google Maps <ArrowRight size={14} strokeWidth={1.5} />
                             </a>
                         </div>
                     </div>
@@ -314,7 +314,7 @@ export default function ContactsPage() {
                                                 title={social.platform}
                                                 className={`w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center ${hoverColor} hover:text-white transition-all duration-300 shadow-sm`}
                                             >
-                                                {IconComponent && <IconComponent size={24} />}
+                                                {IconComponent && <IconComponent size={24} strokeWidth={1.5} />}
                                             </a>
                                         );
                                     })}
@@ -358,7 +358,7 @@ export default function ContactsPage() {
                         rel="noopener noreferrer"
                         className="text-sm font-bold text-red-600 hover:underline flex items-center gap-1 bg-red-50 px-4 py-2 rounded-lg transition"
                     >
-                        Ver todas en Google Maps <ArrowRight size={14} />
+                        Ver todas en Google Maps <ArrowRight size={14} strokeWidth={1.5} />
                     </a>
                 </div>
 
@@ -389,7 +389,8 @@ export default function ContactsPage() {
                                     <Star
                                         key={star}
                                         size={14}
-                                        className="fill-amber-400 text-amber-400"
+                                        strokeWidth={1.5}
+                                        className="text-amber-400"
                                     />
                                 ))}
                             </div>

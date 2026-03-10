@@ -77,8 +77,8 @@ describe('MenuPageSimple (Integration)', () => {
     it('filters by category', async () => {
         renderMenu();
 
-        const categoryBtn = await screen.findByText('Rollos Grandes');
-        fireEvent.click(categoryBtn);
+        const categoryBtns = await screen.findAllByText('Rollos Grandes');
+        fireEvent.click(categoryBtns[0]); // First one is in the sidebar
 
         await waitFor(() => {
             expect(api.get).toHaveBeenCalledWith(
@@ -90,7 +90,7 @@ describe('MenuPageSimple (Integration)', () => {
     it('searches for a dish', async () => {
         renderMenu();
 
-        const searchInput = screen.getByPlaceholderText(/Buscar platos/i);
+        const searchInput = screen.getByPlaceholderText(/¿Qué te apetece hoy?/i);
         fireEvent.change(searchInput, { target: { value: 'Salmon' } });
 
         // Wait for debounce (350ms)

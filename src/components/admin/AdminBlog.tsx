@@ -104,7 +104,7 @@ export default function AdminBlog() {
                     }}
                     className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition"
                 >
-                    <Plus size={16} /> Nuevo Artículo
+                    <Plus size={16} strokeWidth={1.5} /> Nuevo Artículo
                 </button>
             </div>
 
@@ -265,11 +265,11 @@ export default function AdminBlog() {
                                 <td className="p-4">
                                     {p.published ? (
                                         <span className="flex items-center gap-1 text-green-600 text-xs font-bold">
-                                            <CheckCircle size={14} /> Publicado
+                                            <CheckCircle size={14} strokeWidth={1.5} /> Publicado
                                         </span>
                                     ) : (
                                         <span className="flex items-center gap-1 text-gray-400 text-xs font-bold">
-                                            <XCircle size={14} /> Oculto
+                                            <XCircle size={14} strokeWidth={1.5} /> Oculto
                                         </span>
                                     )}
                                 </td>
@@ -279,14 +279,14 @@ export default function AdminBlog() {
                                             onClick={() => handleEdit(p)}
                                             className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition"
                                         >
-                                            <Edit2 size={16} />
+                                            <Edit2 size={16} strokeWidth={1.5} />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(p)}
                                             className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
                                             title="Eliminar artículo"
                                         >
-                                            <Trash2 size={16} />
+                                            <Trash2 size={16} strokeWidth={1.5} />
                                         </button>
                                     </div>
                                 </td>
@@ -313,7 +313,7 @@ export default function AdminBlog() {
                     <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} />
+                                <Trash2 size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 ¿Eliminar artículo?

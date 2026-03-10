@@ -61,7 +61,7 @@ export default function Footer() {
                             className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-gray-300 transition-colors"
                             title="Acceso de personal"
                         >
-                            <Shield size={14} />
+                            <Shield size={14} strokeWidth={1.5} />
                             <span>Staff</span>
                         </Link>
                     </div>

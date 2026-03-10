@@ -111,7 +111,7 @@ export default function AdminSettings() {
                     disabled={saving}
                     className="flex items-center gap-2 bg-red-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition disabled:opacity-50"
                 >
-                    <Save size={18} /> {saving ? 'Guardando...' : 'Guardar Cambios'}
+                    <Save size={18} strokeWidth={1.5} /> {saving ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
             </div>
 
@@ -292,7 +292,7 @@ export default function AdminSettings() {
                         onClick={handleAddSocial}
                         className="text-sm flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700"
                     >
-                        <Plus size={16} /> Añadir red social
+                        <Plus size={16} strokeWidth={1.5} /> Añadir red social
                     </button>
                 </div>
 
@@ -350,7 +350,7 @@ export default function AdminSettings() {
                                     className="text-red-500 hover:text-red-700 p-2 mb-0.5"
                                     title="Eliminar"
                                 >
-                                    <Trash2 size={20} />
+                                    <Trash2 size={16} strokeWidth={1.5} />
                                 </button>
                             </div>
                         </div>
@@ -393,16 +393,15 @@ export default function AdminSettings() {
                         className="fixed bottom-8 right-8 z-50"
                     >
                         <div
-                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${
-                                saveStatus === 'success'
+                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
                                     : 'bg-red-600 border-red-500 text-white'
-                            }`}
+                                }`}
                         >
                             {saveStatus === 'success' ? (
-                                <CheckCircle2 size={24} className="animate-bounce" />
+                                <CheckCircle2 size={24} strokeWidth={1.5} className="animate-bounce" />
                             ) : (
-                                <AlertTriangle size={24} />
+                                <AlertTriangle size={24} strokeWidth={1.5} />
                             )}
                             <div>
                                 <p className="font-bold text-sm">
@@ -418,7 +417,7 @@ export default function AdminSettings() {
                                 onClick={() => setSaveStatus(null)}
                                 className="ml-4 p-1 hover:bg-white/10 rounded-lg transition"
                             >
-                                <X size={18} />
+                                <X size={18} strokeWidth={1.5} />
                             </button>
                         </div>
                     </motion.div>
@@ -435,7 +434,7 @@ export default function AdminSettings() {
                     <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} />
+                                <Trash2 size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 ¿Quitar red social?

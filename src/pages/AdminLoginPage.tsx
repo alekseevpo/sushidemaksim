@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
                     <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                        <ShieldCheck size={32} className="text-red-600" />
+                        <ShieldCheck size={32} strokeWidth={1.5} className="text-red-600" />
                     </div>
                 </div>
                 <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
                             </label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
+                                    <Mail size={20} strokeWidth={1.5} className="text-gray-400" />
                                 </div>
                                 <input
                                     type="email"
@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
                             </label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
+                                    <Lock size={20} strokeWidth={1.5} className="text-gray-400" />
                                 </div>
                                 <input
                                     type="password"
@@ -134,7 +134,7 @@ export default function AdminLoginPage() {
                                     <span>Autenticando...</span>
                                 ) : (
                                     <>
-                                        Entrar al panel seguro <ArrowRight size={18} />
+                                        Entrar al panel seguro <ArrowRight size={18} strokeWidth={1.5} />
                                     </>
                                 )}
                             </button>

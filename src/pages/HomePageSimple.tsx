@@ -15,7 +15,7 @@ const FeatureCard = ({ icon: Icon, title, desc, colorClass, index }: any) => (
         <div
             className={`${colorClass} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:rotate-6 transition-transform duration-300`}
         >
-            <Icon size={32} className="text-gray-900" />
+            <Icon size={32} strokeWidth={1.5} className="text-gray-900" />
         </div>
         <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
         <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
@@ -111,7 +111,7 @@ export default function HomePageSimple() {
                                 className="w-full sm:w-auto btn-premium bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(220,38,38,0.5)] active:scale-95 transition-all"
                             >
                                 EXPLORAR MENÚ
-                                <ArrowRight size={18} />
+                                <ArrowRight size={18} strokeWidth={1.5} />
                             </Link>
                             <Link
                                 to="/blog"
@@ -249,7 +249,8 @@ export default function HomePageSimple() {
                                     <Star
                                         key={i}
                                         size={10}
-                                        className="fill-amber-400 text-amber-400"
+                                        strokeWidth={1.5}
+                                        className="text-amber-400"
                                     />
                                 ))}
                             </div>
@@ -293,7 +294,7 @@ export default function HomePageSimple() {
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center">
-                                        <ChevronRight size={12} className="text-white" />
+                                        <ChevronRight size={12} strokeWidth={1.5} className="text-white" />
                                     </div>
                                     <span className="font-bold text-gray-800 text-sm">{item}</span>
                                 </div>
@@ -306,6 +307,7 @@ export default function HomePageSimple() {
                             LEER MÁS EN NUESTRO BLOG
                             <ArrowRight
                                 size={16}
+                                strokeWidth={1.5}
                                 className="group-hover:translate-x-1 transition-transform"
                             />
                         </Link>

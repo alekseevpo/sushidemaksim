@@ -1,7 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, X, Heart, Sparkles, Share2, Copy, Check } from 'lucide-react';
+import {
+    Plus,
+    Search,
+    X,
+    Heart,
+    Sparkles,
+    Share2,
+    Copy,
+    Check,
+    Waves,
+    Fish,
+    Flame,
+    Soup,
+    Gift,
+    Droplets,
+    Cake,
+} from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
@@ -35,14 +51,14 @@ interface FlyingItem {
 }
 
 const CATEGORIES = [
-    { id: 'entrantes', name: 'Entrantes', icon: '🥟' },
-    { id: 'rollos-grandes', name: 'Rollos Grandes', icon: '🍣' },
-    { id: 'rollos-clasicos', name: 'Rollos Clásicos', icon: '🥢' },
-    { id: 'rollos-fritos', name: 'Rollos Fritos', icon: '🔥' },
-    { id: 'sopas', name: 'Sopas', icon: '🍜' },
-    { id: 'menus', name: 'Menús', icon: '🎁' },
-    { id: 'extras', name: 'Extras', icon: '🧴' },
-    { id: 'postre', name: 'Postre', icon: '🍰' },
+    { id: 'entrantes', name: 'Entrantes', icon: Waves },
+    { id: 'rollos-grandes', name: 'Rollos Grandes', icon: Fish },
+    { id: 'rollos-clasicos', name: 'Rollos Clásicos', icon: Fish },
+    { id: 'rollos-fritos', name: 'Rollos Fritos', icon: Flame },
+    { id: 'sopas', name: 'Sopas', icon: Soup },
+    { id: 'menus', name: 'Menús', icon: Gift },
+    { id: 'extras', name: 'Extras', icon: Droplets },
+    { id: 'postre', name: 'Postre', icon: Cake },
 ];
 
 const EMOJI: Record<string, string> = {
@@ -288,230 +304,279 @@ export default function MenuPageSimple() {
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />
-            <div className="max-w-7xl mx-auto">
-                <h1 className="text-2xl md:text-4xl text-gray-900 font-black text-center mb-4 md:mb-6 tracking-tight">
-                    Nuestro Menú
-                </h1>
-
-                {/* Search */}
-                <div className="flex justify-center mb-6">
-                    <div className="relative w-full max-w-md">
-                        <Search
-                            size={18}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                        />
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            placeholder="Buscar platos..."
-                            className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-full bg-white text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition"
-                        />
-                        {search && (
+            <div className="max-w-7xl mx-auto flex gap-8">
+                {/* Desktop Sidebar Sidebar */}
+                <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
+                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                        <h2 className="text-lg font-black text-gray-900 mb-6 px-2">Categorías</h2>
+                        <nav className="flex flex-col gap-1">
                             <button
-                                onClick={() => setSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
+                                onClick={() => setSelectedCategory('all')}
+                                className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${selectedCategory === 'all'
+                                    ? 'bg-red-50 text-red-600'
+                                    : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                    }`}
                             >
-                                <X size={16} />
+                                <Sparkles size={20} strokeWidth={1.5} />
+                                <span className="text-sm">Todos</span>
                             </button>
-                        )}
+                            {CATEGORIES.map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedCategory(cat.id)}
+                                    className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${selectedCategory === cat.id
+                                        ? 'bg-red-50 text-red-600'
+                                        : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                        }`}
+                                >
+                                    <cat.icon size={20} strokeWidth={1.5} />
+                                    <span className="text-sm">{cat.name}</span>
+                                </button>
+                            ))}
+                        </nav>
                     </div>
-                </div>
+                </aside>
 
-                {/* Category Filter - Sticky and Scrollable on Mobile */}
-                <div className="sticky top-20 z-20 -mx-2 md:-mx-4 px-2 md:px-4 py-3 md:py-4 bg-gray-50/80 backdrop-blur-md mb-6 md:mb-8">
-                    <div className="flex overflow-x-auto no-scrollbar gap-2 md:gap-2 max-w-7xl mx-auto flex-nowrap sm:flex-wrap sm:justify-center">
-                        <button
-                            onClick={() => setSelectedCategory('all')}
-                            className={`whitespace-nowrap flex-shrink-0 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
-                                selectedCategory === 'all'
-                                    ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                    : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                            }`}
-                        >
-                            Todos
-                        </button>
-                        {CATEGORIES.map(cat => (
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-3xl md:text-5xl text-gray-900 font-black mb-4 md:mb-8 tracking-tighter">
+                        Nuestro Menú
+                    </h1>
+
+                    {/* Search */}
+                    <div className="flex mb-8">
+                        <div className="relative w-full max-w-xl">
+                            <Search
+                                size={18}
+                                strokeWidth={1.5}
+                                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                            />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                placeholder="¿Qué te apetece hoy?"
+                                className="w-full pl-12 pr-12 py-4 border border-gray-200 rounded-3xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                            />
+                            {search && (
+                                <button
+                                    onClick={() => setSearch('')}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
+                                >
+                                    <X size={20} strokeWidth={1.5} />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Category Filter - Mobile Only (Horizontal scroll) */}
+                    <div className="lg:hidden sticky top-[72px] z-20 -mx-4 px-4 py-4 bg-gray-50/80 backdrop-blur-md mb-6 overflow-x-auto no-scrollbar">
+                        <div className="flex gap-2 flex-nowrap">
                             <button
-                                key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id)}
-                                className={`whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-black border-none cursor-pointer transition-all duration-200 text-xs md:text-sm ${
-                                    selectedCategory === cat.id
-                                        ? 'bg-red-600 text-white shadow-[0_4px_12px_rgba(220,38,38,0.3)]'
-                                        : 'bg-white text-gray-700 shadow-sm hover:bg-gray-100'
-                                }`}
+                                onClick={() => setSelectedCategory('all')}
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === 'all'
+                                    ? 'bg-red-600 text-white shadow-lg shadow-red-200'
+                                    : 'bg-white text-gray-700 shadow-sm'
+                                    }`}
                             >
-                                <span className="text-sm md:text-base">{cat.icon}</span>
-                                {cat.name}
+                                Todos
                             </button>
-                        ))}
+                            {CATEGORIES.map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedCategory(cat.id)}
+                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === cat.id
+                                        ? 'bg-red-600 text-white shadow-lg shadow-red-200'
+                                        : 'bg-white text-gray-700 shadow-sm'
+                                        }`}
+                                >
+                                    <cat.icon size={18} strokeWidth={1.5} />
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
                     </div>
+
+                    {/* Items */}
+                    {isLoading ? (
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-8">
+                            {[1, 2, 3, 4, 5, 6].map(i => (
+                                <div
+                                    key={i}
+                                    className="bg-white rounded-[32px] overflow-hidden flex flex-col h-[350px] animate-pulse border border-gray-100"
+                                >
+                                    <div className="h-48 bg-gray-200"></div>
+                                    <div className="p-6">
+                                        <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : items.length === 0 ? (
+                        <div className="text-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200">
+                            <div className="text-6xl mb-4">🙊</div>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">
+                                {search
+                                    ? `No hay resultados para "${search}"`
+                                    : 'No hay platos en esta categoría'}
+                            </h3>
+                            <p className="text-gray-500">Intenta buscar con otros términos</p>
+                            <button
+                                onClick={() => {
+                                    setSearch('');
+                                    setSelectedCategory('all');
+                                }}
+                                className="mt-6 px-6 py-3 bg-gray-900 text-white rounded-2xl font-black border-none cursor-pointer hover:bg-red-600 transition-colors"
+                            >
+                                Ver todo el menú
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-12 pb-24">
+                            {(selectedCategory === 'all' && !search
+                                ? CATEGORIES.filter(
+                                    cat => items.some(item => item.category === cat.id)
+                                )
+                                : [{ id: selectedCategory, name: '', icon: '' }]
+                            ).map(cat => {
+                                const sectionItems =
+                                    selectedCategory === 'all' && !search
+                                        ? items.filter(item => item.category === cat.id)
+                                        : items;
+
+                                if (sectionItems.length === 0) return null;
+
+                                return (
+                                    <div key={cat.id} className="scroll-mt-32" id={`section-${cat.id}`}>
+                                        {selectedCategory === 'all' && !search && (
+                                            <div className="flex items-center gap-4 mb-6 md:mb-8">
+                                                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-gray-100">
+                                                    <cat.icon size={24} strokeWidth={1.5} className="text-red-600" />
+                                                </div>
+                                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
+                                                    {cat.name}
+                                                </h2>
+                                                <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
+                                            </div>
+                                        )}
+
+                                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                                            {sectionItems.map(item => (
+                                                <div
+                                                    key={item.id}
+                                                    id={`item-${item.id}`}
+                                                    className="premium-card group flex flex-col h-full rounded-[32px] overflow-hidden"
+                                                >
+                                                    <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                        <button
+                                                            onClick={e => handleShare(item, e)}
+                                                            className="w-9 h-9 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none"
+                                                            title="Compartir"
+                                                        >
+                                                            <Share2 size={16} strokeWidth={1.5} className="text-gray-900" />
+                                                        </button>
+
+                                                        {user && (
+                                                            <button
+                                                                onClick={() => toggleFavorite(item.id)}
+                                                                className="w-9 h-9 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none"
+                                                            >
+                                                                <Heart
+                                                                    size={18}
+                                                                    strokeWidth={1.5}
+                                                                    className={
+                                                                        favoriteItems.has(item.id)
+                                                                            ? 'text-red-500'
+                                                                            : 'text-gray-400'
+                                                                    }
+                                                                    fill="none"
+                                                                />
+                                                            </button>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Image Container */}
+                                                    <div className="h-44 md:h-56 bg-white overflow-hidden relative flex items-center justify-center p-2">
+                                                        {!failedImages.has(item.id) ? (
+                                                            <img
+                                                                src={item.image}
+                                                                alt={item.name}
+                                                                loading="lazy"
+                                                                className="w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-105"
+                                                                onError={() =>
+                                                                    setFailedImages(prev => new Set(prev).add(item.id))
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-gray-50 rounded-2xl flex items-center justify-center text-5xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                                                                {EMOJI[item.category] || '🍱'}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Badges */}
+                                                        <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
+                                                            {item.is_popular && (
+                                                                <span className="bg-amber-400 text-amber-950 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
+                                                                    <Sparkles size={10} strokeWidth={1.5} /> Popular
+                                                                </span>
+                                                            )}
+                                                            {item.is_new && (
+                                                                <span className="bg-white text-gray-900 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg">
+                                                                    ✨ Nuevo
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="p-6 flex flex-col flex-1">
+                                                        <div className="mb-2">
+                                                            <h3 className="text-lg md:text-xl font-black text-gray-900 leading-tight line-clamp-1">
+                                                                {item.name}
+                                                            </h3>
+                                                            {item.pieces && (
+                                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                                                                    {item.pieces} Unidades
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 md:line-clamp-none flex-1 font-medium">
+                                                            {item.description}
+                                                        </p>
+
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-2xl font-black text-gray-900">
+                                                                {item.price.toFixed(2).replace('.', ',')} €
+                                                            </span>
+                                                            <button
+                                                                onClick={e => handleAddToCart(item, e)}
+                                                                className={`h-11 px-6 rounded-2xl font-black text-sm transition-all duration-300 flex items-center gap-2 border-none cursor-pointer ${addedItems.has(item.id)
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-200 active:scale-95'
+                                                                    }`}
+                                                            >
+                                                                {addedItems.has(item.id) ? (
+                                                                    <Check size={20} strokeWidth={1.5} />
+                                                                ) : (
+                                                                    <>
+                                                                        <Plus size={18} strokeWidth={1.5} />
+                                                                        <span>Añadir</span>
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
-
-                {/* Items */}
-                {isLoading ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                            <div
-                                key={i}
-                                className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col h-full animate-pulse border border-gray-100"
-                            >
-                                <div className="h-[140px] md:h-[200px] bg-gray-200"></div>
-                                <div className="p-3 md:p-4 flex-1 flex flex-col">
-                                    <div className="h-5 md:h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                                    <div className="h-3 md:h-4 bg-gray-200 rounded w-full mb-1"></div>
-                                    <div className="h-3 md:h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : items.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-xl text-gray-500">
-                            {search
-                                ? `No hay resultados para "${search}"`
-                                : 'No hay platos en esta categoría'}
-                        </p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 lg:gap-8 pb-20">
-                        {items.map(item => (
-                            <div
-                                key={item.id}
-                                id={`item-${item.id}`}
-                                className="bg-white rounded-[24px] md:rounded-[32px] shadow-[0_4px_15px_-3px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-300 relative hover:-translate-y-1 hover:shadow-[0_20px_30px_-5px_rgba(0,0,0,0.1)] flex flex-col group border border-gray-50/50"
-                            >
-                                <div className="absolute top-2 left-2 right-2 z-10 flex justify-between items-center pointer-events-none">
-                                    <button
-                                        onClick={e => handleShare(item, e)}
-                                        className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none mix-blend-normal pointer-events-auto"
-                                        title="Compartir"
-                                    >
-                                        <Share2 size={14} className="text-gray-600" />
-                                    </button>
-
-                                    {user && (
-                                        <button
-                                            onClick={() => toggleFavorite(item.id)}
-                                            className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none mix-blend-normal pointer-events-auto"
-                                        >
-                                            <Heart
-                                                size={16}
-                                                className={
-                                                    favoriteItems.has(item.id)
-                                                        ? 'text-red-500'
-                                                        : 'text-gray-400'
-                                                }
-                                                fill={
-                                                    favoriteItems.has(item.id)
-                                                        ? 'currentColor'
-                                                        : 'none'
-                                                }
-                                            />
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Image */}
-                                <div className="h-[140px] md:h-[220px] bg-gray-50 overflow-hidden relative flex items-center justify-center">
-                                    {!failedImages.has(item.id) ? (
-                                        <img
-                                            src={item.image}
-                                            alt={`Sushi ${item.name} - ${item.category}`}
-                                            loading="lazy"
-                                            decoding="async"
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            onError={() =>
-                                                setFailedImages(prev => new Set(prev).add(item.id))
-                                            }
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-4xl md:text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
-                                            {EMOJI[item.category] || '🍱'}
-                                        </div>
-                                    )}
-                                    <div className="absolute top-10 md:top-12 left-0 flex flex-col gap-1 z-10">
-                                        {item.is_popular && (
-                                            <span className="bg-amber-500 text-white rounded-r-lg pl-1.5 pr-2 py-0.5 text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
-                                                <Sparkles size={10} fill="currentColor" /> Top
-                                            </span>
-                                        )}
-                                        {item.is_new && (
-                                            <span className="bg-blue-600 text-white rounded-r-lg pl-1.5 pr-2 py-0.5 text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
-                                                🆕 Nuevo
-                                            </span>
-                                        )}
-                                        {item.is_promo && (
-                                            <span className="bg-red-600 text-white rounded-r-lg pl-1.5 pr-2 py-0.5 text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
-                                                🏷️ Oferta
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="absolute bottom-1.5 right-1.5 flex gap-1">
-                                        {item.spicy && (
-                                            <span
-                                                className="bg-white border-2 border-red-500 text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
-                                                title="Picante"
-                                            >
-                                                🌶️
-                                            </span>
-                                        )}
-                                        {item.vegetarian && (
-                                            <span
-                                                className="bg-white border-2 border-emerald-500 text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-[10px] shadow-lg"
-                                                title="Vegetariano"
-                                            >
-                                                🥬
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="p-3 md:p-5 flex flex-col flex-1">
-                                    <h3 className="text-sm md:text-lg font-black m-0 text-gray-900 leading-tight mb-1 line-clamp-2 md:line-clamp-none">
-                                        {item.name}
-                                    </h3>
-
-                                    <p className="hidden md:block text-gray-500 text-sm leading-relaxed mb-3 flex-1 m-0">
-                                        {item.description}
-                                    </p>
-
-                                    <div className="flex items-center justify-between mt-auto">
-                                        <div className="flex flex-col">
-                                            <span className="text-base md:text-[22px] font-black text-gray-900 leading-none">
-                                                {item.price.toFixed(2).replace('.', ',')} €
-                                            </span>
-                                            {item.pieces && (
-                                                <span className="text-[10px] md:text-xs text-gray-400 font-bold mt-0.5">
-                                                    {item.pieces} uds
-                                                </span>
-                                            )}
-                                        </div>
-                                        <button
-                                            onClick={e => handleAddToCart(item, e)}
-                                            className={`w-9 h-9 md:w-auto md:px-5 md:py-2.5 rounded-xl md:rounded-xl font-black border-none cursor-pointer flex items-center justify-center gap-1.5 text-xs outline-none transition-all duration-300 ${
-                                                addedItems.has(item.id)
-                                                    ? 'bg-green-600 text-white'
-                                                    : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-95'
-                                            }`}
-                                        >
-                                            {addedItems.has(item.id) ? (
-                                                <span className="font-black">✓</span>
-                                            ) : (
-                                                <>
-                                                    <Plus size={18} />
-                                                    <span className="hidden md:inline">Añadir</span>
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
             </div>
-
             {/* Share Modal */}
             <AnimatePresence>
                 {sharingItem && (
@@ -538,7 +603,7 @@ export default function MenuPageSimple() {
                                         onClick={() => setSharingItem(null)}
                                         className="p-2 hover:bg-gray-100 rounded-full transition-colors border-none bg-transparent cursor-pointer"
                                     >
-                                        <X size={20} className="text-gray-400" />
+                                        <X size={20} strokeWidth={1.5} className="text-gray-400" />
                                     </button>
                                 </div>
 
@@ -609,12 +674,12 @@ export default function MenuPageSimple() {
                                 >
                                     {copying ? (
                                         <>
-                                            <Check size={18} className="text-green-400" />
+                                            <Check size={18} strokeWidth={1.5} className="text-green-400" />
                                             Enlace Copiado
                                         </>
                                     ) : (
                                         <>
-                                            <Copy size={18} />
+                                            <Copy size={18} strokeWidth={1.5} />
                                             Copiar Enlace
                                         </>
                                     )}

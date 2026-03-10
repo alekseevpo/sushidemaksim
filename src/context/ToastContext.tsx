@@ -87,10 +87,10 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
 
 const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onClose }) => {
     const icons = {
-        success: <CheckCircle className="text-emerald-500" size={20} />,
-        error: <AlertCircle className="text-red-500" size={20} />,
-        info: <Info className="text-blue-500" size={20} />,
-        warning: <AlertTriangle className="text-amber-500" size={20} />,
+        success: <CheckCircle className="text-emerald-500" size={20} strokeWidth={1.5} />,
+        error: <AlertCircle className="text-red-500" size={20} strokeWidth={1.5} />,
+        info: <Info className="text-blue-500" size={20} strokeWidth={1.5} />,
+        warning: <AlertTriangle className="text-amber-500" size={20} strokeWidth={1.5} />,
     };
 
     const bgColors = {
@@ -112,7 +112,7 @@ const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onC
                 onClick={onClose}
                 className="p-1 hover:bg-black/5 rounded-full transition-colors border-none bg-transparent cursor-pointer"
             >
-                <X size={16} className="text-gray-400 group-hover:text-gray-600" />
+                <X size={16} strokeWidth={1.5} className="text-gray-400 group-hover:text-gray-600" />
             </button>
 
             {/* Progress bar countdown */}
@@ -121,15 +121,14 @@ const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onC
                     initial={{ width: '100%' }}
                     animate={{ width: '0%' }}
                     transition={{ duration: (toast.duration || 4000) / 1000, ease: 'linear' }}
-                    className={`absolute bottom-0 left-0 h-1 opacity-40 ${
-                        toast.type === 'success'
+                    className={`absolute bottom-0 left-0 h-1 opacity-40 ${toast.type === 'success'
                             ? 'bg-emerald-500'
                             : toast.type === 'error'
-                              ? 'bg-red-500'
-                              : toast.type === 'info'
-                                ? 'bg-blue-500'
-                                : 'bg-amber-500'
-                    }`}
+                                ? 'bg-red-500'
+                                : toast.type === 'info'
+                                    ? 'bg-blue-500'
+                                    : 'bg-amber-500'
+                        }`}
                 />
             )}
         </div>

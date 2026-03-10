@@ -89,7 +89,7 @@ export default function PayForFriendPage() {
         return (
             <div className="min-h-screen flex items-center justify-center p-6 bg-[#FDFBF7]">
                 <div className="max-w-md w-full bg-white rounded-[32px] p-8 shadow-xl text-center border border-gray-100">
-                    <XCircle size={64} className="text-red-500 mx-auto mb-6" />
+                    <XCircle size={64} strokeWidth={1.5} className="text-red-500 mx-auto mb-6" />
                     <h2 className="text-2xl font-black mb-4 text-gray-900">
                         ¡Vaya! Algo salió mal
                     </h2>
@@ -188,8 +188,8 @@ export default function PayForFriendPage() {
                                     const itemImage = item.image.startsWith('http')
                                         ? item.image
                                         : item.image.startsWith('/')
-                                          ? item.image
-                                          : `/${item.image}`;
+                                            ? item.image
+                                            : `/${item.image}`;
 
                                     return (
                                         <div
@@ -238,7 +238,7 @@ export default function PayForFriendPage() {
                                     </div>
                                     <div className="text-right">
                                         <div className="flex items-center gap-2 text-xs font-bold text-gray-500 mb-1">
-                                            <MapPin size={14} className="text-red-500" /> Entrega
+                                            <MapPin size={14} strokeWidth={1.5} className="text-red-500" /> Entrega
                                             en:
                                         </div>
                                         <p className="text-[10px] text-gray-400 font-medium max-w-[150px] leading-tight">
@@ -260,9 +260,9 @@ export default function PayForFriendPage() {
                                     'Procesando...'
                                 ) : (
                                     <>
-                                        <CreditCard size={24} />
+                                        <CreditCard size={24} strokeWidth={1.5} />
                                         <span>Confirmar y Pagar</span>
-                                        <ArrowRight size={20} className="opacity-50" />
+                                        <ArrowRight size={20} strokeWidth={1.5} className="opacity-50" />
                                     </>
                                 )}
                             </button>
@@ -276,7 +276,7 @@ export default function PayForFriendPage() {
 
                 {/* Secure Badge */}
                 <div className="flex items-center justify-center gap-2 mt-8 text-gray-400 grayscale">
-                    <CheckCircle size={16} />
+                    <CheckCircle size={16} strokeWidth={1.5} />
                     <span className="text-[10px] uppercase font-black tracking-widest">
                         Pago 100% Seguro
                     </span>
@@ -297,7 +297,7 @@ export default function PayForFriendPage() {
                             transition={{ type: 'spring', damping: 15 }}
                             className="w-32 h-32 bg-green-500 rounded-[40px] flex items-center justify-center text-white mb-8 shadow-2xl shadow-green-200"
                         >
-                            <Heart size={64} fill="white" />
+                            <Heart size={64} strokeWidth={1.5} />
                         </motion.div>
 
                         <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter">

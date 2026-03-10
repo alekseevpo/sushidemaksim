@@ -38,7 +38,7 @@ const LoginForm = memo(
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Mail size={18} />
+                            <Mail size={18} strokeWidth={1.5} />
                         </div>
                         <input
                             type="email"
@@ -67,7 +67,7 @@ const LoginForm = memo(
                     </div>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} />
+                            <Lock size={18} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -83,7 +83,7 @@ const LoginForm = memo(
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
                         >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
                         </button>
                     </div>
                 </div>
@@ -137,7 +137,7 @@ const RegisterForm = memo(
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                                <User size={18} />
+                                <User size={18} strokeWidth={1.5} />
                             </div>
                             <input
                                 type="text"
@@ -155,7 +155,7 @@ const RegisterForm = memo(
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                                <Phone size={18} />
+                                <Phone size={18} strokeWidth={1.5} />
                             </div>
                             <input
                                 type="tel"
@@ -174,7 +174,7 @@ const RegisterForm = memo(
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Mail size={18} />
+                            <Mail size={18} strokeWidth={1.5} />
                         </div>
                         <input
                             type="email"
@@ -192,7 +192,7 @@ const RegisterForm = memo(
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} />
+                            <Lock size={18} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -206,7 +206,7 @@ const RegisterForm = memo(
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
                         >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
                         </button>
                     </div>
                 </div>
@@ -263,7 +263,7 @@ const ForgotPasswordForm = memo(
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Mail size={18} />
+                            <Mail size={18} strokeWidth={1.5} />
                         </div>
                         <input
                             type="email"
@@ -288,7 +288,7 @@ const ForgotPasswordForm = memo(
                     onClick={onBack}
                     className="w-full py-4 bg-gray-50 text-gray-600 rounded-2xl font-black text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
                 >
-                    <ArrowLeft size={18} /> Volver al login
+                    <ArrowLeft size={18} strokeWidth={1.5} /> Volver al login
                 </button>
             </form>
         );
@@ -315,7 +315,7 @@ const ResetPasswordForm = memo(
                 <input type="hidden" name="token" value={token} />
                 <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl mb-2 flex items-center gap-3">
                     <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-                        <KeyRound size={20} />
+                        <KeyRound size={20} strokeWidth={1.5} />
                     </div>
                     <p className="text-xs text-blue-700 font-medium leading-relaxed">
                         Crea una nueva contraseña fuerte para proteger tu cuenta.
@@ -327,7 +327,7 @@ const ResetPasswordForm = memo(
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} />
+                            <Lock size={18} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -341,7 +341,7 @@ const ResetPasswordForm = memo(
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
                         >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
                         </button>
                     </div>
                 </div>
@@ -352,7 +352,7 @@ const ResetPasswordForm = memo(
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} />
+                            <Lock size={18} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -511,17 +511,17 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
                     onClick={onClose}
                     className="absolute top-6 right-6 p-2 rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all z-20"
                 >
-                    <X size={20} />
+                    <X size={20} strokeWidth={1.5} />
                 </button>
 
                 <div className="p-8 md:p-10">
                     <div className="text-center mb-8 pt-2">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-red-50 rounded-[28px] mb-6 text-red-600 shadow-inner border-2 border-white">
-                            {mode === 'login' && <User size={32} />}
-                            {mode === 'register' && <Mail size={32} />}
-                            {mode === 'forgot' && <Mail size={32} />}
-                            {mode === 'verify-sent' && <Mail size={32} />}
-                            {mode === 'reset-password' && <KeyRound size={32} />}
+                            {mode === 'login' && <User size={32} strokeWidth={1.5} />}
+                            {mode === 'register' && <Mail size={32} strokeWidth={1.5} />}
+                            {mode === 'forgot' && <Mail size={32} strokeWidth={1.5} />}
+                            {mode === 'verify-sent' && <Mail size={32} strokeWidth={1.5} />}
+                            {mode === 'reset-password' && <KeyRound size={32} strokeWidth={1.5} />}
                         </div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">
                             {mode === 'login' && '¡Hola de nuevo!'}
@@ -579,7 +579,7 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
                                 onClick={() => setMode('login')}
                                 className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                             >
-                                <ArrowLeft size={18} /> Volver al login
+                                <ArrowLeft size={18} strokeWidth={1.5} /> Volver al login
                             </button>
                         </div>
                     )}

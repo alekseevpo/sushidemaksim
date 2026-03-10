@@ -127,7 +127,7 @@ export default function PromoPageSimple() {
                                         {promo.description}
                                     </p>
                                     <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-400 mb-6 font-bold bg-gray-50 p-3 rounded-xl">
-                                        <Clock size={14} className="text-gray-500" />
+                                        <Clock size={14} strokeWidth={1.5} className="text-gray-500" />
                                         <span>
                                             Válido hasta:{' '}
                                             <span className="text-gray-700">
@@ -140,7 +140,7 @@ export default function PromoPageSimple() {
                                         className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-xs md:text-sm text-white transition-all hover:opacity-95 active:scale-95 shadow-lg shadow-gray-200"
                                         style={{ backgroundColor: promo.color }}
                                     >
-                                        Ver menú <ArrowRight size={16} />
+                                        Ver menú <ArrowRight size={16} strokeWidth={1.5} />
                                     </Link>
                                 </div>
                             </div>
@@ -169,7 +169,7 @@ export default function PromoPageSimple() {
                             to="/menu"
                             className="inline-flex items-center gap-2 bg-white text-red-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-95 shadow-xl hover:shadow-2xl"
                         >
-                            PEDIR COMBO <ArrowRight size={20} />
+                            PEDIR COMBO <ArrowRight size={20} strokeWidth={1.5} />
                         </Link>
                     </div>
                 </div>
@@ -177,7 +177,7 @@ export default function PromoPageSimple() {
                 {/* Promo Menu Items from API */}
                 <div className="mb-10 max-w-5xl mx-auto">
                     <div className="flex items-center justify-center gap-3 mb-10">
-                        <Tag size={28} className="text-red-600" />
+                        <Tag size={28} strokeWidth={1.5} className="text-red-600" />
                         <h2 className="text-3xl font-black text-gray-900 m-0 tracking-tight">
                             Menús especiales
                         </h2>
@@ -252,17 +252,16 @@ export default function PromoPageSimple() {
                                             </span>
                                             <button
                                                 onClick={() => handleAdd(item)}
-                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${
-                                                    addedItems.has(item.id)
+                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${addedItems.has(item.id)
                                                         ? 'bg-green-500 text-white shadow-lg'
                                                         : 'bg-red-600 text-white hover:bg-red-700 shadow-xl'
-                                                }`}
+                                                    }`}
                                             >
                                                 {addedItems.has(item.id) ? (
                                                     '✓'
                                                 ) : (
                                                     <>
-                                                        <Plus size={14} className="md:w-4 md:h-4" />{' '}
+                                                        <Plus size={14} strokeWidth={1.5} className="md:w-4 md:h-4" />{' '}
                                                         <span className="hidden md:inline">
                                                             Añadir
                                                         </span>

@@ -64,7 +64,7 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc }: any) => (
                 <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
             </div>
             <div className={`p-2.5 rounded-lg ${colorClass}`}>
-                <Icon size={20} />
+                <Icon size={20} strokeWidth={1.5} />
             </div>
         </div>
         <p className="text-[11px] text-gray-400 line-clamp-1">{desc}</p>
@@ -203,7 +203,7 @@ export default function AdminPage() {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div className="bg-white rounded-3xl shadow-xl p-10 max-w-md w-full text-center border border-gray-100">
                     <div className="w-20 h-20 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <ShieldCheck size={40} />
+                        <ShieldCheck size={40} strokeWidth={1.5} />
                     </div>
                     <h2 className="text-2xl font-black text-gray-900 mb-2">Acceso Restringido</h2>
                     <p className="text-gray-500 mb-8 font-medium">
@@ -240,7 +240,7 @@ export default function AdminPage() {
             <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col md:fixed h-full z-10">
                 <div className="p-6 border-b border-gray-100 flex items-center gap-3">
                     <div className="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center">
-                        <ShieldCheck size={24} />
+                        <ShieldCheck size={24} strokeWidth={1.5} />
                     </div>
                     <div>
                         <h2 className="font-bold text-gray-900 leading-tight">Admin Panel</h2>
@@ -261,10 +261,9 @@ export default function AdminPage() {
                                     }
                                 }}
                                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors relative group
-                                    ${
-                                        isActive
-                                            ? 'text-red-700'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    ${isActive
+                                        ? 'text-red-700'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 {isActive && (
@@ -281,6 +280,7 @@ export default function AdminPage() {
                                 <div className="flex items-center gap-3 relative z-10">
                                     <Icon
                                         size={18}
+                                        strokeWidth={1.5}
                                         className={isActive ? 'text-red-600' : 'text-gray-400'}
                                     />
                                     {tab.label}
@@ -299,7 +299,7 @@ export default function AdminPage() {
                         onClick={() => navigate('/menu')}
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-xl font-bold text-sm transition-colors border border-gray-200"
                     >
-                        <ArrowLeft size={16} />
+                        <ArrowLeft size={16} strokeWidth={1.5} />
                         Volver a la tienda
                     </button>
                 </div>
@@ -318,7 +318,7 @@ export default function AdminPage() {
                                 onClick={() => setShowHelp(!showHelp)}
                                 className="flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600 font-medium transition"
                             >
-                                <HelpCircle size={18} />
+                                <HelpCircle size={18} strokeWidth={1.5} />
                                 {showHelp ? 'Ocultar ayudas' : 'Mostrar ayudas'}
                             </button>
                         </div>
@@ -331,11 +331,11 @@ export default function AdminPage() {
                                 onClick={() => setShowHelp(false)}
                                 className="absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition"
                             >
-                                <X size={20} />
+                                <X size={20} strokeWidth={1.5} />
                             </button>
                             <div className="flex gap-4">
                                 <div className="mt-1">
-                                    <HelpCircle className="text-blue-500" size={24} />
+                                    <HelpCircle className="text-blue-500" size={24} strokeWidth={1.5} />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-blue-900 mb-1">
@@ -374,7 +374,7 @@ export default function AdminPage() {
                                         onClick={() => navigate('/menu')}
                                         className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 transition shadow-sm"
                                     >
-                                        <ExternalLink size={16} />
+                                        <ExternalLink size={16} strokeWidth={1.5} />
                                         Ver Tienda
                                     </button>
                                     <button
@@ -383,6 +383,7 @@ export default function AdminPage() {
                                     >
                                         <RefreshCw
                                             size={14}
+                                            strokeWidth={1.5}
                                             className={loading ? 'animate-spin' : ''}
                                         />
                                         Actualizar datos
@@ -568,7 +569,7 @@ export default function AdminPage() {
                                 ) : !reports?.length ? (
                                     <div className="text-center py-12">
                                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <RefreshCw className="text-gray-300" size={32} />
+                                            <RefreshCw className="text-gray-300" size={32} strokeWidth={1.5} />
                                         </div>
                                         <p className="text-gray-500">
                                             No hay reportes disponibles todavía.
@@ -638,8 +639,8 @@ export default function AdminPage() {
                                                             <span className="text-sm font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg border border-green-100/50">
                                                                 {Number(
                                                                     report.total_revenue ??
-                                                                        report.total ??
-                                                                        0
+                                                                    report.total ??
+                                                                    0
                                                                 )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
@@ -650,9 +651,9 @@ export default function AdminPage() {
                                                             <span className="text-xs font-bold text-gray-600">
                                                                 {Number(
                                                                     report.avg_ticket ??
-                                                                        report.average_ticket ??
-                                                                        report.avg_price ??
-                                                                        0
+                                                                    report.average_ticket ??
+                                                                    report.avg_price ??
+                                                                    0
                                                                 )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
@@ -662,6 +663,7 @@ export default function AdminPage() {
                                                         <td className="px-4 py-4 text-right">
                                                             <ChevronRight
                                                                 size={16}
+                                                                strokeWidth={1.5}
                                                                 className="text-gray-300 group-hover:text-red-500 group-hover:translate-x-1 transition-all inline-block"
                                                             />
                                                         </td>
@@ -683,7 +685,7 @@ export default function AdminPage() {
                                 {/* Device Distribution */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Monitor size={16} className="text-blue-500" />
+                                        <Monitor size={16} strokeWidth={1.5} className="text-blue-500" />
                                         Dispositivo Principal (30d)
                                     </h3>
                                     {loading ? (
@@ -746,7 +748,7 @@ export default function AdminPage() {
                                 {/* Customer Retention */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Users size={16} className="text-purple-500" />
+                                        <Users size={16} strokeWidth={1.5} className="text-purple-500" />
                                         Nuevos vs Recur.
                                     </h3>
                                     {loading ? (
@@ -792,7 +794,7 @@ export default function AdminPage() {
                                 {/* Category Performance */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Activity size={16} className="text-red-500" />
+                                        <Activity size={16} strokeWidth={1.5} className="text-red-500" />
                                         Performance por Categoría (30d)
                                     </h3>
                                     {loading ? (
@@ -859,7 +861,7 @@ export default function AdminPage() {
                                 {/* Browser Distribution */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <ExternalLink size={16} className="text-gray-500" />
+                                        <ExternalLink size={16} strokeWidth={1.5} className="text-gray-500" />
                                         Navegadores (30d)
                                     </h3>
                                     {loading ? (
@@ -905,7 +907,7 @@ export default function AdminPage() {
                                 {/* Sales Growth Area Chart */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <TrendingUp size={18} className="text-green-500" />
+                                        <TrendingUp size={18} strokeWidth={1.5} className="text-green-500" />
                                         Crecimiento de Ventas (30d)
                                     </h3>
                                     <div className="h-72">
@@ -970,7 +972,7 @@ export default function AdminPage() {
                                 {/* Activity Heatmap (Hourly) */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <Clock size={18} className="text-blue-500" />
+                                        <Clock size={18} strokeWidth={1.5} className="text-blue-500" />
                                         Picos de Actividad (Horario)
                                     </h3>
                                     <div className="h-72">

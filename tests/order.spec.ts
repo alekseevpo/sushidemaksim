@@ -13,7 +13,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
 
         // Find specifically the "Gyozas con carne" section and its button
         const card = page
-            .locator('div#item-17, div#item-16, div.bg-white')
+            .locator('div.premium-card')
             .filter({ hasText: 'Gyozas con carne' })
             .first();
         const addButton = card.getByRole('button', { name: /Añadir/i }).first();
@@ -44,7 +44,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
 
     test('FAILURE: should show error when below 20€ threshold', async ({ page }) => {
         await page.goto('/menu');
-        const card = page.locator('div.bg-white', { hasText: 'Gyozas con carne' }).first();
+        const card = page.locator('div.premium-card', { hasText: 'Gyozas con carne' }).first();
         await card
             .getByRole('button', { name: /Añadir/i })
             .first()

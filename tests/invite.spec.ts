@@ -63,7 +63,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         }
 
         // 2. Add things to cart
-        const card = page.locator('div.bg-white').filter({ hasText: 'Gyozas con carne' }).first();
+        const card = page.locator('div.premium-card').filter({ hasText: 'Gyozas con carne' }).first();
         const addButton = card.getByRole('button', { name: /Añadir/i }).first();
 
         await addButton.click();
@@ -105,7 +105,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await ordersTabBtn.click();
 
         // 3. Find our order card (it's the first one in the list)
-        const orderCard = page.locator('div.bg-white').filter({ hasText: '#' }).first();
+        const orderCard = page.locator('div.premium-card, div.bg-white').filter({ hasText: '#' }).first();
         await expect(orderCard).toBeVisible({ timeout: 15000 });
 
         // Extract ID from the "#000XX" text
@@ -140,7 +140,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
 
     test('PROTECTION: Guests cannot invite friends (prompt to login)', async ({ page }) => {
         await page.goto('/menu');
-        const card = page.locator('div.bg-white').filter({ hasText: 'Gyozas con carne' }).first();
+        const card = page.locator('div.premium-card').filter({ hasText: 'Gyozas con carne' }).first();
         await card
             .getByRole('button', { name: /Añadir/i })
             .first()

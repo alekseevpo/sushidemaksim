@@ -112,7 +112,7 @@ export default function ProfilePage() {
                                 {user.email}
                             </p>
                             <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-white border border-white/10">
-                                <Sparkles size={12} className="text-amber-400" />
+                                <Sparkles size={12} strokeWidth={1.5} className="text-amber-400" />
                                 Miembro desde{' '}
                                 {new Date(user.createdAt || Date.now()).toLocaleDateString(
                                     'es-ES',
@@ -125,7 +125,7 @@ export default function ProfilePage() {
                             onClick={handleLogout}
                             className="hidden md:flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-2.5 rounded-xl border border-white/20 text-white font-bold transition-all"
                         >
-                            <LogOut size={18} /> Cerrar sesión
+                            <LogOut size={18} strokeWidth={1.5} /> Cerrar sesión
                         </button>
                     </div>
                 </div>
@@ -153,10 +153,9 @@ export default function ProfilePage() {
                                             }
                                         }}
                                         className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start relative
-                                            ${
-                                                isActive
-                                                    ? 'text-white'
-                                                    : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
+                                            ${isActive
+                                                ? 'text-white'
+                                                : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
                                             }`}
                                     >
                                         {isActive && (
@@ -174,7 +173,7 @@ export default function ProfilePage() {
                                             className={`relative z-10 w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
                                             ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'}`}
                                         >
-                                            <Icon size={16} />
+                                            <Icon size={16} strokeWidth={1.5} />
                                         </div>
                                         <span
                                             className={`relative z-10 font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider ${isActive ? 'translate-x-0.5' : ''} transition-transform`}
@@ -183,6 +182,7 @@ export default function ProfilePage() {
                                         </span>
                                         <ChevronRight
                                             size={14}
+                                            strokeWidth={1.5}
                                             className={`hidden md:block ml-auto transition-all ${isActive ? 'rotate-90 opacity-100' : 'opacity-20'}`}
                                         />
                                     </button>

@@ -166,7 +166,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                             onClick={startEditing}
                             className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-600 transition-all shadow-lg shadow-gray-200 active:scale-95"
                         >
-                            <Edit3 size={16} /> Editar
+                            <Edit3 size={16} strokeWidth={1.5} /> Editar
                         </button>
                     ) : (
                         <>
@@ -174,13 +174,13 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 onClick={() => setIsEditing(false)}
                                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-[10px] md:text-sm hover:bg-gray-200 transition-all active:scale-95"
                             >
-                                <X size={14} /> <span>CANCELAR</span>
+                                <X size={14} strokeWidth={1.5} /> <span>CANCELAR</span>
                             </button>
                             <button
                                 onClick={saveProfile}
                                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-red-600 text-white rounded-xl font-black text-[10px] md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
                             >
-                                <Save size={14} /> GUARDAR
+                                <Save size={14} strokeWidth={1.5} /> GUARDAR
                             </button>
                         </>
                     )}
@@ -218,9 +218,9 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         label: 'Fecha de Cumpleaños',
                         value: user.birthDate
                             ? (() => {
-                                  const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                  return `${d}/${m}/${y}`;
-                              })()
+                                const [y, m, d] = user.birthDate.split('T')[0].split('-');
+                                return `${d}/${m}/${y}`;
+                            })()
                             : 'No añadida',
                         editedValue: editBirthDate,
                         setter: setEditBirthDate,
@@ -233,7 +233,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         className="group p-4 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 flex flex-col min-h-[110px]"
                     >
                         <label className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 group-hover:text-red-500 transition-colors">
-                            <field.icon size={12} />
+                            <field.icon size={12} strokeWidth={1.5} />
                             {field.label}
                         </label>
 
@@ -312,10 +312,9 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                             type="button"
                                             onClick={() => setEditAvatar(avatar)}
                                             className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                                ${
-                                                    editAvatar === avatar
-                                                        ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
-                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                                ${editAvatar === avatar
+                                                    ? 'bg-red-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
+                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
                                                 }`}
                                         >
                                             {avatar}
@@ -334,7 +333,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                     <div className="bg-amber-50 rounded-[32px] p-6 flex flex-col sm:flex-row items-center justify-between gap-6 border border-amber-100">
                         <div className="flex items-center gap-4 text-center sm:text-left">
                             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                                <Shield size={24} />
+                                <Shield size={24} strokeWidth={1.5} />
                             </div>
                             <div>
                                 <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight m-0">
@@ -362,7 +361,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 onClick={() => setShowChangePassword(false)}
                                 className="text-gray-400 hover:text-gray-600"
                             >
-                                <X size={20} />
+                                <X size={20} strokeWidth={1.5} />
                             </button>
                         </div>
 
@@ -387,7 +386,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     value: confirmNewPassword,
                                     setter: setConfirmNewPassword,
                                     show: showNewPwd,
-                                    toggle: () => {},
+                                    toggle: () => { },
                                 },
                             ].map(f => (
                                 <div key={f.label}>
@@ -407,7 +406,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                                 onClick={() => f.toggle(!f.show)}
                                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                             >
-                                                {f.show ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                {f.show ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                                             </button>
                                         )}
                                     </div>
@@ -438,7 +437,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                 <div className="bg-red-50 rounded-[32px] p-8 border border-red-100 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="text-center md:text-left">
                         <h4 className="text-lg font-black text-red-900 m-0 flex items-center gap-2 justify-center md:justify-start">
-                            <Trash2 size={20} /> ZONA DE PELIGRO
+                            <Trash2 size={20} strokeWidth={1.5} /> ZONA DE PELIGRO
                         </h4>
                         <p className="text-sm text-red-700 mt-2 m-0 font-medium">
                             Tu cuenta se marcará para eliminación. Tienes 30 días para recuperarla
@@ -472,7 +471,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         <div className="absolute top-0 left-0 w-full h-2 bg-red-600" />
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} />
+                                <Trash2 size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-2">
                                 ¿Estás seguro?

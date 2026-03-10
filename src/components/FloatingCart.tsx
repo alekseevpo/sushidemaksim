@@ -23,7 +23,7 @@ export default function FloatingCart() {
                     className="flex items-center gap-3 bg-red-600 text-white px-5 py-4 rounded-2xl shadow-[0_15px_30px_-5px_rgba(220,38,38,0.4)] no-underline active:scale-90 transition-all border-none"
                 >
                     <div className="relative">
-                        <ShoppingCart size={24} />
+                        <ShoppingCart size={24} strokeWidth={1.5} />
                         <span className="absolute -top-2 -right-2 bg-white text-red-600 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
                             {itemCount}
                         </span>

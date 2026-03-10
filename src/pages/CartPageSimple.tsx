@@ -344,7 +344,7 @@ export default function CartPageSimple() {
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
 
                     <div className="w-24 h-24 bg-green-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 relative shadow-inner border-2 border-white">
-                        <CheckCircle size={48} className="text-green-600" />
+                        <CheckCircle size={48} strokeWidth={1.5} className="text-green-600" />
                     </div>
 
                     <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">
@@ -449,7 +449,7 @@ export default function CartPageSimple() {
                         to="/menu"
                         className="bg-red-600 text-white px-6 py-3 rounded-lg no-underline font-bold inline-flex items-center gap-2 hover:bg-red-700 transition"
                     >
-                        <ArrowLeft size={20} />
+                        <ArrowLeft size={20} strokeWidth={1.5} />
                         Volver al menú
                     </Link>
 
@@ -502,7 +502,7 @@ export default function CartPageSimple() {
                                                 onClick={() => handleAddToCart(item)}
                                                 className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center border-none cursor-pointer hover:bg-red-700 active:scale-90 transition-all"
                                             >
-                                                <Plus size={16} />
+                                                <Plus size={16} strokeWidth={1.5} />
                                             </button>
                                         </div>
                                     </div>
@@ -527,7 +527,7 @@ export default function CartPageSimple() {
                     <div className="mb-6 animate-in slide-in-from-top duration-500">
                         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-4">
                             <div className="p-3 bg-red-100 text-red-600 rounded-xl shrink-0">
-                                <X size={24} />
+                                <X size={24} strokeWidth={1.5} />
                             </div>
                             <div className="flex-1">
                                 <h3 className="font-bold text-red-900 leading-tight">
@@ -550,7 +550,7 @@ export default function CartPageSimple() {
                         onClick={clearCart}
                         className="text-sm font-bold text-gray-400 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1 w-fit"
                     >
-                        <Trash2 size={14} /> Vaciar cesta
+                        <Trash2 size={14} strokeWidth={1.5} /> Vaciar cesta
                     </button>
                 </div>
 
@@ -604,14 +604,14 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                      item.id,
-                                                                      item.quantity - 1
-                                                                  )
+                                                                    item.id,
+                                                                    item.quantity - 1
+                                                                )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
                                                     >
-                                                        <Minus size={14} />
+                                                        <Minus size={14} strokeWidth={1.5} />
                                                     </button>
                                                     <span className="w-8 md:w-8 text-center font-black text-gray-900 text-sm">
                                                         {item.quantity}
@@ -625,7 +625,7 @@ export default function CartPageSimple() {
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
                                                     >
-                                                        <Plus size={14} />
+                                                        <Plus size={14} strokeWidth={1.5} />
                                                     </button>
                                                 </div>
                                                 <span className="text-base md:text-base font-black text-gray-900">
@@ -642,7 +642,7 @@ export default function CartPageSimple() {
                                             className="text-gray-300 hover:text-red-500 cursor-pointer p-1 transition-colors"
                                             aria-label="Eliminar"
                                         >
-                                            <X size={16} />
+                                            <X size={16} strokeWidth={1.5} />
                                         </button>
                                     </div>
                                 ))}
@@ -651,7 +651,7 @@ export default function CartPageSimple() {
 
                         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px] md:rounded-xl">
                             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                                <MapPin size={18} className="text-red-600" /> Datos de entrega
+                                <MapPin size={18} strokeWidth={1.5} className="text-red-600" /> Datos de entrega
                             </h2>
 
                             {user?.addresses && user.addresses.length > 0 && (
@@ -682,7 +682,7 @@ export default function CartPageSimple() {
                                             type="button"
                                             className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
                                         >
-                                            <MapPin size={16} className="shrink-0" />
+                                            <MapPin size={16} strokeWidth={1.5} className="shrink-0" />
                                             <span className="truncate">
                                                 Usar "{addr.label || 'Mi dirección'}": {addr.street}
                                                 {addr.house && `, Portal/Casa ${addr.house}`}
@@ -809,7 +809,7 @@ export default function CartPageSimple() {
                         ) : suggestions.length > 0 ? (
                             <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-2 py-4 md:p-6 animate-in fade-in duration-500">
                                 <h3 className="text-base font-black mb-3 flex items-center gap-2 uppercase tracking-tight">
-                                    <Sparkles size={16} className="text-amber-500" /> Extras
+                                    <Sparkles size={16} strokeWidth={1.5} className="text-amber-500" /> Extras
                                 </h3>
                                 <div className="flex flex-col gap-2">
                                     {suggestions.map(item => (
@@ -863,7 +863,7 @@ export default function CartPageSimple() {
                                                 className="bg-gray-900 text-white rounded-full p-1.5 hover:bg-red-600 transition-all shadow-sm flex items-center justify-center"
                                                 title="Añadir al pedido"
                                             >
-                                                <Plus size={14} />
+                                                <Plus size={14} strokeWidth={1.5} />
                                             </button>
                                         </div>
                                     ))}
@@ -997,7 +997,7 @@ export default function CartPageSimple() {
                                     disabled={isOrdering || isInviting || items.length === 0}
                                     className="bg-amber-100 text-amber-800 px-6 py-3 rounded-lg font-bold border border-amber-200 cursor-pointer w-full mb-6 text-base hover:bg-amber-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
-                                    <Gift size={18} className="text-amber-600" />
+                                    <Gift size={18} strokeWidth={1.5} className="text-amber-600" />
                                     {isInviting ? 'Generando Enlace...' : '¡Que me inviten!'}
                                 </button>
                             ) : (
@@ -1018,7 +1018,7 @@ export default function CartPageSimple() {
                                 to="/menu"
                                 className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-bold no-underline flex items-center justify-center gap-2 w-full hover:bg-gray-200 transition"
                             >
-                                <ArrowLeft size={20} />
+                                <ArrowLeft size={20} strokeWidth={1.5} />
                                 Volver al menú
                             </Link>
 
@@ -1049,7 +1049,7 @@ export default function CartPageSimple() {
                                 ) : (
                                     <>
                                         <span>Pedir</span>
-                                        <CheckCircle size={20} />
+                                        <CheckCircle size={20} strokeWidth={1.5} />
                                     </>
                                 )}
                             </div>
@@ -1063,7 +1063,7 @@ export default function CartPageSimple() {
                             className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-95 flex items-center justify-between px-6 shadow-xl shadow-gray-200"
                         >
                             <span className="flex items-center gap-2">
-                                Log In para pedir <ArrowLeft className="rotate-180" size={18} />
+                                Log In para pedir <ArrowLeft className="rotate-180" size={18} strokeWidth={1.5} />
                             </span>
                             <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg">
                                 {finalTotal.toFixed(2).replace('.', ',')} €

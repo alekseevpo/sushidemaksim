@@ -184,6 +184,7 @@ export default function AdminMenu() {
                 <div className="relative w-full sm:w-96">
                     <Search
                         size={18}
+                        strokeWidth={1.5}
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                     />
                     <input
@@ -198,14 +199,14 @@ export default function AdminMenu() {
                     onClick={openAddModal}
                     className="w-full sm:w-auto bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition"
                 >
-                    <Plus size={16} /> Nuevo Plato
+                    <Plus size={16} strokeWidth={1.5} /> Nuevo Plato
                 </button>
             </div>
 
             {/* Loading state */}
             {loading ? (
                 <div className="text-center py-12 text-gray-400">
-                    <RefreshCw size={32} className="mx-auto mb-4 animate-spin" />
+                    <RefreshCw size={32} strokeWidth={1.5} className="mx-auto mb-4 animate-spin" />
                     <p>Cargando menú...</p>
                 </div>
             ) : (
@@ -295,7 +296,7 @@ export default function AdminMenu() {
                                                     title="Editar plato"
                                                     aria-label="Editar plato"
                                                 >
-                                                    <Edit2 size={16} />
+                                                    <Edit2 size={16} strokeWidth={1.5} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(item)}
@@ -303,7 +304,7 @@ export default function AdminMenu() {
                                                     title="Eliminar plato"
                                                     aria-label="Eliminar plato"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={16} strokeWidth={1.5} />
                                                 </button>
                                             </div>
                                         </td>
@@ -332,7 +333,7 @@ export default function AdminMenu() {
                                 onClick={() => setIsModalOpen(false)}
                                 className="text-gray-400 hover:text-gray-600"
                             >
-                                <X size={20} />
+                                <X size={20} strokeWidth={1.5} />
                             </button>
                         </div>
 
@@ -476,12 +477,12 @@ export default function AdminMenu() {
                                                     }
                                                     className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={16} strokeWidth={1.5} />
                                                 </button>
                                             </div>
                                         ) : (
                                             <div className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center flex-shrink-0 text-gray-400">
-                                                <ImageIcon size={24} />
+                                                <ImageIcon size={24} strokeWidth={1.5} />
                                             </div>
                                         )}
 
@@ -496,10 +497,11 @@ export default function AdminMenu() {
                                                     {uploadingImage ? (
                                                         <RefreshCw
                                                             size={16}
+                                                            strokeWidth={1.5}
                                                             className="animate-spin"
                                                         />
                                                     ) : (
-                                                        <Upload size={16} />
+                                                        <Upload size={16} strokeWidth={1.5} />
                                                     )}
                                                     {uploadingImage
                                                         ? 'Subiendo...'
@@ -655,8 +657,8 @@ export default function AdminMenu() {
                                                             const updated = e.target.checked
                                                                 ? [...current, allergen]
                                                                 : current.filter(
-                                                                      a => a !== allergen
-                                                                  );
+                                                                    a => a !== allergen
+                                                                );
                                                             setFormData({
                                                                 ...formData,
                                                                 allergens: updated,
@@ -706,7 +708,7 @@ export default function AdminMenu() {
                     <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} />
+                                <Trash2 size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 ¿Eliminar este plato?

@@ -87,6 +87,7 @@ export default function OrderTrackingPage() {
                 >
                     <ChevronLeft
                         size={18}
+                        strokeWidth={1.5}
                         className="transition-transform group-hover:-translate-x-1"
                     />
                     Volver
@@ -128,7 +129,7 @@ export default function OrderTrackingPage() {
                             <div className="space-y-8">
                                 <div>
                                     <h3 className="flex items-center gap-2 text-sm font-black text-gray-900 uppercase tracking-widest mb-4">
-                                        <MapPin size={18} className="text-red-600" />
+                                        <MapPin size={18} strokeWidth={1.5} className="text-red-600" />
                                         Dirección de entrega
                                     </h3>
                                     <p className="text-gray-600 font-medium leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
@@ -139,7 +140,7 @@ export default function OrderTrackingPage() {
                                 {order.notes && (
                                     <div>
                                         <h3 className="flex items-center gap-2 text-sm font-black text-gray-900 uppercase tracking-widest mb-4">
-                                            <Info size={18} className="text-amber-500" />
+                                            <Info size={18} strokeWidth={1.5} className="text-amber-500" />
                                             Notas del pedido
                                         </h3>
                                         <p className="text-amber-700 font-medium text-sm leading-relaxed bg-amber-50 p-4 rounded-2xl border border-amber-100 italic">
@@ -152,7 +153,7 @@ export default function OrderTrackingPage() {
                             {/* Order Summary */}
                             <div className="bg-gray-50 rounded-[32px] p-8 border border-white shadow-inner self-start">
                                 <h3 className="flex items-center gap-2 text-sm font-black text-gray-900 uppercase tracking-widest mb-6">
-                                    <Package size={18} className="text-gray-400" />
+                                    <Package size={18} strokeWidth={1.5} className="text-gray-400" />
                                     Resumen del pedido
                                 </h3>
 
@@ -196,7 +197,7 @@ export default function OrderTrackingPage() {
                         <div className="mt-16 pt-10 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
-                                    <Phone size={24} />
+                                    <Phone size={24} strokeWidth={1.5} />
                                 </div>
                                 <div className="text-left">
                                     <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">
@@ -214,6 +215,7 @@ export default function OrderTrackingPage() {
                                 Seguir comprando
                                 <ArrowRight
                                     size={18}
+                                    strokeWidth={1.5}
                                     className="transition-transform group-hover:translate-x-1"
                                 />
                             </button>

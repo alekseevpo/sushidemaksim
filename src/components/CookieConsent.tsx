@@ -36,7 +36,7 @@ export default function CookieConsent() {
                 >
                     <div className="bg-white/90 backdrop-blur-xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
                         <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center shrink-0">
-                            <ShieldCheck className="text-red-600 w-8 h-8" />
+                            <ShieldCheck size={32} strokeWidth={1.5} className="text-red-600" />
                         </div>
 
                         <div className="flex-1 text-center md:text-left">
@@ -67,6 +67,7 @@ export default function CookieConsent() {
                                 Aceptar todas
                                 <ChevronRight
                                     size={16}
+                                    strokeWidth={1.5}
                                     className="group-hover:translate-x-1 transition-transform"
                                 />
                             </button>
@@ -76,7 +77,7 @@ export default function CookieConsent() {
                             onClick={() => setIsVisible(false)}
                             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1"
                         >
-                            <X size={20} />
+                            <X size={20} strokeWidth={1.5} />
                         </button>
                     </div>
                 </motion.div>

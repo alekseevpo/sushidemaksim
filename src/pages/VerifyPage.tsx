@@ -46,7 +46,7 @@ export default function VerifyPage() {
             <div className="max-w-md w-full bg-white rounded-[32px] p-8 md:p-12 shadow-2xl text-center border border-gray-100 animate-in fade-in zoom-in duration-500">
                 {status === 'loading' && (
                     <div className="flex flex-col items-center">
-                        <Loader2 size={64} className="text-red-600 animate-spin mb-6" />
+                        <Loader2 size={64} strokeWidth={1.5} className="text-red-600 animate-spin mb-6" />
                         <h1 className="text-2xl font-black text-gray-900 mb-2">Verificando...</h1>
                         <p className="text-gray-500 font-medium">
                             Estamos validando tu enlace de activación.
@@ -57,7 +57,7 @@ export default function VerifyPage() {
                 {status === 'success' && (
                     <div className="flex flex-col items-center">
                         <div className="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mb-6 text-green-500 shadow-inner border-2 border-white">
-                            <CheckCircle size={40} />
+                            <CheckCircle size={40} strokeWidth={1.5} />
                         </div>
                         <h1 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">
                             ¡Cuenta Activada!
@@ -75,13 +75,13 @@ export default function VerifyPage() {
                                 }}
                                 className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
                             >
-                                <LogIn size={18} /> Iniciar sesión
+                                <LogIn size={18} strokeWidth={1.5} /> Iniciar sesión
                             </button>
                             <Link
                                 to="/"
                                 className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-black text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
                             >
-                                <Home size={18} /> Ir al inicio
+                                <Home size={18} strokeWidth={1.5} /> Ir al inicio
                             </Link>
                         </div>
                     </div>
@@ -90,7 +90,7 @@ export default function VerifyPage() {
                 {status === 'error' && (
                     <div className="flex flex-col items-center">
                         <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mb-6 text-red-500 shadow-inner border-2 border-white">
-                            <XCircle size={40} />
+                            <XCircle size={40} strokeWidth={1.5} />
                         </div>
                         <h1 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">
                             Error de Activación
@@ -100,7 +100,7 @@ export default function VerifyPage() {
                             onClick={() => navigate('/')}
                             className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-2"
                         >
-                            <Home size={18} /> Volver al Inicio
+                            <Home size={18} strokeWidth={1.5} /> Volver al Inicio
                         </button>
                     </div>
                 )}

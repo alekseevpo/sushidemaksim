@@ -42,24 +42,24 @@ const UserRow = memo(
 
         const lastSeenStr = user.last_seen_at
             ? (() => {
-                  const lastSeenDate = new Date(user.last_seen_at);
-                  const today = new Date();
-                  if (lastSeenDate.toLocaleDateString() === today.toLocaleDateString()) {
-                      return (
-                          'Hoy ' +
-                          lastSeenDate.toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                          })
-                      );
-                  }
-                  return lastSeenDate.toLocaleDateString([], {
-                      day: '2-digit',
-                      month: 'short',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                  });
-              })()
+                const lastSeenDate = new Date(user.last_seen_at);
+                const today = new Date();
+                if (lastSeenDate.toLocaleDateString() === today.toLocaleDateString()) {
+                    return (
+                        'Hoy ' +
+                        lastSeenDate.toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        })
+                    );
+                }
+                return lastSeenDate.toLocaleDateString([], {
+                    day: '2-digit',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+            })()
             : 'Nunca';
 
         const regDate = new Date(user.created_at).toLocaleDateString();
@@ -76,7 +76,7 @@ const UserRow = memo(
                                 title="Email verificado"
                                 className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100"
                             >
-                                <CheckCircle size={12} />
+                                <CheckCircle size={12} strokeWidth={1.5} />
                             </span>
                         ) : (
                             <div className="flex items-center gap-1">
@@ -84,7 +84,7 @@ const UserRow = memo(
                                     title="Email pendiente de verificación"
                                     className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100"
                                 >
-                                    <Clock size={12} />
+                                    <Clock size={12} strokeWidth={1.5} />
                                 </span>
                                 <button
                                     onClick={() => onVerifyEmail(user)}
@@ -103,7 +103,7 @@ const UserRow = memo(
                     <div className="flex flex-col gap-1.5">
                         {birthDate ? (
                             <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                                <Calendar size={12} className="text-gray-400" />
+                                <Calendar size={12} strokeWidth={1.5} className="text-gray-400" />
                                 {birthDate}
                             </div>
                         ) : (
@@ -113,19 +113,18 @@ const UserRow = memo(
                         {birthDate && (
                             <button
                                 onClick={() => onToggleBirthday(user.id, user.birth_date_verified)}
-                                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
-                                    user.birth_date_verified
-                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                }`}
+                                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
+                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                    }`}
                             >
                                 {user.birth_date_verified ? (
                                     <>
-                                        <CheckCircle size={10} /> Verificado
+                                        <CheckCircle size={10} strokeWidth={1.5} /> Verificado
                                     </>
                                 ) : (
                                     <>
-                                        <AlertCircle size={10} /> Sin Verificar
+                                        <AlertCircle size={10} strokeWidth={1.5} /> Sin Verificar
                                     </>
                                 )}
                             </button>
@@ -164,7 +163,7 @@ const UserRow = memo(
                             </div>
                         ) : (
                             <div className="flex items-center gap-2 text-gray-400">
-                                <Clock size={12} />
+                                <Clock size={12} strokeWidth={1.5} />
                                 <span className="text-xs italic">Nunca</span>
                             </div>
                         )}
@@ -174,15 +173,15 @@ const UserRow = memo(
                 <td className="px-4 py-2 text-center">
                     {user.is_superadmin ? (
                         <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold text-xs">
-                            <Crown size={12} /> Owner
+                            <Crown size={12} strokeWidth={1.5} /> Owner
                         </span>
                     ) : user.role === 'admin' ? (
                         <span className="inline-flex items-center gap-1 bg-red-100 text-red-800 px-3 py-1 rounded-full font-bold text-xs">
-                            <Shield size={12} /> Admin
+                            <Shield size={12} strokeWidth={1.5} /> Admin
                         </span>
                     ) : (
                         <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-bold text-xs">
-                            <UsersIcon size={12} /> Cliente
+                            <UsersIcon size={12} strokeWidth={1.5} /> Cliente
                         </span>
                     )}
                 </td>
@@ -192,11 +191,10 @@ const UserRow = memo(
                             <>
                                 <button
                                     onClick={() => onToggleRole(user)}
-                                    className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
-                                        user.role === 'admin'
-                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                            : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                    }`}
+                                    className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${user.role === 'admin'
+                                        ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                        : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                                        }`}
                                 >
                                     {user.role === 'admin' ? 'Revocar' : 'Hacer Admin'}
                                 </button>
@@ -205,7 +203,7 @@ const UserRow = memo(
                                     className="p-1 text-gray-400 hover:text-red-600 transition"
                                     title="Eliminar permanentemente"
                                 >
-                                    <Trash2 size={16} />
+                                    <Trash2 size={16} strokeWidth={1.5} />
                                 </button>
                             </>
                         )}
@@ -323,7 +321,7 @@ export default function AdminUsers() {
     if (loading && users.length === 0) {
         return (
             <div className="text-center py-12 text-gray-400">
-                <RefreshCw size={32} className="mx-auto mb-4 animate-spin" />
+                <RefreshCw size={32} strokeWidth={1.5} className="mx-auto mb-4 animate-spin" />
                 <p>Cargando usuarios...</p>
             </div>
         );
@@ -336,6 +334,7 @@ export default function AdminUsers() {
                 <div className="relative w-full max-w-md">
                     <Search
                         size={18}
+                        strokeWidth={1.5}
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                     />
                     <input
@@ -350,7 +349,7 @@ export default function AdminUsers() {
                             onClick={() => setSearch('')}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
                         >
-                            <X size={16} />
+                            <X size={16} strokeWidth={1.5} />
                         </button>
                     )}
                 </div>
@@ -369,12 +368,12 @@ export default function AdminUsers() {
                                         ID{' '}
                                         {sort.field === 'id' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} />
+                                                <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (
-                                                <ChevronUp size={14} />
+                                                <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} className="opacity-30" />
+                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
                                         )}
                                     </div>
                                 </th>
@@ -388,12 +387,12 @@ export default function AdminUsers() {
                                         Pedidos{' '}
                                         {sort.field === 'orderCount' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} />
+                                                <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (
-                                                <ChevronUp size={14} />
+                                                <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} className="opacity-30" />
+                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
                                         )}
                                     </div>
                                 </th>
@@ -405,12 +404,12 @@ export default function AdminUsers() {
                                         Gastado{' '}
                                         {sort.field === 'totalSpent' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} />
+                                                <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (
-                                                <ChevronUp size={14} />
+                                                <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} className="opacity-30" />
+                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
                                         )}
                                     </div>
                                 </th>
@@ -422,12 +421,12 @@ export default function AdminUsers() {
                                         Actividad{' '}
                                         {sort.field === 'last_seen_at' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} />
+                                                <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (
-                                                <ChevronUp size={14} />
+                                                <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} className="opacity-30" />
+                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
                                         )}
                                     </div>
                                 </th>
@@ -439,12 +438,12 @@ export default function AdminUsers() {
                                         Reg.{' '}
                                         {sort.field === 'created_at' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} />
+                                                <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (
-                                                <ChevronUp size={14} />
+                                                <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} className="opacity-30" />
+                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
                                         )}
                                     </div>
                                 </th>
@@ -456,12 +455,12 @@ export default function AdminUsers() {
                                         Rol{' '}
                                         {sort.field === 'role' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} />
+                                                <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (
-                                                <ChevronUp size={14} />
+                                                <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} className="opacity-30" />
+                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
                                         )}
                                     </div>
                                 </th>
@@ -504,11 +503,10 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                        pageNum === pagination.page
-                                            ? 'bg-red-600 text-white'
-                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                    }`}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
+                                        ? 'bg-red-600 text-white'
+                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                        }`}
                                 >
                                     {pageNum}
                                 </button>
@@ -528,7 +526,7 @@ export default function AdminUsers() {
                     <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} />
+                                <Trash2 size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 ¿Eliminar permanentemente?
@@ -577,7 +575,7 @@ export default function AdminUsers() {
                     <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Shield size={32} />
+                                <Shield size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 {userToChangeRole.role === 'admin'
@@ -627,7 +625,7 @@ export default function AdminUsers() {
                     <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <CheckCircle size={32} />
+                                <CheckCircle size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 ¿Verificar Email Manualmente?
