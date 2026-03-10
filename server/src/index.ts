@@ -115,7 +115,9 @@ app.get(['/invitacion/:id', '/api/orders/share/:id'], async (req, res) => {
 
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
         const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
-        const finalPandaHost = host.includes('localhost') ? `http://${host}` : `https://sushidemaksim.vercel.app`;
+        const finalPandaHost = host.includes('localhost')
+            ? `http://${host}`
+            : `https://sushidemaksim.vercel.app`;
         const pandaImg = `${finalPandaHost}/hungry-panda.png`;
         const finalDest = `${fullOrigin}/pay-for-friend/${id}`;
 
