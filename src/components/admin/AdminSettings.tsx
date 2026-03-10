@@ -393,10 +393,11 @@ export default function AdminSettings() {
                         className="fixed bottom-8 right-8 z-50"
                     >
                         <div
-                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${saveStatus === 'success'
+                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${
+                                saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
                                     : 'bg-red-600 border-red-500 text-white'
-                                }`}
+                            }`}
                         >
                             {saveStatus === 'success' ? (
                                 <CheckCircle2 size={24} className="animate-bounce" />

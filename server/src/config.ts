@@ -21,7 +21,13 @@ export const config = {
     jwtExpiresIn: '7d' as const,
     dbPath: path.join(__dirname, '..', 'data', 'sushi.db'),
     bcryptRounds: 10,
-    corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    corsOrigin: process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(',')
+        : [
+              'http://localhost:5173',
+              'https://sushidemaksim.vercel.app',
+              'https://sushidemaksim.com',
+          ],
     nodeEnv,
     isDev: nodeEnv === 'development',
     isProd: nodeEnv === 'production',

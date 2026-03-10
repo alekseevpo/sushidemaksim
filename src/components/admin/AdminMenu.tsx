@@ -655,8 +655,8 @@ export default function AdminMenu() {
                                                             const updated = e.target.checked
                                                                 ? [...current, allergen]
                                                                 : current.filter(
-                                                                    a => a !== allergen
-                                                                );
+                                                                      a => a !== allergen
+                                                                  );
                                                             setFormData({
                                                                 ...formData,
                                                                 allergens: updated,

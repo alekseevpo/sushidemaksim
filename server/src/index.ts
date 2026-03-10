@@ -39,17 +39,28 @@ app.use(
                     "'self'",
                     'data:',
                     'https://sushidemaksim.com',
+                    'https://*.vercel.app',
                     'http://localhost:3000',
                     'http://localhost:3001',
                 ],
                 'connect-src': [
                     "'self'",
+                    'https://*.vercel.app',
                     'http://localhost:3000',
                     'http://localhost:3001',
                     '*.supabase.co',
                 ],
+                'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+                'script-src': ["'self'", 'https:', "'unsafe-inline'", "'unsafe-eval'"],
+                'frame-ancestors': [
+                    "'self'",
+                    'https://t.me',
+                    'https://web.telegram.org',
+                    'https://*.vercel.app',
+                ],
             },
         },
+        crossOriginEmbedderPolicy: false,
     })
 );
 
