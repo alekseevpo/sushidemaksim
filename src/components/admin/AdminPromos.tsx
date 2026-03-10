@@ -16,6 +16,7 @@ export default function AdminPromos() {
         bg: 'from-amber-500 to-amber-400',
         is_active: true,
     });
+    const [promoToDelete, setPromoToDelete] = useState<any>(null);
 
     useEffect(() => {
         loadPromos();
@@ -67,11 +68,16 @@ export default function AdminPromos() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('¿Seguro que quieres eliminar esta promoción?')) return;
+    const handleDelete = (promo: any) => {
+        setPromoToDelete(promo);
+    };
+
+    const confirmDelete = async () => {
+        if (!promoToDelete) return;
         try {
-            await api.delete(`/admin/promos/${id}`);
+            await api.delete(`/admin/promos/${promoToDelete.id}`);
             alert('Promoción eliminada');
+            setPromoToDelete(null);
             loadPromos();
         } catch (err: any) {
             console.error(err);
@@ -267,8 +273,9 @@ export default function AdminPromos() {
                                             <Edit2 size={16} />
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(p.id)}
+                                            onClick={() => handleDelete(p)}
                                             className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+                                            title="Eliminar promoción"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -286,6 +293,48 @@ export default function AdminPromos() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {promoToDelete && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setPromoToDelete(null)}
+                    />
+                    <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Trash2 size={32} />
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">
+                                ¿Eliminar promoción?
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium mb-8">
+                                Estás a punto de borrar{' '}
+                                <span className="text-red-600 font-bold uppercase">
+                                    "{promoToDelete.title}"
+                                </span>
+                                . <br />
+                                Esta acción no se puede deshacer.
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={confirmDelete}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all"
+                                >
+                                    SÍ, ELIMINAR
+                                </button>
+                                <button
+                                    onClick={() => setPromoToDelete(null)}
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                                >
+                                    CANCELAR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

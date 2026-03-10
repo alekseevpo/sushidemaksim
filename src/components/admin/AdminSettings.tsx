@@ -22,6 +22,7 @@ export default function AdminSettings() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState<null | 'success' | 'error'>(null);
+    const [socialToRemove, setSocialToRemove] = useState<number | null>(null);
 
     useEffect(() => {
         loadSettings();
@@ -82,9 +83,15 @@ export default function AdminSettings() {
     };
 
     const handleRemoveSocial = (index: number) => {
+        setSocialToRemove(index);
+    };
+
+    const confirmRemoveSocial = () => {
+        if (socialToRemove === null) return;
         const newLinks = [...settings.social_links];
-        newLinks.splice(index, 1);
+        newLinks.splice(socialToRemove, 1);
         setSettings({ ...settings, social_links: newLinks });
+        setSocialToRemove(null);
     };
 
     const handleUpdateSocial = (index: number, key: string, value: string) => {
@@ -386,11 +393,10 @@ export default function AdminSettings() {
                         className="fixed bottom-8 right-8 z-50"
                     >
                         <div
-                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${
-                                saveStatus === 'success'
+                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
                                     : 'bg-red-600 border-red-500 text-white'
-                            }`}
+                                }`}
                         >
                             {saveStatus === 'success' ? (
                                 <CheckCircle2 size={24} className="animate-bounce" />
@@ -417,6 +423,47 @@ export default function AdminSettings() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Remove Social Confirmation Modal */}
+            {socialToRemove !== null && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setSocialToRemove(null)}
+                    />
+                    <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Trash2 size={32} />
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">
+                                ¿Quitar red social?
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium mb-8">
+                                Estás a punto de quitar{' '}
+                                <span className="text-red-600 font-bold uppercase">
+                                    "{settings.social_links[socialToRemove]?.platform}"
+                                </span>{' '}
+                                de la lista.
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={confirmRemoveSocial}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all"
+                                >
+                                    SÍ, QUITAR
+                                </button>
+                                <button
+                                    onClick={() => setSocialToRemove(null)}
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                                >
+                                    CANCELAR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </form>
     );
 }

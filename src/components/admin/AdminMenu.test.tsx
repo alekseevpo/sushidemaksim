@@ -87,4 +87,24 @@ describe('AdminMenu (Integration)', () => {
             expect(screen.getByText('New Roll')).toBeInTheDocument();
         });
     });
+
+    it('deletes an item', async () => {
+        vi.mocked(api.delete).mockResolvedValue({});
+        render(<AdminMenu />);
+
+        await waitFor(() => expect(screen.getByText('Sake Sushi')).toBeInTheDocument());
+
+        // Click delete button
+        const deleteBtn = await screen.findByLabelText('Eliminar plato');
+        fireEvent.click(deleteBtn);
+
+        // Modal should be visible
+        const confirmBtn = await screen.findByText('SÍ, ELIMINAR');
+        fireEvent.click(confirmBtn);
+
+        await waitFor(() => {
+            expect(api.delete).toHaveBeenCalledWith('/admin/menu/1');
+            expect(screen.queryByText('Sake Sushi')).not.toBeInTheDocument();
+        });
+    });
 });

@@ -42,6 +42,7 @@ export default function AdminMenu() {
     const [saving, setSaving] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [error, setError] = useState('');
+    const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -94,11 +95,16 @@ export default function AdminMenu() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: number) => {
-        if (!window.confirm('¿Estás seguro de eliminar este plato?')) return;
+    const handleDelete = async (item: MenuItem) => {
+        setItemToDelete(item);
+    };
+
+    const confirmDelete = async () => {
+        if (!itemToDelete) return;
         try {
-            await api.delete(`/admin/menu/${id}`);
-            setItems(items.filter(i => i.id !== id));
+            await api.delete(`/admin/menu/${itemToDelete.id}`);
+            setItems(items.filter(i => i.id !== itemToDelete.id));
+            setItemToDelete(null);
         } catch (err) {
             alert(err instanceof ApiError ? err.message : 'Error al eliminar');
         }
@@ -286,12 +292,16 @@ export default function AdminMenu() {
                                                 <button
                                                     onClick={() => openEditModal(item)}
                                                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                    title="Editar plato"
+                                                    aria-label="Editar plato"
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(item.id)}
+                                                    onClick={() => handleDelete(item)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    title="Eliminar plato"
+                                                    aria-label="Eliminar plato"
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
@@ -645,8 +655,8 @@ export default function AdminMenu() {
                                                             const updated = e.target.checked
                                                                 ? [...current, allergen]
                                                                 : current.filter(
-                                                                      a => a !== allergen
-                                                                  );
+                                                                    a => a !== allergen
+                                                                );
                                                             setFormData({
                                                                 ...formData,
                                                                 allergens: updated,
@@ -681,6 +691,48 @@ export default function AdminMenu() {
                             >
                                 {saving ? 'Guardando...' : 'Guardar Plato'}
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {itemToDelete && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setItemToDelete(null)}
+                    />
+                    <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Trash2 size={32} />
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">
+                                ¿Eliminar este plato?
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium mb-8">
+                                Estás a punto de borrar{' '}
+                                <span className="text-red-600 font-bold uppercase">
+                                    "{itemToDelete.name}"
+                                </span>
+                                . <br />
+                                Esta acción no se puede deshacer.
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={confirmDelete}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all"
+                                >
+                                    SÍ, ELIMINAR
+                                </button>
+                                <button
+                                    onClick={() => setItemToDelete(null)}
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                                >
+                                    CANCELAR
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

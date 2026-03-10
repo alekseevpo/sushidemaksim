@@ -60,13 +60,16 @@ describe('AdminUsers (Integration)', () => {
     });
 
     it('toggles admin role', async () => {
-        vi.spyOn(window, 'confirm').mockReturnValue(true);
         render(<AdminUsers />);
 
         await waitFor(() => expect(screen.getByText('Customer A')).toBeInTheDocument());
 
         const toggleBtn = screen.getByText('Hacer Admin');
         fireEvent.click(toggleBtn);
+
+        // Modal should be visible now
+        const confirmBtn = await screen.findByText('SÍ, CAMBIAR PERMISOS');
+        fireEvent.click(confirmBtn);
 
         await waitFor(() => {
             expect(api.patch).toHaveBeenCalledWith('/admin/users/10/role', { role: 'admin' });
