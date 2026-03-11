@@ -290,7 +290,7 @@ export default function MenuPageSimple() {
             />
             <div className="max-w-7xl mx-auto flex gap-8">
                 {/* Desktop Sidebar Sidebar */}
-                <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
+                <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-[100px] self-start z-30">
                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                         <h2 className="text-lg font-black text-gray-900 mb-6 px-2">Categorías</h2>
                         <nav className="flex flex-col gap-1">
@@ -355,7 +355,8 @@ export default function MenuPageSimple() {
                     </div>
 
                     {/* Category Filter - Mobile Only (Horizontal scroll) */}
-                    <div className="lg:hidden sticky top-[72px] z-20 -mx-2 md:-mx-4 px-2 md:px-4 py-4 bg-gray-50/80 backdrop-blur-md mb-6 overflow-x-auto no-scrollbar">
+                    {/* Category Filter - Fixed/Sticky for all on scroll */}
+                    <div className="sticky top-[72px] md:top-[80px] z-50 -mx-2 md:-mx-4 px-2 md:px-4 py-4 bg-white/80 backdrop-blur-xl border-b border-gray-100 mb-6 overflow-x-auto no-scrollbar shadow-sm">
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 onClick={() => setSelectedCategory('all')}
