@@ -388,7 +388,7 @@ export default function AdminOrders({
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                             Productos ({order.items?.length || 0})
                                         </p>
-                                        <div className="space-y-0.5 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                                        <div className="space-y-0.5 px-1">
                                             {order.items?.map((item: any, idx: number) => (
                                                 <div
                                                     key={idx}
