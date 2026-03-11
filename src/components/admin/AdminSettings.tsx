@@ -172,9 +172,25 @@ export default function AdminSettings() {
                         />
                     </div>
                     <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-gray-500 mb-1">
-                            URL Google Maps (al hacer clic en 'Ver Mapa')
-                        </label>
+                        <div className="flex justify-between items-center mb-1">
+                            <label className="block text-xs font-bold text-gray-500">
+                                URL Google Maps (al hacer clic en 'Ver Mapa')
+                            </label>
+                            {(settings.contact_address_line1 || settings.contact_address_line2) && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const fullAddress =
+                                            `${settings.contact_address_line1} ${settings.contact_address_line2}`.trim();
+                                        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
+                                        setSettings({ ...settings, contact_google_maps_url: url });
+                                    }}
+                                    className="text-[10px] font-bold text-blue-600 hover:underline"
+                                >
+                                    Generar desde dirección
+                                </button>
+                            )}
+                        </div>
                         <input
                             value={settings.contact_google_maps_url}
                             onChange={e =>
@@ -184,6 +200,7 @@ export default function AdminSettings() {
                                 })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                            placeholder="https://www.google.com/maps/..."
                         />
                     </div>
                 </div>
@@ -329,6 +346,8 @@ export default function AdminSettings() {
                                     <option value="facebook">Facebook</option>
                                     <option value="tiktok">TikTok</option>
                                     <option value="twitter">Twitter</option>
+                                    <option value="thefork">The Fork</option>
+                                    <option value="threads">Threads</option>
                                 </select>
                             </div>
                             <div className="w-full md:w-2/4 flex items-center gap-3">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Star, ArrowRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Star, ArrowRight, Utensils } from 'lucide-react';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
 
@@ -39,6 +39,24 @@ const iconMap: Record<string, any> = {
     ),
     instagram: Instagram,
     facebook: Facebook,
+    thefork: Utensils,
+    threads: (props: any) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <path d="M19.25 10c0-4-3.25-7.25-7.25-7.25S4.75 6 4.75 10s3.25 7.25 7.25 7.25c1.5 0 2.85-.45 4-1.2l3.25 3.2" />
+            <path d="M12 7.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" />
+        </svg>
+    ),
 };
 
 export default function ContactsPage() {
@@ -220,7 +238,15 @@ export default function ContactsPage() {
                                 {settings.contact_address_line1} {settings.contact_address_line2}
                             </p>
                             <a
-                                href={settings.contact_google_maps_url}
+                                href={
+                                    settings.contact_google_maps_url ||
+                                    (settings.contact_address_line1 ||
+                                    settings.contact_address_line2
+                                        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                              `${settings.contact_address_line1} ${settings.contact_address_line2}`.trim()
+                                          )}`
+                                        : '#')
+                                }
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-sm font-black text-blue-600 hover:underline inline-flex items-center gap-1"
@@ -304,6 +330,9 @@ export default function ContactsPage() {
                                         if (social.icon === 'facebook')
                                             hoverColor = 'hover:bg-blue-600';
                                         if (social.icon === 'tiktok') hoverColor = 'hover:bg-black';
+                                        if (social.icon === 'thefork')
+                                            hoverColor = 'hover:bg-[#004a32]';
+                                        if (social.icon === 'threads') hoverColor = 'hover:bg-black';
 
                                         return (
                                             <a
