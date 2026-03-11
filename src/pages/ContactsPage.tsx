@@ -6,7 +6,6 @@ import {
     Clock,
     Instagram,
     Facebook,
-    Star,
     ArrowRight,
     Utensils,
     Send,
@@ -228,42 +227,44 @@ export default function ContactsPage() {
                 </div>
 
                 {/* Main Interaction Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
                     {/* Integrated Contact Form */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="lg:col-span-5 bg-gray-50 p-8 md:p-10 rounded-[2.5rem] border border-gray-100 relative overflow-hidden"
+                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 relative overflow-hidden order-2 lg:order-1"
                     >
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-black mb-2 tracking-tight">
+                            <h2 className="text-2xl md:text-3xl font-black mb-2 tracking-tight">
                                 Envíanos un mensaje
                             </h2>
-                            <p className="text-gray-500 mb-10 font-medium">
+                            <p className="text-gray-500 mb-8 md:mb-10 font-medium text-sm md:text-base">
                                 Te responderemos en menos de 24h.
                             </p>
 
-                            <form className="space-y-6">
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-                                        Tu nombre
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre completo"
-                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-                                        Tu email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        placeholder="tu@email.com"
-                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium"
-                                    />
+                            <form className="space-y-4 md:space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                                            Tu nombre
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre completo"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-sm md:text-base"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                                            Tu email
+                                        </label>
+                                        <input
+                                            type="email"
+                                            placeholder="tu@email.com"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-sm md:text-base"
+                                        />
+                                    </div>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
@@ -272,10 +273,10 @@ export default function ContactsPage() {
                                     <textarea
                                         rows={4}
                                         placeholder="¿En qué podemos ayudarte?"
-                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium resize-none"
+                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium resize-none text-sm md:text-base"
                                     ></textarea>
                                 </div>
-                                <button className="w-full bg-gray-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95">
+                                <button className="w-full bg-gray-900 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98]">
                                     ENVIAR MENSAJE
                                     <Send size={18} />
                                 </button>
@@ -284,13 +285,13 @@ export default function ContactsPage() {
                     </motion.div>
 
                     {/* Map and Info Column */}
-                    <div className="lg:col-span-7 space-y-8">
+                    <div className="lg:col-span-12 xl:col-span-7 space-y-6 md:space-y-8 order-1 lg:order-2">
                         {/* Map Card */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.98 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 h-[450px] shadow-sm relative group"
+                            className="bg-white rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-gray-100 h-[300px] md:h-[450px] shadow-sm relative group"
                         >
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3038.563914856037!2d-3.674640123441!3d40.397042071442!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd42272e4ed3b2e5%3A0xe719cdfe984d9b8!2sSushi%20de%20Maksim!5e0!3m2!1ses!2ses!4v1709700000000!5m2!1ses!2ses"
@@ -306,13 +307,13 @@ export default function ContactsPage() {
                         </motion.div>
 
                         {/* Schedule & Socials Info */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 h-full"
+                                className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100 h-full"
                             >
                                 <div className="flex items-center gap-3 mb-6">
                                     <Clock size={20} className="text-gray-900" />
@@ -349,12 +350,12 @@ export default function ContactsPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 h-full flex flex-col"
+                                className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100 h-full flex flex-col"
                             >
                                 <h3 className="font-black text-lg uppercase tracking-tight mb-8">
                                     Síguenos
                                 </h3>
-                                <div className="flex flex-wrap gap-4">
+                                <div className="flex flex-wrap gap-3 md:gap-4">
                                     {settings.social_links?.map((social: any, idx: number) => {
                                         const IconComponent =
                                             iconMap[social.icon?.toLowerCase()] || Instagram;
@@ -366,14 +367,14 @@ export default function ContactsPage() {
                                                 href={social.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-900 border border-gray-100 hover:border-red-500 hover:text-red-500 transition-all shadow-sm premium-shadow"
+                                                className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-gray-900 border border-gray-100 hover:border-red-500 hover:text-red-500 transition-all shadow-sm"
                                             >
-                                                <IconComponent size={22} strokeWidth={1.5} />
+                                                <IconComponent size={20} strokeWidth={1.5} />
                                             </motion.a>
                                         );
                                     })}
                                 </div>
-                                <p className="text-xs text-gray-400 mt-auto pt-8 font-medium">
+                                <p className="text-xs text-gray-400 mt-auto pt-6 md:pt-8 font-medium">
                                     Únete a nuestra comunidad para ofertas exclusivas.
                                 </p>
                             </motion.div>
@@ -383,25 +384,25 @@ export default function ContactsPage() {
             </div>
 
             {/* Premium CTA Section */}
-            <section className="px-4 pb-24">
+            <section className="px-4 pb-16 md:pb-24">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="max-w-7xl mx-auto bg-red-600 rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-red-200"
+                    className="max-w-7xl mx-auto bg-red-600 rounded-[2rem] md:rounded-[3rem] p-8 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-red-200"
                 >
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                     <div className="relative z-10 max-w-3xl mx-auto">
-                        <h2 className="text-3xl md:text-6xl font-black mb-8 leading-tight tracking-tighter">
-                            ¿Listo для la experiencia?
+                        <h2 className="text-2xl md:text-6xl font-black mb-6 md:mb-8 leading-tight tracking-tighter">
+                            ¿Listo para la experiencia?
                         </h2>
-                        <p className="text-red-100 text-lg md:text-xl font-medium mb-12 opacity-90 leading-relaxed">
+                        <p className="text-red-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
                             Pide ahora y descubre por qué somos el sushi favorito del centro de
                             Madrid.
                         </p>
                         <a
                             href="/menu"
-                            className="inline-block bg-white text-red-600 px-12 py-5 rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl premium-shadow"
+                            className="inline-block w-full sm:w-auto bg-white text-red-600 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
                         >
                             HACER MI PEDIDO
                         </a>
