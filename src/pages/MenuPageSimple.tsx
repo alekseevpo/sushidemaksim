@@ -157,26 +157,9 @@ export default function MenuPageSimple() {
         }
     };
 
-    const handleShare = async (item: MenuItem, e: React.MouseEvent) => {
+    const handleShare = (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
-        const shareUrl = `${window.location.origin}/menu?id=${item.id}`;
-        const shareData = {
-            title: item.name,
-            text: `¡Mira qué pintaza tiene este ${item.name} de Sushi de Maksim! 🍣`,
-            url: shareUrl,
-        };
-
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                if ((err as Error).name !== 'AbortError') {
-                    setSharingItem(item);
-                }
-            }
-        } else {
-            setSharingItem(item);
-        }
+        setSharingItem(item);
     };
 
     const copyToClipboard = async (text: string) => {
@@ -692,30 +675,50 @@ export default function MenuPageSimple() {
                                     </a>
                                 </div>
 
-                                <button
-                                    onClick={() =>
-                                        copyToClipboard(
-                                            `${window.location.origin}/menu?id=${sharingItem.id}`
-                                        )
-                                    }
-                                    className={`w-full flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm transition-all border-none cursor-pointer ${copying ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                                >
-                                    {copying ? (
-                                        <>
-                                            <Check
-                                                size={18}
-                                                strokeWidth={1.5}
-                                                className="text-green-400"
-                                            />
-                                            Enlace Copiado
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Copy size={18} strokeWidth={1.5} />
-                                            Copiar Enlace
-                                        </>
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={() =>
+                                            copyToClipboard(
+                                                `${window.location.origin}/menu?id=${sharingItem.id}`
+                                            )
+                                        }
+                                        className={`w-full flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm transition-all border-none cursor-pointer ${copying ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                    >
+                                        {copying ? (
+                                            <>
+                                                <Check
+                                                    size={18}
+                                                    strokeWidth={1.5}
+                                                    className="text-green-400"
+                                                />
+                                                Enlace Copiado
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={18} strokeWidth={1.5} />
+                                                Copiar Enlace
+                                            </>
+                                        )}
+                                    </button>
+
+                                    {navigator.share && (
+                                        <button
+                                            onClick={() => {
+                                                navigator
+                                                    .share({
+                                                        title: sharingItem.name,
+                                                        text: `¡Mira este ${sharingItem.name} de Sushi de Maksim! 🍣`,
+                                                        url: `${window.location.origin}/menu?id=${sharingItem.id}`,
+                                                    })
+                                                    .catch(() => {});
+                                            }}
+                                            className="w-full flex items-center justify-center gap-2 p-3 text-gray-400 hover:text-gray-600 text-xs font-bold transition-colors border-none bg-transparent cursor-pointer"
+                                        >
+                                            <Share2 size={14} />
+                                            Otras opciones
+                                        </button>
                                     )}
-                                </button>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
