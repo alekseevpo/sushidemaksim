@@ -11,6 +11,12 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
 import { CartSkeleton } from './components/skeletons/CartSkeleton';
 import { MenuSkeleton } from './components/skeletons/MenuSkeleton';
+import { HomeSkeleton } from './components/skeletons/HomeSkeleton';
+import { AdminSkeleton } from './components/skeletons/AdminSkeleton';
+import { ProfileSkeleton } from './components/skeletons/ProfileSkeleton';
+import { PromoSkeleton } from './components/skeletons/PromoSkeleton';
+import { BlogSkeleton } from './components/skeletons/BlogSkeleton';
+import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 
 // Lazy-loaded pages with retry logic
 const lazyRetry = (componentImport: any) => {
@@ -44,17 +50,6 @@ const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 
-function PageLoader() {
-    return (
-        <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-                <div className="text-4xl mb-3 animate-bounce">🍣</div>
-                <p className="text-gray-400 text-sm">Cargando...</p>
-            </div>
-        </div>
-    );
-}
-
 function App() {
     const { pathname } = useLocation();
     const isAdminRoute = pathname.startsWith('/admin');
@@ -70,43 +65,112 @@ function App() {
                             <FloatingCart />
                             {!isAdminRoute && <Header />}
                             <main className="flex-1 flex flex-col relative">
-                                <Suspense fallback={<PageLoader />}>
-                                    <Routes>
-                                        <Route path="/" element={<HomePageSimple />} />
-                                        <Route
-                                            path="/menu"
-                                            element={
-                                                <Suspense fallback={<MenuSkeleton />}>
-                                                    <MenuPageSimple />
-                                                </Suspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/cart"
-                                            element={
-                                                <Suspense fallback={<CartSkeleton />}>
-                                                    <CartPageSimple />
-                                                </Suspense>
-                                            }
-                                        />
-                                        <Route path="/promo" element={<PromoPageSimple />} />
-                                        <Route path="/profile" element={<ProfilePage />} />
-                                        <Route path="/admin" element={<AdminPage />} />
-                                        <Route path="/contacts" element={<ContactsPage />} />
-                                        <Route path="/blog" element={<BlogPage />} />
-                                        <Route path="/blog/:slug" element={<BlogPostPage />} />
-                                        <Route
-                                            path="/pay-for-friend/:id"
-                                            element={<PayForFriendPage />}
-                                        />
-                                        <Route path="/verify" element={<VerifyPage />} />
-                                        <Route
-                                            path="/verify-email-change"
-                                            element={<VerifyEmailChangePage />}
-                                        />
-                                        <Route path="/track/:id" element={<OrderTrackingPage />} />
-                                    </Routes>
-                                </Suspense>
+                                <Routes>
+                                    <Route
+                                        path="/"
+                                        element={
+                                            <Suspense fallback={<HomeSkeleton />}>
+                                                <HomePageSimple />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/menu"
+                                        element={
+                                            <Suspense fallback={<MenuSkeleton />}>
+                                                <MenuPageSimple />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/cart"
+                                        element={
+                                            <Suspense fallback={<CartSkeleton />}>
+                                                <CartPageSimple />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/promo"
+                                        element={
+                                            <Suspense fallback={<PromoSkeleton />}>
+                                                <PromoPageSimple />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/profile"
+                                        element={
+                                            <Suspense fallback={<ProfileSkeleton />}>
+                                                <ProfilePage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/admin"
+                                        element={
+                                            <Suspense fallback={<AdminSkeleton />}>
+                                                <AdminPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/contacts"
+                                        element={
+                                            <Suspense fallback={<GenericSkeleton />}>
+                                                <ContactsPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/blog"
+                                        element={
+                                            <Suspense fallback={<BlogSkeleton />}>
+                                                <BlogPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/blog/:slug"
+                                        element={
+                                            <Suspense fallback={<BlogSkeleton />}>
+                                                <BlogPostPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/pay-for-friend/:id"
+                                        element={
+                                            <Suspense fallback={<GenericSkeleton />}>
+                                                <PayForFriendPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/verify"
+                                        element={
+                                            <Suspense fallback={<GenericSkeleton />}>
+                                                <VerifyPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/verify-email-change"
+                                        element={
+                                            <Suspense fallback={<GenericSkeleton />}>
+                                                <VerifyEmailChangePage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path="/track/:id"
+                                        element={
+                                            <Suspense fallback={<GenericSkeleton />}>
+                                                <OrderTrackingPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                </Routes>
                             </main>
                             {!isAdminRoute && <Footer />}
                         </div>
