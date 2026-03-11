@@ -112,7 +112,7 @@ export default function OrderTrackingPage() {
                                     Entrega Estimada
                                 </span>
                                 <span className="text-2xl font-black">
-                                    {order.estimated_delivery_time || '30-45'} min
+                                    {order.estimated_delivery_time || '30-45 min'}
                                 </span>
                             </div>
                         </div>
