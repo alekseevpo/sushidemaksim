@@ -467,8 +467,8 @@ export default function MenuPageSimple() {
                                                     id={`item-${item.id}`}
                                                     className="premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden"
                                                 >
-                                                    {/* Action Buttons Top */}
-                                                    <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 flex gap-2">
+                                                    {/* Action Buttons */}
+                                                    <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
                                                         <button
                                                             onClick={e => handleShare(item, e)}
                                                             className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/90 backdrop-blur-md shadow-lg flex items-center justify-center hover:scale-110 active:scale-90 transition-transform cursor-pointer border-none"
@@ -479,8 +479,10 @@ export default function MenuPageSimple() {
                                                                 className="text-gray-900"
                                                             />
                                                         </button>
+                                                    </div>
 
-                                                        {user && (
+                                                    {user && (
+                                                        <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
                                                             <button
                                                                 onClick={() =>
                                                                     toggleFavorite(item.id)
@@ -501,8 +503,8 @@ export default function MenuPageSimple() {
                                                                     }
                                                                 />
                                                             </button>
-                                                        )}
-                                                    </div>
+                                                        </div>
+                                                    )}
 
                                                     {/* Image Container */}
                                                     <div className="aspect-[4/3] md:h-56 bg-gray-50 overflow-hidden relative group/img">
