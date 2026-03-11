@@ -20,6 +20,7 @@ import {
     BarChart3,
     Monitor,
     Clock,
+    Heart,
 } from 'lucide-react';
 import {
     BarChart,
@@ -1065,6 +1066,16 @@ export default function AdminPage() {
                     {activeTab === 'settings' && <AdminSettings />}
                     {activeTab === 'promos' && <AdminPromos />}
                     {activeTab === 'blog' && <AdminBlog />}
+
+                    {/* Developer Footer */}
+                    <footer className="mt-12 py-8 border-t border-gray-100">
+                        <p className="text-gray-400 text-[10px] md:text-xs font-medium flex items-center justify-center gap-1.5 flex-wrap">
+                            Desarrollado con{' '}
+                            <Heart size={12} className="text-red-500 fill-current" /> por{' '}
+                            <span className="text-gray-600">SelenIT / alekseevpo@gmail.com</span> en
+                            2026. Todos los derechos reservados.
+                        </p>
+                    </footer>
                 </div>
             </main>
         </div>
