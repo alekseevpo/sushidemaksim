@@ -15,6 +15,7 @@ Una plataforma premium de e-commerce gastronómico diseñada para ofrecer la mej
 ## ✨ Características Principales
 
 ### 🍱 Experiencia del Cliente
+
 - **Menú Interactivo Premium**: Navegación fluida por categorías (Nigiri, Rolls, Combos) con diseño "Sticky" para facilitar la selección.
 - **Sistema de Favoritos**: Los usuarios registrados pueden guardar sus platos preferidos para pedirlos rápidamente después.
 - **Gestión de Carrito en Tiempo Real**: Carrito flotante interactivo con cálculos instantáneos de envío y subtotales.
@@ -22,12 +23,14 @@ Una plataforma premium de e-commerce gastronómico diseñada para ofrecer la mej
 - **Totalmente Responsivo**: Optimización extrema para móviles y tablets, con botones de acción rápida y navegación táctil intuitiva.
 
 ### 🛡️ Panel de Administración (Dashboard)
+
 - **Analítica Avanzada**: Visualización de ventas, pedidos diarios, tickets medios y dispositivos de los clientes a través de gráficos interactivos (Recharts).
 - **Gestión de Menú & Stock**: Control total sobre el inventario, precios, etiquetas (Picante, Veggie, Nuevo) y categorías.
 - **Control de Pedidos**: Sistema de gestión de estados de pedido con alertas sonoras en tiempo real para nuevas comandas.
 - **Gestión de Promociones**: Herramientas integradas para crear y activar banners promocionales dinámicos.
 
 ### 🚀 Tecnología & Rendimiento
+
 - **Frontend**: React 18 + Vite para una carga instantánea.
 - **Diseño**: Tailwind CSS con estética minimalista y efectos de "Glassmorphism".
 - **Animaciones**: Framer Motion para transiciones suaves y micro-interacciones.
@@ -40,17 +43,20 @@ Una plataforma premium de e-commerce gastronómico diseñada para ofrecer la mej
 ## 🛠️ Instalación y Configuración
 
 ### 1. Requisitos Previos
+
 - Node.js (v18 o superior)
 - PostgreSQL
 - Cuenta en Supabase (opcional para almacenamiento de imágenes)
 
 ### 2. Configuración del Repositorio
+
 ```bash
 git clone https://github.com/alekseevpo/sushidemaksim.git
 cd sushidemaksim
 ```
 
 ### 3. Instalación de Dependencias
+
 ```bash
 # Instalar dependencias del Cliente (Frontend)
 npm install
@@ -60,7 +66,9 @@ cd server && npm install
 ```
 
 ### 4. Variables de Entorno
+
 Crea un archivo `.env` en la carpeta `server/` con las siguientes claves:
+
 ```env
 PORT=3000
 DATABASE_URL=tu_url_de_postgresql
@@ -73,7 +81,7 @@ EMAIL_PASS=tu_password_de_app
 
 ## 📸 Estética del Proyecto
 
-El proyecto utiliza una paleta de colores curada y tipografías modernas para transmitir una sensación de "Lujo Accesible". 
+El proyecto utiliza una paleta de colores curada y tipografías modernas para transmitir una sensación de "Lujo Accesible".
 
 - **Tipografía**: Inter & Outfit.
 - **Colores**: Rojo Maksim (#DC2626), Fondos Crema (#FDFBF7), Sombras Suaves.
@@ -82,13 +90,13 @@ El proyecto utiliza una paleta de colores curada y tipografías modernas para tr
 
 ## 🤝 Desarrollo
 
-Desarrollado con ❤️ por **SelenIT** y **Pavel Alekseev**. 
+Desarrollado con ❤️ por **SelenIT** y **Pavel Alekseev**.
 
 © 2026 Sushi de Maksim. Todos los derechos reservados.
 
 ---
 
-*English version available below.*
+_English version available below._
 
 ---
 
@@ -104,4 +112,4 @@ A premium gastronomic e-commerce platform designed to offer the best user experi
 - **SEO Optimized**: Dynamic metadata and semantic HTML for better search engine ranking.
 - **Tech Stack**: React 18, TypeScript, Tailwind CSS, Framer Motion, Express, PostgreSQL.
 
-*Documentation continues in Spanish for full technical details.*
+_Documentation continues in Spanish for full technical details._
