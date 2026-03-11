@@ -79,28 +79,38 @@ const ContactInfoCard = ({
     link,
     linkText,
     colorClass,
+    delay,
 }: any) => (
-    <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay }}
+        className="premium-card p-6 md:p-8 flex flex-col group"
+    >
         <div
-            className={`w-12 h-12 ${colorClass} rounded-2xl flex items-center justify-center mb-6`}
+            className={`w-12 h-12 ${colorClass} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
         >
             <Icon size={24} strokeWidth={1.5} className="text-gray-900" />
         </div>
         <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">{title}</h3>
         <p className="text-gray-900 font-bold mb-1">{content}</p>
-        <p className="text-gray-500 text-sm mb-6 flex-grow">{subContent}</p>
+        <p className="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">{subContent}</p>
         {link && (
             <a
                 href={link}
                 target={link.startsWith('http') ? '_blank' : undefined}
                 rel={link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className="text-sm font-black text-red-600 hover:text-red-700 inline-flex items-center gap-2 group"
+                className="text-sm font-black text-red-600 hover:text-black inline-flex items-center gap-2 transition-colors group/link"
             >
                 {linkText}
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight
+                    size={14}
+                    className="group-hover/link:translate-x-1 transition-transform"
+                />
             </a>
         )}
-    </div>
+    </motion.div>
 );
 
 export default function ContactsPage() {
@@ -134,37 +144,57 @@ export default function ContactsPage() {
         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
     return (
-        <div className="bg-white text-gray-900">
+        <div className="bg-white">
             <SEO
                 title="Contacto"
                 description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp y redes sociales."
             />
 
-            {/* Simple Clean Hero */}
-            <section className="bg-gray-50 pt-32 pb-20 px-4">
-                <div className="max-w-7xl mx-auto">
+            {/* Beautiful Hero with Safe Spacing */}
+            <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 px-4 overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src="/sushi-hero.jpg"
+                        alt="Background"
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                </div>
+
+                <div className="max-w-7xl mx-auto relative z-10 text-center md:text-left">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="inline-block px-4 py-1.5 bg-red-600/20 backdrop-blur-md border border-red-500/30 text-red-500 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full mb-6"
+                    >
+                        Estamos a tu disposición
+                    </motion.div>
                     <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-7xl font-black text-gray-900 mb-6 tracking-tighter"
+                        transition={{ duration: 0.6 }}
+                        className="text-4xl md:text-8xl font-black text-white mb-6 tracking-tighter"
                     >
                         Contacto
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-lg md:text-2xl text-gray-500 font-medium max-w-2xl leading-relaxed"
+                        transition={{ delay: 0.2, duration: 0.6 }}
+                        className="text-lg md:text-2xl text-gray-300 font-medium max-w-2xl leading-relaxed"
                     >
-                        ¿Tienes dudas sobre los ingredientes, alérgenos o quieres hacer un pedido
-                        especial? Estamos a un mensaje de distancia.
+                        ¿Tienes dudas sobre los ingredientes o quieres hacer un pedido especial?{' '}
+                        <br className="hidden md:block" />
+                        ¡Hablemos! Estamos encantados de ayudarte.
                     </motion.p>
                 </div>
             </section>
 
-            {/* Info Cards Grid */}
-            <section className="py-12 px-4">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Content Container - No overlapping negative margins here to ensure stability */}
+            <div className="max-w-7xl mx-auto px-4 py-16 md:py-24">
+                {/* Info Cards Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 md:mb-24">
                     <ContactInfoCard
                         icon={Phone}
                         title="Llámanos"
@@ -172,40 +202,46 @@ export default function ContactsPage() {
                         subContent="Atención telefónica directa para pedidos y consultas."
                         link={`tel:${settings.contact_phone?.replace(/\s/g, '')}`}
                         linkText="Llamar ahora"
-                        colorClass="bg-red-50"
-                    />
-                    <ContactInfoCard
-                        icon={Mail}
-                        title="Email"
-                        content={settings.contact_email}
-                        subContent="Para eventos especiales, colaboraciones o sugerencias."
-                        link={`mailto:${settings.contact_email}`}
-                        linkText="Enviar mensaje"
-                        colorClass="bg-amber-50"
+                        colorClass="bg-amber-100/50"
+                        delay={0.1}
                     />
                     <ContactInfoCard
                         icon={MapPin}
                         title="Visítanos"
                         content={fullAddress}
-                        subContent="Nuestra cocina central en el corazón de Madrid."
+                        subContent="Nuestra cocina central en el corazón de Tetuán."
                         link={mapsUrl}
                         linkText="Ver en Google Maps"
-                        colorClass="bg-blue-50"
+                        colorClass="bg-blue-100/50"
+                        delay={0.2}
+                    />
+                    <ContactInfoCard
+                        icon={Mail}
+                        title="Email"
+                        content={settings.contact_email}
+                        subContent="Para eventos especiales, colaboraciones o prensa."
+                        link={`mailto:${settings.contact_email}`}
+                        linkText="Enviar email"
+                        colorClass="bg-red-100/50"
+                        delay={0.3}
                     />
                 </div>
-            </section>
 
-            {/* Map and Form Section */}
-            <section className="py-12 px-4 mb-20">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {/* Main Interaction Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                     {/* Integrated Contact Form */}
-                    <div className="lg:col-span-5">
-                        <div className="bg-gray-50 p-8 md:p-10 rounded-[2.5rem] border border-gray-100">
-                            <h2 className="text-2xl md:text-3xl font-black mb-2">
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        className="lg:col-span-5 bg-gray-50 p-8 md:p-10 rounded-[2.5rem] border border-gray-100 relative overflow-hidden"
+                    >
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-black mb-2 tracking-tight">
                                 Envíanos un mensaje
                             </h2>
-                            <p className="text-gray-500 mb-8 font-medium">
-                                Te responderemos lo antes posible.
+                            <p className="text-gray-500 mb-10 font-medium">
+                                Te responderemos en menos de 24h.
                             </p>
 
                             <form className="space-y-6">
@@ -216,7 +252,7 @@ export default function ContactsPage() {
                                     <input
                                         type="text"
                                         placeholder="Nombre completo"
-                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 transition-colors font-medium"
+                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium"
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -226,7 +262,7 @@ export default function ContactsPage() {
                                     <input
                                         type="email"
                                         placeholder="tu@email.com"
-                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 transition-colors font-medium"
+                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium"
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -236,21 +272,26 @@ export default function ContactsPage() {
                                     <textarea
                                         rows={4}
                                         placeholder="¿En qué podemos ayudarte?"
-                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 transition-colors font-medium resize-none"
+                                        className="w-full bg-white border border-gray-200 px-5 py-4 rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium resize-none"
                                     ></textarea>
                                 </div>
-                                <button className="w-full bg-gray-900 text-white font-black py-5 rounded-2xl hover:bg-red-600 transition-colors shadow-lg flex items-center justify-center gap-3">
+                                <button className="w-full bg-gray-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95">
                                     ENVIAR MENSAJE
                                     <Send size={18} />
                                 </button>
                             </form>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Right Side: Map & Schedule */}
+                    {/* Map and Info Column */}
                     <div className="lg:col-span-7 space-y-8">
                         {/* Map Card */}
-                        <div className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 h-[400px] shadow-sm relative group">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 h-[450px] shadow-sm relative group"
+                        >
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3038.563914856037!2d-3.674640123441!3d40.397042071442!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd42272e4ed3b2e5%3A0xe719cdfe984d9b8!2sSushi%20de%20Maksim!5e0!3m2!1ses!2ses!4v1709700000000!5m2!1ses!2ses"
                                 width="100%"
@@ -260,23 +301,32 @@ export default function ContactsPage() {
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
                                 title="Ubicación"
-                                className="group-hover:scale-105 transition-transform duration-700"
+                                className="group-hover:scale-105 transition-transform duration-1000"
                             ></iframe>
-                        </div>
+                        </motion.div>
 
-                        {/* Schedule & Socials Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100">
+                        {/* Schedule & Socials Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 h-full"
+                            >
                                 <div className="flex items-center gap-3 mb-6">
                                     <Clock size={20} className="text-gray-900" />
                                     <h3 className="font-black text-lg uppercase tracking-tight">
                                         Horario
                                     </h3>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     {settings.contact_schedule?.map((item: any, idx: number) => (
-                                        <div key={idx} className="flex justify-between items-start">
-                                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                        <div
+                                            key={idx}
+                                            className="flex justify-between items-start pb-2 border-b border-gray-100 last:border-0 last:pb-0"
+                                        >
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                                 {item.days}
                                             </span>
                                             <span
@@ -288,53 +338,75 @@ export default function ContactsPage() {
                                     ))}
                                     {settings.contact_schedule.length === 0 && (
                                         <p className="text-sm text-gray-500 font-medium italic">
-                                            Consultar en redes sociales.
+                                            Consúltanos en redes sociales.
                                         </p>
                                     )}
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 flex flex-col">
-                                <h3 className="font-black text-lg uppercase tracking-tight mb-6">
-                                    Redes Sociales
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                                className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 h-full flex flex-col"
+                            >
+                                <h3 className="font-black text-lg uppercase tracking-tight mb-8">
+                                    Síguenos
                                 </h3>
-                                <div className="flex flex-wrap gap-3">
+                                <div className="flex flex-wrap gap-4">
                                     {settings.social_links?.map((social: any, idx: number) => {
                                         const IconComponent =
                                             iconMap[social.icon?.toLowerCase()] || Instagram;
                                         return (
-                                            <a
+                                            <motion.a
                                                 key={idx}
+                                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                                whileTap={{ scale: 0.95 }}
                                                 href={social.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-900 border border-gray-200 hover:border-red-500 hover:text-red-500 transition-all shadow-sm"
+                                                className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-900 border border-gray-100 hover:border-red-500 hover:text-red-500 transition-all shadow-sm premium-shadow"
                                             >
-                                                <IconComponent size={20} strokeWidth={1.5} />
-                                            </a>
+                                                <IconComponent size={22} strokeWidth={1.5} />
+                                            </motion.a>
                                         );
                                     })}
                                 </div>
-                            </div>
+                                <p className="text-xs text-gray-400 mt-auto pt-8 font-medium">
+                                    Únete a nuestra comunidad para ofertas exclusivas.
+                                </p>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            {/* Simple Final CTA */}
-            <section className="bg-red-600 py-16 px-4">
-                <div className="max-w-7xl mx-auto text-center text-white">
-                    <h2 className="text-3xl md:text-5xl font-black mb-6">¿Hambriento de Sushi?</h2>
-                    <p className="text-red-100 text-lg mb-10 font-medium">
-                        Haz tu pedido ahora y recíbelо en tiempo récord.
-                    </p>
-                    <a
-                        href="/menu"
-                        className="inline-block bg-white text-red-600 px-10 py-4 rounded-2xl font-black tracking-tight hover:scale-105 transition-transform shadow-xl"
-                    >
-                        VER EL MENÚ
-                    </a>
-                </div>
+            {/* Premium CTA Section */}
+            <section className="px-4 pb-24">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="max-w-7xl mx-auto bg-red-600 rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-red-200"
+                >
+                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
+                    <div className="relative z-10 max-w-3xl mx-auto">
+                        <h2 className="text-3xl md:text-6xl font-black mb-8 leading-tight tracking-tighter">
+                            ¿Listo для la experiencia?
+                        </h2>
+                        <p className="text-red-100 text-lg md:text-xl font-medium mb-12 opacity-90 leading-relaxed">
+                            Pide ahora y descubre por qué somos el sushi favorito del centro de
+                            Madrid.
+                        </p>
+                        <a
+                            href="/menu"
+                            className="inline-block bg-white text-red-600 px-12 py-5 rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl premium-shadow"
+                        >
+                            HACER MI PEDIDO
+                        </a>
+                    </div>
+                </motion.div>
             </section>
         </div>
     );
