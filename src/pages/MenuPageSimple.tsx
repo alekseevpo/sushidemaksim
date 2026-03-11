@@ -22,6 +22,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
+import { MenuSkeleton } from '../components/skeletons/MenuSkeleton';
 
 interface MenuItem {
     id: number;
@@ -402,21 +403,7 @@ export default function MenuPageSimple() {
 
                     {/* Items */}
                     {isLoading ? (
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-8">
-                            {[1, 2, 3, 4, 5, 6].map(i => (
-                                <div
-                                    key={i}
-                                    className="bg-white rounded-[32px] overflow-hidden flex flex-col h-[350px] animate-pulse border border-gray-100"
-                                >
-                                    <div className="h-48 bg-gray-200"></div>
-                                    <div className="p-6">
-                                        <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-                                        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                                        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <MenuSkeleton />
                     ) : items.length === 0 ? (
                         <div className="text-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200">
                             <div className="text-6xl mb-4">🙊</div>

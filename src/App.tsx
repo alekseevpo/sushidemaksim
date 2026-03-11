@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
 import { CartSkeleton } from './components/skeletons/CartSkeleton';
+import { MenuSkeleton } from './components/skeletons/MenuSkeleton';
 
 // Lazy-loaded pages with retry logic
 const lazyRetry = (componentImport: any) => {
@@ -72,7 +73,14 @@ function App() {
                                 <Suspense fallback={<PageLoader />}>
                                     <Routes>
                                         <Route path="/" element={<HomePageSimple />} />
-                                        <Route path="/menu" element={<MenuPageSimple />} />
+                                        <Route
+                                            path="/menu"
+                                            element={
+                                                <Suspense fallback={<MenuSkeleton />}>
+                                                    <MenuPageSimple />
+                                                </Suspense>
+                                            }
+                                        />
                                         <Route
                                             path="/cart"
                                             element={
