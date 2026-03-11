@@ -6,7 +6,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import FloatingCart from './components/FloatingCart';
-import ScrollToTop from './components/ScrollToTop';
+import SmoothScroll from './components/SmoothScroll';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
 import { CartSkeleton } from './components/skeletons/CartSkeleton';
@@ -60,7 +60,7 @@ function App() {
                 <AuthProvider>
                     <CartProvider>
                         <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
-                            <ScrollToTop />
+                            <SmoothScroll />
                             <CookieConsent />
                             <FloatingCart />
                             {!isAdminRoute && <Header />}
