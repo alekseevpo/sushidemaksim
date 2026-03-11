@@ -460,22 +460,22 @@ export default function MenuPageSimple() {
                                             </div>
                                         )}
 
-                                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
                                             {sectionItems.map(item => (
                                                 <div
                                                     key={item.id}
                                                     id={`item-${item.id}`}
-                                                    className="premium-card group flex flex-col h-full rounded-[32px] overflow-hidden"
+                                                    className="premium-card group flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden"
                                                 >
-                                                    <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    {/* Action Buttons Top */}
+                                                    <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 flex gap-2 transition-all duration-300">
                                                         <button
                                                             onClick={e => handleShare(item, e)}
-                                                            className="w-9 h-9 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none"
+                                                            className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/90 backdrop-blur-md shadow-lg flex items-center justify-center hover:scale-110 active:scale-90 transition-transform cursor-pointer border-none"
                                                             title="Compartir"
                                                         >
                                                             <Share2
-                                                                size={16}
-                                                                strokeWidth={1.5}
+                                                                size={14}
                                                                 className="text-gray-900"
                                                             />
                                                         </button>
@@ -485,30 +485,33 @@ export default function MenuPageSimple() {
                                                                 onClick={() =>
                                                                     toggleFavorite(item.id)
                                                                 }
-                                                                className="w-9 h-9 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none"
+                                                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/90 backdrop-blur-md shadow-lg flex items-center justify-center hover:scale-110 active:scale-90 transition-transform cursor-pointer border-none"
                                                             >
                                                                 <Heart
-                                                                    size={18}
-                                                                    strokeWidth={1.5}
+                                                                    size={16}
                                                                     className={
                                                                         favoriteItems.has(item.id)
                                                                             ? 'text-red-500'
                                                                             : 'text-gray-400'
                                                                     }
-                                                                    fill="none"
+                                                                    fill={
+                                                                        favoriteItems.has(item.id)
+                                                                            ? 'currentColor'
+                                                                            : 'none'
+                                                                    }
                                                                 />
                                                             </button>
                                                         )}
                                                     </div>
 
                                                     {/* Image Container */}
-                                                    <div className="h-44 md:h-56 bg-white overflow-hidden relative flex items-center justify-center p-2">
+                                                    <div className="aspect-[4/3] md:h-56 bg-gray-50 overflow-hidden relative group/img">
                                                         {!failedImages.has(item.id) ? (
                                                             <img
                                                                 src={item.image}
                                                                 alt={item.name}
                                                                 loading="lazy"
-                                                                className="w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-105"
+                                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                                                 onError={() =>
                                                                     setFailedImages(prev =>
                                                                         new Set(prev).add(item.id)
@@ -516,48 +519,49 @@ export default function MenuPageSimple() {
                                                                 }
                                                             />
                                                         ) : (
-                                                            <div className="w-full h-full bg-gray-50 rounded-2xl flex items-center justify-center text-5xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                                                            <div className="w-full h-full flex items-center justify-center text-4xl grayscale opacity-30">
                                                                 {EMOJI[item.category] || '🍱'}
                                                             </div>
                                                         )}
 
-                                                        {/* Badges */}
-                                                        <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
+                                                        {/* Badges Lowered */}
+                                                        <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1">
                                                             {item.is_popular && (
-                                                                <span className="bg-amber-400 text-amber-950 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
+                                                                <span className="bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
                                                                     <Sparkles
-                                                                        size={10}
-                                                                        strokeWidth={1.5}
-                                                                    />{' '}
+                                                                        size={8}
+                                                                        className="md:size-[10px]"
+                                                                    />
                                                                     Popular
                                                                 </span>
                                                             )}
                                                             {item.is_new && (
-                                                                <span className="bg-white text-gray-900 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg">
+                                                                <span className="bg-white text-gray-900 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-sm">
                                                                     ✨ Nuevo
                                                                 </span>
                                                             )}
                                                         </div>
                                                     </div>
 
-                                                    <div className="p-6 flex flex-col flex-1">
-                                                        <div className="mb-2">
-                                                            <h3 className="text-lg md:text-xl font-black text-gray-900 leading-tight line-clamp-1">
+                                                    {/* Info Container */}
+                                                    <div className="p-3 md:p-6 flex flex-col flex-1">
+                                                        <div className="mb-1 md:mb-2">
+                                                            <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto">
                                                                 {item.name}
                                                             </h3>
                                                             {item.pieces && (
-                                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                                                                <span className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest block opacity-70">
                                                                     {item.pieces} Unidades
                                                                 </span>
                                                             )}
                                                         </div>
 
-                                                        <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 md:line-clamp-none flex-1 font-medium">
+                                                        <p className="text-gray-500 text-[11px] md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 min-h-[2.5rem] md:min-h-0 font-medium overflow-hidden">
                                                             {item.description}
                                                         </p>
 
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-2xl font-black text-gray-900">
+                                                        <div className="mt-auto flex items-center justify-between gap-1">
+                                                            <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
                                                                 {item.price
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
@@ -567,24 +571,23 @@ export default function MenuPageSimple() {
                                                                 onClick={e =>
                                                                     handleAddToCart(item, e)
                                                                 }
-                                                                className={`h-11 px-6 rounded-2xl font-black text-sm transition-all duration-300 flex items-center gap-2 border-none cursor-pointer ${
+                                                                className={`h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl font-black text-sm transition-all duration-300 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 ${
                                                                     addedItems.has(item.id)
                                                                         ? 'bg-green-500 text-white'
-                                                                        : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-200 active:scale-95'
+                                                                        : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-200 active:scale-90'
                                                                 }`}
                                                             >
                                                                 {addedItems.has(item.id) ? (
-                                                                    <Check
-                                                                        size={20}
-                                                                        strokeWidth={1.5}
-                                                                    />
+                                                                    <Check size={16} />
                                                                 ) : (
                                                                     <>
                                                                         <Plus
-                                                                            size={18}
-                                                                            strokeWidth={1.5}
+                                                                            size={16}
+                                                                            className="md:size-18"
                                                                         />
-                                                                        <span>Añadir</span>
+                                                                        <span className="hidden md:inline">
+                                                                            Añadir
+                                                                        </span>
                                                                     </>
                                                                 )}
                                                             </button>
