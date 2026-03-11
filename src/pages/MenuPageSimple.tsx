@@ -281,7 +281,7 @@ export default function MenuPageSimple() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8">
+        <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8 overflow-x-hidden">
             <SEO
                 title="Menú y Carta de Sushi"
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
@@ -355,7 +355,7 @@ export default function MenuPageSimple() {
                     </div>
 
                     {/* Category Filter - Mobile Only (Horizontal scroll) */}
-                    <div className="lg:hidden sticky top-[72px] z-20 -mx-4 px-4 py-4 bg-gray-50/80 backdrop-blur-md mb-6 overflow-x-auto no-scrollbar">
+                    <div className="lg:hidden sticky top-[72px] z-20 -mx-2 md:-mx-4 px-2 md:px-4 py-4 bg-gray-50/80 backdrop-blur-md mb-6 overflow-x-auto no-scrollbar">
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 onClick={() => setSelectedCategory('all')}
