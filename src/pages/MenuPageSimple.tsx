@@ -467,10 +467,11 @@ export default function MenuPageSimple() {
                                                     {user && (
                                                         <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
                                                             <button
-                                                                onClick={() =>
-                                                                    toggleFavorite(item.id)
-                                                                }
-                                                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/90 backdrop-blur-md shadow-lg flex items-center justify-center hover:scale-110 active:scale-90 transition-transform cursor-pointer border-none"
+                                                                onClick={e => {
+                                                                    e.stopPropagation();
+                                                                    toggleFavorite(item.id);
+                                                                }}
+                                                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/90 backdrop-blur-md shadow-lg flex items-center justify-center md:hover:scale-110 active:scale-90 transition-transform cursor-pointer border-none"
                                                             >
                                                                 <Heart
                                                                     size={16}
