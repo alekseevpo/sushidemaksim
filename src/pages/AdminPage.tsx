@@ -308,8 +308,8 @@ export default function AdminPage() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 p-3 md:p-6">
-                <div className="w-full">
+            <main className="flex-1 md:ml-64 p-3 md:p-6 flex flex-col min-h-screen">
+                <div className="w-full flex-1 flex flex-col">
                     {/* Top Bar */}
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -1068,8 +1068,8 @@ export default function AdminPage() {
                     {activeTab === 'blog' && <AdminBlog />}
 
                     {/* Developer Footer */}
-                    <footer className="mt-12 py-8 border-t border-gray-100">
-                        <p className="text-gray-400 text-[10px] md:text-xs font-medium flex items-center justify-center gap-1.5 flex-wrap">
+                    <footer className="mt-auto py-8 border-t border-gray-100">
+                        <p className="text-gray-400 text-[10px] md:text-xs font-medium flex items-center justify-center gap-1.5 flex-wrap text-center">
                             Desarrollado con{' '}
                             <Heart size={12} className="text-red-500 fill-current" /> por{' '}
                             <span className="text-gray-600">SelenIT / alekseevpo@gmail.com</span> en
