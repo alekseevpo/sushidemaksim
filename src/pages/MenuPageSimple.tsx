@@ -100,7 +100,7 @@ export default function MenuPageSimple() {
     useEffect(() => {
         loadMenu();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedCategory, debouncedSearch]);
+    }, [selectedCategory, debouncedSearch, user]);
 
     // Scroll to top when category changes to ensure user sees the results
     useEffect(() => {
@@ -468,10 +468,11 @@ export default function MenuPageSimple() {
                                                         <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
                                                             <button
                                                                 onClick={e => {
+                                                                    e.preventDefault();
                                                                     e.stopPropagation();
                                                                     toggleFavorite(item.id);
                                                                 }}
-                                                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/90 backdrop-blur-md shadow-lg flex items-center justify-center md:hover:scale-110 active:scale-90 transition-transform cursor-pointer border-none"
+                                                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all cursor-pointer border-none z-20 touch-manipulation active:scale-95"
                                                             >
                                                                 <Heart
                                                                     size={16}
@@ -497,7 +498,7 @@ export default function MenuPageSimple() {
                                                                 src={item.image}
                                                                 alt={item.name}
                                                                 loading="lazy"
-                                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                                className="w-full h-full object-cover transition-transform duration-700"
                                                                 onError={() =>
                                                                     setFailedImages(prev =>
                                                                         new Set(prev).add(item.id)
