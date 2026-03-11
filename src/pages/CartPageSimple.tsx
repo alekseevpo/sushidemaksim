@@ -34,7 +34,10 @@ const CartSkeleton = () => (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 flex flex-col gap-6">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="bg-white p-6 rounded-[32px] flex gap-4 border border-gray-100">
+                        <div
+                            key={i}
+                            className="bg-white p-6 rounded-[32px] flex gap-4 border border-gray-100"
+                        >
                             <div className="w-20 h-20 skeleton rounded-2xl shrink-0" />
                             <div className="flex-1 space-y-3 pt-1">
                                 <div className="h-5 w-1/3 skeleton rounded-lg" />
@@ -626,9 +629,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                    item.id,
-                                                                    item.quantity - 1
-                                                                )
+                                                                      item.id,
+                                                                      item.quantity - 1
+                                                                  )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
