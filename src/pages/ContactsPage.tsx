@@ -314,7 +314,9 @@ export default function ContactsPage() {
                                                 title={social.platform}
                                                 className={`w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center ${hoverColor} hover:text-white transition-all duration-300 shadow-sm`}
                                             >
-                                                {IconComponent && <IconComponent size={24} strokeWidth={1.5} />}
+                                                {IconComponent && (
+                                                    <IconComponent size={24} strokeWidth={1.5} />
+                                                )}
                                             </a>
                                         );
                                     })}

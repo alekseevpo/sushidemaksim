@@ -111,7 +111,8 @@ export default function AdminSettings() {
                     disabled={saving}
                     className="flex items-center gap-2 bg-red-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition disabled:opacity-50"
                 >
-                    <Save size={18} strokeWidth={1.5} /> {saving ? 'Guardando...' : 'Guardar Cambios'}
+                    <Save size={18} strokeWidth={1.5} />{' '}
+                    {saving ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
             </div>
 
@@ -393,13 +394,18 @@ export default function AdminSettings() {
                         className="fixed bottom-8 right-8 z-50"
                     >
                         <div
-                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${saveStatus === 'success'
+                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${
+                                saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
                                     : 'bg-red-600 border-red-500 text-white'
-                                }`}
+                            }`}
                         >
                             {saveStatus === 'success' ? (
-                                <CheckCircle2 size={24} strokeWidth={1.5} className="animate-bounce" />
+                                <CheckCircle2
+                                    size={24}
+                                    strokeWidth={1.5}
+                                    className="animate-bounce"
+                                />
                             ) : (
                                 <AlertTriangle size={24} strokeWidth={1.5} />
                             )}

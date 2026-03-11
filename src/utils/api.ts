@@ -89,7 +89,10 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
         return data;
     } catch (error: any) {
         if (error.name === 'AbortError') {
-            throw new ApiError('La solicitud ha tardado demasiado tiempo. Reintenta de nuevo.', 408);
+            throw new ApiError(
+                'La solicitud ha tardado demasiado tiempo. Reintenta de nuevo.',
+                408
+            );
         }
         throw error;
     } finally {

@@ -134,7 +134,8 @@ export default function AdminLoginPage() {
                                     <span>Autenticando...</span>
                                 ) : (
                                     <>
-                                        Entrar al panel seguro <ArrowRight size={18} strokeWidth={1.5} />
+                                        Entrar al panel seguro{' '}
+                                        <ArrowRight size={18} strokeWidth={1.5} />
                                     </>
                                 )}
                             </button>

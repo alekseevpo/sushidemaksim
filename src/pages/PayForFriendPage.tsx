@@ -188,8 +188,8 @@ export default function PayForFriendPage() {
                                     const itemImage = item.image.startsWith('http')
                                         ? item.image
                                         : item.image.startsWith('/')
-                                            ? item.image
-                                            : `/${item.image}`;
+                                          ? item.image
+                                          : `/${item.image}`;
 
                                     return (
                                         <div
@@ -238,8 +238,12 @@ export default function PayForFriendPage() {
                                     </div>
                                     <div className="text-right">
                                         <div className="flex items-center gap-2 text-xs font-bold text-gray-500 mb-1">
-                                            <MapPin size={14} strokeWidth={1.5} className="text-red-500" /> Entrega
-                                            en:
+                                            <MapPin
+                                                size={14}
+                                                strokeWidth={1.5}
+                                                className="text-red-500"
+                                            />{' '}
+                                            Entrega en:
                                         </div>
                                         <p className="text-[10px] text-gray-400 font-medium max-w-[150px] leading-tight">
                                             {order.delivery_address}
@@ -262,7 +266,11 @@ export default function PayForFriendPage() {
                                     <>
                                         <CreditCard size={24} strokeWidth={1.5} />
                                         <span>Confirmar y Pagar</span>
-                                        <ArrowRight size={20} strokeWidth={1.5} className="opacity-50" />
+                                        <ArrowRight
+                                            size={20}
+                                            strokeWidth={1.5}
+                                            className="opacity-50"
+                                        />
                                     </>
                                 )}
                             </button>

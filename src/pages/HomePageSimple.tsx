@@ -294,7 +294,11 @@ export default function HomePageSimple() {
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center">
-                                        <ChevronRight size={12} strokeWidth={1.5} className="text-white" />
+                                        <ChevronRight
+                                            size={12}
+                                            strokeWidth={1.5}
+                                            className="text-white"
+                                        />
                                     </div>
                                     <span className="font-bold text-gray-800 text-sm">{item}</span>
                                 </div>

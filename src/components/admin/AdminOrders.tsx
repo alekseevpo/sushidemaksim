@@ -188,13 +188,18 @@ export default function AdminOrders({
                         </div>
                         <button
                             onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
-                            className={`p-2 rounded-lg transition border ${isGlobalSoundEnabled
+                            className={`p-2 rounded-lg transition border ${
+                                isGlobalSoundEnabled
                                     ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
                                     : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
-                                }`}
+                            }`}
                             title={isGlobalSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
                         >
-                            {isGlobalSoundEnabled ? <Volume2 size={18} strokeWidth={1.5} /> : <VolumeX size={18} strokeWidth={1.5} />}
+                            {isGlobalSoundEnabled ? (
+                                <Volume2 size={18} strokeWidth={1.5} />
+                            ) : (
+                                <VolumeX size={18} strokeWidth={1.5} />
+                            )}
                         </button>
                     </div>
                     <button
@@ -202,7 +207,11 @@ export default function AdminOrders({
                         className="w-full sm:w-auto p-2 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
                         title="Actualizar"
                     >
-                        <RefreshCw size={18} strokeWidth={1.5} className={loading ? 'animate-spin' : ''} />
+                        <RefreshCw
+                            size={18}
+                            strokeWidth={1.5}
+                            className={loading ? 'animate-spin' : ''}
+                        />
                     </button>
                 </div>
 
@@ -228,10 +237,11 @@ export default function AdminOrders({
                                     setFilter(tab.id);
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
-                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${filter === tab.id
+                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${
+                                    filter === tab.id
                                         ? 'bg-white text-red-600 shadow-sm border border-gray-100'
                                         : 'text-gray-400 hover:text-gray-600'
-                                    }`}
+                                }`}
                             >
                                 {tab.label}
                                 {tab.badge && (
@@ -266,7 +276,11 @@ export default function AdminOrders({
                 <div className="grid gap-4">
                     {loading && filteredOrders.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                            <RefreshCw className="animate-spin text-red-600 mb-4" size={32} strokeWidth={1.5} />
+                            <RefreshCw
+                                className="animate-spin text-red-600 mb-4"
+                                size={32}
+                                strokeWidth={1.5}
+                            />
                             <p className="text-gray-500 font-medium">Cargando pedidos...</p>
                         </div>
                     ) : (
@@ -279,7 +293,11 @@ export default function AdminOrders({
                                 <div className="p-4 sm:p-5 border-b border-gray-50 bg-gray-50/30 flex flex-wrap items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
                                         <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
-                                            <Package className="text-red-500" size={20} strokeWidth={1.5} />
+                                            <Package
+                                                className="text-red-500"
+                                                size={20}
+                                                strokeWidth={1.5}
+                                            />
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2 mb-0.5">
@@ -287,10 +305,11 @@ export default function AdminOrders({
                                                     Pedido #{String(order.id).padStart(5, '0')}
                                                 </h4>
                                                 <span
-                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusOptions.find(
-                                                        s => s.value === order.status
-                                                    )?.color || ''
-                                                        }`}
+                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                        statusOptions.find(
+                                                            s => s.value === order.status
+                                                        )?.color || ''
+                                                    }`}
                                                 >
                                                     {statusOptions.find(
                                                         s => s.value === order.status
@@ -402,11 +421,12 @@ export default function AdminOrders({
                                                 onChange={e =>
                                                     handleUpdateStatus(order.id, e.target.value)
                                                 }
-                                                className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${statusOptions.find(
-                                                    s => s.value === order.status
-                                                )?.color ||
+                                                className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${
+                                                    statusOptions.find(
+                                                        s => s.value === order.status
+                                                    )?.color ||
                                                     'bg-white border-gray-200 text-gray-700'
-                                                    }`}
+                                                }`}
                                             >
                                                 {statusOptions.map(opt => (
                                                     <option
@@ -451,10 +471,11 @@ export default function AdminOrders({
                         <button
                             key={pageNum}
                             onClick={() => loadOrders(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                pageNum === pagination.page
                                     ? 'bg-red-600 text-white shadow-md'
                                     : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                }`}
+                            }`}
                         >
                             {pageNum}
                         </button>

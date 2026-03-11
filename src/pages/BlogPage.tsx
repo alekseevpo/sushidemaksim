@@ -151,11 +151,19 @@ export default function BlogPage() {
                                 <div className="p-6 flex-1 flex flex-col">
                                     <div className="flex items-center gap-4 text-gray-400 text-[11px] font-medium mb-3">
                                         <span className="flex items-center gap-1.5 line-clamp-1">
-                                            <Calendar size={12} strokeWidth={1.5} className="text-red-500" />{' '}
+                                            <Calendar
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="text-red-500"
+                                            />{' '}
                                             {new Date(post.created_at).toLocaleDateString()}
                                         </span>
                                         <span className="flex items-center gap-1.5">
-                                            <Clock size={12} strokeWidth={1.5} className="text-red-500" />{' '}
+                                            <Clock
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="text-red-500"
+                                            />{' '}
                                             {post.read_time || '5 min'}
                                         </span>
                                     </div>
@@ -240,7 +248,11 @@ export default function BlogPage() {
                                 className="py-4"
                             >
                                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <ChevronRight size={32} strokeWidth={1.5} className="text-green-500" />
+                                    <ChevronRight
+                                        size={32}
+                                        strokeWidth={1.5}
+                                        className="text-green-500"
+                                    />
                                 </div>
                                 <h3 className="text-2xl font-black text-white mb-2">
                                     ¡Bienvenido al Club!

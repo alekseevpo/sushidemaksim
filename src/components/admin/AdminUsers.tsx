@@ -42,24 +42,24 @@ const UserRow = memo(
 
         const lastSeenStr = user.last_seen_at
             ? (() => {
-                const lastSeenDate = new Date(user.last_seen_at);
-                const today = new Date();
-                if (lastSeenDate.toLocaleDateString() === today.toLocaleDateString()) {
-                    return (
-                        'Hoy ' +
-                        lastSeenDate.toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        })
-                    );
-                }
-                return lastSeenDate.toLocaleDateString([], {
-                    day: '2-digit',
-                    month: 'short',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
-            })()
+                  const lastSeenDate = new Date(user.last_seen_at);
+                  const today = new Date();
+                  if (lastSeenDate.toLocaleDateString() === today.toLocaleDateString()) {
+                      return (
+                          'Hoy ' +
+                          lastSeenDate.toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                          })
+                      );
+                  }
+                  return lastSeenDate.toLocaleDateString([], {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                  });
+              })()
             : 'Nunca';
 
         const regDate = new Date(user.created_at).toLocaleDateString();
@@ -113,10 +113,11 @@ const UserRow = memo(
                         {birthDate && (
                             <button
                                 onClick={() => onToggleBirthday(user.id, user.birth_date_verified)}
-                                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${user.birth_date_verified
-                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                    }`}
+                                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
+                                    user.birth_date_verified
+                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                }`}
                             >
                                 {user.birth_date_verified ? (
                                     <>
@@ -191,10 +192,11 @@ const UserRow = memo(
                             <>
                                 <button
                                     onClick={() => onToggleRole(user)}
-                                    className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${user.role === 'admin'
-                                        ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                        : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                        }`}
+                                    className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
+                                        user.role === 'admin'
+                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                            : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                                    }`}
                                 >
                                     {user.role === 'admin' ? 'Revocar' : 'Hacer Admin'}
                                 </button>
@@ -373,7 +375,11 @@ export default function AdminUsers() {
                                                 <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
+                                            <ArrowUpDown
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="opacity-30"
+                                            />
                                         )}
                                     </div>
                                 </th>
@@ -392,7 +398,11 @@ export default function AdminUsers() {
                                                 <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
+                                            <ArrowUpDown
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="opacity-30"
+                                            />
                                         )}
                                     </div>
                                 </th>
@@ -409,7 +419,11 @@ export default function AdminUsers() {
                                                 <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
+                                            <ArrowUpDown
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="opacity-30"
+                                            />
                                         )}
                                     </div>
                                 </th>
@@ -426,7 +440,11 @@ export default function AdminUsers() {
                                                 <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
+                                            <ArrowUpDown
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="opacity-30"
+                                            />
                                         )}
                                     </div>
                                 </th>
@@ -443,7 +461,11 @@ export default function AdminUsers() {
                                                 <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
+                                            <ArrowUpDown
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="opacity-30"
+                                            />
                                         )}
                                     </div>
                                 </th>
@@ -460,7 +482,11 @@ export default function AdminUsers() {
                                                 <ChevronUp size={14} strokeWidth={1.5} />
                                             )
                                         ) : (
-                                            <ArrowUpDown size={12} strokeWidth={1.5} className="opacity-30" />
+                                            <ArrowUpDown
+                                                size={12}
+                                                strokeWidth={1.5}
+                                                className="opacity-30"
+                                            />
                                         )}
                                     </div>
                                 </th>
@@ -503,10 +529,11 @@ export default function AdminUsers() {
                                 <button
                                     key={pageNum}
                                     onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${pageNum === pagination.page
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                        }`}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                        pageNum === pagination.page
+                                            ? 'bg-red-600 text-white'
+                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
                                 >
                                     {pageNum}
                                 </button>

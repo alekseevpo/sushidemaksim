@@ -312,10 +312,11 @@ export default function MenuPageSimple() {
                         <nav className="flex flex-col gap-1">
                             <button
                                 onClick={() => setSelectedCategory('all')}
-                                className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${selectedCategory === 'all'
-                                    ? 'bg-red-50 text-red-600'
-                                    : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
+                                className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
+                                    selectedCategory === 'all'
+                                        ? 'bg-red-50 text-red-600'
+                                        : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
                             >
                                 <Sparkles size={20} strokeWidth={1.5} />
                                 <span className="text-sm">Todos</span>
@@ -324,10 +325,11 @@ export default function MenuPageSimple() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${selectedCategory === cat.id
-                                        ? 'bg-red-50 text-red-600'
-                                        : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                                        }`}
+                                    className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
+                                        selectedCategory === cat.id
+                                            ? 'bg-red-50 text-red-600'
+                                            : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                    }`}
                                 >
                                     <cat.icon size={20} strokeWidth={1.5} />
                                     <span className="text-sm">{cat.name}</span>
@@ -373,10 +375,11 @@ export default function MenuPageSimple() {
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === 'all'
-                                    ? 'bg-red-600 text-white shadow-lg shadow-red-200'
-                                    : 'bg-white text-gray-700 shadow-sm'
-                                    }`}
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${
+                                    selectedCategory === 'all'
+                                        ? 'bg-red-600 text-white shadow-lg shadow-red-200'
+                                        : 'bg-white text-gray-700 shadow-sm'
+                                }`}
                             >
                                 Todos
                             </button>
@@ -384,10 +387,11 @@ export default function MenuPageSimple() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${selectedCategory === cat.id
-                                        ? 'bg-red-600 text-white shadow-lg shadow-red-200'
-                                        : 'bg-white text-gray-700 shadow-sm'
-                                        }`}
+                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${
+                                        selectedCategory === cat.id
+                                            ? 'bg-red-600 text-white shadow-lg shadow-red-200'
+                                            : 'bg-white text-gray-700 shadow-sm'
+                                    }`}
                                 >
                                     <cat.icon size={18} strokeWidth={1.5} />
                                     {cat.name}
@@ -435,9 +439,9 @@ export default function MenuPageSimple() {
                     ) : (
                         <div className="space-y-12 pb-24">
                             {(selectedCategory === 'all' && !search
-                                ? CATEGORIES.filter(
-                                    cat => items.some(item => item.category === cat.id)
-                                )
+                                ? CATEGORIES.filter(cat =>
+                                      items.some(item => item.category === cat.id)
+                                  )
                                 : [{ id: selectedCategory, name: '', icon: '' }]
                             ).map(cat => {
                                 const sectionItems =
@@ -448,11 +452,19 @@ export default function MenuPageSimple() {
                                 if (sectionItems.length === 0) return null;
 
                                 return (
-                                    <div key={cat.id} className="scroll-mt-32" id={`section-${cat.id}`}>
+                                    <div
+                                        key={cat.id}
+                                        className="scroll-mt-32"
+                                        id={`section-${cat.id}`}
+                                    >
                                         {selectedCategory === 'all' && !search && (
                                             <div className="flex items-center gap-4 mb-6 md:mb-8">
                                                 <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-gray-100">
-                                                    <cat.icon size={24} strokeWidth={1.5} className="text-red-600" />
+                                                    <cat.icon
+                                                        size={24}
+                                                        strokeWidth={1.5}
+                                                        className="text-red-600"
+                                                    />
                                                 </div>
                                                 <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
                                                     {cat.name}
@@ -474,12 +486,18 @@ export default function MenuPageSimple() {
                                                             className="w-9 h-9 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none"
                                                             title="Compartir"
                                                         >
-                                                            <Share2 size={16} strokeWidth={1.5} className="text-gray-900" />
+                                                            <Share2
+                                                                size={16}
+                                                                strokeWidth={1.5}
+                                                                className="text-gray-900"
+                                                            />
                                                         </button>
 
                                                         {user && (
                                                             <button
-                                                                onClick={() => toggleFavorite(item.id)}
+                                                                onClick={() =>
+                                                                    toggleFavorite(item.id)
+                                                                }
                                                                 className="w-9 h-9 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none"
                                                             >
                                                                 <Heart
@@ -505,7 +523,9 @@ export default function MenuPageSimple() {
                                                                 loading="lazy"
                                                                 className="w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-105"
                                                                 onError={() =>
-                                                                    setFailedImages(prev => new Set(prev).add(item.id))
+                                                                    setFailedImages(prev =>
+                                                                        new Set(prev).add(item.id)
+                                                                    )
                                                                 }
                                                             />
                                                         ) : (
@@ -518,7 +538,11 @@ export default function MenuPageSimple() {
                                                         <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
                                                             {item.is_popular && (
                                                                 <span className="bg-amber-400 text-amber-950 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1">
-                                                                    <Sparkles size={10} strokeWidth={1.5} /> Popular
+                                                                    <Sparkles
+                                                                        size={10}
+                                                                        strokeWidth={1.5}
+                                                                    />{' '}
+                                                                    Popular
                                                                 </span>
                                                             )}
                                                             {item.is_new && (
@@ -547,20 +571,32 @@ export default function MenuPageSimple() {
 
                                                         <div className="flex items-center justify-between">
                                                             <span className="text-2xl font-black text-gray-900">
-                                                                {item.price.toFixed(2).replace('.', ',')} €
+                                                                {item.price
+                                                                    .toFixed(2)
+                                                                    .replace('.', ',')}{' '}
+                                                                €
                                                             </span>
                                                             <button
-                                                                onClick={e => handleAddToCart(item, e)}
-                                                                className={`h-11 px-6 rounded-2xl font-black text-sm transition-all duration-300 flex items-center gap-2 border-none cursor-pointer ${addedItems.has(item.id)
-                                                                    ? 'bg-green-500 text-white'
-                                                                    : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-200 active:scale-95'
-                                                                    }`}
+                                                                onClick={e =>
+                                                                    handleAddToCart(item, e)
+                                                                }
+                                                                className={`h-11 px-6 rounded-2xl font-black text-sm transition-all duration-300 flex items-center gap-2 border-none cursor-pointer ${
+                                                                    addedItems.has(item.id)
+                                                                        ? 'bg-green-500 text-white'
+                                                                        : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-200 active:scale-95'
+                                                                }`}
                                                             >
                                                                 {addedItems.has(item.id) ? (
-                                                                    <Check size={20} strokeWidth={1.5} />
+                                                                    <Check
+                                                                        size={20}
+                                                                        strokeWidth={1.5}
+                                                                    />
                                                                 ) : (
                                                                     <>
-                                                                        <Plus size={18} strokeWidth={1.5} />
+                                                                        <Plus
+                                                                            size={18}
+                                                                            strokeWidth={1.5}
+                                                                        />
                                                                         <span>Añadir</span>
                                                                     </>
                                                                 )}
@@ -674,7 +710,11 @@ export default function MenuPageSimple() {
                                 >
                                     {copying ? (
                                         <>
-                                            <Check size={18} strokeWidth={1.5} className="text-green-400" />
+                                            <Check
+                                                size={18}
+                                                strokeWidth={1.5}
+                                                className="text-green-400"
+                                            />
                                             Enlace Copiado
                                         </>
                                     ) : (

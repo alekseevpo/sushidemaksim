@@ -103,7 +103,7 @@ describe('CartPageSimple (Integration)', () => {
         renderCart();
         await waitFor(() => expect(api.get).toHaveBeenCalledWith('/settings'));
 
-        fireEvent.change(screen.getByPlaceholderText(/Nombre de tu calle/i), {
+        fireEvent.change(await screen.findByPlaceholderText(/Nombre de tu calle/i), {
             target: { value: 'Calle Real' },
         });
         fireEvent.change(screen.getByPlaceholderText(/Ej: 15/i), { target: { value: '10' } });

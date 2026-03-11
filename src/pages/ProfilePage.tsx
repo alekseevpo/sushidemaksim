@@ -153,9 +153,10 @@ export default function ProfilePage() {
                                             }
                                         }}
                                         className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start relative
-                                            ${isActive
-                                                ? 'text-white'
-                                                : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
+                                            ${
+                                                isActive
+                                                    ? 'text-white'
+                                                    : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
                                             }`}
                                     >
                                         {isActive && (

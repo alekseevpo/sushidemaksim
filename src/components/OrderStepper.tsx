@@ -77,12 +77,13 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                             <motion.div
                                 animate={isCurrent ? { scale: [1, 1.15, 1] } : {}}
                                 transition={isCurrent ? { repeat: Infinity, duration: 2 } : {}}
-                                className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 ${isCurrent
+                                className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 ${
+                                    isCurrent
                                         ? 'bg-red-600 text-white border-red-200'
                                         : isActive
-                                            ? 'bg-white text-red-600 border-red-600'
-                                            : 'bg-white text-gray-300 border-gray-100'
-                                    }`}
+                                          ? 'bg-white text-red-600 border-red-600'
+                                          : 'bg-white text-gray-300 border-gray-100'
+                                }`}
                             >
                                 {step.iconLabel ? (
                                     <span className="text-lg">{step.iconLabel}</span>
@@ -93,8 +94,9 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
 
                             <div className="text-left md:text-center">
                                 <span
-                                    className={`block font-black text-[10px] uppercase tracking-widest ${isActive ? 'text-gray-900' : 'text-gray-400'
-                                        }`}
+                                    className={`block font-black text-[10px] uppercase tracking-widest ${
+                                        isActive ? 'text-gray-900' : 'text-gray-400'
+                                    }`}
                                 >
                                     {step.label}
                                 </span>

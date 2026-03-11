@@ -73,9 +73,9 @@ export default function AddressesTab({
             try {
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?` +
-                    `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
-                    `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
-                    `&q=${encodeURIComponent(searchQuery)}`
+                        `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
+                        `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
+                        `&q=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await res.json();
                 setSuggestions(data);
@@ -390,9 +390,10 @@ export default function AddressesTab({
                         <div
                             key={addr.id}
                             className={`group p-6 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row gap-6
-                                ${addr.isDefault
-                                    ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
-                                    : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
+                                ${
+                                    addr.isDefault
+                                        ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
+                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
                                 }`}
                         >
                             <div

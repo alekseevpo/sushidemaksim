@@ -604,9 +604,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                    item.id,
-                                                                    item.quantity - 1
-                                                                )
+                                                                      item.id,
+                                                                      item.quantity - 1
+                                                                  )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
@@ -651,7 +651,8 @@ export default function CartPageSimple() {
 
                         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px] md:rounded-xl">
                             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                                <MapPin size={18} strokeWidth={1.5} className="text-red-600" /> Datos de entrega
+                                <MapPin size={18} strokeWidth={1.5} className="text-red-600" />{' '}
+                                Datos de entrega
                             </h2>
 
                             {user?.addresses && user.addresses.length > 0 && (
@@ -682,7 +683,11 @@ export default function CartPageSimple() {
                                             type="button"
                                             className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
                                         >
-                                            <MapPin size={16} strokeWidth={1.5} className="shrink-0" />
+                                            <MapPin
+                                                size={16}
+                                                strokeWidth={1.5}
+                                                className="shrink-0"
+                                            />
                                             <span className="truncate">
                                                 Usar "{addr.label || 'Mi dirección'}": {addr.street}
                                                 {addr.house && `, Portal/Casa ${addr.house}`}
@@ -809,7 +814,12 @@ export default function CartPageSimple() {
                         ) : suggestions.length > 0 ? (
                             <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-2 py-4 md:p-6 animate-in fade-in duration-500">
                                 <h3 className="text-base font-black mb-3 flex items-center gap-2 uppercase tracking-tight">
-                                    <Sparkles size={16} strokeWidth={1.5} className="text-amber-500" /> Extras
+                                    <Sparkles
+                                        size={16}
+                                        strokeWidth={1.5}
+                                        className="text-amber-500"
+                                    />{' '}
+                                    Extras
                                 </h3>
                                 <div className="flex flex-col gap-2">
                                     {suggestions.map(item => (
@@ -1063,7 +1073,8 @@ export default function CartPageSimple() {
                             className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-95 flex items-center justify-between px-6 shadow-xl shadow-gray-200"
                         >
                             <span className="flex items-center gap-2">
-                                Log In para pedir <ArrowLeft className="rotate-180" size={18} strokeWidth={1.5} />
+                                Log In para pedir{' '}
+                                <ArrowLeft className="rotate-180" size={18} strokeWidth={1.5} />
                             </span>
                             <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg">
                                 {finalTotal.toFixed(2).replace('.', ',')} €

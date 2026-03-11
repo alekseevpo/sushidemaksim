@@ -15,9 +15,9 @@ export const OrderTimer = ({ createdAt, status }: { createdAt: string; status: s
                 // If native parsing fails, try manual fixes for older formats
                 const finalDate = isNaN(createdDate.getTime())
                     ? new Date(
-                        createdAt.replace(' ', 'T') +
-                        (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
-                    )
+                          createdAt.replace(' ', 'T') +
+                              (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
+                      )
                     : createdDate;
 
                 const now = new Date();

@@ -261,9 +261,10 @@ export default function AdminPage() {
                                     }
                                 }}
                                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors relative group
-                                    ${isActive
-                                        ? 'text-red-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    ${
+                                        isActive
+                                            ? 'text-red-700'
+                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 {isActive && (
@@ -335,7 +336,11 @@ export default function AdminPage() {
                             </button>
                             <div className="flex gap-4">
                                 <div className="mt-1">
-                                    <HelpCircle className="text-blue-500" size={24} strokeWidth={1.5} />
+                                    <HelpCircle
+                                        className="text-blue-500"
+                                        size={24}
+                                        strokeWidth={1.5}
+                                    />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-blue-900 mb-1">
@@ -569,7 +574,11 @@ export default function AdminPage() {
                                 ) : !reports?.length ? (
                                     <div className="text-center py-12">
                                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <RefreshCw className="text-gray-300" size={32} strokeWidth={1.5} />
+                                            <RefreshCw
+                                                className="text-gray-300"
+                                                size={32}
+                                                strokeWidth={1.5}
+                                            />
                                         </div>
                                         <p className="text-gray-500">
                                             No hay reportes disponibles todavía.
@@ -639,8 +648,8 @@ export default function AdminPage() {
                                                             <span className="text-sm font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg border border-green-100/50">
                                                                 {Number(
                                                                     report.total_revenue ??
-                                                                    report.total ??
-                                                                    0
+                                                                        report.total ??
+                                                                        0
                                                                 )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
@@ -651,9 +660,9 @@ export default function AdminPage() {
                                                             <span className="text-xs font-bold text-gray-600">
                                                                 {Number(
                                                                     report.avg_ticket ??
-                                                                    report.average_ticket ??
-                                                                    report.avg_price ??
-                                                                    0
+                                                                        report.average_ticket ??
+                                                                        report.avg_price ??
+                                                                        0
                                                                 )
                                                                     .toFixed(2)
                                                                     .replace('.', ',')}{' '}
@@ -685,7 +694,11 @@ export default function AdminPage() {
                                 {/* Device Distribution */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Monitor size={16} strokeWidth={1.5} className="text-blue-500" />
+                                        <Monitor
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            className="text-blue-500"
+                                        />
                                         Dispositivo Principal (30d)
                                     </h3>
                                     {loading ? (
@@ -748,7 +761,11 @@ export default function AdminPage() {
                                 {/* Customer Retention */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Users size={16} strokeWidth={1.5} className="text-purple-500" />
+                                        <Users
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            className="text-purple-500"
+                                        />
                                         Nuevos vs Recur.
                                     </h3>
                                     {loading ? (
@@ -794,7 +811,11 @@ export default function AdminPage() {
                                 {/* Category Performance */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <Activity size={16} strokeWidth={1.5} className="text-red-500" />
+                                        <Activity
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            className="text-red-500"
+                                        />
                                         Performance por Categoría (30d)
                                     </h3>
                                     {loading ? (
@@ -861,7 +882,11 @@ export default function AdminPage() {
                                 {/* Browser Distribution */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                                        <ExternalLink size={16} strokeWidth={1.5} className="text-gray-500" />
+                                        <ExternalLink
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            className="text-gray-500"
+                                        />
                                         Navegadores (30d)
                                     </h3>
                                     {loading ? (
@@ -907,7 +932,11 @@ export default function AdminPage() {
                                 {/* Sales Growth Area Chart */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <TrendingUp size={18} strokeWidth={1.5} className="text-green-500" />
+                                        <TrendingUp
+                                            size={18}
+                                            strokeWidth={1.5}
+                                            className="text-green-500"
+                                        />
                                         Crecimiento de Ventas (30d)
                                     </h3>
                                     <div className="h-72">
@@ -972,7 +1001,11 @@ export default function AdminPage() {
                                 {/* Activity Heatmap (Hourly) */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <Clock size={18} strokeWidth={1.5} className="text-blue-500" />
+                                        <Clock
+                                            size={18}
+                                            strokeWidth={1.5}
+                                            className="text-blue-500"
+                                        />
                                         Picos de Actividad (Horario)
                                     </h3>
                                     <div className="h-72">

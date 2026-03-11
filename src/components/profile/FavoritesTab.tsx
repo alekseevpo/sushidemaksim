@@ -237,9 +237,10 @@ export default function FavoritesTab() {
                                 <button
                                     onClick={() => handleAddToCart(item)}
                                     className={`h-9 md:h-11 w-9 md:w-11 rounded-xl md:rounded-full font-black text-[10px] md:text-sm transition-all flex items-center justify-center shadow-lg shadow-gray-100/50 shrink-0
-                                        ${addedItems.has(item.id)
-                                            ? 'bg-green-600 text-white pointer-events-none'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-red-100 hover:-translate-y-0.5 active:scale-95'
+                                        ${
+                                            addedItems.has(item.id)
+                                                ? 'bg-green-600 text-white pointer-events-none'
+                                                : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-red-100 hover:-translate-y-0.5 active:scale-95'
                                         }`}
                                 >
                                     {addedItems.has(item.id) ? (

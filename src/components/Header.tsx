@@ -60,11 +60,11 @@ export default function Header() {
 
     const initials = user
         ? user.name
-            .split(' ')
-            .map(n => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2)
+              .split(' ')
+              .map(n => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)
         : '';
 
     const navLinks = [
@@ -180,8 +180,11 @@ export default function Header() {
                                                                 }
                                                                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl no-underline text-red-600 text-[13px] font-black bg-red-50 hover:bg-red-100 transition-colors duration-150"
                                                             >
-                                                                <ShieldCheck size={16} strokeWidth={1.5} /> PANEL
-                                                                ADMIN
+                                                                <ShieldCheck
+                                                                    size={16}
+                                                                    strokeWidth={1.5}
+                                                                />{' '}
+                                                                PANEL ADMIN
                                                             </Link>
                                                             <div className="h-px bg-gray-50 my-1.5" />
                                                         </>
@@ -192,7 +195,11 @@ export default function Header() {
                                                         onClick={() => setShowUserMenu(false)}
                                                         className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
                                                     >
-                                                        <User size={16} strokeWidth={1.5} className="text-gray-400" />{' '}
+                                                        <User
+                                                            size={16}
+                                                            strokeWidth={1.5}
+                                                            className="text-gray-400"
+                                                        />{' '}
                                                         Mi Perfil
                                                     </Link>
 
@@ -205,7 +212,8 @@ export default function Header() {
                                                         }}
                                                         className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl w-full border-none cursor-pointer text-red-600 text-[13px] font-bold bg-transparent hover:bg-red-50 transition-colors duration-150 text-left"
                                                     >
-                                                        <LogOut size={16} strokeWidth={1.5} /> Cerrar sesión
+                                                        <LogOut size={16} strokeWidth={1.5} />{' '}
+                                                        Cerrar sesión
                                                     </button>
                                                 </motion.div>
                                             )}
@@ -258,7 +266,11 @@ export default function Header() {
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
                                 className="md:hidden border-none bg-gray-50 p-2.5 rounded-xl cursor-pointer text-gray-800"
                             >
-                                {showMobileMenu ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
+                                {showMobileMenu ? (
+                                    <X size={20} strokeWidth={1.5} />
+                                ) : (
+                                    <Menu size={20} strokeWidth={1.5} />
+                                )}
                             </button>
                         </div>
                     </div>
@@ -284,7 +296,11 @@ export default function Header() {
                                     >
                                         {link.label}
                                         {location.pathname === link.to && (
-                                            <ChevronRight size={16} strokeWidth={1.5} className="ml-auto" />
+                                            <ChevronRight
+                                                size={16}
+                                                strokeWidth={1.5}
+                                                className="ml-auto"
+                                            />
                                         )}
                                     </Link>
                                 ))}
@@ -306,14 +322,20 @@ export default function Header() {
                                                 to="/admin"
                                                 className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
                                             >
-                                                <ShieldCheck size={18} strokeWidth={1.5} /> PANEL ADMIN
+                                                <ShieldCheck size={18} strokeWidth={1.5} /> PANEL
+                                                ADMIN
                                             </Link>
                                         )}
                                         <Link
                                             to="/profile"
                                             className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl no-underline text-gray-700 text-sm font-bold"
                                         >
-                                            <User size={18} strokeWidth={1.5} className="text-gray-400" /> Mi Perfil
+                                            <User
+                                                size={18}
+                                                strokeWidth={1.5}
+                                                className="text-gray-400"
+                                            />{' '}
+                                            Mi Perfil
                                         </Link>
                                         <button
                                             onClick={logout}

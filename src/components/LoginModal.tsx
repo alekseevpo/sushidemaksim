@@ -83,7 +83,11 @@ const LoginForm = memo(
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
                         >
-                            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
+                            {showPassword ? (
+                                <EyeOff size={18} strokeWidth={1.5} />
+                            ) : (
+                                <Eye size={18} strokeWidth={1.5} />
+                            )}
                         </button>
                     </div>
                 </div>
@@ -206,7 +210,11 @@ const RegisterForm = memo(
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
                         >
-                            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
+                            {showPassword ? (
+                                <EyeOff size={18} strokeWidth={1.5} />
+                            ) : (
+                                <Eye size={18} strokeWidth={1.5} />
+                            )}
                         </button>
                     </div>
                 </div>
@@ -341,7 +349,11 @@ const ResetPasswordForm = memo(
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
                         >
-                            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
+                            {showPassword ? (
+                                <EyeOff size={18} strokeWidth={1.5} />
+                            ) : (
+                                <Eye size={18} strokeWidth={1.5} />
+                            )}
                         </button>
                     </div>
                 </div>
