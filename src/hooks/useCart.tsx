@@ -22,55 +22,58 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const { isAuthenticated } = useAuth();
 
-    const loadCart = useCallback(async () => {
-        if (!isAuthenticated) {
-            const localCart = localStorage.getItem('guest_cart');
-            if (localCart) {
-                try {
-                    const parsed = JSON.parse(localCart);
-                    setItems(parsed);
-                    const localTotal = parsed.reduce(
-                        (sum: number, item: any) => sum + item.price * item.quantity,
-                        0
-                    );
-                    setTotal(localTotal);
-                } catch (e) {
+    const loadCart = useCallback(
+        async (silent = false) => {
+            if (!isAuthenticated) {
+                const localCart = localStorage.getItem('guest_cart');
+                if (localCart) {
+                    try {
+                        const parsed = JSON.parse(localCart);
+                        setItems(parsed);
+                        const localTotal = parsed.reduce(
+                            (sum: number, item: any) => sum + item.price * item.quantity,
+                            0
+                        );
+                        setTotal(localTotal);
+                    } catch (e) {
+                        setItems([]);
+                        setTotal(0);
+                    }
+                } else {
                     setItems([]);
                     setTotal(0);
                 }
-            } else {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                if (!silent) setIsLoading(true);
+                const data = await api.get('/cart');
+
+                // Map API response to our local CartItem type
+                const mappedItems = data.items.map((item: any) => ({
+                    id: item.menu_item_id.toString(), // Keep string IDs for frontend compatibility
+                    name: item.name,
+                    description: item.description,
+                    price: item.price,
+                    image: item.image,
+                    category: item.category,
+                    quantity: item.quantity,
+                }));
+
+                setItems(mappedItems);
+                setTotal(data.total);
+            } catch (error) {
+                console.error('Error loading cart', error);
                 setItems([]);
                 setTotal(0);
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
-            return;
-        }
-
-        try {
-            setIsLoading(true);
-            const data = await api.get('/cart');
-
-            // Map API response to our local CartItem type
-            const mappedItems = data.items.map((item: any) => ({
-                id: item.menu_item_id.toString(), // Keep string IDs for frontend compatibility
-                name: item.name,
-                description: item.description,
-                price: item.price,
-                image: item.image,
-                category: item.category,
-                quantity: item.quantity,
-            }));
-
-            setItems(mappedItems);
-            setTotal(data.total);
-        } catch (error) {
-            console.error('Error loading cart', error);
-            setItems([]);
-            setTotal(0);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [isAuthenticated]);
+        },
+        [isAuthenticated]
+    );
 
     useEffect(() => {
         loadCart();
@@ -97,9 +100,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         try {
             await api.post('/cart', { menuItemId: parseInt(item.id), quantity: 1 });
-            await loadCart(); // sync with server
+            await loadCart(true); // sync with server
         } catch (e) {
-            await loadCart(); // revert on failure
+            await loadCart(true); // revert on failure
             throw e;
         }
     };
@@ -124,9 +127,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
             if (realCartItem) {
                 await api.delete(`/cart/${realCartItem.id}`);
             }
-            await loadCart();
+            await loadCart(true);
         } catch (e) {
-            await loadCart();
+            await loadCart(true);
         }
     };
 
@@ -152,9 +155,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
             if (realCartItem) {
                 await api.put(`/cart/${realCartItem.id}`, { quantity });
             }
-            await loadCart();
+            await loadCart(true);
         } catch (e) {
-            await loadCart();
+            await loadCart(true);
         }
     };
 
@@ -169,9 +172,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         try {
             await api.delete('/cart');
-            await loadCart();
+            await loadCart(true);
         } catch (e) {
-            await loadCart();
+            await loadCart(true);
         }
     };
 

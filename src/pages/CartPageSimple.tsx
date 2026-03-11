@@ -27,6 +27,35 @@ interface MenuItem {
     category: string;
 }
 
+const CartSkeleton = () => (
+    <div className="min-h-screen bg-transparent px-4 py-8 md:py-12 mt-16">
+        <div className="max-w-6xl mx-auto">
+            <div className="h-10 w-48 skeleton rounded-2xl mb-8" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 flex flex-col gap-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="bg-white p-6 rounded-[32px] flex gap-4 border border-gray-100">
+                            <div className="w-20 h-20 skeleton rounded-2xl shrink-0" />
+                            <div className="flex-1 space-y-3 pt-1">
+                                <div className="h-5 w-1/3 skeleton rounded-lg" />
+                                <div className="h-4 w-2/3 skeleton rounded-lg" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="space-y-6">
+                    <div className="bg-white p-8 rounded-[35px] border border-gray-100 space-y-4 shadow-sm">
+                        <div className="h-6 w-1/2 skeleton rounded-lg mb-2" />
+                        <div className="h-4 w-full skeleton rounded-lg" />
+                        <div className="h-4 w-full skeleton rounded-lg" />
+                        <div className="h-12 w-full skeleton rounded-2xl mt-4" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
 export default function CartPageSimple() {
     const {
         items,
@@ -423,15 +452,8 @@ export default function CartPageSimple() {
         );
     }
 
-    if (cartLoading || isLoadingSettings) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-500 font-medium">Cargando...</p>
-                </div>
-            </div>
-        );
+    if ((cartLoading && items.length === 0) || isLoadingSettings) {
+        return <CartSkeleton />;
     }
 
     if (!cartLoading && items.length === 0) {
@@ -604,9 +626,9 @@ export default function CartPageSimple() {
                                                         onClick={() =>
                                                             item.quantity > 1
                                                                 ? updateQuantity(
-                                                                      item.id,
-                                                                      item.quantity - 1
-                                                                  )
+                                                                    item.id,
+                                                                    item.quantity - 1
+                                                                )
                                                                 : removeItem(item.id)
                                                         }
                                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
