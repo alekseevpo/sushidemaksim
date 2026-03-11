@@ -9,6 +9,7 @@ import FloatingCart from './components/FloatingCart';
 import ScrollToTop from './components/ScrollToTop';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
+import { CartSkeleton } from './components/skeletons/CartSkeleton';
 
 // Lazy-loaded pages with retry logic
 const lazyRetry = (componentImport: any) => {
@@ -72,7 +73,14 @@ function App() {
                                     <Routes>
                                         <Route path="/" element={<HomePageSimple />} />
                                         <Route path="/menu" element={<MenuPageSimple />} />
-                                        <Route path="/cart" element={<CartPageSimple />} />
+                                        <Route
+                                            path="/cart"
+                                            element={
+                                                <Suspense fallback={<CartSkeleton />}>
+                                                    <CartPageSimple />
+                                                </Suspense>
+                                            }
+                                        />
                                         <Route path="/promo" element={<PromoPageSimple />} />
                                         <Route path="/profile" element={<ProfilePage />} />
                                         <Route path="/admin" element={<AdminPage />} />
