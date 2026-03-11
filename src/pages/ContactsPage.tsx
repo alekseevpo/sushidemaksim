@@ -143,7 +143,7 @@ export default function ContactsPage() {
         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
     return (
-        <div className="bg-white">
+        <div className="bg-white overflow-x-hidden">
             <SEO
                 title="Contacto"
                 description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp y redes sociales."
@@ -252,7 +252,7 @@ export default function ContactsPage() {
                                         <input
                                             type="text"
                                             placeholder="Nombre completo"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-sm md:text-base"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-base"
                                         />
                                     </div>
                                     <div className="space-y-1">
@@ -262,7 +262,7 @@ export default function ContactsPage() {
                                         <input
                                             type="email"
                                             placeholder="tu@email.com"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-sm md:text-base"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-base"
                                         />
                                     </div>
                                 </div>
@@ -273,7 +273,7 @@ export default function ContactsPage() {
                                     <textarea
                                         rows={4}
                                         placeholder="¿En qué podemos ayudarte?"
-                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium resize-none text-sm md:text-base"
+                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium resize-none text-base"
                                     ></textarea>
                                 </div>
                                 <button className="w-full bg-gray-900 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98]">
