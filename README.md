@@ -1,138 +1,107 @@
-# Суши Де Максим - Онлайн Магазин
+# 🍣 Sushi de Maksim | Auténtica Cocina Japonesa
 
-Современный веб-сайт для заказа суши и роллов с доставкой на дом.
+![Static Badge](https://img.shields.io/badge/React-18-blue?logo=react)
+![Static Badge](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Static Badge](https://img.shields.io/badge/Tailwind-3-38B2AC?logo=tailwind-css)
+![Static Badge](https://img.shields.io/badge/Express-4-black?logo=express)
+![Static Badge](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)
 
-## 🍣 Особенности
+Una plataforma premium de e-commerce gastronómico diseñada para ofrecer la mejor experiencia de usuario en el pedido de sushi a domicilio.
 
-- **Современный дизайн** с использованием React, TypeScript и Tailwind CSS
-- **Интерактивное меню** с категориями и фильтрацией
-- **Корзина** с возможностью изменения количества товаров
-- **Адаптивный дизайн** для всех устройств
-- **Быстрая навигация** между страницами
-
-## 🛠️ Технологии
-
-- **React 18** - UI библиотека
-- **TypeScript** - Типизация JavaScript
-- **Vite** - Сборщик проекта
-- **Tailwind CSS** - CSS фреймворк
-- **React Router** - Навигация
-- **Lucide React** - Иконки
-
-## 📦 Установка и запуск
-
-### Требования
-
-- Node.js 16+
-- npm или yarn
-
-### Шаги для установки
-
-1. **Клонируйте репозиторий**
-
-    ```bash
-    git clone <repository-url>
-    cd sushi-bar-online
-    ```
-
-2. **Установите зависимости**
-
-    ```bash
-    npm install
-    ```
-
-3. **Запустите development сервер**
-
-    ```bash
-    npm run dev
-    ```
-
-4. **Откройте в браузере**
-   Перейдите по адресу `http://localhost:5173`
-
-## 📁 Структура проекта
-
-```
-src/
-├── components/          # Переиспользуемые компоненты
-│   └── Header.tsx     # Шапка сайта
-├── pages/              # Страницы приложения
-│   ├── HomePage.tsx    # Главная страница
-│   ├── MenuPage.tsx    # Страница меню
-│   └── CartPage.tsx    # Страница корзины
-├── hooks/              # Custom React хуки
-│   └── useCart.tsx     # Хук для управления корзиной
-├── types/              # TypeScript типы
-│   └── index.ts        # Основные типы данных
-├── data/               # Статические данные
-│   └── menu.ts         # Меню блюд
-├── utils/              # Вспомогательные функции
-├── App.tsx             # Главный компонент приложения
-├── main.tsx            # Точка входа
-└── index.css           # Глобальные стили
-```
-
-## 🎨 Функциональность
-
-### Главная страница
-
-- Привлекательный hero-блок
-- Преимущества ресторана
-- Популярные блюда
-- Призыв к действию
-
-### Страница меню
-
-- Фильтрация по категориям
-- Карточки блюд с изображениями
-- Добавление в корзину
-- Информация о блюдах (вес, количество, состав)
-
-### Корзина
-
-- Просмотр добавленных товаров
-- Изменение количества
-- Удаление товаров
-- Расчет итоговой суммы
-- Информация о доставке
-
-## 🚀 Скрипты
-
-- `npm run dev` - Запуск development сервера
-- `npm run build` - Сборка для production
-- `npm run preview` - Предпросмотр production сборки
-- `npm run lint` - Проверка кода ESLint
-
-## 🎯 Дополнительные возможности
-
-Проект готов для расширения следующими функциями:
-
-- Оформление заказа
-- Личный кабинет пользователя
-- Отслеживание заказа
-- Интеграция с платежными системами
-- Админ-панель для управления меню
-
-## 📱 Адаптивность
-
-Сайт полностью адаптивен и корректно отображается на:
-
-- Десктопах (1920px+)
-- Планшетах (768px - 1024px)
-- Мобильных устройствах (320px - 768px)
-
-## 🤝 Вклад в проект
-
-1. Fork проекта
-2. Создайте feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit ваши изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Push в branch (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
-## 📄 Лицензия
-
-Этот проект лицензирован под MIT License - подробности в файле LICENSE.
+[**🌐 Ver Demo En Vivo**](https://sushidemaksim.vercel.app)
 
 ---
 
-**Суши Де Максим** - Вкус японской кухни у вас дома! 🍱
+## ✨ Características Principales
+
+### 🍱 Experiencia del Cliente
+- **Menú Interactivo Premium**: Navegación fluida por categorías (Nigiri, Rolls, Combos) con diseño "Sticky" para facilitar la selección.
+- **Sistema de Favoritos**: Los usuarios registrados pueden guardar sus platos preferidos para pedirlos rápidamente después.
+- **Gestión de Carrito en Tiempo Real**: Carrito flotante interactivo con cálculos instantáneos de envío y subtotales.
+- **Blog & Recetas**: Un espacio dedicado a la cultura del sushi, noticias y promociones especiales.
+- **Totalmente Responsivo**: Optimización extrema para móviles y tablets, con botones de acción rápida y navegación táctil intuitiva.
+
+### 🛡️ Panel de Administración (Dashboard)
+- **Analítica Avanzada**: Visualización de ventas, pedidos diarios, tickets medios y dispositivos de los clientes a través de gráficos interactivos (Recharts).
+- **Gestión de Menú & Stock**: Control total sobre el inventario, precios, etiquetas (Picante, Veggie, Nuevo) y categorías.
+- **Control de Pedidos**: Sistema de gestión de estados de pedido con alertas sonoras en tiempo real para nuevas comandas.
+- **Gestión de Promociones**: Herramientas integradas para crear y activar banners promocionales dinámicos.
+
+### 🚀 Tecnología & Rendimiento
+- **Frontend**: React 18 + Vite para una carga instantánea.
+- **Diseño**: Tailwind CSS con estética minimalista y efectos de "Glassmorphism".
+- **Animaciones**: Framer Motion para transiciones suaves y micro-interacciones.
+- **Backend**: Node.js + Express con arquitectura robusta.
+- **Base de Datos**: PostgreSQL para una gestión de datos relacional segura.
+- **Seguridad**: Autenticación JWT, cifrado de contraseñas con bcrypt y protección con Helmet.
+
+---
+
+## 🛠️ Instalación y Configuración
+
+### 1. Requisitos Previos
+- Node.js (v18 o superior)
+- PostgreSQL
+- Cuenta en Supabase (opcional para almacenamiento de imágenes)
+
+### 2. Configuración del Repositorio
+```bash
+git clone https://github.com/alekseevpo/sushidemaksim.git
+cd sushidemaksim
+```
+
+### 3. Instalación de Dependencias
+```bash
+# Instalar dependencias del Cliente (Frontend)
+npm install
+
+# Instalar dependencias del Servidor (Backend)
+cd server && npm install
+```
+
+### 4. Variables de Entorno
+Crea un archivo `.env` en la carpeta `server/` con las siguientes claves:
+```env
+PORT=3000
+DATABASE_URL=tu_url_de_postgresql
+JWT_SECRET=tu_secreto_super_seguro
+EMAIL_USER=tu_email
+EMAIL_PASS=tu_password_de_app
+```
+
+---
+
+## 📸 Estética del Proyecto
+
+El proyecto utiliza una paleta de colores curada y tipografías modernas para transmitir una sensación de "Lujo Accesible". 
+
+- **Tipografía**: Inter & Outfit.
+- **Colores**: Rojo Maksim (#DC2626), Fondos Crema (#FDFBF7), Sombras Suaves.
+
+---
+
+## 🤝 Desarrollo
+
+Desarrollado con ❤️ por **SelenIT** y **Pavel Alekseev**. 
+
+© 2026 Sushi de Maksim. Todos los derechos reservados.
+
+---
+
+*English version available below.*
+
+---
+
+# 🍣 Sushi de Maksim | Authentic Japanese Cuisine
+
+A premium gastronomic e-commerce platform designed to offer the best user experience for ordering sushi at home.
+
+## ✨ Key Features
+
+- **Premium Interactive Menu**: Fluid navigation by categories with a "Sticky" design.
+- **Advanced Admin Dashboard**: Real-time sales analytics, order management, and stock control.
+- **Authentication & Favorites**: Secure system for users to save their preferred items.
+- **SEO Optimized**: Dynamic metadata and semantic HTML for better search engine ranking.
+- **Tech Stack**: React 18, TypeScript, Tailwind CSS, Framer Motion, Express, PostgreSQL.
+
+*Documentation continues in Spanish for full technical details.*
