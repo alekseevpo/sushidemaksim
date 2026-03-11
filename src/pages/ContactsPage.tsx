@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Star, ArrowRight, Utensils } from 'lucide-react';
+import {
+    MapPin,
+    Phone,
+    Mail,
+    Clock,
+    Instagram,
+    Facebook,
+    Star,
+    ArrowRight,
+    Utensils,
+} from 'lucide-react';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
 
@@ -332,7 +342,8 @@ export default function ContactsPage() {
                                         if (social.icon === 'tiktok') hoverColor = 'hover:bg-black';
                                         if (social.icon === 'thefork')
                                             hoverColor = 'hover:bg-[#004a32]';
-                                        if (social.icon === 'threads') hoverColor = 'hover:bg-black';
+                                        if (social.icon === 'threads')
+                                            hoverColor = 'hover:bg-black';
 
                                         return (
                                             <a
