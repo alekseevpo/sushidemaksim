@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -88,7 +88,6 @@ export default function MenuPageSimple() {
     const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
     const [copying, setCopying] = useState(false);
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
 
     // Debounce search input — only fire API call after 350ms of no typing
     useEffect(() => {

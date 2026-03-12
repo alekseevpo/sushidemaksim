@@ -67,11 +67,17 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
             // Token expired or invalid — clear session
             localStorage.removeItem('sushi_token');
 
-            // Don't reload the page if the user is trying to login or we just get a bad login / wrong password
+            // List of public pages that should NOT redirect on 401
+            const publicPages = ['/', '/menu', '/cart', '/promo', '/contacts', '/blog'];
+            const isPublicPage = publicPages.includes(window.location.pathname) || 
+                               window.location.pathname.startsWith('/blog/');
+
+            // Don't reload/redirect if the user is trying to login/register 
+            // OR if they are already on a public page
             if (
                 endpoint !== '/auth/login' &&
                 endpoint !== '/auth/register' &&
-                window.location.pathname !== '/'
+                !isPublicPage
             ) {
                 window.location.href = '/';
             }
