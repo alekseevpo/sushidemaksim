@@ -1,6 +1,6 @@
 // Grid of cards to be used during initial load and category changes
 export const MenuItemsSkeleton = () => (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 pb-24">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 pb-24">
         {[1, 2, 3, 4, 5, 6].map(i => (
             <div
                 key={i}
@@ -38,30 +38,36 @@ export const MenuSkeleton = () => (
             {/* Desktop Sidebar Skeleton */}
             <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-[100px] self-start z-30">
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
-                    <div className="h-4 w-24 skeleton rounded mb-6 opacity-30" />
+                    <div className="h-4 w-16 skeleton rounded-lg mb-6 opacity-30" />
                     {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="h-10 w-full skeleton rounded-2xl opacity-60" />
+                        <div key={i} className="h-11 w-full skeleton rounded-2xl opacity-60" />
                     ))}
                 </div>
             </aside>
 
             <div className="flex-1 min-w-0">
-                {/* Header Skeleton */}
+                {/* Header Skeleton - Matches MenuPageSimple exactly */}
                 <div className="flex items-center justify-between mb-8 h-14">
-                    <div className="h-10 md:h-12 w-48 md:w-64 skeleton rounded-2xl" />
-                    <div className="h-12 w-12 md:w-80 skeleton rounded-2xl" />
+                    <div className="h-10 md:h-14 w-40 md:w-64 skeleton rounded-2xl" />
+                    <div className="h-10 md:h-12 w-10 md:w-80 skeleton rounded-2xl" />
                 </div>
                 
-                {/* Categories Scroll Skeleton (Mobile Only) */}
+                {/* Mobile Categories Scroll Skeleton (Hidden on desktop) */}
                 <div className="mb-6 lg:hidden">
                     <div className="flex gap-2 overflow-hidden">
-                        {[1, 2, 3].map(i => (
+                        {[1, 2, 3, 4].map(i => (
                             <div key={i} className="h-10 w-28 skeleton rounded-2xl shrink-0 opacity-70" />
                         ))}
                     </div>
                 </div>
 
-                {/* Grid items */}
+                {/* Grid Header Skeleton */}
+                <div className="flex items-center gap-4 mb-6 md:mb-8">
+                    <div className="w-12 h-12 rounded-2xl skeleton shrink-0" />
+                    <div className="h-8 w-48 skeleton rounded-xl" />
+                    <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent" />
+                </div>
+
                 <MenuItemsSkeleton />
             </div>
         </div>

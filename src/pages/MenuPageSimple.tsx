@@ -22,7 +22,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
-import { MenuSkeleton, MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
+import { MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
 
 interface MenuItem {
     id: number;
@@ -78,7 +78,7 @@ export default function MenuPageSimple() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [search, setSearch] = useState('');
-    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
     const { addItem } = useCart();
     const { user } = useAuth();
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
@@ -92,11 +92,14 @@ export default function MenuPageSimple() {
 
     // Debounce search input — only fire API call after 350ms of no typing
     useEffect(() => {
-        debounceTimer.current = setTimeout(() => {
+        if (!search && !debouncedSearch) return; // Skip initial empty search
+        
+        const handler = setTimeout(() => {
             setDebouncedSearch(search);
         }, 350);
-        return () => clearTimeout(debounceTimer.current);
-    }, [search]);
+        
+        return () => clearTimeout(handler);
+    }, [search, debouncedSearch]);
 
     useEffect(() => {
         loadMenu();
