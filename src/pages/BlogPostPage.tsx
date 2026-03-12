@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, AlertCircle } from 'lucide-react';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
+
+import { PostSkeleton } from '../components/skeletons/PostSkeleton';
 
 interface BlogPost {
     id: number;
@@ -45,12 +47,7 @@ export default function BlogPostPage() {
     }, [slug]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-transparent flex flex-col items-center justify-center">
-                <RefreshCw size={40} strokeWidth={1.5} className="animate-spin text-red-600 mb-4" />
-                <p className="text-gray-500 font-medium tracking-wide">Cargando artículo...</p>
-            </div>
-        );
+        return <PostSkeleton />;
     }
 
     if (error || !post) {

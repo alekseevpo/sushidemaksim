@@ -93,15 +93,22 @@ export default function FavoritesTab() {
         return (
             <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">
-                        Mis Favoritos
-                    </h2>
+                    <div className="h-8 w-48 skeleton rounded-xl" />
                 </div>
-                <div className="bg-gray-50 rounded-[40px] p-24 text-center border-2 border-gray-100">
-                    <div className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-6 text-2xl animate-spin">
-                        🍣
-                    </div>
-                    <p className="text-gray-500 font-bold">Cargando tus favoritos...</p>
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                        <div key={i} className="bg-white border border-gray-100 rounded-[32px] overflow-hidden space-y-4 shadow-sm pb-6">
+                            <div className="h-[130px] md:h-[190px] skeleton rounded-none" />
+                            <div className="px-6 space-y-3">
+                                <div className="h-4 w-3/4 skeleton rounded" />
+                                <div className="h-3 w-full skeleton rounded opacity-40" />
+                                <div className="flex justify-between items-center pt-2">
+                                    <div className="h-6 w-16 skeleton rounded" />
+                                    <div className="h-10 w-10 skeleton rounded-full" />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         );

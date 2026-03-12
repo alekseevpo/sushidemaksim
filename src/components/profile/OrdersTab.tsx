@@ -141,15 +141,27 @@ export default function OrdersTab() {
 
     if (loading) {
         return (
-            <div className="space-y-6 animate-in fade-in duration-500">
-                <div className="bg-white rounded-[32px] p-20 text-center border border-gray-100 shadow-sm">
-                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl animate-spin">
-                        🍣
-                    </div>
-                    <p className="text-gray-400 text-sm font-bold tracking-tight">
-                        Cargando historial...
-                    </p>
+            <div className="space-y-4 animate-in fade-in duration-500">
+                <div className="px-0 md:px-1 border-b border-gray-100 pb-4 mb-2">
+                    <div className="h-8 w-48 skeleton rounded-xl mb-2" />
+                    <div className="h-4 w-64 skeleton rounded-lg opacity-40" />
                 </div>
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-white border border-gray-100 rounded-[30px] p-6 space-y-6">
+                        <div className="flex justify-between items-start">
+                            <div className="space-y-2">
+                                <div className="h-4 w-20 skeleton rounded" />
+                                <div className="h-6 w-32 skeleton rounded-lg" />
+                            </div>
+                            <div className="h-10 w-24 skeleton rounded-2xl" />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="h-4 w-full skeleton rounded opacity-50" />
+                            <div className="h-4 w-2/3 skeleton rounded opacity-50" />
+                        </div>
+                        <div className="h-12 w-full skeleton rounded-2xl" />
+                    </div>
+                ))}
             </div>
         );
     }
