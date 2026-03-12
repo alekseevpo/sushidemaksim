@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { CheckCircle, XCircle, Loader2, Home, LogIn } from 'lucide-react';
+import { CheckCircle, XCircle, Home, LogIn } from 'lucide-react';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
+import { GenericSkeleton } from '../components/skeletons/GenericSkeleton';
 
 export default function VerifyPage() {
     const [searchParams] = useSearchParams();
@@ -39,25 +40,15 @@ export default function VerifyPage() {
         verifyToken();
     }, [token, showSuccess, showError]);
 
+    if (status === 'loading') {
+        return <GenericSkeleton />;
+    }
+
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-6">
             <SEO title="Activar cuenta" description="Activación de cuenta de usuario" />
 
             <div className="max-w-md w-full bg-white rounded-[32px] p-8 md:p-12 shadow-2xl text-center border border-gray-100 animate-in fade-in zoom-in duration-500">
-                {status === 'loading' && (
-                    <div className="flex flex-col items-center">
-                        <Loader2
-                            size={64}
-                            strokeWidth={1.5}
-                            className="text-red-600 animate-spin mb-6"
-                        />
-                        <h1 className="text-2xl font-black text-gray-900 mb-2">Verificando...</h1>
-                        <p className="text-gray-500 font-medium">
-                            Estamos validando tu enlace de activación.
-                        </p>
-                    </div>
-                )}
-
                 {status === 'success' && (
                     <div className="flex flex-col items-center">
                         <div className="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mb-6 text-green-500 shadow-inner border-2 border-white">

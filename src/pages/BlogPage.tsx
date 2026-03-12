@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
+import { BlogSkeleton } from '../components/skeletons/BlogSkeleton';
 
 interface BlogPost {
     id: number;
@@ -36,6 +37,8 @@ export default function BlogPage() {
 
         fetchPosts();
     }, []);
+
+    if (loading) return <BlogSkeleton />;
 
     return (
         <div className="min-h-screen bg-transparent pb-20 overflow-x-hidden">
@@ -79,28 +82,7 @@ export default function BlogPage() {
             {/* Container */}
             <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {loading ? (
-                        <>
-                            {[1, 2, 3, 4, 5, 6].map(i => (
-                                <div
-                                    key={i}
-                                    className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col h-full animate-pulse border border-gray-100"
-                                >
-                                    <div className="h-64 bg-gray-200"></div>
-                                    <div className="p-6 flex-1 flex flex-col">
-                                        <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-                                        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                                        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                                        <div className="h-4 bg-gray-200 rounded w-5/6 mb-6"></div>
-                                        <div className="mt-auto flex justify-between items-center pt-4 border-t border-gray-100">
-                                            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                                            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </>
-                    ) : posts.length > 0 ? (
+                    {posts.length > 0 ? (
                         posts.map((post, index) => (
                             <motion.article
                                 key={post.id}

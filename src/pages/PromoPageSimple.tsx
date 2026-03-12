@@ -4,6 +4,7 @@ import { ArrowRight, Clock, Tag, Plus } from 'lucide-react';
 import { api } from '../utils/api';
 import { useCart } from '../hooks/useCart';
 import SEO from '../components/SEO';
+import { PromoSkeleton } from '../components/skeletons/PromoSkeleton';
 
 interface PromoItem {
     id: number;
@@ -52,6 +53,8 @@ export default function PromoPageSimple() {
         loadPageData();
     }, []);
 
+    if (isLoading) return <PromoSkeleton />;
+
     const handleAdd = (item: PromoItem) => {
         addItem({
             id: String(item.id),
@@ -99,8 +102,7 @@ export default function PromoPageSimple() {
             <div className="max-w-7xl mx-auto px-4 -mt-16 md:-mt-20 mb-20 relative z-20">
                 {/* Static Promo Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
-                    {!isLoading &&
-                        staticPromos.map(promo => (
+                    {staticPromos.map(promo => (
                             <div
                                 key={promo.id}
                                 className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col group"
@@ -187,23 +189,7 @@ export default function PromoPageSimple() {
                         </h2>
                     </div>
 
-                    {isLoading ? (
-                        <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 md:gap-8">
-                            {[1, 2].map(i => (
-                                <div
-                                    key={i}
-                                    className="bg-white rounded-3xl shadow-sm overflow-hidden flex flex-col h-full animate-pulse border border-gray-100"
-                                >
-                                    <div className="h-40 md:h-56 bg-gray-200"></div>
-                                    <div className="p-4 md:p-8 flex flex-col gap-2 md:gap-4">
-                                        <div className="h-6 bg-gray-200 rounded w-2/3"></div>
-                                        <div className="h-3 bg-gray-200 rounded w-full"></div>
-                                        <div className="h-3 bg-gray-200 rounded w-5/6 mb-2"></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : promoItems.length === 0 ? (
+                    {promoItems.length === 0 ? (
                         <div className="bg-gray-50 rounded-[2.5rem] p-12 text-center border-2 border-dashed border-gray-200">
                             <div className="text-5xl mb-4 grayscale opacity-50">🍱</div>
                             <p className="text-gray-500 text-lg font-medium">

@@ -3,6 +3,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Package, MapPin, Phone, Info, ChevronLeft, ArrowRight } from 'lucide-react';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
+import { TrackSkeleton } from '../components/skeletons/TrackSkeleton';
 import OrderStepper from '../components/OrderStepper';
 
 export default function OrderTrackingPage() {
@@ -35,18 +36,7 @@ export default function OrderTrackingPage() {
     }, [fetchOrder]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6">
-                <div className="text-center">
-                    <div className="w-16 h-16 bg-red-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 text-2xl animate-spin border-2 border-white shadow-inner">
-                        🍣
-                    </div>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">
-                        Localizando tu pedido...
-                    </p>
-                </div>
-            </div>
-        );
+        return <TrackSkeleton />;
     }
 
     if (error) {

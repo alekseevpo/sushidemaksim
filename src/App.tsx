@@ -16,6 +16,7 @@ import { AdminSkeleton } from './components/skeletons/AdminSkeleton';
 import { ProfileSkeleton } from './components/skeletons/ProfileSkeleton';
 import { PromoSkeleton } from './components/skeletons/PromoSkeleton';
 import { BlogSkeleton } from './components/skeletons/BlogSkeleton';
+import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 
 // Lazy-loaded pages with retry logic
@@ -165,7 +166,7 @@ function App() {
                                     <Route
                                         path="/track/:id"
                                         element={
-                                            <Suspense fallback={<GenericSkeleton />}>
+                                            <Suspense fallback={<TrackSkeleton />}>
                                                 <OrderTrackingPage />
                                             </Suspense>
                                         }
