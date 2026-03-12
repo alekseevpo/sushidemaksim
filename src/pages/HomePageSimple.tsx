@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Clock, MapPin, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
+import Newsletter from '../components/Newsletter';
 
 const FeatureCard = ({ icon: Icon, title, desc, colorClass, index }: any) => (
     <motion.div
@@ -350,6 +351,9 @@ export default function HomePageSimple() {
                     </Link>
                 </motion.div>
             </section>
+
+            {/* Newsletter Section */}
+            <Newsletter />
         </div>
     );
 }
