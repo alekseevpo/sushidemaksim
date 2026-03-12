@@ -87,6 +87,7 @@ export default function MenuPageSimple() {
     const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
     const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
     const [copying, setCopying] = useState(false);
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
 
     // Debounce search input — only fire API call after 350ms of no typing
@@ -322,35 +323,99 @@ export default function MenuPageSimple() {
                         </nav>
                     </div>
                 </aside>
-
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-3xl md:text-5xl text-gray-900 font-black mb-4 md:mb-8 tracking-tighter">
-                        Nuestro Menú
-                    </h1>
-
                     {/* Search */}
-                    <div className="flex mb-8">
-                        <div className="relative w-full max-w-xl">
-                            <Search
-                                size={18}
-                                strokeWidth={1.5}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                            />
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                placeholder="¿Qué te apetece hoy?"
-                                className="w-full pl-12 pr-12 py-4 border border-gray-200 rounded-3xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
-                            />
-                            {search && (
-                                <button
-                                    onClick={() => setSearch('')}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
+                    <div className="flex items-center justify-between mb-8 h-14 relative">
+                        <AnimatePresence mode="wait">
+                            {!isSearchExpanded ? (
+                                <motion.div
+                                    key="search-button"
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -10 }}
+                                    className="md:hidden flex items-center justify-between w-full"
                                 >
-                                    <X size={20} strokeWidth={1.5} />
-                                </button>
+                                    <h1 className="text-3xl text-gray-900 font-black tracking-tighter mb-0">
+                                        Nuestro Menú
+                                    </h1>
+                                    <button
+                                        onClick={() => setIsSearchExpanded(true)}
+                                        className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                                    >
+                                        <Search size={22} strokeWidth={2} />
+                                    </button>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="search-input-mobile"
+                                    initial={{ opacity: 0, width: '48px', x: 20 }}
+                                    animate={{ opacity: 1, width: '100%', x: 0 }}
+                                    exit={{ opacity: 0, width: '48px', x: 20 }}
+                                    className="md:hidden relative w-full flex items-center gap-2"
+                                >
+                                    <div className="relative flex-1">
+                                        <Search
+                                            size={18}
+                                            strokeWidth={1.5}
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                                        />
+                                        <input
+                                            autoFocus
+                                            type="text"
+                                            value={search}
+                                            onChange={e => setSearch(e.target.value)}
+                                            placeholder="¿Qué te apetece hoy?"
+                                            className="w-full pl-12 pr-12 py-4 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                                        />
+                                        {search && (
+                                            <button
+                                                onClick={() => setSearch('')}
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
+                                            >
+                                                <X size={20} strokeWidth={1.5} />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setIsSearchExpanded(false);
+                                            setSearch('');
+                                        }}
+                                        className="px-2 font-bold text-sm text-red-600 border-none bg-transparent cursor-pointer"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </motion.div>
                             )}
+                        </AnimatePresence>
+
+                        {/* Desktop Search - Always visible */}
+                        <div className="hidden md:flex items-center justify-between w-full">
+                            <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0">
+                                Nuestro Menú
+                            </h1>
+                            <div className="relative w-full max-w-md ml-8">
+                                <Search
+                                    size={18}
+                                    strokeWidth={1.5}
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                                />
+                                <input
+                                    type="text"
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
+                                    placeholder="¿Qué te apetece hoy?"
+                                    className="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                                />
+                                {search && (
+                                    <button
+                                        onClick={() => setSearch('')}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
+                                    >
+                                        <X size={20} strokeWidth={1.5} />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -625,17 +690,17 @@ export default function MenuPageSimple() {
                                 <div className="bg-gray-50 rounded-2xl p-4 mb-6 flex gap-4 border border-gray-100">
                                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shadow-sm flex-shrink-0">
                                         <img
-                                            src={sharingItem.image}
+                                            src={sharingItem?.image}
                                             alt=""
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
                                     <div className="flex-1">
                                         <p className="font-black text-gray-900 text-sm leading-tight mb-1">
-                                            {sharingItem.name}
+                                            {sharingItem?.name}
                                         </p>
                                         <p className="text-xs text-gray-500 line-clamp-1">
-                                            {sharingItem.description}
+                                            {sharingItem?.description}
                                         </p>
                                         <p className="text-red-600 font-black text-sm mt-1">
                                             {sharingItem.price.toFixed(2).replace('.', ',')} €
@@ -645,7 +710,7 @@ export default function MenuPageSimple() {
 
                                 <div className="grid grid-cols-2 gap-3 mb-6">
                                     <a
-                                        href={`https://wa.me/?text=${encodeURIComponent(`¡Mira este ${sharingItem.name} de Sushi de Maksim! 🍣\n${window.location.origin}/menu?id=${sharingItem.id}`)}`}
+                                        href={`https://wa.me/?text=${encodeURIComponent(`¡Mira este ${sharingItem?.name} de Sushi de Maksim! 🍣\n${window.location.origin}/menu?id=${sharingItem?.id}`)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex flex-col items-center justify-center gap-2 p-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-2xl transition-colors no-underline"
@@ -661,7 +726,7 @@ export default function MenuPageSimple() {
                                         <span className="text-xs font-black">WhatsApp</span>
                                     </a>
                                     <a
-                                        href={`https://t.me/share/url?url=${encodeURIComponent(`${window.location.origin}/menu?id=${sharingItem.id}`)}&text=${encodeURIComponent(`¡Mira este ${sharingItem.name} de Sushi de Maksim! 🍣`)}`}
+                                        href={`https://t.me/share/url?url=${encodeURIComponent(`${window.location.origin}/menu?id=${sharingItem?.id}`)}&text=${encodeURIComponent(`¡Mira este ${sharingItem?.name} de Sushi de Maksim! 🍣`)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex flex-col items-center justify-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-2xl transition-colors no-underline"
@@ -682,7 +747,7 @@ export default function MenuPageSimple() {
                                     <button
                                         onClick={() =>
                                             copyToClipboard(
-                                                `${window.location.origin}/menu?id=${sharingItem.id}`
+                                                `${window.location.origin}/menu?id=${sharingItem?.id}`
                                             )
                                         }
                                         className={`w-full flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm transition-all border-none cursor-pointer ${copying ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
@@ -709,9 +774,9 @@ export default function MenuPageSimple() {
                                             onClick={() => {
                                                 navigator
                                                     .share({
-                                                        title: sharingItem.name,
-                                                        text: `¡Mira este ${sharingItem.name} de Sushi de Maksim! 🍣`,
-                                                        url: `${window.location.origin}/menu?id=${sharingItem.id}`,
+                                                        title: sharingItem?.name,
+                                                        text: `¡Mira este ${sharingItem?.name} de Sushi de Maksim! 🍣`,
+                                                        url: `${window.location.origin}/menu?id=${sharingItem?.id}`,
                                                     })
                                                     .catch(() => {});
                                             }}
