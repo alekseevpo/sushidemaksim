@@ -18,8 +18,8 @@ export const MenuSkeleton = () => (
                     <div className="h-12 w-12 md:w-80 skeleton rounded-2xl" />
                 </div>
 
-                {/* Mobile Categories Scroll Skeleton */}
-                <div className="sticky top-[72px] md:top-[80px] -mx-2 md:-mx-4 px-2 md:px-4 py-4 mb-6">
+                {/* Mobile Categories Scroll Skeleton (Hidden on desktop since we have sidebar skeleton) */}
+                <div className="sticky top-[72px] md:top-[80px] -mx-2 md:-mx-4 px-2 md:px-4 py-4 mb-6 lg:hidden">
                     <div className="flex gap-2 overflow-hidden">
                         {[1, 2, 3, 4, 5].map(i => (
                             <div key={i} className="h-10 w-28 skeleton rounded-2xl shrink-0 opacity-70" />
