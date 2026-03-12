@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowLeft, KeyRound, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
 import { api } from '../utils/api';
@@ -398,6 +399,7 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
     const [resetToken, setResetToken] = useState('');
     const { login, register } = useAuth();
     const { success: showSuccess, error: showError } = useToast();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleOpen = (e: any) => {
@@ -432,6 +434,7 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
             if (res.success) {
                 onClose();
                 showSuccess('¡Bienvenido de nuevo! 🍣');
+                navigate('/menu');
             } else {
                 showError(res.error || 'Error al iniciar sesión');
             }
