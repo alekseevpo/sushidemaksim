@@ -108,14 +108,20 @@ export default function HomePageSimple() {
                         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start">
                             <Link
                                 to="/menu"
-                                className="w-full sm:w-auto btn-premium bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(220,38,38,0.5)] active:scale-95 transition-all"
+                                className="w-full sm:w-auto group btn-premium bg-red-600 text-white px-10 py-5 rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-3 shadow-[0_20px_40px_-15px_rgba(220,38,38,0.5)] transition-all"
                             >
                                 EXPLORAR MENÚ
-                                <ArrowRight size={18} strokeWidth={1.5} />
+                                <motion.div
+                                    animate={{ x: 0 }}
+                                    whileHover={{ x: 5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                                >
+                                    <ArrowRight size={18} strokeWidth={2} />
+                                </motion.div>
                             </Link>
                             <Link
                                 to="/blog"
-                                className="w-full sm:w-auto btn-premium glass-dark text-white border border-white/20 px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 hover:bg-white/10 active:scale-95 transition-all"
+                                className="w-full sm:w-auto btn-premium glass-dark text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-3 hover:bg-white/10 transition-all uppercase"
                             >
                                 NUESTRO BLOG
                             </Link>
@@ -338,7 +344,7 @@ export default function HomePageSimple() {
                     </p>
                     <Link
                         to="/menu"
-                        className="inline-block w-full sm:w-auto bg-white text-red-600 px-12 py-5 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition-transform relative z-10"
+                        className="inline-block w-full sm:w-auto bg-white text-red-600 px-12 py-6 rounded-2xl font-black text-xs tracking-widest shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 relative z-10"
                     >
                         ORDENAR AHORA
                     </Link>
