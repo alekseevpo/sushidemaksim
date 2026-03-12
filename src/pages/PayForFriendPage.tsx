@@ -5,6 +5,8 @@ import { CheckCircle, MapPin, ArrowRight, XCircle, CreditCard, Heart } from 'luc
 import { api, ApiError } from '../utils/api';
 import SEO from '../components/SEO';
 
+import { GenericSkeleton } from '../components/skeletons/GenericSkeleton';
+
 interface OrderItem {
     id: number;
     name: string;
@@ -69,20 +71,7 @@ export default function PayForFriendPage() {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
-                <div className="text-center">
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-                        className="text-4xl mb-4"
-                    >
-                        🍣
-                    </motion.div>
-                    <p className="text-gray-500 font-medium">Cargando sorpresa...</p>
-                </div>
-            </div>
-        );
+        return <GenericSkeleton />;
     }
 
     if (error || !order) {
