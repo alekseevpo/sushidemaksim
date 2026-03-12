@@ -680,6 +680,7 @@ export default function MenuPageSimple() {
                     )}
                 </div>
             </div>
+
             {/* Share Modal */}
             <AnimatePresence>
                 {sharingItem && (
