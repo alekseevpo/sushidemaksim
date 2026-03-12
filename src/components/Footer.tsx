@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Instagram, Phone, MessageCircle } from 'lucide-react';
+import { Shield, Instagram, Phone, MessageCircle, Facebook, Twitter } from 'lucide-react';
 import { api } from '../utils/api';
 
 export default function Footer() {
@@ -51,7 +51,53 @@ export default function Footer() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {/* WhatsApp */}
+                        {/* Dynamic Social Links from Settings */}
+                        {settings?.social_links?.map((social: any, idx: number) => {
+                            const platform = social.platform.toLowerCase();
+                            if (platform === 'whatsapp') return null; // Handle WhatsApp separately or skip if duplicate
+                            
+                            let Icon = MessageCircle;
+                            let hoverClass = 'hover:bg-blue-500/20 hover:border-blue-500/30 hover:text-blue-500';
+
+                            if (platform === 'instagram') {
+                                Icon = Instagram;
+                                hoverClass = 'hover:bg-pink-500/20 hover:border-pink-500/30 hover:text-pink-500';
+                            } else if (platform === 'facebook') {
+                                Icon = Facebook;
+                                hoverClass = 'hover:bg-blue-600/20 hover:border-blue-600/30 hover:text-blue-600';
+                            } else if (platform === 'twitter' || platform === 'x') {
+                                Icon = Twitter;
+                                hoverClass = 'hover:bg-gray-800/20 hover:border-gray-800/30 hover:text-white';
+                            }
+
+                            return (
+                                <a
+                                    key={idx}
+                                    href={social.url === '#' ? 'https://www.instagram.com/sushi_de_maksim/' : social.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all ${hoverClass}`}
+                                    title={social.platform}
+                                >
+                                    <Icon size={20} strokeWidth={1.5} />
+                                </a>
+                            );
+                        })}
+
+                        {/* Fallback / Static Instagram if not in settings */}
+                        {(!settings?.social_links || settings.social_links.length === 0) && (
+                            <a
+                                href="https://www.instagram.com/sushi_de_maksim/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all hover:bg-pink-500/20 hover:border-pink-500/30 hover:text-pink-500"
+                                title="Instagram"
+                            >
+                                <Instagram size={20} strokeWidth={1.5} />
+                            </a>
+                        )}
+
+                        {/* WhatsApp (Main Contact) */}
                         <a
                             href={`https://wa.me/${cleanPhone.replace('+', '')}`}
                             target="_blank"
@@ -60,17 +106,6 @@ export default function Footer() {
                             title="WhatsApp"
                         >
                             <MessageCircle size={20} strokeWidth={1.5} />
-                        </a>
-
-                        {/* Instagram */}
-                        <a
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all hover:bg-pink-500/20 hover:border-pink-500/30 hover:text-pink-500"
-                            title="Instagram"
-                        >
-                            <Instagram size={20} strokeWidth={1.5} />
                         </a>
 
                         {/* Phone Icon Button */}
