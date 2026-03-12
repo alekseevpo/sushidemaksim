@@ -23,6 +23,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const { user } = useAuth();
     const prevAuthRef = useRef(false);
+    const isSyncingRef = useRef(false);
 
     useEffect(() => {
         const isAuth = !!user;
@@ -46,6 +47,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         // Transition from user -> null (logout)
         if (prevUserRef.current && !user) {
             localStorage.setItem('guest_cart', JSON.stringify(items));
+        }
+        // Transition from null -> user (login)
+        if (!prevUserRef.current && user) {
+            // We just logged in, the next 'items' update will be from server
+            // We don't want to save that server state back to guest_cart immediately
         }
         prevUserRef.current = user;
     }, [user, items]);
@@ -214,10 +220,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const syncGuestItems = async () => {
         const localCart = localStorage.getItem('guest_cart');
-        if (!localCart) return;
+        if (!localCart || isSyncingRef.current) return;
 
         try {
+            isSyncingRef.current = true;
             const guestItems = JSON.parse(localCart);
+            
+            // Clear items state immediately to avoid showing "guest + server" mix
+            // the loadCart(true) will fetch the final merged state
+            
             // Sync each items to server
             for (const item of guestItems) {
                 await api.post('/cart', {
@@ -229,6 +240,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             await loadCart(true);
         } catch (e) {
             console.error('Failed to sync guest cart', e);
+        } finally {
+            isSyncingRef.current = false;
         }
     };
 
