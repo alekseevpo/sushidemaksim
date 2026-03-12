@@ -45,13 +45,6 @@ export default function Footer() {
             hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30'
         },
         { 
-            id: 'facebook', 
-            name: 'Facebook', 
-            icon: '/facebook.png', 
-            url: '#', 
-            hover: 'hover:bg-blue-600/20 hover:border-blue-600/30'
-        },
-        { 
             id: 'threads', 
             name: 'Threads', 
             icon: '/threads.png', 
