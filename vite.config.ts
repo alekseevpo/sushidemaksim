@@ -8,7 +8,10 @@ export default defineConfig({
         host: '0.0.0.0',
         port: 5173,
         proxy: {
-            '/api': 'http://localhost:3001',
+            '/api': {
+                target: 'https://sushidemaksim.vercel.app',
+                changeOrigin: true,
+            },
         },
     },
     // @ts-expect-error: Vitest types sometimes conflict with Vite types depending on exact versions

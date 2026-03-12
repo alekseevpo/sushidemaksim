@@ -27,21 +27,21 @@ export default function Footer() {
             id: 'telegram',
             name: 'Telegram',
             icon: '/telegram.png',
-            url: '#',
+            url: 'https://t.me/sushidemaksim',
             hover: 'hover:bg-blue-400/20 hover:border-blue-400/30',
         },
         {
             id: 'instagram',
             name: 'Instagram',
             icon: '/instagram.png',
-            url: 'https://www.instagram.com/sushi_de_maksim/',
+            url: 'https://instagram.com/sushidemaksim',
             hover: 'hover:bg-pink-500/20 hover:border-pink-500/30',
         },
         {
             id: 'thefork',
             name: 'The Fork',
-            icon: '/cooking-recipes-book-with-a-fork-and-a-spoon-in-cross-on-the-cover.png',
-            url: '#',
+            icon: '/fork.png',
+            url: 'https://www.thefork.es/restaurante/sushi-de-maksim-r804561',
             hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30',
         },
         {
@@ -105,13 +105,13 @@ export default function Footer() {
                                     href={url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-red-500/20 overflow-hidden group`}
+                                    className={`w-10 h-10 md:w-11 md:h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-red-500/20 overflow-hidden group`}
                                     title={social.name}
                                 >
                                     <img
                                         src={social.icon}
                                         alt={social.name}
-                                        className={`w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 opacity-80 group-hover:opacity-100 ${social.id !== 'threads' ? 'brightness-0 invert' : ''}`}
+                                        className={`w-5 h-5 md:w-6 md:h-6 object-contain transition-all duration-300 group-hover:scale-110 opacity-80 group-hover:opacity-100 ${social.id !== 'threads' ? 'brightness-0 invert' : ''}`}
                                     />
                                 </a>
                             );
@@ -120,7 +120,7 @@ export default function Footer() {
                         {/* Phone Button */}
                         <a
                             href={`tel:${cleanPhone}`}
-                            className="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center transition-all duration-300 hover:bg-red-700 hover:scale-110 active:scale-95 shadow-xl shadow-red-600/40 ml-2"
+                            className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-red-600 text-white flex items-center justify-center transition-all duration-300 hover:bg-red-700 hover:scale-110 active:scale-95 shadow-xl shadow-red-600/40 ml-2"
                             title={`Llamar: ${phoneNumber}`}
                         >
                             <Phone size={24} strokeWidth={2} />
