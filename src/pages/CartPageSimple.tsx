@@ -10,6 +10,7 @@ import {
     ArrowLeft,
     X,
     Gift,
+    Flame,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
@@ -449,14 +450,21 @@ export default function CartPageSimple() {
 
                     {popularItems.length > 0 && (
                         <div className="mt-20">
-                            <h2 className="text-2xl font-black mb-8">Nuestros favoritos hoy 🔥</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+                            <div className="flex items-center justify-center gap-4 mb-10">
+                                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center border border-gray-100 italic">
+                                    <Flame size={24} strokeWidth={1.5} className="text-red-600" />
+                                </div>
+                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight m-0">
+                                    Nuestros favoritos hoy
+                                </h2>
+                            </div>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 text-left">
                                 {popularItems.map(item => (
                                     <div
                                         key={item.id}
-                                        className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col group"
+                                        className="premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden"
                                     >
-                                        <div className="h-32 bg-gray-50 rounded-2xl mb-4 overflow-hidden relative flex items-center justify-center">
+                                        <div className="aspect-[4/3] bg-gray-50 overflow-hidden relative">
                                             {!failedImages.has(item.id) ? (
                                                 <img
                                                     src={item.image}
@@ -472,32 +480,37 @@ export default function CartPageSimple() {
                                                 <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
                                                     <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
                                                     <div className="absolute w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
-                                                    <span className="text-5xl relative z-10 drop-shadow-2xl transform group-hover:rotate-12 transition-transform duration-500">
+                                                    <span className="text-4xl relative z-10 drop-shadow-2xl translate-y-2">
                                                         {getCategoryEmoji(item.category)}
                                                     </span>
                                                     <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
                                                 </div>
                                             )}
-                                            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md text-[10px] font-black px-2 py-1 rounded-lg shadow-sm">
+                                            <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-white/90 backdrop-blur-md text-[8px] md:text-[10px] font-black px-2 py-1 rounded-lg shadow-sm">
                                                 ★ TOP
                                             </div>
                                         </div>
-                                        <h3 className="font-bold text-gray-900 mb-1">
-                                            {item.name}
-                                        </h3>
-                                        <p className="text-gray-500 text-xs mb-4 flex-1 line-clamp-2">
-                                            {item.description}
-                                        </p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-bold text-red-600">
-                                                {item.price.toFixed(2)} €
-                                            </span>
-                                            <button
-                                                onClick={() => handleAddToCart(item)}
-                                                className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center border-none cursor-pointer hover:bg-red-700 active:scale-90 transition-all"
-                                            >
-                                                <Plus size={16} strokeWidth={1.5} />
-                                            </button>
+                                        <div className="p-3 md:p-6 flex flex-col flex-1">
+                                            <div className="mb-1 md:mb-2">
+                                                <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto">
+                                                    {item.name}
+                                                </h3>
+                                            </div>
+                                            <p className="text-gray-500 text-[11px] md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 min-h-[2.5rem] md:min-h-0 font-medium overflow-hidden">
+                                                {item.description}
+                                            </p>
+                                            <div className="mt-auto flex items-center justify-between gap-1">
+                                                <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
+                                                    {item.price.toFixed(2).replace('.', ',')} €
+                                                </span>
+                                                <button
+                                                    onClick={() => handleAddToCart(item)}
+                                                    className="h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl bg-gray-900 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-200 active:scale-95 transition-all border-none cursor-pointer flex items-center justify-center gap-2"
+                                                >
+                                                    <Plus size={16} strokeWidth={1.5} />
+                                                    <span className="hidden md:inline">Añadir</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
