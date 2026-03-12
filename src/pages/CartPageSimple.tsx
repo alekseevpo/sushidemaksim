@@ -450,10 +450,8 @@ export default function CartPageSimple() {
 
                     {popularItems.length > 0 && (
                         <div className="mt-20">
-                            <div className="flex items-center justify-center gap-4 mb-10">
-                                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center border border-gray-100 italic">
-                                    <Flame size={24} strokeWidth={1.5} className="text-red-600" />
-                                </div>
+                            <div className="flex items-center justify-center gap-3 mb-10">
+                                <Flame size={28} strokeWidth={1.5} className="text-red-600" />
                                 <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight m-0">
                                     Nuestros favoritos hoy
                                 </h2>
