@@ -18,6 +18,7 @@ import promosRoutes from './routes/promos.js';
 import cronRoutes from './routes/cron.js';
 import blogRoutes from './routes/blog.js';
 import settingsRoutes from './routes/settings.js';
+import newsletterRoutes from './routes/newsletter.js';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -97,6 +98,7 @@ app.use('/api/promos', promosRoutes);
 app.use('/api/cron', cronRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────
 // Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them

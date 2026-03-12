@@ -360,3 +360,53 @@ export async function sendEmailChangeVerificationEmail(
 </html>`,
     });
 }
+
+/**
+ * Send a welcome email to a new newsletter subscriber.
+ */
+export async function sendNewsletterWelcomeEmail(to: string, promoCode: string): Promise<void> {
+    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+
+    await transporter.sendMail({
+        from,
+        to,
+        subject: '¡Bienvenido al Club! 🎉 Tu regalo de Sushi de Maksim te espera',
+        html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
+  <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+    <div style="background:linear-gradient(135deg,#000000,#333333);padding:40px;text-align:center;position:relative;">
+      <div style="font-size:50px;margin-bottom:10px;">✨</div>
+      <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Ya eres del Club!</h1>
+      <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Bienvenido a la familia Sushi de Maksim</p>
+    </div>
+    <div style="padding:40px;text-align:center;">
+      <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Hola!</p>
+      <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
+        Gracias por suscribirte. Como prometimos, aquí tienes un regalo especial para que disfrutes de tu próximo pedido con nosotros:
+      </p>
+      
+      <div style="background:#FFF1F2;border:2px dashed #FECDD3;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
+        <p style="color:#BE123C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Promocional</p>
+        <div style="font-size:36px;font-weight:900;color:#DC2626;letter-spacing:5px;">${promoCode}</div>
+        <p style="color:#9F1239;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
+      </div>
+
+      <p style="color:#374151;font-size:15px;margin:0 0 32px;">
+        *Válido durante las próximas 24 horas. Solo tienes que introducir el código al finalizar tu compra en la web.
+      </p>
+
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);color:#ffffff;">¡PEDIR AHORA!</a>
+    </div>
+    
+    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+      <p style="color:#E5E7EB;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en sushidemaksim.com</p>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
+}

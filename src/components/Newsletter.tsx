@@ -1,17 +1,27 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, CheckCircle2 } from 'lucide-react';
+import { Send, CheckCircle2, Loader2 } from 'lucide-react';
+import { api } from '../utils/api';
 
 export default function Newsletter() {
     const [email, setEmail] = useState('');
     const [isSubscribed, setIsSubscribed] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulation of subscription
-        setIsSubscribed(true);
-        // In a real app, you would send this to your API
-        console.log('Subscribing email:', email);
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await api.post('/newsletter/subscribe', { email });
+            setIsSubscribed(true);
+        } catch (err: any) {
+            setError(err.message || 'Error al suscribirse. Inténtalo de nuevo.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -57,19 +67,32 @@ export default function Newsletter() {
                                 <input
                                     type="email"
                                     required
+                                    disabled={isLoading}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Tu mejor email..."
-                                    className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder:text-gray-600"
+                                    className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder:text-gray-600 disabled:opacity-50"
                                 />
                                 <button
                                     type="submit"
-                                    className="bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-2xl text-xs tracking-widest transition-all shadow-lg shadow-red-600/20 active:scale-95 flex items-center justify-center gap-2 uppercase"
+                                    disabled={isLoading}
+                                    className="bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-2xl text-xs tracking-widest transition-all shadow-lg shadow-red-600/20 active:scale-95 flex items-center justify-center gap-2 uppercase disabled:opacity-50 min-w-[160px]"
                                 >
-                                    Suscribirme
-                                    <Send size={16} />
+                                    {isLoading ? (
+                                        <Loader2 size={16} className="animate-spin" />
+                                    ) : (
+                                        <>
+                                            Suscribirme
+                                            <Send size={16} />
+                                        </>
+                                    )}
                                 </button>
                             </form>
+                            {error && (
+                                <p className="text-red-500 text-xs mt-4 font-bold animate-pulse">
+                                    {error}
+                                </p>
+                            )}
                             <p className="text-[10px] text-gray-600 mt-6 font-medium uppercase tracking-tighter">
                                 * Sin spam, solo cosas ricas. Puedes darte de baja cuando quieras.
                             </p>
