@@ -99,26 +99,6 @@ export default function Footer() {
                     <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed font-medium text-gray-400/80">
                         Auténtica experiencia japonesa en el corazón de Madrid. Frescura, tradición y calidad en cada pieza.
                     </p>
-                    <div className="mt-10 flex flex-col md:flex-row items-center justify-center md:justify-start gap-1.5 md:gap-4 text-[10px] text-gray-700 uppercase tracking-[0.25em] font-black italic">
-                        <div className="flex items-center gap-1.5">
-                            <span>© 2026 DESARROLLADO POR SELENIT</span>
-                            <motion.div
-                                animate={{ 
-                                    scale: [1, 1.25, 1],
-                                    opacity: [0.6, 1, 0.6]
-                                }}
-                                transition={{ 
-                                    duration: 1.2,
-                                    repeat: Infinity,
-                                    ease: "easeInOut"
-                                }}
-                            >
-                                <Heart size={10} className="text-red-600 fill-red-600" />
-                            </motion.div>
-                        </div>
-                        <span className="hidden md:block opacity-30">|</span>
-                        <span>TODOS LOS DERECHOS RESERVADOS</span>
-                    </div>
                 </div>
 
 
@@ -167,6 +147,30 @@ export default function Footer() {
                         <Shield size={12} strokeWidth={1.5} />
                         <span>Staff Access</span>
                     </Link>
+                </div>
+            </div>
+
+            {/* Bottom Copyright Row - Moved here for mobile priority */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-white/5">
+                <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 text-[10px] text-gray-700 uppercase tracking-[0.25em] font-black italic">
+                    <div className="flex items-center gap-1.5 order-2 md:order-1">
+                        <span>© 2026 DESARROLLADO POR SELENIT</span>
+                        <motion.div
+                            animate={{ 
+                                scale: [1, 1.25, 1],
+                                opacity: [0.6, 1, 0.6]
+                            }}
+                            transition={{ 
+                                duration: 1.2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                        >
+                            <Heart size={10} className="text-red-600 fill-red-600" />
+                        </motion.div>
+                    </div>
+                    
+                    <span className="order-1 md:order-2">TODOS LOS DERECHOS RESERVADOS</span>
                 </div>
             </div>
         </footer>
