@@ -66,7 +66,7 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
     removeToast,
 }) => {
     return (
-        <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 w-full max-w-[400px] pointer-events-none">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:right-6 md:translate-x-0 z-[9999] flex flex-col gap-3 w-[calc(100%-32px)] md:w-full md:max-w-[400px] pointer-events-none">
             <AnimatePresence mode="popLayout">
                 {toasts.map(toast => (
                     <motion.div
