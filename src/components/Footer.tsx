@@ -102,13 +102,13 @@ export default function Footer() {
                                     href={url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/50 overflow-hidden group`}
+                                    className={`w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-red-500/20 overflow-hidden group`}
                                     title={social.name}
                                 >
                                     <img 
                                         src={social.icon} 
                                         alt={social.name} 
-                                        className={`w-5 h-5 object-contain transition-transform group-hover:scale-110 ${social.id === 'threads' ? 'invert' : ''}`} 
+                                        className="w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 brightness-0 invert opacity-80 group-hover:opacity-100" 
                                     />
                                 </a>
                             );
@@ -117,10 +117,10 @@ export default function Footer() {
                         {/* Phone Button */}
                         <a
                             href={`tel:${cleanPhone}`}
-                            className="w-11 h-11 rounded-xl bg-red-600 text-white flex items-center justify-center transition-all duration-300 hover:bg-red-700 hover:scale-110 active:scale-95 shadow-xl shadow-red-600/30 ml-2"
+                            className="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center transition-all duration-300 hover:bg-red-700 hover:scale-110 active:scale-95 shadow-xl shadow-red-600/40 ml-2"
                             title={`Llamar: ${phoneNumber}`}
                         >
-                            <Phone size={22} strokeWidth={2} />
+                            <Phone size={24} strokeWidth={2} />
                         </a>
                     </div>
 
