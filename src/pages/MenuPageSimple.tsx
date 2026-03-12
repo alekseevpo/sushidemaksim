@@ -22,7 +22,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
-import { MenuSkeleton } from '../components/skeletons/MenuSkeleton';
+import { MenuSkeleton, MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
 
 interface MenuItem {
     id: number;
@@ -101,7 +101,20 @@ export default function MenuPageSimple() {
     useEffect(() => {
         loadMenu();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedCategory, debouncedSearch, user]);
+    }, [selectedCategory, debouncedSearch]);
+
+    // Separate effect for favorites to avoid re-fetching the whole menu when user data arrives
+    useEffect(() => {
+        if (user) {
+            api.get('/user/favorites')
+                .then(favData => {
+                    setFavoriteItems(new Set(favData.favorites.map((f: any) => f.id)));
+                })
+                .catch(console.error);
+        } else {
+            setFavoriteItems(new Set());
+        }
+    }, [user]);
 
     // Scroll to top when category changes to ensure user sees the results
     useEffect(() => {
@@ -118,7 +131,11 @@ export default function MenuPageSimple() {
     }, [debouncedSearch, isLoading, items.length]);
 
     const loadMenu = async () => {
-        setIsLoading(true);
+        // Only show skeleton if we have no items yet (initial load or category change)
+        if (items.length === 0) {
+            setIsLoading(true);
+        }
+        
         try {
             const qs = new URLSearchParams();
             if (selectedCategory && selectedCategory !== 'all') {
@@ -129,11 +146,6 @@ export default function MenuPageSimple() {
             }
             const data = await api.get(`/menu?${qs.toString()}`);
             setItems(data.items);
-
-            if (user) {
-                const favData = await api.get('/user/favorites');
-                setFavoriteItems(new Set(favData.favorites.map((f: any) => f.id)));
-            }
 
             // Check for deep link after items are loaded
             const params = new URLSearchParams(window.location.search);
@@ -451,7 +463,14 @@ export default function MenuPageSimple() {
 
                     {/* Items */}
                     {isLoading ? (
-                        <MenuSkeleton />
+                        <>
+                            <div className="flex items-center gap-4 mb-6 md:mb-8">
+                                <div className="w-12 h-12 rounded-2xl skeleton shrink-0" />
+                                <div className="h-8 w-48 skeleton rounded-xl" />
+                                <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent" />
+                            </div>
+                            <MenuItemsSkeleton />
+                        </>
                     ) : items.length === 0 ? (
                         <div className="text-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200">
                             <div className="text-6xl mb-4">🙊</div>
