@@ -108,7 +108,7 @@ export default function Footer() {
                                     <img 
                                         src={social.icon} 
                                         alt={social.name} 
-                                        className="w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 brightness-0 invert opacity-80 group-hover:opacity-100" 
+                                        className={`w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 opacity-80 group-hover:opacity-100 ${social.id !== 'threads' ? 'brightness-0 invert' : ''}`} 
                                     />
                                 </a>
                             );
