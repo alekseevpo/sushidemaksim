@@ -69,7 +69,7 @@ export default function Newsletter() {
                                     required
                                     disabled={isLoading}
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={e => setEmail(e.target.value)}
                                     placeholder="Tu mejor email..."
                                     className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder:text-gray-600 disabled:opacity-50"
                                 />

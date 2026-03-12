@@ -22,8 +22,6 @@ export default function BlogPage() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
 
-
-
     useEffect(() => {
         const fetchPosts = async () => {
             try {

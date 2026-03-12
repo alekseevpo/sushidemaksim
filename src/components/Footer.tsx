@@ -26,7 +26,8 @@ export default function Footer() {
                         </span>
                     </div>
                     <p className="text-sm max-w-xs mx-auto md:mx-0">
-                        El mejor sushi de la ciudad, directo a tu puerta con la frescura que mereces.
+                        El mejor sushi de la ciudad, directo a tu puerta con la frescura que
+                        mereces.
                     </p>
                     <p className="text-[10px] mt-4 text-gray-600 uppercase tracking-widest font-black shrink-0">
                         © 2026 DESARROLLADO POR SELENIT
