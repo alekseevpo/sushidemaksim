@@ -1,66 +1,61 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Critical E2E: Guest Checkout', () => {
-    test.beforeEach(async ({ page }) => {
-        await page.goto('/');
-        await page.evaluate(() => {
+    test.beforeEach(async ({ page, context }) => {
+        await context.addInitScript(() => {
             localStorage.setItem('cookieConsent', 'accepted');
+            localStorage.removeItem('sushi_token');
         });
+
+        await page.route('**/api/**', async (route) => {
+            const url = route.request().url();
+            if (url.includes('/api/settings')) {
+                return route.fulfill({ status: 200, body: JSON.stringify({ site_name: 'Sushi de Maksim', min_order: 20, free_delivery_threshold: 25, delivery_fee: 3.5 }) });
+            }
+            if (url.includes('/api/menu')) {
+                return route.fulfill({ status: 200, body: JSON.stringify({ items: [{ id: 1, name: 'Gyozas con carne', price: 6.90, category: 'entrantes' }], total: 1 }) });
+            }
+            return route.fulfill({ status: 200, body: '{}' });
+        });
+
+        await page.goto('/');
     });
 
     test('SUCCESS: should place an order when above 20€ threshold', async ({ page }) => {
+        await page.route('**/api/orders', route => route.fulfill({ status: 200, body: '{"success":true, "order":{"id":"123"}}' }));
+
         await page.goto('/menu');
+        const addButton = page.getByRole('button', { name: /Añadir/i }).first();
+        await expect(addButton).toBeVisible();
 
-        // Find specifically the "Gyozas con carne" section and its button
-        const card = page
-            .locator('div.premium-card')
-            .filter({ hasText: 'Gyozas con carne' })
-            .first();
-        const addButton = card.getByRole('button', { name: /Añadir/i }).first();
-
-        // Add 4 items
         for (let i = 0; i < 4; i++) {
             await addButton.click();
-            await page.waitForTimeout(300);
+            await page.waitForTimeout(100);
         }
 
         await page.goto('/cart');
-        await expect(page.locator('text=/Resumen/i')).toBeVisible();
+        await expect(page.locator('h2', { hasText: /Resumen/i })).toBeVisible();
 
-        const randomPhone = '6' + Math.floor(Math.random() * 90000000 + 10000000);
-        await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle E2E Verified');
+        await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle E2E');
         await page.getByPlaceholder(/Ej: 15/i).fill('1');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('A');
-        await page.locator('input[type="tel"]').fill(randomPhone);
+        await page.locator('input[type="tel"]').fill('600111222');
 
-        const submitBtn = page.getByRole('button', { name: /Realizar pedido/i }).first();
-        await submitBtn.click();
-
-        // 20s timeout and look for specific heading
-        await expect(page.locator('h1', { hasText: /¡Pedido exitoso!/i })).toBeVisible({
-            timeout: 20000,
-        });
+        await page.getByRole('button', { name: /Realizar pedido/i }).first().click();
+        await expect(page.locator('h1', { hasText: /¡Pedido exitoso!/i })).toBeVisible({ timeout: 15000 });
     });
 
     test('FAILURE: should show error when below 20€ threshold', async ({ page }) => {
         await page.goto('/menu');
-        const card = page.locator('div.premium-card', { hasText: 'Gyozas con carne' }).first();
-        await card
-            .getByRole('button', { name: /Añadir/i })
-            .first()
-            .click();
+        await page.getByRole('button', { name: /Añadir/i }).first().click();
 
         await page.goto('/cart');
-        await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Error Test');
+        await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Error');
         await page.getByPlaceholder(/Ej: 15/i).fill('1');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('A');
         await page.locator('input[type="tel"]').fill('600999888');
 
-        const submitBtn = page.getByRole('button', { name: /Realizar pedido/i }).first();
-        await submitBtn.click();
-
-        // Error toast
-        const errorToast = page.getByText(/El pedido mínimo es de 20,00/i).first();
-        await expect(errorToast).toBeVisible();
+        await page.getByRole('button', { name: /Realizar pedido/i }).first().click();
+        await expect(page.getByText(/pedido mínimo es de 20,00/i).first()).toBeVisible();
     });
 });

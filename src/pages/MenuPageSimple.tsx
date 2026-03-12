@@ -108,11 +108,7 @@ export default function MenuPageSimple() {
     // Separate effect for favorites to avoid re-fetching the whole menu when user data arrives
     useEffect(() => {
         if (user) {
-            api.get('/user/favorites')
-                .then(favData => {
-                    setFavoriteItems(new Set(favData.favorites.map((f: any) => f.id)));
-                })
-                .catch(console.error);
+            fetchFavorites();
         } else {
             setFavoriteItems(new Set());
         }
@@ -132,12 +128,20 @@ export default function MenuPageSimple() {
         }
     }, [debouncedSearch, isLoading, items.length]);
 
+    const fetchFavorites = async () => {
+        try {
+            const favData = await api.get('/user/favorites');
+            setFavoriteItems(new Set(favData.favorites.map((f: any) => f.id)));
+        } catch (error) {
+            console.error('Failed to fetch favorites', error);
+        }
+    };
+
     const loadMenu = async () => {
         // Only show skeleton if we have no items yet (initial load or category change)
         if (items.length === 0) {
             setIsLoading(true);
         }
-
         try {
             const qs = new URLSearchParams();
             if (selectedCategory && selectedCategory !== 'all') {

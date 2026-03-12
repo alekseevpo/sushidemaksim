@@ -17,7 +17,7 @@ import LoginModal from './LoginModal';
 
 export default function Header() {
     const { itemCount } = useCart();
-    const { user, isAuthenticated, logout } = useAuth();
+    const { user, isAuthenticated, logout, isLoading } = useAuth();
     const location = useLocation();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
@@ -130,7 +130,9 @@ export default function Header() {
                         <div className="flex items-center gap-3">
                             {/* Desktop: User button or login */}
                             <div className="hidden md:block">
-                                {isAuthenticated && user ? (
+                                {isLoading ? (
+                                    <div className="w-24 h-10 bg-gray-100 skeleton rounded-xl" />
+                                ) : isAuthenticated && user ? (
                                     <div ref={userMenuRef} className="relative">
                                         <button
                                             onClick={() => setShowUserMenu(!showUserMenu)}
@@ -307,7 +309,9 @@ export default function Header() {
 
                                 <div className="h-px bg-gray-100 my-4" />
 
-                                {isAuthenticated && user ? (
+                                {isLoading ? (
+                                    <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl" />
+                                ) : isAuthenticated && user ? (
                                     <div className="space-y-2">
                                         <div className="px-4 py-2">
                                             <p className="font-black text-gray-900 text-sm mb-0.5">

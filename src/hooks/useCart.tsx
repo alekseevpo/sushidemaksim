@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { CartItem, SushiItem } from '../types';
 import { api } from '../utils/api';
 import { useAuth } from './useAuth';
@@ -11,6 +11,7 @@ interface CartContextType {
     removeItem: (id: string) => Promise<void>;
     updateQuantity: (id: string, quantity: number) => Promise<void>;
     clearCart: () => Promise<void>;
+    syncGuestItems: () => Promise<void>;
     itemCount: number;
 }
 
@@ -20,11 +21,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const { isAuthenticated } = useAuth();
+    const { user } = useAuth();
+    const prevAuthRef = useRef(false);
+
+    useEffect(() => {
+        const isAuth = !!user;
+        const checkAndSync = async () => {
+            // If just logged in (transition from false to true)
+            if (!prevAuthRef.current && isAuth) {
+                // Delay slightly to ensure token is available in all contexts
+                setTimeout(() => {
+                    const event = new CustomEvent('auth:login_success');
+                    window.dispatchEvent(event);
+                }, 100);
+            }
+            prevAuthRef.current = isAuth;
+        };
+        checkAndSync();
+    }, [user]);
+
+    const prevUserRef = useRef(user);
+
+    useEffect(() => {
+        // Transition from user -> null (logout)
+        if (prevUserRef.current && !user) {
+            localStorage.setItem('guest_cart', JSON.stringify(items));
+        }
+        prevUserRef.current = user;
+    }, [user, items]);
 
     const loadCart = useCallback(
         async (silent = false) => {
-            if (!isAuthenticated) {
+            if (!user) {
                 const localCart = localStorage.getItem('guest_cart');
                 if (localCart) {
                     try {
@@ -72,11 +100,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 setIsLoading(false);
             }
         },
-        [isAuthenticated]
+        [user]
     );
 
     useEffect(() => {
         loadCart();
+        
+        const handleSync = () => {
+            syncGuestItems();
+        };
+        window.addEventListener('auth:login_success', handleSync);
+        return () => window.removeEventListener('auth:login_success', handleSync);
     }, [loadCart]);
 
     const addItem = async (item: SushiItem) => {
@@ -93,7 +127,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems(newItems);
         setTotal(prev => prev + item.price);
 
-        if (!isAuthenticated) {
+        if (!user) {
             localStorage.setItem('guest_cart', JSON.stringify(newItems));
             return;
         }
@@ -115,7 +149,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems(newItems);
         setTotal(prev => prev - item.price * item.quantity);
 
-        if (!isAuthenticated) {
+        if (!user) {
             localStorage.setItem('guest_cart', JSON.stringify(newItems));
             return;
         }
@@ -143,7 +177,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems(newItems);
         setTotal(prev => prev + item.price * diff);
 
-        if (!isAuthenticated) {
+        if (!user) {
             localStorage.setItem('guest_cart', JSON.stringify(newItems));
             return;
         }
@@ -165,7 +199,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems([]);
         setTotal(0);
 
-        if (!isAuthenticated) {
+        if (!user) {
             localStorage.removeItem('guest_cart');
             return;
         }
@@ -175,6 +209,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
             await loadCart(true);
         } catch (e) {
             await loadCart(true);
+        }
+    };
+
+    const syncGuestItems = async () => {
+        const localCart = localStorage.getItem('guest_cart');
+        if (!localCart) return;
+
+        try {
+            const guestItems = JSON.parse(localCart);
+            // Sync each items to server
+            for (const item of guestItems) {
+                await api.post('/cart', {
+                    menuItemId: parseInt(item.id),
+                    quantity: item.quantity,
+                });
+            }
+            localStorage.removeItem('guest_cart');
+            await loadCart(true);
+        } catch (e) {
+            console.error('Failed to sync guest cart', e);
         }
     };
 
@@ -190,6 +244,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 removeItem,
                 updateQuantity,
                 clearCart,
+                syncGuestItems,
                 itemCount,
             }}
         >

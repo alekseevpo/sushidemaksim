@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { User, UserAddress, Order } from '../types';
 import { api } from '../utils/api';
 
@@ -51,6 +51,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(false);
         }
     };
+
+    const prevAuthRef = useRef(false);
+    useEffect(() => {
+        const isAuth = !!user;
+        const checkAndSync = async () => {
+            // If just logged in (transition from false to true)
+            if (!prevAuthRef.current && isAuth) {
+                // Delay slightly to ensure token is available in all contexts
+                setTimeout(() => {
+                    const event = new CustomEvent('auth:login_success');
+                    window.dispatchEvent(event);
+                }, 100);
+            }
+            prevAuthRef.current = isAuth;
+        };
+        checkAndSync();
+    }, [user]);
 
     useEffect(() => {
         loadUser();
