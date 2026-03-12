@@ -69,16 +69,13 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
             // List of public pages that should NOT redirect on 401
             const publicPages = ['/', '/menu', '/cart', '/promo', '/contacts', '/blog'];
-            const isPublicPage = publicPages.includes(window.location.pathname) || 
-                               window.location.pathname.startsWith('/blog/');
+            const isPublicPage =
+                publicPages.includes(window.location.pathname) ||
+                window.location.pathname.startsWith('/blog/');
 
-            // Don't reload/redirect if the user is trying to login/register 
+            // Don't reload/redirect if the user is trying to login/register
             // OR if they are already on a public page
-            if (
-                endpoint !== '/auth/login' &&
-                endpoint !== '/auth/register' &&
-                !isPublicPage
-            ) {
+            if (endpoint !== '/auth/login' && endpoint !== '/auth/register' && !isPublicPage) {
                 window.location.href = '/';
             }
 

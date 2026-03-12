@@ -92,11 +92,11 @@ export default function MenuPageSimple() {
     // Debounce search input — only fire API call after 350ms of no typing
     useEffect(() => {
         if (!search && !debouncedSearch) return; // Skip initial empty search
-        
+
         const handler = setTimeout(() => {
             setDebouncedSearch(search);
         }, 350);
-        
+
         return () => clearTimeout(handler);
     }, [search, debouncedSearch]);
 
@@ -137,7 +137,7 @@ export default function MenuPageSimple() {
         if (items.length === 0) {
             setIsLoading(true);
         }
-        
+
         try {
             const qs = new URLSearchParams();
             if (selectedCategory && selectedCategory !== 'all') {

@@ -8,7 +8,7 @@ export const MenuItemsSkeleton = () => (
             >
                 {/* Image Container Skeleton */}
                 <div className="aspect-[4/3] md:h-56 skeleton w-full" />
-                
+
                 {/* Info Container Skeleton */}
                 <div className="p-3 md:p-6 flex flex-col flex-1">
                     <div className="mb-2 md:mb-3 space-y-2">
@@ -51,12 +51,15 @@ export const MenuSkeleton = () => (
                     <div className="h-10 md:h-14 w-40 md:w-64 skeleton rounded-2xl" />
                     <div className="h-10 md:h-12 w-10 md:w-80 skeleton rounded-2xl" />
                 </div>
-                
+
                 {/* Mobile Categories Scroll Skeleton (Hidden on desktop) */}
                 <div className="mb-6 lg:hidden">
                     <div className="flex gap-2 overflow-hidden">
                         {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="h-10 w-28 skeleton rounded-2xl shrink-0 opacity-70" />
+                            <div
+                                key={i}
+                                className="h-10 w-28 skeleton rounded-2xl shrink-0 opacity-70"
+                            />
                         ))}
                     </div>
                 </div>

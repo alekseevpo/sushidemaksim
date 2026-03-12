@@ -13,49 +13,51 @@ export default function Footer() {
 
     const phoneNumber = settings?.contact_phone || '+34 641 518 390';
     const cleanPhone = phoneNumber.replace(/\s/g, '');
-    
+
     // Social Platforms Configuration
     const socialConfig = [
-        { 
-            id: 'whatsapp', 
-            name: 'WhatsApp', 
-            icon: '/whatsapp.png', 
+        {
+            id: 'whatsapp',
+            name: 'WhatsApp',
+            icon: '/whatsapp.png',
             url: `https://wa.me/${cleanPhone.replace('+', '')}`,
-            hover: 'hover:bg-green-500/20 hover:border-green-500/30'
+            hover: 'hover:bg-green-500/20 hover:border-green-500/30',
         },
-        { 
-            id: 'telegram', 
-            name: 'Telegram', 
-            icon: '/telegram.png', 
-            url: '#', 
-            hover: 'hover:bg-blue-400/20 hover:border-blue-400/30'
+        {
+            id: 'telegram',
+            name: 'Telegram',
+            icon: '/telegram.png',
+            url: '#',
+            hover: 'hover:bg-blue-400/20 hover:border-blue-400/30',
         },
-        { 
-            id: 'instagram', 
-            name: 'Instagram', 
-            icon: '/instagram.png', 
-            url: 'https://www.instagram.com/sushi_de_maksim/', 
-            hover: 'hover:bg-pink-500/20 hover:border-pink-500/30'
+        {
+            id: 'instagram',
+            name: 'Instagram',
+            icon: '/instagram.png',
+            url: 'https://www.instagram.com/sushi_de_maksim/',
+            hover: 'hover:bg-pink-500/20 hover:border-pink-500/30',
         },
-        { 
-            id: 'thefork', 
-            name: 'The Fork', 
-            icon: '/cooking-recipes-book-with-a-fork-and-a-spoon-in-cross-on-the-cover.png', 
-            url: '#', 
-            hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30'
+        {
+            id: 'thefork',
+            name: 'The Fork',
+            icon: '/cooking-recipes-book-with-a-fork-and-a-spoon-in-cross-on-the-cover.png',
+            url: '#',
+            hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30',
         },
-        { 
-            id: 'threads', 
-            name: 'Threads', 
-            icon: '/threads.png', 
-            url: '#', 
-            hover: 'hover:bg-white/10 hover:border-white/20'
-        }
+        {
+            id: 'threads',
+            name: 'Threads',
+            icon: '/threads.png',
+            url: '#',
+            hover: 'hover:bg-white/10 hover:border-white/20',
+        },
     ];
 
     // Priority: Settings URL > Static Config Default URL
     const getUrl = (platformId: string, defaultUrl: string) => {
-        const found = settings?.social_links?.find((l: any) => l.platform.toLowerCase().includes(platformId.toLowerCase()));
+        const found = settings?.social_links?.find((l: any) =>
+            l.platform.toLowerCase().includes(platformId.toLowerCase())
+        );
         return found?.url && found.url !== '#' ? found.url : defaultUrl;
     };
 
@@ -72,23 +74,31 @@ export default function Footer() {
                         </span>
                     </div>
                     <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed font-medium text-gray-400/80">
-                        Auténtica experiencia japonesa en el corazón de Madrid. Frescura, tradición y calidad en cada pieza.
+                        Auténtica experiencia japonesa en el corazón de Madrid. Frescura, tradición
+                        y calidad en cada pieza.
                     </p>
                 </div>
 
-
                 <div className="flex flex-col items-center md:items-end gap-10">
                     <div className="flex gap-10 text-[11px] font-black uppercase tracking-[0.15em] text-gray-500">
-                        <Link to="/menu" className="hover:text-white transition-colors">Menú</Link>
-                        <Link to="/blog" className="hover:text-white transition-colors">Blog</Link>
-                        <Link to="/promo" className="hover:text-white transition-colors">Promos</Link>
-                        <Link to="/contacts" className="hover:text-white transition-colors">Contacto</Link>
+                        <Link to="/menu" className="hover:text-white transition-colors">
+                            Menú
+                        </Link>
+                        <Link to="/blog" className="hover:text-white transition-colors">
+                            Blog
+                        </Link>
+                        <Link to="/promo" className="hover:text-white transition-colors">
+                            Promos
+                        </Link>
+                        <Link to="/contacts" className="hover:text-white transition-colors">
+                            Contacto
+                        </Link>
                     </div>
 
                     <div className="flex flex-wrap items-center justify-center md:justify-end gap-3">
-                        {socialConfig.map((social) => {
+                        {socialConfig.map(social => {
                             const url = getUrl(social.id, social.url);
-                            
+
                             return (
                                 <a
                                     key={social.id}
@@ -98,10 +108,10 @@ export default function Footer() {
                                     className={`w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-red-500/20 overflow-hidden group`}
                                     title={social.name}
                                 >
-                                    <img 
-                                        src={social.icon} 
-                                        alt={social.name} 
-                                        className={`w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 opacity-80 group-hover:opacity-100 ${social.id !== 'threads' ? 'brightness-0 invert' : ''}`} 
+                                    <img
+                                        src={social.icon}
+                                        alt={social.name}
+                                        className={`w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 opacity-80 group-hover:opacity-100 ${social.id !== 'threads' ? 'brightness-0 invert' : ''}`}
                                     />
                                 </a>
                             );
@@ -134,20 +144,20 @@ export default function Footer() {
                     <div className="flex items-center gap-1.5 order-2 md:order-1">
                         <span>© 2026 DESARROLLADO POR SELENIT</span>
                         <motion.div
-                            animate={{ 
+                            animate={{
                                 scale: [1, 1.25, 1],
-                                opacity: [0.6, 1, 0.6]
+                                opacity: [0.6, 1, 0.6],
                             }}
-                            transition={{ 
+                            transition={{
                                 duration: 1.2,
                                 repeat: Infinity,
-                                ease: "easeInOut"
+                                ease: 'easeInOut',
                             }}
                         >
                             <Heart size={10} className="text-red-600 fill-red-600" />
                         </motion.div>
                     </div>
-                    
+
                     <span className="order-1 md:order-2">TODOS LOS DERECHOS RESERVADOS</span>
                 </div>
             </div>
