@@ -24,7 +24,18 @@ export default function Header() {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [isCartBumping, setIsCartBumping] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
+
+    // Track scroll for dynamic header styling
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Check initial scroll
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -93,9 +104,19 @@ export default function Header() {
 
     return (
         <>
-            <header className="sticky top-0 z-[100] transition-all duration-300 bg-white/30 backdrop-blur-xl border-b border-white/20">
+            <header
+                className={`sticky top-0 z-[100] transition-all duration-300 border-b
+                ${
+                    isScrolled
+                        ? 'bg-white/95 backdrop-blur-xl shadow-sm border-gray-100'
+                        : 'bg-white/50 backdrop-blur-md border-transparent'
+                }
+            `}
+            >
                 <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex items-center justify-between h-20">
+                    <div
+                        className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20'}`}
+                    >
                         {/* Logo */}
                         <Link
                             to="/"
@@ -256,9 +277,9 @@ export default function Header() {
                                 <Link
                                     id="cart-icon"
                                     to="/cart"
-                                    className="relative p-2.5 no-underline text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center"
+                                    className="relative p-3 no-underline text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center min-w-[44px] min-h-[44px]"
                                 >
-                                    <ShoppingCart size={20} strokeWidth={1.5} />
+                                    <ShoppingCart size={22} strokeWidth={1.5} />
                                     <AnimatePresence>
                                         {itemCount > 0 && (
                                             <motion.span
@@ -283,12 +304,12 @@ export default function Header() {
                             {/* Mobile burger */}
                             <button
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                className="md:hidden border-none bg-gray-50 p-2.5 rounded-xl cursor-pointer text-gray-800"
+                                className="md:hidden border-none bg-gray-50 p-3 rounded-xl cursor-pointer text-gray-800 flex items-center justify-center min-w-[44px] min-h-[44px]"
                             >
                                 {showMobileMenu ? (
-                                    <X size={20} strokeWidth={1.5} />
+                                    <X size={22} strokeWidth={1.5} />
                                 ) : (
-                                    <Menu size={20} strokeWidth={1.5} />
+                                    <Menu size={22} strokeWidth={1.5} />
                                 )}
                             </button>
                         </div>
@@ -309,20 +330,26 @@ export default function Header() {
                                     className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] md:hidden"
                                 />
 
+                                {/* Bottom Sheet */}
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    initial={{ y: '100%' }}
+                                    animate={{ y: 0 }}
+                                    exit={{ y: '100%' }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="fixed right-4 top-[80px] w-[260px] bg-white rounded-3xl shadow-2xl z-[9999] md:hidden overflow-hidden border border-gray-100 origin-top-right"
+                                    className="fixed inset-x-0 bottom-0 bg-white rounded-t-[32px] shadow-2xl z-[9999] md:hidden overflow-hidden border-t border-gray-100"
                                 >
-                                    <div className="p-3 space-y-1 max-h-[calc(100vh-100px)] overflow-y-auto">
+                                    {/* Drag Handle (visual only) */}
+                                    <div className="flex justify-center pt-4 pb-2">
+                                        <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+                                    </div>
+
+                                    <div className="px-5 pb-8 pt-2 space-y-2 max-h-[85vh] overflow-y-auto w-full">
                                         {navLinks.map(link => (
                                             <Link
                                                 key={link.to}
                                                 to={link.to}
                                                 onClick={() => setShowMobileMenu(false)}
-                                                className={`flex items-center px-4 py-3 rounded-2xl font-black text-sm no-underline hover:bg-gray-50
+                                                className={`flex items-center px-5 py-4 rounded-2xl font-black text-sm no-underline hover:bg-gray-50
                           ${link.highlight ? 'text-red-600' : 'text-gray-700'}
                           ${location.pathname === link.to ? 'bg-gray-100' : ''}`}
                                             >
@@ -342,12 +369,12 @@ export default function Header() {
                                         {isLoading ? (
                                             <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
                                         ) : isAuthenticated && user ? (
-                                            <div className="space-y-1">
-                                                <div className="px-4 py-2">
+                                            <div className="space-y-2 pt-2">
+                                                <div className="px-5 py-3 bg-gray-50 rounded-2xl mb-2">
                                                     <p className="font-black text-gray-900 text-sm mb-0.5 line-clamp-1">
                                                         {user.name}
                                                     </p>
-                                                    <p className="text-[11px] text-gray-400 font-medium line-clamp-1">
+                                                    <p className="text-[12px] text-gray-400 font-medium line-clamp-1">
                                                         {user.email}
                                                     </p>
                                                 </div>
@@ -355,19 +382,19 @@ export default function Header() {
                                                     <Link
                                                         to="/admin"
                                                         onClick={() => setShowMobileMenu(false)}
-                                                        className="flex items-center gap-3 px-4 py-3 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
+                                                        className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
                                                     >
-                                                        <ShieldCheck size={18} strokeWidth={1.5} />{' '}
+                                                        <ShieldCheck size={20} strokeWidth={1.5} />{' '}
                                                         PANEL ADMIN
                                                     </Link>
                                                 )}
                                                 <Link
                                                     to="/profile"
                                                     onClick={() => setShowMobileMenu(false)}
-                                                    className="flex items-center gap-3 px-4 py-3 rounded-2xl no-underline text-gray-700 text-sm font-bold hover:bg-gray-50"
+                                                    className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-gray-700 text-sm font-bold hover:bg-gray-50"
                                                 >
                                                     <User
-                                                        size={18}
+                                                        size={20}
                                                         strokeWidth={1.5}
                                                         className="text-gray-400"
                                                     />{' '}
@@ -378,9 +405,9 @@ export default function Header() {
                                                         logout();
                                                         setShowMobileMenu(false);
                                                     }}
-                                                    className="flex items-center gap-3 px-4 py-3 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-transparent text-left hover:bg-red-50"
+                                                    className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-white border border-red-100 hover:bg-red-50"
                                                 >
-                                                    <LogOut size={18} strokeWidth={1.5} /> Cerrar sesión
+                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar sesión
                                                 </button>
                                             </div>
                                         ) : (
@@ -389,9 +416,9 @@ export default function Header() {
                                                     setShowMobileMenu(false);
                                                     setIsLoginModalOpen(true);
                                                 }}
-                                                className="w-full py-3 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-[13px] shadow-xl active:scale-95 flex items-center justify-center gap-2 mt-2"
+                                                className="w-full py-4 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-sm shadow-xl active:scale-95 flex items-center justify-center gap-2 mt-4"
                                             >
-                                                <User size={16} />
+                                                <User size={18} />
                                                 ACCEDER / REGISTRO
                                             </button>
                                         )}
