@@ -310,30 +310,19 @@ export default function Header() {
                                 />
 
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="fixed inset-x-4 top-[90px] bg-white rounded-[32px] shadow-2xl z-[9999] md:hidden overflow-hidden border border-gray-100"
+                                    className="fixed right-4 top-[80px] w-[260px] bg-white rounded-3xl shadow-2xl z-[9999] md:hidden overflow-hidden border border-gray-100 origin-top-right"
                                 >
-                                    <div className="p-5 space-y-2 max-h-[calc(100vh-140px)] overflow-y-auto">
-                                        <div className="flex items-center justify-between mb-4 md:hidden">
-                                            <span className="font-black text-xl text-gray-900 px-2">
-                                                Menú
-                                            </span>
-                                            <button
-                                                onClick={() => setShowMobileMenu(false)}
-                                                className="p-2 bg-gray-50 rounded-xl border-none"
-                                            >
-                                                <X size={20} />
-                                            </button>
-                                        </div>
+                                    <div className="p-3 space-y-1 max-h-[calc(100vh-100px)] overflow-y-auto">
                                         {navLinks.map(link => (
                                             <Link
                                                 key={link.to}
                                                 to={link.to}
                                                 onClick={() => setShowMobileMenu(false)}
-                                                className={`flex items-center px-5 py-4 rounded-2xl font-black text-sm no-underline
+                                                className={`flex items-center px-4 py-3 rounded-2xl font-black text-sm no-underline
                           ${link.highlight ? 'text-red-600 bg-red-50' : 'text-gray-700 hover:bg-gray-50'}
                           ${location.pathname === link.to ? (link.highlight ? 'bg-red-100' : 'bg-gray-100') : ''}`}
                                             >
@@ -348,17 +337,17 @@ export default function Header() {
                                             </Link>
                                         ))}
 
-                                        <div className="h-px bg-gray-100 my-4 mx-2" />
+                                        <div className="h-px bg-gray-100 my-2 mx-2" />
 
                                         {isLoading ? (
                                             <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
                                         ) : isAuthenticated && user ? (
-                                            <div className="space-y-2">
-                                                <div className="px-5 py-2">
-                                                    <p className="font-black text-gray-900 text-sm mb-0.5">
+                                            <div className="space-y-1">
+                                                <div className="px-4 py-2">
+                                                    <p className="font-black text-gray-900 text-sm mb-0.5 line-clamp-1">
                                                         {user.name}
                                                     </p>
-                                                    <p className="text-xs text-gray-400 font-medium">
+                                                    <p className="text-[11px] text-gray-400 font-medium line-clamp-1">
                                                         {user.email}
                                                     </p>
                                                 </div>
@@ -366,19 +355,19 @@ export default function Header() {
                                                     <Link
                                                         to="/admin"
                                                         onClick={() => setShowMobileMenu(false)}
-                                                        className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
+                                                        className="flex items-center gap-3 px-4 py-3 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
                                                     >
-                                                        <ShieldCheck size={20} strokeWidth={1.5} />{' '}
+                                                        <ShieldCheck size={18} strokeWidth={1.5} />{' '}
                                                         PANEL ADMIN
                                                     </Link>
                                                 )}
                                                 <Link
                                                     to="/profile"
                                                     onClick={() => setShowMobileMenu(false)}
-                                                    className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-gray-700 text-sm font-bold"
+                                                    className="flex items-center gap-3 px-4 py-3 rounded-2xl no-underline text-gray-700 text-sm font-bold hover:bg-gray-50"
                                                 >
                                                     <User
-                                                        size={20}
+                                                        size={18}
                                                         strokeWidth={1.5}
                                                         className="text-gray-400"
                                                     />{' '}
@@ -389,10 +378,9 @@ export default function Header() {
                                                         logout();
                                                         setShowMobileMenu(false);
                                                     }}
-                                                    className="flex items-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-transparent text-left"
+                                                    className="flex items-center gap-3 px-4 py-3 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-transparent text-left hover:bg-red-50"
                                                 >
-                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar
-                                                    sesión
+                                                    <LogOut size={18} strokeWidth={1.5} /> Cerrar sesión
                                                 </button>
                                             </div>
                                         ) : (
@@ -401,9 +389,9 @@ export default function Header() {
                                                     setShowMobileMenu(false);
                                                     setIsLoginModalOpen(true);
                                                 }}
-                                                className="w-full py-4 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-sm shadow-xl active:scale-95 flex items-center justify-center gap-2"
+                                                className="w-full py-3 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-[13px] shadow-xl active:scale-95 flex items-center justify-center gap-2 mt-2"
                                             >
-                                                <User size={18} />
+                                                <User size={16} />
                                                 ACCEDER / REGISTRO
                                             </button>
                                         )}
