@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, MapPin, Package, LogOut, ChevronRight, Heart, Sparkles } from 'lucide-react';
@@ -39,7 +39,17 @@ export default function ProfilePage() {
 
     const [activeTab, setActiveTab] = useState<TabId>(getInitialTab());
 
-    // Sync tab with URL
+    // Sync tab with URL when it changes (e.g. back button)
+    useEffect(() => {
+        const tabParam = searchParams.get('tab') as TabId;
+        if (tabParam && ['profile', 'addresses', 'orders', 'favorites'].includes(tabParam)) {
+            if (tabParam !== activeTab) {
+                setActiveTab(tabParam);
+            }
+        }
+    }, [searchParams, activeTab]);
+
+    // Update URL when tab changes manually
     const handleTabChange = (tab: TabId) => {
         setActiveTab(tab);
         setSearchParams({ tab }, { replace: true });

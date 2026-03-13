@@ -226,8 +226,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             isSyncingRef.current = true;
             const guestItems = JSON.parse(localCart);
             
-            // Clear items state immediately to avoid showing "guest + server" mix
-            // the loadCart(true) will fetch the final merged state
+            // Clear localStorage immediately to prevent multiple sync triggers
+            localStorage.removeItem('guest_cart');
             
             // Sync each items to server
             for (const item of guestItems) {
@@ -236,7 +236,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     quantity: item.quantity,
                 });
             }
-            localStorage.removeItem('guest_cart');
             await loadCart(true);
         } catch (e) {
             console.error('Failed to sync guest cart', e);

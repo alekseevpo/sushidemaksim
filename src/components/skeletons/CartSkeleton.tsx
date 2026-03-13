@@ -73,7 +73,12 @@ export const CartSkeleton = () => (
                             <div className="h-8 w-20 skeleton rounded-lg" />
                             <div className="h-8 w-24 skeleton rounded-lg" />
                         </div>
-                        <div className="h-16 w-full skeleton rounded-2xl mt-6 shadow-sm" /> {/* Checkout button mockup */}
+                        <div className="h-16 w-full skeleton rounded-2xl mt-6 shadow-sm hidden md:block" /> {/* Desktop Button */}
+                    </div>
+
+                    {/* Mobile Sticky Button Skeleton */}
+                    <div className="md:hidden sticky bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 p-2 pb-6 z-50">
+                        <div className="h-14 w-full skeleton rounded-2xl" />
                     </div>
                 </div>
             </div>
