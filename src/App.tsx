@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CartProvider } from './hooks/useCart';
 import { AuthProvider } from './hooks/useAuth';
 import Header from './components/Header';
@@ -51,9 +52,28 @@ const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 
+// Page Wrapper for consistent transitions
+const PageWrapper = ({
+    children,
+    skeleton,
+}: {
+    children: React.ReactNode;
+    skeleton: React.ReactNode;
+}) => (
+    <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="flex-1 flex flex-col"
+    >
+        <Suspense fallback={skeleton}>{children}</Suspense>
+    </motion.div>
+);
+
 function App() {
-    const { pathname } = useLocation();
-    const isAdminRoute = pathname.startsWith('/admin');
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith('/admin');
 
     return (
         <ErrorBoundary>
@@ -65,113 +85,115 @@ function App() {
                             <CookieConsent />
                             <FloatingCart />
                             {!isAdminRoute && <Header />}
-                            <main className="flex-1 flex flex-col relative">
-                                <Routes>
-                                    <Route
-                                        path="/"
-                                        element={
-                                            <Suspense fallback={<HomeSkeleton />}>
-                                                <HomePageSimple />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/menu"
-                                        element={
-                                            <Suspense fallback={<MenuSkeleton />}>
-                                                <MenuPageSimple />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/cart"
-                                        element={
-                                            <Suspense fallback={<CartSkeleton />}>
-                                                <CartPageSimple />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/promo"
-                                        element={
-                                            <Suspense fallback={<PromoSkeleton />}>
-                                                <PromoPageSimple />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/profile"
-                                        element={
-                                            <Suspense fallback={<ProfileSkeleton />}>
-                                                <ProfilePage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/admin"
-                                        element={
-                                            <Suspense fallback={<AdminSkeleton />}>
-                                                <AdminPage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/contacts"
-                                        element={
-                                            <Suspense fallback={<GenericSkeleton />}>
-                                                <ContactsPage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/blog"
-                                        element={
-                                            <Suspense fallback={<BlogSkeleton />}>
-                                                <BlogPage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/blog/:slug"
-                                        element={
-                                            <Suspense fallback={<BlogSkeleton />}>
-                                                <BlogPostPage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/pay-for-friend/:id"
-                                        element={
-                                            <Suspense fallback={<GenericSkeleton />}>
-                                                <PayForFriendPage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/verify"
-                                        element={
-                                            <Suspense fallback={<GenericSkeleton />}>
-                                                <VerifyPage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/verify-email-change"
-                                        element={
-                                            <Suspense fallback={<GenericSkeleton />}>
-                                                <VerifyEmailChangePage />
-                                            </Suspense>
-                                        }
-                                    />
-                                    <Route
-                                        path="/track/:id"
-                                        element={
-                                            <Suspense fallback={<TrackSkeleton />}>
-                                                <OrderTrackingPage />
-                                            </Suspense>
-                                        }
-                                    />
-                                </Routes>
+                            <main className="flex-1 flex flex-col relative w-full overflow-hidden">
+                                <AnimatePresence mode="wait">
+                                    <Routes location={location} key={location.pathname}>
+                                        <Route
+                                            path="/"
+                                            element={
+                                                <PageWrapper skeleton={<HomeSkeleton />}>
+                                                    <HomePageSimple />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/menu"
+                                            element={
+                                                <PageWrapper skeleton={<MenuSkeleton />}>
+                                                    <MenuPageSimple />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/cart"
+                                            element={
+                                                <PageWrapper skeleton={<CartSkeleton />}>
+                                                    <CartPageSimple />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/promo"
+                                            element={
+                                                <PageWrapper skeleton={<PromoSkeleton />}>
+                                                    <PromoPageSimple />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/profile"
+                                            element={
+                                                <PageWrapper skeleton={<ProfileSkeleton />}>
+                                                    <ProfilePage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/admin/*"
+                                            element={
+                                                <Suspense fallback={<AdminSkeleton />}>
+                                                    <AdminPage />
+                                                </Suspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/contacts"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <ContactsPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/blog"
+                                            element={
+                                                <PageWrapper skeleton={<BlogSkeleton />}>
+                                                    <BlogPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/blog/:slug"
+                                            element={
+                                                <PageWrapper skeleton={<BlogSkeleton />}>
+                                                    <BlogPostPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/pay-for-friend/:id"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <PayForFriendPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/verify"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <VerifyPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/verify-email-change"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <VerifyEmailChangePage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="/track/:id"
+                                            element={
+                                                <PageWrapper skeleton={<TrackSkeleton />}>
+                                                    <OrderTrackingPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                    </Routes>
+                                </AnimatePresence>
                             </main>
                             {!isAdminRoute && <Footer />}
                         </div>
