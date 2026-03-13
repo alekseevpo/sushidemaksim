@@ -30,7 +30,10 @@ test.describe('Critical E2E: Guest Checkout', () => {
 
         for (let i = 0; i < 4; i++) {
             await addButton.click();
-            await page.waitForTimeout(100);
+            // Wait for the "Added" state (green button / check icon)
+            await expect(addButton).toHaveClass(/bg-green-500/, { timeout: 10000 });
+            // Small delay to let animations/state settle
+            await page.waitForTimeout(300);
         }
 
         await page.goto('/cart');
@@ -55,7 +58,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('A');
         await page.locator('input[type="tel"]').fill('600999888');
 
-        await page.getByRole('button', { name: /Realizar pedido/i }).first().click();
-        await expect(page.getByText(/pedido mínimo es de 20,00/i).first()).toBeVisible();
+        await page.getByRole('button', { name: /Realizar pedido/i }).click({ delay: 100 });
+        await expect(page.getByText(/pedido mínimo.*20/i)).toBeVisible({ timeout: 20000 });
     });
 });

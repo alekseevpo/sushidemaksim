@@ -79,10 +79,11 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         }));
 
         // 1. Login
-        await page.getByRole('button', { name: /ACCEDER/i }).first().click();
+        const loginBtn = page.getByRole('button', { name: /ACCEDER/i }).filter({ visible: true }).first();
+        await loginBtn.click({ delay: 100 });
         await page.getByPlaceholder(/tu@email.com/i).fill('sender@test.com');
         await page.getByPlaceholder(/Tu contraseña/i).fill('password123');
-        await page.getByRole('button', { name: /Iniciar sesión/i }).click();
+        await page.getByRole('button', { name: /Iniciar sesión/i }).click({ delay: 100 });
         
         // Wait for login to complete and UI to update
         await expect(page.locator('header')).toContainText('Sender', { timeout: 20000 });
