@@ -99,6 +99,18 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
                 408
             );
         }
+        // Network errors (server down, no internet, CORS, etc.)
+        if (
+            error instanceof TypeError &&
+            (error.message === 'Failed to fetch' ||
+                error.message === 'Load failed' ||
+                error.message.includes('NetworkError'))
+        ) {
+            throw new ApiError(
+                'No se pudo conectar con el servidor. Comprueba tu conexión a internet e inténtalo de nuevo.',
+                0
+            );
+        }
         throw error;
     } finally {
         clearTimeout(timeoutId);
