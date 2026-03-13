@@ -649,22 +649,23 @@ export default function CartPageSimple() {
                                                         <Plus size={14} strokeWidth={1.5} />
                                                     </button>
                                                 </div>
-                                                <span className="text-base md:text-base font-black text-gray-900">
-                                                    {(item.price * item.quantity)
-                                                        .toFixed(2)
-                                                        .replace('.', ',')}{' '}
-                                                    €
-                                                </span>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-base md:text-base font-black text-gray-900">
+                                                        {(item.price * item.quantity)
+                                                            .toFixed(2)
+                                                            .replace('.', ',')}{' '}
+                                                        €
+                                                    </span>
+                                                    <button
+                                                        onClick={() => removeItem(item.id)}
+                                                        className="text-gray-300 hover:text-red-500 cursor-pointer p-0 transition-colors flex items-center justify-center"
+                                                        aria-label="Eliminar"
+                                                    >
+                                                        <X size={18} strokeWidth={1.5} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-
-                                        <button
-                                            onClick={() => removeItem(item.id)}
-                                            className="text-gray-300 hover:text-red-500 cursor-pointer p-1 transition-colors"
-                                            aria-label="Eliminar"
-                                        >
-                                            <X size={16} strokeWidth={1.5} />
-                                        </button>
                                     </div>
                                 ))}
                             </div>
