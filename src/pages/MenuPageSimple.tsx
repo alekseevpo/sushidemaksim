@@ -114,19 +114,29 @@ export default function MenuPageSimple() {
         }
     }, [user]);
 
-    // Scroll to top when category changes to ensure user sees the results
+    // Scroll to top of menu section when category changes
     useEffect(() => {
         if (!isLoading) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const menuTop = document.getElementById('menu-content');
+            if (menuTop) {
+                const offset = 100; // Adjustment for header
+                const top = menuTop.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
+            }
         }
-    }, [selectedCategory, isLoading]);
+    }, [selectedCategory]);
 
-    // Scroll to top on search only if there are results and search is not empty
+    // Scroll to top of menu section on search
     useEffect(() => {
         if (debouncedSearch && !isLoading && items.length > 0) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const menuTop = document.getElementById('menu-content');
+            if (menuTop) {
+                const offset = 100;
+                const top = menuTop.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
+            }
         }
-    }, [debouncedSearch, isLoading, items.length]);
+    }, [debouncedSearch]);
 
     const fetchFavorites = async () => {
         try {
@@ -303,45 +313,55 @@ export default function MenuPageSimple() {
         <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8 overflow-x-hidden">
             <SEO
                 title="Menú y Carta de Sushi"
-                description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
+                description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio в Мадриде."
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />
             <div className="max-w-7xl mx-auto flex gap-8">
                 {/* Desktop Sidebar Sidebar */}
-                <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-[100px] self-start z-30">
+                <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-[96px] self-start z-30">
                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                         <h2 className="text-lg font-black text-gray-900 mb-6 px-2">Categorías</h2>
                         <nav className="flex flex-col gap-1">
                             <button
                                 onClick={() => setSelectedCategory('all')}
-                                className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
-                                    selectedCategory === 'all'
-                                        ? 'bg-red-50 text-red-600'
-                                        : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                className={`relative w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
+                                    selectedCategory === 'all' ? 'text-red-600' : 'text-gray-500 hover:text-gray-900'
                                 }`}
                             >
-                                <Sparkles size={20} strokeWidth={1.5} />
-                                <span className="text-sm">Todos</span>
+                                <Sparkles size={20} strokeWidth={1.5} className="relative z-10" />
+                                <span className="text-sm relative z-10">Todos</span>
+                                {selectedCategory === 'all' && (
+                                    <motion.div
+                                        layoutId="category-bg"
+                                        className="absolute inset-0 bg-red-50 rounded-2xl"
+                                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
                             </button>
                             {CATEGORIES.map(cat => (
                                 <button
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
-                                        selectedCategory === cat.id
-                                            ? 'bg-red-50 text-red-600'
-                                            : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                    className={`relative w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
+                                        selectedCategory === cat.id ? 'text-red-600' : 'text-gray-500 hover:text-gray-900'
                                     }`}
                                 >
-                                    <cat.icon size={20} strokeWidth={1.5} />
-                                    <span className="text-sm">{cat.name}</span>
+                                    <cat.icon size={20} strokeWidth={1.5} className="relative z-10" />
+                                    <span className="text-sm relative z-10">{cat.name}</span>
+                                    {selectedCategory === cat.id && (
+                                        <motion.div
+                                            layoutId="category-bg"
+                                            className="absolute inset-0 bg-red-50 rounded-2xl"
+                                            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
                                 </button>
                             ))}
                         </nav>
                     </div>
                 </aside>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0" id="menu-content">
                     {/* Search */}
                     <div className="flex items-center justify-between mb-8 h-14 relative">
                         <AnimatePresence mode="wait">
@@ -438,7 +458,7 @@ export default function MenuPageSimple() {
                     </div>
 
                     {/* Category Filter - Fixed/Sticky for all on scroll (Hidden on desktop since we have sidebar) */}
-                    <div className="sticky top-[72px] md:top-[80px] z-50 -mx-2 md:-mx-4 px-2 md:px-4 py-4 bg-white/80 backdrop-blur-xl border-b border-gray-100 mb-6 lg:hidden overflow-x-auto no-scrollbar shadow-sm">
+                    <div className="sticky top-[80px] z-50 -mx-2 md:-mx-4 px-2 md:px-4 py-4 bg-white/80 backdrop-blur-xl border-b border-gray-100 mb-6 lg:hidden overflow-x-auto no-scrollbar shadow-sm">
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 onClick={() => setSelectedCategory('all')}

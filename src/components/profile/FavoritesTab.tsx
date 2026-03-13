@@ -236,9 +236,9 @@ export default function FavoritesTab() {
 
                             <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between gap-3">
                                 <div className="flex flex-col">
-                                    <span className="text-base md:text-xl font-black text-gray-900 italic tracking-tighter">
+                                    <span className="text-base md:text-xl font-black text-gray-900 tracking-tighter">
                                         {item.price.toFixed(2).replace('.', ',')}
-                                        <span className="text-[10px] md:text-xs ml-0.5 not-italic">
+                                        <span className="text-[10px] md:text-xs ml-0.5">
                                             €
                                         </span>
                                     </span>

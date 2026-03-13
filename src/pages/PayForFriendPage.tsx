@@ -101,7 +101,7 @@ export default function PayForFriendPage() {
     const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
 
     return (
-        <div className="min-h-screen bg-[#FDFBF7] py-8 md:py-16 px-4">
+        <div className="min-h-screen bg-[#FDFBF7] py-8 md:py-16 px-2 md:px-4">
             <SEO
                 title={`¡Invita a ${senderName}! 🎁`}
                 description={`Te ha enviado esta propuesta de Sushi de Maksim. ¡Sorpréndele con su pedido favorito! 🍣✨`}
@@ -116,7 +116,7 @@ export default function PayForFriendPage() {
                     className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-gray-100"
                 >
                     {/* Hero Section */}
-                    <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-8 md:p-12 text-center text-white relative">
+                    <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-6 md:p-12 text-center text-white relative">
                         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
                             <div className="grid grid-cols-4 gap-4 p-4 opacity-50">
                                 {[...Array(8)].map((_, i) => (
@@ -165,7 +165,7 @@ export default function PayForFriendPage() {
                         </div>
                     </div>
 
-                    <div className="p-8 md:p-10">
+                    <div className="px-2 py-8 md:p-10">
                         {/* Summary */}
                         <div className="mb-10">
                             <h2 className="text-xs uppercase font-black text-gray-400 tracking-widest mb-6 flex items-center gap-2">
@@ -200,14 +200,14 @@ export default function PayForFriendPage() {
                                                 />
                                             </div>
                                             <div className="flex-1">
-                                                <p className="font-black text-gray-900 text-sm leading-tight mb-1">
+                                                <p className="font-black text-gray-900 text-xs md:text-sm leading-tight mb-0.5">
                                                     {item.name}
                                                 </p>
-                                                <p className="text-xs text-gray-400">
+                                                <p className="text-[10px] text-gray-400">
                                                     {item.quantity} ud{item.quantity > 1 ? 's' : ''}
                                                 </p>
                                             </div>
-                                            <p className="font-black text-gray-900 text-sm">
+                                            <p className="font-black text-gray-900 text-xs md:text-sm">
                                                 {(item.price_at_time * item.quantity)
                                                     .toFixed(2)
                                                     .replace('.', ',')}{' '}
@@ -224,7 +224,7 @@ export default function PayForFriendPage() {
                                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
                                             Total a pagar
                                         </p>
-                                        <p className="text-3xl font-black text-red-600 tracking-tighter">
+                                        <p className="text-2xl md:text-3xl font-black text-red-600 tracking-tighter">
                                             {order.total.toFixed(2).replace('.', ',')} €
                                         </p>
                                     </div>

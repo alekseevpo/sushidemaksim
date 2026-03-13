@@ -176,9 +176,6 @@ export default function BlogPage() {
                     )}
                 </div>
 
-                {/* Newsletter Subscription (SEO Boost) */}
-                <Newsletter />
-
                 <div className="mt-12 text-center">
                     <Link
                         to="/menu"
@@ -188,6 +185,9 @@ export default function BlogPage() {
                     </Link>
                 </div>
             </div>
+
+            {/* Newsletter Subscription (SEO Boost) */}
+            <Newsletter />
         </div>
     );
 }

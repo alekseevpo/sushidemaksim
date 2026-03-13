@@ -70,7 +70,7 @@ export default function OrderTrackingPage() {
                 description="Sigue el estado de tu pedido de Sushi de Maksim en tiempo real."
             />
 
-            <div className="max-w-4xl mx-auto px-4 pt-10">
+            <div className="max-w-4xl mx-auto px-2 md:px-4 pt-10">
                 <button
                     onClick={() => navigate(-1)}
                     className="group flex items-center gap-2 text-gray-400 hover:text-red-600 transition-colors mb-8 font-black text-xs uppercase tracking-widest"
@@ -85,7 +85,7 @@ export default function OrderTrackingPage() {
 
                 <div className="bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-white overflow-hidden">
                     {/* Header */}
-                    <div className="bg-red-600 p-8 md:p-12 text-white relative overflow-hidden">
+                    <div className="bg-red-600 p-6 md:p-12 text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
 
                         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -108,9 +108,20 @@ export default function OrderTrackingPage() {
                         </div>
                     </div>
 
-                    <div className="p-8 md:p-12">
+                    <div className="px-1 py-8 md:p-12">
+                        {/* Status Stepper Header */}
+                        <div className="mb-8 px-4 text-center md:text-left">
+                            <h2 className="text-lg font-black text-gray-900 uppercase tracking-tighter mb-2">
+                                Estado del pedido
+                            </h2>
+                            <p className="text-xs text-gray-500 font-medium flex items-center justify-center md:justify-start gap-1.5 opacity-80">
+                                <Info size={14} className="text-red-500" />
+                                Consulta aquí el progreso de tu sushi en tiempo real.
+                            </p>
+                        </div>
+
                         {/* Status Stepper */}
-                        <div className="mb-16">
+                        <div className="mb-10">
                             <OrderStepper currentStatus={order.status} />
                         </div>
 
@@ -149,7 +160,7 @@ export default function OrderTrackingPage() {
                             </div>
 
                             {/* Order Summary */}
-                            <div className="bg-gray-50 rounded-[32px] p-8 border border-white shadow-inner self-start">
+                            <div className="bg-gray-50 rounded-[32px] px-2.5 py-6 md:p-8 border border-white shadow-inner self-start">
                                 <h3 className="flex items-center gap-2 text-sm font-black text-gray-900 uppercase tracking-widest mb-6">
                                     <Package
                                         size={18}
@@ -165,11 +176,11 @@ export default function OrderTrackingPage() {
                                             key={idx}
                                             className="flex justify-between items-center text-sm"
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <span className="w-6 h-6 bg-white rounded-lg flex items-center justify-center font-black text-xs text-red-600 shadow-sm">
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-5 h-5 bg-white rounded-md flex items-center justify-center font-black text-[10px] text-red-600 shadow-sm shrink-0">
                                                     {item.quantity}
                                                 </span>
-                                                <span className="font-bold text-gray-700">
+                                                <span className="font-bold text-gray-700 text-xs md:text-sm">
                                                     {item.name}
                                                 </span>
                                             </div>
@@ -189,7 +200,7 @@ export default function OrderTrackingPage() {
                                     </span>
                                     <div className="text-3xl font-black text-gray-900 tracking-tighter">
                                         {Number(order.total).toFixed(2).replace('.', ',')}
-                                        <span className="text-sm text-red-600 italic ml-1">€</span>
+                                        <span className="text-sm text-red-600 ml-1">€</span>
                                     </div>
                                 </div>
                             </div>

@@ -55,7 +55,7 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
     const normalizedIdx = currentStatus === 'pending' ? 0 : statusIdx;
 
     return (
-        <div className="relative w-full py-8">
+        <div className="relative w-full py-4 md:py-8">
             {/* Connection Lines */}
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -translate-y-1/2 z-0 hidden md:block" />
             <div
@@ -63,7 +63,7 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                 style={{ width: `${(normalizedIdx / (STEPS.length - 1)) * 100}%` }}
             />
 
-            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0">
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-2 md:gap-0">
                 {STEPS.map((step, idx) => {
                     const isActive = idx <= normalizedIdx;
                     const isCurrent = idx === normalizedIdx;
@@ -72,45 +72,42 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                     return (
                         <div
                             key={idx}
-                            className="flex flex-row md:flex-col items-center gap-4 md:gap-3 flex-1"
+                            className={`flex flex-row md:flex-col items-center gap-3 md:gap-3 flex-1 p-2 rounded-2xl transition-all duration-500 ${
+                                isCurrent ? 'bg-red-50/50 border border-red-100/50' : ''
+                            }`}
                         >
                             <motion.div
-                                animate={isCurrent ? { scale: [1, 1.15, 1] } : {}}
+                                animate={isCurrent ? { scale: [1, 1.05, 1] } : {}}
                                 transition={isCurrent ? { repeat: Infinity, duration: 2 } : {}}
-                                className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 ${
+                                className={`w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm transition-colors border ${
                                     isCurrent
-                                        ? 'bg-red-600 text-white border-red-200'
+                                        ? 'bg-red-600 text-white border-red-400'
                                         : isActive
-                                          ? 'bg-white text-red-600 border-red-600'
-                                          : 'bg-white text-gray-300 border-gray-100'
+                                          ? 'bg-red-50 text-red-600 border-red-100'
+                                          : 'bg-white text-gray-200 border-gray-100'
                                 }`}
                             >
                                 {step.iconLabel ? (
-                                    <span className="text-lg">{step.iconLabel}</span>
+                                    <span className="text-sm md:text-lg">{step.iconLabel}</span>
                                 ) : (
-                                    <Icon size={20} strokeWidth={1.5} />
+                                    <Icon size={isActive ? 16 : 14} strokeWidth={isCurrent ? 2.5 : 1.5} />
                                 )}
                             </motion.div>
 
-                            <div className="text-left md:text-center">
+                            <div className="flex-1 md:text-center flex flex-row md:flex-col items-center justify-between md:justify-center w-full">
                                 <span
-                                    className={`block font-black text-[10px] uppercase tracking-widest ${
-                                        isActive ? 'text-gray-900' : 'text-gray-400'
+                                    className={`block font-black text-[9px] md:text-[10px] uppercase tracking-wider md:tracking-widest ${
+                                        isActive ? 'text-gray-900' : 'text-gray-300'
                                     }`}
                                 >
                                     {step.label}
                                 </span>
                                 {isCurrent && (
-                                    <span className="text-[10px] font-bold text-red-600 animate-pulse">
+                                    <span className="text-[9px] font-black text-red-600 animate-pulse bg-red-100 px-2 py-0.5 rounded-full md:mt-1">
                                         Ahora
                                     </span>
                                 )}
                             </div>
-
-                            {/* Mobile connection line */}
-                            {idx < STEPS.length - 1 && (
-                                <div className="absolute left-6 top-[48px] w-0.5 h-6 bg-gray-100 md:hidden" />
-                            )}
                         </div>
                     );
                 })}

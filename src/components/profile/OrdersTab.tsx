@@ -263,7 +263,7 @@ export default function OrdersTab() {
                             <div>
                                 <div className="text-xl md:text-2xl font-black text-gray-900 flex items-baseline gap-0.5 tracking-tighter">
                                     {order.total.toFixed(2).replace('.', ',')}
-                                    <span className="text-xs text-red-600 font-black italic">
+                                    <span className="text-xs text-red-600 font-black">
                                         €
                                     </span>
                                 </div>

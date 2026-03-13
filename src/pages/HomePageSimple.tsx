@@ -327,7 +327,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Call to Action */}
-            <section className="py-20 px-4">
+            <section className="py-20 px-2 md:px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
