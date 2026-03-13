@@ -5,7 +5,7 @@ export const ProfileSkeleton = () => (
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-white/20 skeleton border-4 border-white/10 shadow-2xl" />
-                    
+
                     <div className="flex-1 space-y-4">
                         <div className="h-10 w-64 bg-white/20 skeleton rounded-xl mx-auto md:mx-0" />
                         <div className="h-4 w-48 bg-white/20 skeleton rounded-lg mx-auto md:mx-0 opacity-60" />

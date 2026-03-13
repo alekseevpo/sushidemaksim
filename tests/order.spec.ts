@@ -7,13 +7,29 @@ test.describe('Critical E2E: Guest Checkout', () => {
             localStorage.removeItem('sushi_token');
         });
 
-        await page.route('**/api/**', async (route) => {
+        await page.route('**/api/**', async route => {
             const url = route.request().url();
             if (url.includes('/api/settings')) {
-                return route.fulfill({ status: 200, body: JSON.stringify({ site_name: 'Sushi de Maksim', min_order: 20, free_delivery_threshold: 25, delivery_fee: 3.5 }) });
+                return route.fulfill({
+                    status: 200,
+                    body: JSON.stringify({
+                        site_name: 'Sushi de Maksim',
+                        min_order: 20,
+                        free_delivery_threshold: 25,
+                        delivery_fee: 3.5,
+                    }),
+                });
             }
             if (url.includes('/api/menu')) {
-                return route.fulfill({ status: 200, body: JSON.stringify({ items: [{ id: 1, name: 'Gyozas con carne', price: 6.90, category: 'entrantes' }], total: 1 }) });
+                return route.fulfill({
+                    status: 200,
+                    body: JSON.stringify({
+                        items: [
+                            { id: 1, name: 'Gyozas con carne', price: 6.9, category: 'entrantes' },
+                        ],
+                        total: 1,
+                    }),
+                });
             }
             return route.fulfill({ status: 200, body: '{}' });
         });
@@ -22,7 +38,9 @@ test.describe('Critical E2E: Guest Checkout', () => {
     });
 
     test('SUCCESS: should place an order when above 20€ threshold', async ({ page }) => {
-        await page.route('**/api/orders', route => route.fulfill({ status: 200, body: '{"success":true, "order":{"id":"123"}}' }));
+        await page.route('**/api/orders', route =>
+            route.fulfill({ status: 200, body: '{"success":true, "order":{"id":"123"}}' })
+        );
 
         await page.goto('/menu');
         const addButton = page.getByTestId('add-to-cart-button').first();
@@ -44,8 +62,13 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('A');
         await page.locator('input[type="tel"]').fill('600111222');
 
-        await page.getByRole('button', { name: /Realizar pedido/i }).first().click();
-        await expect(page.locator('h1', { hasText: /¡Pedido exitoso!/i })).toBeVisible({ timeout: 15000 });
+        await page
+            .getByRole('button', { name: /Realizar pedido/i })
+            .first()
+            .click();
+        await expect(page.locator('h1', { hasText: /¡Pedido exitoso!/i })).toBeVisible({
+            timeout: 15000,
+        });
     });
 
     test('FAILURE: should show error when below 20€ threshold', async ({ page }) => {

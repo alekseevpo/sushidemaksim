@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
+import {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    ReactNode,
+    useCallback,
+    useRef,
+} from 'react';
 import { CartItem, SushiItem } from '../types';
 import { api } from '../utils/api';
 import { useAuth } from './useAuth';
@@ -109,15 +117,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
         [user]
     );
 
+    const syncGuestItems = useCallback(async () => {
+        const localCart = localStorage.getItem('guest_cart');
+        if (!localCart || isSyncingRef.current) return;
+
+        try {
+            isSyncingRef.current = true;
+            const guestItems = JSON.parse(localCart);
+
+            // Clear localStorage immediately to prevent multiple sync triggers
+            localStorage.removeItem('guest_cart');
+
+            // Sync each items to server
+            for (const item of guestItems) {
+                await api.post('/cart', {
+                    menuItemId: parseInt(item.id),
+                    quantity: item.quantity,
+                });
+            }
+            await loadCart(true);
+        } catch (e) {
+            console.error('Failed to sync guest cart', e);
+        } finally {
+            isSyncingRef.current = false;
+        }
+    }, [loadCart]);
+
     useEffect(() => {
         loadCart();
-        
+
         const handleSync = () => {
             syncGuestItems();
         };
         window.addEventListener('auth:login_success', handleSync);
         return () => window.removeEventListener('auth:login_success', handleSync);
-    }, [loadCart]);
+    }, [loadCart, syncGuestItems]);
 
     const addItem = async (item: SushiItem) => {
         // Haptic feedback
@@ -215,32 +249,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
             await loadCart(true);
         } catch (e) {
             await loadCart(true);
-        }
-    };
-
-    const syncGuestItems = async () => {
-        const localCart = localStorage.getItem('guest_cart');
-        if (!localCart || isSyncingRef.current) return;
-
-        try {
-            isSyncingRef.current = true;
-            const guestItems = JSON.parse(localCart);
-            
-            // Clear localStorage immediately to prevent multiple sync triggers
-            localStorage.removeItem('guest_cart');
-            
-            // Sync each items to server
-            for (const item of guestItems) {
-                await api.post('/cart', {
-                    menuItemId: parseInt(item.id),
-                    quantity: item.quantity,
-                });
-            }
-            await loadCart(true);
-        } catch (e) {
-            console.error('Failed to sync guest cart', e);
-        } finally {
-            isSyncingRef.current = false;
         }
     };
 

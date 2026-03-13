@@ -140,7 +140,7 @@ export default function Footer() {
 
             {/* Bottom Copyright Row - Moved here for mobile priority */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-white/5">
-                <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 text-[10px] text-gray-700 uppercase tracking-[0.25em] font-black italic">
+                <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 text-[10px] text-gray-700 uppercase tracking-[0.25em] font-black">
                     <div className="flex items-center gap-1.5 order-2 md:order-1">
                         <span>© 2026 DESARROLLADO POR SELENIT</span>
                         <motion.div

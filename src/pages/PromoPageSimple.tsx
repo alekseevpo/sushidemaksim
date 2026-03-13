@@ -103,54 +103,48 @@ export default function PromoPageSimple() {
                 {/* Static Promo Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
                     {staticPromos.map(promo => (
+                        <div
+                            key={promo.id}
+                            className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col group"
+                        >
+                            {/* Colored header */}
                             <div
-                                key={promo.id}
-                                className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col group"
+                                className={`p-6 md:p-8 text-center bg-gradient-to-br ${promo.bg} relative overflow-hidden`}
                             >
-                                {/* Colored header */}
-                                <div
-                                    className={`p-6 md:p-8 text-center bg-gradient-to-br ${promo.bg} relative overflow-hidden`}
-                                >
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
-                                    <div className="text-4xl md:text-5xl mb-3 relative z-10 transform group-hover:scale-110 transition-transform">
-                                        {promo.icon}
-                                    </div>
-                                    <h3 className="text-xl md:text-2xl font-black text-white mb-2 relative z-10">
-                                        {promo.title}
-                                    </h3>
-                                    <span className="inline-block bg-black/20 backdrop-blur-md text-white text-[10px] md:text-sm font-black px-4 py-1.5 rounded-full relative z-10 border border-white/20">
-                                        {promo.discount}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+                                <div className="text-4xl md:text-5xl mb-3 relative z-10 transform group-hover:scale-110 transition-transform">
+                                    {promo.icon}
+                                </div>
+                                <h3 className="text-xl md:text-2xl font-black text-white mb-2 relative z-10">
+                                    {promo.title}
+                                </h3>
+                                <span className="inline-block bg-black/20 backdrop-blur-md text-white text-[10px] md:text-sm font-black px-4 py-1.5 rounded-full relative z-10 border border-white/20">
+                                    {promo.discount}
+                                </span>
+                            </div>
+
+                            {/* Body */}
+                            <div className="p-5 md:p-6 flex flex-col flex-1">
+                                <p className="text-gray-600 font-medium text-xs md:text-sm leading-relaxed mb-6 flex-1">
+                                    {promo.description}
+                                </p>
+                                <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-400 mb-6 font-bold bg-gray-50 p-3 rounded-xl">
+                                    <Clock size={14} strokeWidth={1.5} className="text-gray-500" />
+                                    <span>
+                                        Válido hasta:{' '}
+                                        <span className="text-gray-700">{promo.valid_until}</span>
                                     </span>
                                 </div>
-
-                                {/* Body */}
-                                <div className="p-5 md:p-6 flex flex-col flex-1">
-                                    <p className="text-gray-600 font-medium text-xs md:text-sm leading-relaxed mb-6 flex-1">
-                                        {promo.description}
-                                    </p>
-                                    <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-400 mb-6 font-bold bg-gray-50 p-3 rounded-xl">
-                                        <Clock
-                                            size={14}
-                                            strokeWidth={1.5}
-                                            className="text-gray-500"
-                                        />
-                                        <span>
-                                            Válido hasta:{' '}
-                                            <span className="text-gray-700">
-                                                {promo.valid_until}
-                                            </span>
-                                        </span>
-                                    </div>
-                                    <Link
-                                        to="/menu"
-                                        className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-xs md:text-sm text-white transition-all hover:opacity-95 active:scale-95 shadow-lg shadow-gray-200"
-                                        style={{ backgroundColor: promo.color }}
-                                    >
-                                        Ver menú <ArrowRight size={16} strokeWidth={1.5} />
-                                    </Link>
-                                </div>
+                                <Link
+                                    to="/menu"
+                                    className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-xs md:text-sm text-white transition-all hover:opacity-95 active:scale-95 shadow-lg shadow-gray-200"
+                                    style={{ backgroundColor: promo.color }}
+                                >
+                                    Ver menú <ArrowRight size={16} strokeWidth={1.5} />
+                                </Link>
                             </div>
-                        ))}
+                        </div>
+                    ))}
                 </div>
 
                 {/* Weekly Banner */}

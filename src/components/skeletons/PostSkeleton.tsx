@@ -1,5 +1,3 @@
-
-
 export const PostSkeleton = () => (
     <div className="min-h-screen bg-transparent pb-20">
         {/* Back Button Skeleton */}

@@ -25,7 +25,10 @@ export const HomeSkeleton = () => (
         <section className="py-24 px-4 bg-transparent mt-12">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
                 {[1, 2, 3].map(i => (
-                    <div key={i} className="bg-white p-8 rounded-[40px] border border-gray-100 h-64 space-y-6 flex flex-col items-center">
+                    <div
+                        key={i}
+                        className="bg-white p-8 rounded-[40px] border border-gray-100 h-64 space-y-6 flex flex-col items-center"
+                    >
                         <div className="w-16 h-16 skeleton rounded-2xl shrink-0" />
                         <div className="h-6 w-3/4 skeleton rounded-lg" />
                         <div className="h-4 w-full skeleton rounded-md opacity-40" />

@@ -27,7 +27,7 @@ export default function ProfilePage() {
 
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    
+
     // Initial tab from URL or state or default
     const getInitialTab = (): TabId => {
         const tabParam = searchParams.get('tab') as TabId;
@@ -53,7 +53,7 @@ export default function ProfilePage() {
     const handleTabChange = (tab: TabId) => {
         setActiveTab(tab);
         setSearchParams({ tab }, { replace: true });
-        
+
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
             navigator.vibrate(5);
         }

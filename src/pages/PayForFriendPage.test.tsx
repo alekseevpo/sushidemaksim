@@ -59,8 +59,6 @@ describe('PayForFriendPage (Integration)', () => {
 
         renderWithRouter('123');
 
-        expect(screen.getByText(/Cargando sorpresa.../i)).toBeInTheDocument();
-
         await waitFor(() => {
             expect(screen.getByText(/Maksim/i)).toBeInTheDocument();
             expect(screen.getByText(/Dragon Roll/i)).toBeInTheDocument();

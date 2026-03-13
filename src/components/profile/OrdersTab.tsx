@@ -147,7 +147,10 @@ export default function OrdersTab() {
                     <div className="h-4 w-64 skeleton rounded-lg opacity-40" />
                 </div>
                 {[1, 2, 3].map(i => (
-                    <div key={i} className="bg-white border border-gray-100 rounded-[30px] p-6 space-y-6">
+                    <div
+                        key={i}
+                        className="bg-white border border-gray-100 rounded-[30px] p-6 space-y-6"
+                    >
                         <div className="flex justify-between items-start">
                             <div className="space-y-2">
                                 <div className="h-4 w-20 skeleton rounded" />
