@@ -118,7 +118,7 @@ export default function ProfilePage() {
             />
 
             {/* Header Section */}
-            <div className="bg-red-600 pt-12 pb-24 px-4 relative overflow-hidden">
+            <div className="bg-red-600 pt-12 pb-24 px-2 md:px-4 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#fff_0,transparent_50%)]" />
                 </div>

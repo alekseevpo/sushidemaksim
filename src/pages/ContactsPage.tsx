@@ -150,7 +150,7 @@ export default function ContactsPage() {
             />
 
             {/* Beautiful Hero with Safe Spacing */}
-            <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 px-4 overflow-hidden">
+            <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 px-2 md:px-4 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img
                         src="/sushi-hero.jpg"
@@ -191,7 +191,7 @@ export default function ContactsPage() {
             </section>
 
             {/* Content Container - No overlapping negative margins here to ensure stability */}
-            <div className="max-w-7xl mx-auto px-4 py-16 md:py-24">
+            <div className="max-w-7xl mx-auto px-2 md:px-4 py-8 md:py-24">
                 {/* Info Cards Row */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 md:mb-24">
                     <ContactInfoCard
@@ -233,7 +233,7 @@ export default function ContactsPage() {
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 relative overflow-hidden order-2 lg:order-1"
+                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 px-4 py-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 relative overflow-hidden order-2 lg:order-1"
                     >
                         <div className="relative z-10">
                             <h2 className="text-2xl md:text-3xl font-black mb-2 tracking-tight">
@@ -389,7 +389,7 @@ export default function ContactsPage() {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="max-w-7xl mx-auto bg-red-600 rounded-[2rem] md:rounded-[3rem] p-8 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-red-200"
+                    className="max-w-7xl mx-auto bg-red-600 rounded-[2rem] md:rounded-[3rem] px-5 py-10 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-red-200"
                 >
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                     <div className="relative z-10 max-w-3xl mx-auto">

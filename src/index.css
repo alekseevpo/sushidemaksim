@@ -27,6 +27,10 @@ html.lenis body {
     pointer-events: none;
 }
 
+.overflow-hidden {
+    overflow: hidden !important;
+}
+
 @layer base {
     body {
         @apply antialiased text-gray-900 bg-gray-50 overflow-x-hidden;

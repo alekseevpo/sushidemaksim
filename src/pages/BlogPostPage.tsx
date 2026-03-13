@@ -124,7 +124,7 @@ export default function BlogPostPage() {
             </div>
 
             {/* Content Section */}
-            <div className="max-w-3xl mx-auto px-6 pt-16 md:pt-24 relative">
+            <div className="max-w-3xl mx-auto px-4 md:px-6 pt-16 md:pt-24 relative">
                 {/* Floating Author Badge */}
                 <motion.div
                     initial={{ scale: 0 }}

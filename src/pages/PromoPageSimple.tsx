@@ -86,7 +86,7 @@ export default function PromoPageSimple() {
             />
 
             {/* Hero Header */}
-            <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-24 pb-32 px-4">
+            <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-24 pb-32 px-2 md:px-4">
                 <div className="absolute inset-0 bg-black/60"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF7] via-transparent to-transparent"></div>
                 <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -99,7 +99,7 @@ export default function PromoPageSimple() {
                 </div>
             </section>
 
-            <div className="max-w-7xl mx-auto px-4 -mt-16 md:-mt-20 mb-20 relative z-20">
+            <div className="max-w-7xl mx-auto px-2 md:px-4 -mt-16 md:-mt-20 mb-20 relative z-20">
                 {/* Static Promo Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
                     {staticPromos.map(promo => (
@@ -148,7 +148,7 @@ export default function PromoPageSimple() {
                 </div>
 
                 {/* Weekly Banner */}
-                <div className="bg-red-600 rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 text-center text-white mb-20 relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]">
+                <div className="bg-red-600 rounded-[2.5rem] md:rounded-[3rem] px-5 py-10 md:p-12 text-center text-white mb-20 relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]">
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                     <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/20 blur-[80px] rounded-full"></div>
                     <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-black/20 blur-[80px] rounded-full"></div>

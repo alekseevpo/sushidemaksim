@@ -202,41 +202,45 @@ export default function MenuPageSimple() {
     };
 
     const handleAddToCart = (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>) => {
-        // Determine start and end coordinates for animation
-        const cartIcon = document.getElementById('cart-icon');
-        let endX = window.innerWidth - 40; // Fallback x
-        let endY = 40; // Fallback y
+        try {
+            // Determine start and end coordinates for animation
+            const cartIcon = document.getElementById('cart-icon');
+            let endX = window.innerWidth - 40; // Fallback x
+            let endY = 40; // Fallback y
 
-        if (cartIcon) {
-            const rect = cartIcon.getBoundingClientRect();
-            endX = rect.left + rect.width / 2;
-            endY = rect.top + rect.height / 2;
+            if (cartIcon) {
+                const rect = cartIcon.getBoundingClientRect();
+                endX = rect.left + rect.width / 2;
+                endY = rect.top + rect.height / 2;
+            }
+
+            const startX = e.clientX || 0;
+            const startY = e.clientY || 0;
+
+            const animId = Date.now().toString() + Math.random().toString();
+            const hasImage = !failedImages.has(item.id) && item.image;
+
+            // Spawn the flying element
+            setFlyingItems(prev => [
+                ...prev,
+                {
+                    id: animId,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    image: hasImage ? item.image : undefined,
+                    emoji: hasImage ? undefined : EMOJI[item.category] || '🍱',
+                },
+            ]);
+
+            // Remove flying element after animation finishes
+            setTimeout(() => {
+                setFlyingItems(prev => prev.filter(f => f.id !== animId));
+            }, 1200);
+        } catch (err) {
+            console.error('Animation error:', err);
         }
-
-        const startX = e.clientX;
-        const startY = e.clientY;
-
-        const animId = Date.now().toString() + Math.random().toString();
-        const hasImage = !failedImages.has(item.id) && item.image;
-
-        // Spawn the flying element
-        setFlyingItems(prev => [
-            ...prev,
-            {
-                id: animId,
-                startX,
-                startY,
-                endX,
-                endY,
-                image: hasImage ? item.image : undefined,
-                emoji: hasImage ? undefined : EMOJI[item.category] || '🍱',
-            },
-        ]);
-
-        // Remove flying element after animation finishes
-        setTimeout(() => {
-            setFlyingItems(prev => prev.filter(f => f.id !== animId));
-        }, 1200);
 
         // Haptic feedback
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -256,11 +260,15 @@ export default function MenuPageSimple() {
             vegetarian: item.vegetarian,
             isPromo: item.is_promo,
         });
-        setAddedItems(prev => new Set(prev).add(item.id));
+
+        const itemId = item.id;
+        setAddedItems(prev => new Set(prev).add(itemId));
+
+        // Use a unique timeout per item to avoid race conditions
         setTimeout(() => {
             setAddedItems(prev => {
                 const n = new Set(prev);
-                n.delete(item.id);
+                n.delete(itemId);
                 return n;
             });
         }, 1200);

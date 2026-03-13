@@ -36,6 +36,22 @@ export default function Header() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        const lenis = (window as any).lenis;
+        if (showMobileMenu) {
+            document.body.classList.add('overflow-hidden');
+            if (lenis) lenis.stop();
+        } else {
+            document.body.classList.remove('overflow-hidden');
+            if (lenis) lenis.start();
+        }
+        return () => {
+            document.body.classList.remove('overflow-hidden');
+            if (lenis) lenis.start();
+        };
+    }, [showMobileMenu]);
+
     // Close mobile menu on route change
     useEffect(() => {
         setShowMobileMenu(false);

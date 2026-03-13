@@ -149,15 +149,30 @@ export default function CartPageSimple() {
         }
     };
 
-    const handleAddToCart = (item: MenuItem) => {
+    const handleAddToCart = (item: MenuItem, isSuggestion = false) => {
+        const wasEmpty = items.length === 0;
+
         addItem({
             id: String(item.id),
             name: item.name,
-            description: item.description,
+            description: item.description || '',
             price: item.price,
             image: item.image,
             category: item.category as any,
         });
+
+        if (isSuggestion) {
+            setSuggestions(prev => prev.filter(p => p.id !== item.id));
+        }
+
+        if (wasEmpty) {
+            const lenis = (window as any).lenis;
+            if (lenis) {
+                lenis.scrollTo(0, { duration: 1.5 });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
     };
 
     const handleOrder = async () => {
@@ -862,19 +877,7 @@ export default function CartPageSimple() {
                                                 </p>
                                             </div>
                                             <button
-                                                onClick={() => {
-                                                    addItem({
-                                                        id: String(item.id),
-                                                        name: item.name,
-                                                        description: item.description || '',
-                                                        price: item.price,
-                                                        image: item.image,
-                                                        category: item.category as any,
-                                                    });
-                                                    setSuggestions(prev =>
-                                                        prev.filter(p => p.id !== item.id)
-                                                    );
-                                                }}
+                                                onClick={() => handleAddToCart(item, true)}
                                                 className="bg-gray-900 text-white rounded-full p-1.5 hover:bg-red-600 transition-all shadow-sm flex items-center justify-center"
                                                 title="Añadir al pedido"
                                             >
