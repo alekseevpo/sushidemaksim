@@ -14,8 +14,8 @@ export default function SEO({
     title,
     description,
     keywords,
-    image = 'https://sushidemaksim.com/sushi-hero.jpg',
-    url = 'https://sushidemaksim.com',
+    image = 'https://sushidemaksim.vercel.app/og-image.jpg',
+    url = 'https://sushidemaksim.vercel.app',
     type = 'website',
     schema,
 }: SEOProps) {

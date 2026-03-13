@@ -77,11 +77,7 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
             // Don't reload/redirect if the user is trying to login/register
             // OR if they are already on a public page
-            if (
-                endpoint !== '/auth/login' &&
-                endpoint !== '/auth/register' &&
-                !isPublicPage
-            ) {
+            if (endpoint !== '/auth/login' && endpoint !== '/auth/register' && !isPublicPage) {
                 window.location.href = '/';
             }
 

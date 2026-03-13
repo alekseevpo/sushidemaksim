@@ -347,7 +347,7 @@ export default function AdminOrders({
                                 </div>
 
                                 {/* Cuerpo del pedido */}
-                                <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                                <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 overflow-hidden">
                                     {/* Info Cliente */}
                                     <div className="space-y-4">
                                         <div>
@@ -370,14 +370,14 @@ export default function AdminOrders({
                                             )}
                                         </div>
 
-                                        <div>
+                                        <div className="max-w-[280px]">
                                             <div className="flex items-center gap-2 text-gray-400 mb-2">
                                                 <Monitor size={14} strokeWidth={1.5} />
                                                 <span className="text-[10px] font-bold uppercase tracking-widest">
                                                     Dirección de Entrega
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-700 leading-relaxed font-medium">
+                                            <p className="text-sm text-gray-700 leading-relaxed font-medium break-words">
                                                 {order.delivery_address}
                                             </p>
                                         </div>

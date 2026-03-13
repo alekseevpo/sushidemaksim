@@ -334,7 +334,9 @@ export default function MenuPageSimple() {
                             <button
                                 onClick={() => setSelectedCategory('all')}
                                 className={`relative w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
-                                    selectedCategory === 'all' ? 'text-red-600' : 'text-gray-500 hover:text-gray-900'
+                                    selectedCategory === 'all'
+                                        ? 'text-red-600'
+                                        : 'text-gray-500 hover:text-gray-900'
                                 }`}
                             >
                                 <Sparkles size={20} strokeWidth={1.5} className="relative z-10" />
@@ -352,16 +354,26 @@ export default function MenuPageSimple() {
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
                                     className={`relative w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
-                                        selectedCategory === cat.id ? 'text-red-600' : 'text-gray-500 hover:text-gray-900'
+                                        selectedCategory === cat.id
+                                            ? 'text-red-600'
+                                            : 'text-gray-500 hover:text-gray-900'
                                     }`}
                                 >
-                                    <cat.icon size={20} strokeWidth={1.5} className="relative z-10" />
+                                    <cat.icon
+                                        size={20}
+                                        strokeWidth={1.5}
+                                        className="relative z-10"
+                                    />
                                     <span className="text-sm relative z-10">{cat.name}</span>
                                     {selectedCategory === cat.id && (
                                         <motion.div
                                             layoutId="category-bg"
                                             className="absolute inset-0 bg-red-50 rounded-2xl"
-                                            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                            transition={{
+                                                type: 'spring',
+                                                bounce: 0.2,
+                                                duration: 0.6,
+                                            }}
                                         />
                                     )}
                                 </button>

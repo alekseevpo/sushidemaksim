@@ -90,7 +90,10 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                                 {step.iconLabel ? (
                                     <span className="text-sm md:text-lg">{step.iconLabel}</span>
                                 ) : (
-                                    <Icon size={isActive ? 16 : 14} strokeWidth={isCurrent ? 2.5 : 1.5} />
+                                    <Icon
+                                        size={isActive ? 16 : 14}
+                                        strokeWidth={isCurrent ? 2.5 : 1.5}
+                                    />
                                 )}
                             </motion.div>
 

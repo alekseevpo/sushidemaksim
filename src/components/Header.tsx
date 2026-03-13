@@ -318,8 +318,10 @@ export default function Header() {
                                 >
                                     <div className="p-5 space-y-2 max-h-[calc(100vh-140px)] overflow-y-auto">
                                         <div className="flex items-center justify-between mb-4 md:hidden">
-                                            <span className="font-black text-xl text-gray-900 px-2">Menú</span>
-                                            <button 
+                                            <span className="font-black text-xl text-gray-900 px-2">
+                                                Menú
+                                            </span>
+                                            <button
                                                 onClick={() => setShowMobileMenu(false)}
                                                 className="p-2 bg-gray-50 rounded-xl border-none"
                                             >
@@ -389,7 +391,8 @@ export default function Header() {
                                                     }}
                                                     className="flex items-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-transparent text-left"
                                                 >
-                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar sesión
+                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar
+                                                    sesión
                                                 </button>
                                             </div>
                                         ) : (
