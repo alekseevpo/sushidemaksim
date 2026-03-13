@@ -422,6 +422,19 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
         };
     }, []);
 
+    // Prevent body scrolling when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.classList.add('overflow-hidden');
+        } else {
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        return () => {
+            document.body.classList.remove('overflow-hidden');
+        };
+    }, [isOpen]);
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
