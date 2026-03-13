@@ -44,13 +44,6 @@ export default function Footer() {
             url: 'https://www.thefork.es/restaurante/sushi-de-maksim-r804561',
             hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30',
         },
-        {
-            id: 'threads',
-            name: 'Threads',
-            icon: '/threads.png',
-            url: '#',
-            hover: 'hover:bg-white/10 hover:border-white/20',
-        },
     ];
 
     // Priority: Settings URL > Static Config Default URL
