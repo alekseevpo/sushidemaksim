@@ -322,9 +322,9 @@ export default function Header() {
                                                 key={link.to}
                                                 to={link.to}
                                                 onClick={() => setShowMobileMenu(false)}
-                                                className={`flex items-center px-4 py-3 rounded-2xl font-black text-sm no-underline
-                          ${link.highlight ? 'text-red-600 bg-red-50' : 'text-gray-700 hover:bg-gray-50'}
-                          ${location.pathname === link.to ? (link.highlight ? 'bg-red-100' : 'bg-gray-100') : ''}`}
+                                                className={`flex items-center px-4 py-3 rounded-2xl font-black text-sm no-underline hover:bg-gray-50
+                          ${link.highlight ? 'text-red-600' : 'text-gray-700'}
+                          ${location.pathname === link.to ? 'bg-gray-100' : ''}`}
                                             >
                                                 {link.label}
                                                 {location.pathname === link.to && (
