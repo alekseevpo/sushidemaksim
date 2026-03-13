@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import {
     ShoppingCart,
@@ -294,91 +295,122 @@ export default function Header() {
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
-                <AnimatePresence>
-                    {showMobileMenu && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="bg-white border-t border-gray-100 overflow-hidden md:hidden shadow-xl"
-                        >
-                            <div className="p-4 space-y-2">
-                                {navLinks.map(link => (
-                                    <Link
-                                        key={link.to}
-                                        to={link.to}
-                                        className={`flex items-center px-4 py-3.5 rounded-2xl font-black text-sm no-underline
-                      ${link.highlight ? 'text-red-600 bg-red-50' : 'text-gray-700 hover:bg-gray-50'}
-                      ${location.pathname === link.to ? (link.highlight ? 'bg-red-100' : 'bg-gray-100') : ''}`}
-                                    >
-                                        {link.label}
-                                        {location.pathname === link.to && (
-                                            <ChevronRight
-                                                size={16}
-                                                strokeWidth={1.5}
-                                                className="ml-auto"
-                                            />
-                                        )}
-                                    </Link>
-                                ))}
+                {/* Mobile Menu Overlay - Rendered in Portal to avoid stacking context issues */}
+                {createPortal(
+                    <AnimatePresence>
+                        {showMobileMenu && (
+                            <>
+                                {/* Backdrop overlay */}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    onClick={() => setShowMobileMenu(false)}
+                                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] md:hidden"
+                                />
 
-                                <div className="h-px bg-gray-100 my-4" />
-
-                                {isLoading ? (
-                                    <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl" />
-                                ) : isAuthenticated && user ? (
-                                    <div className="space-y-2">
-                                        <div className="px-4 py-2">
-                                            <p className="font-black text-gray-900 text-sm mb-0.5">
-                                                {user.name}
-                                            </p>
-                                            <p className="text-xs text-gray-400 font-medium">
-                                                {user.email}
-                                            </p>
-                                        </div>
-                                        {user.role === 'admin' && (
-                                            <Link
-                                                to="/admin"
-                                                className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                    className="fixed inset-x-4 top-[90px] bg-white rounded-[32px] shadow-2xl z-[9999] md:hidden overflow-hidden border border-gray-100"
+                                >
+                                    <div className="p-5 space-y-2 max-h-[calc(100vh-140px)] overflow-y-auto">
+                                        <div className="flex items-center justify-between mb-4 md:hidden">
+                                            <span className="font-black text-xl text-gray-900 px-2">Menú</span>
+                                            <button 
+                                                onClick={() => setShowMobileMenu(false)}
+                                                className="p-2 bg-gray-50 rounded-xl border-none"
                                             >
-                                                <ShieldCheck size={18} strokeWidth={1.5} /> PANEL
-                                                ADMIN
+                                                <X size={20} />
+                                            </button>
+                                        </div>
+                                        {navLinks.map(link => (
+                                            <Link
+                                                key={link.to}
+                                                to={link.to}
+                                                onClick={() => setShowMobileMenu(false)}
+                                                className={`flex items-center px-5 py-4 rounded-2xl font-black text-sm no-underline
+                          ${link.highlight ? 'text-red-600 bg-red-50' : 'text-gray-700 hover:bg-gray-50'}
+                          ${location.pathname === link.to ? (link.highlight ? 'bg-red-100' : 'bg-gray-100') : ''}`}
+                                            >
+                                                {link.label}
+                                                {location.pathname === link.to && (
+                                                    <ChevronRight
+                                                        size={16}
+                                                        strokeWidth={1.5}
+                                                        className="ml-auto"
+                                                    />
+                                                )}
                                             </Link>
+                                        ))}
+
+                                        <div className="h-px bg-gray-100 my-4 mx-2" />
+
+                                        {isLoading ? (
+                                            <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
+                                        ) : isAuthenticated && user ? (
+                                            <div className="space-y-2">
+                                                <div className="px-5 py-2">
+                                                    <p className="font-black text-gray-900 text-sm mb-0.5">
+                                                        {user.name}
+                                                    </p>
+                                                    <p className="text-xs text-gray-400 font-medium">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                                {user.role === 'admin' && (
+                                                    <Link
+                                                        to="/admin"
+                                                        onClick={() => setShowMobileMenu(false)}
+                                                        className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
+                                                    >
+                                                        <ShieldCheck size={20} strokeWidth={1.5} />{' '}
+                                                        PANEL ADMIN
+                                                    </Link>
+                                                )}
+                                                <Link
+                                                    to="/profile"
+                                                    onClick={() => setShowMobileMenu(false)}
+                                                    className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-gray-700 text-sm font-bold"
+                                                >
+                                                    <User
+                                                        size={20}
+                                                        strokeWidth={1.5}
+                                                        className="text-gray-400"
+                                                    />{' '}
+                                                    Mi Perfil
+                                                </Link>
+                                                <button
+                                                    onClick={() => {
+                                                        logout();
+                                                        setShowMobileMenu(false);
+                                                    }}
+                                                    className="flex items-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-transparent text-left"
+                                                >
+                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar sesión
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => {
+                                                    setShowMobileMenu(false);
+                                                    setIsLoginModalOpen(true);
+                                                }}
+                                                className="w-full py-4 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-sm shadow-xl active:scale-95 flex items-center justify-center gap-2"
+                                            >
+                                                <User size={18} />
+                                                ACCEDER / REGISTRO
+                                            </button>
                                         )}
-                                        <Link
-                                            to="/profile"
-                                            className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl no-underline text-gray-700 text-sm font-bold"
-                                        >
-                                            <User
-                                                size={18}
-                                                strokeWidth={1.5}
-                                                className="text-gray-400"
-                                            />{' '}
-                                            Mi Perfil
-                                        </Link>
-                                        <button
-                                            onClick={logout}
-                                            className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-transparent text-left"
-                                        >
-                                            <LogOut size={18} strokeWidth={1.5} /> Cerrar sesión
-                                        </button>
                                     </div>
-                                ) : (
-                                    <button
-                                        onClick={() => {
-                                            setShowMobileMenu(false);
-                                            setIsLoginModalOpen(true);
-                                        }}
-                                        className="w-full py-4 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-sm shadow-xl active:scale-95"
-                                    >
-                                        ACCEDER
-                                    </button>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>,
+                    document.body
+                )}
             </header>
 
             {isLoginModalOpen && (
