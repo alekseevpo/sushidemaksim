@@ -142,10 +142,24 @@ export default function CartPageSimple() {
 
     const loadPopularItems = async () => {
         try {
-            const data = await api.get('/menu?limit=3');
-            setPopularItems(data.items || []);
+            const [popularRes, promoRes] = await Promise.all([
+                api.get('/menu?limit=6'), // Just get top items
+                api.get('/menu?category=sets') // We don't have a direct 'discount' filter in this simple API, so we fetch sets which are often promos
+            ]);
+            
+            const popular = popularRes.items || [];
+            // Assuming "sets" might contain some promos, or we just mix categories
+            const promos = (promoRes.items || []).filter((i: any) => i.is_promo || i.discount > 0 || i.category === 'sets');
+            
+            // Combine and get unique
+            const combinedMap = new Map();
+            [...popular, ...promos].forEach((item: any) => combinedMap.set(item.id, item));
+            
+            const combined = Array.from(combinedMap.values()).slice(0, 6); // Top 6 items
+            
+            setPopularItems(combined);
         } catch (err) {
-            console.error('Failed to load popular items', err);
+            console.error('Failed to load recommended items', err);
         }
     };
 
@@ -448,28 +462,42 @@ export default function CartPageSimple() {
     if (!cartLoading && items.length === 0) {
         return (
             <div className="min-h-screen bg-transparent px-4 py-8 flex items-center">
-                <div className="max-w-4xl mx-auto text-center py-16">
+                <div className="max-w-4xl mx-auto text-center py-16 w-full">
                     <div className="text-8xl mb-4">🛒</div>
                     <h1 className="text-4xl font-bold mb-4 text-gray-900 tracking-tight">
                         Tu cesta está vacía
                     </h1>
-                    <p className="text-xl text-gray-500 mb-8">
-                        Añade platos del menú para hacer tu pedido
+                    <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                        <span className="block text-xl font-bold text-gray-900 mb-2">Mira lo que tenemos para ti</span>
+                        Añade platos del menú o elige una de nuestras sugerencias a continuación para hacer tu pedido.
                     </p>
-                    <Link
-                        to="/menu"
-                        className="bg-red-600 text-white px-6 py-3 rounded-lg no-underline font-bold inline-flex items-center gap-2 hover:bg-red-700 transition"
-                    >
-                        <ArrowLeft size={20} strokeWidth={1.5} />
-                        Volver al menú
-                    </Link>
+                    <div className="flex flex-col items-center gap-4 mb-12">
+                        <Link
+                            to="/menu"
+                            className="bg-red-600 text-white px-8 py-4 rounded-2xl no-underline font-black shadow-lg shadow-red-200 active:scale-95 transition-all w-full sm:w-auto"
+                        >
+                            Ver Menú Completo
+                        </Link>
+                        
+                        <motion.div
+                            animate={{ y: [0, 10, 0] }}
+                            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                            className="text-red-300 mt-8"
+                        >
+                            <ArrowLeft size={32} strokeWidth={2} className="rotate-[-90deg]" />
+                        </motion.div>
+                    </div>
 
                     {popularItems.length > 0 && (
-                        <div className="mt-20">
-                            <div className="flex items-center justify-center gap-3 mb-10">
-                                <Flame size={28} strokeWidth={1.5} className="text-red-600" />
-                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight m-0">
-                                    Nuestros favoritos hoy
+                        <div className="mt-12">
+                            <div className="flex flex-col items-center justify-center gap-2 mb-8">
+                                <span className="inline-block px-4 py-1.5 bg-red-50 text-red-600 text-xs font-black uppercase tracking-widest rounded-full mb-2">
+                                    Recomendaciones
+                                </span>
+                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight m-0 flex items-center gap-3 w-full justify-center">
+                                    <Flame size={28} strokeWidth={1.5} className="text-red-600 shrink-0" />
+                                    <span className="truncate">Top Ventas y Ofertas</span>
+                                    <Flame size={28} strokeWidth={1.5} className="text-red-600 shrink-0" />
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 text-left">
