@@ -478,7 +478,7 @@ export default function MenuPageSimple() {
                     </div>
 
                     {/* Category Filter - Fixed/Sticky for all on scroll (Hidden on desktop since we have sidebar) */}
-                    <div className="sticky top-[80px] z-50 -mx-2 md:-mx-4 px-2 md:px-4 py-4 bg-white/80 backdrop-blur-xl border-b border-gray-100 mb-6 lg:hidden overflow-x-auto no-scrollbar shadow-sm">
+                    <div className="sticky top-[64px] z-[40] transition-all duration-300 -mx-2 md:-mx-4 px-2 md:px-4 py-3 bg-white/95 backdrop-blur-xl border-b border-gray-100 mb-6 lg:hidden overflow-x-auto no-scrollbar shadow-sm">
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 onClick={() => setSelectedCategory('all')}
