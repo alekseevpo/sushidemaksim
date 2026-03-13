@@ -97,7 +97,7 @@ export default function PayForFriendPage() {
     }
 
     // Extract sender name from notes if present [De parte de: Name]
-    const senderMatch = order.notes.match(/\[De parte de: (.*?)\]/);
+    const senderMatch = order.notes?.match(/\[De parte de: (.*?)\]/);
     const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
 
     return (
@@ -174,11 +174,14 @@ export default function PayForFriendPage() {
                             <div className="space-y-4">
                                 {order.items.map(item => {
                                     // Ensure image URL is absolute for nested routes
-                                    const itemImage = item.image.startsWith('http')
-                                        ? item.image
-                                        : item.image.startsWith('/')
-                                          ? item.image
-                                          : `/${item.image}`;
+                                    const itemImage =
+                                        item.image && typeof item.image === 'string'
+                                            ? item.image.startsWith('http')
+                                                ? item.image
+                                                : item.image.startsWith('/')
+                                                  ? item.image
+                                                  : `/${item.image}`
+                                            : '/api/placeholder/100/100';
 
                                     return (
                                         <div

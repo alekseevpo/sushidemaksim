@@ -1006,28 +1006,20 @@ export default function CartPageSimple() {
                                 {isOrdering ? 'Procesando...' : 'Realizar pedido →'}
                             </button>
 
-                            {isAuthenticated ? (
-                                <button
-                                    onClick={handleInvite}
-                                    disabled={isOrdering || isInviting || items.length === 0}
-                                    className="bg-amber-100 text-amber-800 px-6 py-3 rounded-lg font-bold border border-amber-200 cursor-pointer w-full mb-6 text-base hover:bg-amber-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
-                                >
-                                    <Gift size={18} strokeWidth={1.5} className="text-amber-600" />
-                                    {isInviting ? 'Generando Enlace...' : '¡Que me inviten!'}
-                                </button>
-                            ) : (
-                                <div className="mb-6 p-4 bg-amber-50 rounded-xl border border-amber-100 text-center">
-                                    <p className="text-xs text-amber-800 font-bold mb-2 uppercase tracking-wider">
-                                        ¿Quieres que te inviten? 🎁
-                                    </p>
-                                    <p className="text-[11px] text-amber-600 leading-tight">
-                                        <Link to="/" className="underline font-black">
-                                            Regístrate o inicia sesión
-                                        </Link>{' '}
-                                        para usar esta función y compartir tu cesta con amigos.
-                                    </p>
-                                </div>
-                            )}
+                            <button
+                                onClick={() => {
+                                    if (isAuthenticated) {
+                                        handleInvite();
+                                    } else {
+                                        document.dispatchEvent(new Event('custom:openLogin'));
+                                    }
+                                }}
+                                disabled={isOrdering || isInviting || items.length === 0}
+                                className="bg-amber-100 text-amber-800 px-6 py-3 rounded-lg font-bold border border-amber-200 cursor-pointer w-full mb-6 text-base hover:bg-amber-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                <Gift size={18} strokeWidth={1.5} className="text-amber-600" />
+                                {isInviting ? 'Generando Enlace...' : '¡Que me inviten!'}
+                            </button>
 
                             <Link
                                 to="/menu"

@@ -1,14 +1,17 @@
 export const ProfileSkeleton = () => (
-    <div className="min-h-screen bg-transparent flex flex-col">
+    <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
         {/* Header Section Skeleton */}
-        <div className="bg-red-600/10 pt-12 pb-24 px-4 relative overflow-hidden border-b border-gray-100">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row items-center gap-6">
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl skeleton" />
-                    <div className="flex-1 space-y-4 text-center md:text-left">
-                        <div className="h-10 w-48 md:w-64 skeleton rounded-xl mx-auto md:mx-0" />
-                        <div className="h-4 w-32 md:w-48 skeleton rounded-lg mx-auto md:mx-0 opacity-40" />
+        <div className="bg-red-600 pt-12 pb-24 px-4 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-white/20 skeleton border-4 border-white/10 shadow-2xl" />
+                    
+                    <div className="flex-1 space-y-4">
+                        <div className="h-10 w-64 bg-white/20 skeleton rounded-xl mx-auto md:mx-0" />
+                        <div className="h-4 w-48 bg-white/20 skeleton rounded-lg mx-auto md:mx-0 opacity-60" />
                     </div>
+
+                    <div className="hidden md:block w-32 h-10 bg-white/10 skeleton rounded-xl" />
                 </div>
             </div>
         </div>

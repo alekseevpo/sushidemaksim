@@ -1,16 +1,22 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, context }) => {
+        // Set cookie consent before any script runs.
+        // We only clear sushi_token once at the start.
+        await context.addInitScript(() => {
+            if (!window.sessionStorage.getItem('init_cleared')) {
+                window.localStorage.removeItem('sushi_token');
+                window.sessionStorage.setItem('init_cleared', 'true');
+            }
+            window.localStorage.setItem('cookieConsent', 'accepted');
+        });
+
         // Mock only basic site requirements
         await page.route('**/api/settings', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ site_name: 'Sushi de Maksim', min_order: 20 }) }));
         await page.route('**/api/user/active', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }));
         
         await page.goto('/');
-        await page.evaluate(() => {
-            localStorage.setItem('cookieConsent', 'accepted');
-            localStorage.removeItem('sushi_token');
-        });
     });
 
     test('SUCCESS: should register and see the welcome message', async ({ page }) => {

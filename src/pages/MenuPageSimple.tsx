@@ -645,6 +645,8 @@ export default function MenuPageSimple() {
                                                                 €
                                                             </span>
                                                             <button
+                                                                aria-label="Añadir"
+                                                                data-testid="add-to-cart-button"
                                                                 onClick={e =>
                                                                     handleAddToCart(item, e)
                                                                 }

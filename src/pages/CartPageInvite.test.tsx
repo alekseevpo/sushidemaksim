@@ -67,6 +67,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
             clearCart: vi.fn(),
             isLoading: false,
             addItem: vi.fn(),
+            syncGuestItems: vi.fn().mockResolvedValue(undefined),
         });
 
         vi.mocked(api.get).mockImplementation((url: string) => {
@@ -98,7 +99,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
             </HelmetProvider>
         );
 
-    it('shows invitation block for guests', async () => {
+    it('shows invitation button even for guests', async () => {
         vi.mocked(useAuth).mockReturnValue({
             isAuthenticated: false,
             user: null,
@@ -108,7 +109,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         renderPage();
 
         await waitFor(() => {
-            expect(screen.getByText(/¿Quieres que te inviten\?/i)).toBeInTheDocument();
+            expect(screen.getByText(/¡Que me inviten!/i)).toBeInTheDocument();
         });
     });
 

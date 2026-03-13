@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { User, MapPin, Package, LogOut, ChevronRight, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -8,6 +8,7 @@ import ProfileTab from '../components/profile/ProfileTab';
 import AddressesTab from '../components/profile/AddressesTab';
 import OrdersTab from '../components/profile/OrdersTab';
 import FavoritesTab from '../components/profile/FavoritesTab';
+import { ProfileSkeleton } from '../components/skeletons/ProfileSkeleton';
 
 type TabId = 'profile' | 'addresses' | 'orders' | 'favorites';
 
@@ -15,6 +16,7 @@ export default function ProfilePage() {
     const {
         user,
         isAuthenticated,
+        isLoading,
         logout,
         updateProfile,
         addAddress,
@@ -24,14 +26,32 @@ export default function ProfilePage() {
     } = useAuth();
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const [activeTab, setActiveTab] = useState<TabId>((location.state as any)?.tab || 'profile');
-
-    useEffect(() => {
-        if ((location.state as any)?.tab) {
-            setActiveTab((location.state as any).tab);
+    const [searchParams, setSearchParams] = useSearchParams();
+    
+    // Initial tab from URL or state or default
+    const getInitialTab = (): TabId => {
+        const tabParam = searchParams.get('tab') as TabId;
+        if (['profile', 'addresses', 'orders', 'favorites'].includes(tabParam)) {
+            return tabParam;
         }
-    }, [location.state]);
+        return 'profile';
+    };
+
+    const [activeTab, setActiveTab] = useState<TabId>(getInitialTab());
+
+    // Sync tab with URL
+    const handleTabChange = (tab: TabId) => {
+        setActiveTab(tab);
+        setSearchParams({ tab }, { replace: true });
+        
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(5);
+        }
+    };
+
+    if (isLoading) {
+        return <ProfileSkeleton />;
+    }
 
     if (!isAuthenticated || !user) {
         return (
@@ -143,15 +163,7 @@ export default function ProfilePage() {
                                 return (
                                     <button
                                         key={tab.id}
-                                        onClick={() => {
-                                            setActiveTab(tab.id);
-                                            if (
-                                                typeof navigator !== 'undefined' &&
-                                                navigator.vibrate
-                                            ) {
-                                                navigator.vibrate(5);
-                                            }
-                                        }}
+                                        onClick={() => handleTabChange(tab.id)}
                                         className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start relative
                                             ${
                                                 isActive
@@ -196,20 +208,30 @@ export default function ProfilePage() {
                     <div className="flex-1 min-w-0">
                         <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-[32px] overflow-hidden">
                             <div className="p-0 md:p-8">
-                                {activeTab === 'profile' && (
-                                    <ProfileTab user={user} updateProfile={updateProfile} />
-                                )}
-                                {activeTab === 'addresses' && (
-                                    <AddressesTab
-                                        addresses={user.addresses}
-                                        addAddress={addAddress}
-                                        editAddress={editAddress}
-                                        removeAddress={removeAddress}
-                                        setDefaultAddress={setDefaultAddress}
-                                    />
-                                )}
-                                {activeTab === 'orders' && <OrdersTab />}
-                                {activeTab === 'favorites' && <FavoritesTab />}
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={activeTab}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        {activeTab === 'profile' && (
+                                            <ProfileTab user={user} updateProfile={updateProfile} />
+                                        )}
+                                        {activeTab === 'addresses' && (
+                                            <AddressesTab
+                                                addresses={user.addresses}
+                                                addAddress={addAddress}
+                                                editAddress={editAddress}
+                                                removeAddress={removeAddress}
+                                                setDefaultAddress={setDefaultAddress}
+                                            />
+                                        )}
+                                        {activeTab === 'orders' && <OrdersTab />}
+                                        {activeTab === 'favorites' && <FavoritesTab />}
+                                    </motion.div>
+                                </AnimatePresence>
                             </div>
                         </div>
                     </div>

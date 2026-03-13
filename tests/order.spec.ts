@@ -25,7 +25,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.route('**/api/orders', route => route.fulfill({ status: 200, body: '{"success":true, "order":{"id":"123"}}' }));
 
         await page.goto('/menu');
-        const addButton = page.getByRole('button', { name: /Añadir/i }).first();
+        const addButton = page.getByTestId('add-to-cart-button').first();
         await expect(addButton).toBeVisible();
 
         for (let i = 0; i < 4; i++) {
@@ -47,7 +47,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
 
     test('FAILURE: should show error when below 20€ threshold', async ({ page }) => {
         await page.goto('/menu');
-        await page.getByRole('button', { name: /Añadir/i }).first().click();
+        await page.getByTestId('add-to-cart-button').first().click();
 
         await page.goto('/cart');
         await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Error');
