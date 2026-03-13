@@ -407,7 +407,8 @@ export default function Header() {
                                                     }}
                                                     className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-white border border-red-100 hover:bg-red-50"
                                                 >
-                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar sesión
+                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar
+                                                    sesión
                                                 </button>
                                             </div>
                                         ) : (

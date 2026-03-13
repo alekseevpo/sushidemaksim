@@ -143,7 +143,7 @@ export default function ContactsPage() {
         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
     return (
-        <div className="bg-white overflow-x-hidden">
+        <div className="bg-white">
             <SEO
                 title="Contacto"
                 description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp y redes sociales."

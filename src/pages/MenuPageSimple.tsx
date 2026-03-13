@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -114,9 +114,16 @@ export default function MenuPageSimple() {
         }
     }, [user]);
 
+    const initialCategoryMount = useRef(true);
+    const initialSearchMount = useRef(true);
+
     // Scroll to top of menu section when category changes
     useEffect(() => {
         if (!isLoading) {
+            if (initialCategoryMount.current) {
+                initialCategoryMount.current = false;
+                return;
+            }
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
                 const offset = 100; // Adjustment for header
@@ -124,11 +131,15 @@ export default function MenuPageSimple() {
                 window.scrollTo({ top, behavior: 'smooth' });
             }
         }
-    }, [selectedCategory]);
+    }, [selectedCategory, isLoading]);
 
     // Scroll to top of menu section on search
     useEffect(() => {
         if (debouncedSearch && !isLoading && items.length > 0) {
+            if (initialSearchMount.current) {
+                initialSearchMount.current = false;
+                return;
+            }
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
                 const offset = 100;
@@ -136,7 +147,7 @@ export default function MenuPageSimple() {
                 window.scrollTo({ top, behavior: 'smooth' });
             }
         }
-    }, [debouncedSearch]);
+    }, [debouncedSearch, isLoading, items.length]);
 
     const fetchFavorites = async () => {
         try {
@@ -318,7 +329,7 @@ export default function MenuPageSimple() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8 overflow-x-hidden">
+        <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8">
             <SEO
                 title="Menú y Carta de Sushi"
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio в Мадриде."

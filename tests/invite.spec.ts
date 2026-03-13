@@ -75,8 +75,6 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                 }),
             });
         });
-
-        await page.goto('/');
     });
 
     test('SUCCESS: Create invitation and pay as friend', async ({ page, context }) => {

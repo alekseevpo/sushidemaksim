@@ -146,19 +146,21 @@ export default function CartPageSimple() {
         try {
             const [popularRes, promoRes] = await Promise.all([
                 api.get('/menu?limit=6'), // Just get top items
-                api.get('/menu?category=sets') // We don't have a direct 'discount' filter in this simple API, so we fetch sets which are often promos
+                api.get('/menu?category=sets'), // We don't have a direct 'discount' filter in this simple API, so we fetch sets which are often promos
             ]);
-            
+
             const popular = popularRes.items || [];
             // Assuming "sets" might contain some promos, or we just mix categories
-            const promos = (promoRes.items || []).filter((i: any) => i.is_promo || i.discount > 0 || i.category === 'sets');
-            
+            const promos = (promoRes.items || []).filter(
+                (i: any) => i.is_promo || i.discount > 0 || i.category === 'sets'
+            );
+
             // Combine and get unique
             const combinedMap = new Map();
             [...popular, ...promos].forEach((item: any) => combinedMap.set(item.id, item));
-            
+
             const combined = Array.from(combinedMap.values()).slice(0, 6); // Top 6 items
-            
+
             setPopularItems(combined);
         } catch (err) {
             console.error('Failed to load recommended items', err);
@@ -474,8 +476,11 @@ export default function CartPageSimple() {
                         Tu cesta está vacía
                     </h1>
                     <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                        <span className="block text-xl font-bold text-gray-900 mb-2">Mira lo que tenemos para ti</span>
-                        Añade platos del menú o elige una de nuestras sugerencias a continuación para hacer tu pedido.
+                        <span className="block text-xl font-bold text-gray-900 mb-2">
+                            Mira lo que tenemos para ti
+                        </span>
+                        Añade platos del menú o elige una de nuestras sugerencias a continuación
+                        para hacer tu pedido.
                     </p>
                     <div className="flex flex-col items-center gap-4 mb-12">
                         <Link
@@ -484,10 +489,10 @@ export default function CartPageSimple() {
                         >
                             Ver Menú Completo
                         </Link>
-                        
+
                         <motion.div
                             animate={{ y: [0, 10, 0] }}
-                            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
                             className="text-red-300 mt-8"
                         >
                             <ArrowDown size={32} strokeWidth={2} />
@@ -501,9 +506,17 @@ export default function CartPageSimple() {
                                     Recomendaciones
                                 </span>
                                 <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight m-0 flex items-center gap-3 w-full justify-center">
-                                    <Flame size={28} strokeWidth={1.5} className="text-red-600 shrink-0" />
+                                    <Flame
+                                        size={28}
+                                        strokeWidth={1.5}
+                                        className="text-red-600 shrink-0"
+                                    />
                                     <span className="truncate">Top Ventas y Ofertas</span>
-                                    <Flame size={28} strokeWidth={1.5} className="text-red-600 shrink-0" />
+                                    <Flame
+                                        size={28}
+                                        strokeWidth={1.5}
+                                        className="text-red-600 shrink-0"
+                                    />
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 text-left">

@@ -33,8 +33,6 @@ test.describe('Critical E2E: Guest Checkout', () => {
             }
             return route.fulfill({ status: 200, body: '{}' });
         });
-
-        await page.goto('/');
     });
 
     test('SUCCESS: should place an order when above 20€ threshold', async ({ page }) => {

@@ -41,7 +41,7 @@ export default function BlogPage() {
     if (loading) return <BlogSkeleton />;
 
     return (
-        <div className="min-h-screen bg-transparent pb-20 overflow-x-hidden">
+        <div className="min-h-screen bg-transparent pb-20">
             <SEO
                 title="Blog"
                 description="Historias, recetas y secretos del mundo del sushi artesanal. Aprende más sobre la comida japonesa con Sushi de Maksim."

@@ -33,7 +33,7 @@ export const MenuItemsSkeleton = () => (
 
 // Full page skeleton for Suspense fallback
 export const MenuSkeleton = () => (
-    <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8">
         <div className="max-w-7xl mx-auto flex gap-8">
             {/* Desktop Sidebar Skeleton */}
             <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-[100px] self-start z-30">
