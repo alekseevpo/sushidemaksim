@@ -8,9 +8,11 @@ import {
     Plus,
     Minus,
     ArrowLeft,
+    ArrowDown,
     X,
     Gift,
     Flame,
+    ShoppingCart,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
@@ -463,7 +465,11 @@ export default function CartPageSimple() {
         return (
             <div className="min-h-screen bg-transparent px-4 py-8 flex items-center">
                 <div className="max-w-4xl mx-auto text-center py-16 w-full">
-                    <div className="text-8xl mb-4">🛒</div>
+                    <div className="flex justify-center mb-6">
+                        <div className="w-24 h-24 bg-gray-50 rounded-[32px] flex items-center justify-center -rotate-12 shadow-sm border border-gray-100">
+                            <ShoppingCart size={40} className="text-gray-400" strokeWidth={1.5} />
+                        </div>
+                    </div>
                     <h1 className="text-4xl font-bold mb-4 text-gray-900 tracking-tight">
                         Tu cesta está vacía
                     </h1>
@@ -484,7 +490,7 @@ export default function CartPageSimple() {
                             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                             className="text-red-300 mt-8"
                         >
-                            <ArrowLeft size={32} strokeWidth={2} className="rotate-[-90deg]" />
+                            <ArrowDown size={32} strokeWidth={2} />
                         </motion.div>
                     </div>
 
