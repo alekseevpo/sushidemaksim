@@ -85,7 +85,7 @@ function App() {
                             <CookieConsent />
                             <FloatingCart />
                             {!isAdminRoute && <Header />}
-                            <main className="flex-1 flex flex-col relative w-full overflow-x-hidden">
+                            <main className={`flex-1 flex flex-col relative w-full overflow-x-hidden ${!isAdminRoute ? 'pt-20' : ''}`}>
                                 <AnimatePresence mode="wait">
                                     <Routes location={location} key={location.pathname}>
                                         <Route
