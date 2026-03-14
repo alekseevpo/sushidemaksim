@@ -62,12 +62,30 @@ export default function ProfilePage() {
     // Scroll active tab into view on mobile
     useEffect(() => {
         const activeElement = document.getElementById(`tab-${activeTab}`);
-        if (activeElement && activeElement.scrollIntoView) {
+        if (activeElement && typeof activeElement.scrollIntoView === 'function') {
             activeElement.scrollIntoView({
                 behavior: 'smooth',
                 inline: 'center',
                 block: 'nearest',
             });
+        }
+    }, [activeTab]);
+
+    // Scroll to content when tab changes (especially on mobile)
+    useEffect(() => {
+        if (activeTab === 'orders' || activeTab === 'addresses' || activeTab === 'favorites') {
+            const contentElement = document.getElementById('profile-content');
+            if (contentElement && typeof contentElement.scrollIntoView === 'function') {
+                const headerOffset = window.innerWidth < 768 ? 120 : 80;
+                const elementPosition = contentElement.getBoundingClientRect().top;
+                const offsetPosition =
+                    elementPosition + (window.scrollY || window.pageYOffset) - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth',
+                });
+            }
         }
     }, [activeTab]);
 
@@ -163,11 +181,11 @@ export default function ProfilePage() {
                                 </h1>
                                 <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 w-fit mx-auto md:mx-0">
                                     <Trophy size={10} className="text-amber-400" />
-                                    {user.orderCount >= 50
+                                    {(user.orderCount || 0) >= 50
                                         ? 'Leyenda del Sushi 👑'
-                                        : user.orderCount >= 20
+                                        : (user.orderCount || 0) >= 20
                                           ? 'Cliente VIP ⭐'
-                                          : user.orderCount >= 5
+                                          : (user.orderCount || 0) >= 5
                                             ? 'Cliente Fiel 💎'
                                             : 'Nuevo Miembro 🌱'}
                                 </div>
@@ -190,7 +208,7 @@ export default function ProfilePage() {
                         <div className="grid grid-cols-2 md:flex gap-3 md:gap-4 w-full md:w-auto mt-4 md:mt-0">
                             <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-[24px] border border-white/20 text-center min-w-[120px] flex-1 md:flex-none">
                                 <div className="text-white font-black text-2xl leading-none">
-                                    {user.orderCount}
+                                    {user.orderCount || 0}
                                 </div>
                                 <div className="text-red-100 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70">
                                     Pedidos
@@ -232,7 +250,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="ml-auto text-right">
                                 <span className="block text-lg font-black text-red-600 leading-none">
-                                    {5 - (user.orderCount % 5)}
+                                    {5 - ((user.orderCount || 0) % 5)}
                                 </span>
                                 <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
                                     faltan
@@ -242,7 +260,7 @@ export default function ProfilePage() {
                         <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${(user.orderCount % 5) * 20}%` }}
+                                animate={{ width: `${((user.orderCount || 0) % 5) * 20}%` }}
                                 className="h-full bg-red-600 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.3)]"
                             />
                         </div>
@@ -273,7 +291,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="ml-auto text-right">
                                 <span className="block text-lg font-black text-amber-600 leading-none">
-                                    {10 - (user.orderCount % 10)}
+                                    {10 - ((user.orderCount || 0) % 10)}
                                 </span>
                                 <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
                                     faltan
@@ -283,7 +301,7 @@ export default function ProfilePage() {
                         <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${(user.orderCount % 10) * 10}%` }}
+                                animate={{ width: `${((user.orderCount || 0) % 10) * 10}%` }}
                                 className="h-full bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)]"
                             />
                         </div>
@@ -347,7 +365,7 @@ export default function ProfilePage() {
                     </aside>
 
                     {/* Content Section */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0" id="profile-content">
                         <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-[32px] overflow-hidden">
                             <div className="p-0 md:p-8">
                                 <AnimatePresence mode="wait">

@@ -176,7 +176,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const addOrder = (order: Order) => {
-        setUser(prev => (prev ? { ...prev, orders: [order, ...prev.orders] } : null));
+        setUser(prev =>
+            prev
+                ? {
+                      ...prev,
+                      orders: prev.orders ? [order, ...prev.orders] : [order],
+                      orderCount: (prev.orderCount || 0) + 1,
+                  }
+                : null
+        );
     };
 
     const deleteAccount = async () => {

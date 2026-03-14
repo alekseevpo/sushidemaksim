@@ -95,7 +95,6 @@ export default function OrdersTab() {
 
     useEffect(() => {
         loadOrders(pagination.page);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
 
         // Polling every 30 seconds so order status updates instantly
         const interval = setInterval(() => {
