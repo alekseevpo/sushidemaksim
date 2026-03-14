@@ -59,6 +59,18 @@ export default function ProfilePage() {
         }
     }, [searchParams, activeTab]);
 
+    // Scroll active tab into view on mobile
+    useEffect(() => {
+        const activeElement = document.getElementById(`tab-${activeTab}`);
+        if (activeElement && activeElement.scrollIntoView) {
+            activeElement.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest',
+            });
+        }
+    }, [activeTab]);
+
     // Update URL when tab changes manually
     const handleTabChange = (tab: TabId) => {
         setActiveTab(tab);
@@ -152,17 +164,26 @@ export default function ProfilePage() {
                                 <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 w-fit mx-auto md:mx-0">
                                     <Trophy size={10} className="text-amber-400" />
                                     {user.orderCount >= 50
-                                        ? 'Leyenda del Sushi'
+                                        ? 'Leyenda del Sushi 👑'
                                         : user.orderCount >= 20
-                                          ? 'Cliente VIP'
+                                          ? 'Cliente VIP ⭐'
                                           : user.orderCount >= 5
-                                            ? 'Cliente Fiel'
-                                            : 'Nuevo Miembro'}
+                                            ? 'Cliente Fiel 💎'
+                                            : 'Nuevo Miembro 🌱'}
                                 </div>
                             </div>
                             <p className="text-red-100 font-medium opacity-80 m-0 text-sm mb-4">
                                 {user.email}
                             </p>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-bold text-white border border-white/5">
+                                    Miembro desde{' '}
+                                    {new Date(user.createdAt || Date.now()).toLocaleDateString(
+                                        'es-ES',
+                                        { month: 'short', year: 'numeric' }
+                                    )}
+                                </span>
+                            </div>
                         </div>
 
                         {/* Quick Stats Grid */}
@@ -283,6 +304,7 @@ export default function ProfilePage() {
                                 return (
                                     <button
                                         key={tab.id}
+                                        id={`tab-${tab.id}`}
                                         onClick={() => handleTabChange(tab.id)}
                                         className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start relative
                                             ${

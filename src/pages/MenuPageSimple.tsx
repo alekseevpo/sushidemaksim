@@ -134,6 +134,14 @@ export default function MenuPageSimple() {
     }, [selectedCategory, isLoading]);
 
     // Scroll to top of menu section on search
+    // Scroll active category into view on mobile
+    useEffect(() => {
+        const activeCat = document.getElementById(`cat-${selectedCategory}`);
+        if (activeCat && activeCat.scrollIntoView) {
+            activeCat.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+    }, [selectedCategory]);
+
     useEffect(() => {
         if (debouncedSearch && !isLoading && items.length > 0) {
             if (initialSearchMount.current) {
@@ -494,8 +502,9 @@ export default function MenuPageSimple() {
                     >
                         <div className="flex gap-2 flex-nowrap translate-z-0">
                             <button
+                                id="cat-all"
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 ${
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 snap-center ${
                                     selectedCategory === 'all'
                                         ? 'bg-red-600 text-white shadow-lg shadow-red-200'
                                         : 'bg-white text-gray-700 shadow-sm'
@@ -506,8 +515,9 @@ export default function MenuPageSimple() {
                             {CATEGORIES.map(cat => (
                                 <button
                                     key={cat.id}
+                                    id={`cat-${cat.id}`}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 ${
+                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 snap-center ${
                                         selectedCategory === cat.id
                                             ? 'bg-red-600 text-white shadow-lg shadow-red-200'
                                             : 'bg-white text-gray-700 shadow-sm'
@@ -530,10 +540,10 @@ export default function MenuPageSimple() {
                             <div className="text-6xl mb-6">🙊</div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 {search
-                                    ? `No hay результаты для "${search}"`
-                                    : 'No hay platos в этой категории'}
+                                    ? `No hay resultados para "${search}"`
+                                    : 'No hay platos en esta categoría'}
                             </h3>
-                            <p className="text-gray-500">Попробуй изменить фильтры</p>
+                            <p className="text-gray-500">Prueba a cambiar los filtros</p>
                             <button
                                 onClick={() => {
                                     setSearch('');
