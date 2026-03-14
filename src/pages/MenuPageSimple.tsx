@@ -488,12 +488,14 @@ export default function MenuPageSimple() {
                         </div>
                     </header>
 
-                    {/* Category Filter - PERSISTENT Mobile Version */}
-                    <div className="sticky top-[64px] z-[40] -mx-2 md:mx-0 px-2 md:px-0 py-3 bg-[#FDFBF7]/95 backdrop-blur-xl border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm will-change-transform transform-gpu">
-                        <div className="flex gap-2 flex-nowrap">
+                    <div 
+                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 px-2 md:px-0 py-3 bg-[#FDFBF7] border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm will-change-transform transform-gpu"
+                        style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
+                    >
+                        <div className="flex gap-2 flex-nowrap translate-z-0">
                             <button
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 ${
                                     selectedCategory === 'all'
                                         ? 'bg-red-600 text-white shadow-lg shadow-red-200'
                                         : 'bg-white text-gray-700 shadow-sm'
@@ -505,7 +507,7 @@ export default function MenuPageSimple() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-all duration-200 text-sm ${
+                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 ${
                                         selectedCategory === cat.id
                                             ? 'bg-red-600 text-white shadow-lg shadow-red-200'
                                             : 'bg-white text-gray-700 shadow-sm'
