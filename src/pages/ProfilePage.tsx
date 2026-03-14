@@ -314,7 +314,7 @@ export default function ProfilePage() {
 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Navigation Sidebar */}
-                    <aside className="lg:w-80 shrink-0 -mx-2 md:mx-0 sticky top-[80px] md:relative z-30 mb-4 md:mb-0">
+                    <aside className="lg:w-80 shrink-0 sticky top-[64px] lg:top-24 z-40 mb-6 lg:mb-0 -mx-4 md:mx-0">
                         <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-lg md:shadow-2xl rounded-none md:rounded-[32px] p-2 flex md:block overflow-x-auto no-scrollbar gap-1.5 px-3 md:px-2 snap-x snap-mandatory">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
