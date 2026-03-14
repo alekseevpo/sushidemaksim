@@ -16,6 +16,7 @@ import {
     Clock,
     Heart,
     X,
+    MessageSquare,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
@@ -328,6 +329,14 @@ export default function AdminOrders({
                                                         s => s.value === order.status
                                                     )?.label || order.status}
                                                 </span>
+                                                {order.notes && (
+                                                    <div
+                                                        className="bg-amber-100 text-amber-600 p-1.5 rounded-lg border border-amber-200"
+                                                        title="Tiene notas o comentarios"
+                                                    >
+                                                        <MessageSquare size={14} strokeWidth={2.5} />
+                                                    </div>
+                                                )}
                                             </div>
                                             <p className="text-xs text-gray-500 font-medium">
                                                 {new Date(order.created_at).toLocaleString(
@@ -474,6 +483,20 @@ export default function AdminOrders({
                                                 {order.delivery_address}
                                             </p>
                                         </div>
+
+                                        {order.notes && (
+                                            <div className="bg-amber-50 border border-amber-200/50 rounded-2xl p-4 animate-in slide-in-from-top-2 duration-300">
+                                                <div className="flex items-center gap-2 text-amber-600 mb-2">
+                                                    <MessageSquare size={14} strokeWidth={2} />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">
+                                                        Notas del Pedido
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-amber-900 font-bold leading-relaxed italic">
+                                                    "{order.notes}"
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Items del pedido (Compact Receipt Style) */}
