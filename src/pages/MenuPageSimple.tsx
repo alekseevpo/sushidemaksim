@@ -433,7 +433,7 @@ export default function MenuPageSimple() {
                                             type="text"
                                             value={search}
                                             onChange={e => setSearch(e.target.value)}
-                                            placeholder="¿Qué te apetece сегодня?"
+                                            placeholder="¿Qué te apetece hoy?"
                                             className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
                                         />
                                         {search && (
@@ -473,7 +473,7 @@ export default function MenuPageSimple() {
                                     type="text"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
-                                    placeholder="¿Что ты хочешь сегодня?"
+                                    placeholder="¿Qué te apetece hoy?"
                                     className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
                                 />
                                 {search && (

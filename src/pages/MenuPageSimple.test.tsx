@@ -90,7 +90,7 @@ describe('MenuPageSimple (Integration)', () => {
     it('searches for a dish', async () => {
         renderMenu();
 
-        const searchInput = screen.getByPlaceholderText(/сегодня/i);
+        const searchInput = screen.getByPlaceholderText(/hoy/i);
         fireEvent.change(searchInput, { target: { value: 'Salmon' } });
 
         // Wait for debounce (350ms)

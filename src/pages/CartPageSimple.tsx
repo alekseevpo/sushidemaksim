@@ -47,6 +47,7 @@ export default function CartPageSimple() {
     const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
     const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+    const [isLoadingPopular, setIsLoadingPopular] = useState(false);
     const { addItem } = useCart();
 
     const [address, setAddress] = useState('');
@@ -143,6 +144,7 @@ export default function CartPageSimple() {
     };
 
     const loadPopularItems = async () => {
+        setIsLoadingPopular(true);
         try {
             const [popularRes, promoRes] = await Promise.all([
                 api.get('/menu?limit=6'), // Just get top items
@@ -164,6 +166,8 @@ export default function CartPageSimple() {
             setPopularItems(combined);
         } catch (err) {
             console.error('Failed to load recommended items', err);
+        } finally {
+            setIsLoadingPopular(false);
         }
     };
 
@@ -457,7 +461,9 @@ export default function CartPageSimple() {
         );
     }
 
-    if ((cartLoading && items.length === 0) || isLoadingSettings) {
+    // Show skeleton ONLY if cart is actually loading its initial state
+    // OR if we have items but are waiting for settings/settings loading
+    if ((cartLoading && items.length === 0) || (items.length > 0 && isLoadingSettings)) {
         return <CartSkeleton />;
     }
 
@@ -497,7 +503,7 @@ export default function CartPageSimple() {
                         </motion.div>
                     </div>
 
-                    {popularItems.length > 0 && (
+                    {(popularItems.length > 0 || isLoadingPopular) && (
                         <div className="mt-12">
                             <div className="flex flex-col items-center justify-center gap-2 mb-8">
                                 <span className="inline-block px-4 py-1.5 bg-red-50 text-red-600 text-xs font-black uppercase tracking-widest rounded-full mb-2">
@@ -518,61 +524,80 @@ export default function CartPageSimple() {
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 text-left">
-                                {popularItems.map(item => (
-                                    <div
-                                        key={item.id}
-                                        className="premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden"
-                                    >
-                                        <div className="aspect-[4/3] bg-gray-50 overflow-hidden relative">
-                                            {!failedImages.has(item.id) ? (
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                    onError={() =>
-                                                        setFailedImages(prev =>
-                                                            new Set(prev).add(item.id)
-                                                        )
-                                                    }
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
-                                                    <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-                                                    <div className="absolute w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
-                                                    <span className="text-4xl relative z-10 drop-shadow-2xl translate-y-2">
-                                                        {getCategoryEmoji(item.category)}
-                                                    </span>
-                                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
-                                                </div>
-                                            )}
-                                            <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-white/90 backdrop-blur-md text-[8px] md:text-[10px] font-black px-2 py-1 rounded-lg shadow-sm">
-                                                ★ TOP
-                                            </div>
-                                        </div>
-                                        <div className="p-3 md:p-6 flex flex-col flex-1">
-                                            <div className="mb-1 md:mb-2">
-                                                <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto">
-                                                    {item.name}
-                                                </h3>
-                                            </div>
-                                            <p className="text-gray-500 text-[11px] md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 min-h-[2.5rem] md:min-h-0 font-medium overflow-hidden">
-                                                {item.description}
-                                            </p>
-                                            <div className="mt-auto flex items-center justify-between gap-1">
-                                                <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
-                                                    {item.price.toFixed(2).replace('.', ',')} €
-                                                </span>
-                                                <button
-                                                    onClick={() => handleAddToCart(item)}
-                                                    className="h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl bg-gray-900 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-200 active:scale-95 transition-all border-none cursor-pointer flex items-center justify-center gap-2"
-                                                >
-                                                    <Plus size={16} strokeWidth={1.5} />
-                                                    <span className="hidden md:inline">Añadir</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                {isLoadingPopular
+                                    ? [1, 2, 3, 4, 5, 6].map(i => (
+                                          <div
+                                              key={i}
+                                              className="bg-white rounded-[32px] p-4 space-y-4 border border-gray-100"
+                                          >
+                                              <div className="aspect-[4/3] skeleton rounded-2xl" />
+                                              <div className="space-y-2">
+                                                  <div className="h-4 w-3/4 skeleton rounded" />
+                                                  <div className="h-3 w-1/2 skeleton rounded" />
+                                              </div>
+                                              <div className="flex justify-between items-center pt-2">
+                                                  <div className="h-6 w-16 skeleton rounded" />
+                                                  <div className="h-10 w-24 skeleton rounded-xl" />
+                                              </div>
+                                          </div>
+                                      ))
+                                    : popularItems.map(item => (
+                                          <div
+                                              key={item.id}
+                                              className="premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden"
+                                          >
+                                              <div className="aspect-[4/3] bg-gray-50 overflow-hidden relative">
+                                                  {!failedImages.has(item.id) ? (
+                                                      <img
+                                                          src={item.image}
+                                                          alt={item.name}
+                                                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                          onError={() =>
+                                                              setFailedImages(prev =>
+                                                                  new Set(prev).add(item.id)
+                                                              )
+                                                          }
+                                                      />
+                                                  ) : (
+                                                      <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
+                                                          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                                          <div className="absolute w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
+                                                          <span className="text-4xl relative z-10 drop-shadow-2xl translate-y-2">
+                                                              {getCategoryEmoji(item.category)}
+                                                          </span>
+                                                          <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
+                                                      </div>
+                                                  )}
+                                                  <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-white/90 backdrop-blur-md text-[8px] md:text-[10px] font-black px-2 py-1 rounded-lg shadow-sm">
+                                                      ★ TOP
+                                                  </div>
+                                              </div>
+                                              <div className="p-3 md:p-6 flex flex-col flex-1">
+                                                  <div className="mb-1 md:mb-2">
+                                                      <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto">
+                                                          {item.name}
+                                                      </h3>
+                                                  </div>
+                                                  <p className="text-gray-500 text-[11px] md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 min-h-[2.5rem] md:min-h-0 font-medium overflow-hidden">
+                                                      {item.description}
+                                                  </p>
+                                                  <div className="mt-auto flex items-center justify-between gap-1">
+                                                      <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
+                                                          {item.price.toFixed(2).replace('.', ',')} €
+                                                      </span>
+                                                      <button
+                                                          onClick={() => handleAddToCart(item)}
+                                                          className="h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl bg-gray-900 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-200 active:scale-95 transition-all border-none cursor-pointer flex items-center justify-center gap-2"
+                                                      >
+                                                          <Plus size={16} strokeWidth={1.5} />
+                                                          <span className="hidden md:inline">
+                                                              Añadir
+                                                          </span>
+                                                      </button>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      ))}
                             </div>
                         </div>
                     )}
