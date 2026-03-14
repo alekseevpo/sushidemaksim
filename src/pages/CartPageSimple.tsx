@@ -583,7 +583,8 @@ export default function CartPageSimple() {
                                                   </p>
                                                   <div className="mt-auto flex items-center justify-between gap-1">
                                                       <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
-                                                          {item.price.toFixed(2).replace('.', ',')} €
+                                                          {item.price.toFixed(2).replace('.', ',')}{' '}
+                                                          €
                                                       </span>
                                                       <button
                                                           onClick={() => handleAddToCart(item)}

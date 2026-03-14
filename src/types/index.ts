@@ -74,5 +74,6 @@ export interface User {
     createdAt: string;
     role?: 'user' | 'admin';
     is_superadmin?: boolean;
+    orderCount: number;
     isVerified?: boolean;
 }

@@ -275,12 +275,20 @@ router.get(
 
         if (addrError) throw addrError;
 
+        const { count: orderCount, error: orderError } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', req.userId);
+
+        if (orderError) throw orderError;
+
         const formattedUser = {
             ...user,
             createdAt: user.created_at,
             birthDate: user.birth_date,
             birthDateVerified: user.birth_date_verified,
             lastSeenAt: user.last_seen_at,
+            orderCount: orderCount || 0,
             addresses: addresses?.map(a => ({
                 ...a,
                 postalCode: a.postal_code,

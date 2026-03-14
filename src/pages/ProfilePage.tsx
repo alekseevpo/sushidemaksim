@@ -1,7 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, MapPin, Package, LogOut, ChevronRight, Heart, Sparkles } from 'lucide-react';
+import {
+    User,
+    MapPin,
+    Package,
+    LogOut,
+    ChevronRight,
+    Heart,
+    Gift,
+    Percent,
+    Trophy,
+} from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import ProfileTab from '../components/profile/ProfileTab';
@@ -117,52 +127,152 @@ export default function ProfilePage() {
                 description="Gestiona tu cuenta, direcciones y pedidos en Sushi de Maksim."
             />
 
-            {/* Header Section */}
-            <div className="bg-red-600 pt-12 pb-24 px-2 md:px-4 relative overflow-hidden">
+            {/* Header Section - More Compact */}
+            <div className="bg-red-600 pt-8 pb-32 px-2 md:px-4 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#fff_0,transparent_50%)]" />
                 </div>
 
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-white p-1 shadow-2xl relative">
-                            <div className="w-full h-full rounded-[22px] bg-red-50 flex items-center justify-center text-3xl md:text-5xl border-2 border-white overflow-hidden shadow-inner">
+                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white p-1 shadow-xl relative">
+                            <div className="w-full h-full rounded-[22px] bg-red-50 flex items-center justify-center text-2xl md:text-4xl border-2 border-white overflow-hidden shadow-inner">
                                 {user.avatar ? user.avatar : initials}
                             </div>
-                            <div className="absolute -bottom-2 -right-2 bg-green-500 border-4 border-white w-8 h-8 rounded-full shadow-lg flex items-center justify-center">
-                                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                            <div className="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white w-6 h-6 rounded-full shadow-lg flex items-center justify-center">
+                                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                             </div>
                         </div>
 
                         <div className="flex-1">
-                            <h1 className="text-3xl md:text-4xl font-black text-white m-0 tracking-tight">
-                                {user.name}
-                            </h1>
-                            <p className="text-red-100 font-medium opacity-90 m-0 mt-1 mb-3">
+                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
+                                <h1 className="text-2xl md:text-3xl font-black text-white m-0 tracking-tight">
+                                    {user.name}
+                                </h1>
+                                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 w-fit mx-auto md:mx-0">
+                                    <Trophy size={10} className="text-amber-400" />
+                                    {user.orderCount >= 50
+                                        ? 'Leyenda del Sushi'
+                                        : user.orderCount >= 20
+                                          ? 'Cliente VIP'
+                                          : user.orderCount >= 5
+                                            ? 'Cliente Fiel'
+                                            : 'Nuevo Miembro'}
+                                </div>
+                            </div>
+                            <p className="text-red-100 font-medium opacity-80 m-0 text-sm mb-4">
                                 {user.email}
                             </p>
-                            <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-white border border-white/10">
-                                <Sparkles size={12} strokeWidth={1.5} className="text-amber-400" />
-                                Miembro desde{' '}
-                                {new Date(user.createdAt || Date.now()).toLocaleDateString(
-                                    'es-ES',
-                                    { month: 'long', year: 'numeric' }
-                                )}
-                            </div>
                         </div>
 
-                        <button
-                            onClick={handleLogout}
-                            className="hidden md:flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-2.5 rounded-xl border border-white/20 text-white font-bold transition-all"
-                        >
-                            <LogOut size={18} strokeWidth={1.5} /> Cerrar sesión
-                        </button>
+                        {/* Quick Stats Grid */}
+                        <div className="grid grid-cols-2 md:flex gap-3 md:gap-4 w-full md:w-auto mt-4 md:mt-0">
+                            <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-[24px] border border-white/20 text-center min-w-[120px] flex-1 md:flex-none">
+                                <div className="text-white font-black text-2xl leading-none">
+                                    {user.orderCount}
+                                </div>
+                                <div className="text-red-100 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70">
+                                    Pedidos
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-[24px] border border-white/20 text-white font-bold transition-all flex items-center justify-center gap-2 flex-1 md:flex-none"
+                            >
+                                <LogOut size={18} strokeWidth={1.5} />
+                                <span className="md:hidden">Salir</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Main Content Area */}
-            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-16 pb-20 relative z-20">
+            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-24 pb-20 relative z-20">
+                {/* Loyalty Program Section */}
+                <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-white rounded-[32px] p-6 shadow-xl border border-white relative overflow-hidden group"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-red-500/10 transition-colors" />
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 shadow-inner">
+                                <Percent size={24} strokeWidth={2.5} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
+                                    Próximo Descuento 5%
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-medium m-0">
+                                    En cada 5º pedido
+                                </p>
+                            </div>
+                            <div className="ml-auto text-right">
+                                <span className="block text-lg font-black text-red-600 leading-none">
+                                    {5 - (user.orderCount % 5)}
+                                </span>
+                                <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                                    faltan
+                                </span>
+                            </div>
+                        </div>
+                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(user.orderCount % 5) * 20}%` }}
+                                className="h-full bg-red-600 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.3)]"
+                            />
+                        </div>
+                        <div className="flex justify-between mt-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            <span>0</span>
+                            <span>5 pedidos</span>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-white rounded-[32px] p-6 shadow-xl border border-white relative overflow-hidden group"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-amber-500/10 transition-colors" />
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 shadow-inner">
+                                <Gift size={24} strokeWidth={2.5} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
+                                    Postre de Regalo 🍰
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-medium m-0">
+                                    En cada 10º pedido
+                                </p>
+                            </div>
+                            <div className="ml-auto text-right">
+                                <span className="block text-lg font-black text-amber-600 leading-none">
+                                    {10 - (user.orderCount % 10)}
+                                </span>
+                                <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                                    faltan
+                                </span>
+                            </div>
+                        </div>
+                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(user.orderCount % 10) * 10}%` }}
+                                className="h-full bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                            />
+                        </div>
+                        <div className="flex justify-between mt-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            <span>0</span>
+                            <span>10 pedidos</span>
+                        </div>
+                    </motion.div>
+                </div>
+
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Navigation Sidebar */}
                     <aside className="lg:w-80 shrink-0 -mx-2 md:mx-0 sticky top-[80px] md:relative z-30 mb-4 md:mb-0">
