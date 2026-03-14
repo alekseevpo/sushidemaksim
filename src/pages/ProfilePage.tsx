@@ -158,7 +158,7 @@ export default function ProfilePage() {
             />
 
             {/* Header Section - More Compact */}
-            <div className="bg-red-600 pt-8 pb-32 px-2 md:px-4 relative overflow-hidden">
+            <div className="bg-red-600 pt-8 pb-28 px-2 md:px-4 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#fff_0,transparent_50%)]" />
                 </div>
@@ -175,7 +175,7 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex-1">
-                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
+                            <div className="flex flex-col md:flex-row md:items-center gap-1.5 md:gap-4 mb-2">
                                 <h1 className="text-2xl md:text-3xl font-black text-white m-0 tracking-tight">
                                     {user.name}
                                 </h1>
@@ -190,7 +190,7 @@ export default function ProfilePage() {
                                             : 'Nuevo Miembro 🌱'}
                                 </div>
                             </div>
-                            <p className="text-red-100 font-medium opacity-80 m-0 text-sm mb-4">
+                            <p className="text-red-100 font-medium opacity-80 m-0 text-sm mb-3">
                                 {user.email}
                             </p>
                             <div className="flex flex-wrap gap-2">
@@ -227,13 +227,13 @@ export default function ProfilePage() {
             </div>
 
             {/* Main Content Area */}
-            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-24 pb-20 relative z-20">
+            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-16 pb-20 relative z-20">
                 {/* Loyalty Program Section */}
-                <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-[32px] p-6 shadow-xl border border-white relative overflow-hidden group"
+                        className="bg-white rounded-[32px] p-5 shadow-xl border border-white relative overflow-hidden group"
                     >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-red-500/10 transition-colors" />
                         <div className="flex items-center gap-4 mb-4">
@@ -312,10 +312,10 @@ export default function ProfilePage() {
                     </motion.div>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-8">
+                <div className="flex flex-col lg:flex-row gap-6">
                     {/* Navigation Sidebar */}
-                    <aside className="lg:w-80 shrink-0 sticky top-[64px] lg:top-24 z-40 mb-6 lg:mb-0 -mx-4 md:mx-0">
-                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-lg md:shadow-2xl rounded-none md:rounded-[32px] p-2 flex md:block overflow-x-auto no-scrollbar gap-1.5 px-3 md:px-2 snap-x snap-mandatory">
+                    <aside className="lg:w-80 shrink-0 sticky top-[63px] lg:top-24 z-40 mb-5 lg:mb-0 -mx-4 md:mx-0">
+                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-1 px-3 md:px-2 snap-x snap-mandatory">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;

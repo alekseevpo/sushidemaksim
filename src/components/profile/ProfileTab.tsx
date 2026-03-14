@@ -148,14 +148,14 @@ export default function ProfileTab({ user, updateProfile }: Props) {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-0 md:px-0">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-0 md:px-0">
             {/* Header with Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
                 <div className="text-center sm:text-left">
                     <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">
                         {isEditing ? 'Editar Perfil' : 'Datos Personales'}
                     </h2>
-                    <p className="text-gray-500 text-[11px] md:text-sm mt-1">
+                    <p className="text-gray-500 text-[11px] md:text-xs mt-0.5">
                         Gestiona tu información básica y seguridad
                     </p>
                 </div>
@@ -164,7 +164,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                     {!isEditing ? (
                         <button
                             onClick={startEditing}
-                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-600 transition-all shadow-lg shadow-gray-200 active:scale-95"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-gray-900 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-600 transition-all shadow-lg shadow-gray-200 active:scale-95"
                         >
                             <Edit3 size={16} strokeWidth={1.5} /> Editar
                         </button>
@@ -188,7 +188,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
             </div>
 
             {/* Information Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                     {
                         label: 'Nombre Completo',
@@ -230,10 +230,10 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                 ].map(field => (
                     <div
                         key={field.label}
-                        className="group p-4 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 flex flex-col min-h-[110px]"
+                        className="group p-3.5 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-red-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 flex flex-col"
                     >
-                        <label className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3 group-hover:text-red-500 transition-colors">
-                            <field.icon size={12} strokeWidth={1.5} />
+                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 group-hover:text-red-500 transition-colors">
+                            <field.icon size={11} strokeWidth={1.5} />
                             {field.label}
                         </label>
 
@@ -243,7 +243,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     type={field.type}
                                     value={field.editedValue}
                                     onChange={e => field.setter(e.target.value)}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 outline-none transition-all shadow-sm h-[46px]"
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 outline-none transition-all shadow-sm h-[42px]"
                                     placeholder={`Introduce tu ${field.label.toLowerCase()}`}
                                 />
                                 {field.label.includes('Cumpleaños') && (
@@ -253,7 +253,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-between min-h-[46px]">
+                            <div className="flex items-center justify-between min-h-[32px]">
                                 <p className="text-sm font-black text-gray-900 m-0">
                                     {field.value}
                                 </p>
