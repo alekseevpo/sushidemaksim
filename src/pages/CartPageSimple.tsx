@@ -408,7 +408,7 @@ export default function CartPageSimple() {
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={() =>
-                                        navigate('/profile', { state: { tab: 'orders' } })
+                                        navigate('/profile?tab=orders')
                                     }
                                     className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95 flex items-center justify-center gap-2"
                                 >

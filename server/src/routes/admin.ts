@@ -279,10 +279,80 @@ router.get(
             throw error;
         }
 
+        // Fetch stats for all users in these orders at once
+        const userIds = [...new Set((orders || []).filter(o => o.user_id).map(o => o.user_id))];
+        let userStatsMap: Record<string, any> = {};
+
+        if (userIds.length > 0) {
+            const { data: usersWithAllOrders } = await supabase
+                .from('users')
+                .select('id, created_at, orders(total, created_at, items:order_items(name, quantity))')
+                .in('id', userIds);
+
+            (usersWithAllOrders || []).forEach((u: any) => {
+                const userOrders = u.orders || [];
+                const orderCount = userOrders.length;
+                const totalSpent = userOrders.reduce(
+                    (sum: number, o: any) => sum + Number(o.total || 0),
+                    0
+                );
+                const avgCheck = orderCount > 0 ? totalSpent / orderCount : 0;
+
+                // Favorite dish calculation
+                const dishCounts: Record<string, number> = {};
+                userOrders.forEach((o: any) => {
+                    (o.items || []).forEach((item: any) => {
+                        const name = item.name;
+                        const qty = Number(item.quantity || 1);
+                        dishCounts[name] = (dishCounts[name] || 0) + qty;
+                    });
+                });
+
+                let favoriteDish = 'N/A';
+                let maxQty = 0;
+                Object.entries(dishCounts).forEach(([name, qty]) => {
+                    if (qty > maxQty) {
+                        maxQty = qty;
+                        favoriteDish = name;
+                    }
+                });
+
+                // Frequency calculation: average days between orders
+                let frequency = 'N/A';
+                if (orderCount > 1) {
+                    const sortedOrders = [...userOrders].sort(
+                        (a, b) =>
+                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    );
+                    const firstOrder = new Date(sortedOrders[0].created_at);
+                    const lastOrder = new Date(sortedOrders[orderCount - 1].created_at);
+                    const daysDiff =
+                        (lastOrder.getTime() - firstOrder.getTime()) / (1000 * 3600 * 24);
+                    const avgDays = daysDiff / (orderCount - 1);
+                    frequency =
+                        avgDays < 1
+                            ? 'Varias veces al día'
+                            : `Cada ${Math.round(avgDays)} días`;
+                } else if (orderCount === 1) {
+                    frequency = 'Primer pedido';
+                }
+
+                userStatsMap[u.id] = {
+                    orderCount,
+                    totalSpent,
+                    avgCheck,
+                    frequency,
+                    favoriteDish,
+                    registrationDate: u.created_at,
+                };
+            });
+        }
+
         const formattedOrders = (orders || []).map((o: any) => ({
             ...o,
             user_name: o.users?.name || 'Cliente',
             user_email: o.users?.email || 'N/A',
+            user_stats: o.user_id ? userStatsMap[o.user_id] || null : null,
             items: o.items || [],
         }));
 

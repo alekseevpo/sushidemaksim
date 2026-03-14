@@ -9,6 +9,12 @@ import {
     CheckCircle2,
     Volume2,
     VolumeX,
+    Calendar,
+    ShoppingCart,
+    Wallet,
+    TrendingUp,
+    Clock,
+    Heart,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
@@ -348,18 +354,26 @@ export default function AdminOrders({
 
                                 {/* Cuerpo del pedido */}
                                 <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 overflow-hidden">
-                                    {/* Info Cliente */}
-                                    <div className="space-y-4">
+                                    {/* Info Cliente & Stats */}
+                                    <div className="space-y-6">
                                         <div>
                                             <div className="flex items-center gap-2 text-gray-400 mb-2">
                                                 <Smartphone size={14} strokeWidth={1.5} />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">
+                                                <span className="text-[10px] font-bold uppercase tracking-widest text-pretty">
                                                     Cliente y Contacto
                                                 </span>
                                             </div>
-                                            <p className="font-bold text-gray-900 text-sm mb-1">
-                                                {order.users?.name || 'Invitado'}
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold text-gray-900 text-sm">
+                                                    {order.users?.name || 'Invitado'}
+                                                </p>
+                                                {order.user_stats && (
+                                                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] font-bold border border-blue-100">
+                                                        <Calendar size={10} strokeWidth={2} />
+                                                        REG. {new Date(order.user_stats.registrationDate).toLocaleDateString()}
+                                                    </div>
+                                                )}
+                                            </div>
                                             <p className="text-xs text-gray-600 font-medium">
                                                 {order.phone_number}
                                             </p>
@@ -369,6 +383,46 @@ export default function AdminOrders({
                                                 </p>
                                             )}
                                         </div>
+
+                                        {order.user_stats && (
+                                            <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                                                <div className="space-y-0.5">
+                                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                                        <ShoppingCart size={11} strokeWidth={1.5} />
+                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">Pedidos</span>
+                                                    </div>
+                                                    <p className="text-xs font-black text-gray-900">{order.user_stats.orderCount}</p>
+                                                </div>
+                                                <div className="space-y-0.5">
+                                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                                        <Wallet size={11} strokeWidth={1.5} />
+                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">Invertido</span>
+                                                    </div>
+                                                    <p className="text-xs font-black text-gray-900">{formatCurrency(order.user_stats.totalSpent)}</p>
+                                                </div>
+                                                <div className="space-y-0.5">
+                                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                                        <TrendingUp size={11} strokeWidth={1.5} />
+                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">Ticket Medio</span>
+                                                    </div>
+                                                    <p className="text-xs font-black text-gray-900">{formatCurrency(order.user_stats.avgCheck)}</p>
+                                                </div>
+                                                <div className="space-y-0.5">
+                                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                                        <Clock size={11} strokeWidth={1.5} />
+                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">Frecuencia</span>
+                                                    </div>
+                                                    <p className="text-[10px] font-black text-gray-900 leading-none">{order.user_stats.frequency}</p>
+                                                </div>
+                                                <div className="col-span-2 pt-2 border-t border-gray-200/50 mt-1 space-y-0.5">
+                                                    <div className="flex items-center gap-1.5 text-red-400">
+                                                        <Heart size={11} strokeWidth={1.5} fill="currentColor" />
+                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">Plato Favorito</span>
+                                                    </div>
+                                                    <p className="text-xs font-black text-gray-900 line-clamp-1">{order.user_stats.favoriteDish}</p>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <div className="max-w-[280px]">
                                             <div className="flex items-center gap-2 text-gray-400 mb-2">
