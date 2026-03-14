@@ -122,8 +122,8 @@ export default function AdminMenu() {
                     let width = img.width;
                     let height = img.height;
 
-                    // Max resolution 1200px (ideal for web/mobile)
-                    const MAX_SIZE = 1200;
+                    // Max resolution 1000px (sufficient for high-quality display while staying light)
+                    const MAX_SIZE = 1000;
                     if (width > height) {
                         if (width > MAX_SIZE) {
                             height *= MAX_SIZE / width;
@@ -149,8 +149,8 @@ export default function AdminMenu() {
                                 resolve(file); // Return original if compression is not better
                             }
                         },
-                        'image/jpeg',
-                        0.85 // 85% quality is a good balance
+                        'image/webp',
+                        0.8 // 80% quality is the sweet spot for WebP
                     );
                 };
             };
@@ -168,7 +168,9 @@ export default function AdminMenu() {
             // Auto-compress high-res photos (common for mobile uploads)
             if (file.type.startsWith('image/')) {
                 const compressed = await compressImage(file);
-                file = new File([compressed], file.name, { type: 'image/jpeg' });
+                file = new File([compressed], file.name.replace(/\.[^/.]+$/, '') + '.webp', {
+                    type: 'image/webp',
+                });
             }
 
             // Final safety check for Vercel 4.5MB limit

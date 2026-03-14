@@ -30,39 +30,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const { user } = useAuth();
-    const prevAuthRef = useRef(false);
-    const isSyncingRef = useRef(false);
+    // This ref helps detect transition from guest to logged in for syncing
+    const prevAuthRef = useRef(!!user);
 
     useEffect(() => {
         const isAuth = !!user;
-        const checkAndSync = async () => {
-            // If just logged in (transition from false to true)
-            if (!prevAuthRef.current && isAuth) {
-                // Delay slightly to ensure token is available in all contexts
-                setTimeout(() => {
-                    const event = new CustomEvent('auth:login_success');
-                    window.dispatchEvent(event);
-                }, 100);
-            }
-            prevAuthRef.current = isAuth;
-        };
-        checkAndSync();
+        // If transitioning from false to true (just logged in)
+        if (!prevAuthRef.current && isAuth) {
+            // We don't dispatch here anymore, we listen to the one from useAuth or handle it here
+            // Removing this redundant sync trigger if useAuth already does it
+            // Actually, keep it simpler: useAuth should be the only one dispatching
+        }
+        prevAuthRef.current = isAuth;
     }, [user]);
 
     const prevUserRef = useRef(user);
+    const isSyncingRef = useRef(false);
 
     useEffect(() => {
         // Transition from user -> null (logout)
         if (prevUserRef.current && !user) {
-            localStorage.setItem('guest_cart', JSON.stringify(items));
-        }
-        // Transition from null -> user (login)
-        if (!prevUserRef.current && user) {
-            // We just logged in, the next 'items' update will be from server
-            // We don't want to save that server state back to guest_cart immediately
+            setItems([]);
+            setTotal(0);
+            localStorage.removeItem('guest_cart');
         }
         prevUserRef.current = user;
-    }, [user, items]);
+    }, [user]);
 
     const loadCart = useCallback(
         async (silent = false) => {
