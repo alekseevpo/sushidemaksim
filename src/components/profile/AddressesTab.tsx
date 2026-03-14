@@ -116,6 +116,25 @@ export default function AddressesTab({
         setSuggestions([]);
     };
 
+    const formRef = useRef<HTMLDivElement>(null);
+    const [shouldScroll, setShouldScroll] = useState(false);
+
+    // Scroll form into view when opened
+    useEffect(() => {
+        if (showAddAddress && shouldScroll && formRef.current) {
+            const headerOffset = window.innerWidth < 768 ? 140 : 100;
+            const elementPosition = formRef.current.getBoundingClientRect().top;
+            const offsetPosition =
+                elementPosition + (window.scrollY || window.pageYOffset) - headerOffset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth',
+            });
+            setShouldScroll(false);
+        }
+    }, [showAddAddress, shouldScroll]);
+
     const handleStreetChange = (value: string) => {
         setSearchQuery(value);
         setNewAddress(p => ({ ...p, street: value }));
@@ -137,6 +156,12 @@ export default function AddressesTab({
         ignoreNextSearchRef.current = true;
         setSearchQuery(addr.street);
         setShowAddAddress(true);
+        setShouldScroll(true);
+    };
+
+    const handleAddClick = () => {
+        setShowAddAddress(true);
+        setShouldScroll(true);
     };
 
     const resetForm = () => {
@@ -187,7 +212,7 @@ export default function AddressesTab({
 
                 {!showAddAddress && (
                     <button
-                        onClick={() => setShowAddAddress(true)}
+                        onClick={handleAddClick}
                         className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
                     >
                         <Plus size={16} strokeWidth={1.5} /> Añadir dirección
@@ -197,7 +222,10 @@ export default function AddressesTab({
 
             {/* Add/Edit Form */}
             {showAddAddress && (
-                <div className="bg-gray-50 border-2 border-red-600/20 rounded-[32px] p-6 md:p-8 space-y-6 relative overflow-hidden">
+                <div
+                    ref={formRef}
+                    className="bg-gray-50 border-2 border-red-600/20 rounded-[32px] p-6 md:p-8 space-y-6 relative overflow-hidden"
+                >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-red-600 rounded-full blur-[60px] opacity-5 -mr-16 -mt-16" />
 
                     <div className="flex items-center justify-between relative z-10">
@@ -379,7 +407,7 @@ export default function AddressesTab({
                             Añade una dirección para que tus pedidos lleguen volando.
                         </p>
                         <button
-                            onClick={() => setShowAddAddress(true)}
+                            onClick={handleAddClick}
                             className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all"
                         >
                             <Plus size={18} strokeWidth={1.5} /> Añadir ahora
