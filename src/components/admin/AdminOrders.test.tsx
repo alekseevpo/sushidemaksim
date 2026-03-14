@@ -91,13 +91,31 @@ describe('AdminOrders (Integration)', () => {
         );
 
         const searchInput = await screen.findByPlaceholderText(/Buscar ID, Teléfono, Promo/i);
-
         await waitFor(() => expect(screen.getByText(/00123/)).toBeInTheDocument());
 
+        vi.useFakeTimers();
+
+        // Test search matches
         fireEvent.change(searchInput, { target: { value: '123' } });
+        
+        // Wait for debounce and state update
+        await vi.advanceTimersByTimeAsync(600);
+        
+        expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=123'));
         expect(screen.getByText(/00123/)).toBeInTheDocument();
 
+        // Prepare next mock
+        vi.mocked(api.get).mockResolvedValue({
+            orders: [],
+            pagination: { page: 1, limit: 10, total: 0, pages: 0 },
+        });
+
         fireEvent.change(searchInput, { target: { value: '999' } });
+        await vi.advanceTimersByTimeAsync(600);
+
+        expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=999'));
         expect(screen.queryByText(/00123/)).not.toBeInTheDocument();
+        
+        vi.useRealTimers();
     });
 });
