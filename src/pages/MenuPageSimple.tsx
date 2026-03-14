@@ -393,16 +393,16 @@ export default function MenuPageSimple() {
                     </div>
                 </aside>
                 <div className="flex-1 min-w-0" id="menu-content">
-                    {/* Search */}
-                    <div className="flex items-center justify-between mb-8 h-14 relative">
+                    {/* Header Section with Search */}
+                    <header className="mb-0 md:mb-12 relative">
                         <AnimatePresence mode="wait">
                             {!isSearchExpanded ? (
                                 <motion.div
                                     key="search-button"
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -10 }}
-                                    className="md:hidden flex items-center justify-between w-full"
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="md:hidden flex items-center justify-between w-full h-16 pt-2"
                                 >
                                     <h1 className="text-3xl text-gray-900 font-black tracking-tighter mb-0">
                                         Nuestro Menú
@@ -420,7 +420,7 @@ export default function MenuPageSimple() {
                                     initial={{ opacity: 0, width: '48px', x: 20 }}
                                     animate={{ opacity: 1, width: '100%', x: 0 }}
                                     exit={{ opacity: 0, width: '48px', x: 20 }}
-                                    className="md:hidden relative w-full flex items-center gap-2"
+                                    className="md:hidden relative w-full flex items-center gap-2 h-16 pt-2"
                                 >
                                     <div className="relative flex-1">
                                         <Search
@@ -433,8 +433,8 @@ export default function MenuPageSimple() {
                                             type="text"
                                             value={search}
                                             onChange={e => setSearch(e.target.value)}
-                                            placeholder="¿Qué te apetece hoy?"
-                                            className="w-full pl-12 pr-12 py-4 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                                            placeholder="¿Qué te apetece сегодня?"
+                                            className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
                                         />
                                         {search && (
                                             <button
@@ -458,8 +458,8 @@ export default function MenuPageSimple() {
                             )}
                         </AnimatePresence>
 
-                        {/* Desktop Search - Always visible */}
-                        <div className="hidden md:flex items-center justify-between w-full">
+                        {/* Desktop Header */}
+                        <div className="hidden md:flex items-center justify-between w-full pt-8">
                             <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0">
                                 Nuestro Menú
                             </h1>
@@ -473,8 +473,8 @@ export default function MenuPageSimple() {
                                     type="text"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
-                                    placeholder="¿Qué te apetece hoy?"
-                                    className="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                                    placeholder="¿Что ты хочешь сегодня?"
+                                    className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
                                 />
                                 {search && (
                                     <button
@@ -486,10 +486,10 @@ export default function MenuPageSimple() {
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </header>
 
-                    {/* Category Filter - Fixed/Sticky for all on scroll (Hidden on desktop since we have sidebar) */}
-                    <div className="sticky top-[64px] z-[40] transition-all duration-300 -mx-2 md:-mx-4 px-2 md:px-4 py-3 bg-white/95 backdrop-blur-xl border-b border-gray-100 mb-6 lg:hidden overflow-x-auto no-scrollbar shadow-sm">
+                    {/* Category Filter - PERSISTENT Mobile Version */}
+                    <div className="sticky top-[64px] z-[40] -mx-2 md:mx-0 px-2 md:px-0 py-3 bg-[#FDFBF7]/95 backdrop-blur-xl border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm will-change-transform transform-gpu">
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 onClick={() => setSelectedCategory('all')}
@@ -518,42 +518,37 @@ export default function MenuPageSimple() {
                         </div>
                     </div>
 
-                    {/* Items */}
+                    {/* Items Section */}
                     {isLoading ? (
-                        <>
-                            <div className="flex items-center gap-4 mb-6 md:mb-8">
-                                <div className="w-12 h-12 rounded-2xl skeleton shrink-0" />
-                                <div className="h-8 w-48 skeleton rounded-xl" />
-                                <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent" />
-                            </div>
+                        <div className="space-y-12">
                             <MenuItemsSkeleton />
-                        </>
+                        </div>
                     ) : items.length === 0 ? (
-                        <div className="text-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200">
-                            <div className="text-6xl mb-4">🙊</div>
+                        <div className="text-center py-24 bg-white rounded-[40px] border border-dashed border-gray-200 shadow-sm">
+                            <div className="text-6xl mb-6">🙊</div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
                                 {search
-                                    ? `No hay resultados para "${search}"`
-                                    : 'No hay platos en esta categoría'}
+                                    ? `No hay результаты для "${search}"`
+                                    : 'No hay platos в этой категории'}
                             </h3>
-                            <p className="text-gray-500">Intenta buscar con otros términos</p>
+                            <p className="text-gray-500">Попробуй изменить фильтры</p>
                             <button
                                 onClick={() => {
                                     setSearch('');
                                     setSelectedCategory('all');
                                 }}
-                                className="mt-6 px-6 py-3 bg-gray-900 text-white rounded-2xl font-black border-none cursor-pointer hover:bg-red-600 transition-colors"
+                                className="mt-8 px-8 py-3.5 bg-gray-900 text-white rounded-2xl font-black border-none cursor-pointer hover:bg-red-600 transition-colors shadow-lg"
                             >
-                                Ver todo el menú
+                                Ver Todo
                             </button>
                         </div>
                     ) : (
-                        <div className="space-y-12 pb-24">
+                        <div className="space-y-12 pb-32">
                             {(selectedCategory === 'all' && !search
                                 ? CATEGORIES.filter(cat =>
                                       items.some(item => item.category === cat.id)
                                   )
-                                : [{ id: selectedCategory, name: '', icon: '' }]
+                                : [{ id: selectedCategory, name: '', icon: (props: any) => null }]
                             ).map(cat => {
                                 const sectionItems =
                                     selectedCategory === 'all' && !search
@@ -569,8 +564,9 @@ export default function MenuPageSimple() {
                                         id={`section-${cat.id}`}
                                     >
                                         {selectedCategory === 'all' && !search && (
-                                            <div className="flex items-center gap-4 mb-6 md:mb-8">
+                                            <div className="flex items-center gap-4 mb-8">
                                                 <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-gray-100">
+                                                    {/* @ts-ignore */}
                                                     <cat.icon
                                                         size={24}
                                                         strokeWidth={1.5}
@@ -583,7 +579,6 @@ export default function MenuPageSimple() {
                                                 <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
                                             </div>
                                         )}
-
                                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
                                             {sectionItems.map(item => (
                                                 <div
@@ -673,7 +668,7 @@ export default function MenuPageSimple() {
 
                                                     {/* Info Container */}
                                                     <div className="p-3 md:p-6 flex flex-col flex-1">
-                                                        <div className="mb-1 md:mb-2">
+                                                        <div className="mb-1 md:mb-2 text-left">
                                                             <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto">
                                                                 {item.name}
                                                             </h3>

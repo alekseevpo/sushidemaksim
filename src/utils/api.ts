@@ -73,7 +73,8 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
             const isPublicPage =
                 publicPages.includes(currentPath) ||
                 window.location.pathname.startsWith('/blog/') ||
-                window.location.pathname.startsWith('/track/');
+                window.location.pathname.startsWith('/track/') ||
+                window.location.pathname.startsWith('/pay-for-friend/');
 
             // Don't reload/redirect if the user is trying to login/register
             // OR if they are already on a public page

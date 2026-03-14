@@ -4,18 +4,19 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
     test.use({ viewport: { width: 1280, height: 720 } });
     test.slow();
 
-    test.beforeEach(async ({ page, context }) => {
-        // Set cookie consent before any script runs.
-        // We only clear sushi_token once at the start, using sessionStorage to track it.
+    test.beforeEach(async ({ page, context }, testInfo) => {
+        // Даем разрешения на буфер обмена только для Chromium, так как Webkit их не поддерживает в Playwright
+        if (testInfo.project.name.includes('chromium')) {
+            await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+        }
+
+        // Prevent race condition on Webkit/Chromium by using init scripts for storage
         await context.addInitScript(() => {
-            if (!window.sessionStorage.getItem('init_cleared')) {
-                window.localStorage.removeItem('sushi_token');
-                window.sessionStorage.setItem('init_cleared', 'true');
-            }
             window.localStorage.setItem('cookieConsent', 'accepted');
+            window.localStorage.removeItem('sushi_token');
         });
 
-        // Basic settings and public user mocks
+        // Configuración básica de mocks de API
         await context.route('**/api/settings', route =>
             route.fulfill({
                 status: 200,
@@ -23,15 +24,9 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                 body: JSON.stringify({ site_name: 'Sushi de Maksim', min_order: 20 }),
             })
         );
+        
         await context.route('**/api/user/active', route =>
             route.fulfill({ status: 200, contentType: 'application/json', body: '{"user":null}' })
-        );
-        await context.route('**/api/user/favorites', route =>
-            route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: '{"favorites":[]}',
-            })
         );
 
         await context.route('**/api/menu*', route =>
@@ -46,7 +41,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                             price: 6.9,
                             category: 'entrantes',
                             description: '5 piezas',
-                            image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf',
+                            image: '',
                         },
                     ],
                     total: 1,
@@ -54,112 +49,126 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
             })
         );
 
-        // Default cart with items
-        await context.route('**/api/cart', route => {
-            return route.fulfill({
+        // Mock del carrito por defecto
+        await context.route('**/api/cart', route =>
+            route.fulfill({
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
                     items: [
                         {
-                            menu_item_id: 1,
+                            id: 1,
                             name: 'Gyozas con carne',
                             price: 6.9,
                             quantity: 3,
                             category: 'entrantes',
                             image: '',
-                            description: '',
                         },
                     ],
                     total: 20.7,
                 }),
-            });
-        });
+            })
+        );
     });
 
     test('SUCCESS: Create invitation and pay as friend', async ({ page, context }) => {
-        // Mock auth for Sender
-        await context.route('**/api/auth/me', async route => {
-            const h = route.request().headers();
-            const auth = h['authorization'] || h['Authorization'];
-            if (auth?.includes('sender-token')) {
-                await route.fulfill({
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify({
-                        user: {
-                            id: 101,
-                            name: 'Sender',
-                            full_name: 'Sender',
-                            email: 'sender@test.com',
-                            role: 'user',
-                            addresses: [],
-                        },
-                    }),
-                });
-            } else {
-                await route.fulfill({ status: 401, body: '{"error":"Unauthorized"}' });
-            }
+        // Устанавливаем токен ДО навигации через init script
+        // Также форсируем отсутствие navigator.share для срабатывания fallback-а с тостом
+        await page.addInitScript(() => {
+            window.localStorage.setItem('sushi_token', 'sender-token');
+            // @ts-ignore
+            delete window.navigator.share;
+            // Mock clipboard to avoid permission errors
+            Object.defineProperty(window.navigator, 'clipboard', {
+                value: {
+                    writeText: async () => Promise.resolve()
+                }
+            });
         });
 
-        await context.route('**/api/auth/login', route =>
+        // Консистентные моки пользователя
+        const senderUser = {
+            id: 111,
+            name: 'Sender User',
+            phone: '600111222',
+            addresses: [{ street: 'Calle Emisor', house: '1', apartment: 'A', isDefault: true }],
+        };
+
+        await context.route('**/api/auth/me', route => 
+            route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: senderUser }) })
+        );
+        await context.route('**/api/user/active', route => 
+            route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: senderUser }) })
+        );
+
+        // Mock корзины
+        await context.route('**/api/cart', route =>
             route.fulfill({
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    token: 'sender-token',
-                    user: {
-                        id: 101,
-                        name: 'Sender',
-                        full_name: 'Sender',
-                        email: 'sender@test.com',
-                    },
+                    items: [{ menu_item_id: 1, name: 'Gyozas con carne', price: 6.9, quantity: 3, category: 'entrantes', image: '' }],
+                    total: 20.7,
                 }),
             })
         );
 
-        // 1. Login
-        const loginBtn = page
-            .getByRole('button', { name: /ACCEDER/i })
-            .filter({ visible: true })
-            .first();
-        await loginBtn.click({ delay: 100 });
-        await page.getByPlaceholder(/tu@email.com/i).fill('sender@test.com');
-        await page.getByPlaceholder(/Tu contraseña/i).fill('password123');
-        await page.getByRole('button', { name: /Iniciar sesión/i }).click({ delay: 100 });
-
-        // Wait for login to complete and UI to update
-        await expect(page.locator('header')).toContainText('Sender', { timeout: 20000 });
-
-        // 2. Add item manually to ensure local state and server state are in sync
-        // actually, we already have it mocked, so just go to cart
         await page.goto('/cart');
+        
+        // КРИТИЧНО: Ждем, пока корзина загрузится и покажет товар
+        await expect(page.getByText('Gyozas con carne').first()).toBeVisible({ timeout: 15000 });
 
-        // Wait for items to appear first
-        await expect(page.getByText('Gyozas con carne').first()).toBeVisible({ timeout: 20000 });
+        // Убедимся, что заголовок "Resumen" виден (признак того, что колонка отрендерилась)
+        await expect(page.getByText(/Resumen/i).first()).toBeVisible({ timeout: 10000 });
 
-        // Ensure cart is loaded with the mocked items
-        await expect(page.getByText(/Resumen/i).first()).toBeVisible({ timeout: 15000 });
+        const inviteBtn = page.getByTestId('invite-button');
+        
+        // RELLENAR DATOS DE ENVÍO (necesario para validación en handleInvite)
+        await page.getByTestId('address-input').fill('Calle Falsa 123');
+        await page.getByTestId('house-input').fill('1');
+        await page.getByTestId('apartment-input').fill('2A');
+        await page.getByTestId('phone-input').fill('600111222');
 
-        const inviteBtn = page.getByRole('button', { name: /¡Que me inviten!/i });
+        // Прокрутим к кнопке на всякий случай
+        await inviteBtn.scrollIntoViewIfNeeded();
         await expect(inviteBtn).toBeVisible({ timeout: 15000 });
+        await expect(inviteBtn).toBeEnabled({ timeout: 5000 });
 
-        const fakeOrderId = 'INV-123';
+        const fakeOrderId = 999;
         await context.route('**/api/orders/invite', route =>
             route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ success: true, order_id: fakeOrderId }),
+                body: JSON.stringify({ 
+                    success: true, 
+                    order: { id: fakeOrderId },
+                    shareUrl: `http://localhost:5173/pay-for-friend/${fakeOrderId}`
+                }),
             })
         );
 
-        await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Invitación');
-        await page.getByPlaceholder(/Ej: 15/i).fill('7');
-        await page.getByPlaceholder(/Ej: 3ºB/i).fill('B');
-        await page.locator('input[type="tel"]').fill('611222333');
+        // Кликаем и ждем ответа от API
+        const responsePromise = page.waitForResponse(resp => 
+            resp.url().includes('/api/orders/invite') && resp.status() === 200
+        );
         await inviteBtn.click();
+        const response = await responsePromise;
+        const respJson = await response.json();
+        expect(respJson.success).toBe(true);
+        
+        // Ждем тост об успехе. Если не появился - проверяем, нет ли тоста об ошибке
+        try {
+            await expect(page.getByText(/Enlace de invitación copiado/i).first()).toBeVisible({ timeout: 8000 });
+        } catch (e) {
+            const errorToast = page.locator('div').filter({ hasText: /Error/i });
+            if (await errorToast.count() > 0) {
+                const errorMsg = await errorToast.innerText();
+                throw new Error(`Test failed because of application error: ${errorMsg}`);
+            }
+            throw e;
+        }
 
-        // 3. Recipient part
+        // RECIPIENT FLOW
         await context.route(`**/api/orders/public/${fakeOrderId}`, route =>
             route.fulfill({
                 status: 200,
@@ -170,8 +179,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                         total: 20.7,
                         status: 'pending',
                         delivery_address: 'Calle Invitación, 7, B',
-                        notes: '[De parte de: Sender]',
-                        items: [{ name: 'Gyozas con carne', quantity: 3, price: 6.9, image: '' }],
+                        items: [{ name: 'Gyozas con carne', quantity: 3, price: 6.9 }],
                     },
                 }),
             })
@@ -179,54 +187,36 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
 
         const recipientPage = await context.newPage();
         await recipientPage.goto(`/pay-for-friend/${fakeOrderId}`);
-        // Use a more relaxed text check for the title
-        await expect(recipientPage.getByText(/Momento de invitar/i).first()).toBeVisible({
-            timeout: 30000,
-        });
+        // В Webkit иногда нужно больше времени на рендеринг страницы оплаты
+        await expect(recipientPage.getByText(/Momento de invitar/i).first()).toBeVisible({ timeout: 20000 });
 
         await context.route(`**/api/orders/*/confirm-payment`, route =>
-            route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: '{"success":true}',
-            })
+            route.fulfill({ status: 200, body: '{"success":true}' })
         );
 
         await recipientPage.getByRole('button', { name: /Confirmar y Pagar/i }).click();
-        await expect(recipientPage.locator('h2', { hasText: /¡Eres Genial!/i })).toBeVisible({
-            timeout: 20000,
-        });
+        await expect(recipientPage.locator('h2', { hasText: /¡Eres Genial!/i })).toBeVisible({ timeout: 15000 });
     });
 
     test('PROTECTION: Guests cannot invite friends (prompt to login)', async ({ page }) => {
-        // Mock guest cart in localStorage
-        await page.evaluate(() => {
-            window.localStorage.setItem(
-                'guest_cart',
-                JSON.stringify([
-                    {
-                        id: '1',
-                        name: 'Gyozas',
-                        price: 10,
-                        quantity: 1,
-                        category: 'entrantes',
-                        image: '',
-                        description: '',
-                    },
-                ])
-            );
+        // Устанавливаем корзину ДО навигации
+        await page.addInitScript(() => {
+            window.localStorage.setItem('guest_cart', JSON.stringify([
+                { id: '1', name: 'Gyozas', price: 20, quantity: 1, category: 'entrantes' }
+            ]));
         });
 
         await page.goto('/cart');
-        try {
-            const inviteBtn = page.getByText(/¡Que me inviten!/i).first();
-            await expect(inviteBtn).toBeVisible({ timeout: 15000 });
-            await inviteBtn.click();
-        } catch (e) {
-            console.log('GUEST CART CONTENT:', await page.evaluate(() => document.body.innerText));
-            throw e;
-        }
+        
+        // Ждем товар
+        await expect(page.getByText('Gyozas').first()).toBeVisible({ timeout: 15000 });
 
-        await expect(page.getByRole('heading', { name: /Hola/i })).toBeVisible({ timeout: 10000 });
+        const inviteBtn = page.getByTestId('invite-button');
+        await inviteBtn.scrollIntoViewIfNeeded();
+        await expect(inviteBtn).toBeVisible({ timeout: 15000 });
+        await inviteBtn.click();
+
+        // Проверяем открытие модалки
+        await expect(page.getByText(/¡Hola de nuevo!/i).first()).toBeVisible({ timeout: 15000 });
     });
 });

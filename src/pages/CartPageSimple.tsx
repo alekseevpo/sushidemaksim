@@ -775,6 +775,8 @@ export default function CartPageSimple() {
                                     </label>
                                     <input
                                         type="text"
+                                        id="address-input"
+                                        data-testid="address-input"
                                         value={address}
                                         onChange={e => setAddress(e.target.value)}
                                         placeholder={
@@ -793,6 +795,8 @@ export default function CartPageSimple() {
                                         </label>
                                         <input
                                             type="text"
+                                            id="house-input"
+                                            data-testid="house-input"
                                             value={house}
                                             onChange={e => setHouse(e.target.value)}
                                             placeholder="Ej: 15"
@@ -805,6 +809,8 @@ export default function CartPageSimple() {
                                         </label>
                                         <input
                                             type="text"
+                                            id="apartment-input"
+                                            data-testid="apartment-input"
                                             value={apartment}
                                             onChange={e => setApartment(e.target.value)}
                                             placeholder="Ej: 3ºB"
@@ -819,6 +825,8 @@ export default function CartPageSimple() {
                                     </label>
                                     <input
                                         type="tel"
+                                        id="phone-input"
+                                        data-testid="phone-input"
                                         value={phone}
                                         onChange={e => setPhone(e.target.value)}
                                         placeholder={user?.phone || '+34 600 000 000'}
@@ -1066,6 +1074,7 @@ export default function CartPageSimple() {
                                         document.dispatchEvent(new Event('custom:openLogin'));
                                     }
                                 }}
+                                data-testid="invite-button"
                                 disabled={isOrdering || isInviting || items.length === 0}
                                 className="bg-amber-100 text-amber-800 px-6 py-3 rounded-lg font-bold border border-amber-200 cursor-pointer w-full mb-6 text-base hover:bg-amber-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
                             >

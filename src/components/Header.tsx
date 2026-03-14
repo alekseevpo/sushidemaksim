@@ -10,6 +10,9 @@ import {
     X,
     ShieldCheck,
     ChevronRight,
+    BookOpen,
+    Phone,
+    Star,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
@@ -96,27 +99,25 @@ export default function Header() {
         : '';
 
     const navLinks = [
-        { to: '/menu', label: 'Menú' },
-        { to: '/blog', label: 'Blog' },
-        { to: '/contacts', label: 'Contactos' },
-        { to: '/promo', label: 'Promo', highlight: true },
+        { to: '/menu', label: 'Menú', icon: Menu },
+        { to: '/blog', label: 'Blog', icon: BookOpen },
+        { to: '/contacts', label: 'Contactos', icon: Phone },
+        { to: '/promo', label: 'Promo', highlight: true, icon: Star },
     ];
 
     return (
         <>
             <header
-                className={`fixed top-0 w-full z-[100] transition-all duration-300 border-b
+                className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 border-b h-16
                 ${
                     isScrolled
                         ? 'bg-white/95 backdrop-blur-xl shadow-sm border-gray-100'
-                        : 'bg-white/50 backdrop-blur-md border-transparent'
+                        : 'bg-white/80 backdrop-blur-md border-transparent'
                 }
             `}
             >
                 <div className="max-w-7xl mx-auto px-4">
-                    <div
-                        className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20'}`}
-                    >
+                    <div className="flex items-center justify-between h-16">
                         {/* Logo */}
                         <Link
                             to="/"
@@ -335,94 +336,115 @@ export default function Header() {
                                     initial={{ y: '100%' }}
                                     animate={{ y: 0 }}
                                     exit={{ y: '100%' }}
-                                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="fixed inset-x-0 bottom-0 bg-white rounded-t-[32px] shadow-2xl z-[9999] md:hidden overflow-hidden border-t border-gray-100"
+                                    transition={{ 
+                                        type: 'spring', 
+                                        damping: 30, 
+                                        stiffness: 300,
+                                        mass: 0.8
+                                    }}
+                                    className="fixed inset-x-0 bottom-0 bg-white/90 backdrop-blur-xl rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-white/40 will-change-transform flex flex-col max-h-[92dvh]"
                                 >
-                                    {/* Drag Handle (visual only) */}
-                                    <div className="flex justify-center pt-4 pb-2">
-                                        <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+                                    {/* Drag Handle Container */}
+                                    <div className="flex justify-center pt-5 pb-2 shrink-0">
+                                        <div className="w-12 h-1.5 bg-gray-200/80 rounded-full" />
                                     </div>
 
-                                    <div className="px-5 pb-8 pt-2 space-y-2 max-h-[85vh] overflow-y-auto w-full">
-                                        {navLinks.map(link => (
-                                            <Link
-                                                key={link.to}
-                                                to={link.to}
-                                                onClick={() => setShowMobileMenu(false)}
-                                                className={`flex items-center px-5 py-4 rounded-2xl font-black text-sm no-underline hover:bg-gray-50
-                          ${link.highlight ? 'text-red-600' : 'text-gray-700'}
-                          ${location.pathname === link.to ? 'bg-gray-100' : ''}`}
-                                            >
-                                                {link.label}
-                                                {location.pathname === link.to && (
-                                                    <ChevronRight
-                                                        size={16}
-                                                        strokeWidth={1.5}
-                                                        className="ml-auto"
-                                                    />
-                                                )}
-                                            </Link>
-                                        ))}
-
-                                        <div className="h-px bg-gray-100 my-2 mx-2" />
-
-                                        {isLoading ? (
-                                            <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
-                                        ) : isAuthenticated && user ? (
-                                            <div className="space-y-2 pt-2">
-                                                <div className="px-5 py-3 bg-gray-50 rounded-2xl mb-2">
-                                                    <p className="font-black text-gray-900 text-sm mb-0.5 line-clamp-1">
-                                                        {user.name}
-                                                    </p>
-                                                    <p className="text-[12px] text-gray-400 font-medium line-clamp-1">
-                                                        {user.email}
-                                                    </p>
-                                                </div>
-                                                {user.role === 'admin' && (
-                                                    <Link
-                                                        to="/admin"
-                                                        onClick={() => setShowMobileMenu(false)}
-                                                        className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-red-600 text-sm font-black bg-red-50"
-                                                    >
-                                                        <ShieldCheck size={20} strokeWidth={1.5} />{' '}
-                                                        PANEL ADMIN
-                                                    </Link>
-                                                )}
+                                    {/* Scrollable Content Area */}
+                                    <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+                                        <div className="px-6 pt-4 pb-2 space-y-2">
+                                        {navLinks.map(link => {
+                                            const Icon = link.icon;
+                                            const isActive = location.pathname === link.to;
+                                            return (
                                                 <Link
-                                                    to="/profile"
+                                                    key={link.to}
+                                                    to={link.to}
                                                     onClick={() => setShowMobileMenu(false)}
-                                                    className="flex items-center gap-3 px-5 py-4 rounded-2xl no-underline text-gray-700 text-sm font-bold hover:bg-gray-50"
+                                                    className={`group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97]
+                                                        ${isActive 
+                                                            ? 'text-red-600 bg-red-50/50' 
+                                                            : 'text-gray-600 hover:text-gray-900'
+                                                        }`}
                                                 >
-                                                    <User
-                                                        size={20}
-                                                        strokeWidth={1.5}
-                                                        className="text-gray-400"
-                                                    />{' '}
-                                                    Mi Perfil
+                                                    <div className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}>
+                                                        <Icon size={22} strokeWidth={isActive ? 2.5 : 1.8} />
+                                                    </div>
+                                                    <span className={`flex-1 tracking-tight ${isActive ? 'text-red-600' : 'text-gray-900'}`}>{link.label}</span>
+                                                    <ChevronRight
+                                                        size={18}
+                                                        strokeWidth={isActive ? 2.5 : 2}
+                                                        className={`transition-all duration-300 ${isActive ? 'translate-x-0 opacity-100' : 'opacity-0 -translate-x-2'}`}
+                                                    />
                                                 </Link>
-                                                <button
-                                                    onClick={() => {
-                                                        logout();
-                                                        setShowMobileMenu(false);
-                                                    }}
-                                                    className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-sm font-bold bg-white border border-red-100 hover:bg-red-50"
-                                                >
-                                                    <LogOut size={20} strokeWidth={1.5} /> Cerrar
-                                                    sesión
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                onClick={() => {
-                                                    setShowMobileMenu(false);
-                                                    setIsLoginModalOpen(true);
-                                                }}
-                                                className="w-full py-4 rounded-2xl bg-gray-900 text-white border-none cursor-pointer font-black text-sm shadow-xl active:scale-95 flex items-center justify-center gap-2 mt-4"
-                                            >
-                                                <User size={18} />
-                                                ACCEDER / REGISTRO
-                                            </button>
-                                        )}
+                                            );
+                                        })}
+                                        </div>
+
+                                        <div className="px-6 pb-8 space-y-3">
+                                            <div className="h-px bg-gray-100 my-2 mx-2" />
+
+                                            {isLoading ? (
+                                                <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
+                                            ) : isAuthenticated && user ? (
+                                                <div className="space-y-4">
+                                                    <div className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white font-black text-sm">
+                                                            {user.avatar ? user.avatar : initials}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-black text-gray-900 text-[14px] leading-none mb-1">
+                                                                {user.name}
+                                                            </p>
+                                                            <p className="text-[12px] text-gray-400 font-medium leading-none">
+                                                                {user.email}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className={`grid gap-2 ${user.role === 'admin' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                                                        {user.role === 'admin' && (
+                                                            <Link
+                                                                to="/admin"
+                                                                onClick={() => setShowMobileMenu(false)}
+                                                                className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-red-600 text-[13px] font-black bg-red-50 border border-red-100"
+                                                            >
+                                                                <ShieldCheck size={18} strokeWidth={1.5} />
+                                                                PANEL
+                                                            </Link>
+                                                        )}
+                                                        <Link
+                                                            to="/profile"
+                                                            onClick={() => setShowMobileMenu(false)}
+                                                            className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-gray-700 text-[13px] font-bold bg-gray-50 border border-gray-100"
+                                                        >
+                                                            <User size={18} strokeWidth={1.5} />
+                                                            MI PERFIL
+                                                        </Link>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            logout();
+                                                            setShowMobileMenu(false);
+                                                        }}
+                                                        className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-[14px] font-black bg-white border border-red-50 hover:bg-red-50 transition-colors mb-4"
+                                                    >
+                                                        <LogOut size={18} strokeWidth={1.5} /> Cerrar sesión
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="pb-4">
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowMobileMenu(false);
+                                                            setIsLoginModalOpen(true);
+                                                        }}
+                                                        className="w-full py-5 rounded-[24px] bg-gray-900 text-white border-none cursor-pointer font-black text-[15px] shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-3"
+                                                    >
+                                                        <User size={20} />
+                                                        ACCEDER / REGISTRO
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </motion.div>
                             </>

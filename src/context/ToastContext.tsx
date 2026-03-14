@@ -94,15 +94,15 @@ const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onC
     };
 
     const bgColors = {
-        success: 'bg-emerald-50/80 border-emerald-100',
-        error: 'bg-red-50/80 border-red-100',
-        info: 'bg-blue-50/80 border-blue-100',
-        warning: 'bg-amber-50/80 border-amber-100',
+        success: 'bg-emerald-50 border-emerald-100',
+        error: 'bg-red-50 border-red-100',
+        info: 'bg-blue-50 border-blue-100',
+        warning: 'bg-amber-50 border-amber-100',
     };
 
     return (
         <div
-            className={`flex items-center gap-4 p-4 rounded-2xl border backdrop-blur-xl shadow-2xl ${bgColors[toast.type]} overflow-hidden relative group`}
+            className={`flex items-center gap-4 p-4 rounded-2xl border shadow-2xl ${bgColors[toast.type]} overflow-hidden relative group`}
         >
             <div className="flex-shrink-0">{icons[toast.type]}</div>
             <div className="flex-1">
