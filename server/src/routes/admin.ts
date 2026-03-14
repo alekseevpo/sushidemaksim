@@ -53,7 +53,10 @@ router.post(
 
         if (error) {
             console.error('❌ Supabase storage error:', error);
-            return res.status(500).json({ error: 'Error al subir la imagen a Supabase Storage' });
+            return res.status(500).json({
+                error: 'Error al subir la imagen a Supabase Storage',
+                details: error.message || JSON.stringify(error),
+            });
         }
 
         // Get Public URL
@@ -254,6 +257,7 @@ router.get(
         const offset = (page - 1) * limit;
         const status = req.query.status as string | undefined;
         const userId = req.query.userId as string | undefined;
+        const search = req.query.search as string | undefined;
 
         let query = supabase
             .from('orders')
@@ -267,6 +271,19 @@ router.get(
             }
         }
         if (userId) query = query.eq('user_id', userId);
+
+        if (search) {
+            const searchNum = parseInt(search);
+            if (!isNaN(searchNum) && searchNum.toString() === search) {
+                query = query.or(
+                    `id.eq.${searchNum},phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promocode.ilike.%${search}%`
+                );
+            } else {
+                query = query.or(
+                    `phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promocode.ilike.%${search}%`
+                );
+            }
+        }
 
         const {
             data: orders,

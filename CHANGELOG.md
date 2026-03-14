@@ -1,5 +1,15 @@
 # Журнал разработки (Changelog)
 
+## [2026-03-14] - Comprehensive Project Audit & Roadmap Update 🛡️
+
+### 📊 Аудит и Планирование (Audit & Quality)
+
+- **Detailed Project Audit**: Проведен глубокий технический аудит всей кодовой базы (Frontend, Backend, Tests, Infrastructure).
+- **Roadmap 2.0**: Сформирован обновленный план развития проекта, включая переход на TanStack Query, исправление логики поиска в админке и оптимизацию синхронизации корзины.
+- **PostgreSQL Error Mapping**: Выявлена необходимость обновления обработки ошибок под PostgreSQL.
+- **Cron Strategy**: Пересмотрена стратегия выполнения фоновых задач для работы в serverless-среде Vercel.
+- **Admin Search Engine**: Глобальное исправление системы поиска в админ-панели (Orders/Users). Поиск перенесен на бэкенд для корректной работы с пагинацией по всей базе данных. Добавлен дебаунс (debounce) для снижения нагрузки на БД и кнопки мгновенной очистки (clear buttons).
+
 ## [2026-03-11] - UX Reliability, Admin Polish & Project Organization ❤️
 
 ### 🍱 Меню и Избранное (UX Reliability)

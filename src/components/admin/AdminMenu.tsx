@@ -110,13 +110,72 @@ export default function AdminMenu() {
         }
     };
 
+    const compressImage = (file: File): Promise<Blob | File> => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Max resolution 1200px (ideal for web/mobile)
+                    const MAX_SIZE = 1200;
+                    if (width > height) {
+                        if (width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        }
+                    } else {
+                        if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob(
+                        (blob) => {
+                            if (blob && blob.size < file.size) {
+                                resolve(blob);
+                            } else {
+                                resolve(file); // Return original if compression is not better
+                            }
+                        },
+                        'image/jpeg',
+                        0.85 // 85% quality is a good balance
+                    );
+                };
+            };
+        });
+    };
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+        let file = e.target.files?.[0];
         if (!file) return;
 
         setUploadingImage(true);
         setError('');
+        
         try {
+            // Auto-compress high-res photos (common for mobile uploads)
+            if (file.type.startsWith('image/')) {
+                const compressed = await compressImage(file);
+                file = new File([compressed], file.name, { type: 'image/jpeg' });
+            }
+
+            // Final safety check for Vercel 4.5MB limit
+            if (file.size > 4 * 1024 * 1024) {
+                throw new Error('La imagen sigue siendo demasiado grande (máx. 4.5MB). Por favor, intenta con otra o redúcela manualmente.');
+            }
+
             const formDataUpload = new FormData();
             formDataUpload.append('image', file);
 
@@ -125,25 +184,28 @@ export default function AdminMenu() {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    // Browser automatically sets Content-Type for FormData
                 },
                 body: formDataUpload,
             });
 
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ error: 'Error del servidor' }));
-                throw new Error(errorData.error || `Error ${res.status}`);
+                const errorData = await res.json().catch(() => ({ 
+                    error: `Error del servidor (${res.status})`,
+                    details: 'No se pudo procesar la respuesta del servidor.'
+                }));
+                const errorMessage = errorData.details 
+                    ? `${errorData.error}: ${errorData.details}` 
+                    : errorData.error;
+                throw new Error(errorMessage || `Error ${res.status}`);
             }
 
             const data = await res.json();
             setFormData(prev => ({ ...prev, image: data.url }));
         } catch (err: any) {
             console.error('Upload fail:', err);
-            setError(
-                err.message === 'Failed to fetch'
-                    ? 'Error de red: No se pudo conectar al servidor. Inténtalo de nuevo o refresca la página.'
-                    : err.message
-            );
+            setError(err.message === 'Failed to fetch' 
+                ? 'Error de red: No se pudo conectar al servidor.' 
+                : err.message);
         } finally {
             setUploadingImage(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -156,9 +218,14 @@ export default function AdminMenu() {
         setError('');
 
         try {
+            const priceStr = String(formData.price || '0');
+            const parsedPrice = priceStr.includes(',')
+                ? Number(priceStr.replace(',', '.'))
+                : Number(priceStr);
+
             const payload = {
                 ...formData,
-                price: Number(formData.price),
+                price: parsedPrice,
                 pieces: formData.pieces ? Number(formData.pieces) : undefined,
             };
 
@@ -192,8 +259,16 @@ export default function AdminMenu() {
                         placeholder="Buscar por nombre o categoría..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
+                        className="w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
                     />
+                    {search && (
+                        <button
+                            onClick={() => setSearch('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                            <X size={16} strokeWidth={1.5} />
+                        </button>
+                    )}
                 </div>
                 <button
                     onClick={openAddModal}

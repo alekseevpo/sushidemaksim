@@ -15,6 +15,7 @@ import {
     TrendingUp,
     Clock,
     Heart,
+    X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
@@ -37,11 +38,20 @@ export default function AdminOrders({
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<string>('active');
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [notification, setNotification] = useState<{
         id: number;
         oldStatus: string;
         newStatus: string;
     } | null>(null);
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const loadOrders = async (
         page: number = 1,
@@ -52,6 +62,10 @@ export default function AdminOrders({
         setError(null);
         try {
             let url = `/admin/orders?page=${page}&limit=${pagination.limit}`;
+
+            if (debouncedSearch) {
+                url += `&search=${encodeURIComponent(debouncedSearch)}`;
+            }
 
             // Map frontend filters to backend status strings
             const filterMap: Record<string, string> = {
@@ -91,7 +105,7 @@ export default function AdminOrders({
 
         return () => clearInterval(intervalId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pagination.page, filter]);
+    }, [pagination.page, filter, debouncedSearch]);
 
     const handleUpdateStatus = async (id: number, newStatus: string) => {
         const order = orders.find(o => o.id === id);
@@ -157,21 +171,6 @@ export default function AdminOrders({
         return Number(amount).toFixed(2).replace('.', ',') + ' €';
     };
 
-    const filteredOrders = orders.filter(o => {
-        // Since status filtering is now handled by the backend,
-        // we only perform frontend filtering for the SEARCH string.
-        if (!search) return true;
-
-        const matchesSearch =
-            String(o.id).includes(search) ||
-            (o.delivery_address &&
-                o.delivery_address.toLowerCase().includes(search.toLowerCase())) ||
-            (o.phone_number && o.phone_number.includes(search)) ||
-            (o.promocode && o.promocode.toLowerCase().includes(search.toLowerCase()));
-
-        return matchesSearch;
-    });
-
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Top Controls */}
@@ -189,8 +188,16 @@ export default function AdminOrders({
                                 placeholder="Buscar ID, Teléfono, Promo..."
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
+                                className="w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
                             />
+                            {search && (
+                                <button
+                                    onClick={() => setSearch('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <X size={16} strokeWidth={1.5} />
+                                </button>
+                            )}
                         </div>
                         <button
                             onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
@@ -269,7 +276,7 @@ export default function AdminOrders({
                 </div>
             )}
 
-            {!loading && filteredOrders.length === 0 ? (
+            {!loading && orders.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center">
                     <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <Package size={32} strokeWidth={1.5} />
@@ -280,7 +287,7 @@ export default function AdminOrders({
                 </div>
             ) : (
                 <div className="grid gap-4">
-                    {loading && filteredOrders.length === 0 ? (
+                    {loading && orders.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
                             <RefreshCw
                                 className="animate-spin text-red-600 mb-4"
@@ -290,7 +297,7 @@ export default function AdminOrders({
                             <p className="text-gray-500 font-medium">Cargando pedidos...</p>
                         </div>
                     ) : (
-                        filteredOrders.map(order => (
+                        orders.map(order => (
                             <div
                                 key={order.id}
                                 className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
@@ -551,7 +558,7 @@ export default function AdminOrders({
                 </div>
             )}
 
-            {!loading && filteredOrders.length > 0 && pagination.pages > 1 && (
+            {!loading && orders.length > 0 && pagination.pages > 1 && (
                 <div className="mt-6 flex justify-center gap-2">
                     {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
                         <button
