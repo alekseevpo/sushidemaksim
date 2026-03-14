@@ -76,7 +76,7 @@ export default function ProfilePage() {
         if (activeTab === 'orders' || activeTab === 'addresses' || activeTab === 'favorites') {
             const contentElement = document.getElementById('profile-content');
             if (contentElement && typeof contentElement.scrollIntoView === 'function') {
-                const headerOffset = window.innerWidth < 768 ? 120 : 80;
+                const headerOffset = window.innerWidth < 768 ? 160 : 120;
                 const elementPosition = contentElement.getBoundingClientRect().top;
                 const offsetPosition =
                     elementPosition + (window.scrollY || window.pageYOffset) - headerOffset;

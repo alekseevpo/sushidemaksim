@@ -397,7 +397,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900">
-                                                        {order.user_stats.orderCount}
+                                                        {order.user_stats.orderCount || 0}
                                                     </p>
                                                 </div>
                                                 <div className="space-y-0.5">
@@ -409,7 +409,7 @@ export default function AdminOrders({
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900">
                                                         {formatCurrency(
-                                                            order.user_stats.totalSpent
+                                                            order.user_stats.totalSpent || 0
                                                         )}
                                                     </p>
                                                 </div>
@@ -421,7 +421,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900">
-                                                        {formatCurrency(order.user_stats.avgCheck)}
+                                                        {formatCurrency(order.user_stats.avgCheck || 0)}
                                                     </p>
                                                 </div>
                                                 <div className="space-y-0.5">
@@ -432,7 +432,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <p className="text-[10px] font-black text-gray-900 leading-none">
-                                                        {order.user_stats.frequency}
+                                                        {order.user_stats.frequency || 'Primer pedido'}
                                                     </p>
                                                 </div>
                                                 <div className="col-span-2 pt-2 border-t border-gray-200/50 mt-1 space-y-0.5">
@@ -447,7 +447,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900 line-clamp-1">
-                                                        {order.user_stats.favoriteDish}
+                                                        {order.user_stats.favoriteDish || 'N/A'}
                                                     </p>
                                                 </div>
                                             </div>
