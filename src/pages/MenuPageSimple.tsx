@@ -488,7 +488,7 @@ export default function MenuPageSimple() {
                         </div>
                     </header>
 
-                    <div 
+                    <div
                         className="sticky top-[64px] z-[40] -mx-2 md:mx-0 px-2 md:px-0 py-3 bg-[#FDFBF7] border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm will-change-transform transform-gpu"
                         style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
                     >
@@ -550,7 +550,7 @@ export default function MenuPageSimple() {
                                 ? CATEGORIES.filter(cat =>
                                       items.some(item => item.category === cat.id)
                                   )
-                                : [{ id: selectedCategory, name: '', icon: (props: any) => null }]
+                                : [{ id: selectedCategory, name: '', icon: () => null }]
                             ).map(cat => {
                                 const sectionItems =
                                     selectedCategory === 'all' && !search
@@ -568,7 +568,7 @@ export default function MenuPageSimple() {
                                         {selectedCategory === 'all' && !search && (
                                             <div className="flex items-center gap-4 mb-8">
                                                 <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-gray-100">
-                                                    {/* @ts-ignore */}
+                                                    {/* @ts-expect-error: dynamically rendered component from cat object */}
                                                     <cat.icon
                                                         size={24}
                                                         strokeWidth={1.5}

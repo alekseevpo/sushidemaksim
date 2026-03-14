@@ -336,11 +336,11 @@ export default function Header() {
                                     initial={{ y: '100%' }}
                                     animate={{ y: 0 }}
                                     exit={{ y: '100%' }}
-                                    transition={{ 
-                                        type: 'spring', 
-                                        damping: 30, 
+                                    transition={{
+                                        type: 'spring',
+                                        damping: 30,
                                         stiffness: 300,
-                                        mass: 0.8
+                                        mass: 0.8,
                                     }}
                                     className="fixed inset-x-0 bottom-0 bg-white/90 backdrop-blur-xl rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-white/40 will-change-transform flex flex-col max-h-[92dvh]"
                                 >
@@ -352,32 +352,42 @@ export default function Header() {
                                     {/* Scrollable Content Area */}
                                     <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
                                         <div className="px-6 pt-4 pb-2 space-y-2">
-                                        {navLinks.map(link => {
-                                            const Icon = link.icon;
-                                            const isActive = location.pathname === link.to;
-                                            return (
-                                                <Link
-                                                    key={link.to}
-                                                    to={link.to}
-                                                    onClick={() => setShowMobileMenu(false)}
-                                                    className={`group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97]
-                                                        ${isActive 
-                                                            ? 'text-red-600 bg-red-50/50' 
-                                                            : 'text-gray-600 hover:text-gray-900'
+                                            {navLinks.map(link => {
+                                                const Icon = link.icon;
+                                                const isActive = location.pathname === link.to;
+                                                return (
+                                                    <Link
+                                                        key={link.to}
+                                                        to={link.to}
+                                                        onClick={() => setShowMobileMenu(false)}
+                                                        className={`group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97]
+                                                        ${
+                                                            isActive
+                                                                ? 'text-red-600 bg-red-50/50'
+                                                                : 'text-gray-600 hover:text-gray-900'
                                                         }`}
-                                                >
-                                                    <div className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}>
-                                                        <Icon size={22} strokeWidth={isActive ? 2.5 : 1.8} />
-                                                    </div>
-                                                    <span className={`flex-1 tracking-tight ${isActive ? 'text-red-600' : 'text-gray-900'}`}>{link.label}</span>
-                                                    <ChevronRight
-                                                        size={18}
-                                                        strokeWidth={isActive ? 2.5 : 2}
-                                                        className={`transition-all duration-300 ${isActive ? 'translate-x-0 opacity-100' : 'opacity-0 -translate-x-2'}`}
-                                                    />
-                                                </Link>
-                                            );
-                                        })}
+                                                    >
+                                                        <div
+                                                            className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}
+                                                        >
+                                                            <Icon
+                                                                size={22}
+                                                                strokeWidth={isActive ? 2.5 : 1.8}
+                                                            />
+                                                        </div>
+                                                        <span
+                                                            className={`flex-1 tracking-tight ${isActive ? 'text-red-600' : 'text-gray-900'}`}
+                                                        >
+                                                            {link.label}
+                                                        </span>
+                                                        <ChevronRight
+                                                            size={18}
+                                                            strokeWidth={isActive ? 2.5 : 2}
+                                                            className={`transition-all duration-300 ${isActive ? 'translate-x-0 opacity-100' : 'opacity-0 -translate-x-2'}`}
+                                                        />
+                                                    </Link>
+                                                );
+                                            })}
                                         </div>
 
                                         <div className="px-6 pb-8 space-y-3">
@@ -400,14 +410,21 @@ export default function Header() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className={`grid gap-2 ${user.role === 'admin' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                                                    <div
+                                                        className={`grid gap-2 ${user.role === 'admin' ? 'grid-cols-2' : 'grid-cols-1'}`}
+                                                    >
                                                         {user.role === 'admin' && (
                                                             <Link
                                                                 to="/admin"
-                                                                onClick={() => setShowMobileMenu(false)}
+                                                                onClick={() =>
+                                                                    setShowMobileMenu(false)
+                                                                }
                                                                 className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-red-600 text-[13px] font-black bg-red-50 border border-red-100"
                                                             >
-                                                                <ShieldCheck size={18} strokeWidth={1.5} />
+                                                                <ShieldCheck
+                                                                    size={18}
+                                                                    strokeWidth={1.5}
+                                                                />
                                                                 PANEL
                                                             </Link>
                                                         )}
@@ -427,7 +444,8 @@ export default function Header() {
                                                         }}
                                                         className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-[14px] font-black bg-white border border-red-50 hover:bg-red-50 transition-colors mb-4"
                                                     >
-                                                        <LogOut size={18} strokeWidth={1.5} /> Cerrar sesión
+                                                        <LogOut size={18} strokeWidth={1.5} />{' '}
+                                                        Cerrar sesión
                                                     </button>
                                                 </div>
                                             ) : (

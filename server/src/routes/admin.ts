@@ -281,12 +281,14 @@ router.get(
 
         // Fetch stats for all users in these orders at once
         const userIds = [...new Set((orders || []).filter(o => o.user_id).map(o => o.user_id))];
-        let userStatsMap: Record<string, any> = {};
+        const userStatsMap: Record<string, any> = {};
 
         if (userIds.length > 0) {
             const { data: usersWithAllOrders } = await supabase
                 .from('users')
-                .select('id, created_at, orders(total, created_at, items:order_items(name, quantity))')
+                .select(
+                    'id, created_at, orders(total, created_at, items:order_items(name, quantity))'
+                )
                 .in('id', userIds);
 
             (usersWithAllOrders || []).forEach((u: any) => {
@@ -330,9 +332,7 @@ router.get(
                         (lastOrder.getTime() - firstOrder.getTime()) / (1000 * 3600 * 24);
                     const avgDays = daysDiff / (orderCount - 1);
                     frequency =
-                        avgDays < 1
-                            ? 'Varias veces al día'
-                            : `Cada ${Math.round(avgDays)} días`;
+                        avgDays < 1 ? 'Varias veces al día' : `Cada ${Math.round(avgDays)} días`;
                 } else if (orderCount === 1) {
                     frequency = 'Primer pedido';
                 }

@@ -4,7 +4,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
     test.use({ viewport: { width: 1280, height: 720 } });
     test.slow();
 
-    test.beforeEach(async ({ page, context }, testInfo) => {
+    test.beforeEach(async ({ context }, testInfo) => {
         // Даем разрешения на буфер обмена только для Chromium, так как Webkit их не поддерживает в Playwright
         if (testInfo.project.name.includes('chromium')) {
             await context.grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -24,7 +24,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                 body: JSON.stringify({ site_name: 'Sushi de Maksim', min_order: 20 }),
             })
         );
-        
+
         await context.route('**/api/user/active', route =>
             route.fulfill({ status: 200, contentType: 'application/json', body: '{"user":null}' })
         );
@@ -76,13 +76,13 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         // Также форсируем отсутствие navigator.share для срабатывания fallback-а с тостом
         await page.addInitScript(() => {
             window.localStorage.setItem('sushi_token', 'sender-token');
-            // @ts-ignore
+            // @ts-expect-error: deleting share property to force fallback
             delete window.navigator.share;
             // Mock clipboard to avoid permission errors
             Object.defineProperty(window.navigator, 'clipboard', {
                 value: {
-                    writeText: async () => Promise.resolve()
-                }
+                    writeText: async () => Promise.resolve(),
+                },
             });
         });
 
@@ -94,11 +94,19 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
             addresses: [{ street: 'Calle Emisor', house: '1', apartment: 'A', isDefault: true }],
         };
 
-        await context.route('**/api/auth/me', route => 
-            route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: senderUser }) })
+        await context.route('**/api/auth/me', route =>
+            route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ user: senderUser }),
+            })
         );
-        await context.route('**/api/user/active', route => 
-            route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: senderUser }) })
+        await context.route('**/api/user/active', route =>
+            route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ user: senderUser }),
+            })
         );
 
         // Mock корзины
@@ -107,14 +115,23 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    items: [{ menu_item_id: 1, name: 'Gyozas con carne', price: 6.9, quantity: 3, category: 'entrantes', image: '' }],
+                    items: [
+                        {
+                            menu_item_id: 1,
+                            name: 'Gyozas con carne',
+                            price: 6.9,
+                            quantity: 3,
+                            category: 'entrantes',
+                            image: '',
+                        },
+                    ],
                     total: 20.7,
                 }),
             })
         );
 
         await page.goto('/cart');
-        
+
         // КРИТИЧНО: Ждем, пока корзина загрузится и покажет товар
         await expect(page.getByText('Gyozas con carne').first()).toBeVisible({ timeout: 15000 });
 
@@ -122,7 +139,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await expect(page.getByText(/Resumen/i).first()).toBeVisible({ timeout: 10000 });
 
         const inviteBtn = page.getByTestId('invite-button');
-        
+
         // RELLENAR DATOS DE ENVÍO (necesario para validación en handleInvite)
         await page.getByTestId('address-input').fill('Calle Falsa 123');
         await page.getByTestId('house-input').fill('1');
@@ -139,29 +156,31 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
             route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ 
-                    success: true, 
+                body: JSON.stringify({
+                    success: true,
                     order: { id: fakeOrderId },
-                    shareUrl: `http://localhost:5173/pay-for-friend/${fakeOrderId}`
+                    shareUrl: `http://localhost:5173/pay-for-friend/${fakeOrderId}`,
                 }),
             })
         );
 
         // Кликаем и ждем ответа от API
-        const responsePromise = page.waitForResponse(resp => 
-            resp.url().includes('/api/orders/invite') && resp.status() === 200
+        const responsePromise = page.waitForResponse(
+            resp => resp.url().includes('/api/orders/invite') && resp.status() === 200
         );
         await inviteBtn.click();
         const response = await responsePromise;
         const respJson = await response.json();
         expect(respJson.success).toBe(true);
-        
+
         // Ждем тост об успехе. Если не появился - проверяем, нет ли тоста об ошибке
         try {
-            await expect(page.getByText(/Enlace de invitación copiado/i).first()).toBeVisible({ timeout: 8000 });
+            await expect(page.getByText(/Enlace de invitación copiado/i).first()).toBeVisible({
+                timeout: 8000,
+            });
         } catch (e) {
             const errorToast = page.locator('div').filter({ hasText: /Error/i });
-            if (await errorToast.count() > 0) {
+            if ((await errorToast.count()) > 0) {
                 const errorMsg = await errorToast.innerText();
                 throw new Error(`Test failed because of application error: ${errorMsg}`);
             }
@@ -188,26 +207,33 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         const recipientPage = await context.newPage();
         await recipientPage.goto(`/pay-for-friend/${fakeOrderId}`);
         // В Webkit иногда нужно больше времени на рендеринг страницы оплаты
-        await expect(recipientPage.getByText(/Momento de invitar/i).first()).toBeVisible({ timeout: 20000 });
+        await expect(recipientPage.getByText(/Momento de invitar/i).first()).toBeVisible({
+            timeout: 20000,
+        });
 
         await context.route(`**/api/orders/*/confirm-payment`, route =>
             route.fulfill({ status: 200, body: '{"success":true}' })
         );
 
         await recipientPage.getByRole('button', { name: /Confirmar y Pagar/i }).click();
-        await expect(recipientPage.locator('h2', { hasText: /¡Eres Genial!/i })).toBeVisible({ timeout: 15000 });
+        await expect(recipientPage.locator('h2', { hasText: /¡Eres Genial!/i })).toBeVisible({
+            timeout: 15000,
+        });
     });
 
     test('PROTECTION: Guests cannot invite friends (prompt to login)', async ({ page }) => {
         // Устанавливаем корзину ДО навигации
         await page.addInitScript(() => {
-            window.localStorage.setItem('guest_cart', JSON.stringify([
-                { id: '1', name: 'Gyozas', price: 20, quantity: 1, category: 'entrantes' }
-            ]));
+            window.localStorage.setItem(
+                'guest_cart',
+                JSON.stringify([
+                    { id: '1', name: 'Gyozas', price: 20, quantity: 1, category: 'entrantes' },
+                ])
+            );
         });
 
         await page.goto('/cart');
-        
+
         // Ждем товар
         await expect(page.getByText('Gyozas').first()).toBeVisible({ timeout: 15000 });
 
