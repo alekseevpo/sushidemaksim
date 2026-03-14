@@ -24,7 +24,7 @@ export const ProfileSkeleton = () => (
         </div>
 
         {/* Main Content Skeleton */}
-        <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-24 pb-20 relative z-20">
+        <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-16 pb-20 relative z-20">
             {/* Loyalty Program Skeletons */}
             <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[1, 2].map(i => (

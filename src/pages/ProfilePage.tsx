@@ -151,7 +151,7 @@ export default function ProfilePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-transparent flex flex-col">
+        <div className="min-h-screen bg-transparent flex flex-col overflow-x-hidden">
             <SEO
                 title="Mi Perfil"
                 description="Gestiona tu cuenta, direcciones y pedidos en Sushi de Maksim."
@@ -314,7 +314,7 @@ export default function ProfilePage() {
 
                 <div className="flex flex-col lg:flex-row gap-6">
                     {/* Navigation Sidebar */}
-                    <aside className="lg:w-80 shrink-0 sticky top-[63px] lg:top-24 z-40 mb-5 lg:mb-0 -mx-4 md:mx-0">
+                    <aside className="lg:w-80 shrink-0 sticky top-[63px] lg:top-24 z-40 mb-5 lg:mb-0">
                         <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-1 px-3 md:px-2 snap-x snap-mandatory">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
