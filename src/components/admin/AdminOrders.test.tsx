@@ -97,10 +97,10 @@ describe('AdminOrders (Integration)', () => {
 
         // Test search matches
         fireEvent.change(searchInput, { target: { value: '123' } });
-        
+
         // Wait for debounce and state update
         await vi.advanceTimersByTimeAsync(600);
-        
+
         expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=123'));
         expect(screen.getByText(/00123/)).toBeInTheDocument();
 
@@ -115,7 +115,7 @@ describe('AdminOrders (Integration)', () => {
 
         expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=999'));
         expect(screen.queryByText(/00123/)).not.toBeInTheDocument();
-        
+
         vi.useRealTimers();
     });
 });

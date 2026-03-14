@@ -111,10 +111,10 @@ export default function AdminMenu() {
     };
 
     const compressImage = (file: File): Promise<Blob | File> => {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = (event) => {
+            reader.onload = event => {
                 const img = new Image();
                 img.src = event.target?.result as string;
                 img.onload = () => {
@@ -140,9 +140,9 @@ export default function AdminMenu() {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(img, 0, 0, width, height);
-                    
+
                     canvas.toBlob(
-                        (blob) => {
+                        blob => {
                             if (blob && blob.size < file.size) {
                                 resolve(blob);
                             } else {
@@ -163,7 +163,7 @@ export default function AdminMenu() {
 
         setUploadingImage(true);
         setError('');
-        
+
         try {
             // Auto-compress high-res photos (common for mobile uploads)
             if (file.type.startsWith('image/')) {
@@ -173,7 +173,9 @@ export default function AdminMenu() {
 
             // Final safety check for Vercel 4.5MB limit
             if (file.size > 4 * 1024 * 1024) {
-                throw new Error('La imagen sigue siendo demasiado grande (máx. 4.5MB). Por favor, intenta con otra o redúcela manualmente.');
+                throw new Error(
+                    'La imagen sigue siendo demasiado grande (máx. 4.5MB). Por favor, intenta con otra o redúcela manualmente.'
+                );
             }
 
             const formDataUpload = new FormData();
@@ -189,12 +191,12 @@ export default function AdminMenu() {
             });
 
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ 
+                const errorData = await res.json().catch(() => ({
                     error: `Error del servidor (${res.status})`,
-                    details: 'No se pudo procesar la respuesta del servidor.'
+                    details: 'No se pudo procesar la respuesta del servidor.',
                 }));
-                const errorMessage = errorData.details 
-                    ? `${errorData.error}: ${errorData.details}` 
+                const errorMessage = errorData.details
+                    ? `${errorData.error}: ${errorData.details}`
                     : errorData.error;
                 throw new Error(errorMessage || `Error ${res.status}`);
             }
@@ -203,9 +205,11 @@ export default function AdminMenu() {
             setFormData(prev => ({ ...prev, image: data.url }));
         } catch (err: any) {
             console.error('Upload fail:', err);
-            setError(err.message === 'Failed to fetch' 
-                ? 'Error de red: No se pudo conectar al servidor.' 
-                : err.message);
+            setError(
+                err.message === 'Failed to fetch'
+                    ? 'Error de red: No se pudo conectar al servidor.'
+                    : err.message
+            );
         } finally {
             setUploadingImage(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
