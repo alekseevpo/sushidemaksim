@@ -334,7 +334,10 @@ export default function AdminOrders({
                                                         className="bg-amber-100 text-amber-600 p-1.5 rounded-lg border border-amber-200"
                                                         title="Tiene notas o comentarios"
                                                     >
-                                                        <MessageSquare size={14} strokeWidth={2.5} />
+                                                        <MessageSquare
+                                                            size={14}
+                                                            strokeWidth={2.5}
+                                                        />
                                                     </div>
                                                 )}
                                             </div>
