@@ -73,10 +73,15 @@ export default function CartPageSimple() {
     const MIN_ORDER = siteSettings?.min_order ?? 15;
     const isStoreClosed = !!siteSettings?.is_store_closed;
 
+    const todayStr = (() => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    })();
+
     const [noCall, setNoCall] = useState(false);
     const [noBuzzer, setNoBuzzer] = useState(false);
     const [isScheduled, setIsScheduled] = useState(false);
-    const [scheduledDate, setScheduledDate] = useState(new Date().toISOString().split('T')[0]);
+    const [scheduledDate, setScheduledDate] = useState(todayStr);
     const [scheduledTime, setScheduledTime] = useState('');
     const [customNote, setCustomNote] = useState('');
     const [failedImages, setFailedImages] = useState<Set<string | number>>(new Set());
@@ -250,6 +255,21 @@ export default function CartPageSimple() {
         if (!paymentMethod) {
             showError('Por favor, selecciona un método de pago');
             return;
+        }
+
+        if (isScheduled) {
+            if (!scheduledDate || !scheduledTime) {
+                showError('Por favor, indica la fecha y hora para la entrega programada');
+                return;
+            }
+
+            const now = new Date();
+            const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+
+            if (scheduledDateTime <= now) {
+                showError('La fecha y hora programada no puede estar en el pasado');
+                return;
+            }
         }
 
         if (isStoreClosed) {
@@ -1074,7 +1094,7 @@ export default function CartPageSimple() {
                                             </label>
                                             <input
                                                 type="date"
-                                                min={new Date().toISOString().split('T')[0]}
+                                                min={todayStr}
                                                 value={scheduledDate}
                                                 onChange={e => setScheduledDate(e.target.value)}
                                                 className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white shadow-sm transition-all appearance-none"
@@ -1375,18 +1395,19 @@ export default function CartPageSimple() {
                             </div>
                         </button>
                     ) : (
-                        <Link
-                            to="/"
-                            className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-90 flex items-center justify-center gap-4 px-6 shadow-xl shadow-gray-200"
+                        <button
+                            type="button"
+                            onClick={() => document.dispatchEvent(new Event('custom:openLogin'))}
+                            className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base border-none cursor-pointer active:scale-90 flex items-center justify-center gap-4 px-6 shadow-xl shadow-gray-200"
                         >
                             <span className="flex items-center gap-2">
                                 Inicia sesión para pedir{' '}
                                 <ArrowLeft className="rotate-180" size={18} strokeWidth={2} />
                             </span>
-                            <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg">
+                            <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg tabular-nums">
                                 {finalTotal.toFixed(2).replace('.', ',')} €
                             </div>
-                        </Link>
+                        </button>
                     )}
                 </div>
             </div>
