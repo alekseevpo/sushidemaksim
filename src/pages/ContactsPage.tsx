@@ -335,14 +335,14 @@ export default function ContactsPage() {
                                     )}
                                 </button>
                                 <p className="text-[9px] text-gray-400 text-center leading-relaxed mt-4">
-                                    Este sitio está protegido por reCAPTCHA и se aplican la
+                                    Este sitio está protegido por reCAPTCHA y se aplican la
                                     <a
                                         href="https://policies.google.com/privacy"
                                         className="underline ml-1"
                                     >
                                         Política de privacidad
                                     </a>{' '}
-                                    и
+                                    y
                                     <a
                                         href="https://policies.google.com/terms"
                                         className="underline ml-1"

@@ -212,3 +212,8 @@ img {
 .premium-card img {
     will-change: transform;
 }
+
+/* reCAPTCHA badge handling */
+.grecaptcha-badge {
+    visibility: hidden !important;
+}

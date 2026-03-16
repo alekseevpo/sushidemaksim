@@ -1280,6 +1280,24 @@ export default function CartPageSimple() {
                                 Volver al menú
                             </Link>
 
+                            <p className="text-[9px] text-gray-400 text-center leading-relaxed mt-4">
+                                Este sitio está protegido por reCAPTCHA y se aplican la
+                                <a
+                                    href="https://policies.google.com/privacy"
+                                    className="underline mx-1"
+                                >
+                                    Política de privacidad
+                                </a>
+                                y los
+                                <a
+                                    href="https://policies.google.com/terms"
+                                    className="underline ml-1"
+                                >
+                                    Términos de servicio
+                                </a>
+                                de Google.
+                            </p>
+
                             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                                 <h3 className="text-base font-bold mb-2">Información de envío</h3>
                                 <ul className="text-sm text-gray-500 m-0 pl-5 space-y-1">
@@ -1330,7 +1348,7 @@ export default function CartPageSimple() {
                             className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-95 flex items-center justify-center gap-4 px-6 shadow-xl shadow-gray-200"
                         >
                             <span className="flex items-center gap-2">
-                                Log In para pedir{' '}
+                                Inicia sesión para pedir{' '}
                                 <ArrowLeft className="rotate-180" size={18} strokeWidth={2} />
                             </span>
                             <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg">
