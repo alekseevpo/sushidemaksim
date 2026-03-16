@@ -12,8 +12,7 @@ import './index.css';
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 // Replace with your actual Google reCAPTCHA v3 Site Key
-const RECAPTCHA_SITE_KEY =
-    import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LfWxiwsAAAAAHN3DKXyXlMXdz44qej3pvJPyInt';
+const RECAPTCHA_SITE_KEY = '6LfWxiwsAAAAAHN3DKXyXlMXdz44qej3pvJPyInt';
 
 root.render(
     <React.StrictMode>
