@@ -497,10 +497,9 @@ export default function MenuPageSimple() {
                     </header>
 
                     <div
-                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 px-2 md:px-0 py-3 bg-[#FDFBF7] border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm will-change-transform transform-gpu"
-                        style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
+                        className="sticky top-[64px] z-[40] -mx-2 px-2 py-3 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate"
                     >
-                        <div className="flex gap-2 flex-nowrap translate-z-0">
+                        <div className="flex gap-2 flex-nowrap">
                             <button
                                 id="cat-all"
                                 onClick={() => setSelectedCategory('all')}
