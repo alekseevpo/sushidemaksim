@@ -58,8 +58,6 @@ vi.mock('../context/ToastContext', () => ({
     }),
 }));
 
-
-
 describe('CartPageSimple (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();

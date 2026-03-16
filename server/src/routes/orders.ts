@@ -8,8 +8,6 @@ import { UAParser } from 'ua-parser-js';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
 
-
-
 const router = Router();
 
 // POST /api/orders — create order from current cart (supports Guests and Users)

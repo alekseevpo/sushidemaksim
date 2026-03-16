@@ -36,5 +36,3 @@ Object.defineProperty(window, 'IntersectionObserver', {
     configurable: true,
     value: IntersectionObserverMock,
 });
-
-
