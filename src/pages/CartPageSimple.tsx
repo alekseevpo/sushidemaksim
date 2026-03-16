@@ -1380,41 +1380,25 @@ export default function CartPageSimple() {
 
             <div className="md:hidden sticky bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 p-2 pb-6 z-50 animate-in slide-in-from-bottom duration-500">
                 <div className="max-w-7xl mx-auto">
-                    {isAuthenticated ? (
-                        <button
-                            onClick={handleOrder}
-                            disabled={isOrdering || items.length === 0}
-                            className="w-full bg-red-600 text-white h-14 rounded-2xl font-black text-base hover:bg-red-700 transition active:scale-90 disabled:bg-gray-400 shadow-xl shadow-red-200 flex items-center justify-center gap-4 px-6"
-                        >
-                            <div className="flex items-center gap-2">
-                                {isOrdering ? (
-                                    'Procesando...'
-                                ) : (
-                                    <>
-                                        <span>Pedir</span>
-                                        <CheckCircle size={20} strokeWidth={2} />
-                                    </>
-                                )}
-                            </div>
-                            <div className="bg-white/20 px-4 py-1.5 rounded-xl text-lg tabular-nums">
-                                {finalTotal.toFixed(2).replace('.', ',')} €
-                            </div>
-                        </button>
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={() => document.dispatchEvent(new Event('custom:openLogin'))}
-                            className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base border-none cursor-pointer active:scale-90 flex items-center justify-center gap-4 px-6 shadow-xl shadow-gray-200"
-                        >
-                            <span className="flex items-center gap-2">
-                                Inicia sesión para pedir{' '}
-                                <ArrowLeft className="rotate-180" size={18} strokeWidth={2} />
-                            </span>
-                            <div className="bg-white/10 px-4 py-1.5 rounded-xl text-lg tabular-nums">
-                                {finalTotal.toFixed(2).replace('.', ',')} €
-                            </div>
-                        </button>
-                    )}
+                    <button
+                        onClick={handleOrder}
+                        disabled={isOrdering || items.length === 0}
+                        className="w-full bg-red-600 text-white h-14 rounded-2xl font-black text-base hover:bg-red-700 transition active:scale-90 disabled:bg-gray-400 shadow-xl shadow-red-200 flex items-center justify-center gap-4 px-6"
+                    >
+                        <div className="flex items-center gap-2">
+                            {isOrdering ? (
+                                'Procesando...'
+                            ) : (
+                                <>
+                                    <span>Pedir</span>
+                                    <CheckCircle size={20} strokeWidth={2} />
+                                </>
+                            )}
+                        </div>
+                        <div className="bg-white/20 px-4 py-1.5 rounded-xl text-lg tabular-nums">
+                            {finalTotal.toFixed(2).replace('.', ',')} €
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>
