@@ -122,6 +122,8 @@ router.post(
         if (notes?.includes('[TIPO: DOMICILIO]')) {
             const { data: settings } = await supabase.from('site_settings').select('*');
             const deliveryFeeSetting = settings?.find(s => s.key === 'delivery_fee');
+            const thresholdSetting = settings?.find(s => s.key === 'free_delivery_threshold');
+
             const fee = deliveryFeeSetting
                 ? parseFloat(
                       deliveryFeeSetting.value.startsWith('"')
@@ -129,7 +131,18 @@ router.post(
                           : deliveryFeeSetting.value
                   )
                 : 3.5;
-            finalTotal += fee;
+
+            const threshold = thresholdSetting
+                ? parseFloat(
+                      thresholdSetting.value.startsWith('"')
+                          ? JSON.parse(thresholdSetting.value)
+                          : thresholdSetting.value
+                  )
+                : 60;
+
+            if (subtotal < threshold) {
+                finalTotal += fee;
+            }
         }
 
         // 3. Create Order
