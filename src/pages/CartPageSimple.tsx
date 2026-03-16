@@ -1098,7 +1098,10 @@ export default function CartPageSimple() {
                                                 value={scheduledDate}
                                                 onChange={e => setScheduledDate(e.target.value)}
                                                 className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white shadow-sm transition-all appearance-none"
-                                                style={{ WebkitAppearance: 'none', minHeight: '46px' }}
+                                                style={{
+                                                    WebkitAppearance: 'none',
+                                                    minHeight: '46px',
+                                                }}
                                             />
                                         </div>
                                         <div>
@@ -1110,7 +1113,10 @@ export default function CartPageSimple() {
                                                 value={scheduledTime}
                                                 onChange={e => setScheduledTime(e.target.value)}
                                                 className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white shadow-sm transition-all appearance-none"
-                                                style={{ WebkitAppearance: 'none', minHeight: '46px' }}
+                                                style={{
+                                                    WebkitAppearance: 'none',
+                                                    minHeight: '46px',
+                                                }}
                                             />
                                         </div>
                                     </motion.div>
