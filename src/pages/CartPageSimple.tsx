@@ -433,12 +433,12 @@ export default function CartPageSimple() {
         }
     };
 
-    const cartSubtotal = total;
+    const cartSubtotal = Number(total) || 0;
     const deliveryCost =
         deliveryType === 'delivery'
-            ? cartSubtotal >= FREE_DELIVERY_THRESHOLD
+            ? cartSubtotal >= Number(FREE_DELIVERY_THRESHOLD)
                 ? 0
-                : DELIVERY_FEE
+                : Number(DELIVERY_FEE)
             : 0;
     const finalTotal = cartSubtotal + deliveryCost;
 
@@ -1241,9 +1241,9 @@ export default function CartPageSimple() {
                                     <div className="flex justify-between text-gray-500 animate-in fade-in duration-300">
                                         <span>Envío</span>
                                         <span
-                                            className={`font-bold ${deliveryCost === 0 ? 'text-green-600' : 'text-gray-900'}`}
+                                            className={`font-bold ${deliveryCost <= 0 ? 'text-green-600' : 'text-gray-900'}`}
                                         >
-                                            {deliveryCost === 0
+                                            {deliveryCost <= 0
                                                 ? 'GRATIS'
                                                 : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
                                         </span>
