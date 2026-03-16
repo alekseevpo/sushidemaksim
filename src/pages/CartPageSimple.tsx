@@ -71,6 +71,7 @@ export default function CartPageSimple() {
 
     const DELIVERY_FEE = siteSettings?.delivery_fee ?? 3.5;
     const MIN_ORDER = siteSettings?.min_order ?? 15;
+    const FREE_DELIVERY_THRESHOLD = siteSettings?.free_delivery_threshold ?? 60;
     const isStoreClosed = !!siteSettings?.is_store_closed;
 
     const todayStr = (() => {
@@ -429,7 +430,12 @@ export default function CartPageSimple() {
     };
 
     const cartSubtotal = total;
-    const deliveryCost = deliveryType === 'delivery' ? DELIVERY_FEE : 0;
+    const deliveryCost =
+        deliveryType === 'delivery'
+            ? cartSubtotal >= FREE_DELIVERY_THRESHOLD
+                ? 0
+                : DELIVERY_FEE
+            : 0;
     const finalTotal = cartSubtotal + deliveryCost;
 
     // ===== ORDER SUCCESS STATE =====
@@ -1230,8 +1236,12 @@ export default function CartPageSimple() {
                                 {deliveryType === 'delivery' && (
                                     <div className="flex justify-between text-gray-500 animate-in fade-in duration-300">
                                         <span>Envío</span>
-                                        <span className="font-bold text-gray-900">
-                                            {DELIVERY_FEE.toFixed(2).replace('.', ',')} €
+                                        <span
+                                            className={`font-bold ${deliveryCost === 0 ? 'text-green-600' : 'text-gray-900'}`}
+                                        >
+                                            {deliveryCost === 0
+                                                ? 'GRATIS'
+                                                : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
                                         </span>
                                     </div>
                                 )}
@@ -1360,6 +1370,7 @@ export default function CartPageSimple() {
                                 <h3 className="text-base font-bold mb-2">Información de envío</h3>
                                 <ul className="text-sm text-gray-500 m-0 pl-5 space-y-1">
                                     <li>Entrega segura a domicilio</li>
+                                    <li>Envío GRATIS desde 60,00 €</li>
                                     <li>Tiempo de entrega: 30–60 min</li>
                                     <li>
                                         Horario: según el horario de apertura (
