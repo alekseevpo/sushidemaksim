@@ -198,10 +198,20 @@ html.lenis body {
     input[type='tel'],
     input[type='number'],
     input[type='search'],
+    input[type='date'],
+    input[type='time'],
     textarea,
     select {
         font-size: 16px !important;
     }
+}
+
+/* Base style for date/time inputs to remove iOS defaults */
+input[type='date'],
+input[type='time'] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 1.25em; /* Ensure they have height even if empty */
 }
 /* Image loading performance */
 img {
