@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -11,7 +12,8 @@ import './index.css';
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 // Replace with your actual Google reCAPTCHA v3 Site Key
-const RECAPTCHA_SITE_KEY = '6LdsdowsAAAAAGuwUCjrDuHALVKaiATr87p91b3L';
+const RECAPTCHA_SITE_KEY =
+    import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LdsdowsAAAAAGuwUCjrDuHALVKaiATr87p91b3L';
 
 root.render(
     <React.StrictMode>
