@@ -25,7 +25,6 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api, ApiError } from '../utils/api';
 import { useToast } from '../context/ToastContext';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import SEO from '../components/SEO';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 
@@ -50,7 +49,6 @@ export default function CartPageSimple() {
     const { isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
     const { success: showSuccess, error: showError, info: showInfo } = useToast();
-    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
     const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
@@ -218,11 +216,6 @@ export default function CartPageSimple() {
     };
 
     const handleOrder = async () => {
-        if (!executeRecaptcha) {
-            showError('reCAPTCHA no está listo. Por favor, inténtalo de nuevo.');
-            return;
-        }
-
         const streetVal =
             address.trim() ||
             (defaultAddr && defaultAddr.street
@@ -304,13 +297,10 @@ export default function CartPageSimple() {
         const notes = notesArray.join(' | ');
 
         try {
-            const recaptchaToken = await executeRecaptcha('checkout');
-
             const orderPayload: any = {
                 deliveryAddress,
                 phoneNumber: deliveryPhone,
                 notes,
-                recaptchaToken,
             };
 
             if (!isAuthenticated) {
@@ -342,11 +332,6 @@ export default function CartPageSimple() {
 
     const handleInvite = async () => {
         if (items.length === 0) return;
-
-        if (!executeRecaptcha) {
-            showError('reCAPTCHA no está listo. Por favor, inténtalo de nuevo.');
-            return;
-        }
 
         const streetVal = address.trim();
         const houseVal = house.trim();
@@ -396,14 +381,11 @@ export default function CartPageSimple() {
         const notes = notesArray.join(' | ');
 
         try {
-            const recaptchaToken = await executeRecaptcha('invite');
-
             const payload: any = {
                 deliveryAddress,
                 phoneNumber: deliveryPhone,
                 notes,
                 senderName: user?.name || '',
-                recaptchaToken,
             };
 
             if (!isAuthenticated) {
@@ -1352,24 +1334,6 @@ export default function CartPageSimple() {
                                 <ArrowLeft size={18} strokeWidth={2} />
                                 Volver al menú
                             </Link>
-
-                            <p className="text-[9px] text-gray-400 text-center leading-relaxed mt-4">
-                                Este sitio está protegido por reCAPTCHA y se aplican la
-                                <a
-                                    href="https://policies.google.com/privacy"
-                                    className="underline mx-1"
-                                >
-                                    Política de privacidad
-                                </a>
-                                y los
-                                <a
-                                    href="https://policies.google.com/terms"
-                                    className="underline ml-1"
-                                >
-                                    Términos de servicio
-                                </a>
-                                de Google.
-                            </p>
 
                             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                                 <h3 className="text-base font-bold mb-2">Información de envío</h3>

@@ -13,7 +13,6 @@ import {
     Loader2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -86,7 +85,6 @@ const ContactInfoCard = ({
 
 export default function ContactsPage() {
     const { success: showSuccess, error: showError } = useToast();
-    const { executeRecaptcha } = useGoogleReCaptcha();
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -135,11 +133,6 @@ export default function ContactsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!executeRecaptcha) {
-            showError('reCAPTCHA no está listo. Por favor, inténtalo de nuevo.');
-            return;
-        }
-
         if (!formData.name || !formData.email || !formData.message) {
             showError('Por favor, rellena todos los campos.');
             return;
@@ -148,11 +141,8 @@ export default function ContactsPage() {
         setSubmitting(true);
 
         try {
-            const recaptchaToken = await executeRecaptcha('contact_form');
-
             await api.post('/contact', {
                 ...formData,
-                recaptchaToken,
             });
 
             showSuccess('¡Mensaje enviado con éxito! Te responderemos pronto.');
@@ -334,23 +324,6 @@ export default function ContactsPage() {
                                         </>
                                     )}
                                 </button>
-                                <p className="text-[9px] text-gray-400 text-center leading-relaxed mt-4">
-                                    Este sitio está protegido por reCAPTCHA y se aplican la
-                                    <a
-                                        href="https://policies.google.com/privacy"
-                                        className="underline ml-1"
-                                    >
-                                        Política de privacidad
-                                    </a>{' '}
-                                    y los
-                                    <a
-                                        href="https://policies.google.com/terms"
-                                        className="underline ml-1"
-                                    >
-                                        Términos de servicio
-                                    </a>{' '}
-                                    de Google.
-                                </p>
                             </form>
                         </div>
                     </motion.div>

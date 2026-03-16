@@ -5,21 +5,10 @@ import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../middlewa
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { UAParser } from 'ua-parser-js';
-import axios from 'axios';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
 
-async function verifyRecaptcha(token: string) {
-    if (!token) return false;
-    try {
-        const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${config.recaptchaSecret}&response=${token}`;
-        const response = await axios.post(verificationUrl);
-        return response.data.success && response.data.score >= 0.5;
-    } catch (error) {
-        console.error('reCAPTCHA verification error:', error);
-        return false;
-    }
-}
+
 
 const router = Router();
 
@@ -33,13 +22,9 @@ router.post(
         phoneNumber: { type: 'string', required: true, maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems, recaptchaToken } =
-            req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems } = req.body;
 
-        const isHuman = await verifyRecaptcha(recaptchaToken);
-        if (!isHuman) {
-            return res.status(403).json({ error: 'Verificación anti-spam fallida' });
-        }
+        const isHuman = true;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
@@ -328,13 +313,9 @@ router.post(
         senderName: { type: 'string', required: false, maxLength: 100 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, senderName, recaptchaToken } =
-            req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, senderName } = req.body;
 
-        const isHuman = await verifyRecaptcha(recaptchaToken);
-        if (!isHuman) {
-            return res.status(403).json({ error: 'Verificación anti-spam fallida' });
-        }
+        const isHuman = true;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
