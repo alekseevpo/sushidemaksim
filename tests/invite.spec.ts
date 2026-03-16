@@ -14,6 +14,12 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await context.addInitScript(() => {
             window.localStorage.setItem('cookieConsent', 'accepted');
             window.localStorage.removeItem('sushi_token');
+
+            // Mock grecaptcha for Playwright
+            (window as any).grecaptcha = {
+                execute: () => Promise.resolve('playwright-invite-mock-token'),
+                ready: (callback: () => void) => callback(),
+            };
         });
 
         // Configuración básica de mocks de API
@@ -146,6 +152,11 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await page.getByTestId('apartment-input').fill('2A');
         await page.getByTestId('phone-input').fill('600111222');
 
+        // Select payment method
+        const paymentBtn = page.getByRole('button', { name: /Tarjeta/i });
+        await paymentBtn.scrollIntoViewIfNeeded();
+        await paymentBtn.click({ force: true });
+
         // Прокрутим к кнопке на всякий случай
         await inviteBtn.scrollIntoViewIfNeeded();
         await expect(inviteBtn).toBeVisible({ timeout: 15000 });
@@ -168,7 +179,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         const responsePromise = page.waitForResponse(
             resp => resp.url().includes('/api/orders/invite') && resp.status() === 200
         );
-        await inviteBtn.click();
+        await inviteBtn.click({ force: true });
         const response = await responsePromise;
         const respJson = await response.json();
         expect(respJson.success).toBe(true);

@@ -132,6 +132,10 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         fireEvent.change(streetInput, { target: { value: 'Calle Principal' } });
         fireEvent.change(houseInput, { target: { value: '1' } });
         fireEvent.change(aptInput, { target: { value: 'A' } });
+        
+        // Select payment method (as it's now mandatory)
+        const cardBtn = screen.getByText(/Tarjeta/i);
+        fireEvent.click(cardBtn);
 
         const inviteBtn = screen.getByText(/¡Que me inviten!/i);
         fireEvent.click(inviteBtn);
@@ -142,6 +146,8 @@ describe('CartPageSimple - Invitations (Integration)', () => {
                 expect.objectContaining({
                     deliveryAddress: 'Calle Principal, Portal/Casa: 1, Piso/Puerta: A',
                     senderName: 'Test User',
+                    notes: expect.stringContaining('[MÉTODO DE PAGO: TARJETA]'),
+                    recaptchaToken: expect.any(String),
                 })
             );
             expect(navigator.share).toHaveBeenCalled();

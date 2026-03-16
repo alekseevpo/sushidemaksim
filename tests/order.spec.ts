@@ -2,10 +2,34 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Critical E2E: Guest Checkout', () => {
     test.beforeEach(async ({ page, context }) => {
+        // Pipe logs
+        page.on('console', msg => console.log(`BROWSER: ${msg.text()}`));
+
         // Prevent race condition on Webkit by using init scripts for storage
         await context.addInitScript(() => {
             window.localStorage.setItem('cookieConsent', 'accepted');
             window.localStorage.removeItem('sushi_token');
+            
+            // Mock grecaptcha for Playwright (before the provider runs)
+            (window as any).grecaptcha = {
+                execute: () => {
+                    console.log('grecaptcha.execute called');
+                    return Promise.resolve('playwright-mock-token');
+                },
+                ready: (callback: () => void) => {
+                    console.log('grecaptcha.ready called');
+                    callback();
+                },
+            };
+        });
+
+        // Block real reCAPTCHA and return mock
+        await context.route('**/recaptcha/api.js*', route => {
+            route.fulfill({
+                status: 200,
+                contentType: 'application/javascript',
+                body: 'window.grecaptcha = { execute: () => Promise.resolve("playwright-mock-token"), ready: (cb) => cb() };'
+            });
         });
 
         // Global API mocks for stability
@@ -80,8 +104,9 @@ test.describe('Critical E2E: Guest Checkout', () => {
 
         // Add 3 times to exceed 20€ (3 * 6.9 = 20.7)
         for (let i = 0; i < 3; i++) {
-            await addButton.click();
-            // Just check it exists and is enabled, class check can be flaky with animations
+            await addButton.scrollIntoViewIfNeeded();
+            await addButton.click({ force: true });
+            // Just check it exists and is enabled
             await expect(addButton).toBeVisible();
             await page.waitForTimeout(300);
         }
@@ -94,7 +119,12 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.getByPlaceholder(/Ej: 15/i).fill('42');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('C');
         await page.locator('input[type="tel"]').fill('600123456');
-
+        
+        // Select payment method
+        const paymentBtn1 = page.getByRole('button', { name: /Tarjeta/i });
+        await paymentBtn1.scrollIntoViewIfNeeded();
+        await paymentBtn1.click({ force: true });
+        
         await page
             .getByRole('button', { name: /Realizar pedido/i })
             .first()
@@ -117,6 +147,11 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Falla');
         await page.getByPlaceholder(/Ej: 15/i).fill('1');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('1');
+
+        // Select payment method
+        const paymentBtn2 = page.getByRole('button', { name: /Tarjeta/i });
+        await paymentBtn2.scrollIntoViewIfNeeded();
+        await paymentBtn2.click({ force: true });
 
         await page
             .getByRole('button', { name: /Realizar pedido/i })

@@ -36,7 +36,7 @@ Una plataforma premium de e-commerce gastronómico diseñada para ofrecer la mej
 - **Animaciones**: Framer Motion para transiciones suaves y micro-interacciones.
 - **Backend**: Node.js + Express con arquitectura robusta.
 - **Base de Datos**: PostgreSQL para una gestión de datos relacional segura.
-- **Seguridad**: Autenticación JWT, cifrado de contraseñas con bcrypt y protección con Helmet.
+- **Seguridad**: Autenticación JWT, cifrado de contraseñas con bcrypt, protección con Helmet y **Google reCAPTCHA v3** en formularios críticos para prevenir spam y ataques automatizados.
 
 ---
 
@@ -73,9 +73,16 @@ Crea un archivo `.env` en la carpeta `server/` con las siguientes claves:
 PORT=3000
 DATABASE_URL=tu_url_de_postgresql
 JWT_SECRET=tu_secreto_super_seguro
+RECAPTCHA_SECRET_KEY=tu_clave_secreta_de_google
 EMAIL_USER=tu_email
 EMAIL_PASS=tu_password_de_app
 ```
+
+### 5. Configuración de reCAPTCHA v3
+Para proteger los formularios contra el spam, el proyecto utiliza Google reCAPTCHA v3.
+1. Obtén tus claves en [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin).
+2. Añade `RECAPTCHA_SECRET_KEY` en el `.env` del servidor.
+3. Actualiza `RECAPTCHA_SITE_KEY` en `src/main.tsx` con tu clave de sitio.
 
 ---
 

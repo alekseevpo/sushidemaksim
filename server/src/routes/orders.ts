@@ -5,8 +5,21 @@ import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../middlewa
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 import { UAParser } from 'ua-parser-js';
+import axios from 'axios';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
+
+async function verifyRecaptcha(token: string) {
+    if (!token) return false;
+    try {
+        const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${config.recaptchaSecret}&response=${token}`;
+        const response = await axios.post(verificationUrl);
+        return response.data.success && response.data.score >= 0.5;
+    } catch (error) {
+        console.error('reCAPTCHA verification error:', error);
+        return false;
+    }
+}
 
 const router = Router();
 
@@ -20,7 +33,12 @@ router.post(
         phoneNumber: { type: 'string', required: true, maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems, recaptchaToken } = req.body;
+
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if (!isHuman) {
+            return res.status(403).json({ error: 'Verificación anti-spam fallida' });
+        }
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
@@ -66,11 +84,12 @@ router.post(
                 .json({ error: 'La cesta está vacía o artículos no encontrados' });
         }
 
-        // 2. Calculate total
-        let finalTotal = cartItems.reduce(
+        // 2. Calculate subtotal
+        let subtotal = cartItems.reduce(
             (sum, item: any) => sum + item.menu_items.price * item.quantity,
             0
         );
+        let finalTotal = subtotal;
         let usedPromoId = null;
 
         if (promoCode) {
@@ -96,6 +115,14 @@ router.post(
                     usedPromoId = promo.id;
                 }
             }
+        }
+
+        // 2.5 Add delivery fee if applicable (parsed from notes)
+        if (notes?.includes('[TIPO: DOMICILIO]')) {
+            const { data: settings } = await supabase.from('site_settings').select('*');
+            const deliveryFeeSetting = settings?.find(s => s.key === 'delivery_fee');
+            const fee = deliveryFeeSetting ? parseFloat(deliveryFeeSetting.value.startsWith('"') ? JSON.parse(deliveryFeeSetting.value) : deliveryFeeSetting.value) : 3.5;
+            finalTotal += fee;
         }
 
         // 3. Create Order
@@ -281,7 +308,12 @@ router.post(
         senderName: { type: 'string', required: false, maxLength: 100 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, senderName } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, senderName, recaptchaToken } = req.body;
+
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if (!isHuman) {
+            return res.status(403).json({ error: 'Verificación anti-spam fallida' });
+        }
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';

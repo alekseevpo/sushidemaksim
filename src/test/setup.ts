@@ -23,3 +23,24 @@ vi.mock('../context/ToastContext', () => ({
 afterEach(() => {
     cleanup();
 });
+
+// Mock IntersectionObserver which is missing in JSDOM but needed by Framer Motion
+class IntersectionObserverMock {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+}
+
+Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: IntersectionObserverMock,
+});
+
+// Global Mock for reCAPTCHA
+vi.mock('react-google-recaptcha-v3', () => ({
+    useGoogleReCaptcha: () => ({
+        executeRecaptcha: vi.fn().mockResolvedValue('global-mock-token'),
+    }),
+    GoogleReCaptchaProvider: ({ children }: { children: React.ReactNode }) => children,
+}));

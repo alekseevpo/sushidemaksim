@@ -1,0 +1,98 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import ContactsPage from './ContactsPage';
+import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { api, ApiError } from '../utils/api';
+
+// Mock API
+vi.mock('../utils/api', () => ({
+    api: {
+        post: vi.fn(),
+        get: vi.fn().mockResolvedValue({}),
+    },
+    ApiError: class extends Error {
+        constructor(public message: string, public status?: number) {
+            super(message);
+        }
+    },
+}));
+
+// Mock useGoogleReCaptcha is now handled globally in setup.ts
+
+// Mock useToast
+const mockSuccess = vi.fn();
+const mockError = vi.fn();
+vi.mock('../context/ToastContext', () => ({
+    useToast: () => ({
+        success: mockSuccess,
+        error: mockError,
+    }),
+}));
+
+describe('ContactsPage (Security)', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    const renderPage = () =>
+        render(
+            <HelmetProvider>
+                <BrowserRouter>
+                    <ContactsPage />
+                </BrowserRouter>
+            </HelmetProvider>
+        );
+
+    it('submits contact form with reCAPTCHA token', async () => {
+        renderPage();
+
+        fireEvent.change(screen.getByPlaceholderText(/Nombre completo/i), {
+            target: { value: 'John Doe' },
+        });
+        fireEvent.change(screen.getByPlaceholderText(/tu@email\.com/i), {
+            target: { value: 'john@example.com' },
+        });
+        fireEvent.change(screen.getByPlaceholderText(/¿En qué podemos ayudarte\?/i), {
+            target: { value: 'Hello from test' },
+        });
+
+        (api.post as any).mockResolvedValue({ success: true });
+
+        const submitButton = screen.getByRole('button', { name: /ENVIAR MENSAJE/i });
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(api.post).toHaveBeenCalledWith('/contact', expect.objectContaining({
+                name: 'John Doe',
+                email: 'john@example.com',
+                message: 'Hello from test',
+                recaptchaToken: 'global-mock-token'
+            }));
+            expect(mockSuccess).toHaveBeenCalledWith(expect.stringMatching(/Mensaje enviado con éxito/i));
+        });
+    });
+
+    it('shows error if reCAPTCHA verification fails on server', async () => {
+        renderPage();
+
+        fireEvent.change(screen.getByPlaceholderText(/Nombre completo/i), {
+            target: { value: 'Bot' },
+        });
+        fireEvent.change(screen.getByPlaceholderText(/tu@email\.com/i), {
+            target: { value: 'bot@spam.com' },
+        });
+        fireEvent.change(screen.getByPlaceholderText(/¿En qué podemos ayudarte\?/i), {
+            target: { value: 'Spam message' },
+        });
+
+        (api.post as any).mockRejectedValue(new ApiError('Verificación anti-spam fallida'));
+
+        const submitButton = screen.getByRole('button', { name: /ENVIAR MENSAJE/i });
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(mockError).toHaveBeenCalledWith('Verificación anti-spam fallida');
+        });
+    });
+});

@@ -19,6 +19,7 @@ import cronRoutes from './routes/cron.js';
 import blogRoutes from './routes/blog.js';
 import settingsRoutes from './routes/settings.js';
 import newsletterRoutes from './routes/newsletter.js';
+import contactRoutes from './routes/contact.js';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -52,7 +53,15 @@ app.use(
                     '*.supabase.co',
                 ],
                 'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-                'script-src': ["'self'", 'https:', "'unsafe-inline'", "'unsafe-eval'"],
+                'script-src': [
+                    "'self'",
+                    'https:',
+                    "'unsafe-inline'",
+                    "'unsafe-eval'",
+                    'https://www.google.com',
+                    'https://www.gstatic.com',
+                ],
+                'frame-src': ["'self'", 'https://www.google.com'],
                 'frame-ancestors': [
                     "'self'",
                     'https://t.me',
@@ -99,6 +108,7 @@ app.use('/api/cron', cronRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/contact', contactRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────
 // Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them

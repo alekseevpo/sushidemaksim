@@ -57,8 +57,6 @@ export const CartSkeleton = () => (
 
                     {/* Totals card */}
                     <div className="bg-white md:rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 space-y-6 rounded-t-[32px] md:border-none border-t border-gray-100">
-                        <div className="h-24 w-full skeleton rounded-2xl" />{' '}
-                        {/* Free delivery progress */}
                         <div className="h-6 w-24 skeleton rounded-lg" />
                         <div className="space-y-4 pt-2">
                             <div className="flex justify-between">

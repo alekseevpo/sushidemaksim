@@ -242,23 +242,6 @@ export default function AdminSettings() {
                     </div>
                     <div>
                         <label className="block text-xs font-bold text-gray-500 mb-1">
-                            Umbral Envío Gratis (€)
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            value={settings.free_delivery_threshold}
-                            onChange={e =>
-                                setSettings({
-                                    ...settings,
-                                    free_delivery_threshold: parseFloat(e.target.value),
-                                })
-                            }
-                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">
                             Tiempo estimado de entrega
                         </label>
                         <input

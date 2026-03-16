@@ -1,8 +1,23 @@
 # Журнал разработки (Changelog)
 
+## [Unreleased] - 2026-03-16
+- **Checkout Refactor**: Replaced promo code functionality. Added mandatory payment method selection (Cash/Card) with premium UI and animations.
+- Added "Delayed Delivery" feature with date and time selection.
+- Refactored order receipt email with detailed breakdown and special instructions.
+- Removed promo code functionality as requested.
+- **Admin Visibility**: Payment method is now clearly labeled in order notes for the administration team.
+- **Haptic Enhancements**: Added micro-vibrations for payment method selection.
+- **Security Hardening (reCAPTCHA v3)**: Integrated Google reCAPTCHA v3 across all public forms:
+    - **Contact Form**: Protected against automated spam messages.
+    - **Order Checkout**: Added invisible bot protection for guest and registered orders.
+    - **Gift/Invite Flow**: Secured the "invite a friend" order creation.
+    - **Backend Protection**: Implemented token verification on critical API routes (`/api/contact`, `/api/orders`, `/api/orders/invite`).
+    - **Infrastructure**: Updated Content Security Policy (CSP) and environment configuration for production safety.
+    - **Automated Testing**: Updated unit and integration tests to account for reCAPTCHA state and tokens.
+
 ## [2026-03-14] - Comprehensive Project Audit & Roadmap Update 🛡️
 
-### 📊 Аудит и Планирование (Audit & Quality)
+### 📊 Аудит и Планирование (Audit и Quality)
 
 - **Detailed Project Audit**: Проведен глубокий технический аудит всей кодовой базы (Frontend, Backend, Tests, Infrastructure).
 - **Roadmap 2.0**: Сформирован обновленный план развития проекта, включая переход на TanStack Query, исправление логики поиска в админке и оптимизацию синхронизации корзины.

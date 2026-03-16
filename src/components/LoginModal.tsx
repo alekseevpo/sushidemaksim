@@ -109,7 +109,7 @@ const LoginForm = memo(
                             onClick={onSwitchRegister}
                             className="text-red-600 font-black hover:underline"
                         >
-                            Regístrate gratis
+                            Regístrate
                         </button>
                     </p>
                 </div>

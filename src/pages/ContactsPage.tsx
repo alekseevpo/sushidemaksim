@@ -9,10 +9,15 @@ import {
     ArrowRight,
     Utensils,
     Send,
+    Calendar,
+    Loader2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
+import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 const iconMap: Record<string, any> = {
     whatsapp: (props: any) => (
@@ -32,42 +37,9 @@ const iconMap: Record<string, any> = {
             <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
         </svg>
     ),
-    tiktok: (props: any) => (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            {...props}
-        >
-            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-        </svg>
-    ),
     instagram: Instagram,
     facebook: Facebook,
     thefork: Utensils,
-    threads: (props: any) => (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            {...props}
-        >
-            <path d="M19.25 10c0-4-3.25-7.25-7.25-7.25S4.75 6 4.75 10s3.25 7.25 7.25 7.25c1.5 0 2.85-.45 4-1.2l3.25 3.2" />
-            <path d="M12 7.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" />
-        </svg>
-    ),
 };
 
 const ContactInfoCard = ({
@@ -113,13 +85,30 @@ const ContactInfoCard = ({
 );
 
 export default function ContactsPage() {
+    const { success: showSuccess, error: showError } = useToast();
+    const { executeRecaptcha } = useGoogleReCaptcha();
+    const [submitting, setSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: '',
+    });
+
     const [settings, setSettings] = useState<any>({
         contact_phone: '+34 641 518 390',
         contact_email: 'info@sushidemaksim.com',
         contact_address_line1: 'Calle Barrilero, 20,',
         contact_address_line2: '28007 Madrid',
         contact_google_maps_url: '',
-        contact_schedule: [],
+        contact_schedule: [
+            { days: 'lunes', hours: 'Cerrado', closed: true },
+            { days: 'martes', hours: 'Cerrado', closed: true },
+            { days: 'miércoles', hours: '20:00–23:00' },
+            { days: 'jueves (Día del padre)', hours: '20:00–23:00' },
+            { days: 'viernes', hours: '20:00–23:00' },
+            { days: 'sábado', hours: '14:00–17:00 / 20:00–23:00' },
+            { days: 'domingo', hours: '14:00–17:00' },
+        ],
         social_links: [
             { platform: 'WhatsApp', url: 'https://wa.me/34641518390', icon: 'whatsapp' },
             { platform: 'Instagram', url: '#', icon: 'instagram' },
@@ -130,11 +119,49 @@ export default function ContactsPage() {
         api.get('/settings')
             .then(data => {
                 if (data && Object.keys(data).length > 0) {
-                    setSettings(data);
+                    setSettings((prev: any) => ({
+                        ...prev,
+                        ...data,
+                        contact_schedule: data.contact_schedule && data.contact_schedule.length > 0 
+                            ? data.contact_schedule 
+                            : prev.contact_schedule
+                    }));
                 }
             })
             .catch(console.error);
     }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!executeRecaptcha) {
+            showError('reCAPTCHA no está listo. Por favor, inténtalo de nuevo.');
+            return;
+        }
+
+        if (!formData.name || !formData.email || !formData.message) {
+            showError('Por favor, rellena todos los campos.');
+            return;
+        }
+
+        setSubmitting(true);
+
+        try {
+            const recaptchaToken = await executeRecaptcha('contact_form');
+            
+            await api.post('/contact', {
+                ...formData,
+                recaptchaToken
+            });
+
+            showSuccess('¡Mensaje enviado con éxito! Te responderemos pronto.');
+            setFormData({ name: '', email: '', message: '' });
+        } catch (err: any) {
+            showError(err.message || 'Error al enviar el mensaje.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const fullAddress =
         `${settings.contact_address_line1} ${settings.contact_address_line2}`.trim();
@@ -143,62 +170,50 @@ export default function ContactsPage() {
         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
     return (
-        <div className="bg-white">
+        <div className="bg-transparent pb-24">
             <SEO
                 title="Contacto"
-                description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp y redes sociales."
+                description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp и redes sociales."
             />
 
-            {/* Beautiful Hero with Safe Spacing */}
-            <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 px-2 md:px-4 overflow-hidden">
+            {/* Hero Section styled like BlogPage */}
+            <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
                     <img
                         src="/sushi-hero.jpg"
-                        alt="Background"
-                        className="w-full h-full object-cover"
+                        alt="Contacto Sushi de Maksim"
+                        fetchPriority="high"
+                        decoding="async"
+                        className="w-full h-full object-cover opacity-40 scale-105"
                     />
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
                 </div>
 
-                <div className="max-w-7xl mx-auto relative z-10 text-center md:text-left">
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="inline-block px-4 py-1.5 bg-red-600/20 backdrop-blur-md border border-red-500/30 text-red-500 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full mb-6"
-                    >
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative z-10 text-center px-4"
+                >
+                    <span className="inline-block px-3 py-1 bg-red-600 text-white text-[11px] font-bold rounded-full mb-4 tracking-widest uppercase">
                         Estamos a tu disposición
-                    </motion.div>
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="text-4xl md:text-8xl font-black text-white mb-6 tracking-tighter"
-                    >
-                        Contacto
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.6 }}
-                        className="text-lg md:text-2xl text-gray-300 font-medium max-w-2xl leading-relaxed"
-                    >
-                        ¿Tienes dudas sobre los ingredientes o quieres hacer un pedido especial?{' '}
-                        <br className="hidden md:block" />
-                        ¡Hablemos! Estamos encantados de ayudarte.
-                    </motion.p>
-                </div>
+                    </span>
+                    <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg">
+                        Contacto & <span className="text-red-500 italic">Soporte</span>
+                    </h1>
+                    <p className="text-gray-300 max-w-xl mx-auto text-sm md:text-base font-medium">
+                        ¿Tienes dudas o quieres hacer un pedido especial? ¡Hablemos!
+                    </p>
+                </motion.div>
             </section>
 
-            {/* Content Container - No overlapping negative margins here to ensure stability */}
-            <div className="max-w-7xl mx-auto px-2 md:px-4 py-8 md:py-24">
-                {/* Info Cards Row */}
+            <div className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 md:mb-24">
                     <ContactInfoCard
                         icon={Phone}
                         title="Llámanos"
                         content={settings.contact_phone}
-                        subContent="Atención telefónica directa para pedidos y consultas."
+                        subContent="Atención telefónica directa para pedidos и consultas."
                         link={`tel:${settings.contact_phone?.replace(/\s/g, '')}`}
                         linkText="Llamar ahora"
                         colorClass="bg-amber-100/50"
@@ -226,14 +241,12 @@ export default function ContactsPage() {
                     />
                 </div>
 
-                {/* Main Interaction Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
-                    {/* Integrated Contact Form */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 px-4 py-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 relative overflow-hidden order-2 lg:order-1"
+                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 px-4 py-8 md:p-10 rounded-[2rem] border border-gray-100 relative overflow-hidden order-2 xl:order-1"
                     >
                         <div className="relative z-10">
                             <h2 className="text-2xl md:text-3xl font-black mb-2 tracking-tight">
@@ -243,7 +256,7 @@ export default function ContactsPage() {
                                 Te responderemos en menos de 24h.
                             </p>
 
-                            <form className="space-y-4 md:space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
@@ -251,8 +264,12 @@ export default function ContactsPage() {
                                         </label>
                                         <input
                                             type="text"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                            required
+                                            disabled={submitting}
                                             placeholder="Nombre completo"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-base"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 transition-all font-medium text-base disabled:opacity-50"
                                         />
                                     </div>
                                     <div className="space-y-1">
@@ -261,8 +278,12 @@ export default function ContactsPage() {
                                         </label>
                                         <input
                                             type="email"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                            required
+                                            disabled={submitting}
                                             placeholder="tu@email.com"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium text-base"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 transition-all font-medium text-base disabled:opacity-50"
                                         />
                                     </div>
                                 </div>
@@ -272,26 +293,46 @@ export default function ContactsPage() {
                                     </label>
                                     <textarea
                                         rows={4}
+                                        value={formData.message}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                                        required
+                                        disabled={submitting}
                                         placeholder="¿En qué podemos ayudarte?"
-                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5 transition-all font-medium resize-none text-base"
+                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 transition-all font-medium resize-none text-base disabled:opacity-50"
                                     ></textarea>
                                 </div>
-                                <button className="w-full bg-gray-900 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98]">
-                                    ENVIAR MENSAJE
-                                    <Send size={18} />
+                                <button 
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="w-full bg-gray-900 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <Loader2 size={18} className="animate-spin" />
+                                            ENVIANDO...
+                                        </>
+                                    ) : (
+                                        <>
+                                            ENVIAR MENSAJE
+                                            <Send size={18} />
+                                        </>
+                                    )}
                                 </button>
+                                <p className="text-[9px] text-gray-400 text-center leading-relaxed mt-4">
+                                    Este sitio está protegido por reCAPTCHA и se aplican la 
+                                    <a href="https://policies.google.com/privacy" className="underline ml-1">Política de privacidad</a> и 
+                                    <a href="https://policies.google.com/terms" className="underline ml-1">Términos de servicio</a> de Google.
+                                </p>
                             </form>
                         </div>
                     </motion.div>
 
-                    {/* Map and Info Column */}
-                    <div className="lg:col-span-12 xl:col-span-7 space-y-6 md:space-y-8 order-1 lg:order-2">
-                        {/* Map Card */}
+                    <div className="lg:col-span-12 xl:col-span-7 space-y-6 md:space-y-8 order-1 xl:order-2">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.98 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="bg-white rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-gray-100 h-[300px] md:h-[450px] shadow-sm relative group"
+                            className="bg-white rounded-[2rem] overflow-hidden border border-gray-100 h-[300px] md:h-[450px] shadow-sm relative group"
                         >
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3038.563914856037!2d-3.674640123441!3d40.397042071442!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd42272e4ed3b2e5%3A0xe719cdfe984d9b8!2sSushi%20de%20Maksim!5e0!3m2!1ses!2ses!4v1709700000000!5m2!1ses!2ses"
@@ -300,27 +341,25 @@ export default function ContactsPage() {
                                 style={{ border: 0 }}
                                 allowFullScreen
                                 loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
                                 title="Ubicación"
                                 className="group-hover:scale-105 transition-transform duration-1000"
                             ></iframe>
                         </motion.div>
 
-                        {/* Schedule & Socials Info */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2 }}
-                                className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100 h-full"
-                            >
-                                <div className="flex items-center gap-3 mb-6">
-                                    <Clock size={20} className="text-gray-900" />
-                                    <h3 className="font-black text-lg uppercase tracking-tight">
-                                        Horario
-                                    </h3>
-                                </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100"
+                        >
+                            <div className="flex items-center gap-3 mb-6">
+                                <Clock size={20} className="text-gray-900" />
+                                <h3 className="font-black text-lg uppercase tracking-tight">
+                                    Horario
+                                </h3>
+                            </div>
+                            <div className="max-w-2xl">
                                 <div className="space-y-4">
                                     {settings.contact_schedule?.map((item: any, idx: number) => (
                                         <div
@@ -337,53 +376,52 @@ export default function ContactsPage() {
                                             </span>
                                         </div>
                                     ))}
-                                    {settings.contact_schedule.length === 0 && (
-                                        <p className="text-sm text-gray-500 font-medium italic">
-                                            Consúltanos en redes sociales.
-                                        </p>
-                                    )}
-                                </div>
-                            </motion.div>
 
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.3 }}
-                                className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100 h-full flex flex-col"
-                            >
-                                <h3 className="font-black text-lg uppercase tracking-tight mb-8">
-                                    Síguenos
-                                </h3>
-                                <div className="flex flex-wrap gap-3 md:gap-4">
-                                    {settings.social_links?.map((social: any, idx: number) => {
-                                        const IconComponent =
-                                            iconMap[social.icon?.toLowerCase()] || Instagram;
-                                        return (
-                                            <motion.a
-                                                key={idx}
-                                                whileHover={{ scale: 1.1, rotate: 5 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                href={social.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-gray-900 border border-gray-100 hover:border-red-500 hover:text-red-500 transition-all shadow-sm"
-                                            >
-                                                <IconComponent size={20} strokeWidth={1.5} />
-                                            </motion.a>
-                                        );
-                                    })}
+                                    <div className="pt-6 mt-6 border-t border-gray-100">
+                                        <div className="flex items-center gap-2 mb-4 text-red-600">
+                                            <Calendar size={14} strokeWidth={2.5} />
+                                            <span className="text-[10px] font-black uppercase tracking-widest">
+                                                Próximos Festivos
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {[
+                                                { name: 'Jueves Santo', date: '2 Abr' },
+                                                { name: 'Viernes Santo', date: '3 Abr' },
+                                                { name: 'Fiesta del Trabajo', date: '1 May' },
+                                                { name: 'Comunidad de Madrid', date: '2 May' },
+                                                { name: 'San Isidro', date: '15 May' },
+                                            ].map((holiday, hIdx) => (
+                                                <div key={hIdx} className="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-gray-50">
+                                                    <span className="text-[11px] font-bold text-gray-600">{holiday.name} ({holiday.date})</span>
+                                                    <a
+                                                        href={`https://wa.me/34641518390?text=${encodeURIComponent(`Hola, me gustaría confirmar el horario para el festivo ${holiday.name} (${holiday.date})`)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-tight hover:bg-emerald-100 transition-colors border border-emerald-100/50"
+                                                    >
+                                                        {iconMap.whatsapp({ size: 10, strokeWidth: 2.5 })}
+                                                        Consultar
+                                                    </a>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="mt-4 flex items-center gap-3 bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm transition-all hover:bg-amber-100/50">
+                                            <div className="w-8 h-8 bg-amber-200 rounded-lg flex items-center justify-center text-amber-900">
+                                                {iconMap.whatsapp({ size: 16, strokeWidth: 2.5 })}
+                                            </div>
+                                            <p className="text-xs text-amber-900 font-black leading-tight m-0">
+                                                Consultar horario especial en días festivos
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-gray-400 mt-auto pt-6 md:pt-8 font-medium">
-                                    Únete a nuestra comunidad para ofertas exclusivas.
-                                </p>
-                            </motion.div>
-                        </div>
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
             </div>
 
-            {/* Premium CTA Section */}
             <section className="px-4 pb-16 md:pb-24">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -397,15 +435,14 @@ export default function ContactsPage() {
                             ¿Listo para la experiencia?
                         </h2>
                         <p className="text-red-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
-                            Pide ahora y descubre por qué somos el sushi favorito del centro de
-                            Madrid.
+                            Pide ahora и descubre por qué somos el sushi favorito del centro de Madrid.
                         </p>
-                        <a
-                            href="/menu"
+                        <Link
+                            to="/menu"
                             className="inline-block w-full sm:w-auto bg-white text-red-600 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
                         >
                             HACER MI PEDIDO
-                        </a>
+                        </Link>
                     </div>
                 </motion.div>
             </section>

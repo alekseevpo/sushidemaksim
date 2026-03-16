@@ -111,12 +111,41 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
 export async function sendOrderReceiptEmail(to: string, orderData: any): Promise<void> {
     const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
 
+    // Parse notes for special instructions
+    const notes = orderData.notes || '';
+    let paymentMethod = 'No especificado';
+    let noCall = false;
+    let noBuzzer = false;
+    let scheduledTime = '';
+    let customerNote = '';
+
+    const parts = notes.split(' | ');
+    let deliveryType = 'DOMICILIO';
+    parts.forEach((part: string) => {
+        if (part.includes('[TIPO:')) {
+            deliveryType = part.replace('[TIPO: ', '').replace(']', '');
+        } else if (part.includes('[MÉTODO DE PAGO:')) {
+            paymentMethod = part.replace('[MÉTODO DE PAGO: ', '').replace(']', '');
+        } else if (part.includes('[ENTREGA PROGRAMADA:')) {
+            scheduledTime = part.replace('[ENTREGA PROGRAMADA: ', '').replace(']', '');
+        } else if (part.includes('[NO LLAMAR ДЛЯ ПОДТВЕРЖДЕНИЯ]')) {
+            noCall = true;
+        } else if (part.includes('[НЕ ЗВОНИТЬ В ДОМОФОН - ПОЗВОНИТЬ НА МОБИЛЬНЫЙ]')) {
+            noBuzzer = true;
+        } else {
+            customerNote += (customerNote ? ' | ' : '') + part;
+        }
+    });
+
     const itemsHtml = orderData.items
         .map(
             (item: any) => `
-    <tr style="border-bottom: 1px solid #e5e7eb;">
-      <td style="padding: 12px 0; color: #374151; font-size: 15px;">${item.quantity}x ${item.name}</td>
-      <td style="padding: 12px 0; text-align: right; color: #374151; font-size: 15px; font-weight: bold;">
+    <tr style="border-bottom: 1px solid #f3f4f6;">
+      <td style="padding: 16px 0;">
+        <div style="font-weight: 600; color: #111827; font-size: 15px;">${item.name} ${item.quantity > 1 ? `<span style="color:#dc2626;">x${item.quantity}</span>` : ''}</div>
+        <div style="color: #6b7280; font-size: 13px;">Precio unitario: ${item.price_at_time.toFixed(2).replace('.', ',')} €</div>
+      </td>
+      <td style="padding: 16px 0; text-align: right; vertical-align: top; font-weight: 700; color: #111827; font-size: 15px;">
         ${(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
       </td>
     </tr>
@@ -127,52 +156,121 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
     const html = `
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif;">
-  <div style="max-width:500px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
-    <div style="padding:30px 20px;background:#dc2626;text-align:center;">
-      <h1 style="color:#ffffff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
+    
+    <!-- Header -->
+    <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
+      <div style="margin-bottom: 16px;">
+        <span style="background-color: #dc2626; color: #ffffff; padding: 10px 14px; border-radius: 12px; font-weight: 900; font-size: 24px;">🍣</span>
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
+        MAKSIM<span style="color:#dc2626;">.</span>
+      </h1>
+      <p style="color: #6b7280; margin: 5px 0 0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Confirmación de Pedido</p>
     </div>
-    <div style="padding:30px;">
-      <h2 style="font-size:20px;color:#111827;margin:0 0 15px;">¡Hola ${orderData.customerName}!</h2>
-      <p style="font-size:15px;line-height:1.5;color:#374151;margin:0 0 20px;">
-        Gracias por tu pedido. Hemos recibido tu orden <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> y la estamos preparando.
+
+    <!-- Main Content -->
+    <div style="padding: 40px;">
+      <h2 style="color: #111827; margin: 0 0 12px; font-size: 24px; font-weight: 800;">¡Hola ${orderData.customerName}!</h2>
+      <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
+        Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> ha sido recibido con éxito.
       </p>
-      
-      <div style="border-top:1px solid #e5e7eb;margin:20px 0;"></div>
-      
-      <h3 style="font-size:14px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin:0 0 15px;">Resumen de tu pedido:</h3>
-      
-      <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
-        ${itemsHtml}
-      </table>
-      
-      <div style="border-top:1px solid #e5e7eb;margin:20px 0;"></div>
-      
-      <table style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td style="font-size:18px;font-weight:bold;color:#111827;">TOTAL</td>
-          <td style="font-size:20px;font-weight:bold;color:#dc2626;text-align:right;">
-            ${orderData.total.toFixed(2).replace('.', ',')} €
-          </td>
-        </tr>
-      </table>
-      
-      <div style="border-top:1px solid #e5e7eb;margin:20px 0;"></div>
-      
-      <h3 style="font-size:14px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin:0 0 15px;">Detalles de entrega:</h3>
-      <p style="font-size:14px;color:#4b5563;margin:4px 0;"><strong>Dirección:</strong> ${orderData.deliveryAddress}</p>
-      <p style="font-size:14px;color:#4b5563;margin:4px 0;"><strong>Teléfono:</strong> ${orderData.phoneNumber}</p>
-      ${orderData.notes ? `<p style="font-size:14px;color:#4b5563;margin:4px 0;"><strong>Notas:</strong> ${orderData.notes}</p>` : ''}
-      
-      <p style="font-size:14px;color:#6b7280;text-align:center;margin-top:40px;font-style:italic;">
-        Tiempo aproximado de entrega: 30-60 minutos.<br />
-        ¡Esperamos que lo disfrutes!
-      </p>
+
+      <!-- Order Summary Card -->
+      <div style="background-color: #f9fafb; border-radius: 20px; padding: 24px; margin-bottom: 32px; border: 1px solid #f1f5f9;">
+        <h3 style="color: #111827; margin: 0 0 20px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Resumen del Pedido</h3>
+        
+        <table style="width:100%; border-collapse:collapse;">
+          ${itemsHtml}
+        </table>
+
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e2e8f0;">
+          <table style="width:100%; border-collapse:collapse;">
+            <tr>
+              <td style="padding-top: 12px; color: #111827; font-size: 20px; font-weight: 900;">TOTAL</td>
+              <td style="padding-top: 12px; text-align: right; color: #dc2626; font-size: 24px; font-weight: 900;">${orderData.total.toFixed(2).replace('.', ',')} €</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Payment & Delivery Type -->
+      <div style="margin-bottom: 32px;">
+        <table style="width:100%; border-collapse:collapse;">
+          <tr>
+            <td style="width: 50%; vertical-align: top;">
+              <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Método de Pago</h4>
+              <div style="color: #111827; font-size: 15px; font-weight: 700;">
+                ${paymentMethod === 'TARJETA' ? '💳 Tarjeta' : '💵 Efectivo'}
+              </div>
+            </td>
+            <td style="width: 50%; vertical-align: top;">
+              <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Tipo de Entrega</h4>
+              <div style="color: #111827; font-size: 15px; font-weight: 700;">
+                ${deliveryType === 'RECOGIDA EN LOCAL' ? '🏬 Recogida en Local' : '🚚 Entrega a Domicilio'}
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        ${(scheduledTime || noCall || noBuzzer || customerNote) ? `
+        <h4 style="color: #9ca3af; margin: 24px 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
+        <div style="background-color: #fff1f2; border-radius: 16px; padding: 20px; border: 1px solid #fecdd3;">
+          ${scheduledTime ? `<div style="color: #111827; font-size: 14px; font-weight: 700; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #fecdd3;">⏰ Entrega programada: <span style="color: #dc2626;">${scheduledTime}</span></div>` : ''}
+          ${noCall ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🚫 No llamar para confirmar pedido</div>' : ''}
+          ${noBuzzer ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
+          ${customerNote ? `<div style="color: #4b5563; font-size: 14px; line-height: 1.5; margin-top: ${ (noCall || noBuzzer) ? '12px' : '0' }; border-top: ${ (noCall || noBuzzer) ? '1px solid #fecdd3' : 'none' }; padding-top: ${ (noCall || noBuzzer) ? '12px' : '0' };"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
+        </div>
+        ` : ''}
+      </div>
+
+      <!-- Delivery Details -->
+      <h4 style="color: #9ca3af; margin: 0 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType === 'RECOGIDA EN LOCAL' ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
+      <div style="background-color: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0;">
+        <div style="color: #4b5563; font-size: 14px; line-height: 1.6;">
+          ${deliveryType === 'RECOGIDA EN LOCAL' 
+            ? '<strong>📍 Dirección:</strong> Calle Barrilero, 20, 28007 Madrid' 
+            : `<strong>📍 Dirección:</strong> ${orderData.deliveryAddress}`}
+          <br>
+          <strong>📱 Teléfono:</strong> ${orderData.phoneNumber}
+        </div>
+      </div>
+
+      <!-- Store Info & Schedule -->
+      <div style="margin-top: 32px; padding: 24px; background-color: #000000; border-radius: 20px; color: #ffffff;">
+        <h4 style="color: #dc2626; margin: 0 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Nuestro Horario</h4>
+        <table style="width: 100%; color: #9ca3af; font-size: 12px; border-collapse: collapse;">
+          <tr><td style="padding: 4px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">20:00 – 23:00</td></tr>
+          <tr><td style="padding: 4px 0;">Sábado:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00 | 20:00 – 23:00</td></tr>
+          <tr><td style="padding: 4px 0;">Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00</td></tr>
+          <tr><td style="padding: 4px 0;">Lunes – Martes:</td><td style="text-align: right;">Cerrado</td></tr>
+        </table>
+        <div style="margin-top: 16px; pt-16; border-top: 1px solid #374151; padding-top: 16px; font-size: 11px; text-align: center; color: #6b7280;">
+          Sushi de Maksim — Calle Barrilero, 20, 28007 Madrid
+        </div>
+      </div>
+
+      <div style="margin-top: 48px; text-align: center;">
+        <p style="color: #9ca3af; font-size: 14px; font-style: italic; margin: 0;">
+          Gracias por confiar en nosotros.<br>
+          ¡Esperamos que disfrutes de la experiencia Maksim!
+        </p>
+      </div>
     </div>
-    <div style="background:#f9fafb;padding:20px;text-align:center;border-top:1px solid #f3f4f6;">
-      <p style="font-size:12px;color:#9ca3af;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+
+    <!-- Footer -->
+    <div style="background-color: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+      <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+      <div style="color: #e5e7eb; font-size: 11px;">
+        Este es un correo automático, por favor no respondas a este mensaje.
+      </div>
     </div>
+
   </div>
 </body>
 </html>
