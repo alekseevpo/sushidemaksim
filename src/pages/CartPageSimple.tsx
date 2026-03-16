@@ -200,19 +200,18 @@ export default function CartPageSimple() {
     };
 
     const handleOrder = async () => {
+        if (!executeRecaptcha) {
+            showError('reCAPTCHA no está listo. Por favor, inténtalo de nuevo.');
+            return;
+        }
+
         const streetVal =
             address.trim() ||
             (defaultAddr && defaultAddr.street
                 ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
                 : '');
-
         const houseVal = house.trim();
         const aptVal = apartment.trim();
-
-        if (!executeRecaptcha) {
-            showError('reCAPTCHA no está listo. Por favor, inténtalo de nuevo.');
-            return;
-        }
 
         if (deliveryType === 'delivery') {
             if (!streetVal || streetVal.length < 3 || streetVal.includes('undefined')) {
@@ -229,8 +228,8 @@ export default function CartPageSimple() {
             }
         }
 
-        if (total < MIN_ORDER) {
-            showError(`El pedido mínimo es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`);
+        if (deliveryType === 'delivery' && total < MIN_ORDER) {
+            showError(`El pedido mínimo para entrega es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`);
             return;
         }
 
@@ -817,6 +816,7 @@ export default function CartPageSimple() {
 
                             <div className="flex bg-gray-50 p-1.5 rounded-2xl mb-6 border border-gray-100">
                                 <button
+                                    type="button"
                                     onClick={() => setDeliveryType('delivery')}
                                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all ${
                                         deliveryType === 'delivery'
@@ -828,6 +828,7 @@ export default function CartPageSimple() {
                                     Domicilio
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => setDeliveryType('pickup')}
                                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all ${
                                         deliveryType === 'pickup'
@@ -1157,7 +1158,7 @@ export default function CartPageSimple() {
                             </div>
                         ) : null}
 
-                        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 overflow-hidden rounded-t-[32px] md:rounded-xl border-b md:border-none border-gray-50">
+                        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] md:rounded-xl border-b md:border-none border-gray-50">
                             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">
                                 Resumen
                             </h2>
@@ -1171,12 +1172,14 @@ export default function CartPageSimple() {
                                         {total.toFixed(2).replace('.', ',')} €
                                     </span>
                                 </div>
-                                <div className="flex justify-between text-gray-500">
-                                    <span>Envío</span>
-                                    <span className="font-bold text-gray-900">
-                                        {DELIVERY_FEE.toFixed(2).replace('.', ',')} €
-                                    </span>
-                                </div>
+                                {deliveryType === 'delivery' && (
+                                    <div className="flex justify-between text-gray-500 animate-in fade-in duration-300">
+                                        <span>Envío</span>
+                                        <span className="font-bold text-gray-900">
+                                            {DELIVERY_FEE.toFixed(2).replace('.', ',')} €
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="border-t border-gray-200 pt-3 mt-1">
                                     <div className="flex justify-between text-lg font-bold">
                                         <span>Total</span>
