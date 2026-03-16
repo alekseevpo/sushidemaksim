@@ -284,7 +284,7 @@ export default function CartPageSimple() {
                 ? 'RECOGIDA EN LOCAL (Calle Barrilero, 20)'
                 : `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
         const deliveryPhone = phone.trim() || user?.phone || '';
-        if (!deliveryPhone || deliveryPhone.length < 6) {
+        if (!deliveryPhone || deliveryPhone.length < 9) {
             showError('Por favor, introduce un teléfono de contacto válido');
             return;
         }
