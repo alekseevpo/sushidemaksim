@@ -22,6 +22,15 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
             };
         });
 
+        // Block real reCAPTCHA and return mock
+        await context.route('**/recaptcha/api.js*', route => {
+            route.fulfill({
+                status: 200,
+                contentType: 'application/javascript',
+                body: 'window.grecaptcha = { execute: () => Promise.resolve("playwright-invite-mock-token"), ready: (cb) => cb() };',
+            });
+        });
+
         // Configuración básica de mocks de API
         await context.route('**/api/settings', route =>
             route.fulfill({

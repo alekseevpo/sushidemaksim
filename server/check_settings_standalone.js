@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -19,7 +18,7 @@ async function checkSettings() {
         console.error('Error fetching settings:', error);
         return;
     }
-    
+
     const settingsMap = settings.reduce((acc, curr) => {
         try {
             acc[curr.key] = typeof curr.value === 'string' ? JSON.parse(curr.value) : curr.value;

@@ -18,8 +18,8 @@ router.post('/', async (req, res) => {
         const { success, score } = response.data;
 
         if (!success || score < 0.5) {
-            return res.status(403).json({ 
-                error: 'Fallo en la verificación anti-spam. Por favor, inténtalo de nuevo.' 
+            return res.status(403).json({
+                error: 'Fallo en la verificación anti-spam. Por favor, inténtalo de nuevo.',
             });
         }
 
@@ -33,7 +33,9 @@ router.post('/', async (req, res) => {
         return res.json({ message: '¡Mensaje enviado con éxito!' });
     } catch (error) {
         console.error('Error verifying reCAPTCHA:', error);
-        return res.status(500).json({ error: 'Error al procesar el mensaje. Por favor, intente más tarde.' });
+        return res
+            .status(500)
+            .json({ error: 'Error al procesar el mensaje. Por favor, intente más tarde.' });
     }
 });
 

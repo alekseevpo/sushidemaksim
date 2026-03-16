@@ -122,9 +122,10 @@ export default function ContactsPage() {
                     setSettings((prev: any) => ({
                         ...prev,
                         ...data,
-                        contact_schedule: data.contact_schedule && data.contact_schedule.length > 0 
-                            ? data.contact_schedule 
-                            : prev.contact_schedule
+                        contact_schedule:
+                            data.contact_schedule && data.contact_schedule.length > 0
+                                ? data.contact_schedule
+                                : prev.contact_schedule,
                     }));
                 }
             })
@@ -133,7 +134,7 @@ export default function ContactsPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!executeRecaptcha) {
             showError('reCAPTCHA no está listo. Por favor, inténtalo de nuevo.');
             return;
@@ -148,10 +149,10 @@ export default function ContactsPage() {
 
         try {
             const recaptchaToken = await executeRecaptcha('contact_form');
-            
+
             await api.post('/contact', {
                 ...formData,
-                recaptchaToken
+                recaptchaToken,
             });
 
             showSuccess('¡Mensaje enviado con éxito! Te responderemos pronto.');
@@ -265,7 +266,12 @@ export default function ContactsPage() {
                                         <input
                                             type="text"
                                             value={formData.name}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                            onChange={e =>
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    name: e.target.value,
+                                                }))
+                                            }
                                             required
                                             disabled={submitting}
                                             placeholder="Nombre completo"
@@ -279,7 +285,12 @@ export default function ContactsPage() {
                                         <input
                                             type="email"
                                             value={formData.email}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                            onChange={e =>
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    email: e.target.value,
+                                                }))
+                                            }
                                             required
                                             disabled={submitting}
                                             placeholder="tu@email.com"
@@ -294,14 +305,19 @@ export default function ContactsPage() {
                                     <textarea
                                         rows={4}
                                         value={formData.message}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                                        onChange={e =>
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                message: e.target.value,
+                                            }))
+                                        }
                                         required
                                         disabled={submitting}
                                         placeholder="¿En qué podemos ayudarte?"
                                         className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 transition-all font-medium resize-none text-base disabled:opacity-50"
                                     ></textarea>
                                 </div>
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={submitting}
                                     className="w-full bg-gray-900 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
@@ -319,9 +335,21 @@ export default function ContactsPage() {
                                     )}
                                 </button>
                                 <p className="text-[9px] text-gray-400 text-center leading-relaxed mt-4">
-                                    Este sitio está protegido por reCAPTCHA и se aplican la 
-                                    <a href="https://policies.google.com/privacy" className="underline ml-1">Política de privacidad</a> и 
-                                    <a href="https://policies.google.com/terms" className="underline ml-1">Términos de servicio</a> de Google.
+                                    Este sitio está protegido por reCAPTCHA и se aplican la
+                                    <a
+                                        href="https://policies.google.com/privacy"
+                                        className="underline ml-1"
+                                    >
+                                        Política de privacidad
+                                    </a>{' '}
+                                    и
+                                    <a
+                                        href="https://policies.google.com/terms"
+                                        className="underline ml-1"
+                                    >
+                                        Términos de servicio
+                                    </a>{' '}
+                                    de Google.
                                 </p>
                             </form>
                         </div>
@@ -392,15 +420,23 @@ export default function ContactsPage() {
                                                 { name: 'Comunidad de Madrid', date: '2 May' },
                                                 { name: 'San Isidro', date: '15 May' },
                                             ].map((holiday, hIdx) => (
-                                                <div key={hIdx} className="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-gray-50">
-                                                    <span className="text-[11px] font-bold text-gray-600">{holiday.name} ({holiday.date})</span>
+                                                <div
+                                                    key={hIdx}
+                                                    className="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-gray-50"
+                                                >
+                                                    <span className="text-[11px] font-bold text-gray-600">
+                                                        {holiday.name} ({holiday.date})
+                                                    </span>
                                                     <a
                                                         href={`https://wa.me/34641518390?text=${encodeURIComponent(`Hola, me gustaría confirmar el horario para el festivo ${holiday.name} (${holiday.date})`)}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-tight hover:bg-emerald-100 transition-colors border border-emerald-100/50"
                                                     >
-                                                        {iconMap.whatsapp({ size: 10, strokeWidth: 2.5 })}
+                                                        {iconMap.whatsapp({
+                                                            size: 10,
+                                                            strokeWidth: 2.5,
+                                                        })}
                                                         Consultar
                                                     </a>
                                                 </div>
@@ -435,7 +471,8 @@ export default function ContactsPage() {
                             ¿Listo para la experiencia?
                         </h2>
                         <p className="text-red-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
-                            Pide ahora и descubre por qué somos el sushi favorito del centro de Madrid.
+                            Pide ahora и descubre por qué somos el sushi favorito del centro de
+                            Madrid.
                         </p>
                         <Link
                             to="/menu"

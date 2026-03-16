@@ -246,9 +246,10 @@ export default function CartPageSimple() {
             return;
         }
 
-        const deliveryAddress = deliveryType === 'pickup' 
-            ? 'RECOGIDA EN LOCAL (Calle Barrilero, 20)' 
-            : `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
+        const deliveryAddress =
+            deliveryType === 'pickup'
+                ? 'RECOGIDA EN LOCAL (Calle Barrilero, 20)'
+                : `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
         const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 6) {
             showError('Por favor, introduce un teléfono de contacto válido');
@@ -270,12 +271,12 @@ export default function CartPageSimple() {
 
         try {
             const recaptchaToken = await executeRecaptcha('checkout');
-            
+
             const orderPayload: any = {
                 deliveryAddress,
                 phoneNumber: deliveryPhone,
                 notes,
-                recaptchaToken
+                recaptchaToken,
             };
 
             if (!isAuthenticated) {
@@ -332,9 +333,10 @@ export default function CartPageSimple() {
             return;
         }
 
-        const deliveryAddress = deliveryType === 'pickup' 
-            ? 'RECOGIDA EN LOCAL (Calle Barrilero, 20)' 
-            : `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
+        const deliveryAddress =
+            deliveryType === 'pickup'
+                ? 'RECOGIDA EN LOCAL (Calle Barrilero, 20)'
+                : `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
         const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 6) {
             showError('Por favor, introduce un teléfono de contacto válido');
@@ -362,7 +364,7 @@ export default function CartPageSimple() {
                 phoneNumber: deliveryPhone,
                 notes,
                 senderName: user?.name || '',
-                recaptchaToken
+                recaptchaToken,
             };
 
             if (!isAuthenticated) {
@@ -428,7 +430,9 @@ export default function CartPageSimple() {
                     <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 mb-8 flex items-center justify-center gap-4">
                         <div className="flex flex-col items-center">
                             <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1">
-                                {deliveryType === 'pickup' ? 'Tiempo de preparación' : 'Entrega estimada'}
+                                {deliveryType === 'pickup'
+                                    ? 'Tiempo de preparación'
+                                    : 'Entrega estimada'}
                             </span>
                             <span className="text-lg font-black text-red-600">
                                 {deliveryType === 'pickup' ? '20 – 30 min' : '30 – 60 min'}
@@ -443,16 +447,24 @@ export default function CartPageSimple() {
                                     <Store size={24} strokeWidth={1.5} />
                                 </div>
                                 <div>
-                                    <h4 className="text-amber-900 font-black uppercase tracking-tight mb-1 uppercase text-sm">Punto de Recogida</h4>
-                                    <p className="text-sm text-amber-800 font-medium mb-4 italic">Calle Barrilero, 20, 28007 Madrid</p>
-                                    
+                                    <h4 className="text-amber-900 font-black uppercase tracking-tight mb-1 uppercase text-sm">
+                                        Punto de Recogida
+                                    </h4>
+                                    <p className="text-sm text-amber-800 font-medium mb-4 italic">
+                                        Calle Barrilero, 20, 28007 Madrid
+                                    </p>
+
                                     <div className="pt-4 border-t border-amber-200/50">
-                                        <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">Horario de recogida</p>
+                                        <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
+                                            Horario de recogida
+                                        </p>
                                         <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-[11px] font-medium text-amber-800">
                                             <span>Miércoles – Viernes:</span>
                                             <span className="text-right">20:00 – 23:00</span>
                                             <span>Sábado:</span>
-                                            <span className="text-right">14:00 – 17:00 | 20:00 – 23:00</span>
+                                            <span className="text-right">
+                                                14:00 – 17:00 | 20:00 – 23:00
+                                            </span>
                                             <span>Domingo:</span>
                                             <span className="text-right">14:00 – 17:00</span>
                                         </div>
@@ -835,22 +847,40 @@ export default function CartPageSimple() {
                                             <Store size={20} strokeWidth={1.5} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-amber-900 uppercase tracking-tight mb-1">Punto de Recogida</p>
-                                            <p className="text-sm text-amber-800 font-medium">Calle Barrilero, 20, 28007 Madrid</p>
-                                            
+                                            <p className="text-sm font-black text-amber-900 uppercase tracking-tight mb-1">
+                                                Punto de Recogida
+                                            </p>
+                                            <p className="text-sm text-amber-800 font-medium">
+                                                Calle Barrilero, 20, 28007 Madrid
+                                            </p>
+
                                             <div className="mt-4 pt-4 border-t border-amber-200/50">
-                                                <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">Horario de recogida</p>
+                                                <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
+                                                    Horario de recogida
+                                                </p>
                                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] font-medium text-amber-800">
                                                     <span>Miércoles – Viernes:</span>
-                                                    <span className="text-right">20:00 – 23:00</span>
+                                                    <span className="text-right">
+                                                        20:00 – 23:00
+                                                    </span>
                                                     <span>Sábado (Comida):</span>
-                                                    <span className="text-right">14:00 – 17:00</span>
+                                                    <span className="text-right">
+                                                        14:00 – 17:00
+                                                    </span>
                                                     <span>Sábado (Cena):</span>
-                                                    <span className="text-right">20:00 – 23:00</span>
+                                                    <span className="text-right">
+                                                        20:00 – 23:00
+                                                    </span>
                                                     <span>Domingo:</span>
-                                                    <span className="text-right">14:00 – 17:00</span>
-                                                    <span className="text-amber-900/40">Lunes – Martes:</span>
-                                                    <span className="text-right text-amber-900/40">Cerrado</span>
+                                                    <span className="text-right">
+                                                        14:00 – 17:00
+                                                    </span>
+                                                    <span className="text-amber-900/40">
+                                                        Lunes – Martes:
+                                                    </span>
+                                                    <span className="text-right text-amber-900/40">
+                                                        Cerrado
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -858,49 +888,52 @@ export default function CartPageSimple() {
                                 </div>
                             )}
 
-                            {deliveryType === 'delivery' && user?.addresses && user.addresses.length > 0 && (
-                                <div className="flex flex-col gap-2 mb-4">
-                                    {user.addresses.map(addr => (
-                                        <button
-                                            key={addr.id}
-                                            onClick={() => {
-                                                let s = addr.street || '';
-                                                let h = addr.house || '';
-                                                let a = addr.apartment || '';
+                            {deliveryType === 'delivery' &&
+                                user?.addresses &&
+                                user.addresses.length > 0 && (
+                                    <div className="flex flex-col gap-2 mb-4">
+                                        {user.addresses.map(addr => (
+                                            <button
+                                                key={addr.id}
+                                                onClick={() => {
+                                                    let s = addr.street || '';
+                                                    let h = addr.house || '';
+                                                    let a = addr.apartment || '';
 
-                                                if (s.includes(',') && !h && !a) {
-                                                    const pts = s.split(',').map(p => p.trim());
-                                                    if (pts.length >= 2) {
-                                                        s = pts[0];
-                                                        h = pts[1];
-                                                        if (pts.length >= 3)
-                                                            a = pts.slice(2).join(', ');
+                                                    if (s.includes(',') && !h && !a) {
+                                                        const pts = s.split(',').map(p => p.trim());
+                                                        if (pts.length >= 2) {
+                                                            s = pts[0];
+                                                            h = pts[1];
+                                                            if (pts.length >= 3)
+                                                                a = pts.slice(2).join(', ');
+                                                        }
                                                     }
-                                                }
 
-                                                setAddress(s);
-                                                setHouse(h);
-                                                setApartment(a);
-                                                setPhone(prev => prev || addr.phone || '');
-                                            }}
-                                            type="button"
-                                            className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
-                                        >
-                                            <MapPin
-                                                size={16}
-                                                strokeWidth={1.5}
-                                                className="shrink-0"
-                                            />
-                                            <span className="truncate">
-                                                Usar "{addr.label || 'Mi dirección'}": {addr.street}
-                                                {addr.house && `, Portal/Casa ${addr.house}`}
-                                                {addr.apartment &&
-                                                    `, Piso/Puerta ${addr.apartment}`}
-                                            </span>
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
+                                                    setAddress(s);
+                                                    setHouse(h);
+                                                    setApartment(a);
+                                                    setPhone(prev => prev || addr.phone || '');
+                                                }}
+                                                type="button"
+                                                className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
+                                            >
+                                                <MapPin
+                                                    size={16}
+                                                    strokeWidth={1.5}
+                                                    className="shrink-0"
+                                                />
+                                                <span className="truncate">
+                                                    Usar "{addr.label || 'Mi dirección'}":{' '}
+                                                    {addr.street}
+                                                    {addr.house && `, Portal/Casa ${addr.house}`}
+                                                    {addr.apartment &&
+                                                        `, Piso/Puerta ${addr.apartment}`}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             <div className="flex flex-col gap-3">
                                 {deliveryType === 'delivery' && (
                                     <>
@@ -1008,7 +1041,9 @@ export default function CartPageSimple() {
                                         className="grid grid-cols-2 gap-3 mt-2 overflow-hidden"
                                     >
                                         <div>
-                                            <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">Fecha</label>
+                                            <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
+                                                Fecha
+                                            </label>
                                             <input
                                                 type="date"
                                                 min={new Date().toISOString().split('T')[0]}
@@ -1018,7 +1053,9 @@ export default function CartPageSimple() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">Hora</label>
+                                            <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
+                                                Hora
+                                            </label>
                                             <input
                                                 type="time"
                                                 value={scheduledTime}
@@ -1121,7 +1158,6 @@ export default function CartPageSimple() {
                         ) : null}
 
                         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 overflow-hidden rounded-t-[32px] md:rounded-xl border-b md:border-none border-gray-50">
-
                             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">
                                 Resumen
                             </h2>
@@ -1169,10 +1205,16 @@ export default function CartPageSimple() {
                                                 : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-gray-100/50'
                                         }`}
                                     >
-                                        <div className={`p-3 rounded-xl transition-all duration-300 ${paymentMethod === 'card' ? 'bg-red-600 text-white shadow-lg shadow-red-200 rotate-3' : 'bg-white text-gray-400 border border-gray-100 group-hover:rotate-3'}`}>
+                                        <div
+                                            className={`p-3 rounded-xl transition-all duration-300 ${paymentMethod === 'card' ? 'bg-red-600 text-white shadow-lg shadow-red-200 rotate-3' : 'bg-white text-gray-400 border border-gray-100 group-hover:rotate-3'}`}
+                                        >
                                             <CreditCard size={20} strokeWidth={2} />
                                         </div>
-                                        <span className={`text-[10px] font-black uppercase tracking-wider transition-colors ${paymentMethod === 'card' ? 'text-red-600' : 'text-gray-500'}`}>Tarjeta</span>
+                                        <span
+                                            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${paymentMethod === 'card' ? 'text-red-600' : 'text-gray-500'}`}
+                                        >
+                                            Tarjeta
+                                        </span>
                                     </button>
                                     <button
                                         onClick={() => {
@@ -1185,10 +1227,16 @@ export default function CartPageSimple() {
                                                 : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-gray-100/50'
                                         }`}
                                     >
-                                        <div className={`p-3 rounded-xl transition-all duration-300 ${paymentMethod === 'cash' ? 'bg-red-600 text-white shadow-lg shadow-red-200 -rotate-3' : 'bg-white text-gray-400 border border-gray-100 group-hover:-rotate-3'}`}>
+                                        <div
+                                            className={`p-3 rounded-xl transition-all duration-300 ${paymentMethod === 'cash' ? 'bg-red-600 text-white shadow-lg shadow-red-200 -rotate-3' : 'bg-white text-gray-400 border border-gray-100 group-hover:-rotate-3'}`}
+                                        >
                                             <Wallet size={20} strokeWidth={2} />
                                         </div>
-                                        <span className={`text-[10px] font-black uppercase tracking-wider transition-colors ${paymentMethod === 'cash' ? 'text-red-600' : 'text-gray-500'}`}>Efectivo</span>
+                                        <span
+                                            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${paymentMethod === 'cash' ? 'text-red-600' : 'text-gray-500'}`}
+                                        >
+                                            Efectivo
+                                        </span>
                                     </button>
                                 </div>
                             </div>
@@ -1198,7 +1246,9 @@ export default function CartPageSimple() {
                                 disabled={isOrdering || isInviting || items.length === 0}
                                 className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-xl shadow-red-200 flex items-center justify-center gap-2 active:scale-[0.98]"
                             >
-                                {isOrdering ? 'Procesando...' : (
+                                {isOrdering ? (
+                                    'Procesando...'
+                                ) : (
                                     <>
                                         <span>Realizar pedido</span>
                                         <ArrowRight size={18} strokeWidth={2} />
@@ -1230,14 +1280,17 @@ export default function CartPageSimple() {
                                 Volver al menú
                             </Link>
 
-                             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                                 <h3 className="text-base font-bold mb-2">Información de envío</h3>
                                 <ul className="text-sm text-gray-500 m-0 pl-5 space-y-1">
                                     <li>Entrega segura a domicilio</li>
                                     <li>Tiempo de entrega: 30–60 min</li>
                                     <li>
                                         Horario: según el horario de apertura (
-                                        <Link to="/contacts" className="text-red-600 hover:underline">
+                                        <Link
+                                            to="/contacts"
+                                            className="text-red-600 hover:underline"
+                                        >
                                             ver horarios
                                         </Link>
                                         )

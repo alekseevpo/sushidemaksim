@@ -1,4 +1,3 @@
-
 import { supabase } from './src/db/supabase.js';
 
 async function checkSettings() {

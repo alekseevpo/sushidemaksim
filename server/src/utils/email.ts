@@ -218,24 +218,30 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
           </tr>
         </table>
 
-        ${(scheduledTime || noCall || noBuzzer || customerNote) ? `
+        ${
+            scheduledTime || noCall || noBuzzer || customerNote
+                ? `
         <h4 style="color: #9ca3af; margin: 24px 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
         <div style="background-color: #fff1f2; border-radius: 16px; padding: 20px; border: 1px solid #fecdd3;">
           ${scheduledTime ? `<div style="color: #111827; font-size: 14px; font-weight: 700; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #fecdd3;">⏰ Entrega programada: <span style="color: #dc2626;">${scheduledTime}</span></div>` : ''}
           ${noCall ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🚫 No llamar para confirmar pedido</div>' : ''}
           ${noBuzzer ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
-          ${customerNote ? `<div style="color: #4b5563; font-size: 14px; line-height: 1.5; margin-top: ${ (noCall || noBuzzer) ? '12px' : '0' }; border-top: ${ (noCall || noBuzzer) ? '1px solid #fecdd3' : 'none' }; padding-top: ${ (noCall || noBuzzer) ? '12px' : '0' };"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
+          ${customerNote ? `<div style="color: #4b5563; font-size: 14px; line-height: 1.5; margin-top: ${noCall || noBuzzer ? '12px' : '0'}; border-top: ${noCall || noBuzzer ? '1px solid #fecdd3' : 'none'}; padding-top: ${noCall || noBuzzer ? '12px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
         </div>
-        ` : ''}
+        `
+                : ''
+        }
       </div>
 
       <!-- Delivery Details -->
       <h4 style="color: #9ca3af; margin: 0 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType === 'RECOGIDA EN LOCAL' ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
       <div style="background-color: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0;">
         <div style="color: #4b5563; font-size: 14px; line-height: 1.6;">
-          ${deliveryType === 'RECOGIDA EN LOCAL' 
-            ? '<strong>📍 Dirección:</strong> Calle Barrilero, 20, 28007 Madrid' 
-            : `<strong>📍 Dirección:</strong> ${orderData.deliveryAddress}`}
+          ${
+              deliveryType === 'RECOGIDA EN LOCAL'
+                  ? '<strong>📍 Dirección:</strong> Calle Barrilero, 20, 28007 Madrid'
+                  : `<strong>📍 Dirección:</strong> ${orderData.deliveryAddress}`
+          }
           <br>
           <strong>📱 Teléfono:</strong> ${orderData.phoneNumber}
         </div>

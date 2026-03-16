@@ -132,7 +132,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         fireEvent.change(streetInput, { target: { value: 'Calle Principal' } });
         fireEvent.change(houseInput, { target: { value: '1' } });
         fireEvent.change(aptInput, { target: { value: 'A' } });
-        
+
         // Select payment method (as it's now mandatory)
         const cardBtn = screen.getByText(/Tarjeta/i);
         fireEvent.click(cardBtn);

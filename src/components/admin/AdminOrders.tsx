@@ -489,83 +489,120 @@ export default function AdminOrders({
                                             </p>
                                         </div>
 
-                                        {order.notes && (() => {
-                                            const notes = order.notes || '';
-                                            let paymentMethod = '';
-                                            let deliveryType = '';
-                                            let scheduled = '';
-                                            let noCall = false;
-                                            let noBuzzer = false;
-                                            let actualNote = '';
+                                        {order.notes &&
+                                            (() => {
+                                                const notes = order.notes || '';
+                                                let paymentMethod = '';
+                                                let deliveryType = '';
+                                                let scheduled = '';
+                                                let noCall = false;
+                                                let noBuzzer = false;
+                                                let actualNote = '';
 
-                                            const parts = notes.split(' | ');
-                                            parts.forEach((part: string) => {
-                                                if (part.includes('[MÉTODO DE PAGO:')) {
-                                                    paymentMethod = part.replace('[MÉTODO DE PAGO: ', '').replace(']', '');
-                                                } else if (part.includes('[TIPO:')) {
-                                                    deliveryType = part.replace('[TIPO: ', '').replace(']', '');
-                                                } else if (part.includes('[ENTREGA PROGRAMADA:')) {
-                                                    scheduled = part.replace('[ENTREGA PROGRAMADA: ', '').replace(']', '');
-                                                } else if (part.includes('[NO LLAMAR ДЛЯ ПОДТВЕРЖДЕНИЯ]')) {
-                                                    noCall = true;
-                                                } else if (part.includes('[НЕ ЗВОНИТЬ В ДОМОФОН - ПОЗВОНИТЬ НА МОБИЛЬНЫЙ]')) {
-                                                    noBuzzer = true;
-                                                } else {
-                                                    actualNote += (actualNote ? ' | ' : '') + part;
-                                                }
-                                            });
+                                                const parts = notes.split(' | ');
+                                                parts.forEach((part: string) => {
+                                                    if (part.includes('[MÉTODO DE PAGO:')) {
+                                                        paymentMethod = part
+                                                            .replace('[MÉTODO DE PAGO: ', '')
+                                                            .replace(']', '');
+                                                    } else if (part.includes('[TIPO:')) {
+                                                        deliveryType = part
+                                                            .replace('[TIPO: ', '')
+                                                            .replace(']', '');
+                                                    } else if (
+                                                        part.includes('[ENTREGA PROGRAMADA:')
+                                                    ) {
+                                                        scheduled = part
+                                                            .replace('[ENTREGA PROGRAMADA: ', '')
+                                                            .replace(']', '');
+                                                    } else if (
+                                                        part.includes(
+                                                            '[NO LLAMAR ДЛЯ ПОДТВЕРЖДЕНИЯ]'
+                                                        )
+                                                    ) {
+                                                        noCall = true;
+                                                    } else if (
+                                                        part.includes(
+                                                            '[НЕ ЗВОНИТЬ В ДОМОФОН - ПОЗВОНИТЬ НА МОБИЛЬНЫЙ]'
+                                                        )
+                                                    ) {
+                                                        noBuzzer = true;
+                                                    } else {
+                                                        actualNote +=
+                                                            (actualNote ? ' | ' : '') + part;
+                                                    }
+                                                });
 
-                                            return (
-                                                <div className="space-y-3">
-                                                    <div className="flex flex-wrap gap-2 mb-2">
-                                                        {deliveryType && (
-                                                            <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${deliveryType === 'RECOGIDA EN LOCAL' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}>
-                                                                {deliveryType === 'RECOGIDA EN LOCAL' ? <Store size={12} /> : <Truck size={12} />}
-                                                                {deliveryType === 'RECOGIDA EN LOCAL' ? 'RECOGIDA' : 'DOMICILIO'}
-                                                            </div>
-                                                        )}
-                                                        {paymentMethod && (
-                                                            <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${paymentMethod === 'TARJETA' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}>
-                                                                {paymentMethod === 'TARJETA' ? <Wallet size={12} /> : <Wallet size={12} />}
-                                                                {paymentMethod}
-                                                            </div>
-                                                        )}
-                                                        {scheduled && (
-                                                            <div className="px-2 py-1 rounded-lg bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
-                                                                <Clock size={12} />
-                                                                {scheduled}
-                                                            </div>
-                                                        )}
-                                                        {noCall && (
-                                                            <div className="px-2 py-1 rounded-lg bg-gray-100 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
-                                                                <VolumeX size={12} />
-                                                                SIN LLAMADA
-                                                            </div>
-                                                        )}
-                                                        {noBuzzer && (
-                                                            <div className="px-2 py-1 rounded-lg bg-gray-100 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
-                                                                <MessageSquare size={12} />
-                                                                MÓVIL (NO TIMBRE)
+                                                return (
+                                                    <div className="space-y-3">
+                                                        <div className="flex flex-wrap gap-2 mb-2">
+                                                            {deliveryType && (
+                                                                <div
+                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${deliveryType === 'RECOGIDA EN LOCAL' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}
+                                                                >
+                                                                    {deliveryType ===
+                                                                    'RECOGIDA EN LOCAL' ? (
+                                                                        <Store size={12} />
+                                                                    ) : (
+                                                                        <Truck size={12} />
+                                                                    )}
+                                                                    {deliveryType ===
+                                                                    'RECOGIDA EN LOCAL'
+                                                                        ? 'RECOGIDA'
+                                                                        : 'DOMICILIO'}
+                                                                </div>
+                                                            )}
+                                                            {paymentMethod && (
+                                                                <div
+                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${paymentMethod === 'TARJETA' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}
+                                                                >
+                                                                    {paymentMethod === 'TARJETA' ? (
+                                                                        <Wallet size={12} />
+                                                                    ) : (
+                                                                        <Wallet size={12} />
+                                                                    )}
+                                                                    {paymentMethod}
+                                                                </div>
+                                                            )}
+                                                            {scheduled && (
+                                                                <div className="px-2 py-1 rounded-lg bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
+                                                                    <Clock size={12} />
+                                                                    {scheduled}
+                                                                </div>
+                                                            )}
+                                                            {noCall && (
+                                                                <div className="px-2 py-1 rounded-lg bg-gray-100 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
+                                                                    <VolumeX size={12} />
+                                                                    SIN LLAMADA
+                                                                </div>
+                                                            )}
+                                                            {noBuzzer && (
+                                                                <div className="px-2 py-1 rounded-lg bg-gray-100 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
+                                                                    <MessageSquare size={12} />
+                                                                    MÓVIL (NO TIMBRE)
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {actualNote && (
+                                                            <div className="bg-amber-50 border border-amber-200/50 rounded-2xl p-4 animate-in slide-in-from-top-2 duration-300">
+                                                                <div className="flex items-center gap-2 text-amber-600 mb-2">
+                                                                    <MessageSquare
+                                                                        size={14}
+                                                                        strokeWidth={2}
+                                                                    />
+                                                                    <span className="text-[10px] font-black uppercase tracking-widest">
+                                                                        Mensaje del Cliente
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-xs text-amber-900 font-bold leading-relaxed italic">
+                                                                    "{actualNote}"
+                                                                </p>
                                                             </div>
                                                         )}
                                                     </div>
-                                                    
-                                                    {actualNote && (
-                                                        <div className="bg-amber-50 border border-amber-200/50 rounded-2xl p-4 animate-in slide-in-from-top-2 duration-300">
-                                                            <div className="flex items-center gap-2 text-amber-600 mb-2">
-                                                                <MessageSquare size={14} strokeWidth={2} />
-                                                                <span className="text-[10px] font-black uppercase tracking-widest">
-                                                                    Mensaje del Cliente
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-xs text-amber-900 font-bold leading-relaxed italic">
-                                                                "{actualNote}"
-                                                            </p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })()}
+                                                );
+                                            })()}
                                     </div>
 
                                     {/* Items del pedido (Compact Receipt Style) */}

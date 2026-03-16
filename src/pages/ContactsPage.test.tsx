@@ -12,7 +12,10 @@ vi.mock('../utils/api', () => ({
         get: vi.fn().mockResolvedValue({}),
     },
     ApiError: class extends Error {
-        constructor(public message: string, public status?: number) {
+        constructor(
+            public message: string,
+            public status?: number
+        ) {
             super(message);
         }
     },
@@ -63,13 +66,18 @@ describe('ContactsPage (Security)', () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith('/contact', expect.objectContaining({
-                name: 'John Doe',
-                email: 'john@example.com',
-                message: 'Hello from test',
-                recaptchaToken: 'global-mock-token'
-            }));
-            expect(mockSuccess).toHaveBeenCalledWith(expect.stringMatching(/Mensaje enviado con éxito/i));
+            expect(api.post).toHaveBeenCalledWith(
+                '/contact',
+                expect.objectContaining({
+                    name: 'John Doe',
+                    email: 'john@example.com',
+                    message: 'Hello from test',
+                    recaptchaToken: 'global-mock-token',
+                })
+            );
+            expect(mockSuccess).toHaveBeenCalledWith(
+                expect.stringMatching(/Mensaje enviado con éxito/i)
+            );
         });
     });
 

@@ -9,7 +9,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await context.addInitScript(() => {
             window.localStorage.setItem('cookieConsent', 'accepted');
             window.localStorage.removeItem('sushi_token');
-            
+
             // Mock grecaptcha for Playwright (before the provider runs)
             (window as any).grecaptcha = {
                 execute: () => {
@@ -28,7 +28,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
             route.fulfill({
                 status: 200,
                 contentType: 'application/javascript',
-                body: 'window.grecaptcha = { execute: () => Promise.resolve("playwright-mock-token"), ready: (cb) => cb() };'
+                body: 'window.grecaptcha = { execute: () => Promise.resolve("playwright-mock-token"), ready: (cb) => cb() };',
             });
         });
 
@@ -119,12 +119,12 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.getByPlaceholder(/Ej: 15/i).fill('42');
         await page.getByPlaceholder(/Ej: 3ºB/i).fill('C');
         await page.locator('input[type="tel"]').fill('600123456');
-        
+
         // Select payment method
         const paymentBtn1 = page.getByRole('button', { name: /Tarjeta/i });
         await paymentBtn1.scrollIntoViewIfNeeded();
         await paymentBtn1.click({ force: true });
-        
+
         await page
             .getByRole('button', { name: /Realizar pedido/i })
             .first()

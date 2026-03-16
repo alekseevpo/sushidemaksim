@@ -79,7 +79,9 @@ EMAIL_PASS=tu_password_de_app
 ```
 
 ### 5. Configuración de reCAPTCHA v3
+
 Para proteger los formularios contra el spam, el proyecto utiliza Google reCAPTCHA v3.
+
 1. Obtén tus claves en [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin).
 2. Añade `RECAPTCHA_SECRET_KEY` en el `.env` del servidor.
 3. Actualiza `RECAPTCHA_SITE_KEY` en `src/main.tsx` con tu clave de sitio.

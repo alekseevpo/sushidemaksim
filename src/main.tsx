@@ -16,7 +16,7 @@ const RECAPTCHA_SITE_KEY = '6LdsdowsAAAAAGuwUCjrDuHALVKaiATr87p91b3L';
 root.render(
     <React.StrictMode>
         <HelmetProvider>
-            <GoogleReCaptchaProvider 
+            <GoogleReCaptchaProvider
                 reCaptchaKey={RECAPTCHA_SITE_KEY}
                 language="es"
                 useRecaptchaNet

@@ -1,6 +1,7 @@
 # Журнал разработки (Changelog)
 
 ## [Unreleased] - 2026-03-16
+
 - **Checkout Refactor**: Replaced promo code functionality. Added mandatory payment method selection (Cash/Card) with premium UI and animations.
 - Added "Delayed Delivery" feature with date and time selection.
 - Refactored order receipt email with detailed breakdown and special instructions.

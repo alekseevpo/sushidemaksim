@@ -33,7 +33,8 @@ router.post(
         phoneNumber: { type: 'string', required: true, maxLength: 30 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems, recaptchaToken } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems, recaptchaToken } =
+            req.body;
 
         const isHuman = await verifyRecaptcha(recaptchaToken);
         if (!isHuman) {
@@ -85,7 +86,7 @@ router.post(
         }
 
         // 2. Calculate subtotal
-        let subtotal = cartItems.reduce(
+        const subtotal = cartItems.reduce(
             (sum, item: any) => sum + item.menu_items.price * item.quantity,
             0
         );
@@ -121,7 +122,13 @@ router.post(
         if (notes?.includes('[TIPO: DOMICILIO]')) {
             const { data: settings } = await supabase.from('site_settings').select('*');
             const deliveryFeeSetting = settings?.find(s => s.key === 'delivery_fee');
-            const fee = deliveryFeeSetting ? parseFloat(deliveryFeeSetting.value.startsWith('"') ? JSON.parse(deliveryFeeSetting.value) : deliveryFeeSetting.value) : 3.5;
+            const fee = deliveryFeeSetting
+                ? parseFloat(
+                      deliveryFeeSetting.value.startsWith('"')
+                          ? JSON.parse(deliveryFeeSetting.value)
+                          : deliveryFeeSetting.value
+                  )
+                : 3.5;
             finalTotal += fee;
         }
 
@@ -308,7 +315,8 @@ router.post(
         senderName: { type: 'string', required: false, maxLength: 100 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, senderName, recaptchaToken } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, senderName, recaptchaToken } =
+            req.body;
 
         const isHuman = await verifyRecaptcha(recaptchaToken);
         if (!isHuman) {
