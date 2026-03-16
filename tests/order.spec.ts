@@ -9,27 +9,6 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await context.addInitScript(() => {
             window.localStorage.setItem('cookieConsent', 'accepted');
             window.localStorage.removeItem('sushi_token');
-
-            // Mock grecaptcha for Playwright (before the provider runs)
-            (window as any).grecaptcha = {
-                execute: () => {
-                    console.log('grecaptcha.execute called');
-                    return Promise.resolve('playwright-mock-token');
-                },
-                ready: (callback: () => void) => {
-                    console.log('grecaptcha.ready called');
-                    callback();
-                },
-            };
-        });
-
-        // Block real reCAPTCHA and return mock
-        await context.route('**/recaptcha/api.js*', route => {
-            route.fulfill({
-                status: 200,
-                contentType: 'application/javascript',
-                body: 'window.grecaptcha = { execute: () => Promise.resolve("playwright-mock-token"), ready: (cb) => cb() };',
-            });
         });
 
         // Global API mocks for stability

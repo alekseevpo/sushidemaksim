@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ContactsPage from './ContactsPage';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { api, ApiError } from '../utils/api';
+import { api } from '../utils/api';
 
 // Mock API
 vi.mock('../utils/api', () => ({
@@ -47,7 +47,7 @@ describe('ContactsPage (Security)', () => {
             </HelmetProvider>
         );
 
-    it('submits contact form with reCAPTCHA token', async () => {
+    it('submits contact form', async () => {
         renderPage();
 
         fireEvent.change(screen.getByPlaceholderText(/Nombre completo/i), {
@@ -72,35 +72,11 @@ describe('ContactsPage (Security)', () => {
                     name: 'John Doe',
                     email: 'john@example.com',
                     message: 'Hello from test',
-                    recaptchaToken: 'global-mock-token',
                 })
             );
             expect(mockSuccess).toHaveBeenCalledWith(
                 expect.stringMatching(/Mensaje enviado con éxito/i)
             );
-        });
-    });
-
-    it('shows error if reCAPTCHA verification fails on server', async () => {
-        renderPage();
-
-        fireEvent.change(screen.getByPlaceholderText(/Nombre completo/i), {
-            target: { value: 'Bot' },
-        });
-        fireEvent.change(screen.getByPlaceholderText(/tu@email\.com/i), {
-            target: { value: 'bot@spam.com' },
-        });
-        fireEvent.change(screen.getByPlaceholderText(/¿En qué podemos ayudarte\?/i), {
-            target: { value: 'Spam message' },
-        });
-
-        (api.post as any).mockRejectedValue(new ApiError('Verificación anti-spam fallida'));
-
-        const submitButton = screen.getByRole('button', { name: /ENVIAR MENSAJE/i });
-        fireEvent.click(submitButton);
-
-        await waitFor(() => {
-            expect(mockError).toHaveBeenCalledWith('Verificación anti-spam fallida');
         });
     });
 });

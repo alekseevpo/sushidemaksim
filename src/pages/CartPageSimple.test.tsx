@@ -58,13 +58,7 @@ vi.mock('../context/ToastContext', () => ({
     }),
 }));
 
-// Mock useGoogleReCaptcha
-vi.mock('react-google-recaptcha-v3', () => ({
-    useGoogleReCaptcha: () => ({
-        executeRecaptcha: vi.fn().mockResolvedValue('mock-token'),
-    }),
-    GoogleReCaptchaProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+
 
 describe('CartPageSimple (Integration)', () => {
     beforeEach(() => {

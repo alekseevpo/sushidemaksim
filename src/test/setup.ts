@@ -37,10 +37,4 @@ Object.defineProperty(window, 'IntersectionObserver', {
     value: IntersectionObserverMock,
 });
 
-// Global Mock for reCAPTCHA
-vi.mock('react-google-recaptcha-v3', () => ({
-    useGoogleReCaptcha: () => ({
-        executeRecaptcha: vi.fn().mockResolvedValue('global-mock-token'),
-    }),
-    GoogleReCaptchaProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
+

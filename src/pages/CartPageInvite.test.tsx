@@ -147,7 +147,6 @@ describe('CartPageSimple - Invitations (Integration)', () => {
                     deliveryAddress: 'Calle Principal, Portal/Casa: 1, Piso/Puerta: A',
                     senderName: 'Test User',
                     notes: expect.stringContaining('[MÉTODO DE PAGO: TARJETA]'),
-                    recaptchaToken: expect.any(String),
                 })
             );
             expect(navigator.share).toHaveBeenCalled();

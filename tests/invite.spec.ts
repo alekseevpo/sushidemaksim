@@ -14,21 +14,6 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await context.addInitScript(() => {
             window.localStorage.setItem('cookieConsent', 'accepted');
             window.localStorage.removeItem('sushi_token');
-
-            // Mock grecaptcha for Playwright
-            (window as any).grecaptcha = {
-                execute: () => Promise.resolve('playwright-invite-mock-token'),
-                ready: (callback: () => void) => callback(),
-            };
-        });
-
-        // Block real reCAPTCHA and return mock
-        await context.route('**/recaptcha/api.js*', route => {
-            route.fulfill({
-                status: 200,
-                contentType: 'application/javascript',
-                body: 'window.grecaptcha = { execute: () => Promise.resolve("playwright-invite-mock-token"), ready: (cb) => cb() };',
-            });
         });
 
         // Configuración básica de mocks de API

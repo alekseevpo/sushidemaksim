@@ -42,6 +42,5 @@ export const config = {
         url: process.env.SUPABASE_URL || '',
         key: process.env.SUPABASE_KEY || '',
     },
-    recaptchaSecret: '6LfWxiwsAAAAABC4g8-2p66fRELQXKWRa7LYTCsM',
     frontendUrl: process.env.FRONTEND_URL || 'https://sushidemaksim.vercel.app',
 };
