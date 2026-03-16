@@ -342,7 +342,7 @@ export default function ContactsPage() {
                                     >
                                         Política de privacidad
                                     </a>{' '}
-                                    y
+                                    y los
                                     <a
                                         href="https://policies.google.com/terms"
                                         className="underline ml-1"
