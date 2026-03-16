@@ -328,8 +328,12 @@ export default function CartPageSimple() {
             if ('vibrate' in navigator) {
                 navigator.vibrate(2000);
             }
-        } catch (err) {
-            showError(err instanceof ApiError ? err.message : 'Error al realizar el pedido');
+        } catch (err: any) {
+            console.error('Order error:', err);
+            const errorMessage = err instanceof ApiError 
+                ? err.message 
+                : (err.message || 'Error al realizar el pedido');
+            showError(errorMessage);
         } finally {
             setIsOrdering(false);
         }
