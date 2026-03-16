@@ -58,14 +58,18 @@ export default function Footer() {
         <footer className="bg-black text-gray-400 py-16 mt-auto border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-12">
                 <div className="text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-4 mb-5">
-                        <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-2xl shadow-red-600/40 transform hover:rotate-12 transition-transform duration-500">
+                    <Link
+                        to="/"
+                        onClick={() => (window as any).lenis?.scrollTo(0)}
+                        className="flex items-center justify-center md:justify-start gap-4 mb-5 no-underline group cursor-pointer"
+                    >
+                        <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-2xl shadow-red-600/40 transform group-hover:rotate-12 transition-transform duration-500">
                             <div className="w-3.5 h-3.5 bg-white rounded-full scale-110 shadow-inner"></div>
                         </div>
                         <span className="font-black text-white text-3xl tracking-tighter uppercase whitespace-nowrap">
                             Sushi<span className="text-red-500 font-light">Maksim</span>
                         </span>
-                    </div>
+                    </Link>
                     <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed font-medium text-gray-400/80">
                         Auténtica experiencia japonesa en el corazón de Madrid. Frescura, tradición
                         y calidad en cada pieza.
