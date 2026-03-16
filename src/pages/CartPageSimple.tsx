@@ -330,9 +330,10 @@ export default function CartPageSimple() {
             }
         } catch (err: any) {
             console.error('Order error:', err);
-            const errorMessage = err instanceof ApiError 
-                ? err.message 
-                : (err.message || 'Error al realizar el pedido');
+            const errorMessage =
+                err instanceof ApiError
+                    ? err.message
+                    : err.message || 'Error al realizar el pedido';
             showError(errorMessage);
         } finally {
             setIsOrdering(false);
