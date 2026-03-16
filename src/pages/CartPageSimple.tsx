@@ -241,7 +241,9 @@ export default function CartPageSimple() {
         }
 
         if (deliveryType === 'delivery' && total < MIN_ORDER) {
-            showError(`El pedido mínimo para entrega es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`);
+            showError(
+                `El pedido mínimo para entrega es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`
+            );
             return;
         }
 
@@ -676,7 +678,10 @@ export default function CartPageSimple() {
                                                               <Check size={16} />
                                                           ) : (
                                                               <>
-                                                                  <Plus size={16} strokeWidth={1.5} />
+                                                                  <Plus
+                                                                      size={16}
+                                                                      strokeWidth={1.5}
+                                                                  />
                                                                   <span className="hidden md:inline">
                                                                       Añadir
                                                                   </span>
