@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, Tag, Plus } from 'lucide-react';
+import { ArrowRight, Clock, Tag, Plus, Check } from 'lucide-react';
 import { api } from '../utils/api';
 import { useCart } from '../hooks/useCart';
 import SEO from '../components/SEO';
@@ -137,7 +137,7 @@ export default function PromoPageSimple() {
                                 </div>
                                 <Link
                                     to="/menu"
-                                    className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-xs md:text-sm text-white transition-all hover:opacity-95 active:scale-95 shadow-lg shadow-gray-200"
+                                    className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-xs md:text-sm text-white transition-all hover:opacity-95 active:scale-90 shadow-lg shadow-gray-200"
                                     style={{ backgroundColor: promo.color }}
                                 >
                                     Ver menú <ArrowRight size={16} strokeWidth={1.5} />
@@ -167,7 +167,7 @@ export default function PromoPageSimple() {
                         <br />
                         <Link
                             to="/menu"
-                            className="inline-flex items-center gap-2 bg-white text-red-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-95 shadow-xl hover:shadow-2xl"
+                            className="inline-flex items-center gap-2 bg-white text-red-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-90 shadow-xl hover:shadow-2xl"
                         >
                             PEDIR COMBO <ArrowRight size={20} strokeWidth={1.5} />
                         </Link>
@@ -236,14 +236,14 @@ export default function PromoPageSimple() {
                                             </span>
                                             <button
                                                 onClick={() => handleAdd(item)}
-                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-95 ${
+                                                className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-90 ${
                                                     addedItems.has(item.id)
                                                         ? 'bg-green-500 text-white shadow-lg'
                                                         : 'bg-red-600 text-white hover:bg-red-700 shadow-xl'
                                                 }`}
                                             >
                                                 {addedItems.has(item.id) ? (
-                                                    '✓'
+                                                    <Check size={16} />
                                                 ) : (
                                                     <>
                                                         <Plus

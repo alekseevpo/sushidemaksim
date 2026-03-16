@@ -504,7 +504,7 @@ export default function MenuPageSimple() {
                             <button
                                 id="cat-all"
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 snap-center ${
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-90 snap-center ${
                                     selectedCategory === 'all'
                                         ? 'bg-red-600 text-white shadow-lg shadow-red-200'
                                         : 'bg-white text-gray-700 shadow-sm'
@@ -517,7 +517,7 @@ export default function MenuPageSimple() {
                                     key={cat.id}
                                     id={`cat-${cat.id}`}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-95 snap-center ${
+                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-90 snap-center ${
                                         selectedCategory === cat.id
                                             ? 'bg-red-600 text-white shadow-lg shadow-red-200'
                                             : 'bg-white text-gray-700 shadow-sm'
@@ -619,7 +619,7 @@ export default function MenuPageSimple() {
                                                                     e.stopPropagation();
                                                                     toggleFavorite(item.id);
                                                                 }}
-                                                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all cursor-pointer border-none z-20 touch-manipulation active:scale-95"
+                                                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all cursor-pointer border-none z-20 touch-manipulation active:scale-90"
                                                             >
                                                                 <Heart
                                                                     size={16}

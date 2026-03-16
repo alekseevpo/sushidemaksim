@@ -312,7 +312,7 @@ export default function PayForFriendPage() {
                         <div className="flex flex-col gap-4 w-full max-w-xs">
                             <Link
                                 to="/menu"
-                                className="bg-red-600 text-white py-4 rounded-2xl font-black no-underline shadow-xl shadow-red-100 hover:bg-red-700 transition transform active:scale-95"
+                                className="bg-red-600 text-white py-4 rounded-2xl font-black no-underline shadow-xl shadow-red-100 hover:bg-red-700 transition transform active:scale-90"
                             >
                                 Pedir sushi para mí 🍣
                             </Link>

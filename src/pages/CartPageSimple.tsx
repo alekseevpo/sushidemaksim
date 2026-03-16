@@ -5,6 +5,7 @@ import {
     MapPin,
     CheckCircle,
     Trash2,
+    Check,
     Plus,
     Minus,
     ArrowLeft,
@@ -80,6 +81,7 @@ export default function CartPageSimple() {
     const [customNote, setCustomNote] = useState('');
     const [failedImages, setFailedImages] = useState<Set<string | number>>(new Set());
     const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
+    const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
 
     const EMOJI: Record<string, string> = {
         rolls: '🍣',
@@ -197,6 +199,16 @@ export default function CartPageSimple() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 100);
         }
+
+        const itemId = item.id;
+        setAddedItems(prev => new Set(prev).add(itemId));
+        setTimeout(() => {
+            setAddedItems(prev => {
+                const n = new Set(prev);
+                n.delete(itemId);
+                return n;
+            });
+        }, 1200);
     };
 
     const handleOrder = async () => {
@@ -478,13 +490,13 @@ export default function CartPageSimple() {
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={() => navigate('/profile?tab=orders')}
-                                    className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95 flex items-center justify-center gap-2"
+                                    className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90 flex items-center justify-center gap-2"
                                 >
                                     Mis Pedidos
                                 </button>
                                 <Link
                                     to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone || user?.phone || '')}`}
-                                    className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-black transition-all active:scale-90 flex items-center justify-center gap-2"
                                 >
                                     Seguir mi pedido 🛵
                                 </Link>
@@ -493,7 +505,7 @@ export default function CartPageSimple() {
                             <div className="flex flex-col gap-3">
                                 <Link
                                     to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone)}`}
-                                    className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-95"
+                                    className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90"
                                 >
                                     Seguir mi pedido 🛵
                                 </Link>
@@ -508,7 +520,7 @@ export default function CartPageSimple() {
                                         onClick={() =>
                                             document.dispatchEvent(new Event('custom:openLogin'))
                                         }
-                                        className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-95"
+                                        className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-90"
                                     >
                                         Crear cuenta
                                     </button>
@@ -517,7 +529,7 @@ export default function CartPageSimple() {
                         )}
                         <Link
                             to="/menu"
-                            className="bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-gray-200 transition-all active:scale-95"
+                            className="bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-gray-200 transition-all active:scale-90"
                         >
                             Seguir comprando
                         </Link>
@@ -555,7 +567,7 @@ export default function CartPageSimple() {
                     <div className="flex flex-col items-center gap-4 mb-12">
                         <Link
                             to="/menu"
-                            className="bg-red-600 text-white px-8 py-4 rounded-2xl no-underline font-black shadow-lg shadow-red-200 active:scale-95 transition-all w-full sm:w-auto"
+                            className="bg-red-600 text-white px-8 py-4 rounded-2xl no-underline font-black shadow-lg shadow-red-200 active:scale-90 transition-all w-full sm:w-auto"
                         >
                             Ver Menú Completo
                         </Link>
@@ -654,12 +666,22 @@ export default function CartPageSimple() {
                                                       </span>
                                                       <button
                                                           onClick={() => handleAddToCart(item)}
-                                                          className="h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl bg-gray-900 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-200 active:scale-95 transition-all border-none cursor-pointer flex items-center justify-center gap-2"
+                                                          className={`h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl font-black text-sm transition-all duration-300 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 ${
+                                                              addedItems.has(item.id)
+                                                                  ? 'bg-green-500 text-white'
+                                                                  : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-200 active:scale-90'
+                                                          }`}
                                                       >
-                                                          <Plus size={16} strokeWidth={1.5} />
-                                                          <span className="hidden md:inline">
-                                                              Añadir
-                                                          </span>
+                                                          {addedItems.has(item.id) ? (
+                                                              <Check size={16} />
+                                                          ) : (
+                                                              <>
+                                                                  <Plus size={16} strokeWidth={1.5} />
+                                                                  <span className="hidden md:inline">
+                                                                      Añadir
+                                                                  </span>
+                                                              </>
+                                                          )}
                                                       </button>
                                                   </div>
                                               </div>
@@ -767,7 +789,7 @@ export default function CartPageSimple() {
                                                                   )
                                                                 : removeItem(item.id)
                                                         }
-                                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
+                                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all"
                                                     >
                                                         <Minus size={14} strokeWidth={1.5} />
                                                     </button>
@@ -781,7 +803,7 @@ export default function CartPageSimple() {
                                                                 item.quantity + 1
                                                             )
                                                         }
-                                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-95 transition-all"
+                                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all"
                                                     >
                                                         <Plus size={14} strokeWidth={1.5} />
                                                     </button>
@@ -1147,7 +1169,7 @@ export default function CartPageSimple() {
                                             </div>
                                             <button
                                                 onClick={() => handleAddToCart(item, true)}
-                                                className="bg-gray-900 text-white rounded-full p-1.5 hover:bg-red-600 transition-all shadow-sm flex items-center justify-center"
+                                                className="bg-gray-900 text-white rounded-full p-1.5 hover:bg-red-600 active:scale-90 transition-all duration-300 shadow-sm flex items-center justify-center"
                                                 title="Añadir al pedido"
                                             >
                                                 <Plus size={14} strokeWidth={1.5} />
@@ -1329,7 +1351,7 @@ export default function CartPageSimple() {
                         <button
                             onClick={handleOrder}
                             disabled={isOrdering || items.length === 0}
-                            className="w-full bg-red-600 text-white h-14 rounded-2xl font-black text-base hover:bg-red-700 transition active:scale-95 disabled:bg-gray-400 shadow-xl shadow-red-200 flex items-center justify-center gap-4 px-6"
+                            className="w-full bg-red-600 text-white h-14 rounded-2xl font-black text-base hover:bg-red-700 transition active:scale-90 disabled:bg-gray-400 shadow-xl shadow-red-200 flex items-center justify-center gap-4 px-6"
                         >
                             <div className="flex items-center gap-2">
                                 {isOrdering ? (
@@ -1348,7 +1370,7 @@ export default function CartPageSimple() {
                     ) : (
                         <Link
                             to="/"
-                            className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-95 flex items-center justify-center gap-4 px-6 shadow-xl shadow-gray-200"
+                            className="w-full bg-gray-900 text-white h-14 rounded-2xl font-black text-base no-underline active:scale-90 flex items-center justify-center gap-4 px-6 shadow-xl shadow-gray-200"
                         >
                             <span className="flex items-center gap-2">
                                 Inicia sesión para pedir{' '}

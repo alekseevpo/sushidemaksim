@@ -345,7 +345,7 @@ export default function HomePageSimple() {
                     </p>
                     <Link
                         to="/menu"
-                        className="inline-block w-full sm:w-auto bg-white text-red-600 px-12 py-6 rounded-2xl font-black text-xs tracking-widest shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 relative z-10"
+                        className="inline-block w-full sm:w-auto bg-white text-red-600 px-12 py-6 rounded-2xl font-black text-xs tracking-widest shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-90 transition-all duration-300 relative z-10"
                     >
                         ORDENAR AHORA
                     </Link>
