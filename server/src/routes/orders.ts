@@ -22,8 +22,6 @@ router.post(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { deliveryAddress, phoneNumber, notes, promoCode, guestItems } = req.body;
 
-        const isHuman = true;
-
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
         const osName = parser.getOS().name || 'Unknown';
@@ -312,8 +310,6 @@ router.post(
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { deliveryAddress, phoneNumber, notes, promoCode, senderName } = req.body;
-
-        const isHuman = true;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
