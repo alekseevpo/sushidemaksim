@@ -535,7 +535,9 @@ export default function CartPageSimple() {
                                         <button
                                             onClick={() =>
                                                 document.dispatchEvent(
-                                                    new Event('custom:openLogin')
+                                                    new CustomEvent('custom:openLogin', {
+                                                        detail: { mode: 'register' },
+                                                    })
                                                 )
                                             }
                                             className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-90"
