@@ -41,10 +41,10 @@ export default function CartPageSimple() {
     const {
         items,
         total,
+        isLoading: cartLoading,
         updateQuantity,
         removeItem,
         clearCart,
-        isLoading: cartLoading,
     } = useCart();
     const { isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
@@ -428,128 +428,132 @@ export default function CartPageSimple() {
     // ===== ORDER SUCCESS STATE =====
     if (orderSuccess !== null) {
         return (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-500">
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="bg-white rounded-[40px] shadow-2xl p-10 max-w-md w-full text-center relative overflow-hidden border border-white"
-                >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
+            <div className="fixed inset-0 z-[200] overflow-y-auto bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-500">
+                <div className="flex min-h-full items-center justify-center p-4">
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                        className="bg-white rounded-3xl md:rounded-[40px] shadow-2xl p-6 md:p-10 max-w-md w-full text-center relative overflow-hidden border border-white my-auto"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
 
-                    <div className="w-24 h-24 bg-green-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 relative shadow-inner border-2 border-white">
-                        <CheckCircle size={48} strokeWidth={1.5} className="text-green-600" />
-                    </div>
-
-                    <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">
-                        ¡Pedido exitoso!
-                    </h1>
-                    <p className="text-gray-500 font-medium mb-6 leading-relaxed">
-                        Tu pedido{' '}
-                        <span className="text-gray-900 font-black">
-                            #{String(orderSuccess).padStart(5, '0')}
-                        </span>{' '}
-                        ha sido recibido y ya estamos preparando tus sushis con amor.
-                    </p>
-
-                    <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 mb-8 flex items-center justify-center gap-4">
-                        <div className="flex flex-col items-center">
-                            <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1">
-                                {deliveryType === 'pickup'
-                                    ? 'Tiempo de preparación'
-                                    : 'Entrega estimada'}
-                            </span>
-                            <span className="text-lg font-black text-red-600">
-                                {deliveryType === 'pickup' ? '20 – 30 min' : '30 – 60 min'}
-                            </span>
+                        <div className="w-24 h-24 bg-green-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 relative shadow-inner border-2 border-white">
+                            <CheckCircle size={48} strokeWidth={1.5} className="text-green-600" />
                         </div>
-                    </div>
 
-                    {deliveryType === 'pickup' && (
-                        <div className="mb-8 p-6 bg-amber-50 rounded-3xl border border-amber-100 text-left animate-in fade-in slide-in-from-top-4 duration-700">
-                            <div className="flex items-start gap-4">
-                                <div className="p-3 bg-amber-100 rounded-2xl text-amber-600">
-                                    <Store size={24} strokeWidth={1.5} />
-                                </div>
-                                <div>
-                                    <h4 className="text-amber-900 font-black uppercase tracking-tight mb-1 uppercase text-sm">
-                                        Punto de Recogida
-                                    </h4>
-                                    <p className="text-sm text-amber-800 font-medium mb-4 italic">
-                                        Calle Barrilero, 20, 28007 Madrid
-                                    </p>
+                        <h1 className="text-3xl font-black mb-3 text-gray-900 tracking-tight">
+                            ¡Pedido exitoso!
+                        </h1>
+                        <p className="text-gray-500 font-medium mb-6 leading-relaxed">
+                            Tu pedido{' '}
+                            <span className="text-gray-900 font-black">
+                                #{String(orderSuccess).padStart(5, '0')}
+                            </span>{' '}
+                            ha sido recibido y ya estamos preparando tus sushis con amor.
+                        </p>
 
-                                    <div className="pt-4 border-t border-amber-200/50">
-                                        <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
-                                            Horario de recogida
+                        <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 mb-8 flex items-center justify-center gap-4">
+                            <div className="flex flex-col items-center">
+                                <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1">
+                                    {deliveryType === 'pickup'
+                                        ? 'Tiempo de preparación'
+                                        : 'Entrega estimada'}
+                                </span>
+                                <span className="text-lg font-black text-red-600">
+                                    {deliveryType === 'pickup' ? '20 – 30 min' : '30 – 60 min'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {deliveryType === 'pickup' && (
+                            <div className="mb-8 p-4 md:p-6 bg-amber-50 rounded-3xl border border-amber-100 text-left animate-in fade-in slide-in-from-top-4 duration-700">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-3 bg-amber-100 rounded-2xl text-amber-600">
+                                        <Store size={24} strokeWidth={1.5} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-amber-900 font-black uppercase tracking-tight mb-1 uppercase text-sm">
+                                            Punto de Recogida
+                                        </h4>
+                                        <p className="text-sm text-amber-800 font-medium mb-4 italic">
+                                            Calle Barrilero, 20, 28007 Madrid
                                         </p>
-                                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-[11px] font-medium text-amber-800">
-                                            <span>Miércoles – Viernes:</span>
-                                            <span className="text-right">20:00 – 23:00</span>
-                                            <span>Sábado:</span>
-                                            <span className="text-right">
-                                                14:00 – 17:00 | 20:00 – 23:00
-                                            </span>
-                                            <span>Domingo:</span>
-                                            <span className="text-right">14:00 – 17:00</span>
+
+                                        <div className="pt-4 border-t border-amber-200/50">
+                                            <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
+                                                Horario de recogida
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-x-4 md:gap-x-8 gap-y-1 text-[11px] font-medium text-amber-800">
+                                                <span>Miércoles – Viernes:</span>
+                                                <span className="text-right">20:00 – 23:00</span>
+                                                <span>Sábado:</span>
+                                                <span className="text-right">
+                                                    14:00 – 17:00 | 20:00 – 23:00
+                                                </span>
+                                                <span>Domingo:</span>
+                                                <span className="text-right">14:00 – 17:00</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
-
-                    <div className="flex flex-col gap-3 relative z-10">
-                        {isAuthenticated ? (
-                            <div className="flex flex-col gap-3">
-                                <button
-                                    onClick={() => navigate('/profile?tab=orders')}
-                                    className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90 flex items-center justify-center gap-2"
-                                >
-                                    Mis Pedidos
-                                </button>
-                                <Link
-                                    to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone || user?.phone || '')}`}
-                                    className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-black transition-all active:scale-90 flex items-center justify-center gap-2"
-                                >
-                                    Seguir mi pedido 🛵
-                                </Link>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col gap-3">
-                                <Link
-                                    to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone)}`}
-                                    className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90"
-                                >
-                                    Seguir mi pedido 🛵
-                                </Link>
-                                <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-2 flex flex-col items-center">
-                                    <span className="text-amber-600 mb-1">🎁</span>
-                                    <p className="text-xs text-amber-800 font-medium mb-3">
-                                        ¡Regístrate ahora y consigue{' '}
-                                        <strong>descuentos exclusivos</strong> en tus próximos
-                                        pedidos!
-                                    </p>
-                                    <button
-                                        onClick={() =>
-                                            document.dispatchEvent(new Event('custom:openLogin'))
-                                        }
-                                        className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-90"
-                                    >
-                                        Crear cuenta
-                                    </button>
-                                </div>
-                            </div>
                         )}
-                        <Link
-                            to="/menu"
-                            className="bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-gray-200 transition-all active:scale-90"
-                        >
-                            Seguir comprando
-                        </Link>
-                    </div>
-                </motion.div>
+
+                        <div className="flex flex-col gap-3 relative z-10">
+                            {isAuthenticated ? (
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={() => navigate('/profile?tab=orders')}
+                                        className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90 flex items-center justify-center gap-2"
+                                    >
+                                        Mis Pedidos
+                                    </button>
+                                    <Link
+                                        to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone || user?.phone || '')}`}
+                                        className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-black transition-all active:scale-90 flex items-center justify-center gap-2"
+                                    >
+                                        Seguir mi pedido 🛵
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-3">
+                                    <Link
+                                        to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone)}`}
+                                        className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90"
+                                    >
+                                        Seguir mi pedido 🛵
+                                    </Link>
+                                    <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-2 flex flex-col items-center">
+                                        <span className="text-amber-600 mb-1">🎁</span>
+                                        <p className="text-xs text-amber-800 font-medium mb-3">
+                                            ¡Regístrate ahora y consigue{' '}
+                                            <strong>descuentos exclusivos</strong> en tus próximos
+                                            pedidos!
+                                        </p>
+                                        <button
+                                            onClick={() =>
+                                                document.dispatchEvent(
+                                                    new Event('custom:openLogin')
+                                                )
+                                            }
+                                            className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-90"
+                                        >
+                                            Crear cuenta
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                            <Link
+                                to="/menu"
+                                className="bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-gray-200 transition-all active:scale-90"
+                            >
+                                Seguir comprando
+                            </Link>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
         );
     }
