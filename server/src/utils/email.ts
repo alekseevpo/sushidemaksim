@@ -132,8 +132,7 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
             noCall = true;
         } else if (part.includes('[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]')) {
             noBuzzer = true;
-        }
- else {
+        } else {
             customerNote += (customerNote ? ' | ' : '') + part;
         }
     });
