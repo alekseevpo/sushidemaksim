@@ -164,7 +164,7 @@ export default function ContactsPage() {
         <div className="bg-transparent pb-24">
             <SEO
                 title="Contacto"
-                description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp и redes sociales."
+                description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp y redes sociales."
             />
 
             {/* Hero Section styled like BlogPage */}
@@ -204,7 +204,7 @@ export default function ContactsPage() {
                         icon={Phone}
                         title="Llámanos"
                         content={settings.contact_phone}
-                        subContent="Atención telefónica directa para pedidos и consultas."
+                        subContent="Atención telefónica directa para pedidos y consultas."
                         link={`tel:${settings.contact_phone?.replace(/\s/g, '')}`}
                         linkText="Llamar ahora"
                         colorClass="bg-amber-100/50"
@@ -444,7 +444,7 @@ export default function ContactsPage() {
                             ¿Listo para la experiencia?
                         </h2>
                         <p className="text-red-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
-                            Pide ahora и descubre por qué somos el sushi favorito del centro de
+                            Pide ahora y descubre por qué somos el sushi favorito del centro de
                             Madrid.
                         </p>
                         <Link

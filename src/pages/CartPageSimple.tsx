@@ -291,8 +291,8 @@ export default function CartPageSimple() {
         if (isScheduled && scheduledDate && scheduledTime) {
             notesArray.push(`[ENTREGA PROGRAMADA: ${scheduledDate} a las ${scheduledTime}]`);
         }
-        if (noCall) notesArray.push('[NO LLAMAR ДЛЯ ПОДТВЕРЖДЕНИЯ]');
-        if (noBuzzer) notesArray.push('[НЕ ЗВОНИТЬ В ДОМОФОН - ПОЗВОНИТЬ НА МОБИЛЬНЫЙ]');
+        if (noCall) notesArray.push('[NO LLAMAR PARA CONFIRMACIÓN]');
+        if (noBuzzer) notesArray.push('[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]');
         if (customNote.trim()) notesArray.push(customNote.trim());
         const notes = notesArray.join(' | ');
 
@@ -375,8 +375,8 @@ export default function CartPageSimple() {
         if (isScheduled && scheduledDate && scheduledTime) {
             notesArray.push(`[ENTREGA PROGRAMADA: ${scheduledDate} a las ${scheduledTime}]`);
         }
-        if (noCall) notesArray.push('[NO LLAMAR ДЛЯ ПОДТВЕРЖДЕНИЯ]');
-        if (noBuzzer) notesArray.push('[НЕ ЗВОНИТЬ В ДОМОФОН - ПОЗВОНИТЬ НА МОБИЛЬНЫЙ]');
+        if (noCall) notesArray.push('[NO LLAMAR PARA CONFIRMACIÓN]');
+        if (noBuzzer) notesArray.push('[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]');
         if (customNote.trim()) notesArray.push(customNote.trim());
         const notes = notesArray.join(' | ');
 

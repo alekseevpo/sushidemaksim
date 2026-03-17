@@ -351,19 +351,19 @@ export default function AdminPage() {
                                         {activeTab === 'dashboard' &&
                                             'Esta es tu pantalla principal. Aquí verás un resumen rápido del estado de tu negocio: cuánto dinero has ganado hoy, cuántos pedidos están pendientes y las tendencias generales. Es ideal para tener una visión rápida al principio del día.'}
                                         {activeTab === 'orders' &&
-                                            'Aquí gestionas los pedidos. Consejo: Preста atención a los pedidos con estado "Pendiente". Puedes cambiar su estado a "Preparando" para que el cliente sepa que ya estás en ello, y luego a "En camino" o "Entregado".'}
+                                            'Aquí gestionas los pedidos. Consejo: Presta atención a los pedidos con estado "Pendiente". Puedes cambiar su estado a "Preparando" para que el cliente sepa que ya estás en ello, y luego a "En camino" o "Entregado".'}
                                         {activeTab === 'menu' &&
                                             'Desde aquí puedes añadir nuevos platos, cambiar precios o marcar platos con promociones. Si un plato se agota, puedes ocultarlo temporalmente para que los clientes no puedan pedirlo.'}
                                         {activeTab === 'users' &&
-                                            'Este es el directorio de tus clientes. Puedes ver quiénes son tus mejores compradores и analizar su historial de pedidos.'}
+                                            'Este es el directorio de tus clientes. Puedes ver quiénes son tus mejores compradores y analizar su historial de pedidos.'}
                                         {activeTab === 'promos' &&
-                                            'Gestiona tus ofertas estáticas aquí. Crea banners promocionales con diferentes colores, iconos и ofertas.'}
+                                            'Gestiona tus ofertas estáticas aquí. Crea banners promocionales con diferentes colores, iconos y ofertas.'}
                                         {activeTab === 'blog' &&
                                             'Maneja tu blog aquí. Crea artículos nuevos, edita los existentes o cambia su estado de publicación.'}
                                         {activeTab === 'analytics' &&
-                                            'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes (móviles vs ordenador), a qué horas prefieren pedir и qué días de la semana tienes más trabajo. Úsalo para planificar turnos de personal o lanzar promociones en horas bajas.'}
+                                            'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes (móviles vs ordenador), a qué horas prefieren pedir y qué días de la semana tienes más trabajo. Úsalo para planificar turnos de personal o lanzar promociones en horas bajas.'}
                                         {activeTab === 'settings' &&
-                                            'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails и redes sociales en un solo lugar.'}
+                                            'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails y redes sociales en un solo lugar.'}
                                     </p>
                                 </div>
                             </div>
@@ -1047,7 +1047,7 @@ export default function AdminPage() {
                                         </ResponsiveContainer>
                                     </div>
                                     <p className="text-xs text-center text-gray-400 mt-4">
-                                        Distribución de pedidos por hora del día (últimos 90 дней).
+                                        Distribución de pedidos por hora del día (últimos 90 días).
                                     </p>
                                 </div>
                             </div>

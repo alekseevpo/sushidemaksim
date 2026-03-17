@@ -340,7 +340,7 @@ export default function MenuPageSimple() {
         <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8">
             <SEO
                 title="Menú y Carta de Sushi"
-                description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio в Мадриде."
+                description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />

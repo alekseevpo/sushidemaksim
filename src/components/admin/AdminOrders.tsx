@@ -517,13 +517,13 @@ export default function AdminOrders({
                                                             .replace(']', '');
                                                     } else if (
                                                         part.includes(
-                                                            '[NO LLAMAR ДЛЯ ПОДТВЕРЖДЕНИЯ]'
+                                                            '[NO LLAMAR PARA CONFIRMACIÓN]'
                                                         )
                                                     ) {
                                                         noCall = true;
                                                     } else if (
                                                         part.includes(
-                                                            '[НЕ ЗВОНИТЬ В ДОМОФОН - ПОЗВОНИТЬ НА МОБИЛЬНЫЙ]'
+                                                            '[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]'
                                                         )
                                                     ) {
                                                         noBuzzer = true;

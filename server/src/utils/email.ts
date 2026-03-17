@@ -128,11 +128,12 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
             paymentMethod = part.replace('[MÉTODO DE PAGO: ', '').replace(']', '');
         } else if (part.includes('[ENTREGA PROGRAMADA:')) {
             scheduledTime = part.replace('[ENTREGA PROGRAMADA: ', '').replace(']', '');
-        } else if (part.includes('[NO LLAMAR ДЛЯ ПОДТВЕРЖДЕНИЯ]')) {
+        } else if (part.includes('[NO LLAMAR PARA CONFIRMACIÓN]')) {
             noCall = true;
-        } else if (part.includes('[НЕ ЗВОНИТЬ В ДОМОФОН - ПОЗВОНИТЬ НА МОБИЛЬНЫЙ]')) {
+        } else if (part.includes('[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]')) {
             noBuzzer = true;
-        } else {
+        }
+ else {
             customerNote += (customerNote ? ' | ' : '') + part;
         }
     });
