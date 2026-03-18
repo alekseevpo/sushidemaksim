@@ -157,6 +157,24 @@ export default function MenuPageSimple() {
         }
     }, [debouncedSearch, isLoading, items.length]);
 
+    // Handle initial hash scroll
+    useEffect(() => {
+        if (!isLoading && items.length > 0) {
+            const hash = window.location.hash;
+            if (hash) {
+                const id = hash.replace('#', '');
+                setTimeout(() => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const offset = 120; // Extra offset for sticky category bar
+                        const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                }, 300);
+            }
+        }
+    }, [isLoading, items.length]);
+
     const fetchFavorites = async () => {
         try {
             const favData = await api.get('/user/favorites');
@@ -496,7 +514,10 @@ export default function MenuPageSimple() {
                         </div>
                     </header>
 
-                    <div className="sticky top-[64px] z-[40] -mx-2 px-2 py-3 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate transform-gpu translate-z-0">
+                    <div
+                        className="sticky top-[64px] z-[40] -mx-2 px-2 py-3 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate transform-gpu translate-z-0 snap-x snap-mandatory"
+                        style={{ touchAction: 'pan-x' }}
+                    >
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 id="cat-all"

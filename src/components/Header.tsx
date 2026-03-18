@@ -105,14 +105,18 @@ export default function Header() {
         { to: '/promo', label: 'Promo', highlight: true, icon: Star },
     ];
 
+    const isHome = location.pathname === '/';
+
     return (
         <>
             <header
-                className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 border-b h-16
+                className={`fixed top-0 inset-x-0 z-[100] transition-all duration-500 h-16
                 ${
                     isScrolled
-                        ? 'bg-white/95 backdrop-blur-xl shadow-sm border-gray-100'
-                        : 'bg-white/80 backdrop-blur-md border-transparent'
+                        ? 'bg-white/95 backdrop-blur-xl shadow-sm border-b border-gray-100'
+                        : isHome
+                          ? 'bg-transparent border-b border-transparent'
+                          : 'bg-white/80 backdrop-blur-md border-b border-transparent'
                 }
             `}
             >
@@ -124,14 +128,14 @@ export default function Header() {
                             onClick={() => setShowMobileMenu(false)}
                             className="flex items-center no-underline gap-2 group"
                         >
-                            <div className="bg-red-600 p-1.5 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                            <div className="bg-red-600 p-1.5 rounded-lg group-hover:rotate-12 transition-transform duration-300 shadow-lg">
                                 <img
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
                                     className="h-6 w-auto brightness-0 invert"
                                 />
                             </div>
-                            <span className="font-black text-xl tracking-tighter text-gray-900">
+                            <span className={`font-black text-xl tracking-tighter transition-colors duration-300 ${isScrolled || !isHome ? 'text-gray-900' : 'text-white'}`}>
                                 MAKSIM<span className="text-red-600">.</span>
                             </span>
                         </Link>
@@ -144,9 +148,9 @@ export default function Header() {
                                     <Link
                                         key={link.to}
                                         to={link.to}
-                                        className={`relative no-underline font-bold px-4 py-2 transition-colors duration-200 rounded-xl text-sm
-                      ${link.highlight ? 'text-red-600' : 'text-gray-600 hover:text-gray-900'}
-                      ${isActive ? (link.highlight ? 'text-red-600' : 'text-gray-900') : ''}`}
+                                        className={`relative no-underline font-bold px-4 py-2 transition-all duration-300 rounded-xl text-sm
+                      ${link.highlight ? 'text-red-600' : isScrolled || !isHome ? 'text-gray-600 hover:text-gray-900' : 'text-white/80 hover:text-white'}
+                      ${isActive ? (link.highlight ? 'text-red-600' : isScrolled || !isHome ? 'text-gray-900' : 'text-white') : ''}`}
                                     >
                                         {link.label}
                                         {isActive && (
@@ -270,7 +274,6 @@ export default function Header() {
                                 )}
                             </div>
 
-                            {/* Cart */}
                             <motion.div
                                 animate={isCartBumping ? { scale: [1, 1.2, 1] } : {}}
                                 transition={{ duration: 0.3 }}
@@ -278,7 +281,11 @@ export default function Header() {
                                 <Link
                                     id="cart-icon"
                                     to="/cart"
-                                    className="relative p-3 no-underline text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center min-w-[44px] min-h-[44px]"
+                                    className={`relative p-3 no-underline rounded-xl transition-all flex items-center justify-center min-w-[44px] min-h-[44px] ${
+                                        isScrolled || !isHome
+                                            ? 'text-gray-800 bg-gray-50 hover:bg-gray-100'
+                                            : 'text-white bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+                                    }`}
                                 >
                                     <ShoppingCart size={22} strokeWidth={1.5} />
                                     <AnimatePresence>
@@ -302,10 +309,13 @@ export default function Header() {
                                 </Link>
                             </motion.div>
 
-                            {/* Mobile burger */}
                             <button
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                className="md:hidden border-none bg-gray-50 p-3 rounded-xl cursor-pointer text-gray-800 flex items-center justify-center min-w-[44px] min-h-[44px]"
+                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
+                                    isScrolled || !isHome
+                                        ? 'bg-gray-50 text-gray-800'
+                                        : 'bg-white/10 text-white backdrop-blur-md border border-white/20'
+                                }`}
                             >
                                 {showMobileMenu ? (
                                     <X size={22} strokeWidth={1.5} />

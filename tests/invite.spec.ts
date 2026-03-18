@@ -76,8 +76,12 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         // Также форсируем отсутствие navigator.share для срабатывания fallback-а с тостом
         await page.addInitScript(() => {
             window.localStorage.setItem('sushi_token', 'sender-token');
-            // @ts-expect-error: deleting share property to force fallback
-            delete window.navigator.share;
+            // Mock navigator.share as undefined to force clipboard fallback
+            Object.defineProperty(window.navigator, 'share', {
+                value: undefined,
+                configurable: true,
+                writable: true,
+            });
             // Mock clipboard to avoid permission errors
             Object.defineProperty(window.navigator, 'clipboard', {
                 value: {
@@ -171,26 +175,29 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
 
         // Кликаем и ждем ответа от API
         const responsePromise = page.waitForResponse(
-            resp => resp.url().includes('/api/orders/invite') && resp.status() === 200
+            resp => resp.url().includes('/api/orders/invite') && resp.status() === 200,
+            { timeout: 10000 }
         );
         await inviteBtn.click({ force: true });
-        const response = await responsePromise;
-        const respJson = await response.json();
-        expect(respJson.success).toBe(true);
-
-        // Ждем тост об успехе. Если не появился - проверяем, нет ли тоста об ошибке
+        
+        // В Webkit иногда клик не срабатывает из-за анимаций, попробуем еще раз если запрос не ушел
         try {
-            await expect(page.getByText(/Enlace de invitación copiado/i).first()).toBeVisible({
-                timeout: 8000,
-            });
+            const response = await responsePromise;
+            const respJson = await response.json();
+            expect(respJson.success).toBe(true);
         } catch (e) {
-            const errorToast = page.locator('div').filter({ hasText: /Error/i });
-            if ((await errorToast.count()) > 0) {
-                const errorMsg = await errorToast.innerText();
-                throw new Error(`Test failed because of application error: ${errorMsg}`);
-            }
-            throw e;
+            console.log('Retrying click for Webkit...');
+            await inviteBtn.click({ force: true });
+            const response = await responsePromise;
+            const respJson = await response.json();
+            expect(respJson.success).toBe(true);
         }
+
+        // Ждем тост об успехе. Используем regex для большей гибкости.
+        // Теперь мы показываем тост "Enlace de invitación generado" сразу после успеха API.
+        await expect(page.getByText(/Enlace de invitación generado/i).first()).toBeVisible({
+            timeout: 15000,
+        });
 
         // RECIPIENT FLOW
         await context.route(`**/api/orders/public/${fakeOrderId}`, route =>

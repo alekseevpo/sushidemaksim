@@ -684,7 +684,7 @@ router.get(
             ordersByStatus[o.status] = (ordersByStatus[o.status] || 0) + 1;
         });
 
-        // 4. Recent orders
+        // 4. Recent orders (still 5 recent orders)
         const { data: recentOrders } = await supabase
             .from('orders')
             .select('id, total, status, created_at, users(name)')
@@ -696,57 +696,40 @@ router.get(
             user_name: o.users?.name,
         }));
 
-        // 5. Top Items & Category Stats (using order_items from last 30 days)
+        // 5. Unified Data Processing (Last 90 days)
+        const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-        // 5a. First find orders in that range
-        const { data: recentOrderIds } = await supabase
+        const { data: orders90 } = await supabase
             .from('orders')
-            .select('id')
-            .gte('created_at', thirtyDaysAgo)
-            .neq('status', 'cancelled');
+            .select(
+                'id, total, status, created_at, user_id, device_type, os_name, browser_name, delivery_address'
+            )
+            .gte('created_at', ninetyDaysAgo);
 
-        const ids = recentOrderIds?.map(o => o.id) || [];
+        const orderIds90 = (orders90 || []).filter(o => o.status !== 'cancelled').map(o => o.id);
 
-        let topItemsRaw: any[] | null = [];
-        if (ids.length > 0) {
-            const { data } = await supabase
+        let items90: any[] = [];
+        if (orderIds90.length > 0) {
+            const { data: itemsData } = await supabase
                 .from('order_items')
-                .select('name, quantity, price_at_time, menu_items(category)')
-                .in('order_id', ids);
-            topItemsRaw = data;
+                .select('order_id, name, quantity, price_at_time, menu_items(category)')
+                .in('order_id', orderIds90);
+            items90 = itemsData || [];
         }
 
-        const itemMap: Record<string, { name: string; sold: number; revenue: number }> = {};
-        const categoryMap: Record<string, { total: number; count: number }> = {};
+        // --- Accumulators ---
+        const hourlyDistribution = Array(24).fill(0);
+        const dailyDistribution = Array(7).fill(0);
+        const heatmapMatrix = Array(7)
+            .fill(0)
+            .map(() => Array(24).fill(0));
 
-        topItemsRaw?.forEach(item => {
-            // Item stats
-            if (!itemMap[item.name]) itemMap[item.name] = { name: item.name, sold: 0, revenue: 0 };
-            itemMap[item.name].sold += item.quantity;
-            itemMap[item.name].revenue += item.quantity * item.price_at_time;
-
-            // Category stats
-            const cat = item.menu_items?.category || 'Otros';
-            if (!categoryMap[cat]) categoryMap[cat] = { total: 0, count: 0 };
-            categoryMap[cat].total += item.quantity * item.price_at_time;
-            categoryMap[cat].count += item.quantity;
-        });
-
-        const topItems = Object.values(itemMap)
-            .sort((a, b) => b.sold - a.sold)
-            .slice(0, 5);
-
-        const categoryStats = Object.entries(categoryMap).map(([name, data]) => ({
-            name,
-            avgPrice: Math.round((data.total / data.count) * 100) / 100,
-            revenue: Math.round(data.total * 100) / 100,
-        }));
-
-        // 6. Device/OS breakdown
-        const { data: devicesData } = await supabase
-            .from('orders')
-            .select('device_type, os_name, browser_name');
+        const dailyStats: Record<string, { date: string; revenue: number; orders: number }> = {};
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            dailyStats[d] = { date: d, revenue: 0, orders: 0 };
+        }
 
         const analytics = {
             devices: {} as Record<string, number>,
@@ -754,96 +737,156 @@ router.get(
             browsers: {} as Record<string, number>,
         };
 
-        devicesData?.forEach(o => {
-            const dt = o.device_type || 'Unknown';
-            const os = o.os_name || 'Unknown';
-            const b = o.browser_name || 'Unknown';
-            analytics.devices[dt] = (analytics.devices[dt] || 0) + 1;
-            analytics.os[os] = (analytics.os[os] || 0) + 1;
-            analytics.browsers[b] = (analytics.browsers[b] || 0) + 1;
+        const itemMap90: Record<string, { name: string; sold: number; revenue: number }> = {};
+        const areaMap: Record<string, { count: number; revenue: number }> = {};
+        const orderSubtotals: Record<string, number> = {};
+        const categoryMap: Record<string, { total: number; count: number }> = {};
+
+        // 1. Process Items
+        items90.forEach(item => {
+            const rev = item.quantity * item.price_at_time;
+            orderSubtotals[item.order_id] = (orderSubtotals[item.order_id] || 0) + rev;
+
+            // ABC Accumulation
+            if (!itemMap90[item.name])
+                itemMap90[item.name] = { name: item.name, sold: 0, revenue: 0 };
+            itemMap90[item.name].sold += item.quantity;
+            itemMap90[item.name].revenue += rev;
+
+            // Category Accumulation
+            const cat = item.menu_items?.category || 'Otros';
+            if (!categoryMap[cat]) categoryMap[cat] = { total: 0, count: 0 };
+            categoryMap[cat].total += rev;
+            categoryMap[cat].count += item.quantity;
         });
 
-        // 7. Time-based Heatmap (Last 90 days)
-        const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-        const { data: heatmapData } = await supabase
-            .from('orders')
-            .select('created_at')
-            .gte('created_at', ninetyDaysAgo)
-            .neq('status', 'cancelled');
-
-        const hourlyDistribution = Array(24).fill(0);
-        const dailyDistribution = Array(7).fill(0);
-
-        heatmapData?.forEach(o => {
-            const date = new Date(o.created_at);
-            // Adjust to Madrid time if needed, but JS Date parsed from ISO is usually UTC.
-            // Let's assume the server/client handles local display, but for stats we can use local hour
-            const hour = date.getHours();
-            const day = date.getDay(); // 0 (Sun) to 6 (Sat)
-            hourlyDistribution[hour]++;
-            dailyDistribution[day]++;
-        });
-
-        // 8. Daily Growth & Retention (Last 30 days)
-        const dailyStats: Record<string, { date: string; revenue: number; orders: number }> = {};
-        const { data: recentOrdersFull } = await supabase
-            .from('orders')
-            .select('total, created_at, user_id')
-            .gte('created_at', thirtyDaysAgo)
-            .neq('status', 'cancelled');
-
-        // Initialize last 30 days
-        for (let i = 29; i >= 0; i--) {
-            const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            dailyStats[d] = { date: d, revenue: 0, orders: 0 };
-        }
-
-        let newUsers = 0;
-        let returningUsers = 0;
+        // 2. Process Orders
+        let newUsers30 = 0;
+        let returningUsers30 = 0;
         const seenUsers = new Set();
+        let promoCount = 0;
+        let totalDiscount = 0;
 
-        recentOrdersFull?.forEach(o => {
-            const d = new Date(o.created_at).toISOString().split('T')[0];
-            if (dailyStats[d]) {
-                dailyStats[d].revenue += Number(o.total);
-                dailyStats[d].orders += 1;
+        orders90?.forEach(o => {
+            const date = new Date(o.created_at);
+            const isoDate = date.toISOString().split('T')[0];
+            const isWithin30 = o.created_at >= thirtyDaysAgo;
+
+            if (o.status !== 'cancelled') {
+                // Heatmaps
+                const hour = date.getHours();
+                const day = date.getDay();
+                hourlyDistribution[hour]++;
+                dailyDistribution[day]++;
+                heatmapMatrix[day][hour]++;
+
+                // Areas
+                const area =
+                    o.delivery_address
+                        ?.split(/[,\d]/)[0]
+                        .replace(/^(calle|avenida|av|c\/|via|pza|plaza)\s+/i, '')
+                        .trim() || 'Centro/Otros';
+                if (!areaMap[area]) areaMap[area] = { count: 0, revenue: 0 };
+                areaMap[area].count++;
+                areaMap[area].revenue += Number(o.total);
+
+                // Promo Detection
+                const subtotal = orderSubtotals[o.id] || 0;
+                if (subtotal > 0 && Number(o.total) < subtotal - 0.5) {
+                    promoCount++;
+                    totalDiscount += subtotal - Number(o.total);
+                }
+
+                // Growth
+                if (isWithin30 && dailyStats[isoDate]) {
+                    dailyStats[isoDate].revenue += Number(o.total);
+                    dailyStats[isoDate].orders += 1;
+                }
             }
 
-            if (o.user_id) {
-                if (seenUsers.has(o.user_id)) {
-                    returningUsers++;
-                } else {
-                    newUsers++;
+            // Retention (30d)
+            if (isWithin30 && o.user_id) {
+                if (seenUsers.has(o.user_id)) returningUsers30++;
+                else {
+                    newUsers30++;
                     seenUsers.add(o.user_id);
                 }
             }
+
+            // Analytics
+            analytics.devices[o.device_type || 'Unknown'] =
+                (analytics.devices[o.device_type || 'Unknown'] || 0) + 1;
+            analytics.os[o.os_name || 'Unknown'] = (analytics.os[o.os_name || 'Unknown'] || 0) + 1;
+            analytics.browsers[o.browser_name || 'Unknown'] =
+                (analytics.browsers[o.browser_name || 'Unknown'] || 0) + 1;
         });
 
+        // 3. Final Formats
+        const totalRev90 = Object.values(itemMap90).reduce((s, i) => s + i.revenue, 0);
+        let currentShareSum = 0;
+        const abcAnalysis = Object.values(itemMap90)
+            .sort((a, b) => b.revenue - a.revenue)
+            .map(item => {
+                currentShareSum += item.revenue;
+                const cumulativeShare = currentShareSum / (totalRev90 || 1);
+                let category = 'C';
+                if (cumulativeShare <= 0.8) category = 'A';
+                else if (cumulativeShare <= 0.95) category = 'B';
+                return {
+                    ...item,
+                    category,
+                    revenueShare: (item.revenue / (totalRev90 || 1)) * 100,
+                };
+            });
+
+        const areaStats = Object.entries(areaMap)
+            .map(([name, data]) => ({ name, ...data }))
+            .sort((a, b) => b.revenue - a.revenue)
+            .slice(0, 8);
+
+        const categoryStats = Object.entries(categoryMap).map(([name, data]) => ({
+            name,
+            avgPrice: Math.round((data.total / data.count) * 100) / 100,
+            revenue: Math.round(data.total * 100) / 100,
+        }));
+
+        const growth = Object.values(dailyStats);
+
         res.json({
-            revenueToday: Math.round(revenueToday * 100) / 100,
+            revenueToday,
             ordersToday,
             pendingOrders,
             usersToday,
             stats: {
                 totalUsers,
                 totalOrders,
-                revenue: Math.round(revenue * 100) / 100,
+                revenue,
                 menuItems,
             },
             ordersByStatus,
             recentOrders: formattedRecent,
-            topItems,
+            topItems: abcAnalysis.slice(0, 5),
             analytics,
             heatmap: {
                 hourly: hourlyDistribution,
                 daily: dailyDistribution,
+                matrix: heatmapMatrix,
             },
-            growth: Object.values(dailyStats),
+            growth,
             retention: {
-                new: newUsers,
-                returning: returningUsers,
+                new: newUsers30,
+                returning: returningUsers30,
             },
+            ltv: (totalUsers || 0) > 0 ? Math.round((revenue / (totalUsers || 1)) * 100) / 100 : 0,
             categoryStats,
+            abcAnalysis,
+            areaStats,
+            promoStats: {
+                count: promoCount,
+                totalDiscount: Math.round(totalDiscount * 100) / 100,
+                avgDiscount:
+                    promoCount > 0 ? Math.round((totalDiscount / promoCount) * 100) / 100 : 0,
+            },
         });
     })
 );

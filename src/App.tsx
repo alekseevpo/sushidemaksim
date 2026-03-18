@@ -86,7 +86,9 @@ function App() {
                             <FloatingCart />
                             {!isAdminRoute && <Header />}
                             <main
-                                className={`flex-1 flex flex-col relative w-full ${!isAdminRoute ? 'pt-20' : ''}`}
+                                className={`flex-1 flex flex-col relative w-full ${
+                                    !isAdminRoute && location.pathname !== '/' ? 'pt-20' : ''
+                                }`}
                             >
                                 <AnimatePresence mode="wait">
                                     <Routes location={location} key={location.pathname}>

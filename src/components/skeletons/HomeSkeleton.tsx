@@ -29,19 +29,48 @@ export const HomeSkeleton = () => (
             </div>
         </section>
 
+        {/* Marquee Skeleton */}
+        <div className="h-16 md:h-20 bg-gray-950 animate-pulse" />
+
         {/* Stats Banner Skeleton */}
         <section className="bg-white/50 py-8 md:py-10 border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-4 grid grid-cols-3 gap-8 items-center">
                 {[1, 2, 3].map(i => (
                     <div key={i} className="flex flex-col md:flex-row items-center gap-3">
-                        <div className="h-8 w-12 skeleton rounded-lg animate-pulse" />
+                        <div className="h-8 w-12 bg-gray-200 rounded-lg animate-pulse" />
                         <div className="space-y-1 hidden md:block">
-                            <div className="h-3 w-16 skeleton rounded animate-pulse" />
-                            <div className="h-3 w-12 skeleton rounded animate-pulse" />
+                            <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                            <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
                         </div>
                     </div>
                 ))}
             </div>
+        </section>
+
+        {/* Categories Section Skeleton */}
+        <section className="py-24 px-4 bg-transparent">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                    <div className="space-y-4">
+                        <div className="h-4 w-32 bg-gray-200 rounded-full animate-pulse" />
+                        <div className="h-10 w-64 bg-gray-200 rounded-xl animate-pulse" />
+                    </div>
+                    <div className="h-10 w-48 bg-gray-200 rounded-full animate-pulse" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {[1, 2, 3, 4].map(i => (
+                        <div
+                            key={i}
+                            className="h-48 md:h-64 bg-gray-100 rounded-[2rem] animate-pulse"
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        {/* Promo Banner Skeleton */}
+        <section className="px-4 py-12">
+            <div className="max-w-7xl mx-auto h-64 bg-gray-100 rounded-[2.5rem] animate-pulse" />
         </section>
 
         {/* Features Section Skeleton */}

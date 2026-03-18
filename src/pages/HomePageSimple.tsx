@@ -1,29 +1,216 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Clock, MapPin, ChevronRight } from 'lucide-react';
+import { ArrowRight, Star, ChevronRight, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
+import RatingsBanner from '../components/RatingsBanner';
+import { api } from '../utils/api';
+import { useCart } from '../hooks/useCart';
 
-const FeatureCard = ({ icon: Icon, title, desc, colorClass, index }: any) => (
-    <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-        style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
-        className="premium-card p-8 text-center group"
-    >
-        <div
-            className={`${colorClass} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:rotate-6 transition-transform duration-300`}
-        >
-            <Icon size={32} strokeWidth={1.5} className="text-gray-900" />
+interface MenuItem {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    category: string;
+    is_popular?: boolean;
+    is_chef_choice?: boolean;
+    pieces?: number;
+}
+
+const Marquee = () => (
+    <div className="relative py-4 md:py-6 overflow-hidden bg-gray-950 border-y border-white/5 select-none">
+        <div className="flex whitespace-nowrap animate-marquee">
+            {[1, 2].map(i => (
+                <div key={i} className="flex items-center gap-12 px-6">
+                    <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
+                        FRESH SEAFOOD DAILY
+                    </span>
+                    <span className="text-red-600/30 text-3xl md:text-5xl font-black">●</span>
+                    <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
+                        PREMIUM QUALITY
+                    </span>
+                    <span className="text-red-600/30 text-3xl md:text-5xl font-black">●</span>
+                    <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
+                        FASTEST DELIVERY
+                    </span>
+                    <span className="text-red-600/30 text-3xl md:text-5xl font-black">●</span>
+                </div>
+            ))}
         </div>
-        <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
-        <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-    </motion.div>
+    </div>
 );
 
+const CategoryCard = ({ id, name, image, index }: any) => {
+    const [imageFailed, setImageFailed] = useState(false);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1 }}
+            className="group relative h-48 md:h-64 rounded-[2rem] overflow-hidden cursor-pointer"
+        >
+            <Link to={`/menu#section-${id}`} className="absolute inset-0 z-10" />
+            {image && !imageFailed ? (
+                <img
+                    src={image}
+                    alt={name}
+                    onError={() => setImageFailed(true)}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                />
+            ) : (
+                <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center"></div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60"></div>
+
+            {/* Title at the top */}
+            <div className="absolute top-6 left-6 right-6">
+                <h3 className="text-white font-black text-xl md:text-2xl uppercase tracking-tighter drop-shadow-lg">
+                    {name}
+                </h3>
+            </div>
+
+            {/* Arrow at the bottom right */}
+            <div className="absolute bottom-6 right-6">
+                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white group-hover:bg-red-600 group-hover:border-red-600 transition-all shrink-0">
+                    <ArrowRight size={18} />
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
+const ProductCard = ({ item, index }: { item: MenuItem; index: number }) => {
+    const { addItem } = useCart();
+    const [isAdded, setIsAdded] = useState(false);
+
+    const handleAdd = (e: React.MouseEvent) => {
+        e.preventDefault();
+        // Convert MenuItem to SushiItem expected by addItem
+        const sushiItem: any = {
+            ...item,
+            id: String(item.id),
+            category: item.category as any,
+        };
+        addItem(sushiItem);
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 2000);
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="w-[280px] md:w-[320px] snap-center shrink-0 bg-white rounded-[32px] p-4 shadow-xl shadow-gray-100/50 border border-gray-100 group flex flex-col h-full"
+        >
+            <div className="relative aspect-square mb-4 rounded-[24px] overflow-hidden bg-gray-50">
+                <img
+                    src={item.image || '/placeholder-sushi.png'}
+                    alt={item.name}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute top-3 right-3 flex flex-col gap-2">
+                    {item.is_popular && (
+                        <span className="bg-amber-400 text-amber-950 text-[10px] font-black px-3 py-1 rounded-full shadow-lg flex items-center gap-1.5 uppercase tracking-wider">
+                            <Star size={10} fill="currentColor" />
+                            Popular
+                        </span>
+                    )}
+                </div>
+            </div>
+            <div className="flex-1 px-2">
+                <div className="flex justify-between items-start mb-1">
+                    <h4 className="text-lg font-black text-gray-900 line-clamp-1 flex-1">
+                        {item.name}
+                    </h4>
+                    {item.pieces && (
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 opacity-70 mt-1">
+                            {item.pieces} pzs
+                        </span>
+                    )}
+                </div>
+                <p className="text-gray-500 text-xs font-medium line-clamp-2 mb-4 leading-relaxed">
+                    {item.description}
+                </p>
+            </div>
+            <div className="px-2 pb-2 flex items-center justify-between mt-auto">
+                <span className="text-xl font-black text-gray-900">
+                    {item.price.toFixed(2).replace('.', ',')}€
+                </span>
+                <button
+                    onClick={handleAdd}
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-lg active:scale-90 shrink-0 ${
+                        isAdded
+                            ? 'bg-green-500 text-white translate-y-[-4px]'
+                            : 'bg-gray-900 text-white hover:bg-black'
+                    }`}
+                >
+                    {isAdded ? (
+                        <div className="text-xs font-black">OK</div>
+                    ) : (
+                        <Plus size={20} strokeWidth={2.5} />
+                    )}
+                </button>
+            </div>
+        </motion.div>
+    );
+};
+
 export default function HomePageSimple() {
+    const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchData = async () => {
+            try {
+                const [categoriesData, allItemsData] = await Promise.all([
+                    api.get('/menu/info/categories'),
+                    api.get('/menu'),
+                ]);
+
+                if (!isMounted) return;
+
+                const allItems = allItemsData.items || [];
+                
+                // Filter popular items from all items list locally to save an API call
+                const popular = allItems
+                    .filter((item: any) => item.is_popular)
+                    .slice(0, 8);
+                setPopularItems(popular);
+
+                const enhancedCategories = (categoriesData.categories || []).map((cat: any) => {
+                    // Find the first item in this category that has an image
+                    const representativeItem = allItems.find(
+                        (item: any) => item.category === cat.id && item.image
+                    );
+                    return {
+                        ...cat,
+                        image: representativeItem?.image || null,
+                    };
+                });
+                setCategories(enhancedCategories);
+            } catch (error) {
+                if (!isMounted) return;
+                console.error('Error fetching data:', error);
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
+        };
+
+        fetchData();
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     return (
         <div className="overflow-hidden">
             <SEO
@@ -73,7 +260,7 @@ export default function HomePageSimple() {
             />
 
             {/* Hero Section */}
-            <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 -mt-20 pb-20 md:pb-32 bg-[url('/sushi-hero.jpg')] bg-cover bg-center">
+            <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-[url('/sushi-hero.jpg')] bg-neutral-950 bg-cover bg-center">
                 {/* Background Overlay (Filter) */}
                 <div className="absolute inset-0 z-0 bg-black/50"></div>
                 <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
@@ -137,7 +324,15 @@ export default function HomePageSimple() {
                         className="hidden lg:block relative"
                     >
                         <div className="relative z-10 w-full aspect-square max-w-md mx-auto rounded-[3rem] overflow-hidden border-8 border-white/10 premium-shadow">
-                            <img
+                            <motion.img
+                                animate={{
+                                    y: [0, -20, 0],
+                                }}
+                                transition={{
+                                    duration: 6,
+                                    repeat: Infinity,
+                                    ease: 'easeInOut',
+                                }}
                                 src="/blog_post_chef_hands.png"
                                 alt="Experiencia Chef en Sushi de Maksim"
                                 fetchPriority="high"
@@ -152,80 +347,166 @@ export default function HomePageSimple() {
                 </div>
             </section>
 
-            {/* Stats/Badge Banner */}
-            <section className="bg-white/50 backdrop-blur-sm py-8 md:py-10 border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 grid grid-cols-3 gap-4 md:flex md:justify-between items-center md:gap-8">
-                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
-                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">
-                            9.8
+            <Marquee />
+
+            {/* Ratings Banner (Google + The Fork) */}
+            <RatingsBanner />
+
+            {/* Categories Section */}
+            <section className="py-24 px-4 bg-transparent overflow-hidden">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                        <div className="max-w-xl text-center md:text-left">
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 block"
+                            >
+                                ¿Qué te apetece hoy?
+                            </motion.span>
+                            <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
+                                Explora Nuestra <span className="text-red-600">Carta</span>
+                            </h2>
                         </div>
-                        <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
-                            Valoración
-                            <br className="hidden md:block" />
-                            Media
-                        </div>
+                        <Link
+                            to="/menu"
+                            className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-red-600 transition-colors no-underline"
+                        >
+                            VER TODAS LAS CATEGORÍAS
+                            <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                                <ArrowRight size={18} strokeWidth={2} />
+                            </div>
+                        </Link>
                     </div>
-                    <div className="h-4 w-px bg-gray-200 hidden md:block"></div>
-                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
-                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">
-                            +2k
-                        </div>
-                        <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
-                            Pedidos
-                            <br className="hidden md:block" />
-                            Hoy
-                        </div>
-                    </div>
-                    <div className="h-4 w-px bg-gray-200 hidden md:block"></div>
-                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center md:text-left">
-                        <div className="text-xl md:text-3xl font-black text-gray-900 italic">
-                            100%
-                        </div>
-                        <div className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter leading-tight">
-                            Pescado
-                            <br className="hidden md:block" />
-                            Fresco
-                        </div>
+
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                        {categories.slice(0, 8).map((cat, idx) => (
+                            <CategoryCard
+                                key={cat.id}
+                                id={cat.id}
+                                name={cat.name}
+                                icon={cat.icon}
+                                image={cat.image}
+                                index={idx}
+                            />
+                        ))}
+                        {categories.length === 0 && !isLoading && (
+                            <div className="col-span-full text-center text-gray-400 py-12">
+                                No se encontraron categorías.
+                            </div>
+                        )}
+                        {isLoading &&
+                            [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                                <div
+                                    key={i}
+                                    className="h-44 md:h-64 bg-gray-100 rounded-[2rem] animate-pulse flex flex-col p-6"
+                                >
+                                    <div className="h-6 w-2/3 bg-gray-200/50 rounded-lg mb-auto" />
+                                    <div className="self-end h-10 w-10 rounded-full bg-gray-200/50" />
+                                </div>
+                            ))}
                     </div>
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="py-24 px-4 bg-transparent">
+            {/* Promo Banner Section */}
+            <section className="px-4 py-12">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-4 tracking-tighter">
-                            La Experiencia <span className="text-red-600">Maksim</span>
-                        </h2>
-                        <p className="text-gray-500 max-w-2xl mx-auto text-sm md:text-base font-medium">
-                            No solo vendemos comida, entregamos una tradición familiar perfeccionada
-                            durante años.
-                        </p>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="relative overflow-hidden rounded-[2.5rem] bg-gray-900 p-8 md:p-12"
+                    >
+                        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-600/20 to-transparent pointer-events-none"></div>
+                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className="text-center md:text-left">
+                                <span className="inline-block px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase rounded-full mb-4">
+                                    Oferta de Bienvenida
+                                </span>
+                                <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
+                                    <span className="text-red-500">10%</span> de Descuento
+                                </h2>
+                                <p className="text-gray-400 font-medium max-w-md">
+                                    Válido para todos los nuevos usuarios registrados que realicen
+                                    su primer pedido por un importe superior a 70€.
+                                </p>
+                            </div>
+                            <Link
+                                to="/menu"
+                                className="px-10 py-5 bg-white text-gray-900 rounded-2xl font-black text-xs tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-xl"
+                            >
+                                ORDENAR AHORA
+                            </Link>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Chef's Recommendations / Popular Section */}
+            <section className="py-24 bg-gray-50/50 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                        <div className="max-w-xl text-center md:text-left">
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 block"
+                            >
+                                Seleccionados por el Chef
+                            </motion.span>
+                            <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
+                                Nuestros <span className="text-red-600">Favoritos</span> Ineludibles
+                            </h2>
+                        </div>
+                        <Link
+                            to="/menu"
+                            className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-red-600 transition-colors no-underline"
+                        >
+                            VER CARTA COMPLETA
+                            <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                                <ArrowRight size={18} strokeWidth={2} />
+                            </div>
+                        </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                        <FeatureCard
-                            index={0}
-                            icon={Clock}
-                            title="Entrega Express"
-                            desc="Nuestros repartidores conocen Madrid como nadie. Tu pedido llega siempre a la temperatura ideal en menos de 45 min."
-                            colorClass="bg-amber-100/50"
-                        />
-                        <FeatureCard
-                            index={1}
-                            icon={Star}
-                            title="Calidad Premium"
-                            desc="Seleccionamos el Atún Rojo y el Salmón Noruego cada mañana en MercaMadrid para garantizar frescura absoluta."
-                            colorClass="bg-red-100/50"
-                        />
-                        <FeatureCard
-                            index={2}
-                            icon={MapPin}
-                            title="Localización Ideal"
-                            desc="Situados en el corazón de Tetuán, listos para que pases a recoger tu pedido con un 10% de descuento adicional."
-                            colorClass="bg-blue-100/50"
-                        />
-                    </div>
+                    {!isLoading && popularItems.length > 0 ? (
+                        <div
+                            className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none"
+                            style={{ touchAction: 'pan-x' }}
+                        >
+                            <div className="flex gap-6 md:gap-8 flex-nowrap w-max min-w-full">
+                                {popularItems.map((item, index) => (
+                                    <ProductCard key={item.id} item={item} index={index} />
+                                ))}
+                            </div>
+                        </div>
+                    ) : isLoading ? (
+                        <div className="relative -mx-4 px-4 overflow-hidden pb-10">
+                            <div className="flex gap-6 md:gap-8 flex-nowrap overflow-x-auto no-scrollbar">
+                                {[1, 2, 3, 4].map(i => (
+                                    <div
+                                        key={i}
+                                        className="min-w-[280px] md:min-w-[320px] bg-white rounded-[32px] p-4 shadow-sm border border-gray-100 flex flex-col h-full animate-pulse"
+                                    >
+                                        <div className="aspect-square mb-4 rounded-[24px] bg-gray-50" />
+                                        <div className="flex-1 px-2">
+                                            <div className="h-6 w-3/4 bg-gray-100 rounded-lg mb-2" />
+                                            <div className="h-4 w-1/2 bg-gray-50 rounded-md mb-4" />
+                                        </div>
+                                        <div className="px-2 pb-2 flex items-center justify-between mt-auto">
+                                            <div className="h-8 w-16 bg-gray-50 rounded-lg" />
+                                            <div className="h-12 w-12 bg-gray-100 rounded-2xl" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-12 text-gray-400 font-medium">
+                            Cargando delicias...
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -327,30 +608,6 @@ export default function HomePageSimple() {
             </section>
 
             {/* Call to Action */}
-            <section className="py-20 px-2 md:px-4">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-                    style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
-                    className="max-w-5xl mx-auto bg-red-600 rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 text-center text-white relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]"
-                >
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
-                    <h2 className="text-2xl md:text-5xl font-black mb-6 relative z-10 leading-tight">
-                        ¿Hambre de Verdad?
-                    </h2>
-                    <p className="text-red-100 mb-10 text-base md:text-xl font-medium relative z-10 max-w-xl mx-auto">
-                        Haz tu primer pedido hoy y descubre por qué somos los favoritos del barrio.
-                    </p>
-                    <Link
-                        to="/menu"
-                        className="inline-block w-full sm:w-auto bg-white text-red-600 px-12 py-6 rounded-2xl font-black text-xs tracking-widest shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-90 transition-all duration-300 relative z-10"
-                    >
-                        ORDENAR AHORA
-                    </Link>
-                </motion.div>
-            </section>
 
             {/* Newsletter Section */}
             <Newsletter />

@@ -396,18 +396,37 @@ export default function CartPageSimple() {
             }
 
             const data = await api.post('/orders/invite', payload);
-
             const shareUrlWithCacheBust = `${data.shareUrl}?t=${Date.now()}`;
 
+            // Show success toast immediately once we have the URL
+            showInfo('¡Enlace de invitación generado! ✨');
+
             if (navigator.share) {
-                await navigator.share({
-                    title: '¡Invítame a Sushi de Maksim! 🍣',
-                    text: `¡Hola! He preparado este pedido de sushi y me encantaría que me invitases. ¿Te animas? 🍱✨\n\n${shareUrlWithCacheBust}`,
-                    url: shareUrlWithCacheBust,
-                });
+                try {
+                    await navigator.share({
+                        title: '¡Invítame a Sushi de Maksim! 🍣',
+                        text: `¡Hola! He preparado este pedido de sushi y me encantaría que me invitases. ¿Te animas? 🍱✨\n\n${shareUrlWithCacheBust}`,
+                        url: shareUrlWithCacheBust,
+                    });
+                } catch (shareErr: any) {
+                    // AbortError is normal user behavior, others should be logged
+                    if (shareErr.name !== 'AbortError') {
+                        console.warn('Share failed, falling back to clipboard:', shareErr);
+                        try {
+                            await navigator.clipboard.writeText(shareUrlWithCacheBust);
+                            showInfo('¡Enlace copiado al portapapeles! 📋');
+                        } catch (clipErr) {
+                            console.error('Clipboard fallback also failed:', clipErr);
+                        }
+                    }
+                }
             } else {
-                await navigator.clipboard.writeText(shareUrlWithCacheBust);
-                showInfo('¡Enlace de invitación copiado! ✨');
+                try {
+                    await navigator.clipboard.writeText(shareUrlWithCacheBust);
+                    showInfo('¡Enlace copiado al portapapeles! 📋');
+                } catch (clipErr) {
+                    console.error('Clipboard write failed:', clipErr);
+                }
             }
         } catch (err) {
             showError(err instanceof ApiError ? err.message : 'Error al generar invitación');

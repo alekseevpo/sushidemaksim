@@ -9,7 +9,7 @@ const router = Router();
 router.get(
     '/',
     asyncHandler(async (req: Request, res: Response) => {
-        const { category, search, is_promo } = req.query;
+        const { category, search, is_promo, is_popular, is_chef_choice, limit } = req.query;
 
         let query = supabase.from('menu_items').select('*');
 
@@ -19,6 +19,18 @@ router.get(
 
         if (is_promo === 'true') {
             query = query.eq('is_promo', true);
+        }
+
+        if (is_popular === 'true') {
+            query = query.eq('is_popular', true);
+        }
+
+        if (is_chef_choice === 'true') {
+            query = query.eq('is_chef_choice', true);
+        }
+
+        if (limit) {
+            query = query.limit(parseInt(limit as string));
         }
 
         if (search && typeof search === 'string' && search.trim().length > 0) {
