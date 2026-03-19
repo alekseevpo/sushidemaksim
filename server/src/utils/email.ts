@@ -164,43 +164,43 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
   <div style="max-width:600px;margin:10px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
     
     <!-- Header -->
-    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-      <div style="margin-bottom: 8px;">
-        <span style="background-color: #dc2626; color: #ffffff; padding: 10px 14px; border-radius: 12px; font-weight: 900; font-size: 24px;">🍣</span>
+    <div style="background-color: #000000; padding: 16px 20px; text-align: center;">
+      <div style="margin-bottom: 4px;">
+        <span style="background-color: #dc2626; color: #ffffff; padding: 6px 10px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
       </div>
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
         MAKSIM<span style="color:#dc2626;">.</span>
       </h1>
-      <p style="color: #6b7280; margin: 5px 0 0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Confirmación de Pedido</p>
+      <p style="color: #6b7280; margin: 2px 0 0; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">Confirmación de Pedido</p>
     </div>
 
     <!-- Main Content -->
-    <div style="padding: 24px 20px;">
-      <h2 style="color: #111827; margin: 0 0 8px; font-size: 22px; font-weight: 800;">¡Hola ${orderData.customerName}!</h2>
-      <p style="color: #4b5563; font-size: 15px; line-height: 1.6; margin: 0 0 20px;">
+    <div style="padding: 16px 20px;">
+      <h2 style="color: #111827; margin: 0 0 4px; font-size: 20px; font-weight: 800;">¡Hola ${orderData.customerName}!</h2>
+      <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0 0 16px;">
         Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> ha sido recibido con éxito.
       </p>
 
       <!-- Order Summary Card -->
-      <div style="background-color: #f9fafb; border-radius: 20px; padding: 16px 20px; margin-bottom: 24px; border: 1px solid #f1f5f9;">
-        <h3 style="color: #111827; margin: 0 0 12px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Resumen del Pedido</h3>
+      <div style="background-color: #f9fafb; border-radius: 16px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #f1f5f9;">
+        <h3 style="color: #111827; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Resumen del Pedido</h3>
         
         <table style="width:100%; border-collapse:collapse;">
           ${itemsHtml}
         </table>
 
-        <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #e2e8f0;">
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 2px solid #e2e8f0;">
           <table style="width:100%; border-collapse:collapse;">
             <tr>
-              <td style="padding-top: 12px; color: #111827; font-size: 20px; font-weight: 900;">TOTAL</td>
-              <td style="padding-top: 12px; text-align: right; color: #dc2626; font-size: 24px; font-weight: 900;">${orderData.total.toFixed(2).replace('.', ',')} €</td>
+              <td style="padding-top: 8px; color: #111827; font-size: 18px; font-weight: 900;">TOTAL</td>
+              <td style="padding-top: 8px; text-align: right; color: #dc2626; font-size: 20px; font-weight: 900;">${orderData.total.toFixed(2).replace('.', ',')} €</td>
             </tr>
           </table>
         </div>
       </div>
 
       <!-- Payment & Delivery Type -->
-      <div style="margin-bottom: 24px;">
+      <div style="margin-bottom: 16px;">
         <table style="width:100%; border-collapse:collapse;">
           <tr>
             <td style="width: 50%; vertical-align: top;">
@@ -221,12 +221,12 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
         ${
             scheduledTime || noCall || noBuzzer || customerNote
                 ? `
-        <h4 style="color: #9ca3af; margin: 20px 0 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
-        <div style="background-color: #fff1f2; border-radius: 16px; padding: 16px; border: 1px solid #fecdd3;">
-          ${scheduledTime ? `<div style="color: #111827; font-size: 14px; font-weight: 700; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #fecdd3;">⏰ Entrega programada: <span style="color: #dc2626;">${scheduledTime}</span></div>` : ''}
-          ${noCall ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🚫 No llamar para confirmar pedido</div>' : ''}
-          ${noBuzzer ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
-          ${customerNote ? `<div style="color: #4b5563; font-size: 14px; line-height: 1.5; margin-top: ${noCall || noBuzzer ? '12px' : '0'}; border-top: ${noCall || noBuzzer ? '1px solid #fecdd3' : 'none'}; padding-top: ${noCall || noBuzzer ? '12px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
+        <h4 style="color: #9ca3af; margin: 12px 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
+        <div style="background-color: #fff1f2; border-radius: 12px; padding: 12px; border: 1px solid #fecdd3;">
+          ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #fecdd3;">⏰ Entrega programada: <span style="color: #dc2626;">${scheduledTime}</span></div>` : ''}
+          ${noCall ? '<div style="color: #be123c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🚫 No llamar para confirmar pedido</div>' : ''}
+          ${noBuzzer ? '<div style="color: #be123c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
+          ${customerNote ? `<div style="color: #4b5563; font-size: 13px; line-height: 1.4; margin-top: ${noCall || noBuzzer ? '8px' : '0'}; border-top: ${noCall || noBuzzer ? '1px solid #fecdd3' : 'none'}; padding-top: ${noCall || noBuzzer ? '8px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
         </div>
         `
                 : ''
@@ -234,9 +234,9 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       </div>
 
       <!-- Delivery Details -->
-      <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType === 'RECOGIDA EN LOCAL' ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
-      <div style="background-color: #f8fafc; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0;">
-        <div style="color: #4b5563; font-size: 14px; line-height: 1.6;">
+      <h4 style="color: #9ca3af; margin: 0 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType === 'RECOGIDA EN LOCAL' ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
+      <div style="background-color: #f8fafc; border-radius: 12px; padding: 12px; border: 1px solid #e2e8f0;">
+        <div style="color: #4b5563; font-size: 13px; line-height: 1.5;">
           ${
               deliveryType === 'RECOGIDA EN LOCAL'
                   ? '<strong>📍 Dirección:</strong> Calle Barrilero, 20, 28007 Madrid'
@@ -248,15 +248,15 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       </div>
 
       <!-- Store Info & Schedule -->
-      <div style="margin-top: 16px; padding: 16px 20px; background-color: #000000; border-radius: 20px; color: #ffffff;">
-        <h4 style="color: #dc2626; margin: 0 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Nuestro Horario</h4>
-        <table style="width: 100%; color: #9ca3af; font-size: 12px; border-collapse: collapse;">
-          <tr><td style="padding: 4px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">20:00 – 23:00</td></tr>
-          <tr><td style="padding: 4px 0;">Sábado:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00 | 20:00 – 23:00</td></tr>
-          <tr><td style="padding: 4px 0;">Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00</td></tr>
-          <tr><td style="padding: 4px 0;">Lunes – Martes:</td><td style="text-align: right;">Cerrado</td></tr>
+      <div style="margin-top: 12px; padding: 12px 16px; background-color: #000000; border-radius: 16px; color: #ffffff;">
+        <h4 style="color: #dc2626; margin: 0 0 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Nuestro Horario</h4>
+        <table style="width: 100%; color: #9ca3af; font-size: 11px; border-collapse: collapse;">
+          <tr><td style="padding: 2px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">20:00 – 23:00</td></tr>
+          <tr><td style="padding: 2px 0;">Sábado:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00 | 20:00 – 23:00</td></tr>
+          <tr><td style="padding: 2px 0;">Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00</td></tr>
+          <tr><td style="padding: 2px 0;">Lunes – Martes:</td><td style="text-align: right;">Cerrado</td></tr>
         </table>
-        <div style="margin-top: 10px; border-top: 1px solid #374151; padding-top: 10px; font-size: 11px; text-align: center; color: #6b7280;">
+        <div style="margin-top: 8px; border-top: 1px solid #374151; padding-top: 8px; font-size: 10px; text-align: center; color: #6b7280;">
           Sushi de Maksim — Calle Barrilero, 20, 28007 Madrid
         </div>
       </div>

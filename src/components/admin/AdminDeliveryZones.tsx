@@ -119,7 +119,7 @@ export default function AdminDeliveryZones() {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h3 className="font-bold text-gray-900">Zonas de Entrega Activas</h3>
-                    <p className="text-sm text-gray-500">Dibuja polígonos en el mapa для определения областей доставки.</p>
+                    <p className="text-sm text-gray-500">Dibuja polígonos en el mapa para definir las áreas de entrega.</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <button

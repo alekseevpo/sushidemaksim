@@ -455,7 +455,7 @@ export default function AdminAnalytics({ stats, loading }: AdminAnalyticsProps) 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
                         <ExternalLink size={18} strokeWidth={1.5} className="text-indigo-500" />
-                        Zonas de Entreга Populares
+                        Zonas de Entrega Populares
                     </h3>
                     <div className="space-y-2">
                         {(stats?.areaStats || []).slice(0, 5).map((area: any, idx: number) => (
