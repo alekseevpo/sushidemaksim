@@ -282,11 +282,11 @@ router.post(
             }
         }
 
-        // 7. Generate WhatsApp Link for return
+        // 7. Generate WhatsApp Link for return (Pointing to Store WhatsApp: +34 641 51 83 90)
         const waText = encodeURIComponent(
             `🍣 ¡Hola Sushi de Maksim! Mi pedido #${String(order.id).padStart(5, '0')} ha sido realizado con éxito.\n📍 Dirección: ${deliveryAddress}\n💰 Total: ${finalTotal.toFixed(2)}€\nMuchas gracias.`
         );
-        const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${waText}`;
+        const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
 
         res.status(201).json({
             order: { ...fullOrder, items: fullOrder.order_items },
