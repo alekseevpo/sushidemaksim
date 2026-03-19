@@ -1160,6 +1160,56 @@ export default function CartPageSimple() {
                                     </>
                                 )}
 
+                                <div className="mt-4 pt-4 border-t border-gray-100">
+                                    <label className="block text-xs font-black text-gray-400 uppercase mb-3 px-1 tracking-widest">
+                                        Método de Pago *
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPaymentMethod('card');
+                                                if ('vibrate' in navigator) navigator.vibrate(10);
+                                            }}
+                                            className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 ${
+                                                paymentMethod === 'card'
+                                                    ? 'border-red-600 bg-red-50/50 text-red-600 shadow-sm'
+                                                    : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
+                                            }`}
+                                        >
+                                            <div
+                                                className={`p-2 rounded-lg transition-all ${paymentMethod === 'card' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400'}`}
+                                            >
+                                                <CreditCard size={18} strokeWidth={2} />
+                                            </div>
+                                            <span className="text-sm font-black uppercase tracking-tight">
+                                                Tarjeta
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPaymentMethod('cash');
+                                                if ('vibrate' in navigator) navigator.vibrate(10);
+                                            }}
+                                            className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 ${
+                                                paymentMethod === 'cash'
+                                                    ? 'border-red-600 bg-red-50/50 text-red-600 shadow-sm'
+                                                    : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
+                                            }`}
+                                        >
+                                            <div
+                                                className={`p-2 rounded-lg transition-all ${paymentMethod === 'cash' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400'}`}
+                                            >
+                                                <Wallet size={18} strokeWidth={2} />
+                                            </div>
+                                            <span className="text-sm font-black uppercase tracking-tight">
+                                                Efectivo
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-600 mb-1">
                                         Teléfono de contacto *
@@ -1371,58 +1421,6 @@ export default function CartPageSimple() {
                                             </span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="mb-6 pb-6 border-b border-gray-100">
-                                <label className="block text-sm font-black text-gray-900 mb-3 uppercase tracking-tight">
-                                    Método de Pago *
-                                </label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        onClick={() => {
-                                            setPaymentMethod('card');
-                                            if ('vibrate' in navigator) navigator.vibrate(10);
-                                        }}
-                                        className={`group flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 ${
-                                            paymentMethod === 'card'
-                                                ? 'border-red-600 bg-red-50/50 text-red-600 shadow-md scale-[1.02]'
-                                                : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-gray-100/50'
-                                        }`}
-                                    >
-                                        <div
-                                            className={`p-3 rounded-xl transition-all duration-300 ${paymentMethod === 'card' ? 'bg-red-600 text-white shadow-lg shadow-red-200 rotate-3' : 'bg-white text-gray-400 border border-gray-100 group-hover:rotate-3'}`}
-                                        >
-                                            <CreditCard size={20} strokeWidth={2} />
-                                        </div>
-                                        <span
-                                            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${paymentMethod === 'card' ? 'text-red-600' : 'text-gray-500'}`}
-                                        >
-                                            Tarjeta
-                                        </span>
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setPaymentMethod('cash');
-                                            if ('vibrate' in navigator) navigator.vibrate(10);
-                                        }}
-                                        className={`group flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 ${
-                                            paymentMethod === 'cash'
-                                                ? 'border-red-600 bg-red-50/50 text-red-600 shadow-md scale-[1.02]'
-                                                : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-gray-100/50'
-                                        }`}
-                                    >
-                                        <div
-                                            className={`p-3 rounded-xl transition-all duration-300 ${paymentMethod === 'cash' ? 'bg-red-600 text-white shadow-lg shadow-red-200 -rotate-3' : 'bg-white text-gray-400 border border-gray-100 group-hover:-rotate-3'}`}
-                                        >
-                                            <Wallet size={20} strokeWidth={2} />
-                                        </div>
-                                        <span
-                                            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${paymentMethod === 'cash' ? 'text-red-600' : 'text-gray-500'}`}
-                                        >
-                                            Efectivo
-                                        </span>
-                                    </button>
                                 </div>
                             </div>
 
