@@ -23,15 +23,15 @@ router.post(
         customerName: { type: 'string', required: false, maxLength: 100 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { 
-            deliveryAddress, 
-            phoneNumber, 
-            notes, 
-            promoCode, 
-            guestItems, 
+        const {
+            deliveryAddress,
+            phoneNumber,
+            notes,
+            promoCode,
+            guestItems,
             postalCode,
             email,
-            customerName
+            customerName,
         } = req.body;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
@@ -247,26 +247,30 @@ router.post(
         // 6. Send Receipts
         // Admin always gets a copy
         try {
-            await sendOrderReceiptEmail('info@sushidemaksim.com', {
-                orderId: order.id,
-                customerName: (fullOrder as any).users?.name || req.body.customerName || 'Cliente',
-                items: orderItemsToInsert,
-                total: finalTotal,
-                deliveryAddress,
-                phoneNumber,
-                notes,
-            }, true);
+            await sendOrderReceiptEmail(
+                'info@sushidemaksim.com',
+                {
+                    orderId: order.id,
+                    customerName: (fullOrder as any).users?.name || customerName || 'Cliente',
+                    items: orderItemsToInsert,
+                    total: finalTotal,
+                    deliveryAddress,
+                    phoneNumber,
+                    notes,
+                },
+                true
+            );
         } catch (adminEmailErr) {
             console.error('Failed to send admin notification email:', adminEmailErr);
         }
 
         // Customer gets receipt if email is available (Auth or Guest)
-        const targetEmail = (fullOrder as any).users?.email || req.body.email;
+        const targetEmail = (fullOrder as any).users?.email || email;
         if (targetEmail) {
             try {
                 await sendOrderReceiptEmail(targetEmail, {
                     orderId: order.id,
-                    customerName: (fullOrder as any).users?.name || req.body.customerName || 'Cliente',
+                    customerName: (fullOrder as any).users?.name || customerName || 'Cliente',
                     items: orderItemsToInsert,
                     total: finalTotal,
                     deliveryAddress,
@@ -279,12 +283,14 @@ router.post(
         }
 
         // 7. Generate WhatsApp Link for return
-        const waText = encodeURIComponent(`🍣 ¡Hola Sushi de Maksim! Mi pedido #${String(order.id).padStart(5, '0')} ha sido realizado con éxito.\n📍 Dirección: ${deliveryAddress}\n💰 Total: ${finalTotal.toFixed(2)}€\nMuchas gracias.`);
+        const waText = encodeURIComponent(
+            `🍣 ¡Hola Sushi de Maksim! Mi pedido #${String(order.id).padStart(5, '0')} ha sido realizado con éxito.\n📍 Dirección: ${deliveryAddress}\n💰 Total: ${finalTotal.toFixed(2)}€\nMuchas gracias.`
+        );
         const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${waText}`;
 
-        res.status(201).json({ 
+        res.status(201).json({
             order: { ...fullOrder, items: fullOrder.order_items },
-            whatsappUrl
+            whatsappUrl,
         });
     })
 );

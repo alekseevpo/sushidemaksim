@@ -581,10 +581,17 @@ export default function AdminOrders({
                                                             )}
                                                             {scheduled && (
                                                                 <div className="px-3 py-2 rounded-xl bg-red-600 text-white border border-red-700 text-[11px] font-black uppercase tracking-wider flex items-center gap-2 animate-pulse shadow-lg shadow-red-200">
-                                                                    <Clock size={14} strokeWidth={3} />
+                                                                    <Clock
+                                                                        size={14}
+                                                                        strokeWidth={3}
+                                                                    />
                                                                     <div className="flex flex-col leading-none">
-                                                                        <span>ENTREGA PROGRAMADA</span>
-                                                                        <span className="text-[9px] opacity-90 mt-0.5">{scheduled}</span>
+                                                                        <span>
+                                                                            ENTREGA PROGRAMADA
+                                                                        </span>
+                                                                        <span className="text-[9px] opacity-90 mt-0.5">
+                                                                            {scheduled}
+                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                             )}
