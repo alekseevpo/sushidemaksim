@@ -24,6 +24,7 @@ export default function Header() {
     const { user, isAuthenticated, logout, isLoading } = useAuth();
     const location = useLocation();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [loginModalMode, setLoginModalMode] = useState<'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'>('login');
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [isCartBumping, setIsCartBumping] = useState(false);
@@ -77,9 +78,13 @@ export default function Header() {
     }, [location.pathname]);
 
     useEffect(() => {
-        const handleOpenLogin = () => setIsLoginModalOpen(true);
-        document.addEventListener('custom:openLogin', handleOpenLogin);
-        return () => document.removeEventListener('custom:openLogin', handleOpenLogin);
+        const handleOpenLogin = (e: any) => {
+            if (e.detail?.mode) setLoginModalMode(e.detail.mode);
+            else setLoginModalMode('login');
+            setIsLoginModalOpen(true);
+        };
+        document.addEventListener('custom:openLogin', handleOpenLogin as EventListener);
+        return () => document.removeEventListener('custom:openLogin', handleOpenLogin as EventListener);
     }, []);
 
     // Cart bump animation trigger
@@ -505,7 +510,11 @@ export default function Header() {
             </header>
 
             {isLoginModalOpen && (
-                <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+                <LoginModal 
+                    isOpen={isLoginModalOpen} 
+                    onClose={() => setIsLoginModalOpen(false)} 
+                    initialMode={loginModalMode}
+                />
             )}
         </>
     );

@@ -391,10 +391,18 @@ const ResetPasswordForm = memo(
 
 // ========== MAIN COMPONENT ==========
 
-export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function LoginModal({ 
+    isOpen, 
+    onClose, 
+    initialMode = 'login' 
+}: { 
+    isOpen: boolean; 
+    onClose: () => void; 
+    initialMode?: 'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password';
+}) {
     const [mode, setMode] = useState<
         'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'
-    >('login');
+    >(initialMode);
     const [isLoading, setIsLoading] = useState(false);
     const [resetToken, setResetToken] = useState('');
     const { login, register } = useAuth();
@@ -422,9 +430,9 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
         };
     }, []);
 
-    // Prevent body scrolling when modal is open
     useEffect(() => {
         if (isOpen) {
+            setMode(initialMode);
             document.body.classList.add('overflow-hidden');
         } else {
             document.body.classList.remove('overflow-hidden');
@@ -433,7 +441,7 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
         return () => {
             document.body.classList.remove('overflow-hidden');
         };
-    }, [isOpen]);
+    }, [isOpen, initialMode]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
