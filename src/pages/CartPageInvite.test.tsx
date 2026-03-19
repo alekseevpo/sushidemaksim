@@ -126,8 +126,8 @@ describe('CartPageSimple - Invitations (Integration)', () => {
 
         // Wait for page to load
         const streetInput = await screen.findByPlaceholderText(/Nombre de tu calle/i);
-        const houseInput = screen.getByPlaceholderText(/Ej: 20/i);
-        const aptInput = screen.getByPlaceholderText(/3ºB/i);
+        const houseInput = screen.getByPlaceholderText(/Ej: 15/i);
+        const aptInput = screen.getByPlaceholderText(/Ej: 3ºB/i);
 
         fireEvent.change(streetInput, { target: { value: 'Calle Principal' } });
         fireEvent.change(houseInput, { target: { value: '1' } });

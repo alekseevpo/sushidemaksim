@@ -105,8 +105,8 @@ describe('CartPageSimple (Integration)', () => {
         fireEvent.change(await screen.findByPlaceholderText(/Nombre de tu calle/i), {
             target: { value: 'Calle Real' },
         });
-        fireEvent.change(screen.getByPlaceholderText(/Ej: 20/i), { target: { value: '10' } });
-        fireEvent.change(screen.getByPlaceholderText(/3ºB/i), { target: { value: 'B' } });
+        fireEvent.change(screen.getByPlaceholderText(/Ej: 15/i), { target: { value: '10' } });
+        fireEvent.change(screen.getByPlaceholderText(/Ej: 3ºB/i), { target: { value: 'B' } });
         fireEvent.change(screen.getByPlaceholderText(/28001/i), { target: { value: '28001' } });
         fireEvent.change(screen.getByPlaceholderText(/\+34 600 000 000/i), {
             target: { value: '600000000' },
