@@ -114,13 +114,13 @@ export default function Header() {
     return (
         <>
             <header
-                className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color] duration-500 h-16
+                className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color,backdrop-filter] duration-500 h-16
                 ${
                     isScrolled
-                        ? 'bg-[#FDFBF7] shadow-sm border-b border-gray-200'
+                        ? 'bg-[#FDFBF7]/80 backdrop-blur-xl shadow-sm border-b border-gray-200/50'
                         : isHome
                           ? 'bg-transparent border-b border-transparent'
-                          : 'bg-[#FDFBF7]/90 border-b border-gray-100'
+                          : 'bg-[#FDFBF7]/60 backdrop-blur-md border-b border-gray-100/30'
                 }
             `}
             >

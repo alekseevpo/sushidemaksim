@@ -515,7 +515,7 @@ export default function MenuPageSimple() {
                     </header>
 
                     <div
-                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 bg-[#FDFBF7] border-b border-gray-100 mb-8 lg:hidden"
+                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 bg-[#FDFBF7]/80 backdrop-blur-xl border-b border-gray-200/50 mb-8 lg:hidden"
                         style={{
                             contain: 'layout style paint',
                             backfaceVisibility: 'hidden',
