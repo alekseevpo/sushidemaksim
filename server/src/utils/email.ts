@@ -247,17 +247,27 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
         </div>
       </div>
 
-      <!-- Store Info & Schedule -->
-      <div style="margin-top: 12px; padding: 12px 16px; background-color: #000000; border-radius: 16px; color: #ffffff;">
-        <h4 style="color: #dc2626; margin: 0 0 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Nuestro Horario</h4>
+      <!-- Store Info & Support -->
+      <div style="margin-top: 12px; padding: 16px; background-color: #000000; border-radius: 16px; color: #ffffff;">
+        <h4 style="color: #dc2626; margin: 0 0 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center;">¿Necesitas algo? Contáctanos</h4>
+        
+        <div style="text-align: center; margin-bottom: 16px;">
+          <a href="https://wa.me/34641518390" style="display: inline-block; background-color: #25D366; color: #ffffff; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; margin: 0 4px;">WhatsApp</a>
+          <a href="mailto:info@sushidemaksim.com" style="display: inline-block; background-color: #ffffff; color: #000000; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; margin: 0 4px;">Email</a>
+          <a href="tel:+34641518390" style="display: inline-block; background-color: #dc2626; color: #ffffff; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; margin: 0 4px;">Llamar</a>
+        </div>
+
+        <h4 style="color: #6b7280; margin: 16px 0 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Horario de Atención</h4>
         <table style="width: 100%; color: #9ca3af; font-size: 11px; border-collapse: collapse;">
           <tr><td style="padding: 2px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">20:00 – 23:00</td></tr>
           <tr><td style="padding: 2px 0;">Sábado:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00 | 20:00 – 23:00</td></tr>
           <tr><td style="padding: 2px 0;">Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00</td></tr>
           <tr><td style="padding: 2px 0;">Lunes – Martes:</td><td style="text-align: right;">Cerrado</td></tr>
         </table>
-        <div style="margin-top: 8px; border-top: 1px solid #374151; padding-top: 8px; font-size: 10px; text-align: center; color: #6b7280;">
-          Sushi de Maksim — Calle Barrilero, 20, 28007 Madrid
+        
+        <div style="margin-top: 12px; border-top: 1px solid #374151; padding-top: 12px; font-size: 10px; text-align: center; color: #6b7280;">
+          <strong>Sushi de Maksim</strong><br>
+          Calle Barrilero, 20, 28007 Madrid
         </div>
       </div>
 
