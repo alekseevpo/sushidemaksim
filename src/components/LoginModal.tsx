@@ -391,13 +391,13 @@ const ResetPasswordForm = memo(
 
 // ========== MAIN COMPONENT ==========
 
-export default function LoginModal({ 
-    isOpen, 
-    onClose, 
-    initialMode = 'login' 
-}: { 
-    isOpen: boolean; 
-    onClose: () => void; 
+export default function LoginModal({
+    isOpen,
+    onClose,
+    initialMode = 'login',
+}: {
+    isOpen: boolean;
+    onClose: () => void;
     initialMode?: 'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password';
 }) {
     const [mode, setMode] = useState<

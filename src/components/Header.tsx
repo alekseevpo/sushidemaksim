@@ -24,7 +24,9 @@ export default function Header() {
     const { user, isAuthenticated, logout, isLoading } = useAuth();
     const location = useLocation();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const [loginModalMode, setLoginModalMode] = useState<'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'>('login');
+    const [loginModalMode, setLoginModalMode] = useState<
+        'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'
+    >('login');
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [isCartBumping, setIsCartBumping] = useState(false);
@@ -84,7 +86,8 @@ export default function Header() {
             setIsLoginModalOpen(true);
         };
         document.addEventListener('custom:openLogin', handleOpenLogin as EventListener);
-        return () => document.removeEventListener('custom:openLogin', handleOpenLogin as EventListener);
+        return () =>
+            document.removeEventListener('custom:openLogin', handleOpenLogin as EventListener);
     }, []);
 
     // Cart bump animation trigger
@@ -510,9 +513,9 @@ export default function Header() {
             </header>
 
             {isLoginModalOpen && (
-                <LoginModal 
-                    isOpen={isLoginModalOpen} 
-                    onClose={() => setIsLoginModalOpen(false)} 
+                <LoginModal
+                    isOpen={isLoginModalOpen}
+                    onClose={() => setIsLoginModalOpen(false)}
                     initialMode={loginModalMode}
                 />
             )}
