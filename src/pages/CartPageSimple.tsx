@@ -496,18 +496,41 @@ export default function CartPageSimple() {
                             <span className="text-gray-900 font-black">
                                 #{String(orderSuccess).padStart(5, '0')}
                             </span>{' '}
-                            ha sido recibido y ya estamos preparando tus sushis con amor.
+                            ha sido recibido.
+                            {isScheduled ? (
+                                <> Lo prepararemos para la fecha y hora seleccionada.</>
+                            ) : (
+                                <> и ya estamos preparando tus sushis con amor.</>
+                            )}
                         </p>
 
                         <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 mb-8 flex items-center justify-center gap-4">
                             <div className="flex flex-col items-center">
-                                <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1">
-                                    {deliveryType === 'pickup'
-                                        ? 'Tiempo de preparación'
-                                        : 'Entrega estimada'}
+                                <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none mb-1 text-center">
+                                    {isScheduled
+                                        ? 'Entrega programada'
+                                        : deliveryType === 'pickup'
+                                          ? 'Tiempo de preparación'
+                                          : 'Entrega estimada'}
                                 </span>
-                                <span className="text-lg font-black text-red-600">
-                                    {deliveryType === 'pickup' ? '20 – 30 min' : '30 – 60 min'}
+                                <span className="text-lg font-black text-red-600 text-center">
+                                    {isScheduled ? (
+                                        <span className="flex flex-col items-center">
+                                            <span>
+                                                {new Date(scheduledDate).toLocaleDateString(
+                                                    'es-ES',
+                                                    { day: 'numeric', month: 'long' }
+                                                )}
+                                            </span>
+                                            <span className="text-sm opacity-60 font-black">
+                                                a las {scheduledTime}
+                                            </span>
+                                        </span>
+                                    ) : deliveryType === 'pickup' ? (
+                                        '20 – 30 min'
+                                    ) : (
+                                        '30 – 60 min'
+                                    )}
                                 </span>
                             </div>
                         </div>
