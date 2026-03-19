@@ -520,7 +520,7 @@ export default function MenuPageSimple() {
                             touchAction: 'pan-x',
                             WebkitOverflowScrolling: 'touch',
                             transform: 'translateZ(0)',
-                            willChange: 'transform'
+                            willChange: 'transform',
                         }}
                     >
                         <div className="flex gap-2 flex-nowrap px-2">
