@@ -33,7 +33,11 @@ export default function Header() {
     // Track scroll for dynamic header styling
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            const scrolled = window.scrollY > 20;
+            setIsScrolled(prev => {
+                if (prev === scrolled) return prev; // No re-render if unchanged
+                return scrolled;
+            });
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll(); // Check initial scroll
