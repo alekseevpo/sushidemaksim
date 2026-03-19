@@ -515,12 +515,12 @@ export default function MenuPageSimple() {
                     </header>
 
                     <div
-                        className="sticky top-[64px] z-[40] px-2 py-3 bg-white border-b border-gray-100 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm"
+                        className="sticky top-0 z-[40] px-2 py-3 bg-white border-b border-gray-100 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate"
                         style={{
                             touchAction: 'pan-x',
-                            WebkitBackfaceVisibility: 'hidden',
-                            backfaceVisibility: 'hidden',
-                            transform: 'translate3d(0,0,0)',
+                            WebkitOverflowScrolling: 'touch',
+                            transform: 'translateZ(0)',
+                            willChange: 'transform'
                         }}
                     >
                         <div className="flex gap-2 flex-nowrap">
