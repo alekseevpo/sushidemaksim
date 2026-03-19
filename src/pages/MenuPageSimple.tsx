@@ -515,43 +515,47 @@ export default function MenuPageSimple() {
                     </header>
 
                     <div
-                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 px-2 py-4 bg-[#FDFBF7] border-b border-gray-100 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate"
+                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 bg-[#FDFBF7] border-b border-gray-100 mb-8 lg:hidden shadow-sm"
                         style={{
-                            touchAction: 'pan-x',
-                            WebkitOverflowScrolling: 'touch',
-                            transform: 'translateZ(0)',
-                            willChange: 'transform',
+                            backfaceVisibility: 'hidden',
+                            WebkitBackfaceVisibility: 'hidden',
                         }}
                     >
-                        <div className="flex gap-2 flex-nowrap px-2">
-                            <button
-                                id="cat-all"
-                                onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-90 snap-center ${
-                                    selectedCategory === 'all'
-                                        ? 'bg-red-600 text-white shadow-lg shadow-red-200 scale-105'
-                                        : 'bg-white/80 text-gray-700 shadow-sm hover:bg-white'
-                                }`}
-                                style={{ transform: 'translateZ(0)' }}
-                            >
-                                Todos
-                            </button>
-                            {CATEGORIES.map(cat => (
+                        <div
+                            className="overflow-x-auto no-scrollbar px-4 py-4"
+                            style={{
+                                touchAction: 'pan-x',
+                                WebkitOverflowScrolling: 'touch',
+                            }}
+                        >
+                            <div className="flex gap-2 flex-nowrap">
                                 <button
-                                    key={cat.id}
-                                    id={`cat-${cat.id}`}
-                                    onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-[background-color,color,box-shadow,transform] duration-200 text-sm active:scale-90 snap-center ${
-                                        selectedCategory === cat.id
-                                            ? 'bg-red-600 text-white shadow-lg shadow-red-200 scale-105'
-                                            : 'bg-white/80 text-gray-700 shadow-sm hover:bg-white'
+                                    id="cat-all"
+                                    onClick={() => setSelectedCategory('all')}
+                                    className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-colors duration-200 text-sm active:scale-90 snap-center ${
+                                        selectedCategory === 'all'
+                                            ? 'bg-red-600 text-white shadow-lg shadow-red-200'
+                                            : 'bg-white text-gray-700 shadow-sm'
                                     }`}
-                                    style={{ transform: 'translateZ(0)' }}
                                 >
-                                    <cat.icon size={18} strokeWidth={1.5} />
-                                    {cat.name}
+                                    Todos
                                 </button>
-                            ))}
+                                {CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        id={`cat-${cat.id}`}
+                                        onClick={() => setSelectedCategory(cat.id)}
+                                        className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black border-none cursor-pointer transition-colors duration-200 text-sm active:scale-90 snap-center ${
+                                            selectedCategory === cat.id
+                                                ? 'bg-red-600 text-white shadow-lg shadow-red-200'
+                                                : 'bg-white text-gray-700 shadow-sm'
+                                        }`}
+                                    >
+                                        <cat.icon size={18} strokeWidth={1.5} />
+                                        {cat.name}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
