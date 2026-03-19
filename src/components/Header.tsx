@@ -87,7 +87,7 @@ export default function Header() {
     useEffect(() => {
         if (itemCount > prevCountRef.current) {
             setIsCartBumping(true);
-            const timer = setTimeout(() => setIsCartBumping(false), 300);
+            const timer = setTimeout(() => setIsCartBumping(false), 500);
             return () => clearTimeout(timer);
         }
         prevCountRef.current = itemCount;
@@ -290,8 +290,15 @@ export default function Header() {
                             </div>
 
                             <motion.div
-                                animate={isCartBumping ? { scale: [1, 1.2, 1] } : {}}
-                                transition={{ duration: 0.3 }}
+                                animate={
+                                    isCartBumping
+                                        ? {
+                                              scale: [1, 1.3, 0.95, 1],
+                                              rotate: [0, -8, 8, 0],
+                                          }
+                                        : {}
+                                }
+                                transition={{ duration: 0.4, ease: 'easeInOut' }}
                             >
                                 <Link
                                     id="cart-icon"

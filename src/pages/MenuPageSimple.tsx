@@ -274,7 +274,7 @@ export default function MenuPageSimple() {
             // Remove flying element after animation finishes
             setTimeout(() => {
                 setFlyingItems(prev => prev.filter(f => f.id !== animId));
-            }, 1200);
+            }, 900);
         } catch (err) {
             console.error('Animation error:', err);
         }
@@ -908,39 +908,44 @@ export default function MenuPageSimple() {
                             <motion.div
                                 key={fly.id}
                                 initial={{
-                                    x: fly.startX - 25,
-                                    y: fly.startY - 25,
+                                    x: fly.startX - 20,
+                                    y: fly.startY - 20,
                                     scale: 1,
                                     opacity: 1,
+                                    rotate: 0,
                                 }}
                                 animate={{
-                                    x: fly.endX - 25,
-                                    // Make the arc more pronounced and ensure it hits the cart at scale 0.1
+                                    x: fly.endX - 20,
                                     y: [
-                                        fly.startY - 25,
-                                        Math.min(fly.startY - 150, fly.endY - 50),
-                                        fly.endY - 25,
+                                        fly.startY - 20,
+                                        Math.min(fly.startY - 100, fly.endY - 30),
+                                        fly.endY - 20,
                                     ],
-                                    scale: [1, 1.2, 0.1],
+                                    scale: [1, 0.8, 0.2],
                                     opacity: [1, 1, 0],
+                                    rotate: [0, -15, 15],
                                 }}
                                 transition={{
-                                    duration: 1.1,
-                                    // Move horizontally in a straight line, slower
-                                    x: { ease: 'linear', duration: 1.1 },
-                                    // Move vertically with an arc: jump up fast, fall down slowly
+                                    duration: 0.7,
+                                    x: { ease: 'easeInOut', duration: 0.7 },
                                     y: {
                                         ease: ['easeOut', 'easeIn'],
-                                        times: [0, 0.4, 1],
-                                        duration: 1.1,
+                                        times: [0, 0.35, 1],
+                                        duration: 0.7,
                                     },
-                                    // Grow a bit at start of arc, then shrink into cart
-                                    scale: { ease: 'easeInOut', times: [0, 0.3, 1], duration: 1.1 },
-                                    // Fade out only at the very end
-                                    opacity: { ease: 'linear', times: [0, 0.85, 1], duration: 1.1 },
+                                    scale: {
+                                        ease: 'easeIn',
+                                        times: [0, 0.4, 1],
+                                        duration: 0.7,
+                                    },
+                                    opacity: {
+                                        ease: 'linear',
+                                        times: [0, 0.8, 1],
+                                        duration: 0.7,
+                                    },
                                 }}
-                                className="fixed top-0 left-0 z-[1000] pointer-events-none rounded-full overflow-hidden shadow-2xl flex items-center justify-center bg-white border-2 border-red-500 will-change-transform"
-                                style={{ width: '50px', height: '50px' }}
+                                className="fixed top-0 left-0 z-[1000] pointer-events-none rounded-full overflow-hidden shadow-lg flex items-center justify-center bg-white border-2 border-red-500 will-change-transform"
+                                style={{ width: '40px', height: '40px' }}
                             >
                                 {fly.image ? (
                                     <img
