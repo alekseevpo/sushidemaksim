@@ -82,6 +82,7 @@ export default function AddressModal({
     const [apartment, setApartment] = useState(currentAddress?.apartment || '');
     const [postalCode, setPostalCode] = useState(currentAddress?.postalCode || '');
     const [selectedZone, setSelectedZone] = useState<any>(null);
+    const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
     // Auto-detect zone on marker move
     useEffect(() => {
@@ -147,6 +148,31 @@ export default function AddressModal({
         }
     };
 
+    const performReverseGeocode = async (lat: number, lon: number) => {
+        setIsReverseGeocoding(true);
+        try {
+            const data = await api.get(`/delivery-zones/reverse?lat=${lat}&lon=${lon}`);
+            if (data && data.address) {
+                // Determine street name from road or pedestrian
+                const street =
+                    data.address.road ||
+                    data.address.pedestrian ||
+                    data.address.suburb ||
+                    data.address.city ||
+                    '';
+                const houseNum = data.address.house_number || '';
+
+                if (street) setAddress(street);
+                if (houseNum) setHouse(houseNum);
+                if (data.address.postcode) setPostalCode(data.address.postcode);
+            }
+        } catch (err) {
+            console.error('Reverse geocode failed', err);
+        } finally {
+            setIsReverseGeocoding(false);
+        }
+    };
+
     const selectResult = (res: any) => {
         const lat = parseFloat(res.lat);
         const lon = parseFloat(res.lon);
@@ -159,6 +185,22 @@ export default function AddressModal({
         setSearchResults([]);
         setSearchQuery('');
     };
+
+    // Debounce reverse geocoding on manual marker move
+    useEffect(() => {
+        // Skip for the restaurant's default location initialization
+        const isDefault =
+            Math.abs(markerPosition[0] - RESTAURANT_LOCATION[0]) < 0.0001 &&
+            Math.abs(markerPosition[1] - RESTAURANT_LOCATION[1]) < 0.0001;
+
+        if (isDefault) return;
+
+        const timer = setTimeout(() => {
+            performReverseGeocode(markerPosition[0], markerPosition[1]);
+        }, 1200);
+
+        return () => clearTimeout(timer);
+    }, [markerPosition]);
 
     const handleContinue = () => {
         onSelect({
@@ -415,10 +457,24 @@ export default function AddressModal({
                                 <div className="mt-auto">
                                     <button
                                         onClick={handleContinue}
-                                        disabled={!address || !house || !selectedZone}
+                                        disabled={
+                                            !address ||
+                                            !house ||
+                                            !selectedZone ||
+                                            isReverseGeocoding
+                                        }
                                         className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg flex items-center justify-center gap-3 hover:bg-red-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-xl shadow-red-200"
                                     >
-                                        Confirmar dirección <ArrowRight size={24} />
+                                        {isReverseGeocoding ? (
+                                            <span className="flex items-center gap-2">
+                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                Actualizando...
+                                            </span>
+                                        ) : (
+                                            <>
+                                                Confirmar dirección <ArrowRight size={24} />
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </div>

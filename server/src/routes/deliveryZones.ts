@@ -82,4 +82,35 @@ router.get(
     })
 );
 
+// Proxy reverse geocode
+router.get(
+    '/reverse',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { lat, lon } = req.query;
+        if (!lat || !lon) {
+            return res.status(400).json({ error: 'Lat and Lon required' });
+        }
+
+        try {
+            const response = await axios.get('https://nominatim.openstreetmap.org/reverse', {
+                params: {
+                    format: 'json',
+                    lat,
+                    lon,
+                    zoom: 18,
+                    addressdetails: 1,
+                },
+                headers: {
+                    'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                },
+            });
+
+            res.json(response.data);
+        } catch (err: any) {
+            console.error('Nominatim reverse error:', err.message);
+            res.status(err.response?.status || 500).json({ error: 'Reverse geocode failed' });
+        }
+    })
+);
+
 export default router;
