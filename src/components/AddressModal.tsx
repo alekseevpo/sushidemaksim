@@ -263,7 +263,7 @@ export default function AddressModal({
                         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-[1002] max-h-[95vh] overflow-hidden flex flex-col md:max-w-4xl md:mx-auto md:top-10 md:bottom-10 md:rounded-[40px]"
                     >
                         {/* Header */}
-                        <div className="p-6 md:p-8 flex justify-between items-center border-b border-gray-100 shrink-0">
+                        <div className="p-6 md:p-8 flex justify-between items-start border-b border-gray-100 shrink-0 relative">
                             <div>
                                 <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
                                     <MapPin className="text-red-500" />
@@ -275,9 +275,9 @@ export default function AddressModal({
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-3 bg-gray-50 rounded-2xl hover:bg-gray-100 transition active:scale-90"
+                                className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-gray-400 hover:text-gray-900 transition-all hover:bg-gray-50 rounded-full active:scale-90"
                             >
-                                <X size={24} />
+                                <X size={28} strokeWidth={2.5} />
                             </button>
                         </div>
 
