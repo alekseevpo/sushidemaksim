@@ -299,7 +299,7 @@ export default function Header() {
                                     className={`relative p-3 no-underline rounded-xl transition-all flex items-center justify-center min-w-[44px] min-h-[44px] ${
                                         isScrolled || !isHome
                                             ? 'text-gray-800 bg-gray-50 hover:bg-gray-100'
-                                            : 'text-white bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+                                            : 'text-white bg-white/15 hover:bg-white/25 border border-white/20'
                                     }`}
                                 >
                                     <ShoppingCart size={22} strokeWidth={1.5} />
@@ -329,7 +329,7 @@ export default function Header() {
                                 className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
                                     isScrolled || !isHome
                                         ? 'bg-gray-50 text-gray-800'
-                                        : 'bg-white/10 text-white backdrop-blur-md border border-white/20'
+                                        : 'bg-white/15 text-white border border-white/20'
                                 }`}
                             >
                                 {showMobileMenu ? (
@@ -353,7 +353,7 @@ export default function Header() {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     onClick={() => setShowMobileMenu(false)}
-                                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] md:hidden"
+                                    className="fixed inset-0 bg-black/50 z-[9998] md:hidden"
                                 />
 
                                 {/* Bottom Sheet */}
@@ -367,7 +367,7 @@ export default function Header() {
                                         stiffness: 300,
                                         mass: 0.8,
                                     }}
-                                    className="fixed inset-x-0 bottom-0 bg-white/40 backdrop-blur-md rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-white/40 will-change-transform flex flex-col max-h-[92dvh]"
+                                    className="fixed inset-x-0 bottom-0 bg-white rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-gray-100 will-change-transform flex flex-col max-h-[92dvh]"
                                 >
                                     {/* Drag Handle Container */}
                                     <div className="flex justify-center pt-5 pb-2 shrink-0">
