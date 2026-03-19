@@ -515,7 +515,7 @@ export default function MenuPageSimple() {
                     </header>
 
                     <div
-                        className="sticky top-0 z-[40] -mx-2 md:mx-0 px-2 py-4 bg-[#FDFBF7] border-b border-gray-100 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate"
+                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 px-2 py-4 bg-[#FDFBF7] border-b border-gray-100 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate"
                         style={{
                             touchAction: 'pan-x',
                             WebkitOverflowScrolling: 'touch',
