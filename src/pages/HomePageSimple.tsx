@@ -103,17 +103,19 @@ const ProductCard = ({ item, index }: { item: MenuItem; index: number }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
             className="w-[280px] md:w-[320px] snap-center shrink-0 bg-white rounded-[32px] p-4 shadow-xl shadow-gray-100/50 border border-gray-100 group flex flex-col h-full"
         >
             <div className="relative aspect-square mb-4 rounded-[24px] overflow-hidden bg-gray-50">
                 <img
                     src={item.image || '/placeholder-sushi.png'}
                     alt={item.name}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
                 />
                 <div className="absolute top-3 right-3 flex flex-col gap-2">
                     {item.is_popular && (
@@ -469,7 +471,7 @@ export default function HomePageSimple() {
                     </div>
 
                     {!isLoading && popularItems.length > 0 ? (
-                        <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none">
+                        <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth">
                             <div className="flex gap-6 md:gap-8 flex-nowrap w-max min-w-full">
                                 {popularItems.map((item, index) => (
                                     <ProductCard key={item.id} item={item} index={index} />
