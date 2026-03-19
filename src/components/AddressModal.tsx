@@ -314,6 +314,7 @@ export default function AddressModal({
                                         <input
                                             value={address}
                                             onChange={e => setAddress(e.target.value)}
+                                            data-testid="address-input"
                                             className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                             placeholder="Ej: Calle de Serrano"
                                         />
@@ -327,6 +328,7 @@ export default function AddressModal({
                                             <input
                                                 value={house}
                                                 onChange={e => setHouse(e.target.value)}
+                                                data-testid="house-input"
                                                 className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                                 placeholder="Ej: 20"
                                             />
@@ -338,6 +340,7 @@ export default function AddressModal({
                                             <input
                                                 value={apartment}
                                                 onChange={e => setApartment(e.target.value)}
+                                                data-testid="apartment-input"
                                                 className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                                 placeholder="Ej: 1B"
                                             />

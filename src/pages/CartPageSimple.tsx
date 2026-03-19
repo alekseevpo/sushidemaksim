@@ -1110,6 +1110,7 @@ export default function CartPageSimple() {
                                                     <input
                                                         value={address}
                                                         onChange={e => setAddress(e.target.value)}
+                                                        data-testid="address-input"
                                                         placeholder="Nombre de tu calle"
                                                         className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                                     />
@@ -1122,7 +1123,8 @@ export default function CartPageSimple() {
                                                         <input
                                                             value={house}
                                                             onChange={e => setHouse(e.target.value)}
-                                                            placeholder="Ej: 20"
+                                                            data-testid="house-input"
+                                                            placeholder="Ej: 15"
                                                             className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                                         />
                                                     </div>
@@ -1135,7 +1137,8 @@ export default function CartPageSimple() {
                                                             onChange={e =>
                                                                 setApartment(e.target.value)
                                                             }
-                                                            placeholder="3ºB"
+                                                            data-testid="apartment-input"
+                                                            placeholder="Ej: 3ºB"
                                                             className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                                         />
                                                     </div>
