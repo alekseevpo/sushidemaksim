@@ -52,16 +52,32 @@ router.get(
                 params: {
                     format: 'json',
                     q: `${query}, Madrid`,
-                    limit: 5,
+                    limit: 10,
                     addressdetails: 1,
+                    // Madrid and surrounding Community of Madrid bounding box
+                    // Format: left, top, right, bottom (lon, lat)
+                    viewbox: '-4.6, 41.2, -3.0, 39.8',
+                    bounded: 1,
                 },
                 headers: {
                     'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
                 },
             });
 
+            // Filter results to ensure they are in Madrid region
+            const madridResults = response.data.filter((item: any) => {
+                const displayName = item.display_name.toLowerCase();
+                return (
+                    displayName.includes('madrid') ||
+                    (item.address &&
+                        (item.address.state === 'Comunidad de Madrid' ||
+                            item.address.province === 'Madrid' ||
+                            item.address.city === 'Madrid'))
+                );
+            });
+
             // Update cache
-            searchCache.set(query, { data: response.data, timestamp: now });
+            searchCache.set(query, { data: madridResults, timestamp: now });
 
             // Periodically clean cache
             if (searchCache.size > 500) {

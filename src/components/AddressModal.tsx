@@ -357,7 +357,15 @@ export default function AddressModal({
                                                             className="mt-1 text-gray-400 shrink-0"
                                                         />
                                                         <span className="text-sm font-bold text-gray-700">
-                                                            {res.display_name}
+                                                            {/* Ensure it starts with Madrid for clarity, but avoid double Madrid */}
+                                                            {res.display_name
+                                                                .toLowerCase()
+                                                                .startsWith('madrid')
+                                                                ? res.display_name
+                                                                      .split(',')
+                                                                      .slice(0, 3)
+                                                                      .join(',')
+                                                                : `Madrid, ${res.display_name.split(',').slice(0, 2).join(',')}`}
                                                         </span>
                                                     </button>
                                                 ))}
