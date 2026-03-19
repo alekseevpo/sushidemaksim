@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, ArrowRight, Loader2, Search, CheckCircle, Info } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap, Polygon } from 'react-leaflet';
@@ -83,6 +83,7 @@ export default function AddressModal({
     const [postalCode, setPostalCode] = useState(currentAddress?.postalCode || '');
     const [selectedZone, setSelectedZone] = useState<any>(null);
     const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
+    const skipReverseGeocodeRef = useRef(false);
 
     // Auto-detect zone on marker move
     useEffect(() => {
@@ -174,13 +175,27 @@ export default function AddressModal({
     };
 
     const selectResult = (res: any) => {
+        // Mark that we shouldn't reverse geocode this position update
+        skipReverseGeocodeRef.current = true;
+
         const lat = parseFloat(res.lat);
         const lon = parseFloat(res.lon);
         setMarkerPosition([lat, lon]);
-        setAddress(res.display_name.split(',')[0]);
-        // Try to extract postal code
-        const pcMatch = res.display_name.match(/\b\d{5}\b/);
-        if (pcMatch) setPostalCode(pcMatch[0]);
+
+        // Better street name extraction from Nominatim
+        if (res.address) {
+            const street =
+                res.address.road ||
+                res.address.pedestrian ||
+                res.address.display_name?.split(',')[0] ||
+                '';
+            const houseNum = res.address.house_number || '';
+            if (street) setAddress(street);
+            if (houseNum) setHouse(houseNum);
+            if (res.address.postcode) setPostalCode(res.address.postcode);
+        } else {
+            setAddress(res.display_name?.split(',')[0] || '');
+        }
 
         setSearchResults([]);
         setSearchQuery('');
@@ -194,6 +209,12 @@ export default function AddressModal({
             Math.abs(markerPosition[1] - RESTAURANT_LOCATION[1]) < 0.0001;
 
         if (isDefault) return;
+
+        // If we selected this from search, don't reverse geocode it (keep the search data)
+        if (skipReverseGeocodeRef.current) {
+            skipReverseGeocodeRef.current = false; // Reset for next interaction
+            return;
+        }
 
         const timer = setTimeout(() => {
             performReverseGeocode(markerPosition[0], markerPosition[1]);
