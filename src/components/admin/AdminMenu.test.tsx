@@ -55,7 +55,9 @@ describe('AdminMenu (Integration)', () => {
         fireEvent.click(addBtn);
 
         expect(screen.getByText(/Añadir Plato/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /Crear Plato|Guardar Cambios/i })).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: /Crear Plato|Guardar Cambios/i })
+        ).toBeInTheDocument();
     });
 
     it('submits the form to add a new item', async () => {
@@ -63,7 +65,7 @@ describe('AdminMenu (Integration)', () => {
         vi.mocked(api.post).mockResolvedValue({
             item: newItem,
         });
-        
+
         // Initial load
         vi.mocked(api.get).mockResolvedValueOnce({ items: mockItems });
         // Refresh load
@@ -75,7 +77,9 @@ describe('AdminMenu (Integration)', () => {
         fireEvent.click(addBtn);
 
         // Fill form
-        fireEvent.change(await screen.findByLabelText(/Nombre \*/i), { target: { value: 'New Roll' } });
+        fireEvent.change(await screen.findByLabelText(/Nombre \*/i), {
+            target: { value: 'New Roll' },
+        });
         fireEvent.change(screen.getByLabelText(/Descripción \*/i), { target: { value: 'Tasty' } });
         fireEvent.change(screen.getByLabelText(/Precio \(€\) \*/i), { target: { value: '10' } });
         fireEvent.change(screen.getByLabelText(/Categoría \*/i), { target: { value: 'menus' } });

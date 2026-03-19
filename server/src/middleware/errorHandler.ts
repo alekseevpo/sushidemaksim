@@ -12,7 +12,9 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
         try {
             const logMsg = `\n[${new Date().toISOString()}] ERROR: ${err.message || 'No message'}\nCODE: ${err.code || 'No code'}\nSTACK: ${err.stack || ''}\nJSON: ${JSON.stringify(err, null, 2)}\n`;
             fs.appendFileSync('/tmp/server_error.log', logMsg);
-        } catch (e) {}
+        } catch (e) {
+            // Logging failed, but we shouldn't crash the entire error handler
+        }
     } else {
         console.error('❌ Error:', message);
     }
@@ -23,7 +25,9 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
     }
 
     if (err.code === '23503' || message.includes('FOREIGN KEY constraint')) {
-        return res.status(400).json({ error: 'Operación denegada: Este recurso está en uso por otros elementos (ej. pedidos u otros registros).' });
+        return res.status(400).json({
+            error: 'Operación denegada: Este recurso está en uso por otros elementos (ej. pedidos u otros registros).',
+        });
     }
 
     if (err.code === '23502' || message.includes('NOT NULL constraint')) {
@@ -31,9 +35,9 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
     }
 
     if (err.code === '42501' || message.includes('row-level security policy')) {
-        return res.status(403).json({ 
+        return res.status(403).json({
             error: 'Permiso denegado en la base de datos (RLS)',
-            details: config.isDev ? message : undefined 
+            details: config.isDev ? message : undefined,
         });
     }
 

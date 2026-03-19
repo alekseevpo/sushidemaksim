@@ -13,7 +13,10 @@ const createTestQueryClient = () =>
         },
     });
 
-export function renderWithProviders(ui: React.ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+export function renderWithProviders(
+    ui: React.ReactElement,
+    options?: Omit<RenderOptions, 'wrapper'>
+) {
     const queryClient = createTestQueryClient();
 
     function Wrapper({ children }: { children: ReactNode }) {

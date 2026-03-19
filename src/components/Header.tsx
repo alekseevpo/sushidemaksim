@@ -136,10 +136,14 @@ export default function Header() {
                                 />
                             </div>
                             <div className="flex flex-col leading-none">
-                                <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 ${isScrolled || !isHome ? 'text-red-500' : 'text-red-400'}`}>
+                                <span
+                                    className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 ${isScrolled || !isHome ? 'text-red-500' : 'text-red-400'}`}
+                                >
                                     Sushi de
                                 </span>
-                                <span className={`font-black text-xl tracking-tighter transition-colors duration-300 ${isScrolled || !isHome ? 'text-gray-900' : 'text-white'}`}>
+                                <span
+                                    className={`font-black text-xl tracking-tighter transition-colors duration-300 ${isScrolled || !isHome ? 'text-gray-900' : 'text-white'}`}
+                                >
                                     MAKSIM<span className="text-red-600">.</span>
                                 </span>
                             </div>

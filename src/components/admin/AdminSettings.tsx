@@ -48,7 +48,7 @@ export default function AdminSettings() {
         onError: () => {
             setSaveStatus('error');
             setTimeout(() => setSaveStatus(null), 4000);
-        }
+        },
     });
 
     const handleSave = (e: React.FormEvent) => {
@@ -84,8 +84,8 @@ export default function AdminSettings() {
         setLocalSettings({ ...localSettings, social_links: newLinks });
     };
 
-
-    if (isLoading || !localSettings) return <div className="p-8 text-center text-gray-500">Cargando ajustes...</div>;
+    if (isLoading || !localSettings)
+        return <div className="p-8 text-center text-gray-500">Cargando ajustes...</div>;
 
     return (
         <form onSubmit={handleSave} className="space-y-6">
@@ -111,7 +111,10 @@ export default function AdminSettings() {
                         <input
                             value={localSettings.contact_phone}
                             onChange={e =>
-                                setLocalSettings({ ...localSettings, contact_phone: e.target.value })
+                                setLocalSettings({
+                                    ...localSettings,
+                                    contact_phone: e.target.value,
+                                })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                         />
@@ -121,7 +124,10 @@ export default function AdminSettings() {
                         <input
                             value={localSettings.contact_email}
                             onChange={e =>
-                                setLocalSettings({ ...localSettings, contact_email: e.target.value })
+                                setLocalSettings({
+                                    ...localSettings,
+                                    contact_email: e.target.value,
+                                })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                         />
@@ -137,7 +143,10 @@ export default function AdminSettings() {
                         <input
                             value={localSettings.contact_address_line1}
                             onChange={e =>
-                                setLocalSettings({ ...localSettings, contact_address_line1: e.target.value })
+                                setLocalSettings({
+                                    ...localSettings,
+                                    contact_address_line1: e.target.value,
+                                })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                             placeholder="Calle Barrilero, 20,"
@@ -150,7 +159,10 @@ export default function AdminSettings() {
                         <input
                             value={localSettings.contact_address_line2}
                             onChange={e =>
-                                setLocalSettings({ ...localSettings, contact_address_line2: e.target.value })
+                                setLocalSettings({
+                                    ...localSettings,
+                                    contact_address_line2: e.target.value,
+                                })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                             placeholder="28007 Madrid"
@@ -161,14 +173,18 @@ export default function AdminSettings() {
                             <label className="block text-xs font-bold text-gray-500">
                                 URL Google Maps (al hacer clic en 'Ver Mapa')
                             </label>
-                            {(localSettings.contact_address_line1 || localSettings.contact_address_line2) && (
+                            {(localSettings.contact_address_line1 ||
+                                localSettings.contact_address_line2) && (
                                 <button
                                     type="button"
                                     onClick={() => {
                                         const fullAddress =
                                             `${localSettings.contact_address_line1} ${localSettings.contact_address_line2}`.trim();
                                         const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
-                                        setLocalSettings({ ...localSettings, contact_google_maps_url: url });
+                                        setLocalSettings({
+                                            ...localSettings,
+                                            contact_google_maps_url: url,
+                                        });
                                     }}
                                     className="text-[10px] font-bold text-blue-600 hover:underline"
                                 >
@@ -201,7 +217,10 @@ export default function AdminSettings() {
                         <input
                             value={localSettings.est_delivery_time}
                             onChange={e =>
-                                setLocalSettings({ ...localSettings, est_delivery_time: e.target.value })
+                                setLocalSettings({
+                                    ...localSettings,
+                                    est_delivery_time: e.target.value,
+                                })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                             placeholder="30-60 min"
@@ -213,7 +232,10 @@ export default function AdminSettings() {
                                 type="checkbox"
                                 checked={localSettings.is_store_closed}
                                 onChange={e =>
-                                    setLocalSettings({ ...localSettings, is_store_closed: e.target.checked })
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        is_store_closed: e.target.checked,
+                                    })
                                 }
                                 className="w-5 h-5 accent-red-600"
                             />
@@ -230,7 +252,10 @@ export default function AdminSettings() {
                             <input
                                 value={localSettings.closed_message}
                                 onChange={e =>
-                                    setLocalSettings({ ...localSettings, closed_message: e.target.value })
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        closed_message: e.target.value,
+                                    })
                                 }
                                 className="w-full border rounded-lg px-3 py-2 text-sm outline-none border-red-200 bg-red-50 focus:border-red-500"
                             />
@@ -319,7 +344,6 @@ export default function AdminSettings() {
                     )}
                 </div>
             </div>
-
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="font-bold text-lg mb-4 text-gray-800">Horarios (JSON)</h3>

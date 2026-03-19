@@ -104,8 +104,13 @@ export default function AdminOrders({
             await queryClient.cancelQueries({
                 queryKey: ['admin-orders', page, filter, debouncedSearch],
             });
-            const previousData = queryClient.getQueryData(['admin-orders', page, filter, debouncedSearch]);
-            
+            const previousData = queryClient.getQueryData([
+                'admin-orders',
+                page,
+                filter,
+                debouncedSearch,
+            ]);
+
             // Show notification
             const order = (previousData as any)?.orders?.find((o: any) => o.id === id);
             setNotification({ id, oldStatus: order?.status || '?', newStatus });
@@ -270,7 +275,11 @@ export default function AdminOrders({
             {fetchError && (
                 <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100 flex items-center gap-3">
                     <RefreshCw className="animate-spin" size={18} strokeWidth={1.5} />
-                    <p className="font-medium">{fetchError instanceof ApiError ? fetchError.message : 'Error al cargar los pedidos'}</p>
+                    <p className="font-medium">
+                        {fetchError instanceof ApiError
+                            ? fetchError.message
+                            : 'Error al cargar los pedidos'}
+                    </p>
                 </div>
             )}
 
@@ -657,7 +666,15 @@ export default function AdminOrders({
                                                 ))}
                                             </select>
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                                                <RefreshCw size={14} strokeWidth={1.5} className={statusMutation.isPending ? 'animate-spin' : ''} />
+                                                <RefreshCw
+                                                    size={14}
+                                                    strokeWidth={1.5}
+                                                    className={
+                                                        statusMutation.isPending
+                                                            ? 'animate-spin'
+                                                            : ''
+                                                    }
+                                                />
                                             </div>
                                         </div>
 

@@ -220,7 +220,7 @@ const UserRow = memo(
 export default function AdminUsers() {
     const { user: currentUser } = useAuth();
     const queryClient = useQueryClient();
-    
+
     // UI state
     const [page, setPage] = useState(1);
     const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
@@ -252,8 +252,10 @@ export default function AdminUsers() {
         refetch,
     } = useQuery({
         queryKey: ['admin-users', page, sort.field, sort.order, debouncedSearch],
-        queryFn: () => 
-            api.get(`/admin/users?page=${page}&limit=${LIMIT}&sortBy=${sort.field}&order=${sort.order}&search=${debouncedSearch}`),
+        queryFn: () =>
+            api.get(
+                `/admin/users?page=${page}&limit=${LIMIT}&sortBy=${sort.field}&order=${sort.order}&search=${debouncedSearch}`
+            ),
     });
 
     const users = data?.users || [];
@@ -268,7 +270,7 @@ export default function AdminUsers() {
     });
 
     const roleMutation = useMutation({
-        mutationFn: ({ id, role }: { id: number; role: string }) => 
+        mutationFn: ({ id, role }: { id: number; role: string }) =>
             api.patch(`/admin/users/${id}/role`, { role }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -276,14 +278,15 @@ export default function AdminUsers() {
     });
 
     const verifyEmailMutation = useMutation({
-        mutationFn: (id: number) => api.patch(`/admin/users/${id}/verify-email`, { is_verified: true }),
+        mutationFn: (id: number) =>
+            api.patch(`/admin/users/${id}/verify-email`, { is_verified: true }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
         },
     });
 
     const verifyBirthdayMutation = useMutation({
-        mutationFn: ({ id, verified }: { id: number; verified: boolean }) => 
+        mutationFn: ({ id, verified }: { id: number; verified: boolean }) =>
             api.patch(`/admin/users/${id}/verify-birthday`, { verified }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -311,9 +314,12 @@ export default function AdminUsers() {
         setUserToVerify(null);
     };
 
-    const toggleBirthdayVerified = useCallback((userId: number, currentVerified: boolean) => {
-        verifyBirthdayMutation.mutate({ id: userId, verified: !currentVerified });
-    }, [verifyBirthdayMutation]);
+    const toggleBirthdayVerified = useCallback(
+        (userId: number, currentVerified: boolean) => {
+            verifyBirthdayMutation.mutate({ id: userId, verified: !currentVerified });
+        },
+        [verifyBirthdayMutation]
+    );
 
     if (isLoading && users.length === 0) {
         return (
@@ -355,14 +361,22 @@ export default function AdminUsers() {
                     className="p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-100 rounded-xl shadow-sm transition"
                     title="Actualizar"
                 >
-                    <RefreshCw size={18} strokeWidth={1.5} className={isFetching ? 'animate-spin' : ''} />
+                    <RefreshCw
+                        size={18}
+                        strokeWidth={1.5}
+                        className={isFetching ? 'animate-spin' : ''}
+                    />
                 </button>
             </div>
 
             {fetchError && (
                 <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100 flex items-center gap-3">
                     <AlertCircle size={18} strokeWidth={1.5} />
-                    <p className="font-medium">{fetchError instanceof ApiError ? fetchError.message : 'Error al cargar los usuarios'}</p>
+                    <p className="font-medium">
+                        {fetchError instanceof ApiError
+                            ? fetchError.message
+                            : 'Error al cargar los usuarios'}
+                    </p>
                 </div>
             )}
 
@@ -521,7 +535,10 @@ export default function AdminUsers() {
                             ))}
                             {!isLoading && users.length === 0 && (
                                 <tr>
-                                    <td colSpan={9} className="px-4 py-12 text-center text-gray-400">
+                                    <td
+                                        colSpan={9}
+                                        className="px-4 py-12 text-center text-gray-400"
+                                    >
                                         No se encontraron usuarios
                                     </td>
                                 </tr>
@@ -584,7 +601,9 @@ export default function AdminUsers() {
                                     disabled={deleteMutation.isPending}
                                     className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
-                                    {deleteMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                    {deleteMutation.isPending && (
+                                        <RefreshCw size={16} className="animate-spin" />
+                                    )}
                                     SÍ, ELIMINAR AHORA
                                 </button>
                                 <button
@@ -636,7 +655,9 @@ export default function AdminUsers() {
                                     disabled={roleMutation.isPending}
                                     className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
-                                    {roleMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                    {roleMutation.isPending && (
+                                        <RefreshCw size={16} className="animate-spin" />
+                                    )}
                                     SÍ, CAMBIAR PERMISOS
                                 </button>
                                 <button
@@ -682,7 +703,9 @@ export default function AdminUsers() {
                                     disabled={verifyEmailMutation.isPending}
                                     className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
-                                    {verifyEmailMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                    {verifyEmailMutation.isPending && (
+                                        <RefreshCw size={16} className="animate-spin" />
+                                    )}
                                     SÍ, VERIFICAR AHORA
                                 </button>
                                 <button

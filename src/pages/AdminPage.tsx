@@ -68,18 +68,32 @@ export default function AdminPage() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Stats Query
-    const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
+    const {
+        data: stats,
+        isLoading: statsLoading,
+        refetch: refetchStats,
+    } = useQuery({
         queryKey: ['admin-stats'],
         queryFn: () => api.get('/admin/stats'),
-        enabled: isAuthenticated && (user?.role === 'admin' || user?.is_superadmin) && (activeTab === 'dashboard' || activeTab === 'analytics'),
+        enabled:
+            isAuthenticated &&
+            (user?.role === 'admin' || user?.is_superadmin) &&
+            (activeTab === 'dashboard' || activeTab === 'analytics'),
         refetchInterval: 60000,
     });
 
     // Reports Query
-    const { data: reports, isLoading: reportsLoading, refetch: refetchReports } = useQuery({
+    const {
+        data: reports,
+        isLoading: reportsLoading,
+        refetch: refetchReports,
+    } = useQuery({
         queryKey: ['admin-reports'],
         queryFn: () => api.get('/admin/reports'),
-        enabled: isAuthenticated && (user?.role === 'admin' || user?.is_superadmin) && activeTab === 'dashboard',
+        enabled:
+            isAuthenticated &&
+            (user?.role === 'admin' || user?.is_superadmin) &&
+            activeTab === 'dashboard',
         refetchInterval: 60000,
     });
 
@@ -91,7 +105,7 @@ export default function AdminPage() {
         refetchInterval: 30000,
     });
 
-    const pendingOrders = pendingData?.orders || [];
+    const pendingOrders = useMemo(() => pendingData?.orders || [], [pendingData]);
     const pendingCount = pendingData?.pagination?.total || pendingOrders.length;
 
     // Audio Alert Effect

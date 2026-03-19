@@ -179,11 +179,9 @@ export default function HomePageSimple() {
                 if (!isMounted) return;
 
                 const allItems = allItemsData.items || [];
-                
+
                 // Filter popular items from all items list locally to save an API call
-                const popular = allItems
-                    .filter((item: any) => item.is_popular)
-                    .slice(0, 8);
+                const popular = allItems.filter((item: any) => item.is_popular).slice(0, 8);
                 setPopularItems(popular);
 
                 const enhancedCategories = (categoriesData.categories || []).map((cat: any) => {
@@ -471,9 +469,7 @@ export default function HomePageSimple() {
                     </div>
 
                     {!isLoading && popularItems.length > 0 ? (
-                        <div
-                            className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none"
-                        >
+                        <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none">
                             <div className="flex gap-6 md:gap-8 flex-nowrap w-max min-w-full">
                                 {popularItems.map((item, index) => (
                                     <ProductCard key={item.id} item={item} index={index} />

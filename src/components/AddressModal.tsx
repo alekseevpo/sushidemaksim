@@ -11,7 +11,7 @@ import * as turf from '@turf/turf';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
+const DefaultIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
     iconSize: [25, 41],
@@ -36,7 +36,13 @@ function MapUpdater({ center }: { center: [number, number] }) {
     return null;
 }
 
-function LocationMarker({ position, setPosition }: { position: [number, number], setPosition: (p: [number, number]) => void }) {
+function LocationMarker({
+    position,
+    setPosition,
+}: {
+    position: [number, number];
+    setPosition: (p: [number, number]) => void;
+}) {
     useMapEvents({
         click(e) {
             setPosition([e.latlng.lat, e.latlng.lng]);
@@ -44,13 +50,18 @@ function LocationMarker({ position, setPosition }: { position: [number, number],
     });
 
     return position ? (
-        <Marker position={position} icon={DefaultIcon} draggable={true} eventHandlers={{
-            dragend: (e) => {
-                const marker = e.target;
-                const pos = marker.getLatLng();
-                setPosition([pos.lat, pos.lng]);
-            }
-        }} />
+        <Marker
+            position={position}
+            icon={DefaultIcon}
+            draggable={true}
+            eventHandlers={{
+                dragend: e => {
+                    const marker = e.target;
+                    const pos = marker.getLatLng();
+                    setPosition([pos.lat, pos.lng]);
+                },
+            }}
+        />
     ) : null;
 }
 
@@ -64,7 +75,7 @@ export default function AddressModal({
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
-    
+
     const [markerPosition, setMarkerPosition] = useState<[number, number]>(RESTAURANT_LOCATION);
     const [address, setAddress] = useState(currentAddress?.street || '');
     const [house, setHouse] = useState(currentAddress?.house || '');
@@ -81,9 +92,12 @@ export default function AddressModal({
 
         for (const zone of deliveryZones) {
             if (!zone.coordinates || zone.coordinates.length < 3) continue;
-            
+
             const turfCoords = zone.coordinates.map((c: number[]) => [c[1], c[0]]);
-            if (turfCoords[0][0] !== turfCoords[turfCoords.length-1][0] || turfCoords[0][1] !== turfCoords[turfCoords.length-1][1]) {
+            if (
+                turfCoords[0][0] !== turfCoords[turfCoords.length - 1][0] ||
+                turfCoords[0][1] !== turfCoords[turfCoords.length - 1][1]
+            ) {
                 turfCoords.push(turfCoords[0]);
             }
 
@@ -141,7 +155,7 @@ export default function AddressModal({
         // Try to extract postal code
         const pcMatch = res.display_name.match(/\b\d{5}\b/);
         if (pcMatch) setPostalCode(pcMatch[0]);
-        
+
         setSearchResults([]);
         setSearchQuery('');
     };
@@ -153,7 +167,7 @@ export default function AddressModal({
             apartment,
             postalCode,
             zone: selectedZone,
-            coordinates: markerPosition
+            coordinates: markerPosition,
         });
         onClose();
     };
@@ -192,9 +206,14 @@ export default function AddressModal({
                                     <MapPin className="text-red-500" />
                                     ¿Dónde entregamos?
                                 </h2>
-                                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-1">Selecciona tu ubicación en el mapa</p>
+                                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                    Selecciona tu ubicación en el mapa
+                                </p>
                             </div>
-                            <button onClick={onClose} className="p-3 bg-gray-50 rounded-2xl hover:bg-gray-100 transition active:scale-90">
+                            <button
+                                onClick={onClose}
+                                className="p-3 bg-gray-50 rounded-2xl hover:bg-gray-100 transition active:scale-90"
+                            >
                                 <X size={24} />
                             </button>
                         </div>
@@ -212,9 +231,12 @@ export default function AddressModal({
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                     />
-                                    
+
                                     <MapUpdater center={markerPosition} />
-                                    <LocationMarker position={markerPosition} setPosition={setMarkerPosition} />
+                                    <LocationMarker
+                                        position={markerPosition}
+                                        setPosition={setMarkerPosition}
+                                    />
 
                                     {deliveryZones.map(zone => (
                                         <Polygon
@@ -224,7 +246,7 @@ export default function AddressModal({
                                                 color: zone.color,
                                                 fillColor: zone.color,
                                                 fillOpacity: 0.1,
-                                                weight: 2
+                                                weight: 2,
                                             }}
                                         />
                                     ))}
@@ -234,26 +256,35 @@ export default function AddressModal({
                                 <div className="absolute top-4 left-4 right-4 z-[1000] space-y-2">
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition">
-                                            {isSearching ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
+                                            {isSearching ? (
+                                                <Loader2 size={18} className="animate-spin" />
+                                            ) : (
+                                                <Search size={18} />
+                                            )}
                                         </div>
-                                        <input 
+                                        <input
                                             type="text"
                                             value={searchQuery}
                                             onChange={e => setSearchQuery(e.target.value)}
                                             placeholder="Buscar mi calle en Madrid..."
                                             className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-4 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
                                         />
-                                        
+
                                         {searchResults.length > 0 && (
                                             <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-hidden divide-y divide-gray-50 animate-in fade-in slide-in-from-top-2 duration-200">
                                                 {searchResults.map((res, i) => (
-                                                    <button 
+                                                    <button
                                                         key={i}
                                                         onClick={() => selectResult(res)}
                                                         className="w-full px-5 py-4 text-left hover:bg-red-50 transition flex items-start gap-3"
                                                     >
-                                                        <MapPin size={16} className="mt-1 text-gray-400 shrink-0" />
-                                                        <span className="text-sm font-bold text-gray-700">{res.display_name}</span>
+                                                        <MapPin
+                                                            size={16}
+                                                            className="mt-1 text-gray-400 shrink-0"
+                                                        />
+                                                        <span className="text-sm font-bold text-gray-700">
+                                                            {res.display_name}
+                                                        </span>
                                                     </button>
                                                 ))}
                                             </div>
@@ -263,8 +294,12 @@ export default function AddressModal({
 
                                 <div className="absolute bottom-4 left-4 z-[1000]">
                                     <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-xl border border-white shadow-lg">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Tu ubicación</p>
-                                        <p className="text-xs font-bold text-gray-900">{address || 'Selecciona un punto'}</p>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
+                                            Tu ubicación
+                                        </p>
+                                        <p className="text-xs font-bold text-gray-900">
+                                            {address || 'Selecciona un punto'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -273,7 +308,9 @@ export default function AddressModal({
                             <div className="w-full md:w-[380px] p-6 md:p-8 overflow-y-auto bg-white flex flex-col gap-6 scrollbar-hide">
                                 <div className="space-y-5">
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">Calle / Avenida *</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                            Calle / Avenida *
+                                        </label>
                                         <input
                                             value={address}
                                             onChange={e => setAddress(e.target.value)}
@@ -284,7 +321,9 @@ export default function AddressModal({
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">Número / Portal *</label>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                                Número / Portal *
+                                            </label>
                                             <input
                                                 value={house}
                                                 onChange={e => setHouse(e.target.value)}
@@ -293,7 +332,9 @@ export default function AddressModal({
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">Piso / Puerta</label>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                                Piso / Puerta
+                                            </label>
                                             <input
                                                 value={apartment}
                                                 onChange={e => setApartment(e.target.value)}
@@ -304,7 +345,9 @@ export default function AddressModal({
                                     </div>
 
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">Código Postal</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                            Código Postal
+                                        </label>
                                         <input
                                             value={postalCode}
                                             onChange={e => setPostalCode(e.target.value)}
@@ -319,14 +362,24 @@ export default function AddressModal({
                                         {selectedZone ? (
                                             <div className="p-5 bg-green-50 rounded-3xl border border-green-100 flex gap-4 animate-in slide-in-from-bottom-2 duration-300">
                                                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-green-100 shrink-0">
-                                                    <CheckCircle className="text-green-500" size={24} />
+                                                    <CheckCircle
+                                                        className="text-green-500"
+                                                        size={24}
+                                                    />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-1 leading-none">Área de entrega</p>
-                                                    <p className="text-sm font-black text-green-900 tracking-tight">{selectedZone.name}</p>
+                                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-1 leading-none">
+                                                        Área de entrega
+                                                    </p>
+                                                    <p className="text-sm font-black text-green-900 tracking-tight">
+                                                        {selectedZone.name}
+                                                    </p>
                                                     <div className="flex items-center gap-2 mt-2">
                                                         <span className="text-[10px] font-bold bg-green-200/50 text-green-800 px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                                                            Envío: {selectedZone.cost === 0 ? 'GRATIS' : `${selectedZone.cost}€`}
+                                                            Envío:{' '}
+                                                            {selectedZone.cost === 0
+                                                                ? 'GRATIS'
+                                                                : `${selectedZone.cost}€`}
                                                         </span>
                                                         <span className="text-[10px] font-bold bg-green-200/50 text-green-800 px-2 py-0.5 rounded-full uppercase tracking-tighter">
                                                             Mínimo: {selectedZone.min_order}€
@@ -340,9 +393,16 @@ export default function AddressModal({
                                                     <Info className="text-red-500" size={24} />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-1 leading-none">Lo sentimos</p>
-                                                    <p className="text-sm font-black text-red-900 tracking-tight">Zona no cubierta</p>
-                                                    <p className="text-[10px] font-bold text-red-600 mt-1 uppercase leading-tight">Mueve el marcador o prueba otra dirección dentro de Madrid.</p>
+                                                    <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-1 leading-none">
+                                                        Lo sentimos
+                                                    </p>
+                                                    <p className="text-sm font-black text-red-900 tracking-tight">
+                                                        Zona no cubierta
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-red-600 mt-1 uppercase leading-tight">
+                                                        Mueve el marcador o prueba otra dirección
+                                                        dentro de Madrid.
+                                                    </p>
                                                 </div>
                                             </div>
                                         )}

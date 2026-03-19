@@ -13,7 +13,7 @@ import { Trash2, Save, MapPin, RefreshCw, X } from 'lucide-react';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
+const DefaultIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
     iconSize: [25, 41],
@@ -41,7 +41,11 @@ export default function AdminDeliveryZones() {
     const [editingZone, setEditingZone] = useState<Partial<DeliveryZone> | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { data: zones = [], isLoading, refetch } = useQuery<DeliveryZone[]>({
+    const {
+        data: zones = [],
+        isLoading,
+        refetch,
+    } = useQuery<DeliveryZone[]>({
         queryKey: ['delivery-zones'],
         queryFn: async () => {
             const res = await api.get('/admin/delivery-zones');
@@ -51,7 +55,7 @@ export default function AdminDeliveryZones() {
 
     const upsertMutation = useMutation({
         mutationFn: (data: Partial<DeliveryZone>) => {
-            return data.id 
+            return data.id
                 ? api.put(`/admin/delivery-zones/${data.id}`, data)
                 : api.post('/admin/delivery-zones', data);
         },
@@ -63,7 +67,7 @@ export default function AdminDeliveryZones() {
         },
         onError: (err: any) => {
             toastError(err.message || 'Error al guardar la zona');
-        }
+        },
     });
 
     const deleteMutation = useMutation({
@@ -85,7 +89,7 @@ export default function AdminDeliveryZones() {
                 color: '#EF4444',
                 opacity: 0.3,
                 coordinates: latlngs,
-                is_active: true
+                is_active: true,
             });
             setIsModalOpen(true);
             // Remove the temporary layer from the map so we can render it from state
@@ -119,7 +123,9 @@ export default function AdminDeliveryZones() {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h3 className="font-bold text-gray-900">Zonas de Entrega Activas</h3>
-                    <p className="text-sm text-gray-500">Dibuja polígonos en el mapa para definir las áreas de entrega.</p>
+                    <p className="text-sm text-gray-500">
+                        Dibuja polígonos en el mapa para definir las áreas de entrega.
+                    </p>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
@@ -137,7 +143,10 @@ export default function AdminDeliveryZones() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Map Area */}
-                <div className="lg:col-span-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 overflow-hidden" style={{ minHeight: '600px' }}>
+                <div
+                    className="lg:col-span-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+                    style={{ minHeight: '600px' }}
+                >
                     <MapContainer
                         center={MADRID_CENTER}
                         zoom={13}
@@ -147,7 +156,7 @@ export default function AdminDeliveryZones() {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
-                        
+
                         <Marker position={RESTAURANT_LOCATION}>
                             <Popup>
                                 <div className="text-center font-bold">Sushi de Maksim</div>
@@ -175,13 +184,13 @@ export default function AdminDeliveryZones() {
                                     pathOptions={{
                                         color: zone.color,
                                         fillColor: zone.color,
-                                        fillOpacity: zone.opacity
+                                        fillOpacity: zone.opacity,
                                     }}
                                     eventHandlers={{
                                         click: () => {
                                             setEditingZone(zone);
                                             setIsModalOpen(true);
-                                        }
+                                        },
                                     }}
                                 >
                                     <Popup>
@@ -200,27 +209,36 @@ export default function AdminDeliveryZones() {
                     {zones.length === 0 ? (
                         <div className="text-center p-8 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
                             <MapPin size={32} className="mx-auto text-gray-300 mb-2" />
-                            <p className="text-sm text-gray-500">No hay zonas definidas. Usa la herramienta de dibujo (polígono) para crear una.</p>
+                            <p className="text-sm text-gray-500">
+                                No hay zonas definidas. Usa la herramienta de dibujo (polígono) para
+                                crear una.
+                            </p>
                         </div>
                     ) : (
                         zones.map(zone => (
-                            <div key={zone.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 group">
+                            <div
+                                key={zone.id}
+                                className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 group"
+                            >
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="flex items-center gap-2">
-                                        <div 
-                                            className="w-3 h-3 rounded-full" 
+                                        <div
+                                            className="w-3 h-3 rounded-full"
                                             style={{ backgroundColor: zone.color }}
                                         />
                                         <h4 className="font-bold text-gray-900">{zone.name}</h4>
                                     </div>
                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                                        <button 
-                                            onClick={() => { setEditingZone(zone); setIsModalOpen(true); }}
+                                        <button
+                                            onClick={() => {
+                                                setEditingZone(zone);
+                                                setIsModalOpen(true);
+                                            }}
                                             className="p-1.5 text-blue-500 hover:bg-blue-50 rounded"
                                         >
                                             <Save size={14} />
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => deleteMutation.mutate(zone.id)}
                                             className="p-1.5 text-red-500 hover:bg-red-50 rounded"
                                         >
@@ -230,12 +248,20 @@ export default function AdminDeliveryZones() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
                                     <div className="bg-gray-50 p-2 rounded-lg">
-                                        <span className="block text-[10px] uppercase font-bold text-gray-400">Envío</span>
-                                        <span className="font-bold text-gray-900">{zone.cost} €</span>
+                                        <span className="block text-[10px] uppercase font-bold text-gray-400">
+                                            Envío
+                                        </span>
+                                        <span className="font-bold text-gray-900">
+                                            {zone.cost} €
+                                        </span>
                                     </div>
                                     <div className="bg-gray-50 p-2 rounded-lg">
-                                        <span className="block text-[10px] uppercase font-bold text-gray-400">Min. Pedido</span>
-                                        <span className="font-bold text-gray-900">{zone.min_order} €</span>
+                                        <span className="block text-[10px] uppercase font-bold text-gray-400">
+                                            Min. Pedido
+                                        </span>
+                                        <span className="font-bold text-gray-900">
+                                            {zone.min_order} €
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -250,60 +276,95 @@ export default function AdminDeliveryZones() {
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                             <h2 className="text-xl font-bold text-gray-900">Configurar Zona</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
                                 <X size={20} />
                             </button>
                         </div>
                         <div className="p-6 space-y-4">
                             <div className="space-y-1">
-                                <label className="text-xs font-bold text-gray-500 uppercase">Nombre de la Zona</label>
-                                <input 
+                                <label className="text-xs font-bold text-gray-500 uppercase">
+                                    Nombre de la Zona
+                                </label>
+                                <input
                                     type="text"
                                     value={editingZone.name || ''}
-                                    onChange={e => setEditingZone({...editingZone, name: e.target.value})}
+                                    onChange={e =>
+                                        setEditingZone({ ...editingZone, name: e.target.value })
+                                    }
                                     placeholder="Ej: Retiro Norte"
                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Costo Envío (€)</label>
-                                    <input 
+                                    <label className="text-xs font-bold text-gray-500 uppercase">
+                                        Costo Envío (€)
+                                    </label>
+                                    <input
                                         type="number"
                                         value={editingZone.cost || 0}
-                                        onChange={e => setEditingZone({...editingZone, cost: parseFloat(e.target.value)})}
+                                        onChange={e =>
+                                            setEditingZone({
+                                                ...editingZone,
+                                                cost: parseFloat(e.target.value),
+                                            })
+                                        }
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Pedido Mín. (€)</label>
-                                    <input 
+                                    <label className="text-xs font-bold text-gray-500 uppercase">
+                                        Pedido Mín. (€)
+                                    </label>
+                                    <input
                                         type="number"
                                         value={editingZone.min_order || 0}
-                                        onChange={e => setEditingZone({...editingZone, min_order: parseFloat(e.target.value)})}
+                                        onChange={e =>
+                                            setEditingZone({
+                                                ...editingZone,
+                                                min_order: parseFloat(e.target.value),
+                                            })
+                                        }
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
                                     />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Color</label>
-                                    <input 
+                                    <label className="text-xs font-bold text-gray-500 uppercase">
+                                        Color
+                                    </label>
+                                    <input
                                         type="color"
                                         value={editingZone.color || '#EF4444'}
-                                        onChange={e => setEditingZone({...editingZone, color: e.target.value})}
+                                        onChange={e =>
+                                            setEditingZone({
+                                                ...editingZone,
+                                                color: e.target.value,
+                                            })
+                                        }
                                         className="w-full h-10 p-1 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer"
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Opacidad (0-1)</label>
-                                    <input 
+                                    <label className="text-xs font-bold text-gray-500 uppercase">
+                                        Opacidad (0-1)
+                                    </label>
+                                    <input
                                         type="range"
                                         min="0"
                                         max="1"
                                         step="0.1"
                                         value={editingZone.opacity || 0.3}
-                                        onChange={e => setEditingZone({...editingZone, opacity: parseFloat(e.target.value)})}
+                                        onChange={e =>
+                                            setEditingZone({
+                                                ...editingZone,
+                                                opacity: parseFloat(e.target.value),
+                                            })
+                                        }
                                         className="w-full mt-2"
                                     />
                                 </div>

@@ -104,13 +104,13 @@ router.post(
         let deliveryFee = 0;
         if (notes?.includes('[TIPO: DOMICILIO]')) {
             const { deliveryZoneId } = req.body;
-            
+
             // Get delivery zones directly from the table
             const { data: zones } = await supabase
                 .from('delivery_zones')
                 .select('*')
                 .eq('is_active', true);
-            
+
             // Site-wide fallbacks
             let defaultFee = 3.5;
             let defaultFreeThreshold = 60;
@@ -122,30 +122,49 @@ router.post(
                 const feeSet = settings.find(s => s.key === 'delivery_fee');
                 const threshSet = settings.find(s => s.key === 'free_delivery_threshold');
                 const minSet = settings.find(s => s.key === 'min_order');
-                
-                if (feeSet) defaultFee = parseFloat(typeof feeSet.value === 'string' ? JSON.parse(feeSet.value) : feeSet.value);
-                if (threshSet) defaultFreeThreshold = parseFloat(typeof threshSet.value === 'string' ? JSON.parse(threshSet.value) : threshSet.value);
-                if (minSet) defaultMinOrder = parseFloat(typeof minSet.value === 'string' ? JSON.parse(minSet.value) : minSet.value);
+
+                if (feeSet)
+                    defaultFee = parseFloat(
+                        typeof feeSet.value === 'string' ? JSON.parse(feeSet.value) : feeSet.value
+                    );
+                if (threshSet)
+                    defaultFreeThreshold = parseFloat(
+                        typeof threshSet.value === 'string'
+                            ? JSON.parse(threshSet.value)
+                            : threshSet.value
+                    );
+                if (minSet)
+                    defaultMinOrder = parseFloat(
+                        typeof minSet.value === 'string' ? JSON.parse(minSet.value) : minSet.value
+                    );
             }
 
             let matchedZone = null;
             if (deliveryZoneId && zones) {
-                matchedZone = zones.find(z => z.id === deliveryZoneId || z.id === String(deliveryZoneId));
+                matchedZone = zones.find(
+                    z => z.id === deliveryZoneId || z.id === String(deliveryZoneId)
+                );
             }
-            
+
             if (!matchedZone && postalCode && zones) {
-                matchedZone = zones.find(z => 
-                    Array.isArray(z.postal_codes) && z.postal_codes.includes(postalCode)
+                matchedZone = zones.find(
+                    z => Array.isArray(z.postal_codes) && z.postal_codes.includes(postalCode)
                 );
             }
 
             const currentFee = matchedZone ? (Number(matchedZone.cost) ?? defaultFee) : defaultFee;
-            const currentFreeThreshold = matchedZone ? (Number(matchedZone.free_threshold) ?? defaultFreeThreshold) : defaultFreeThreshold;
-            const currentMinOrder = matchedZone ? (Number(matchedZone.min_order) ?? defaultMinOrder) : defaultMinOrder;
+            const currentFreeThreshold = matchedZone
+                ? (Number(matchedZone.free_threshold) ?? defaultFreeThreshold)
+                : defaultFreeThreshold;
+            const currentMinOrder = matchedZone
+                ? (Number(matchedZone.min_order) ?? defaultMinOrder)
+                : defaultMinOrder;
 
             // Enforce Min Order on Server
             if (subtotal < currentMinOrder) {
-                return res.status(400).json({ error: `El pedido mínimo para su zona es de ${currentMinOrder.toFixed(2).replace('.', ',')}€` });
+                return res.status(400).json({
+                    error: `El pedido mínimo para su zona es de ${currentMinOrder.toFixed(2).replace('.', ',')}€`,
+                });
             }
 
             if (subtotal < currentFreeThreshold) {
@@ -381,33 +400,50 @@ router.post(
         // Dynamic Delivery Fee / Min Order for Invitations
         if (notes?.includes('[TIPO: DOMICILIO]')) {
             const { deliveryZoneId } = req.body;
-            const { data: zones } = await supabase.from('delivery_zones').select('*').eq('is_active', true);
+            const { data: zones } = await supabase
+                .from('delivery_zones')
+                .select('*')
+                .eq('is_active', true);
             let defFee = 3.5;
             let defThresh = 60;
-            let defMin = 15;
+            const defMin = 15;
 
             const { data: settings } = await supabase.from('site_settings').select('*');
             if (settings) {
                 const f = settings.find(s => s.key === 'delivery_fee');
                 const t = settings.find(s => s.key === 'free_delivery_threshold');
-                if (f) defFee = parseFloat(typeof f.value === 'string' ? JSON.parse(f.value) : f.value);
-                if (t) defThresh = parseFloat(typeof t.value === 'string' ? JSON.parse(t.value) : t.value);
+                if (f)
+                    defFee = parseFloat(
+                        typeof f.value === 'string' ? JSON.parse(f.value) : f.value
+                    );
+                if (t)
+                    defThresh = parseFloat(
+                        typeof t.value === 'string' ? JSON.parse(t.value) : t.value
+                    );
             }
 
             let matchedZone = null;
             if (deliveryZoneId && zones) {
-                matchedZone = zones.find(z => z.id === deliveryZoneId || z.id === String(deliveryZoneId));
+                matchedZone = zones.find(
+                    z => z.id === deliveryZoneId || z.id === String(deliveryZoneId)
+                );
             }
             if (!matchedZone && postalCode && zones) {
-                matchedZone = zones.find(z => Array.isArray(z.postal_codes) && z.postal_codes.includes(postalCode));
+                matchedZone = zones.find(
+                    z => Array.isArray(z.postal_codes) && z.postal_codes.includes(postalCode)
+                );
             }
 
             const currentFee = matchedZone ? (Number(matchedZone.cost) ?? defFee) : defFee;
-            const currentThresh = matchedZone ? (Number(matchedZone.free_threshold) ?? defThresh) : defThresh;
+            const currentThresh = matchedZone
+                ? (Number(matchedZone.free_threshold) ?? defThresh)
+                : defThresh;
             const currentMin = matchedZone ? (Number(matchedZone.min_order) ?? defMin) : defMin;
 
             if (subtotal < currentMin) {
-                return res.status(400).json({ error: `El pedido mínimo para su zona es de ${currentMin.toFixed(2).replace('.', ',')}€` });
+                return res.status(400).json({
+                    error: `El pedido mínimo para su zona es de ${currentMin.toFixed(2).replace('.', ',')}€`,
+                });
             }
             if (subtotal < currentThresh) {
                 deliveryFee = currentFee;

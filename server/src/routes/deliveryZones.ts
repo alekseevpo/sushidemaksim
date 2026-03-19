@@ -22,7 +22,7 @@ router.get(
 );
 
 // Simple in-memory cache to stay within Nominatim's 1 req/sec limit and avoid 429 errors
-const searchCache = new Map<string, { data: any, timestamp: number }>();
+const searchCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 1000 * 60 * 30; // 30 minutes
 
 // Proxy search because Nominatim blocks direct browser access (CORS/UA)
@@ -39,7 +39,7 @@ router.get(
 
         // Check cache
         const cached = searchCache.get(query);
-        if (cached && (now - cached.timestamp < CACHE_TTL)) {
+        if (cached && now - cached.timestamp < CACHE_TTL) {
             return res.json(cached.data);
         }
 
@@ -53,16 +53,16 @@ router.get(
                     format: 'json',
                     q: `${query}, Madrid`,
                     limit: 5,
-                    addressdetails: 1
+                    addressdetails: 1,
                 },
                 headers: {
-                    'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)'
-                }
+                    'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                },
             });
 
             // Update cache
             searchCache.set(query, { data: response.data, timestamp: now });
-            
+
             // Periodically clean cache
             if (searchCache.size > 500) {
                 for (const [key, val] of searchCache.entries()) {
@@ -73,10 +73,10 @@ router.get(
             res.json(response.data);
         } catch (err: any) {
             console.error('Nominatim proxy error:', err.message);
-            
+
             // If we have a stale cache, return it on error instead of 429
             if (cached) return res.json(cached.data);
-            
+
             res.status(err.response?.status || 500).json({ error: 'Search failed' });
         }
     })

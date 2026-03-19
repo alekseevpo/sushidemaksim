@@ -111,7 +111,7 @@ describe('CartPageSimple (Integration)', () => {
         fireEvent.change(screen.getByPlaceholderText(/\+34 600 000 000/i), {
             target: { value: '600000000' },
         });
-        
+
         // Select payment method
         const cashOption = screen.getByText(/Efectivo/i);
         fireEvent.click(cashOption);

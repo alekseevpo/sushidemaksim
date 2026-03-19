@@ -25,4 +25,3 @@ export async function adminMiddleware(req: AuthRequest, res: Response, next: Nex
 
     next();
 }
-

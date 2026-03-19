@@ -50,7 +50,7 @@ export default function AdminMenu() {
         queryFn: () => api.get('/admin/menu'),
     });
 
-    const items: MenuItem[] = data?.items || [];
+    const items: MenuItem[] = useMemo(() => data?.items || [], [data]);
 
     const filteredItems = useMemo(() => {
         return items.filter(
@@ -69,7 +69,7 @@ export default function AdminMenu() {
         },
         onError: (err: any) => {
             alert(err instanceof ApiError ? err.message : 'Error al eliminar');
-        }
+        },
     });
 
     const upsertMutation = useMutation({
@@ -85,7 +85,7 @@ export default function AdminMenu() {
         },
         onError: (err: any) => {
             setFormError(err instanceof ApiError ? err.message : 'Error al guardar');
-        }
+        },
     });
 
     const openAddModal = () => {
@@ -275,7 +275,11 @@ export default function AdminMenu() {
                         className="p-2 text-gray-400 hover:text-gray-600 transition"
                         title="Actualizar"
                     >
-                        <RefreshCw size={18} strokeWidth={1.5} className={isFetching ? 'animate-spin' : ''} />
+                        <RefreshCw
+                            size={18}
+                            strokeWidth={1.5}
+                            className={isFetching ? 'animate-spin' : ''}
+                        />
                     </button>
                     <button
                         onClick={openAddModal}
@@ -620,8 +624,18 @@ export default function AdminMenu() {
                                 </div>
 
                                 <div className="flex flex-wrap gap-4 pt-2">
-                                    {['spicy', 'vegetarian', 'is_promo', 'is_popular', 'is_chef_choice', 'is_new'].map(field => (
-                                        <label key={field} className="flex items-center gap-2 cursor-pointer">
+                                    {[
+                                        'spicy',
+                                        'vegetarian',
+                                        'is_promo',
+                                        'is_popular',
+                                        'is_chef_choice',
+                                        'is_new',
+                                    ].map(field => (
+                                        <label
+                                            key={field}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
                                             <input
                                                 type="checkbox"
                                                 checked={!!(formData as any)[field]}
@@ -653,12 +667,19 @@ export default function AdminMenu() {
                                                 >
                                                     <input
                                                         type="checkbox"
-                                                        checked={formData.allergens?.includes(allergen) || false}
+                                                        checked={
+                                                            formData.allergens?.includes(
+                                                                allergen
+                                                            ) || false
+                                                        }
                                                         onChange={e => {
-                                                            const current = formData.allergens || [];
+                                                            const current =
+                                                                formData.allergens || [];
                                                             const updated = e.target.checked
                                                                 ? [...current, allergen]
-                                                                : current.filter(a => a !== allergen);
+                                                                : current.filter(
+                                                                      a => a !== allergen
+                                                                  );
                                                             setFormData({
                                                                 ...formData,
                                                                 allergens: updated,
@@ -691,7 +712,9 @@ export default function AdminMenu() {
                                 disabled={upsertMutation.isPending}
                                 className="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 rounded-lg transition shadow-md disabled:bg-red-300 flex items-center gap-2"
                             >
-                                {upsertMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                {upsertMutation.isPending && (
+                                    <RefreshCw size={16} className="animate-spin" />
+                                )}
                                 {editingItem ? 'Guardar Cambios' : 'Crear Plato'}
                             </button>
                         </div>
@@ -727,7 +750,9 @@ export default function AdminMenu() {
                                     disabled={deleteMutation.isPending}
                                     className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
-                                    {deleteMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                    {deleteMutation.isPending && (
+                                        <RefreshCw size={16} className="animate-spin" />
+                                    )}
                                     SÍ, ELIMINAR AHORA
                                 </button>
                                 <button

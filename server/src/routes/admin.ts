@@ -254,7 +254,7 @@ router.delete(
             supabase.from('cart_items').delete().eq('menu_item_id', id),
             supabase.from('user_favorites').delete().eq('menu_item_id', id),
             // Nullify reference in orders but keep the data records
-            supabase.from('order_items').update({ menu_item_id: null }).eq('menu_item_id', id)
+            supabase.from('order_items').update({ menu_item_id: null }).eq('menu_item_id', id),
         ]);
 
         const { error } = await supabase.from('menu_items').delete().eq('id', id);
@@ -336,7 +336,8 @@ router.get(
                     (sum: number, o: any) => sum + Number(o.total || 0),
                     0
                 );
-                const avgCheck = orderCount > 0 ? Math.round((totalSpent / orderCount) * 100) / 100 : 0;
+                const avgCheck =
+                    orderCount > 0 ? Math.round((totalSpent / orderCount) * 100) / 100 : 0;
 
                 // Favorite dish calculation
                 const dishCounts: Record<string, number> = {};
@@ -486,7 +487,10 @@ router.get(
                 ...u,
                 orderCount: u.orders?.length || 0,
                 totalSpent:
-                    Math.round((u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0) * 100) / 100,
+                    Math.round(
+                        (u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) ||
+                            0) * 100
+                    ) / 100,
             }));
 
             // In-memory sort
@@ -532,7 +536,10 @@ router.get(
                 ...u,
                 orderCount: u.orders?.length || 0,
                 totalSpent:
-                    Math.round((u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0) * 100) / 100,
+                    Math.round(
+                        (u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) ||
+                            0) * 100
+                    ) / 100,
             }));
         }
 
@@ -666,7 +673,9 @@ router.get(
             supabase.from('menu_items').select('*', { count: 'exact', head: true }),
         ]);
 
-        const revenue = Math.round((revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) / 100;
+        const revenue =
+            Math.round((revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) /
+            100;
 
         // 2. Today metrics (Madrid reset at 0:00)
         const todayISO = getMadridStartOfDay().toISOString();
@@ -696,7 +705,9 @@ router.get(
                 .gte('created_at', todayISO),
         ]);
 
-        const revenueToday = Math.round((revTodayData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) / 100;
+        const revenueToday =
+            Math.round((revTodayData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) /
+            100;
 
         // 3. Status breakdown
         const { data: statusData } = await supabase.from('orders').select('status');
@@ -809,7 +820,8 @@ router.get(
                         .trim() || 'Centro/Otros';
                 if (!areaMap[area]) areaMap[area] = { count: 0, revenue: 0 };
                 areaMap[area].count++;
-                areaMap[area].revenue = Math.round((areaMap[area].revenue + Number(o.total)) * 100) / 100;
+                areaMap[area].revenue =
+                    Math.round((areaMap[area].revenue + Number(o.total)) * 100) / 100;
 
                 // Promo Detection
                 const subtotal = orderSubtotals[o.id] || 0;
@@ -820,7 +832,8 @@ router.get(
 
                 // Growth
                 if (isWithin30 && dailyStats[isoDate]) {
-                    dailyStats[isoDate].revenue = Math.round((dailyStats[isoDate].revenue + Number(o.total)) * 100) / 100;
+                    dailyStats[isoDate].revenue =
+                        Math.round((dailyStats[isoDate].revenue + Number(o.total)) * 100) / 100;
                     dailyStats[isoDate].orders += 1;
                 }
             }
@@ -862,7 +875,11 @@ router.get(
             });
 
         const areaStats = Object.entries(areaMap)
-            .map(([name, data]) => ({ name, ...data, revenue: Math.round(data.revenue * 100) / 100 }))
+            .map(([name, data]) => ({
+                name,
+                ...data,
+                revenue: Math.round(data.revenue * 100) / 100,
+            }))
             .sort((a, b) => b.revenue - a.revenue)
             .slice(0, 8);
 
@@ -1211,7 +1228,7 @@ router.post(
     }),
     asyncHandler(async (req: Request, res: Response) => {
         const { name, cost, min_order, color, opacity, coordinates, is_active } = req.body;
-        
+
         const { data: zone, error } = await supabase
             .from('delivery_zones')
             .insert({
@@ -1221,7 +1238,7 @@ router.post(
                 color: color || '#EF4444',
                 opacity: opacity || 0.3,
                 coordinates,
-                is_active: is_active !== undefined ? is_active : true
+                is_active: is_active !== undefined ? is_active : true,
             })
             .select()
             .single();
@@ -1247,7 +1264,7 @@ router.put(
                 color,
                 opacity,
                 coordinates,
-                is_active
+                is_active,
             })
             .eq('id', id)
             .select()

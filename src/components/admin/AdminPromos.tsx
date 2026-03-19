@@ -18,7 +18,12 @@ export default function AdminPromos() {
     });
     const [promoToDelete, setPromoToDelete] = useState<any>(null);
 
-    const { data: promos = [], isLoading, refetch, isFetching } = useQuery({
+    const {
+        data: promos = [],
+        isLoading,
+        refetch,
+        isFetching,
+    } = useQuery({
         queryKey: ['admin-promos'],
         queryFn: () => api.get('/admin/promos'),
     });
@@ -46,8 +51,10 @@ export default function AdminPromos() {
             alert(isEditing ? 'Promoción actualizada' : 'Promoción creada');
         },
         onError: (err: any) => {
-            alert('Error al guardar: ' + (err instanceof ApiError ? err.message : 'Error desconocido'));
-        }
+            alert(
+                'Error al guardar: ' + (err instanceof ApiError ? err.message : 'Error desconocido')
+            );
+        },
     });
 
     const deleteMutation = useMutation({
@@ -59,7 +66,7 @@ export default function AdminPromos() {
         },
         onError: () => {
             alert('Error al eliminar');
-        }
+        },
     });
 
     const handleSave = (e: React.FormEvent) => {
@@ -80,7 +87,11 @@ export default function AdminPromos() {
                         className="p-2 text-gray-400 hover:text-gray-600 transition"
                         title="Actualizar"
                     >
-                        <RefreshCw size={18} strokeWidth={1.5} className={isFetching ? 'animate-spin' : ''} />
+                        <RefreshCw
+                            size={18}
+                            strokeWidth={1.5}
+                            className={isFetching ? 'animate-spin' : ''}
+                        />
                     </button>
                     <button
                         onClick={() => {
@@ -204,7 +215,9 @@ export default function AdminPromos() {
                         disabled={upsertMutation.isPending}
                         className="bg-gray-900 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-black transition disabled:opacity-50 flex items-center gap-2"
                     >
-                        {upsertMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                        {upsertMutation.isPending && (
+                            <RefreshCw size={16} className="animate-spin" />
+                        )}
                         Guardar
                     </button>
                 </div>
@@ -320,7 +333,9 @@ export default function AdminPromos() {
                                     disabled={deleteMutation.isPending}
                                     className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
-                                    {deleteMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                    {deleteMutation.isPending && (
+                                        <RefreshCw size={16} className="animate-spin" />
+                                    )}
                                     SÍ, ELIMINAR
                                 </button>
                                 <button

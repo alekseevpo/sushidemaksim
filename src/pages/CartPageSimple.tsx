@@ -73,9 +73,15 @@ export default function CartPageSimple() {
     const [selectedZone, setSelectedZone] = useState<any>(null);
     const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
 
-    const DELIVERY_FEE = selectedZone ? (selectedZone.cost ?? 0) : (siteSettings?.delivery_fee ?? 3.5);
-    const MIN_ORDER = selectedZone ? (selectedZone.min_order ?? 0) : (siteSettings?.min_order ?? 15);
-    const FREE_DELIVERY_THRESHOLD = selectedZone ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60) : (siteSettings?.free_delivery_threshold ?? 60);
+    const DELIVERY_FEE = selectedZone
+        ? (selectedZone.cost ?? 0)
+        : (siteSettings?.delivery_fee ?? 3.5);
+    const MIN_ORDER = selectedZone
+        ? (selectedZone.min_order ?? 0)
+        : (siteSettings?.min_order ?? 15);
+    const FREE_DELIVERY_THRESHOLD = selectedZone
+        ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60)
+        : (siteSettings?.free_delivery_threshold ?? 60);
     const isStoreClosed = !!siteSettings?.is_store_closed;
 
     const todayStr = (() => {
@@ -1033,13 +1039,18 @@ export default function CartPageSimple() {
                                                 >
                                                     <div className="flex flex-col items-center gap-3">
                                                         <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-inner">
-                                                            <MapPin className="text-red-500" size={32} />
+                                                            <MapPin
+                                                                className="text-red-500"
+                                                                size={32}
+                                                            />
                                                         </div>
                                                         <div>
                                                             <p className="font-black text-lg text-gray-900 tracking-tight">
                                                                 🏠 ¿Dónde entregamos?
                                                             </p>
-                                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Pulsa para indicar tu dirección</p>
+                                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">
+                                                                Pulsa para indicar tu dirección
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </button>
@@ -1047,29 +1058,43 @@ export default function CartPageSimple() {
                                                 <div className="bg-gray-50 rounded-[32px] p-6 mb-2 border border-gray-100 flex items-center justify-between">
                                                     <div className="flex items-center gap-4 overflow-hidden">
                                                         <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 shrink-0">
-                                                            <MapPin className="text-red-500" size={20} />
+                                                            <MapPin
+                                                                className="text-red-500"
+                                                                size={20}
+                                                            />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-black text-sm text-gray-900 truncate">{address}</p>
+                                                            <p className="font-black text-sm text-gray-900 truncate">
+                                                                {address}
+                                                            </p>
                                                             <div className="flex items-center gap-2 mt-0.5">
                                                                 {selectedZone && (
-                                                                    <span 
-                                                                        className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full text-white" 
-                                                                        style={{ backgroundColor: selectedZone.color || '#EF4444' }}
+                                                                    <span
+                                                                        className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full text-white"
+                                                                        style={{
+                                                                            backgroundColor:
+                                                                                selectedZone.color ||
+                                                                                '#EF4444',
+                                                                        }}
                                                                     >
                                                                         {selectedZone.name}
                                                                     </span>
                                                                 )}
-                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">CP: {postalCode}</span>
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                                                                    CP: {postalCode}
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button 
+                                                    <button
                                                         type="button"
                                                         onClick={() => setIsAddressModalOpen(true)}
                                                         className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:bg-gray-50 active:scale-90 transition shrink-0 ml-2"
                                                     >
-                                                        <ArrowRight size={18} className="text-gray-400" />
+                                                        <ArrowRight
+                                                            size={18}
+                                                            className="text-gray-400"
+                                                        />
                                                     </button>
                                                 </div>
                                             )}
@@ -1079,7 +1104,9 @@ export default function CartPageSimple() {
                                         <div className="hidden md:block">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
                                                 <div>
-                                                    <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Calle / Avenida *</label>
+                                                    <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
+                                                        Calle / Avenida *
+                                                    </label>
                                                     <input
                                                         value={address}
                                                         onChange={e => setAddress(e.target.value)}
@@ -1089,7 +1116,9 @@ export default function CartPageSimple() {
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div>
-                                                        <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Portal</label>
+                                                        <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
+                                                            Portal
+                                                        </label>
                                                         <input
                                                             value={house}
                                                             onChange={e => setHouse(e.target.value)}
@@ -1098,10 +1127,14 @@ export default function CartPageSimple() {
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Piso</label>
+                                                        <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
+                                                            Piso
+                                                        </label>
                                                         <input
                                                             value={apartment}
-                                                            onChange={e => setApartment(e.target.value)}
+                                                            onChange={e =>
+                                                                setApartment(e.target.value)
+                                                            }
                                                             placeholder="3ºB"
                                                             className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                                         />
@@ -1109,7 +1142,9 @@ export default function CartPageSimple() {
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Código Postal</label>
+                                                <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
+                                                    Código Postal
+                                                </label>
                                                 <input
                                                     value={postalCode}
                                                     onChange={e => setPostalCode(e.target.value)}
@@ -1431,7 +1466,10 @@ export default function CartPageSimple() {
                                 <h3 className="text-base font-bold mb-2">Información de envío</h3>
                                 <ul className="text-sm text-gray-500 m-0 pl-5 space-y-1">
                                     <li>Entrega segura a domicilio</li>
-                                    <li>Envío GRATIS desde {FREE_DELIVERY_THRESHOLD.toFixed(2).replace('.', ',')} €</li>
+                                    <li>
+                                        Envío GRATIS desde{' '}
+                                        {FREE_DELIVERY_THRESHOLD.toFixed(2).replace('.', ',')} €
+                                    </li>
                                     <li>Tiempo de entrega: 30–60 min</li>
                                     <li>
                                         Horario: según el horario de apertura (

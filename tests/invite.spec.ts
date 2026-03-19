@@ -179,7 +179,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
             { timeout: 10000 }
         );
         await inviteBtn.click({ force: true });
-        
+
         // В Webkit иногда клик не срабатывает из-за анимаций, попробуем еще раз если запрос не ушел
         try {
             const response = await responsePromise;
