@@ -514,21 +514,8 @@ export default function MenuPageSimple() {
                         </div>
                     </header>
 
-                    <div
-                        className="sticky top-[64px] z-[40] -mx-2 md:mx-0 bg-[#FDFBF7] border-b border-gray-200 mb-8 lg:hidden"
-                        style={{
-                            contain: 'layout style paint',
-                            backfaceVisibility: 'hidden',
-                            WebkitBackfaceVisibility: 'hidden',
-                        }}
-                    >
-                        <div
-                            className="overflow-x-auto no-scrollbar px-4 py-3"
-                            style={{
-                                touchAction: 'pan-x',
-                                WebkitOverflowScrolling: 'touch',
-                            }}
-                        >
+                    <div className="sticky top-16 z-[40] -mx-2 md:mx-0 bg-[#FDFBF7] border-b border-gray-200 mb-8 lg:hidden">
+                        <div className="overflow-x-auto no-scrollbar px-4 py-3">
                             <div className="flex gap-2 flex-nowrap">
                                 <button
                                     id="cat-all"
