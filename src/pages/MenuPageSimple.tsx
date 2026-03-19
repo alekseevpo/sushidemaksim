@@ -419,6 +419,8 @@ export default function MenuPageSimple() {
                     </div>
                 </aside>
                 <div className="flex-1 min-w-0" id="menu-content">
+                    {/* Spacer for fixed category bar on mobile */}
+                    <div className="h-12 lg:hidden" />
                     {/* Header Section with Search */}
                     <header className="mb-0 md:mb-12 relative">
                         <AnimatePresence mode="wait">
@@ -549,8 +551,6 @@ export default function MenuPageSimple() {
                             </div>
                         </div>
                     </div>
-                    {/* Spacer for fixed category bar */}
-                    <div className="h-14 lg:hidden" />
 
                     {/* Items Section */}
                     {isLoading ? (
