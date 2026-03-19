@@ -490,19 +490,19 @@ export default function CartPageSimple() {
                         initial={{ scale: 0.8, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                        className="bg-white rounded-[32px] md:rounded-[40px] shadow-2xl p-5 md:p-10 max-w-md w-full text-center relative overflow-hidden border border-white my-auto pb-8"
+                        className="bg-white rounded-[32px] md:rounded-[40px] shadow-2xl p-4 md:p-10 max-w-md w-full text-center relative overflow-hidden border border-white my-auto pb-6"
                     >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
 
-                        <div className="w-20 h-20 bg-green-50 rounded-[28px] flex items-center justify-center mx-auto mb-4 relative shadow-inner border-2 border-white">
-                            <CheckCircle size={40} strokeWidth={1.5} className="text-green-600" />
+                        <div className="w-16 h-16 bg-green-50 rounded-[20px] flex items-center justify-center mx-auto mb-2.5 relative shadow-inner border-2 border-white">
+                            <CheckCircle size={32} strokeWidth={1.5} className="text-green-600" />
                         </div>
 
-                        <h1 className="text-2xl font-black mb-2 text-gray-900 tracking-tight">
+                        <h1 className="text-xl font-black mb-1 text-gray-900 tracking-tight">
                             ¡Pedido exitoso!
                         </h1>
-                        <p className="text-gray-500 text-sm font-medium mb-4 leading-relaxed px-2">
+                        <p className="text-gray-500 text-[13px] font-medium mb-3 leading-relaxed px-2">
                             Tu pedido{' '}
                             <span className="text-gray-900 font-black">
                                 #{String(orderSuccess).padStart(5, '0')}
@@ -511,31 +511,31 @@ export default function CartPageSimple() {
                             {isScheduled ? (
                                 <> Lo prepararemos para la fecha y hora seleccionada.</>
                             ) : (
-                                <> y ya estamos preparando tus sushis con amor.</>
+                                <> и ya estamos preparando tus sushis с amor.</>
                             )}
                         </p>
 
-                        <div className="flex flex-col gap-2.5 mb-5">
+                        <div className="flex flex-col gap-1.5 mb-3.5">
                             {/* Time Block */}
-                            <div className="bg-gray-50/50 p-3.5 rounded-2xl border border-gray-100 flex items-center justify-center">
+                            <div className="bg-gray-50/50 p-2 rounded-2xl border border-gray-100 flex items-center justify-center">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">
+                                    <span className="text-[9px] uppercase font-black text-gray-400 tracking-widest mb-0.5">
                                         {isScheduled
                                             ? 'Entrega programada'
                                             : deliveryType === 'pickup'
                                               ? 'Tiempo de preparación'
                                               : 'Entrega estimada'}
                                     </span>
-                                    <div className="text-lg font-black text-red-600 text-center">
+                                    <div className="text-base font-black text-red-600 text-center">
                                         {isScheduled ? (
-                                            <div className="flex flex-col items-center">
+                                            <div className="flex flex-col items-center leading-tight">
                                                 <span>
                                                     {new Date(scheduledDate).toLocaleDateString(
                                                         'es-ES',
                                                         { day: 'numeric', month: 'long' }
                                                     )}
                                                 </span>
-                                                <span className="text-sm opacity-60 font-black">
+                                                <span className="text-[13px] opacity-60 font-black">
                                                     a las {scheduledTime}
                                                 </span>
                                             </div>
@@ -549,33 +549,33 @@ export default function CartPageSimple() {
                             </div>
 
                             {/* Address Block */}
-                            <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                                <div className="flex items-start gap-4 text-left">
-                                    <div className="p-3 bg-white rounded-2xl text-red-600 shadow-sm shrink-0 border border-gray-100">
+                            <div className="bg-gray-50/50 p-2.5 rounded-2xl border border-gray-100">
+                                <div className="flex items-start gap-3 text-left">
+                                    <div className="p-2 bg-white rounded-xl text-red-600 shadow-sm shrink-0 border border-gray-100">
                                         {deliveryType === 'pickup' ? (
-                                            <Store size={20} />
+                                            <Store size={18} />
                                         ) : (
-                                            <MapPin size={20} />
+                                            <MapPin size={18} />
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1">
+                                        <h4 className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">
                                             {deliveryType === 'pickup'
                                                 ? 'Punto de Recogida'
                                                 : 'Dirección de Entrega'}
                                         </h4>
-                                        <p className="text-sm font-black text-gray-900 leading-tight">
+                                        <p className="text-[13px] font-black text-gray-900 leading-tight truncate">
                                             {deliveryType === 'pickup'
                                                 ? 'Calle Barrilero, 20, 28007 Madrid'
-                                                : `${address}${house ? `, Portal: ${house}` : ''}${apartment ? `, Piso: ${apartment}` : ''}`}
+                                                : `${address}${house ? `, Portal: ${house}` : ''}`}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Help / Contact Block */}
-                            <div className="bg-gray-50/50 p-4 md:p-6 rounded-3xl border border-gray-100">
-                                <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 text-center">
+                            <div className="bg-gray-50/50 p-3 rounded-2xl border border-gray-100">
+                                <h4 className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-2 text-center">
                                     ¿Necesitas ayuda?
                                 </h4>
 
@@ -584,11 +584,11 @@ export default function CartPageSimple() {
                                         href={orderWhatsappUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-full mb-3 bg-[#25D366] text-white px-8 py-3.5 rounded-2xl font-black text-sm hover:bg-[#1ebd59] transition-all shadow-xl shadow-green-100 transform active:scale-90 flex items-center justify-center gap-2 no-underline"
+                                        className="w-full mb-2 bg-[#25D366] text-white px-8 py-2.5 rounded-2xl font-black text-[13px] hover:bg-[#1ebd59] transition-all shadow-lg shadow-green-100 transform active:scale-95 flex items-center justify-center gap-2 no-underline"
                                     >
                                         <svg
-                                            width="20"
-                                            height="20"
+                                            width="18"
+                                            height="18"
                                             viewBox="0 0 24 24"
                                             fill="currentColor"
                                         >
@@ -598,17 +598,17 @@ export default function CartPageSimple() {
                                     </a>
                                 )}
 
-                                <div className="flex justify-center gap-4">
+                                <div className="flex justify-center gap-3">
                                     <a
                                         href={`https://wa.me/34641518390`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="p-3.5 bg-white rounded-2xl text-[#25D366] shadow-sm border border-gray-100 hover:scale-110 active:scale-95 transition-all outline-none"
+                                        className="p-2.5 bg-white rounded-xl text-[#25D366] shadow-sm border border-gray-100 hover:scale-110 active:scale-95 transition-all outline-none"
                                         title="WhatsApp Directo"
                                     >
                                         <svg
-                                            width="24"
-                                            height="24"
+                                            width="18"
+                                            height="18"
                                             viewBox="0 0 24 24"
                                             fill="currentColor"
                                         >
@@ -617,51 +617,48 @@ export default function CartPageSimple() {
                                     </a>
                                     <a
                                         href={`mailto:info@sushidemaksim.com`}
-                                        className="p-3.5 bg-white rounded-2xl text-red-600 shadow-sm border border-gray-100 hover:scale-110 active:scale-95 transition-all outline-none"
+                                        className="p-2.5 bg-white rounded-xl text-red-600 shadow-sm border border-gray-100 hover:scale-110 active:scale-95 transition-all outline-none"
                                         title="Email"
                                     >
-                                        <Mail size={24} strokeWidth={2} />
+                                        <Mail size={18} strokeWidth={2} />
                                     </a>
                                     <a
                                         href={`tel:+34641518390`}
-                                        className="p-3.5 bg-white rounded-2xl text-blue-600 shadow-sm border border-gray-100 hover:scale-110 active:scale-95 transition-all outline-none"
+                                        className="p-2.5 bg-white rounded-xl text-blue-600 shadow-sm border border-gray-100 hover:scale-110 active:scale-95 transition-all outline-none"
                                         title="Llamar"
                                     >
-                                        <Phone size={24} strokeWidth={2} />
+                                        <Phone size={18} strokeWidth={2} />
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 relative z-10">
                             {isAuthenticated ? (
-                                <div className="flex flex-col gap-3">
+                                <div className="flex flex-col gap-2">
                                     <button
                                         onClick={() => navigate('/profile?tab=orders')}
-                                        className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90 flex items-center justify-center gap-2"
+                                        className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black text-[13px] hover:bg-red-700 transition-all shadow-lg shadow-red-100 transform active:scale-95 flex items-center justify-center gap-2"
                                     >
                                         Mis Pedidos
                                     </button>
                                     <Link
                                         to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone || user?.phone || '')}`}
-                                        className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-black transition-all active:scale-90 flex items-center justify-center gap-2"
+                                        className="bg-gray-900 text-white px-8 py-3 rounded-2xl font-black text-[13px] no-underline text-center hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
                                     >
                                         Seguir mi pedido 🛵
                                     </Link>
                                 </div>
                             ) : (
-                                <div className="flex flex-col gap-3">
+                                <div className="flex flex-col gap-2">
                                     <Link
                                         to={`/track/${orderSuccess}?phone=${encodeURIComponent(phone)}`}
-                                        className="bg-red-600 text-white px-8 py-3.5 rounded-2xl font-black text-sm no-underline text-center hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform active:scale-90"
+                                        className="bg-red-600 text-white px-8 py-3 rounded-2xl font-black text-[13px] no-underline text-center hover:bg-red-700 transition-all shadow-lg shadow-red-100 transform active:scale-95"
                                     >
                                         Seguir mi pedido 🛵
                                     </Link>
-                                    <div className="bg-amber-50 border border-amber-200 p-3.5 rounded-2xl mb-1 flex flex-col items-center">
-                                        <span className="text-amber-600 mb-1">🎁</span>
-                                        <p className="text-xs text-amber-800 font-medium mb-3">
-                                            ¡Regístrate ahora y consigue{' '}
-                                            <strong>descuentos exclusivos</strong> en tus próximos
-                                            pedidos!
+                                    <div className="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl flex flex-col items-center">
+                                        <p className="text-[10px] text-amber-800 font-bold mb-1.5 px-2 text-center leading-tight">
+                                            🎁 ¡Consigue descuentos en tus próximos pedidos!
                                         </p>
                                         <button
                                             onClick={() =>
@@ -671,19 +668,13 @@ export default function CartPageSimple() {
                                                     })
                                                 )
                                             }
-                                            className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-xs hover:bg-gray-800 transition transform active:scale-90"
+                                            className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-[11px] hover:bg-gray-800 transition transform active:scale-95 uppercase tracking-wider"
                                         >
                                             Crear cuenta
                                         </button>
                                     </div>
                                 </div>
                             )}
-                            <Link
-                                to="/menu"
-                                className="bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl font-black text-sm no-underline text-center hover:bg-gray-200 transition-all active:scale-90"
-                            >
-                                Seguir comprando
-                            </Link>
                         </div>
                     </motion.div>
                 </div>
