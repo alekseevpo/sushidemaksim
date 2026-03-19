@@ -108,8 +108,18 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
 /**
  * Send an order receipt email.
  */
-export async function sendOrderReceiptEmail(to: string, orderData: any): Promise<void> {
+export async function sendOrderReceiptEmail(
+    to: string,
+    orderData: any,
+    isAdminCopy = false
+): Promise<void> {
     const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+
+    const subject = isAdminCopy
+        ? `🚨 [NUEVO PEDIDO] #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`
+        : `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`;
+
+    const greeting = isAdminCopy ? '¡Hola Administrador!' : `¡Hola ${orderData.customerName}!`;
 
     // Parse notes for special instructions
     const notes = orderData.notes || '';
@@ -174,11 +184,10 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       <p style="color: #6b7280; margin: 2px 0 0; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">Confirmación de Pedido</p>
     </div>
 
-    <!-- Main Content -->
     <div style="padding: 16px 20px;">
-      <h2 style="color: #111827; margin: 0 0 4px; font-size: 20px; font-weight: 800;">¡Hola ${orderData.customerName}!</h2>
+      <h2 style="color: #111827; margin: 0 0 4px; font-size: 20px; font-weight: 800;">${greeting}</h2>
       <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0 0 16px;">
-        Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> ha sido recibido con éxito.
+        El pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> ha sido recibido con éxito.
       </p>
 
       <!-- Order Summary Card -->
@@ -295,7 +304,7 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
     await transporter.sendMail({
         from,
         to,
-        subject: `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`,
+        subject,
         html,
     });
 }

@@ -402,9 +402,20 @@ export default function AdminOrders({
                                                     </div>
                                                 )}
                                             </div>
-                                            <p className="text-xs text-gray-600 font-medium">
-                                                {order.phone_number}
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-xs text-gray-600 font-bold">
+                                                    {order.phone_number}
+                                                </p>
+                                                <a
+                                                    href={`https://wa.me/${order.phone_number.replace(/\D/g, '')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-1 px-2 bg-green-50 text-green-600 rounded-lg text-[10px] font-black border border-green-100 hover:bg-green-100 transition-colors flex items-center gap-1"
+                                                >
+                                                    <MessageSquare size={10} strokeWidth={2.5} />
+                                                    WHATSAPP
+                                                </a>
+                                            </div>
                                             {order.users?.email && (
                                                 <p className="text-[10px] text-gray-400 mt-1">
                                                     {order.users.email}
@@ -569,9 +580,12 @@ export default function AdminOrders({
                                                                 </div>
                                                             )}
                                                             {scheduled && (
-                                                                <div className="px-2 py-1 rounded-lg bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
-                                                                    <Clock size={12} />
-                                                                    {scheduled}
+                                                                <div className="px-3 py-2 rounded-xl bg-red-600 text-white border border-red-700 text-[11px] font-black uppercase tracking-wider flex items-center gap-2 animate-pulse shadow-lg shadow-red-200">
+                                                                    <Clock size={14} strokeWidth={3} />
+                                                                    <div className="flex flex-col leading-none">
+                                                                        <span>ENTREGA PROGRAMADA</span>
+                                                                        <span className="text-[9px] opacity-90 mt-0.5">{scheduled}</span>
+                                                                    </div>
                                                                 </div>
                                                             )}
                                                             {noCall && (
