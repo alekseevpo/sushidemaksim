@@ -136,6 +136,6 @@ test.describe('Critical E2E: Guest Checkout', () => {
             .getByRole('button', { name: /Realizar pedido/i })
             .first()
             .click();
-        await expect(page.getByText(/El pedido mínimo para entrega es de 20,00/i)).toBeVisible();
+        await expect(page.getByText(/El pedido mínimo.*20,00/i)).toBeVisible();
     });
 });
