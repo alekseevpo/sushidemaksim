@@ -515,8 +515,8 @@ export default function MenuPageSimple() {
                     </header>
 
                     <div
-                        className="sticky top-[64px] z-[40] -mx-2 px-2 py-3 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate transform-gpu translate-z-0 snap-x snap-mandatory"
-                        style={{ touchAction: 'pan-x' }}
+                        className="sticky top-[64px] z-[40] px-2 py-3 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-100/50 mb-8 lg:hidden overflow-x-auto no-scrollbar shadow-sm isolate"
+                        style={{ touchAction: 'pan-x', willChange: 'top' }}
                     >
                         <div className="flex gap-2 flex-nowrap">
                             <button

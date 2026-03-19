@@ -148,7 +148,10 @@ router.post(
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Supabase error inserting item:', error);
+            throw error;
+        }
         res.status(201).json({ item: formatMenuItem(item) });
     })
 );
@@ -239,10 +242,28 @@ router.put(
 router.delete(
     '/menu/:id',
     asyncHandler(async (req: Request, res: Response) => {
-        const { error } = await supabase.from('menu_items').delete().eq('id', req.params.id);
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ error: 'ID de producto inválido' });
+        }
 
-        if (error) throw error;
-        res.json({ success: true, message: `Producto ${req.params.id} eliminado` });
+        // 1. Handle dependencies before deletion to avoid FK constraint errors (23503)
+        // Order history is preserved because order_items stores name/price/image strings
+        await Promise.all([
+            // Clear from carts and favorites
+            supabase.from('cart_items').delete().eq('menu_item_id', id),
+            supabase.from('user_favorites').delete().eq('menu_item_id', id),
+            // Nullify reference in orders but keep the data records
+            supabase.from('order_items').update({ menu_item_id: null }).eq('menu_item_id', id)
+        ]);
+
+        const { error } = await supabase.from('menu_items').delete().eq('id', id);
+
+        if (error) {
+            console.error('❌ Error deleting menu item:', error);
+            throw error;
+        }
+        res.json({ success: true, message: `Producto ${id} eliminado` });
     })
 );
 
@@ -315,7 +336,7 @@ router.get(
                     (sum: number, o: any) => sum + Number(o.total || 0),
                     0
                 );
-                const avgCheck = orderCount > 0 ? totalSpent / orderCount : 0;
+                const avgCheck = orderCount > 0 ? Math.round((totalSpent / orderCount) * 100) / 100 : 0;
 
                 // Favorite dish calculation
                 const dishCounts: Record<string, number> = {};
@@ -465,7 +486,7 @@ router.get(
                 ...u,
                 orderCount: u.orders?.length || 0,
                 totalSpent:
-                    u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
+                    Math.round((u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0) * 100) / 100,
             }));
 
             // In-memory sort
@@ -511,7 +532,7 @@ router.get(
                 ...u,
                 orderCount: u.orders?.length || 0,
                 totalSpent:
-                    u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0,
+                    Math.round((u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0) * 100) / 100,
             }));
         }
 
@@ -645,7 +666,7 @@ router.get(
             supabase.from('menu_items').select('*', { count: 'exact', head: true }),
         ]);
 
-        const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
+        const revenue = Math.round((revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) / 100;
 
         // 2. Today metrics (Madrid reset at 0:00)
         const todayISO = getMadridStartOfDay().toISOString();
@@ -675,7 +696,7 @@ router.get(
                 .gte('created_at', todayISO),
         ]);
 
-        const revenueToday = revTodayData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
+        const revenueToday = Math.round((revTodayData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) / 100;
 
         // 3. Status breakdown
         const { data: statusData } = await supabase.from('orders').select('status');
@@ -756,7 +777,7 @@ router.get(
             // Category Accumulation
             const cat = item.menu_items?.category || 'Otros';
             if (!categoryMap[cat]) categoryMap[cat] = { total: 0, count: 0 };
-            categoryMap[cat].total += rev;
+            categoryMap[cat].total = Math.round((categoryMap[cat].total + rev) * 100) / 100;
             categoryMap[cat].count += item.quantity;
         });
 
@@ -788,7 +809,7 @@ router.get(
                         .trim() || 'Centro/Otros';
                 if (!areaMap[area]) areaMap[area] = { count: 0, revenue: 0 };
                 areaMap[area].count++;
-                areaMap[area].revenue += Number(o.total);
+                areaMap[area].revenue = Math.round((areaMap[area].revenue + Number(o.total)) * 100) / 100;
 
                 // Promo Detection
                 const subtotal = orderSubtotals[o.id] || 0;
@@ -799,7 +820,7 @@ router.get(
 
                 // Growth
                 if (isWithin30 && dailyStats[isoDate]) {
-                    dailyStats[isoDate].revenue += Number(o.total);
+                    dailyStats[isoDate].revenue = Math.round((dailyStats[isoDate].revenue + Number(o.total)) * 100) / 100;
                     dailyStats[isoDate].orders += 1;
                 }
             }
@@ -834,13 +855,14 @@ router.get(
                 else if (cumulativeShare <= 0.95) category = 'B';
                 return {
                     ...item,
+                    revenue: Math.round(item.revenue * 100) / 100,
                     category,
-                    revenueShare: (item.revenue / (totalRev90 || 1)) * 100,
+                    revenueShare: Math.round((item.revenue / (totalRev90 || 1)) * 10000) / 100,
                 };
             });
 
         const areaStats = Object.entries(areaMap)
-            .map(([name, data]) => ({ name, ...data }))
+            .map(([name, data]) => ({ name, ...data, revenue: Math.round(data.revenue * 100) / 100 }))
             .sort((a, b) => b.revenue - a.revenue)
             .slice(0, 8);
 
@@ -1158,6 +1180,92 @@ router.get(
             return res.json([]);
         }
         res.json(reports || []);
+    })
+);
+
+// ─── DELIVERY ZONES MANAGEMENT ──────────────────────────────────────────
+
+// GET /api/admin/delivery-zones
+router.get(
+    '/delivery-zones',
+    asyncHandler(async (_req: Request, res: Response) => {
+        const { data: zones, error } = await supabase
+            .from('delivery_zones')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.json({ zones });
+    })
+);
+
+// POST /api/admin/delivery-zones
+router.post(
+    '/delivery-zones',
+    validate({
+        name: { required: true, type: 'string', minLength: 1 },
+        cost: { required: true, type: 'number', min: 0 },
+        min_order: { type: 'number', min: 0 },
+        color: { type: 'string' },
+        coordinates: { required: true, type: 'array' },
+    }),
+    asyncHandler(async (req: Request, res: Response) => {
+        const { name, cost, min_order, color, opacity, coordinates, is_active } = req.body;
+        
+        const { data: zone, error } = await supabase
+            .from('delivery_zones')
+            .insert({
+                name: name.trim(),
+                cost,
+                min_order: min_order || 0,
+                color: color || '#EF4444',
+                opacity: opacity || 0.3,
+                coordinates,
+                is_active: is_active !== undefined ? is_active : true
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.status(201).json({ zone });
+    })
+);
+
+// PUT /api/admin/delivery-zones/:id
+router.put(
+    '/delivery-zones/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const { name, cost, min_order, color, opacity, coordinates, is_active } = req.body;
+
+        const { data: zone, error } = await supabase
+            .from('delivery_zones')
+            .update({
+                name: name?.trim(),
+                cost,
+                min_order,
+                color,
+                opacity,
+                coordinates,
+                is_active
+            })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json({ zone });
+    })
+);
+
+// DELETE /api/admin/delivery-zones/:id
+router.delete(
+    '/delivery-zones/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const { error } = await supabase.from('delivery_zones').delete().eq('id', id);
+        if (error) throw error;
+        res.json({ success: true });
     })
 );
 

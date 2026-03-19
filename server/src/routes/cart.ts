@@ -111,6 +111,61 @@ router.delete(
     })
 );
 
+// POST /api/cart/bulk — sync multiple items (merges with existing)
+router.post(
+    '/bulk',
+    validate({
+        items: { required: true, type: 'array' },
+    }),
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { items: incomingItems } = req.body;
+
+        if (!Array.isArray(incomingItems) || incomingItems.length === 0) {
+            return res.json({ success: true, message: 'Nada que sincronizar' });
+        }
+
+        // 1. Fetch existing cart
+        const { data: existing, error: fetchError } = await supabase
+            .from('cart_items')
+            .select('*')
+            .eq('user_id', req.userId);
+
+        if (fetchError) throw fetchError;
+
+        // 2. Merge logic
+        const cartMap = new Map();
+        // Pack existing into map
+        (existing || []).forEach(item => {
+            cartMap.set(item.menu_item_id, item.quantity);
+        });
+
+        // Add incoming
+        incomingItems.forEach((item: any) => {
+            const mid = parseInt(item.menuItemId || item.id);
+            const qty = parseInt(item.quantity || 1);
+            if (!isNaN(mid)) {
+                cartMap.set(mid, (cartMap.get(mid) || 0) + qty);
+            }
+        });
+
+        // 3. Re-sync (Delete all and re-insert is the safest way to "merge" without complex upserts)
+        await supabase.from('cart_items').delete().eq('user_id', req.userId);
+
+        const toInsert = Array.from(cartMap.entries()).map(([menu_item_id, quantity]) => ({
+            user_id: req.userId,
+            menu_item_id,
+            quantity,
+        }));
+
+        if (toInsert.length > 0) {
+            const { error: insertError } = await supabase.from('cart_items').insert(toInsert);
+            if (insertError) throw insertError;
+        }
+
+        res.json({ success: true, message: 'Cesta sincronizada' });
+    })
+);
+
 // DELETE /api/cart — clear entire cart
 router.delete(
     '/',

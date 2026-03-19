@@ -1,0 +1,1072 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/Users/ppmtrue/Documents/GitHub/sushidemaksim[39m
+
+ [32m✓[39m src/hooks/useCart.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+[90mstderr[2m | src/components/admin/AdminUsers.test.tsx[2m > [22m[2mAdminUsers (Integration)[2m > [22m[2mrenders the users list
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/components/admin/AdminMenu.test.tsx[2m > [22m[2mAdminMenu (Integration)[2m > [22m[2mrenders the menu list
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/pages/PayForFriendPage.test.tsx[2m > [22m[2mPayForFriendPage (Integration)[2m > [22m[2mloads and displays order details
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/components/admin/AdminOrders.test.tsx[2m > [22m[2mAdminOrders (Integration)[2m > [22m[2mrenders the orders list
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/pages/MenuPageSimple.test.tsx[2m > [22m[2mMenuPageSimple (Integration)[2m > [22m[2mrenders the menu items
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+Not implemented: Window's scrollTo() method
+ [32m✓[39m src/components/admin/AdminUsers.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 243[2mms[22m[39m
+ [32m✓[39m src/pages/PayForFriendPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 201[2mms[22m[39m
+[90mstderr[2m | src/pages/ContactsPage.test.tsx[2m > [22m[2mContactsPage (Security)[2m > [22m[2msubmits contact form
+[22m[39mWarning: React does not recognize the `fetchPriority` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fetchpriority` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at img
+    at div
+    at section
+    at div
+    at ContactsPage (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/pages/ContactsPage.tsx:158:73)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32m✓[39m src/pages/ContactsPage.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 361[2mms[22m[39m
+     [33m[2m✓[22m[39m submits contact form [33m 361[2mms[22m[39m
+[90mstderr[2m | src/components/admin/AdminOrders.test.tsx[2m > [22m[2mAdminOrders (Integration)[2m > [22m[2mfilters by search ID
+[22m[39mWarning: An update to AdminOrders inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+Warning: An update to AdminOrders inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+
+[90mstderr[2m | src/components/admin/AdminOrders.test.tsx[2m > [22m[2mAdminOrders (Integration)[2m > [22m[2mfilters by search ID
+[22m[39mWarning: An update to AdminOrders inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+
+[90mstderr[2m | src/components/admin/AdminOrders.test.tsx[2m > [22m[2mAdminOrders (Integration)[2m > [22m[2mfilters by search ID
+[22m[39mWarning: An update to OrderTimer inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at OrderTimer (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/OrderTimer.tsx:8:23)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+Warning: An update to OrderTimer inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at OrderTimer (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/OrderTimer.tsx:8:23)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+
+[90mstderr[2m | src/components/admin/AdminOrders.test.tsx[2m > [22m[2mAdminOrders (Integration)[2m > [22m[2mfilters by search ID
+[22m[39mWarning: An update to AdminOrders inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+Warning: An update to AdminOrders inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+
+[90mstderr[2m | src/components/admin/AdminOrders.test.tsx[2m > [22m[2mAdminOrders (Integration)[2m > [22m[2mfilters by search ID
+[22m[39mWarning: An update to AdminOrders inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at AdminOrders (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/components/admin/AdminOrders.tsx:17:3)
+    at Router (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at _HelmetProvider (/Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/react-helmet-async/lib/index.esm.js:463:5)
+    at QueryClientProvider (file:///Users/ppmtrue/Documents/GitHub/sushidemaksim/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at Wrapper (/Users/ppmtrue/Documents/GitHub/sushidemaksim/src/test/test-utils.tsx:23:22)
+
+ [32m✓[39m src/components/admin/AdminOrders.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 359[2mms[22m[39m
+[90mstderr[2m | src/pages/CartPageSimple.test.tsx[2m > [22m[2mCartPageSimple (Integration)[2m > [22m[2mrenders the cart content
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/pages/CartPageInvite.test.tsx[2m > [22m[2mCartPageSimple - Invitations (Integration)[2m > [22m[2mshows invitation button even for guests
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [31m❯[39m src/pages/CartPageSimple.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 110[2mms[22m[39m
+     [32m✓[39m renders the cart content[32m 40[2mms[22m[39m
+     [32m✓[39m calculates the summary correctly[32m 18[2mms[22m[39m
+[31m     [31m×[31m shows minimum order error after filling address[39m[32m 51[2mms[22m[39m
+ [31m❯[39m src/pages/CartPageInvite.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 112[2mms[22m[39m
+     [32m✓[39m shows invitation button even for guests[32m 50[2mms[22m[39m
+[31m     [31m×[31m allows authenticated users to generate an invitation link[39m[32m 28[2mms[22m[39m
+     [32m✓[39m shows error if inviting without address[32m 33[2mms[22m[39m
+ [32m✓[39m src/hooks/useAuth.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/pages/MenuPageSimple.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 640[2mms[22m[39m
+     [33m[2m✓[22m[39m searches for a dish [33m 386[2mms[22m[39m
+ [32m✓[39m src/utils/formatters.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [31m❯[39m src/components/admin/AdminMenu.test.tsx [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1460[2mms[22m[39m
+     [32m✓[39m renders the menu list[32m 45[2mms[22m[39m
+     [32m✓[39m filters items by search[32m 32[2mms[22m[39m
+     [33m[2m✓[22m[39m opens modal to add a new item [33m 318[2mms[22m[39m
+[31m     [31m×[31m submits the form to add a new item[39m[33m 1047[2mms[22m[39m
+     [32m✓[39m deletes an item[32m 16[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/CartPageInvite.test.tsx[2m > [22mCartPageSimple - Invitations (Integration)[2m > [22mallows authenticated users to generate an invitation link
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the placeholder text of: /15/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-transparent flex flex-col"[39m
+    [36m>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl sm:text-4xl font-black text-gray-900 m-0 tracking-tight"[39m
+          [36m>[39m
+            [0mTu cesta[0m
+          [36m</h1>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"text-sm font-bold text-gray-400 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1 w-fit"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-trash2 "[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 6h18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mx1[39m=[32m"10"[39m
+                [33mx2[39m=[32m"10"[39m
+                [33my1[39m=[32m"11"[39m
+                [33my2[39m=[32m"17"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mx1[39m=[32m"14"[39m
+                [33mx2[39m=[32m"14"[39m
+                [33my1[39m=[32m"11"[39m
+                [33my2[39m=[32m"17"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Vaciar cesta[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-1 lg:grid-cols-3 gap-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"lg:col-span-2 flex flex-col gap-4 md:gap-6 px-0 md:px-0"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"bg-transparent md:bg-white md:rounded-xl md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-0 md:p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-4 md:mb-6 px-4 md:px-0"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-xl md:text-xl font-black m-0 uppercase tracking-tight"[39m
+                [36m>[39m
+                  [0mProductos ([0m
+                  [0m1[0m
+                  [0m)[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-col gap-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"relative flex items-center gap-3 p-3 bg-white border-b border-gray-50 last:border-none animate-in slide-in-from-left duration-300"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"w-16 h-16 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img"[39m
+                  [36m>[39m
+                    [36m<img[39m
+                      [33malt[39m=[32m"Producto Sushi Roll"[39m
+                      [33mclass[39m=[32m"w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"[39m
+                      [33mloading[39m=[32m"lazy"[39m
+                      [33msrc[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                  [36m>[39m
+                    [36m<h3[39m
+                      [33mclass[39m=[32m"font-bold text-gray-900 leading-tight mb-1 md:mb-2 text-sm md:text-sm truncate"[39m
+                    [36m>[39m
+                      [0mSushi Roll[0m
+                    [36m</h3>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center justify-between"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-center bg-gray-50 rounded-lg p-0.5 border border-gray-100"[39m
+                      [36m>[39m
+                        [36m<button[39m
+                          [33mclass[39m=[32m"w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all"[39m
+                        [36m>[39m
+                          [36m<svg[39m
+                            [33mclass[39m=[32m"lucide lucide-minus "[39m
+                            [33mfill[39m=[32m"none"[39m
+                            [33mheight[39m=[32m"14"[39m
+                            [33mstroke[39m=[32m"currentColor"[39m
+                            [33mstroke-linecap[39m=[32m"round"[39m
+                            [33mstroke-linejoin[39m=[32m"round"[39m
+                            [33mstroke-width[39m=[32m"1.5"[39m
+                            [33mviewBox[39m=[32m"0 0 24 24"[39m
+                            [33mwidth[39m=[32m"14"[39m
+                            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                          [36m>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"M5 12h14"[39m
+                            [36m/>[39m
+                          [36m</svg>[39m
+                        [36m</button>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"w-8 md:w-8 text-center font-black text-gray-900 text-sm"[39m
+                        [36m>[39m
+                          [0m2[0m
+                        [36m</span>[39m
+                        [36m<button[39m
+                          [33mclass[39m=[32m"w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all"[39m
+                        [36m>[39m
+                         ...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/CartPageInvite.test.tsx:[2m129:35[22m[39m
+    [90m127| [39m        [90m// Wait for page to load[39m
+    [90m128| [39m        const streetInput = await screen.findByPlaceholderText(/Nombre…
+    [90m129| [39m        [35mconst[39m houseInput [33m=[39m screen[33m.[39m[34mgetByPlaceholderText[39m([36m/15/i[39m)[33m;[39m
+    [90m   | [39m                                  [31m^[39m
+    [90m130| [39m        [35mconst[39m aptInput [33m=[39m screen[33m.[39m[34mgetByPlaceholderText[39m([36m/3ºB/i[39m)[33m;[39m
+    [90m131| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/CartPageSimple.test.tsx[2m > [22mCartPageSimple (Integration)[2m > [22mshows minimum order error after filling address
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the placeholder text of: /00000/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-transparent flex flex-col"[39m
+    [36m>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl sm:text-4xl font-black text-gray-900 m-0 tracking-tight"[39m
+          [36m>[39m
+            [0mTu cesta[0m
+          [36m</h1>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"text-sm font-bold text-gray-400 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1 w-fit"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-trash2 "[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 6h18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mx1[39m=[32m"10"[39m
+                [33mx2[39m=[32m"10"[39m
+                [33my1[39m=[32m"11"[39m
+                [33my2[39m=[32m"17"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mx1[39m=[32m"14"[39m
+                [33mx2[39m=[32m"14"[39m
+                [33my1[39m=[32m"11"[39m
+                [33my2[39m=[32m"17"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Vaciar cesta[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-1 lg:grid-cols-3 gap-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"lg:col-span-2 flex flex-col gap-4 md:gap-6 px-0 md:px-0"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"bg-transparent md:bg-white md:rounded-xl md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-0 md:p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-4 md:mb-6 px-4 md:px-0"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-xl md:text-xl font-black m-0 uppercase tracking-tight"[39m
+                [36m>[39m
+                  [0mProductos ([0m
+                  [0m1[0m
+                  [0m)[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-col gap-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"relative flex items-center gap-3 p-3 bg-white border-b border-gray-50 last:border-none animate-in slide-in-from-left duration-300"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"w-16 h-16 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img"[39m
+                  [36m>[39m
+                    [36m<img[39m
+                      [33malt[39m=[32m"Producto Sushi A"[39m
+                      [33mclass[39m=[32m"w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"[39m
+                      [33mloading[39m=[32m"lazy"[39m
+                      [33msrc[39m=[32m""[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                  [36m>[39m
+                    [36m<h3[39m
+                      [33mclass[39m=[32m"font-bold text-gray-900 leading-tight mb-1 md:mb-2 text-sm md:text-sm truncate"[39m
+                    [36m>[39m
+                      [0mSushi A[0m
+                    [36m</h3>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center justify-between"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-center bg-gray-50 rounded-lg p-0.5 border border-gray-100"[39m
+                      [36m>[39m
+                        [36m<button[39m
+                          [33mclass[39m=[32m"w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all"[39m
+                        [36m>[39m
+                          [36m<svg[39m
+                            [33mclass[39m=[32m"lucide lucide-minus "[39m
+                            [33mfill[39m=[32m"none"[39m
+                            [33mheight[39m=[32m"14"[39m
+                            [33mstroke[39m=[32m"currentColor"[39m
+                            [33mstroke-linecap[39m=[32m"round"[39m
+                            [33mstroke-linejoin[39m=[32m"round"[39m
+                            [33mstroke-width[39m=[32m"1.5"[39m
+                            [33mviewBox[39m=[32m"0 0 24 24"[39m
+                            [33mwidth[39m=[32m"14"[39m
+                            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                          [36m>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"M5 12h14"[39m
+                            [36m/>[39m
+                          [36m</svg>[39m
+                        [36m</button>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"w-8 md:w-8 text-center font-black text-gray-900 text-sm"[39m
+                        [36m>[39m
+                          [0m1[0m
+                        [36m</span>[39m
+                        [36m<button[39m
+                          [33mclass[39m=[32m"w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all"[39m
+                        [36m>[39m
+                          [36m...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/CartPageSimple.test.tsx:[2m110:33[22m[39m
+    [90m108| [39m        fireEvent.change(screen.getByPlaceholderText(/Ej: 20/i), { tar…
+    [90m109| [39m        fireEvent.change(screen.getByPlaceholderText(/3ºB/i), { target…
+    [90m110| [39m        fireEvent.change(screen.getByPlaceholderText(/00000/i), { targ…
+    [90m   | [39m                                [31m^[39m
+    [90m111| [39m        fireEvent.change(screen.getByPlaceholderText(/\+34 600 000 000…
+    [90m112| [39m            target[33m:[39m { value[33m:[39m [32m'600000000'[39m }[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/admin/AdminMenu.test.tsx[2m > [22mAdminMenu (Integration)[2m > [22msubmits the form to add a new item
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: New Roll. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"animate-in fade-in slide-in-from-bottom-4 duration-500"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"relative w-full sm:w-96"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33mclass[39m=[32m"lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"18"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"1.5"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"18"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"11"[39m
+              [33mcy[39m=[32m"11"[39m
+              [33mr[39m=[32m"8"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"m21 21-4.3-4.3"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"[39m
+            [33mplaceholder[39m=[32m"Buscar por nombre o categoría..."[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-3 w-full sm:w-auto"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"p-2 text-gray-400 hover:text-gray-600 transition"[39m
+            [33mtitle[39m=[32m"Actualizar"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-refresh-cw "[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 3v5h-5"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 16H3v5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"flex-1 sm:flex-none bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-plus "[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M5 12h14"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 5v14"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Nuevo Plato[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"overflow-x-auto"[39m
+        [36m>[39m
+          [36m<table[39m
+            [33mclass[39m=[32m"w-full text-left text-sm text-gray-600"[39m
+          [36m>[39m
+            [36m<thead[39m
+              [33mclass[39m=[32m"bg-gray-50 text-gray-700 font-bold border-b border-gray-100"[39m
+            [36m>[39m
+              [36m<tr>[39m
+                [36m<th[39m
+                  [33mclass[39m=[32m"px-6 py-4"[39m
+                [36m>[39m
+                  [0mImagen[0m
+                [36m</th>[39m
+                [36m<th[39m
+                  [33mclass[39m=[32m"px-6 py-4"[39m
+                [36m>[39m
+                  [0mNombre[0m
+                [36m</th>[39m
+                [36m<th[39m
+                  [33mclass[39m=[32m"px-6 py-4"[39m
+                [36m>[39m
+                  [0mCategoría[0m
+                [36m</th>[39m
+                [36m<th[39m
+                  [33mclass[39m=[32m"px-6 py-4 text-right"[39m
+                [36m>[39m
+                  [0mPrecio[0m
+                [36m</th>[39m
+                [36m<th[39m
+                  [33mclass[39m=[32m"px-6 py-4 text-center"[39m
+                [36m>[39m
+                  [0mEtiquetas[0m
+                [36m</th>[39m
+                [36m<th[39m
+                  [33mclass[39m=[32m"px-6 py-4 text-right"[39m
+                [36m>[39m
+                  [0mAcciones[0m
+                [36m</th>[39m
+              [36m</tr>[39m
+            [36m</thead>[39m
+            [36m<tbody[39m
+              [33mclass[39m=[32m"divide-y divide-gray-100"[39m
+            [36m>[39m
+              [36m<tr[39m
+                [33mclass[39m=[32m"hover:bg-gray-50 transition-colors"[39m
+              [36m>[39m
+                [36m<td[39m
+                  [33mclass[39m=[32m"px-6 py-3"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex items-center justify-center"[39m
+                  [36m>[39m
+                    [0m🍣[0m
+                  [36m</div>[39m
+                [36m</td>[39m
+                [36m<td[39m
+                  [33mclass[39m=[32m"px-6 py-3 font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mSake Sushi[0m
+                [36m</td>[39m
+                [36m<td[39m
+                  [33mclass[39m=[32m"px-6 py-3 capitalize"[39m
+                [36m>[39m
+                  [0mentrantes[0m
+                [36m</td>[39m
+                [36m<td[39m
+                  [33mclass[39m=[32m"px-6 py-3 text-right font-bold text-red-600"[39m
+                [36m>[39m
+                  [0m5,00[0m
+                  [0m €[0m
+                [36m</td>[39m
+                [36m<td[39m
+                  [33mclass[39m=[32m"px-6 py-3 text-center"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center justify-center gap-1 flex-wrap"[39m
+                  [36m/>[39m
+                [36m</td>[39m
+                [36m<td[39m
+                  [33mclass[39m=[32m"px-6 py-3 text-right"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center justify-end gap-2"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"Editar plato"[39m
+                      [33mclass[39m=[32m"p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"[39m
+                      [33mtitle[39m=[32m"Editar plato"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mclass[39m=[32m"lucide lucide-pen "[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"16"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"1.5"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"16"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</button>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"Eliminar plato"[39m
+                      [33mclass[39m=[32m"p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"[39m
+                      [33mtitle[39m=[32m"Eliminar plato"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mclass[39m=[32m"lucide lucide-trash2 "[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"16"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"1.5"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"16"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M3 6h18"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"[39m
+                        [36m/>[39m
+                        [36m<line[39m
+                          [33mx1[39m=[32m"10"[39m
+                          [33mx2[39m=[32m"10"[39m
+                          [33my1[39m=[32m"11"[39m
+                          [33my2[39m=[32m"17"[39m
+                        [36m/>[39m
+                        [36m<line[39m
+                          [33mx1[39m=[32m"14"[39m
+                          [33mx2[39m=[32m"14"[39m
+                          [33my1[39m=[32m"11"[39m
+                          [33my2[39m=[32m"17"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                [36m</td>[39m
+              [36m</tr>[39m
+            [36m</tbody>[39m
+          [36m</table>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-in fade-in slide-in-from-bottom-4 duration-500"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative w-full sm:w-96"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.3-4.3"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"[39m
+              [33mplaceholder[39m=[32m"Buscar por nombre o categoría..."[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 w-full sm:w-auto"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"p-2 text-gray-400 hover:text-gray-600 transition"[39m
+              [33mtitle[39m=[32m"Actualizar"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-refresh-cw "[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M21 3v5h-5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 16H3v5"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"flex-1 sm:flex-none bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-plus "[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M5 12h14"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 5v14"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0m Nuevo Plato[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"overflow-x-auto"[39m
+          [36m>[39m
+            [36m<table[39m
+              [33mclass[39m=[32m"w-full text-left text-sm text-gray-600"[39m
+            [36m>[39m
+              [36m<thead[39m
+                [33mclass[39m=[32m"bg-gray-50 text-gray-700 font-bold border-b border-gray-100"[39m
+              [36m>[39m
+                [36m<tr>[39m
+                  [36m<th[39m
+                    [33mclass[39m=[32m"px-6 py-4"[39m
+                  [36m>[39m
+                    [0mImagen[0m
+                  [36m</th>[39m
+                  [36m<th[39m
+                    [33mclass[39m=[32m"px-6 py-4"[39m
+                  [36m>[39m
+                    [0mNombre[0m
+                  [36m</th>[39m
+                  [36m<th[39m
+                    [33mclass[39m=[32m"px-6 py-4"[39m
+                  [36m>[39m
+                    [0mCategoría[0m
+                  [36m</th>[39m
+                  [36m<th[39m
+                    [33mclass[39m=[32m"px-6 py-4 text-right"[39m
+                  [36m>[39m
+                    [0mPrecio[0m
+                  [36m</th>[39m
+                  [36m<th[39m
+                    [33mclass[39m=[32m"px-6 py-4 text-center"[39m
+                  [36m>[39m
+                    [0mEtiquetas[0m
+                  [36m</th>[39m
+                  [36m<th[39m
+                    [33mclass[39m=[32m"px-6 py-4 text-right"[39m
+                  [36m>[39m
+                    [0mAcciones[0m
+                  [36m</th>[39m
+                [36m</tr>[39m
+              [36m</thead>[39m
+              [36m<tbody[39m
+                [33mclass[39m=[32m"divide-y divide-gray-100"[39m
+              [36m>[39m
+                [36m<tr[39m
+                  [33mclass[39m=[32m"hover:bg-gray-50 transition-colors"[39m
+                [36m>[39m
+                  [36m<td[39m
+                    [33mclass[39m=[32m"px-6 py-3"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex items-center justify-center"[39m
+                    [36m>[39m
+                      [0m🍣[0m
+                    [36m</div>[39m
+                  [36m</td>[39m
+                  [36m<td[39m
+                    [33mclass[39m=[32m"px-6 py-3 font-semibold text-gray-900"[39m
+                  [36m>[39m
+                    [0mSake Sushi[0m
+                  [36m</td>[39m
+                  [36m<td[39m
+                    [33mclass[39m=[32m"px-6 py-3 capitalize"[39m
+                  [36m>[39m
+                    [0mentrantes[0m
+                  [36m</td>[39m
+                  [36m<td[39m
+                    [33mclass[39m=[32m"px-6 py-3 text-right font-bold text-red-600"[39m
+                  [36m>[39m
+                    [0m5,00[0m
+                    [0m €[0m
+                  [36m</td>[39m
+                  [36m<td[39m
+                    [33mclass[39m=[32m"px-6 py-3 text-center"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center justify-center gap-1 flex-wrap"[39m
+                    [36m/>[39m
+                  [36m</td>[39m
+                  [36m<td[39m
+                    [33mclass[39m=[32m"px-6 py-3 text-right"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center justify-end gap-2"[39m
+                    [36m>[39m
+                      [36m<button[39m
+                        [33maria-label[39m=[32m"Editar plato"[39m
+                        [33mclass[39m=[32m"p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"[39m
+                        [33mtitle[39m=[32m"Editar plato"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33mclass[39m=[32m"lucide lucide-pen "[39m
+                          [33mfill[39m=[32m"none"[39m
+                          [33mheight[39m=[32m"16"[39m
+                          [33mstroke[39m=[32m"currentColor"[39m
+                          [33mstroke-linecap[39m=[32m"round"[39m
+                          [33mstroke-linejoin[39m=[32m"round"[39m
+                          [33mstroke-width[39m=[32m"1.5"[39m
+                          [33mviewBox[39m=[32m"0 0 24 24"[39m
+                          [33mwidth[39m=[32m"16"[39m
+                          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                        [36m>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"[39m
+                          [36m/>[39m
+                        [36m</svg>[39m
+                      [36m</button>[39m
+                      [36m<button[39m
+                        [33maria-label[39m=[32m"Eliminar plato"[39m
+                        [33mclass[39m=[32m"p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"[39m
+                        [33mtitle[39m=[32m"Eliminar plato"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33mclass[39m=[32m"lucide lucide-trash2 "[39m
+                          [33mfill[39m=[32m"none"[39m
+                          [33mheight[39m=[32m"16"[39m
+                          [33mstroke[39m=[32m"currentColor"[39m
+                          [33mstroke-linecap[39m=[32m"round"[39m
+                          [33mstroke-linejoin[39m=[32m"round"[39m
+                          [33mstroke-width[39m=[32m"1.5"[39m
+                          [33mviewBox[39m=[32m"0 0 24 24"[39m
+                          [33mwidth[39m=[32m"16"[39m
+                          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                        [36m>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M3 6h18"[39m
+                          [36m/>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"[39m
+                          [36m/>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"[39m
+                          [36m/>[39m
+                          [36m<line[39m
+                            [33mx1[39m=[32m"10"[39m
+                            [33mx2[39m=[32m"10"[39m
+                            [33my1[39m=[32m"11"[39m
+                            [33my2[39m=[32m"17"[39m
+                          [36m/>[39m
+                          [36m<line[39m
+                            [33mx1[39m=[32m"14"[39m
+                            [33mx2[39m=[32m"14"[39m
+                            [33my1[39m=[32m"11"[39m
+                            [33my2[39m=[32m"17"[39m
+                          [36m/>[39m
+                        [36m</svg>[39m
+                      [36m</button>[39m
+                    [36m</div>[39m
+                  [36m</td>[39m
+                [36m</tr>[39m
+              [36m</tbody>[39m
+            [36m</table>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Module.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/components/admin/AdminMenu.test.tsx:[2m81:15[22m[39m
+    [90m 79| [39m        fireEvent[33m.[39m[34msubmit[39m(form)[33m;[39m
+    [90m 80| [39m
+    [90m 81| [39m        [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
+    [90m   | [39m              [31m^[39m
+    [90m 82| [39m            [34mexpect[39m(api[33m.[39mpost)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m 83| [39m            [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'New Roll'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m8 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m35 passed[39m[22m[90m (38)[39m
+[2m   Start at [22m 13:41:51
+[2m   Duration [22m 2.90s[2m (transform 1.42s, setup 2.32s, import 3.84s, tests 3.53s, environment 7.40s)[22m
+

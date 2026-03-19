@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import { api } from '../../utils/api';
+import { useState } from 'react';
+import { Plus, Edit2, Trash2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api, ApiError } from '../../utils/api';
 
 export default function AdminPromos() {
-    const [promos, setPromos] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [isEditing, setIsEditing] = useState<any>(null);
     const [form, setForm] = useState({
         title: '',
@@ -18,32 +18,20 @@ export default function AdminPromos() {
     });
     const [promoToDelete, setPromoToDelete] = useState<any>(null);
 
-    useEffect(() => {
-        loadPromos();
-    }, []);
+    const { data: promos = [], isLoading, refetch, isFetching } = useQuery({
+        queryKey: ['admin-promos'],
+        queryFn: () => api.get('/admin/promos'),
+    });
 
-    const loadPromos = async () => {
-        setLoading(true);
-        try {
-            const data = await api.get('/admin/promos');
-            setPromos(data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
+    const upsertMutation = useMutation({
+        mutationFn: (payload: any) => {
             if (isEditing) {
-                await api.put(`/admin/promos/${isEditing.id}`, form);
-                alert('Promoción actualizada con éxito');
-            } else {
-                await api.post('/admin/promos', form);
-                alert('Promoción creada con éxito');
+                return api.put(`/admin/promos/${isEditing.id}`, payload);
             }
+            return api.post('/admin/promos', payload);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-promos'] });
             setIsEditing(null);
             setForm({
                 title: '',
@@ -55,61 +43,64 @@ export default function AdminPromos() {
                 bg: 'from-amber-500 to-amber-400',
                 is_active: true,
             });
-            loadPromos();
-        } catch (err: any) {
-            console.error(err);
-            alert('Error al guardar: ' + (err.message || 'Error desconocido'));
+            alert(isEditing ? 'Promoción actualizada' : 'Promoción creada');
+        },
+        onError: (err: any) => {
+            alert('Error al guardar: ' + (err instanceof ApiError ? err.message : 'Error desconocido'));
         }
-    };
+    });
 
-    const handleEdit = (promo: any) => {
-        setIsEditing(promo);
-        setForm(promo);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const handleDelete = (promo: any) => {
-        setPromoToDelete(promo);
-    };
-
-    const confirmDelete = async () => {
-        if (!promoToDelete) return;
-        try {
-            await api.delete(`/admin/promos/${promoToDelete.id}`);
-            alert('Promoción eliminada');
+    const deleteMutation = useMutation({
+        mutationFn: (id: number) => api.delete(`/admin/promos/${id}`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-promos'] });
             setPromoToDelete(null);
-            loadPromos();
-        } catch (err: any) {
-            console.error(err);
+            alert('Promoción eliminada');
+        },
+        onError: () => {
             alert('Error al eliminar');
         }
+    });
+
+    const handleSave = (e: React.FormEvent) => {
+        e.preventDefault();
+        upsertMutation.mutate(form);
     };
 
-    if (loading)
+    if (isLoading)
         return <div className="p-8 text-center text-gray-500">Cargando promociones...</div>;
 
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Promociones Estáticas</h2>
-                <button
-                    onClick={() => {
-                        setIsEditing(null);
-                        setForm({
-                            title: '',
-                            description: '',
-                            discount: '',
-                            valid_until: '',
-                            icon: '🎁',
-                            color: '#F59E0B',
-                            bg: 'from-amber-500 to-amber-400',
-                            is_active: true,
-                        });
-                    }}
-                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition"
-                >
-                    <Plus size={16} strokeWidth={1.5} /> Nueva Promoción
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => refetch()}
+                        className="p-2 text-gray-400 hover:text-gray-600 transition"
+                        title="Actualizar"
+                    >
+                        <RefreshCw size={18} strokeWidth={1.5} className={isFetching ? 'animate-spin' : ''} />
+                    </button>
+                    <button
+                        onClick={() => {
+                            setIsEditing(null);
+                            setForm({
+                                title: '',
+                                description: '',
+                                discount: '',
+                                valid_until: '',
+                                icon: '🎁',
+                                color: '#F59E0B',
+                                bg: 'from-amber-500 to-amber-400',
+                                is_active: true,
+                            });
+                        }}
+                        className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition"
+                    >
+                        <Plus size={16} strokeWidth={1.5} /> Nueva Promoción
+                    </button>
+                </div>
             </div>
 
             <form
@@ -210,8 +201,10 @@ export default function AdminPromos() {
                     </label>
                     <button
                         type="submit"
-                        className="bg-gray-900 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-black transition"
+                        disabled={upsertMutation.isPending}
+                        className="bg-gray-900 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-black transition disabled:opacity-50 flex items-center gap-2"
                     >
+                        {upsertMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
                         Guardar
                     </button>
                 </div>
@@ -227,7 +220,7 @@ export default function AdminPromos() {
                         </tr>
                     </thead>
                     <tbody>
-                        {promos.map(p => (
+                        {promos.map((p: any) => (
                             <tr
                                 key={p.id}
                                 className="border-b border-gray-50 hover:bg-gray-50 transition"
@@ -267,13 +260,17 @@ export default function AdminPromos() {
                                 <td className="p-4">
                                     <div className="flex items-center gap-2">
                                         <button
-                                            onClick={() => handleEdit(p)}
+                                            onClick={() => {
+                                                setIsEditing(p);
+                                                setForm(p);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
                                             className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition"
                                         >
                                             <Edit2 size={16} strokeWidth={1.5} />
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(p)}
+                                            onClick={() => setPromoToDelete(p)}
                                             className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
                                             title="Eliminar promoción"
                                         >
@@ -319,9 +316,11 @@ export default function AdminPromos() {
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button
-                                    onClick={confirmDelete}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all"
+                                    onClick={() => deleteMutation.mutate(promoToDelete.id)}
+                                    disabled={deleteMutation.isPending}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
+                                    {deleteMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
                                     SÍ, ELIMINAR
                                 </button>
                                 <button

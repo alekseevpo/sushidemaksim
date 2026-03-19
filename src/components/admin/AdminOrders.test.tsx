@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithProviders as render, screen, fireEvent, waitFor } from '../../test/test-utils';
 import AdminOrders from './AdminOrders';
 import { api } from '../../utils/api';
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, memo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     Shield,
     Users as UsersIcon,
@@ -218,46 +219,76 @@ const UserRow = memo(
 
 export default function AdminUsers() {
     const { user: currentUser } = useAuth();
-    const [users, setUsers] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 1 });
+    const queryClient = useQueryClient();
+    
+    // UI state
+    const [page, setPage] = useState(1);
     const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
+    const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    // Modal state
     const [userToDelete, setUserToDelete] = useState<any>(null);
     const [userToChangeRole, setUserToChangeRole] = useState<any>(null);
     const [userToVerify, setUserToVerify] = useState<any>(null);
 
-    const [search, setSearch] = useState('');
-    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const LIMIT = 20;
 
+    // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(search);
+            setPage(1);
         }, 500);
         return () => clearTimeout(timer);
     }, [search]);
 
-    useEffect(() => {
-        loadUsers(1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sort, debouncedSearch]);
+    // Users Query
+    const {
+        data,
+        isLoading,
+        error: fetchError,
+        isFetching,
+        refetch,
+    } = useQuery({
+        queryKey: ['admin-users', page, sort.field, sort.order, debouncedSearch],
+        queryFn: () => 
+            api.get(`/admin/users?page=${page}&limit=${LIMIT}&sortBy=${sort.field}&order=${sort.order}&search=${debouncedSearch}`),
+    });
 
-    const loadUsers = useCallback(
-        async (page: number) => {
-            setLoading(true);
-            try {
-                const data = await api.get(
-                    `/admin/users?page=${page}&limit=${pagination.limit}&sortBy=${sort.field}&order=${sort.order}&search=${debouncedSearch}`
-                );
-                setUsers(data.users || []);
-                setPagination(data.pagination);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
+    const users = data?.users || [];
+    const pagination = data?.pagination || { page: 1, limit: LIMIT, total: 0, pages: 1 };
+
+    // Mutations
+    const deleteMutation = useMutation({
+        mutationFn: (userId: number) => api.delete(`/admin/users/${userId}`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] });
         },
-        [pagination.limit, sort.field, sort.order, debouncedSearch]
-    );
+    });
+
+    const roleMutation = useMutation({
+        mutationFn: ({ id, role }: { id: number; role: string }) => 
+            api.patch(`/admin/users/${id}/role`, { role }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+        },
+    });
+
+    const verifyEmailMutation = useMutation({
+        mutationFn: (id: number) => api.patch(`/admin/users/${id}/verify-email`, { is_verified: true }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+        },
+    });
+
+    const verifyBirthdayMutation = useMutation({
+        mutationFn: ({ id, verified }: { id: number; verified: boolean }) => 
+            api.patch(`/admin/users/${id}/verify-birthday`, { verified }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+        },
+    });
 
     const handleSort = (field: string) => {
         setSort(prev => ({
@@ -266,61 +297,25 @@ export default function AdminUsers() {
         }));
     };
 
-    const deleteUser = useCallback(async (userId: number) => {
-        try {
-            await api.delete(`/admin/users/${userId}`);
-            // Success! Reload users or update state
-            setUsers(prev => prev.filter(u => u.id !== userId));
-        } catch (err) {
-            alert(err instanceof ApiError ? err.message : 'Error al eliminar usuario');
-        }
-    }, []);
-
     const confirmToggleRole = async () => {
         if (!userToChangeRole) return;
         const { id, role: currentRole } = userToChangeRole;
         const newRole = currentRole === 'admin' ? 'user' : 'admin';
-        try {
-            await api.patch(`/admin/users/${id}/role`, { role: newRole });
-            setUsers(prev => prev.map(u => (u.id === id ? { ...u, role: newRole } : u)));
-        } catch (err) {
-            alert(err instanceof ApiError ? err.message : 'Error al cambiar rol');
-        } finally {
-            setUserToChangeRole(null);
-        }
+        roleMutation.mutate({ id, role: newRole });
+        setUserToChangeRole(null);
     };
-
-    const toggleBirthdayVerified = useCallback(async (userId: number, currentVerified: boolean) => {
-        try {
-            await api.patch(`/admin/users/${userId}/verify-birthday`, {
-                verified: !currentVerified,
-            });
-            setUsers(prev =>
-                prev.map(u =>
-                    u.id === userId ? { ...u, birth_date_verified: !currentVerified } : u
-                )
-            );
-        } catch (err) {
-            alert('Error updating verification');
-        }
-    }, []);
 
     const confirmVerifyEmail = async () => {
         if (!userToVerify) return;
-        const { id } = userToVerify;
-        try {
-            await api.patch(`/admin/users/${id}/verify-email`, {
-                is_verified: true,
-            });
-            setUsers(prev => prev.map(u => (u.id === id ? { ...u, is_verified: true } : u)));
-        } catch (err) {
-            alert('Error updating email verification');
-        } finally {
-            setUserToVerify(null);
-        }
+        verifyEmailMutation.mutate(userToVerify.id);
+        setUserToVerify(null);
     };
 
-    if (loading && users.length === 0) {
+    const toggleBirthdayVerified = useCallback((userId: number, currentVerified: boolean) => {
+        verifyBirthdayMutation.mutate({ id: userId, verified: !currentVerified });
+    }, [verifyBirthdayMutation]);
+
+    if (isLoading && users.length === 0) {
         return (
             <div className="text-center py-12 text-gray-400">
                 <RefreshCw size={32} strokeWidth={1.5} className="mx-auto mb-4 animate-spin" />
@@ -332,7 +327,7 @@ export default function AdminUsers() {
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Search Bar */}
-            <div className="mb-6 flex justify-end">
+            <div className="mb-6 flex justify-between items-center">
                 <div className="relative w-full max-w-md">
                     <Search
                         size={18}
@@ -355,7 +350,21 @@ export default function AdminUsers() {
                         </button>
                     )}
                 </div>
+                <button
+                    onClick={() => refetch()}
+                    className="p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-100 rounded-xl shadow-sm transition"
+                    title="Actualizar"
+                >
+                    <RefreshCw size={18} strokeWidth={1.5} className={isFetching ? 'animate-spin' : ''} />
+                </button>
             </div>
+
+            {fetchError && (
+                <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100 flex items-center gap-3">
+                    <AlertCircle size={18} strokeWidth={1.5} />
+                    <p className="font-medium">{fetchError instanceof ApiError ? fetchError.message : 'Error al cargar los usuarios'}</p>
+                </div>
+            )}
 
             <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -498,8 +507,8 @@ export default function AdminUsers() {
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y divide-gray-100">
-                            {users.map(user => (
+                        <tbody className="divide-y divide-gray-100 text-pretty">
+                            {users.map((user: any) => (
                                 <UserRow
                                     key={user.id}
                                     user={user}
@@ -510,35 +519,32 @@ export default function AdminUsers() {
                                     onVerifyEmail={setUserToVerify}
                                 />
                             ))}
+                            {!isLoading && users.length === 0 && (
+                                <tr>
+                                    <td colSpan={9} className="px-4 py-12 text-center text-gray-400">
+                                        No se encontraron usuarios
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
 
                 {pagination.pages > 1 && (
                     <div className="p-4 border-t border-gray-100 flex justify-center gap-2 bg-gray-50">
-                        {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => {
-                            // Simple pagination logic, showing up to 5 surrounding pages
-                            let pageNum = pagination.page - 2 + i;
-                            if (pagination.page <= 3) pageNum = i + 1;
-                            else if (pagination.page >= pagination.pages - 2)
-                                pageNum = pagination.pages - 4 + i;
-
-                            if (pageNum < 1 || pageNum > pagination.pages) return null;
-
-                            return (
-                                <button
-                                    key={pageNum}
-                                    onClick={() => loadUsers(pageNum)}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
-                                        pageNum === pagination.page
-                                            ? 'bg-red-600 text-white'
-                                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                    }`}
-                                >
-                                    {pageNum}
-                                </button>
-                            );
-                        })}
+                        {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
+                            <button
+                                key={pageNum}
+                                onClick={() => setPage(pageNum)}
+                                className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                    pageNum === page
+                                        ? 'bg-red-600 text-white shadow-md'
+                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                }`}
+                            >
+                                {pageNum}
+                            </button>
+                        ))}
                     </div>
                 )}
             </div>
@@ -572,12 +578,13 @@ export default function AdminUsers() {
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={() => {
-                                        const id = userToDelete.id;
+                                        deleteMutation.mutate(userToDelete.id);
                                         setUserToDelete(null);
-                                        deleteUser(id);
                                     }}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all"
+                                    disabled={deleteMutation.isPending}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
+                                    {deleteMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
                                     SÍ, ELIMINAR AHORA
                                 </button>
                                 <button
@@ -626,8 +633,10 @@ export default function AdminUsers() {
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={confirmToggleRole}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all"
+                                    disabled={roleMutation.isPending}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
+                                    {roleMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
                                     SÍ, CAMBIAR PERMISOS
                                 </button>
                                 <button
@@ -670,8 +679,10 @@ export default function AdminUsers() {
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={confirmVerifyEmail}
-                                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all"
+                                    disabled={verifyEmailMutation.isPending}
+                                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
+                                    {verifyEmailMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
                                     SÍ, VERIFICAR AHORA
                                 </button>
                                 <button

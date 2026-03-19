@@ -5,6 +5,7 @@
 
 /** Convert SQLite integer booleans (0/1) to JS booleans for menu items */
 export function formatMenuItem(item: any) {
+    if (!item) return null;
     return {
         ...item,
         spicy: !!item.spicy,

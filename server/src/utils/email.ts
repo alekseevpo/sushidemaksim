@@ -70,12 +70,12 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:40px;text-align:center;position:relative;">
+    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;position:relative;">
       <div style="font-size:50px;margin-bottom:10px;">🎁</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Feliz Cumpleaños!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Queremos celebrar tu día especial</p>
     </div>
-    <div style="padding:40px;text-align:center;">
+    <div style="padding:24px;text-align:center;">
       <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Hola ${name}!</p>
       <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
         En este día tan especial, para nosotros es un honor celebrarlo contigo. Te enviamos un regalo exclusivo para que disfrutes de lo que más te gusta:
@@ -141,11 +141,11 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
         .map(
             (item: any) => `
     <tr style="border-bottom: 1px solid #f3f4f6;">
-      <td style="padding: 16px 0;">
+      <td style="padding: 12px 0;">
         <div style="font-weight: 600; color: #111827; font-size: 15px;">${item.name} ${item.quantity > 1 ? `<span style="color:#dc2626;">x${item.quantity}</span>` : ''}</div>
         <div style="color: #6b7280; font-size: 13px;">Precio unitario: ${item.price_at_time.toFixed(2).replace('.', ',')} €</div>
       </td>
-      <td style="padding: 16px 0; text-align: right; vertical-align: top; font-weight: 700; color: #111827; font-size: 15px;">
+      <td style="padding: 12px 0; text-align: right; vertical-align: top; font-weight: 700; color: #111827; font-size: 15px;">
         ${(item.price_at_time * item.quantity).toFixed(2).replace('.', ',')} €
       </td>
     </tr>
@@ -161,11 +161,11 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
-  <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
+  <div style="max-width:600px;margin:10px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
     
     <!-- Header -->
-    <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
-      <div style="margin-bottom: 16px;">
+    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
+      <div style="margin-bottom: 8px;">
         <span style="background-color: #dc2626; color: #ffffff; padding: 10px 14px; border-radius: 12px; font-weight: 900; font-size: 24px;">🍣</span>
       </div>
       <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
@@ -175,21 +175,21 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
     </div>
 
     <!-- Main Content -->
-    <div style="padding: 40px;">
-      <h2 style="color: #111827; margin: 0 0 12px; font-size: 24px; font-weight: 800;">¡Hola ${orderData.customerName}!</h2>
-      <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
+    <div style="padding: 24px 20px;">
+      <h2 style="color: #111827; margin: 0 0 8px; font-size: 22px; font-weight: 800;">¡Hola ${orderData.customerName}!</h2>
+      <p style="color: #4b5563; font-size: 15px; line-height: 1.6; margin: 0 0 20px;">
         Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> ha sido recibido con éxito.
       </p>
 
       <!-- Order Summary Card -->
-      <div style="background-color: #f9fafb; border-radius: 20px; padding: 24px; margin-bottom: 32px; border: 1px solid #f1f5f9;">
-        <h3 style="color: #111827; margin: 0 0 20px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Resumen del Pedido</h3>
+      <div style="background-color: #f9fafb; border-radius: 20px; padding: 16px 20px; margin-bottom: 24px; border: 1px solid #f1f5f9;">
+        <h3 style="color: #111827; margin: 0 0 12px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Resumen del Pedido</h3>
         
         <table style="width:100%; border-collapse:collapse;">
           ${itemsHtml}
         </table>
 
-        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e2e8f0;">
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #e2e8f0;">
           <table style="width:100%; border-collapse:collapse;">
             <tr>
               <td style="padding-top: 12px; color: #111827; font-size: 20px; font-weight: 900;">TOTAL</td>
@@ -200,7 +200,7 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       </div>
 
       <!-- Payment & Delivery Type -->
-      <div style="margin-bottom: 32px;">
+      <div style="margin-bottom: 24px;">
         <table style="width:100%; border-collapse:collapse;">
           <tr>
             <td style="width: 50%; vertical-align: top;">
@@ -221,8 +221,8 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
         ${
             scheduledTime || noCall || noBuzzer || customerNote
                 ? `
-        <h4 style="color: #9ca3af; margin: 24px 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
-        <div style="background-color: #fff1f2; border-radius: 16px; padding: 20px; border: 1px solid #fecdd3;">
+        <h4 style="color: #9ca3af; margin: 20px 0 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
+        <div style="background-color: #fff1f2; border-radius: 16px; padding: 16px; border: 1px solid #fecdd3;">
           ${scheduledTime ? `<div style="color: #111827; font-size: 14px; font-weight: 700; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #fecdd3;">⏰ Entrega programada: <span style="color: #dc2626;">${scheduledTime}</span></div>` : ''}
           ${noCall ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🚫 No llamar para confirmar pedido</div>' : ''}
           ${noBuzzer ? '<div style="color: #be123c; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
@@ -234,8 +234,8 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       </div>
 
       <!-- Delivery Details -->
-      <h4 style="color: #9ca3af; margin: 0 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType === 'RECOGIDA EN LOCAL' ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
-      <div style="background-color: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0;">
+      <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType === 'RECOGIDA EN LOCAL' ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
+      <div style="background-color: #f8fafc; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0;">
         <div style="color: #4b5563; font-size: 14px; line-height: 1.6;">
           ${
               deliveryType === 'RECOGIDA EN LOCAL'
@@ -248,7 +248,7 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
       </div>
 
       <!-- Store Info & Schedule -->
-      <div style="margin-top: 32px; padding: 24px; background-color: #000000; border-radius: 20px; color: #ffffff;">
+      <div style="margin-top: 16px; padding: 16px 20px; background-color: #000000; border-radius: 20px; color: #ffffff;">
         <h4 style="color: #dc2626; margin: 0 0 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Nuestro Horario</h4>
         <table style="width: 100%; color: #9ca3af; font-size: 12px; border-collapse: collapse;">
           <tr><td style="padding: 4px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">20:00 – 23:00</td></tr>
@@ -256,12 +256,12 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
           <tr><td style="padding: 4px 0;">Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00</td></tr>
           <tr><td style="padding: 4px 0;">Lunes – Martes:</td><td style="text-align: right;">Cerrado</td></tr>
         </table>
-        <div style="margin-top: 16px; pt-16; border-top: 1px solid #374151; padding-top: 16px; font-size: 11px; text-align: center; color: #6b7280;">
+        <div style="margin-top: 10px; border-top: 1px solid #374151; padding-top: 10px; font-size: 11px; text-align: center; color: #6b7280;">
           Sushi de Maksim — Calle Barrilero, 20, 28007 Madrid
         </div>
       </div>
 
-      <div style="margin-top: 48px; text-align: center;">
+      <div style="margin-top: 20px; text-align: center;">
         <p style="color: #9ca3af; font-size: 14px; font-style: italic; margin: 0;">
           Gracias por confiar en nosotros.<br>
           ¡Esperamos que disfrutes de la experiencia Maksim!
@@ -270,7 +270,7 @@ export async function sendOrderReceiptEmail(to: string, orderData: any): Promise
     </div>
 
     <!-- Footer -->
-    <div style="background-color: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+    <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
       <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
       <div style="color: #e5e7eb; font-size: 11px;">
         Este es un correo automático, por favor no respondas a este mensaje.
@@ -355,7 +355,7 @@ export async function sendVerificationEmail(
   <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);">
     
     <!-- Header with Stylized Logo -->
-    <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
+    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
       <div style="margin-bottom: 16px;">
         <span style="background-color: #dc2626; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
       </div>
@@ -366,7 +366,7 @@ export async function sendVerificationEmail(
     </div>
 
     <!-- Content -->
-    <div style="padding: 40px; text-align: center;">
+    <div style="padding: 24px 20px; text-align: center;">
       <h2 style="color: #111827; margin: 0 0 16px; font-size: 28px; font-weight: 800; line-height: 1.2;">¡Hola ${name}!</h2>
       <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
         Estamos muy felices de tenerte con nosotros. Para empezar a disfrutar del mejor sushi artesanal, activa tu cuenta y desbloquea tu regalo de bienvenida.
@@ -393,7 +393,7 @@ export async function sendVerificationEmail(
     </div>
 
     <!-- Footer -->
-    <div style="background-color: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+    <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
       <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
       <div style="color: #e5e7eb; font-size: 11px;">
         Recibiste este correo porque te registraste en sushidemaksim.com
@@ -441,7 +441,7 @@ export async function sendEmailChangeVerificationEmail(
       <p style="color: #6b7280; margin: 5px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Confirmación de Email</p>
     </div>
 
-    <div style="padding: 40px; text-align: center;">
+    <div style="padding: 24px; text-align: center;">
       <h2 style="color: #111827; margin: 0 0 16px; font-size: 28px; font-weight: 800; line-height: 1.2;">¡Hola ${name}!</h2>
       <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
         Has solicitado cambiar tu correo electrónico en Sushi de Maksim. Para completar el proceso, por favor haz clic en el botón de abajo.
@@ -456,7 +456,7 @@ export async function sendEmailChangeVerificationEmail(
       </p>
     </div>
 
-    <div style="background-color: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+    <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
       <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
     </div>
   </div>
@@ -481,12 +481,12 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
-    <div style="background:linear-gradient(135deg,#000000,#333333);padding:40px;text-align:center;position:relative;">
+    <div style="background:linear-gradient(135deg,#000000,#333333);padding:24px;text-align:center;position:relative;">
       <div style="font-size:50px;margin-bottom:10px;">✨</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Ya eres del Club!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Bienvenido a la familia Sushi de Maksim</p>
     </div>
-    <div style="padding:40px;text-align:center;">
+    <div style="padding:24px;text-align:center;">
       <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Hola!</p>
       <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
         Gracias por suscribirte. Como prometimos, aquí tienes un regalo especial para que disfrutes de tu próximo pedido con nosotros:

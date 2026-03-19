@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     Package,
     Search,
@@ -35,12 +36,10 @@ export default function AdminOrders({
     setIsGlobalSoundEnabled,
     globalPendingCount,
 }: AdminOrdersProps) {
-    const [orders, setOrders] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<string>('active');
-    const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
+    const [page, setPage] = useState(1);
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [notification, setNotification] = useState<{
         id: number;
@@ -48,83 +47,79 @@ export default function AdminOrders({
         newStatus: string;
     } | null>(null);
 
+    const LIMIT = 10;
+
     // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(search);
+            setPage(1); // Reset to first page on search
         }, 500);
         return () => clearTimeout(timer);
     }, [search]);
 
-    const loadOrders = async (
-        page: number = 1,
-        currentFilter: string = filter,
-        isPolling: boolean = false
-    ) => {
-        if (!isPolling) setLoading(true);
-        setError(null);
-        try {
-            let url = `/admin/orders?page=${page}&limit=${pagination.limit}`;
+    // Map frontend filters to backend status strings
+    const filterMap: Record<string, string> = {
+        active: 'pending,received,confirmed,preparing,on_the_way',
+        unpaid: 'waiting_payment',
+        preparing: 'confirmed,preparing',
+        on_the_way: 'on_the_way',
+        delivered: 'delivered',
+        cancelled: 'cancelled',
+        all: '',
+    };
 
+    // Orders Query
+    const {
+        data,
+        isLoading,
+        error: fetchError,
+        isFetching,
+        refetch,
+    } = useQuery({
+        queryKey: ['admin-orders', page, filter, debouncedSearch],
+        queryFn: async () => {
+            let url = `/admin/orders?page=${page}&limit=${LIMIT}`;
             if (debouncedSearch) {
                 url += `&search=${encodeURIComponent(debouncedSearch)}`;
             }
-
-            // Map frontend filters to backend status strings
-            const filterMap: Record<string, string> = {
-                active: 'pending,received,confirmed,preparing,on_the_way',
-                unpaid: 'waiting_payment',
-                preparing: 'confirmed,preparing',
-                on_the_way: 'on_the_way',
-                delivered: 'delivered',
-                cancelled: 'cancelled',
-            };
-
-            const statusParam = filterMap[currentFilter];
+            const statusParam = filterMap[filter];
             if (statusParam) {
                 url += `&status=${statusParam}`;
             }
+            return await api.get(url);
+        },
+        refetchInterval: 30000, // Automagical polling every 30s
+    });
 
-            const data = await api.get(url);
-            setOrders(data.orders || []);
-            setPagination(data.pagination);
-        } catch (err) {
-            console.error('Error fetching admin orders:', err);
-            if (!isPolling)
-                setError(err instanceof ApiError ? err.message : 'Error al cargar los pedidos');
-        } finally {
-            if (!isPolling) setLoading(false);
-        }
-    };
+    const orders = data?.orders || [];
+    const pagination = data?.pagination || { page: 1, limit: LIMIT, total: 0, pages: 1 };
 
-    useEffect(() => {
-        loadOrders(pagination.page);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Refresh every 30 seconds
-        const intervalId = setInterval(() => {
-            loadOrders(pagination.page, filter, true);
-        }, 30000);
-
-        return () => clearInterval(intervalId);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pagination.page, filter, debouncedSearch]);
-
-    const handleUpdateStatus = async (id: number, newStatus: string) => {
-        const order = orders.find(o => o.id === id);
-        const oldStatus = order?.status;
-
-        try {
-            await api.patch(`/admin/orders/${id}/status`, { status: newStatus });
-            setOrders(orders.map(o => (o.id === id ? { ...o, status: newStatus } : o)));
-
+    // Update Status Mutation
+    const statusMutation = useMutation({
+        mutationFn: ({ id, newStatus }: { id: number; newStatus: string }) =>
+            api.patch(`/admin/orders/${id}/status`, { status: newStatus }),
+        onMutate: async ({ id, newStatus }) => {
+            // Optimistic update
+            await queryClient.cancelQueries({
+                queryKey: ['admin-orders', page, filter, debouncedSearch],
+            });
+            const previousData = queryClient.getQueryData(['admin-orders', page, filter, debouncedSearch]);
+            
             // Show notification
-            setNotification({ id, oldStatus: oldStatus || '?', newStatus });
-            // Hide notification after 4 seconds
+            const order = (previousData as any)?.orders?.find((o: any) => o.id === id);
+            setNotification({ id, oldStatus: order?.status || '?', newStatus });
             setTimeout(() => setNotification(null), 4000);
-        } catch (err) {
-            alert(err instanceof ApiError ? err.message : 'Error al actualizar status');
-        }
+
+            return { previousData };
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+        },
+    });
+
+    const handleUpdateStatus = (id: number, newStatus: string) => {
+        statusMutation.mutate({ id, newStatus });
     };
 
     const statusOptions = [
@@ -219,14 +214,14 @@ export default function AdminOrders({
                         </button>
                     </div>
                     <button
-                        onClick={() => loadOrders(pagination.page)}
+                        onClick={() => refetch()}
                         className="w-full sm:w-auto p-2 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
                         title="Actualizar"
                     >
                         <RefreshCw
                             size={18}
                             strokeWidth={1.5}
-                            className={loading ? 'animate-spin' : ''}
+                            className={isFetching ? 'animate-spin' : ''}
                         />
                     </button>
                 </div>
@@ -251,7 +246,7 @@ export default function AdminOrders({
                                 key={tab.id}
                                 onClick={() => {
                                     setFilter(tab.id);
-                                    setPagination(prev => ({ ...prev, page: 1 }));
+                                    setPage(1);
                                 }}
                                 className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${
                                     filter === tab.id
@@ -272,14 +267,14 @@ export default function AdminOrders({
                 </div>
             </div>
 
-            {error && (
+            {fetchError && (
                 <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100 flex items-center gap-3">
                     <RefreshCw className="animate-spin" size={18} strokeWidth={1.5} />
-                    <p className="font-medium">{error}</p>
+                    <p className="font-medium">{fetchError instanceof ApiError ? fetchError.message : 'Error al cargar los pedidos'}</p>
                 </div>
             )}
 
-            {!loading && orders.length === 0 ? (
+            {!isLoading && orders.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center">
                     <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <Package size={32} strokeWidth={1.5} />
@@ -290,7 +285,7 @@ export default function AdminOrders({
                 </div>
             ) : (
                 <div className="grid gap-4">
-                    {loading && orders.length === 0 ? (
+                    {isLoading && orders.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
                             <RefreshCw
                                 className="animate-spin text-red-600 mb-4"
@@ -300,7 +295,7 @@ export default function AdminOrders({
                             <p className="text-gray-500 font-medium">Cargando pedidos...</p>
                         </div>
                     ) : (
-                        orders.map(order => (
+                        orders.map((order: any) => (
                             <div
                                 key={order.id}
                                 className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
@@ -605,7 +600,7 @@ export default function AdminOrders({
                                             })()}
                                     </div>
 
-                                    {/* Items del pedido (Compact Receipt Style) */}
+                                    {/* Items del pedido (Receipt Style) */}
                                     <div className="space-y-2">
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                             Productos ({order.items?.length || 0})
@@ -632,7 +627,7 @@ export default function AdminOrders({
                                         </div>
                                     </div>
 
-                                    {/* Acciones de Estatus */}
+                                    {/* Actions */}
                                     <div className="lg:border-l border-gray-100 lg:pl-8 flex flex-col justify-start">
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
                                             Estado del Pedido
@@ -643,6 +638,7 @@ export default function AdminOrders({
                                                 onChange={e =>
                                                     handleUpdateStatus(order.id, e.target.value)
                                                 }
+                                                disabled={statusMutation.isPending}
                                                 className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${
                                                     statusOptions.find(
                                                         s => s.value === order.status
@@ -661,7 +657,7 @@ export default function AdminOrders({
                                                 ))}
                                             </select>
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                                                <RefreshCw size={14} strokeWidth={1.5} />
+                                                <RefreshCw size={14} strokeWidth={1.5} className={statusMutation.isPending ? 'animate-spin' : ''} />
                                             </div>
                                         </div>
 
@@ -687,12 +683,12 @@ export default function AdminOrders({
                 </div>
             )}
 
-            {!loading && orders.length > 0 && pagination.pages > 1 && (
+            {!isLoading && orders.length > 0 && pagination.pages > 1 && (
                 <div className="mt-6 flex justify-center gap-2">
                     {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
                         <button
                             key={pageNum}
-                            onClick={() => loadOrders(pageNum)}
+                            onClick={() => setPage(pageNum)}
                             className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
                                 pageNum === pagination.page
                                     ? 'bg-red-600 text-white shadow-md'

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import {
     ShieldCheck,
     LayoutDashboard,
@@ -26,6 +27,9 @@ import AdminBlog from '../components/admin/AdminBlog';
 import AdminSettings from '../components/admin/AdminSettings';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import AdminAnalytics from '../components/admin/AdminAnalytics';
+import AdminDeliveryZones from '../components/admin/AdminDeliveryZones';
+import { AdminSkeleton } from '../components/skeletons/AdminSkeleton';
+import { Map as MapIcon } from 'lucide-react';
 
 type TabId =
     | 'dashboard'
@@ -35,10 +39,11 @@ type TabId =
     | 'promos'
     | 'blog'
     | 'settings'
-    | 'analytics';
+    | 'analytics'
+    | 'delivery';
 
 export default function AdminPage() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, isLoading } = useAuth();
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const activeTab = (searchParams.get('tab') as TabId) || 'dashboard';
@@ -46,17 +51,86 @@ export default function AdminPage() {
     const setActiveTab = (tab: TabId) => {
         setSearchParams({ tab });
     };
-    const [stats, setStats] = useState<any>(null);
-    const [reports, setReports] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+
     const [showHelp, setShowHelp] = useState(true);
 
     // Global Sound & Pending Orders Monitoring
-    const [isSoundEnabled, setIsSoundEnabled] = useState(false);
-    const [pendingCount, setPendingCount] = useState(0);
+    const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
+        const saved = localStorage.getItem('admin_sound_enabled');
+        return saved === null ? true : saved === 'true';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('admin_sound_enabled', String(isSoundEnabled));
+    }, [isSoundEnabled]);
     const pendingReminders = useRef<Map<number, number>>(new Map());
     const isFirstLoad = useRef(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Stats Query
+    const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
+        queryKey: ['admin-stats'],
+        queryFn: () => api.get('/admin/stats'),
+        enabled: isAuthenticated && (user?.role === 'admin' || user?.is_superadmin) && (activeTab === 'dashboard' || activeTab === 'analytics'),
+        refetchInterval: 60000,
+    });
+
+    // Reports Query
+    const { data: reports, isLoading: reportsLoading, refetch: refetchReports } = useQuery({
+        queryKey: ['admin-reports'],
+        queryFn: () => api.get('/admin/reports'),
+        enabled: isAuthenticated && (user?.role === 'admin' || user?.is_superadmin) && activeTab === 'dashboard',
+        refetchInterval: 60000,
+    });
+
+    // Pending Orders Query (Global Monitoring)
+    const { data: pendingData } = useQuery({
+        queryKey: ['admin-pending-monitor'],
+        queryFn: () => api.get('/admin/orders?status=pending&limit=100'),
+        enabled: isAuthenticated && (user?.role === 'admin' || user?.is_superadmin),
+        refetchInterval: 30000,
+    });
+
+    const pendingOrders = pendingData?.orders || [];
+    const pendingCount = pendingData?.pagination?.total || pendingOrders.length;
+
+    // Audio Alert Effect
+    useEffect(() => {
+        if (!pendingOrders.length) {
+            // Cleanup reminders if no pending orders
+            if (pendingReminders.current.size > 0) {
+                pendingReminders.current.clear();
+            }
+            isFirstLoad.current = false;
+            return;
+        }
+
+        let shouldPlaySound = false;
+        const now = Date.now();
+
+        pendingOrders.forEach((order: any) => {
+            const lastNotified = pendingReminders.current.get(order.id);
+            if (!lastNotified) {
+                if (!isFirstLoad.current && isSoundEnabled) shouldPlaySound = true;
+                pendingReminders.current.set(order.id, now);
+            } else if (now - lastNotified >= 120000) {
+                if (isSoundEnabled) shouldPlaySound = true;
+                pendingReminders.current.set(order.id, now);
+            }
+        });
+
+        // Cleanup stale reminders
+        const pendingIds = new Set(pendingOrders.map((o: any) => o.id));
+        for (const id of pendingReminders.current.keys()) {
+            if (!pendingIds.has(id)) pendingReminders.current.delete(id);
+        }
+
+        if (shouldPlaySound && audioRef.current) {
+            audioRef.current.play().catch(e => console.error('Sound alert failed:', e));
+        }
+
+        isFirstLoad.current = false;
+    }, [pendingOrders, isSoundEnabled]);
 
     const navLinks = useMemo(
         () => [
@@ -64,7 +138,7 @@ export default function AdminPage() {
             { id: 'analytics', label: 'Analítica Avanzada', icon: BarChart3 },
             {
                 id: 'orders',
-                label: 'Gestión de Pedidos', // Renaming happens in the component tab, this is sidebar
+                label: 'Gestión de Pedidos',
                 icon: Package,
                 badge: pendingCount > 0 ? pendingCount : null,
             },
@@ -73,96 +147,28 @@ export default function AdminPage() {
             { id: 'promos', label: 'Gestión de Promociones', icon: ShoppingBag },
             { id: 'blog', label: 'Gestión de Blog', icon: Activity },
             { id: 'settings', label: 'Ajustes de Contacto', icon: DollarSign },
+            { id: 'delivery', label: 'Zonas de Entrega', icon: MapIcon },
         ],
         [pendingCount]
     );
 
-    const checkGlobalOrders = async () => {
-        try {
-            // Fetch all pending orders for global alert
-            const data = await api.get('/admin/orders?status=pending&limit=100');
-            const pendingOrders = data.orders || [];
-            const totalPending = data.pagination?.total || pendingOrders.length;
-            setPendingCount(totalPending);
-
-            if (isSoundEnabled) {
-                let shouldPlaySound = false;
-                const now = Date.now();
-
-                pendingOrders.forEach((order: any) => {
-                    const lastNotified = pendingReminders.current.get(order.id);
-                    if (!lastNotified) {
-                        if (!isFirstLoad.current) shouldPlaySound = true;
-                        pendingReminders.current.set(order.id, now);
-                    } else if (now - lastNotified >= 120000) {
-                        shouldPlaySound = true;
-                        pendingReminders.current.set(order.id, now);
-                    }
-                });
-
-                // Cleanup
-                const pendingIds = new Set(pendingOrders.map((o: any) => o.id));
-                for (const id of pendingReminders.current.keys()) {
-                    if (!pendingIds.has(id)) pendingReminders.current.delete(id);
-                }
-
-                if (shouldPlaySound && audioRef.current) {
-                    audioRef.current.play().catch(e => console.error('Sound alert failed:', e));
-                }
-            } else {
-                pendingOrders.forEach((order: any) => {
-                    if (!pendingReminders.current.has(order.id)) {
-                        pendingReminders.current.set(order.id, Date.now());
-                    }
-                });
-            }
-            isFirstLoad.current = false;
-        } catch (err) {
-            console.error('Global orders check failed', err);
-        }
-    };
-
-    useEffect(() => {
-        checkGlobalOrders();
-        const interval = setInterval(checkGlobalOrders, 30000);
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSoundEnabled]);
-
     // Authorization Check
     useEffect(() => {
-        if (isAuthenticated && user && user.role !== 'admin' && !user.is_superadmin) {
-            navigate('/profile'); // Redirect normal users away
+        if (!isLoading && isAuthenticated && user && user.role !== 'admin' && !user.is_superadmin) {
+            navigate('/profile');
         }
-    }, [isAuthenticated, user, navigate]);
+    }, [isLoading, isAuthenticated, user, navigate]);
 
-    useEffect(() => {
-        const authorized = user?.role === 'admin' || user?.is_superadmin;
-        const needsStats = activeTab === 'dashboard' || activeTab === 'analytics';
-
-        if (authorized && needsStats) {
-            loadStats();
-            // Polling every 60 seconds to keep stats updated without skeleton
-            const interval = setInterval(() => loadStats(true), 60000);
-            return () => clearInterval(interval);
-        }
-    }, [user, activeTab]);
-
-    const loadStats = async (isPolling: boolean = false) => {
-        if (!isPolling) setLoading(true);
-        try {
-            const [statsData, reportsData] = await Promise.all([
-                api.get('/admin/stats'),
-                api.get('/admin/reports'),
-            ]);
-            setStats(statsData);
-            setReports(reportsData || []);
-        } catch (err) {
-            console.error('Failed to load stats', err);
-        } finally {
-            if (!isPolling) setLoading(false);
+    const handleRefetchStats = async (isPolling?: boolean) => {
+        if (!isPolling) {
+            await Promise.all([refetchStats(), refetchReports()]);
         }
     };
+
+    // While waiting for auth status, show the skeleton to prevent layout shift and "restricted" flash
+    if (isLoading) {
+        return <AdminSkeleton />;
+    }
 
     if (!isAuthenticated || (user?.role !== 'admin' && !user?.is_superadmin)) {
         return (
@@ -329,6 +335,8 @@ export default function AdminPage() {
                                             'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes (móviles vs ordenador), a qué horas prefieren pedir y qué días de la semana tienes más trabajo. Úsalo para planificar turnos de personal o lanzar promociones en horas bajas.'}
                                         {activeTab === 'settings' &&
                                             'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails y redes sociales en un solo lugar.'}
+                                        {activeTab === 'delivery' &&
+                                            'Dibuja tus zonas de entrega en el mapa. Puedes definir diferentes precios y pedidos mínimos para cada zona.'}
                                     </p>
                                 </div>
                             </div>
@@ -340,14 +348,14 @@ export default function AdminPage() {
                         <AdminDashboard
                             stats={stats}
                             reports={reports}
-                            loading={loading}
-                            loadStats={loadStats}
+                            loading={statsLoading || reportsLoading}
+                            loadStats={handleRefetchStats}
                             setActiveTab={setActiveTab}
                         />
                     )}
 
                     {activeTab === 'analytics' && (
-                        <AdminAnalytics stats={stats} loading={loading} />
+                        <AdminAnalytics stats={stats} loading={statsLoading} />
                     )}
 
                     {activeTab === 'menu' && <AdminMenu />}
@@ -360,6 +368,7 @@ export default function AdminPage() {
                         />
                     )}
                     {activeTab === 'settings' && <AdminSettings />}
+                    {activeTab === 'delivery' && <AdminDeliveryZones />}
                     {activeTab === 'promos' && <AdminPromos />}
                     {activeTab === 'blog' && <AdminBlog />}
 

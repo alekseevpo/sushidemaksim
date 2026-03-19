@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 type Rule = {
     required?: boolean;
-    type?: 'string' | 'number' | 'boolean';
+    type?: 'string' | 'number' | 'boolean' | 'array';
     min?: number;
     max?: number;
     minLength?: number;
@@ -34,8 +34,13 @@ export function validate(schema: Schema, source: 'body' | 'query' | 'params' = '
 
             if (isEmpty) continue;
 
-            if (rules.type && typeof value !== rules.type) {
+            if (rules.type && rules.type !== 'array' && typeof value !== rules.type) {
                 errors.push(`El campo '${field}' debe ser de tipo ${rules.type}`);
+                continue;
+            }
+
+            if (rules.type === 'array' && !Array.isArray(value)) {
+                errors.push(`El campo '${field}' debe ser un array`);
                 continue;
             }
 

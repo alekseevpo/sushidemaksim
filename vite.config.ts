@@ -9,7 +9,7 @@ export default defineConfig({
         port: 5173,
         proxy: {
             '/api': {
-                target: 'https://sushidemaksim.vercel.app',
+                target: 'http://localhost:3001',
                 changeOrigin: true,
             },
         },

@@ -1,7 +1,7 @@
 export const HomeSkeleton = () => (
     <div className="overflow-hidden">
         {/* Hero Section Skeleton */}
-        <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-24 md:pt-20 pb-20 md:pb-32 bg-gray-900">
+        <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-gray-900">
             <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="text-center lg:text-left space-y-8">
                     {/* Badge */}

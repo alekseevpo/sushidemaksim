@@ -19,7 +19,6 @@ export const config = {
     port: parseInt(process.env.PORT || '3001'),
     jwtSecret,
     jwtExpiresIn: '7d' as const,
-    dbPath: path.join(__dirname, '..', 'data', 'sushi.db'),
     bcryptRounds: 10,
     corsOrigin: process.env.CORS_ORIGIN
         ? process.env.CORS_ORIGIN.split(',')

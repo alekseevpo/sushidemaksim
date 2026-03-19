@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     Plus,
     Edit2,
@@ -29,8 +30,7 @@ interface MenuItem {
 }
 
 export default function AdminMenu() {
-    const [items, setItems] = useState<MenuItem[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
 
     // Modal state
@@ -39,33 +39,54 @@ export default function AdminMenu() {
 
     // Form state
     const [formData, setFormData] = useState<Partial<MenuItem>>({});
-    const [saving, setSaving] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
-    const [error, setError] = useState('');
+    const [formError, setFormError] = useState('');
     const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        loadMenu();
-    }, []);
+    // Menu Query
+    const { data, isLoading, refetch, isFetching } = useQuery({
+        queryKey: ['admin-menu'],
+        queryFn: () => api.get('/admin/menu'),
+    });
 
-    const loadMenu = async () => {
-        setLoading(true);
-        try {
-            const data = await api.get('/admin/menu');
-            setItems(data.items || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+    const items: MenuItem[] = data?.items || [];
+
+    const filteredItems = useMemo(() => {
+        return items.filter(
+            item =>
+                item.name.toLowerCase().includes(search.toLowerCase()) ||
+                item.category.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [items, search]);
+
+    // Mutations
+    const deleteMutation = useMutation({
+        mutationFn: (id: number) => api.delete(`/admin/menu/${id}`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-menu'] });
+            setItemToDelete(null);
+        },
+        onError: (err: any) => {
+            alert(err instanceof ApiError ? err.message : 'Error al eliminar');
         }
-    };
+    });
 
-    const filteredItems = items.filter(
-        item =>
-            item.name.toLowerCase().includes(search.toLowerCase()) ||
-            item.category.toLowerCase().includes(search.toLowerCase())
-    );
+    const upsertMutation = useMutation({
+        mutationFn: (payload: any) => {
+            if (editingItem) {
+                return api.put(`/admin/menu/${editingItem.id}`, payload);
+            }
+            return api.post('/admin/menu', payload);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-menu'] });
+            setIsModalOpen(false);
+        },
+        onError: (err: any) => {
+            setFormError(err instanceof ApiError ? err.message : 'Error al guardar');
+        }
+    });
 
     const openAddModal = () => {
         setEditingItem(null);
@@ -84,30 +105,15 @@ export default function AdminMenu() {
             is_new: false,
             allergens: [],
         });
-        setError('');
+        setFormError('');
         setIsModalOpen(true);
     };
 
     const openEditModal = (item: MenuItem) => {
         setEditingItem(item);
         setFormData({ ...item });
-        setError('');
+        setFormError('');
         setIsModalOpen(true);
-    };
-
-    const handleDelete = async (item: MenuItem) => {
-        setItemToDelete(item);
-    };
-
-    const confirmDelete = async () => {
-        if (!itemToDelete) return;
-        try {
-            await api.delete(`/admin/menu/${itemToDelete.id}`);
-            setItems(items.filter(i => i.id !== itemToDelete.id));
-            setItemToDelete(null);
-        } catch (err) {
-            alert(err instanceof ApiError ? err.message : 'Error al eliminar');
-        }
     };
 
     const compressImage = (file: File): Promise<Blob | File> => {
@@ -122,7 +128,6 @@ export default function AdminMenu() {
                     let width = img.width;
                     let height = img.height;
 
-                    // Max resolution 1000px (sufficient for high-quality display while staying light)
                     const MAX_SIZE = 1000;
                     if (width > height) {
                         if (width > MAX_SIZE) {
@@ -146,11 +151,11 @@ export default function AdminMenu() {
                             if (blob && blob.size < file.size) {
                                 resolve(blob);
                             } else {
-                                resolve(file); // Return original if compression is not better
+                                resolve(file);
                             }
                         },
                         'image/webp',
-                        0.8 // 80% quality is the sweet spot for WebP
+                        0.8
                     );
                 };
             };
@@ -162,10 +167,9 @@ export default function AdminMenu() {
         if (!file) return;
 
         setUploadingImage(true);
-        setError('');
+        setFormError('');
 
         try {
-            // Auto-compress high-res photos (common for mobile uploads)
             if (file.type.startsWith('image/')) {
                 const compressed = await compressImage(file);
                 file = new File([compressed], file.name.replace(/\.[^/.]+$/, '') + '.webp', {
@@ -173,7 +177,6 @@ export default function AdminMenu() {
                 });
             }
 
-            // Final safety check for Vercel 4.5MB limit
             if (file.size > 4 * 1024 * 1024) {
                 throw new Error(
                     'La imagen sigue siendo demasiado grande (máx. 4.5MB). Por favor, intenta con otra o redúcela manualmente.'
@@ -207,7 +210,7 @@ export default function AdminMenu() {
             setFormData(prev => ({ ...prev, image: data.url }));
         } catch (err: any) {
             console.error('Upload fail:', err);
-            setError(
+            setFormError(
                 err.message === 'Failed to fetch'
                     ? 'Error de red: No se pudo conectar al servidor.'
                     : err.message
@@ -220,8 +223,7 @@ export default function AdminMenu() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSaving(true);
-        setError('');
+        setFormError('');
 
         try {
             const priceStr = String(formData.price || '0');
@@ -235,18 +237,9 @@ export default function AdminMenu() {
                 pieces: formData.pieces ? Number(formData.pieces) : undefined,
             };
 
-            if (editingItem) {
-                const data = await api.put(`/admin/menu/${editingItem.id}`, payload);
-                setItems(items.map(i => (i.id === editingItem.id ? data.item : i)));
-            } else {
-                const data = await api.post('/admin/menu', payload);
-                setItems([...items, data.item]);
-            }
-            setIsModalOpen(false);
+            upsertMutation.mutate(payload);
         } catch (err) {
-            setError(err instanceof ApiError ? err.message : 'Error al guardar');
-        } finally {
-            setSaving(false);
+            setFormError('Error al procesar el precio');
         }
     };
 
@@ -276,16 +269,25 @@ export default function AdminMenu() {
                         </button>
                     )}
                 </div>
-                <button
-                    onClick={openAddModal}
-                    className="w-full sm:w-auto bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition"
-                >
-                    <Plus size={16} strokeWidth={1.5} /> Nuevo Plato
-                </button>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <button
+                        onClick={() => refetch()}
+                        className="p-2 text-gray-400 hover:text-gray-600 transition"
+                        title="Actualizar"
+                    >
+                        <RefreshCw size={18} strokeWidth={1.5} className={isFetching ? 'animate-spin' : ''} />
+                    </button>
+                    <button
+                        onClick={openAddModal}
+                        className="flex-1 sm:flex-none bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition"
+                    >
+                        <Plus size={16} strokeWidth={1.5} /> Nuevo Plato
+                    </button>
+                </div>
             </div>
 
             {/* Loading state */}
-            {loading ? (
+            {isLoading && items.length === 0 ? (
                 <div className="text-center py-12 text-gray-400">
                     <RefreshCw size={32} strokeWidth={1.5} className="mx-auto mb-4 animate-spin" />
                     <p>Cargando menú...</p>
@@ -380,7 +382,7 @@ export default function AdminMenu() {
                                                     <Edit2 size={16} strokeWidth={1.5} />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(item)}
+                                                    onClick={() => setItemToDelete(item)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                     title="Eliminar plato"
                                                     aria-label="Eliminar plato"
@@ -420,9 +422,9 @@ export default function AdminMenu() {
 
                         <div className="p-6 overflow-y-auto">
                             <form id="menu-form" onSubmit={handleSave} className="space-y-4">
-                                {error && (
+                                {formError && (
                                     <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-200">
-                                        {error}
+                                        {formError}
                                     </div>
                                 )}
 
@@ -438,7 +440,7 @@ export default function AdminMenu() {
                                             id="item-name"
                                             required
                                             type="text"
-                                            value={formData.name}
+                                            value={formData.name || ''}
                                             onChange={e =>
                                                 setFormData({ ...formData, name: e.target.value })
                                             }
@@ -455,7 +457,7 @@ export default function AdminMenu() {
                                         <select
                                             id="item-category"
                                             required
-                                            value={formData.category}
+                                            value={formData.category || ''}
                                             onChange={e =>
                                                 setFormData({
                                                     ...formData,
@@ -487,11 +489,11 @@ export default function AdminMenu() {
                                             type="number"
                                             step="0.01"
                                             min="0"
-                                            value={formData.price}
+                                            value={formData.price || 0}
                                             onChange={e =>
                                                 setFormData({
                                                     ...formData,
-                                                    price: e.target.value as any,
+                                                    price: parseFloat(e.target.value) || 0,
                                                 })
                                             }
                                             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-red-400"
@@ -527,7 +529,7 @@ export default function AdminMenu() {
                                         id="item-description"
                                         required
                                         rows={3}
-                                        value={formData.description}
+                                        value={formData.description || ''}
                                         onChange={e =>
                                             setFormData({
                                                 ...formData,
@@ -618,102 +620,24 @@ export default function AdminMenu() {
                                 </div>
 
                                 <div className="flex flex-wrap gap-4 pt-2">
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.spicy}
-                                            onChange={e =>
-                                                setFormData({
-                                                    ...formData,
-                                                    spicy: e.target.checked,
-                                                })
-                                            }
-                                            className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            🌶️ Picante
-                                        </span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.vegetarian}
-                                            onChange={e =>
-                                                setFormData({
-                                                    ...formData,
-                                                    vegetarian: e.target.checked,
-                                                })
-                                            }
-                                            className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            🥬 Vegetariano
-                                        </span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_promo}
-                                            onChange={e =>
-                                                setFormData({
-                                                    ...formData,
-                                                    is_promo: e.target.checked,
-                                                })
-                                            }
-                                            className="w-4 h-4 text-amber-500 rounded border-gray-300 focus:ring-amber-500"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            🏷️ Promoción
-                                        </span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_popular}
-                                            onChange={e =>
-                                                setFormData({
-                                                    ...formData,
-                                                    is_popular: e.target.checked,
-                                                })
-                                            }
-                                            className="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            🔥 Popular (Top)
-                                        </span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_chef_choice}
-                                            onChange={e =>
-                                                setFormData({
-                                                    ...formData,
-                                                    is_chef_choice: e.target.checked,
-                                                })
-                                            }
-                                            className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            👨‍🍳 Selección del Chef
-                                        </span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_new}
-                                            onChange={e =>
-                                                setFormData({
-                                                    ...formData,
-                                                    is_new: e.target.checked,
-                                                })
-                                            }
-                                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700">
-                                            🆕 Nuevo Producto
-                                        </span>
-                                    </label>
+                                    {['spicy', 'vegetarian', 'is_promo', 'is_popular', 'is_chef_choice', 'is_new'].map(field => (
+                                        <label key={field} className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={!!(formData as any)[field]}
+                                                onChange={e =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        [field]: e.target.checked,
+                                                    })
+                                                }
+                                                className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                                            />
+                                            <span className="text-sm font-medium text-gray-700 capitalize">
+                                                {field.replace('is_', '').replace('_', ' ')}
+                                            </span>
+                                        </label>
+                                    ))}
                                 </div>
 
                                 <div className="space-y-2">
@@ -729,17 +653,12 @@ export default function AdminMenu() {
                                                 >
                                                     <input
                                                         type="checkbox"
-                                                        checked={formData.allergens?.includes(
-                                                            allergen
-                                                        )}
+                                                        checked={formData.allergens?.includes(allergen) || false}
                                                         onChange={e => {
-                                                            const current =
-                                                                formData.allergens || [];
+                                                            const current = formData.allergens || [];
                                                             const updated = e.target.checked
                                                                 ? [...current, allergen]
-                                                                : current.filter(
-                                                                      a => a !== allergen
-                                                                  );
+                                                                : current.filter(a => a !== allergen);
                                                             setFormData({
                                                                 ...formData,
                                                                 allergens: updated,
@@ -769,10 +688,11 @@ export default function AdminMenu() {
                             <button
                                 type="submit"
                                 form="menu-form"
-                                disabled={saving}
-                                className="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 rounded-lg transition shadow-md disabled:bg-red-300"
+                                disabled={upsertMutation.isPending}
+                                className="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 rounded-lg transition shadow-md disabled:bg-red-300 flex items-center gap-2"
                             >
-                                {saving ? 'Guardando...' : 'Guardar Plato'}
+                                {upsertMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                {editingItem ? 'Guardar Cambios' : 'Crear Plato'}
                             </button>
                         </div>
                     </div>
@@ -786,7 +706,7 @@ export default function AdminMenu() {
                         className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
                         onClick={() => setItemToDelete(null)}
                     />
-                    <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="relative bg-white rounded-[32px] p-8 max-sm:p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                 <Trash2 size={32} strokeWidth={1.5} />
@@ -799,19 +719,20 @@ export default function AdminMenu() {
                                 <span className="text-red-600 font-bold uppercase">
                                     "{itemToDelete.name}"
                                 </span>
-                                . <br />
-                                Esta acción no se puede deshacer.
+                                . Esta acción no se puede deshacer.
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button
-                                    onClick={confirmDelete}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all"
+                                    onClick={() => deleteMutation.mutate(itemToDelete.id)}
+                                    disabled={deleteMutation.isPending}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
                                 >
-                                    SÍ, ELIMINAR
+                                    {deleteMutation.isPending && <RefreshCw size={16} className="animate-spin" />}
+                                    SÍ, ELIMINAR AHORA
                                 </button>
                                 <button
                                     onClick={() => setItemToDelete(null)}
-                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200 transition-colors"
                                 >
                                     CANCELAR
                                 </button>

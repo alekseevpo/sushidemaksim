@@ -473,7 +473,6 @@ export default function HomePageSimple() {
                     {!isLoading && popularItems.length > 0 ? (
                         <div
                             className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none"
-                            style={{ touchAction: 'pan-x' }}
                         >
                             <div className="flex gap-6 md:gap-8 flex-nowrap w-max min-w-full">
                                 {popularItems.map((item, index) => (

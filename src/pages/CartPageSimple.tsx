@@ -27,6 +27,7 @@ import { api, ApiError } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
+import AddressModal from '../components/AddressModal';
 
 interface MenuItem {
     id: number;
@@ -60,6 +61,7 @@ export default function CartPageSimple() {
     const [house, setHouse] = useState('');
     const [apartment, setApartment] = useState('');
     const [phone, setPhone] = useState('');
+    const [postalCode, setPostalCode] = useState('');
     const [isOrdering, setIsOrdering] = useState(false);
     const [isInviting, setIsInviting] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
@@ -67,9 +69,13 @@ export default function CartPageSimple() {
     const [siteSettings, setSiteSettings] = useState<any>(null);
     const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
-    const DELIVERY_FEE = siteSettings?.delivery_fee ?? 3.5;
-    const MIN_ORDER = siteSettings?.min_order ?? 15;
-    const FREE_DELIVERY_THRESHOLD = siteSettings?.free_delivery_threshold ?? 60;
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+    const [selectedZone, setSelectedZone] = useState<any>(null);
+    const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
+
+    const DELIVERY_FEE = selectedZone ? (selectedZone.cost ?? 0) : (siteSettings?.delivery_fee ?? 3.5);
+    const MIN_ORDER = selectedZone ? (selectedZone.min_order ?? 0) : (siteSettings?.min_order ?? 15);
+    const FREE_DELIVERY_THRESHOLD = selectedZone ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60) : (siteSettings?.free_delivery_threshold ?? 60);
     const isStoreClosed = !!siteSettings?.is_store_closed;
 
     const todayStr = (() => {
@@ -109,6 +115,7 @@ export default function CartPageSimple() {
 
     useEffect(() => {
         loadSettings();
+        loadZones();
         loadSuggestions();
         loadPopularItems();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,6 +129,15 @@ export default function CartPageSimple() {
             console.error('Failed to load settings', err);
         } finally {
             setIsLoadingSettings(false);
+        }
+    };
+
+    const loadZones = async () => {
+        try {
+            const data = await api.get('/delivery-zones');
+            setDeliveryZones(data.zones || []);
+        } catch (err) {
+            console.error('Failed to load zones', err);
         }
     };
 
@@ -241,7 +257,7 @@ export default function CartPageSimple() {
 
         if (deliveryType === 'delivery' && total < MIN_ORDER) {
             showError(
-                `El pedido mínimo para entrega es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`
+                `El pedido mínimo para esta zona (${selectedZone?.name || 'entrega'}) es de ${MIN_ORDER.toFixed(2).replace('.', ',')} €`
             );
             return;
         }
@@ -276,7 +292,7 @@ export default function CartPageSimple() {
         const deliveryAddress =
             deliveryType === 'pickup'
                 ? 'RECOGIDA EN LOCAL (Calle Barrilero, 20)'
-                : `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
+                : `${streetVal}, CP: ${postalCode}${selectedZone ? ` (${selectedZone.name})` : ''}, Portal: ${houseVal}, Piso: ${aptVal}`;
         const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 9) {
             showError('Por favor, introduce un teléfono de contacto válido');
@@ -300,7 +316,9 @@ export default function CartPageSimple() {
             const orderPayload: any = {
                 deliveryAddress,
                 phoneNumber: deliveryPhone,
+                postalCode: postalCode || (selectedZone ? selectedZone.postal_codes?.[0] : ''),
                 notes,
+                deliveryZoneId: selectedZone?.id,
             };
 
             if (!isAuthenticated) {
@@ -360,7 +378,7 @@ export default function CartPageSimple() {
         const deliveryAddress =
             deliveryType === 'pickup'
                 ? 'RECOGIDA EN LOCAL (Calle Barrilero, 20)'
-                : `${streetVal}, Portal/Casa: ${houseVal}, Piso/Puerta: ${aptVal}`;
+                : `${streetVal}, CP: ${postalCode}${selectedZone ? ` (${selectedZone.name})` : ''}, Portal: ${houseVal}, Piso: ${aptVal}`;
         const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 6) {
             showError('Por favor, introduce un teléfono de contacto válido');
@@ -384,8 +402,10 @@ export default function CartPageSimple() {
             const payload: any = {
                 deliveryAddress,
                 phoneNumber: deliveryPhone,
+                postalCode: postalCode || (selectedZone ? selectedZone.postal_codes?.[0] : ''),
                 notes,
                 senderName: user?.name || '',
+                deliveryZoneId: selectedZone?.id,
             };
 
             if (!isAuthenticated) {
@@ -1003,52 +1023,99 @@ export default function CartPageSimple() {
                             <div className="flex flex-col gap-3">
                                 {deliveryType === 'delivery' && (
                                     <>
-                                        <div>
-                                            <label className="block text-sm font-semibold text-gray-600 mb-1">
-                                                Calle / Avenida *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="address-input"
-                                                data-testid="address-input"
-                                                value={address}
-                                                onChange={e => setAddress(e.target.value)}
-                                                placeholder={
-                                                    defaultAddr && defaultAddr.street
-                                                        ? `${defaultAddr.street}, ${defaultAddr.postalCode || ''} ${defaultAddr.city || ''}`
-                                                        : 'Nombre de tu calle'
-                                                }
-                                                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
-                                            />
+                                        {/* Mobile Modal Trigger (Modern) */}
+                                        <div className="md:hidden">
+                                            {!address ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsAddressModalOpen(true)}
+                                                    className="w-full bg-white border-2 border-red-100 rounded-3xl p-8 text-center hover:border-red-500 transition-all group mb-2 shadow-sm active:scale-95 duration-200"
+                                                >
+                                                    <div className="flex flex-col items-center gap-3">
+                                                        <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-inner">
+                                                            <MapPin className="text-red-500" size={32} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-black text-lg text-gray-900 tracking-tight">
+                                                                🏠 ¿Dónde entregamos?
+                                                            </p>
+                                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Pulsa para indicar tu dirección</p>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ) : (
+                                                <div className="bg-gray-50 rounded-[32px] p-6 mb-2 border border-gray-100 flex items-center justify-between">
+                                                    <div className="flex items-center gap-4 overflow-hidden">
+                                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 shrink-0">
+                                                            <MapPin className="text-red-500" size={20} />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-black text-sm text-gray-900 truncate">{address}</p>
+                                                            <div className="flex items-center gap-2 mt-0.5">
+                                                                {selectedZone && (
+                                                                    <span 
+                                                                        className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full text-white" 
+                                                                        style={{ backgroundColor: selectedZone.color || '#EF4444' }}
+                                                                    >
+                                                                        {selectedZone.name}
+                                                                    </span>
+                                                                )}
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">CP: {postalCode}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => setIsAddressModalOpen(true)}
+                                                        className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:bg-gray-50 active:scale-90 transition shrink-0 ml-2"
+                                                    >
+                                                        <ArrowRight size={18} className="text-gray-400" />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label className="block text-sm font-semibold text-gray-600 mb-1">
-                                                    Portal / Casa *
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    id="house-input"
-                                                    data-testid="house-input"
-                                                    value={house}
-                                                    onChange={e => setHouse(e.target.value)}
-                                                    placeholder="Ej: 15"
-                                                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
-                                                />
+                                        {/* Desktop Inputs */}
+                                        <div className="hidden md:block">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
+                                                <div>
+                                                    <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Calle / Avenida *</label>
+                                                    <input
+                                                        value={address}
+                                                        onChange={e => setAddress(e.target.value)}
+                                                        placeholder="Nombre de tu calle"
+                                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Portal</label>
+                                                        <input
+                                                            value={house}
+                                                            onChange={e => setHouse(e.target.value)}
+                                                            placeholder="Ej: 20"
+                                                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Piso</label>
+                                                        <input
+                                                            value={apartment}
+                                                            onChange={e => setApartment(e.target.value)}
+                                                            placeholder="3ºB"
+                                                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-semibold text-gray-600 mb-1">
-                                                    Piso / Puerta *
-                                                </label>
+                                                <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">Código Postal</label>
                                                 <input
-                                                    type="text"
-                                                    id="apartment-input"
-                                                    data-testid="apartment-input"
-                                                    value={apartment}
-                                                    onChange={e => setApartment(e.target.value)}
-                                                    placeholder="Ej: 3ºB"
-                                                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                                    value={postalCode}
+                                                    onChange={e => setPostalCode(e.target.value)}
+                                                    placeholder="28001"
+                                                    maxLength={5}
+                                                    className="w-64 px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                                 />
                                             </div>
                                         </div>
@@ -1364,7 +1431,7 @@ export default function CartPageSimple() {
                                 <h3 className="text-base font-bold mb-2">Información de envío</h3>
                                 <ul className="text-sm text-gray-500 m-0 pl-5 space-y-1">
                                     <li>Entrega segura a domicilio</li>
-                                    <li>Envío GRATIS desde 60,00 €</li>
+                                    <li>Envío GRATIS desde {FREE_DELIVERY_THRESHOLD.toFixed(2).replace('.', ',')} €</li>
                                     <li>Tiempo de entrega: 30–60 min</li>
                                     <li>
                                         Horario: según el horario de apertura (
@@ -1406,6 +1473,25 @@ export default function CartPageSimple() {
                     </button>
                 </div>
             </div>
+            {/* Footer / Modals */}
+            <AddressModal
+                isOpen={isAddressModalOpen}
+                onClose={() => setIsAddressModalOpen(false)}
+                deliveryZones={deliveryZones}
+                onSelect={data => {
+                    setAddress(data.street);
+                    setHouse(data.house || '');
+                    setApartment(data.apartment || '');
+                    setPostalCode(data.postalCode);
+                    setSelectedZone(data.zone);
+                }}
+                currentAddress={{
+                    street: address,
+                    house: house,
+                    apartment: apartment,
+                    postalCode: postalCode,
+                }}
+            />
         </div>
     );
 }

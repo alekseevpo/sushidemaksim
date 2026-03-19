@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { config } from '../config.js';
+import fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
@@ -8,21 +9,36 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
     // Log with stack in development
     if (config.isDev) {
         console.error('❌ Error:', err.stack || message);
+        try {
+            const logMsg = `\n[${new Date().toISOString()}] ERROR: ${err.message || 'No message'}\nCODE: ${err.code || 'No code'}\nSTACK: ${err.stack || ''}\nJSON: ${JSON.stringify(err, null, 2)}\n`;
+            fs.appendFileSync('/tmp/server_error.log', logMsg);
+        } catch (e) {}
     } else {
         console.error('❌ Error:', message);
     }
 
-    // Handle specific SQLite errors
-    if (message.includes('UNIQUE constraint')) {
+    // Handle PostgreSQL specific errors (Supabase)
+    if (err.code === '23505' || message.includes('UNIQUE constraint')) {
         return res.status(409).json({ error: 'El recurso ya existe' });
     }
 
-    if (message.includes('FOREIGN KEY constraint')) {
-        return res.status(400).json({ error: 'Referencia a recurso inexistente' });
+    if (err.code === '23503' || message.includes('FOREIGN KEY constraint')) {
+        return res.status(400).json({ error: 'Operación denegada: Este recurso está en uso por otros elementos (ej. pedidos u otros registros).' });
     }
 
-    if (message.includes('NOT NULL constraint')) {
+    if (err.code === '23502' || message.includes('NOT NULL constraint')) {
         return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    if (err.code === '42501' || message.includes('row-level security policy')) {
+        return res.status(403).json({ 
+            error: 'Permiso denegado en la base de datos (RLS)',
+            details: config.isDev ? message : undefined 
+        });
+    }
+
+    if (err.code === 'PGRST116') {
+        return res.status(404).json({ error: 'Recurso no encontrado' });
     }
 
     // Handle malformed JSON body

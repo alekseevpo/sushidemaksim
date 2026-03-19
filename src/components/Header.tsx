@@ -113,10 +113,10 @@ export default function Header() {
                 className={`fixed top-0 inset-x-0 z-[100] transition-all duration-500 h-16
                 ${
                     isScrolled
-                        ? 'bg-white/95 backdrop-blur-xl shadow-sm border-b border-gray-100'
+                        ? 'bg-white/40 backdrop-blur-md shadow-sm border-b border-white/20'
                         : isHome
                           ? 'bg-transparent border-b border-transparent'
-                          : 'bg-white/80 backdrop-blur-md border-b border-transparent'
+                          : 'bg-white/15 backdrop-blur-sm border-b border-white/20'
                 }
             `}
             >
@@ -126,18 +126,23 @@ export default function Header() {
                         <Link
                             to="/"
                             onClick={() => setShowMobileMenu(false)}
-                            className="flex items-center no-underline gap-2 group"
+                            className="flex items-center no-underline gap-2.5 group py-1"
                         >
-                            <div className="bg-red-600 p-1.5 rounded-lg group-hover:rotate-12 transition-transform duration-300 shadow-lg">
+                            <div className="bg-red-600 px-2.5 h-10 flex items-center justify-center rounded-xl group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-red-900/20 shrink-0">
                                 <img
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
-                                    className="h-6 w-auto brightness-0 invert"
+                                    className="h-6 w-auto brightness-0 invert object-contain"
                                 />
                             </div>
-                            <span className={`font-black text-xl tracking-tighter transition-colors duration-300 ${isScrolled || !isHome ? 'text-gray-900' : 'text-white'}`}>
-                                MAKSIM<span className="text-red-600">.</span>
-                            </span>
+                            <div className="flex flex-col leading-none">
+                                <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 ${isScrolled || !isHome ? 'text-red-500' : 'text-red-400'}`}>
+                                    Sushi de
+                                </span>
+                                <span className={`font-black text-xl tracking-tighter transition-colors duration-300 ${isScrolled || !isHome ? 'text-gray-900' : 'text-white'}`}>
+                                    MAKSIM<span className="text-red-600">.</span>
+                                </span>
+                            </div>
                         </Link>
 
                         {/* Desktop Navigation */}
@@ -352,7 +357,7 @@ export default function Header() {
                                         stiffness: 300,
                                         mass: 0.8,
                                     }}
-                                    className="fixed inset-x-0 bottom-0 bg-white/90 backdrop-blur-xl rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-white/40 will-change-transform flex flex-col max-h-[92dvh]"
+                                    className="fixed inset-x-0 bottom-0 bg-white/40 backdrop-blur-md rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-white/40 will-change-transform flex flex-col max-h-[92dvh]"
                                 >
                                     {/* Drag Handle Container */}
                                     <div className="flex justify-center pt-5 pb-2 shrink-0">

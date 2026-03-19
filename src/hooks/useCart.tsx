@@ -121,13 +121,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
             // Clear localStorage immediately to prevent multiple sync triggers
             localStorage.removeItem('guest_cart');
 
-            // Sync each items to server
-            for (const item of guestItems) {
-                await api.post('/cart', {
-                    menuItemId: parseInt(item.id),
-                    quantity: item.quantity,
-                });
-            }
+            // Use bulk endpoint for efficiency
+            const itemsToSync = guestItems.map((item: any) => ({
+                menuItemId: parseInt(item.id),
+                quantity: item.quantity,
+            }));
+
+            await api.post('/cart/bulk', { items: itemsToSync });
             await loadCart(true);
         } catch (e) {
             console.error('Failed to sync guest cart', e);

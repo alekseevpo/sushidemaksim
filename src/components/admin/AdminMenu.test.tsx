@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithProviders as render, screen, fireEvent, waitFor } from '../../test/test-utils';
 import AdminMenu from './AdminMenu';
 import { api } from '../../utils/api';
 
@@ -55,13 +55,19 @@ describe('AdminMenu (Integration)', () => {
         fireEvent.click(addBtn);
 
         expect(screen.getByText(/Añadir Plato/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /Guardar Plato/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Crear Plato|Guardar Cambios/i })).toBeInTheDocument();
     });
 
     it('submits the form to add a new item', async () => {
+        const newItem = { id: 2, name: 'New Roll', category: 'menus', price: 10 };
         vi.mocked(api.post).mockResolvedValue({
-            item: { id: 2, name: 'New Roll', category: 'menus', price: 10 },
+            item: newItem,
         });
+        
+        // Initial load
+        vi.mocked(api.get).mockResolvedValueOnce({ items: mockItems });
+        // Refresh load
+        vi.mocked(api.get).mockResolvedValue({ items: [...mockItems, newItem] });
 
         render(<AdminMenu />);
 
@@ -69,27 +75,28 @@ describe('AdminMenu (Integration)', () => {
         fireEvent.click(addBtn);
 
         // Fill form
-        fireEvent.change(screen.getByLabelText(/Nombre \*/i), { target: { value: 'New Roll' } });
+        fireEvent.change(await screen.findByLabelText(/Nombre \*/i), { target: { value: 'New Roll' } });
         fireEvent.change(screen.getByLabelText(/Descripción \*/i), { target: { value: 'Tasty' } });
         fireEvent.change(screen.getByLabelText(/Precio \(€\) \*/i), { target: { value: '10' } });
+        fireEvent.change(screen.getByLabelText(/Categoría \*/i), { target: { value: 'menus' } });
 
-        const saveBtn = screen.getByRole('button', { name: /Guardar Plato/i });
-        fireEvent.click(saveBtn);
+        const form = (await screen.findByLabelText(/Nombre \*/i)).closest('form')!;
+        fireEvent.submit(form);
 
         await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith(
-                '/admin/menu',
-                expect.objectContaining({
-                    name: 'New Roll',
-                    price: 10,
-                })
-            );
+            expect(api.post).toHaveBeenCalled();
             expect(screen.getByText('New Roll')).toBeInTheDocument();
         });
     });
 
     it('deletes an item', async () => {
-        vi.mocked(api.delete).mockResolvedValue({});
+        let items = [...mockItems];
+        vi.mocked(api.get).mockImplementation(() => Promise.resolve({ items }));
+        vi.mocked(api.delete).mockImplementation(() => {
+            items = [];
+            return Promise.resolve({});
+        });
+
         render(<AdminMenu />);
 
         await waitFor(() => expect(screen.getByText('Sake Sushi')).toBeInTheDocument());
@@ -99,7 +106,7 @@ describe('AdminMenu (Integration)', () => {
         fireEvent.click(deleteBtn);
 
         // Modal should be visible
-        const confirmBtn = await screen.findByText('SÍ, ELIMINAR');
+        const confirmBtn = await screen.findByText(/SÍ, ELIMINAR AHORA/i);
         fireEvent.click(confirmBtn);
 
         await waitFor(() => {

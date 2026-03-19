@@ -16,11 +16,12 @@ router.post(
     orderLimiter,
     optionalAuthMiddleware,
     validate({
-        deliveryAddress: { type: 'string', required: true, maxLength: 300 },
+        deliveryAddress: { type: 'string', required: true, maxLength: 400 },
         phoneNumber: { type: 'string', required: true, maxLength: 30 },
+        postalCode: { type: 'string', required: false, maxLength: 10 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, guestItems, postalCode } = req.body;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
@@ -99,30 +100,57 @@ router.post(
             }
         }
 
-        // 2.5 Add delivery fee if applicable (parsed from notes)
+        // 2.5 Dynamic Delivery Fee from Zones
+        let deliveryFee = 0;
         if (notes?.includes('[TIPO: DOMICILIO]')) {
+            const { deliveryZoneId } = req.body;
+            
+            // Get delivery zones directly from the table
+            const { data: zones } = await supabase
+                .from('delivery_zones')
+                .select('*')
+                .eq('is_active', true);
+            
+            // Site-wide fallbacks
+            let defaultFee = 3.5;
+            let defaultFreeThreshold = 60;
+            let defaultMinOrder = 15;
+
+            // Load global settings for fallbacks if needed
             const { data: settings } = await supabase.from('site_settings').select('*');
-            const deliveryFeeSetting = settings?.find(s => s.key === 'delivery_fee');
-            const thresholdSetting = settings?.find(s => s.key === 'free_delivery_threshold');
+            if (settings) {
+                const feeSet = settings.find(s => s.key === 'delivery_fee');
+                const threshSet = settings.find(s => s.key === 'free_delivery_threshold');
+                const minSet = settings.find(s => s.key === 'min_order');
+                
+                if (feeSet) defaultFee = parseFloat(typeof feeSet.value === 'string' ? JSON.parse(feeSet.value) : feeSet.value);
+                if (threshSet) defaultFreeThreshold = parseFloat(typeof threshSet.value === 'string' ? JSON.parse(threshSet.value) : threshSet.value);
+                if (minSet) defaultMinOrder = parseFloat(typeof minSet.value === 'string' ? JSON.parse(minSet.value) : minSet.value);
+            }
 
-            const fee = deliveryFeeSetting
-                ? parseFloat(
-                      deliveryFeeSetting.value.startsWith('"')
-                          ? JSON.parse(deliveryFeeSetting.value)
-                          : deliveryFeeSetting.value
-                  )
-                : 3.5;
+            let matchedZone = null;
+            if (deliveryZoneId && zones) {
+                matchedZone = zones.find(z => z.id === deliveryZoneId || z.id === String(deliveryZoneId));
+            }
+            
+            if (!matchedZone && postalCode && zones) {
+                matchedZone = zones.find(z => 
+                    Array.isArray(z.postal_codes) && z.postal_codes.includes(postalCode)
+                );
+            }
 
-            const threshold = thresholdSetting
-                ? parseFloat(
-                      thresholdSetting.value.startsWith('"')
-                          ? JSON.parse(thresholdSetting.value)
-                          : thresholdSetting.value
-                  )
-                : 60;
+            const currentFee = matchedZone ? (Number(matchedZone.cost) ?? defaultFee) : defaultFee;
+            const currentFreeThreshold = matchedZone ? (Number(matchedZone.free_threshold) ?? defaultFreeThreshold) : defaultFreeThreshold;
+            const currentMinOrder = matchedZone ? (Number(matchedZone.min_order) ?? defaultMinOrder) : defaultMinOrder;
 
-            if (subtotal < threshold) {
-                finalTotal += fee;
+            // Enforce Min Order on Server
+            if (subtotal < currentMinOrder) {
+                return res.status(400).json({ error: `El pedido mínimo para su zona es de ${currentMinOrder.toFixed(2).replace('.', ',')}€` });
+            }
+
+            if (subtotal < currentFreeThreshold) {
+                deliveryFee = currentFee;
+                finalTotal += deliveryFee;
             }
         }
 
@@ -155,6 +183,18 @@ router.post(
             price_at_time: item.menu_items.price,
             image: item.menu_items.image,
         }));
+
+        // ADD DELIVERY FEE AS A PRODUCT ITEM (So it appears in the check/receipt)
+        if (deliveryFee > 0) {
+            orderItemsToInsert.push({
+                order_id: order.id,
+                menu_item_id: -1, // Virtual ID for delivery
+                name: 'Gastos de Envío',
+                quantity: 1,
+                price_at_time: deliveryFee,
+                image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png', // Delivery truck icon
+            });
+        }
 
         const { error: itemsError } = await supabase.from('order_items').insert(orderItemsToInsert);
         if (itemsError) throw itemsError;
@@ -304,12 +344,13 @@ router.post(
     orderLimiter,
     authMiddleware,
     validate({
-        deliveryAddress: { type: 'string', required: true, maxLength: 300 },
+        deliveryAddress: { type: 'string', required: true, maxLength: 400 },
         phoneNumber: { type: 'string', required: true, maxLength: 30 },
+        postalCode: { type: 'string', required: false, maxLength: 10 },
         senderName: { type: 'string', required: false, maxLength: 100 },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, senderName } = req.body;
+        const { deliveryAddress, phoneNumber, notes, promoCode, senderName, postalCode } = req.body;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
@@ -335,7 +376,46 @@ router.post(
             0
         );
         let finalTotal = subtotal;
-        // Simple 10% for testing if needed, or proper promo logic
+        let deliveryFee = 0;
+
+        // Dynamic Delivery Fee / Min Order for Invitations
+        if (notes?.includes('[TIPO: DOMICILIO]')) {
+            const { deliveryZoneId } = req.body;
+            const { data: zones } = await supabase.from('delivery_zones').select('*').eq('is_active', true);
+            let defFee = 3.5;
+            let defThresh = 60;
+            let defMin = 15;
+
+            const { data: settings } = await supabase.from('site_settings').select('*');
+            if (settings) {
+                const f = settings.find(s => s.key === 'delivery_fee');
+                const t = settings.find(s => s.key === 'free_delivery_threshold');
+                if (f) defFee = parseFloat(typeof f.value === 'string' ? JSON.parse(f.value) : f.value);
+                if (t) defThresh = parseFloat(typeof t.value === 'string' ? JSON.parse(t.value) : t.value);
+            }
+
+            let matchedZone = null;
+            if (deliveryZoneId && zones) {
+                matchedZone = zones.find(z => z.id === deliveryZoneId || z.id === String(deliveryZoneId));
+            }
+            if (!matchedZone && postalCode && zones) {
+                matchedZone = zones.find(z => Array.isArray(z.postal_codes) && z.postal_codes.includes(postalCode));
+            }
+
+            const currentFee = matchedZone ? (Number(matchedZone.cost) ?? defFee) : defFee;
+            const currentThresh = matchedZone ? (Number(matchedZone.free_threshold) ?? defThresh) : defThresh;
+            const currentMin = matchedZone ? (Number(matchedZone.min_order) ?? defMin) : defMin;
+
+            if (subtotal < currentMin) {
+                return res.status(400).json({ error: `El pedido mínimo para su zona es de ${currentMin.toFixed(2).replace('.', ',')}€` });
+            }
+            if (subtotal < currentThresh) {
+                deliveryFee = currentFee;
+                finalTotal += deliveryFee;
+            }
+        }
+
+        // Simple 10% for testing if needed
         if (promoCode === 'TEST10') finalTotal *= 0.9;
 
         // 3. Create Draft Order
@@ -366,6 +446,17 @@ router.post(
             price_at_time: item.menu_items.price,
             image: item.menu_items.image,
         }));
+
+        if (deliveryFee > 0) {
+            itemsToInsert.push({
+                order_id: order.id,
+                menu_item_id: -1,
+                name: 'Gastos de Envío',
+                quantity: 1,
+                price_at_time: deliveryFee,
+                image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png',
+            });
+        }
         await supabase.from('order_items').insert(itemsToInsert);
 
         const origin =

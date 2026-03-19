@@ -126,7 +126,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
 
         // Wait for page to load
         const streetInput = await screen.findByPlaceholderText(/Nombre de tu calle/i);
-        const houseInput = screen.getByPlaceholderText(/15/i);
+        const houseInput = screen.getByPlaceholderText(/Ej: 20/i);
         const aptInput = screen.getByPlaceholderText(/3ºB/i);
 
         fireEvent.change(streetInput, { target: { value: 'Calle Principal' } });
@@ -144,7 +144,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
             expect(api.post).toHaveBeenCalledWith(
                 '/orders/invite',
                 expect.objectContaining({
-                    deliveryAddress: 'Calle Principal, Portal/Casa: 1, Piso/Puerta: A',
+                    deliveryAddress: expect.stringMatching(/Calle Principal.*Portal: 1.*Piso: A/i),
                     senderName: 'Test User',
                     notes: expect.stringContaining('[MÉTODO DE PAGO: TARJETA]'),
                 })
