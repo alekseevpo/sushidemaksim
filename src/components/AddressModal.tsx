@@ -154,17 +154,19 @@ export default function AddressModal({
         try {
             const data = await api.get(`/delivery-zones/reverse?lat=${lat}&lon=${lon}`);
             if (data && data.address) {
-                // Determine street name from road or pedestrian
+                // Determine street name from road, pedestrian, or other common fields
                 const street =
                     data.address.road ||
                     data.address.pedestrian ||
                     data.address.suburb ||
+                    data.address.neighbourhood ||
                     data.address.city ||
                     '';
                 const houseNum = data.address.house_number || '';
 
-                if (street) setAddress(street);
-                if (houseNum) setHouse(houseNum);
+                // If street is found, set it, otherwise fallback to a more generic name
+                setAddress(street || data.display_name?.split(',')[0] || '');
+                setHouse(houseNum);
                 if (data.address.postcode) setPostalCode(data.address.postcode);
             }
         } catch (err) {
@@ -182,20 +184,27 @@ export default function AddressModal({
         const lon = parseFloat(res.lon);
         setMarkerPosition([lat, lon]);
 
-        // 1. Street
-        const street =
+        // 1. Extract street name correctly
+        let street =
             res.address?.road ||
             res.address?.pedestrian ||
             res.address?.suburb ||
+            res.address?.neighbourhood ||
             res.display_name?.split(',')[0] ||
             '';
-        setAddress(street);
 
-        // 2. House number
+        // 2. Extract house number
         const houseNum = res.address?.house_number || '';
+
+        // If the street name contains the house number, try to clean it
+        if (houseNum && street.includes(houseNum)) {
+            street = street.replace(houseNum, '').replace(/,/g, '').trim();
+        }
+
+        setAddress(street);
         setHouse(houseNum);
 
-        // 3. Postal code
+        // 3. Extract postal code
         const pc = res.address?.postcode || res.display_name?.match(/\b\d{5}\b/)?.[0] || '';
         if (pc) setPostalCode(pc);
 
