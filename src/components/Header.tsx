@@ -132,11 +132,13 @@ export default function Header() {
                             onClick={() => setShowMobileMenu(false)}
                             className="flex items-center no-underline gap-2.5 group py-1"
                         >
-                            <div className="bg-red-600 px-2.5 h-10 flex items-center justify-center rounded-xl group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-red-900/20 shrink-0">
+                            <div className="bg-red-600 px-2.5 h-10 min-w-[60px] flex items-center justify-center rounded-xl group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-red-900/20 shrink-0">
                                 <img
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
-                                    className="h-6 w-auto brightness-0 invert object-contain"
+                                    width={76}
+                                    height={24}
+                                    className="h-6 w-[76px] brightness-0 invert object-contain"
                                 />
                             </div>
                             <div className="flex flex-col leading-none">
