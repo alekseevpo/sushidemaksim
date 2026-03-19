@@ -362,7 +362,7 @@ export default function MenuPageSimple() {
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />
-            <div className="max-w-7xl mx-auto flex gap-8">
+            <div className="max-w-7xl mx-auto lg:flex gap-8">
                 {/* Desktop Sidebar Sidebar */}
                 <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-[96px] self-start z-30">
                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
