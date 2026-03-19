@@ -514,38 +514,43 @@ export default function MenuPageSimple() {
                         </div>
                     </header>
 
-                    <div className="sticky top-16 z-[40] -mx-2 md:mx-0 bg-[#FDFBF7] border-b border-gray-200 mb-8 lg:hidden">
-                        <div className="overflow-x-auto no-scrollbar px-4 py-3">
-                            <div className="flex gap-2 flex-nowrap">
-                                <button
-                                    id="cat-all"
-                                    onClick={() => setSelectedCategory('all')}
-                                    className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center ${
-                                        selectedCategory === 'all'
-                                            ? 'bg-red-600 text-white border border-red-600'
-                                            : 'bg-white text-gray-700 border border-gray-200'
-                                    }`}
-                                >
-                                    Todos
-                                </button>
-                                {CATEGORIES.map(cat => (
+                    {/* Fixed category bar — NOT sticky (Safari jitter bug) */}
+                    <div className="fixed top-16 left-0 right-0 z-[40] bg-[#FDFBF7] border-b border-gray-200 lg:hidden">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="overflow-x-auto no-scrollbar px-4 py-3">
+                                <div className="flex gap-2 flex-nowrap">
                                     <button
-                                        key={cat.id}
-                                        id={`cat-${cat.id}`}
-                                        onClick={() => setSelectedCategory(cat.id)}
-                                        className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center ${
-                                            selectedCategory === cat.id
+                                        id="cat-all"
+                                        onClick={() => setSelectedCategory('all')}
+                                        className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center ${
+                                            selectedCategory === 'all'
                                                 ? 'bg-red-600 text-white border border-red-600'
                                                 : 'bg-white text-gray-700 border border-gray-200'
                                         }`}
                                     >
-                                        <cat.icon size={18} strokeWidth={1.5} />
-                                        {cat.name}
+                                        Todos
                                     </button>
-                                ))}
+                                    {CATEGORIES.map(cat => (
+                                        <button
+                                            key={cat.id}
+                                            id={`cat-${cat.id}`}
+                                            onClick={() => setSelectedCategory(cat.id)}
+                                            className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center ${
+                                                selectedCategory === cat.id
+                                                    ? 'bg-red-600 text-white border border-red-600'
+                                                    : 'bg-white text-gray-700 border border-gray-200'
+                                            }`}
+                                        >
+                                            <cat.icon size={18} strokeWidth={1.5} />
+                                            {cat.name}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {/* Spacer for fixed category bar */}
+                    <div className="h-14 lg:hidden" />
 
                     {/* Items Section */}
                     {isLoading ? (
