@@ -274,13 +274,13 @@ export default function AddressModal({
                         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-[1002] max-h-[95vh] overflow-hidden flex flex-col md:max-w-4xl md:mx-auto md:top-10 md:bottom-10 md:rounded-[40px]"
                     >
                         {/* Header */}
-                        <div className="p-6 md:p-8 flex justify-between items-start border-b border-gray-100 shrink-0 relative">
+                        <div className="p-4 md:p-6 flex justify-between items-start border-b border-gray-100 shrink-0 relative">
                             <div>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-                                    <MapPin className="text-red-500" />
+                                <h2 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                                    <MapPin size={22} className="text-red-500" />
                                     ¿Dónde entregamos?
                                 </h2>
-                                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
                                     Selecciona tu ubicación en el mapa
                                 </p>
                             </div>
@@ -294,7 +294,7 @@ export default function AddressModal({
 
                         <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl">
                             {/* Map Side */}
-                            <div className="h-64 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100">
+                            <div className="h-48 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100">
                                 <MapContainer
                                     center={markerPosition}
                                     zoom={15}
@@ -341,7 +341,7 @@ export default function AddressModal({
                                             value={searchQuery}
                                             onChange={e => setSearchQuery(e.target.value)}
                                             placeholder="Buscar mi calle en Madrid..."
-                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-4 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
+                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
                                         />
 
                                         {searchResults.length > 0 && (
@@ -388,68 +388,68 @@ export default function AddressModal({
 
                             {/* Form Side */}
                             <div className="w-full md:w-[380px] bg-white flex flex-col overflow-hidden">
-                                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-5 scrollbar-hide">
+                                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3.5 scrollbar-hide">
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
                                             Calle / Avenida *
                                         </label>
                                         <input
                                             value={address}
                                             onChange={e => setAddress(e.target.value)}
                                             data-testid="address-input"
-                                            className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                            className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                             placeholder="Ej: Calle de Serrano"
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
                                                 Número / Portal *
                                             </label>
                                             <input
                                                 value={house}
                                                 onChange={e => setHouse(e.target.value)}
                                                 data-testid="house-input"
-                                                className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                                className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                                 placeholder="Ej: 20"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
                                                 Piso / Puerta
                                             </label>
                                             <input
                                                 value={apartment}
                                                 onChange={e => setApartment(e.target.value)}
                                                 data-testid="apartment-input"
-                                                className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                                className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                                 placeholder="Ej: 1B"
                                             />
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
                                             Código Postal
                                         </label>
                                         <input
                                             value={postalCode}
                                             onChange={e => setPostalCode(e.target.value)}
-                                            className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                            className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                             placeholder="28001"
                                             maxLength={5}
                                         />
                                     </div>
 
                                     {/* Zone Status */}
-                                    <div className="pt-2">
+                                    <div className="pt-1">
                                         {selectedZone ? (
-                                            <div className="p-5 bg-green-50 rounded-3xl border border-green-100 flex gap-4 animate-in slide-in-from-bottom-2 duration-300">
-                                                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-green-100 shrink-0">
+                                            <div className="p-4 bg-green-50 rounded-2xl border border-green-100 flex gap-4 animate-in slide-in-from-bottom-2 duration-300">
+                                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-green-100 shrink-0">
                                                     <CheckCircle
                                                         className="text-green-500"
-                                                        size={24}
+                                                        size={20}
                                                     />
                                                 </div>
                                                 <div>
@@ -473,9 +473,9 @@ export default function AddressModal({
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="p-5 bg-red-50 rounded-3xl border border-red-100 flex gap-4 animate-in shake duration-500">
-                                                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border-red-100 shrink-0">
-                                                    <Info className="text-red-500" size={24} />
+                                            <div className="p-4 bg-red-50 rounded-2xl border border-red-100 flex gap-4 animate-in shake duration-500">
+                                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border-red-100 shrink-0">
+                                                    <Info className="text-red-500" size={20} />
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-1 leading-none">
@@ -495,8 +495,8 @@ export default function AddressModal({
                                 </div>
 
                                 {/* Sticky Footer with Gradient */}
-                                <div className="p-6 md:p-8 bg-white border-t border-gray-50 relative pb-10 md:pb-8 shrink-0">
-                                    <div className="absolute bottom-full left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                                <div className="p-4 md:p-6 bg-white border-t border-gray-50 relative pb-6 md:pb-6 shrink-0">
+                                    <div className="absolute bottom-full left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                                     <button
                                         onClick={handleContinue}
                                         disabled={
@@ -505,7 +505,7 @@ export default function AddressModal({
                                             !selectedZone ||
                                             isReverseGeocoding
                                         }
-                                        className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg flex items-center justify-center gap-3 hover:bg-red-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-[0_20px_40px_-10px_rgba(220,38,38,0.3)]"
+                                        className="w-full py-4 bg-red-600 text-white rounded-[20px] font-black text-base flex items-center justify-center gap-3 hover:bg-red-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-[0_15px_30px_-10px_rgba(220,38,38,0.3)]"
                                     >
                                         {isReverseGeocoding ? (
                                             <span className="flex items-center gap-2">
@@ -514,7 +514,7 @@ export default function AddressModal({
                                             </span>
                                         ) : (
                                             <>
-                                                Confirmar dirección <ArrowRight size={24} />
+                                                Confirmar dirección <ArrowRight size={20} />
                                             </>
                                         )}
                                     </button>
