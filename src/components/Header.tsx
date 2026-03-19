@@ -141,7 +141,7 @@ export default function Header() {
                                     className="h-6 w-[76px] brightness-0 invert object-contain"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none">
+                            <div className="flex flex-col leading-none -space-y-0.5">
                                 <span
                                     className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 ${isScrolled || !isHome ? 'text-red-500' : 'text-red-400'}`}
                                 >
