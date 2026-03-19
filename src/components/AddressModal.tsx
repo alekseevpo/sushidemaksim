@@ -387,8 +387,8 @@ export default function AddressModal({
                             </div>
 
                             {/* Form Side */}
-                            <div className="w-full md:w-[380px] p-6 md:p-8 overflow-y-auto bg-white flex flex-col gap-6 scrollbar-hide">
-                                <div className="space-y-5">
+                            <div className="w-full md:w-[380px] bg-white flex flex-col overflow-hidden">
+                                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-5 scrollbar-hide">
                                     <div>
                                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1 tracking-widest leading-none">
                                             Calle / Avenida *
@@ -494,7 +494,9 @@ export default function AddressModal({
                                     </div>
                                 </div>
 
-                                <div className="mt-auto">
+                                {/* Sticky Footer with Gradient */}
+                                <div className="p-6 md:p-8 bg-white border-t border-gray-50 relative pb-10 md:pb-8 shrink-0">
+                                    <div className="absolute bottom-full left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                                     <button
                                         onClick={handleContinue}
                                         disabled={
@@ -503,7 +505,7 @@ export default function AddressModal({
                                             !selectedZone ||
                                             isReverseGeocoding
                                         }
-                                        className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg flex items-center justify-center gap-3 hover:bg-red-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-xl shadow-red-200"
+                                        className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg flex items-center justify-center gap-3 hover:bg-red-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-[0_20px_40px_-10px_rgba(220,38,38,0.3)]"
                                     >
                                         {isReverseGeocoding ? (
                                             <span className="flex items-center gap-2">
