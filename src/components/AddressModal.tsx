@@ -182,20 +182,22 @@ export default function AddressModal({
         const lon = parseFloat(res.lon);
         setMarkerPosition([lat, lon]);
 
-        // Better street name extraction from Nominatim
-        if (res.address) {
-            const street =
-                res.address.road ||
-                res.address.pedestrian ||
-                res.address.display_name?.split(',')[0] ||
-                '';
-            const houseNum = res.address.house_number || '';
-            if (street) setAddress(street);
-            if (houseNum) setHouse(houseNum);
-            if (res.address.postcode) setPostalCode(res.address.postcode);
-        } else {
-            setAddress(res.display_name?.split(',')[0] || '');
-        }
+        // 1. Street
+        const street =
+            res.address?.road ||
+            res.address?.pedestrian ||
+            res.address?.suburb ||
+            res.display_name?.split(',')[0] ||
+            '';
+        setAddress(street);
+
+        // 2. House number
+        const houseNum = res.address?.house_number || '';
+        setHouse(houseNum);
+
+        // 3. Postal code
+        const pc = res.address?.postcode || res.display_name?.match(/\b\d{5}\b/)?.[0] || '';
+        if (pc) setPostalCode(pc);
 
         setSearchResults([]);
         setSearchQuery('');
