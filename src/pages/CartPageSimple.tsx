@@ -453,8 +453,10 @@ export default function CartPageSimple() {
                 isOpen={isAddressModalOpen}
                 onClose={() => setIsAddressModalOpen(false)}
                 onSelect={res => {
-                    setAddress(res.address);
-                    setPostalCode(res.postalCode);
+                    setAddress(res.street || '');
+                    setHouse(res.house || '');
+                    setApartment(res.apartment || '');
+                    setPostalCode(res.postalCode || '');
                     setSelectedZone(res.zone);
                 }}
                 deliveryZones={deliveryZones}

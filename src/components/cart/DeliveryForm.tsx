@@ -204,37 +204,66 @@ export default function DeliveryForm({
                                 </div>
                             </button>
                         ) : (
-                            <div className="bg-gray-50 rounded-[32px] p-6 mb-2 border border-gray-100 flex items-center justify-between">
-                                <div className="flex items-center gap-4 overflow-hidden">
-                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 shrink-0">
-                                        <MapPin className="text-red-500" size={20} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-black text-sm text-gray-900 truncate">
-                                            {address}
-                                        </p>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            {selectedZone && (
-                                                <span
-                                                    className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full text-white"
-                                                    style={{ backgroundColor: selectedZone.color }}
-                                                >
-                                                    {selectedZone.name}
+                            <div className="flex flex-col gap-3">
+                                <div className="bg-gray-50 rounded-[32px] p-6 border border-gray-100 flex items-center justify-between">
+                                    <div className="flex items-center gap-4 overflow-hidden">
+                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 shrink-0">
+                                            <MapPin className="text-red-500" size={20} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-black text-sm text-gray-900 truncate">
+                                                {address}
+                                            </p>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                {selectedZone && (
+                                                    <span
+                                                        className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full text-white"
+                                                        style={{ backgroundColor: selectedZone.color }}
+                                                    >
+                                                        {selectedZone.name}
+                                                    </span>
+                                                )}
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                                                    CP: {postalCode}
                                                 </span>
-                                            )}
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                                                CP: {postalCode}
-                                            </span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddressClick}
+                                        className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:bg-gray-50 active:scale-90 transition shrink-0 ml-2 cursor-pointer"
+                                    >
+                                        <ArrowRight size={18} className="text-gray-400" />
+                                    </button>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={handleAddressClick}
-                                    className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:bg-gray-50 active:scale-90 transition shrink-0 ml-2 cursor-pointer"
-                                >
-                                    <ArrowRight size={18} className="text-gray-400" />
-                                </button>
+
+                                <div className="grid grid-cols-2 gap-3 -mt-1">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 px-1 tracking-wider">
+                                            Portal / Casa
+                                        </label>
+                                        <input
+                                            value={house}
+                                            onChange={e => setHouse(e.target.value)}
+                                            placeholder="Ej: 15"
+                                            data-testid="house-input"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 px-1 tracking-wider">
+                                            Piso / Puerta
+                                        </label>
+                                        <input
+                                            value={apartment}
+                                            onChange={e => setApartment(e.target.value)}
+                                            placeholder="Ej: 3ºB"
+                                            data-testid="apartment-input"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
