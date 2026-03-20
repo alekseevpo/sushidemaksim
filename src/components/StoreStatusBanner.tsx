@@ -1,0 +1,133 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Clock, Info, X, Calendar, Timer } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../utils/api';
+import { useLocation } from 'react-router-dom';
+import { isStoreOpen, getNextOpeningTime, formatTimeLeft } from '../utils/storeStatus';
+
+export default function StoreStatusBanner() {
+    const [isVisible, setIsVisible] = useState(true);
+    const [timeLeftDisplay, setTimeLeftDisplay] = useState<string | null>(null);
+    const [isAutoClosed, setIsAutoClosed] = useState(false);
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith('/admin');
+
+    const { data: settings } = useQuery({
+        queryKey: ['settings'],
+        queryFn: () => api.get('/settings'),
+        refetchOnWindowFocus: true,
+        staleTime: 60000,
+    });
+
+    useEffect(() => {
+        const updateCountdown = () => {
+            const now = new Date();
+            const open = isStoreOpen(now);
+            setIsAutoClosed(!open);
+
+            if (!open) {
+                const nextOpening = getNextOpeningTime(now);
+                if (nextOpening) {
+                    const diff = nextOpening.getTime() - now.getTime();
+                    if (diff > 0) {
+                        setTimeLeftDisplay(formatTimeLeft(diff));
+                    }
+                }
+            } else {
+                setTimeLeftDisplay(null);
+            }
+        };
+
+        updateCountdown();
+        const timer = setInterval(updateCountdown, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const isStoreClosed = settings?.is_store_closed || isAutoClosed;
+
+    if (isAdminRoute || !isStoreClosed || !isVisible) {
+        return null;
+    }
+
+    const todayDay = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
+    const schedule = settings?.contact_schedule || [];
+    const todaySchedule = schedule.find((s: any) => s.days.toLowerCase().includes(todayDay));
+
+    return (
+        <AnimatePresence>
+            <motion.div
+                key="store-closed-banner"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="bg-gray-950 border-b border-white/5 relative z-[101] overflow-hidden"
+            >
+                <div className="max-w-7xl mx-auto px-4 py-3 md:py-2.5">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex items-start md:items-center gap-4">
+                            <div className="w-10 h-10 rounded-2xl bg-red-600/10 flex items-center justify-center shrink-0 border border-red-500/20 shadow-inner">
+                                <Clock size={20} className="text-red-500 animate-pulse" />
+                            </div>
+                            <div className="flex flex-col">
+                                <div className="flex items-center gap-2">
+                                    <p className="text-white font-black text-xs md:text-sm uppercase tracking-tight">
+                                        {settings?.is_store_closed ? 'Restaurante Cerrado' : 'Fuera de Horario'}
+                                    </p>
+                                    <span className="hidden md:block px-2 py-0.5 bg-red-600/20 text-red-500 text-[8px] font-black rounded-full border border-red-500/20">
+                                        MODO PRE-ORDEN
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="text-gray-400 text-[10px] md:text-xs font-bold leading-none flex items-center gap-1">
+                                        <Calendar size={10} className="text-gray-500" />
+                                        {todaySchedule?.hours ? `Horario hoy: ${todaySchedule.hours}` : 'Consulta nuestro horario'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                            {timeLeftDisplay && (
+                                <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 decoration-red-500">
+                                    <Timer size={14} className="text-red-500" />
+                                    <span className="text-[10px] uppercase font-black text-gray-400 tracking-wider">
+                                        Abrimos en:
+                                    </span>
+                                    <span className="text-[12px] font-black text-white tabular-nums">
+                                        {timeLeftDisplay}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="flex-1 md:flex-none flex items-center gap-3 bg-white/5 backdrop-blur-md rounded-xl px-4 py-2 border border-white/10">
+                                <Info size={14} className="text-amber-400 shrink-0" />
+                                <div className="flex flex-col">
+                                    <p className="text-[10px] md:text-[11px] text-gray-200 font-medium leading-tight">
+                                        Puedes realizar tu pedido y nos pondremos en contacto contigo.
+                                    </p>
+                                    <p className="text-[9px] md:text-[10px] text-gray-400 mt-0.5">
+                                        Se procesarán al abrir.
+                                    </p>
+                                    {timeLeftDisplay && (
+                                        <p className="lg:hidden text-[9px] text-red-400 font-bold mt-0.5">
+                                            Abrimos en: {timeLeftDisplay}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <button 
+                                onClick={() => setIsVisible(false)}
+                                className="p-2 text-gray-500 hover:text-white transition-colors"
+                                aria-label="Cerrar aviso"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
+        </AnimatePresence>
+    );
+}

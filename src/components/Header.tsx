@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
+import StoreStatusBanner from './StoreStatusBanner';
 import LoginModal from './LoginModal';
 
 export default function Header() {
@@ -122,7 +123,7 @@ export default function Header() {
     return (
         <>
             <header
-                className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color] duration-300 h-16
+                className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color] duration-300
                 ${
                     isScrolled
                         ? 'bg-[#FDFBF7] shadow-sm border-b border-gray-200'
@@ -132,6 +133,7 @@ export default function Header() {
                 }
             `}
             >
+                <StoreStatusBanner />
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}

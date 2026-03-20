@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     Sparkles,
+    Clock,
     MapPin,
     CheckCircle,
     Trash2,
@@ -31,6 +32,7 @@ import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
+import { isStoreOpen } from '../utils/storeStatus';
 
 interface MenuItem {
     id: number;
@@ -88,7 +90,7 @@ export default function CartPageSimple() {
     const FREE_DELIVERY_THRESHOLD = selectedZone
         ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60)
         : (siteSettings?.free_delivery_threshold ?? 60);
-    const isStoreClosed = !!siteSettings?.is_store_closed;
+    const isStoreClosed = !!siteSettings?.is_store_closed || !isStoreOpen();
 
     const todayStr = (() => {
         const now = new Date();
@@ -305,12 +307,8 @@ export default function CartPageSimple() {
             }
         }
 
-        if (isStoreClosed) {
-            showError(
-                siteSettings?.closed_message || 'Lo sentimos, la tienda está cerrada ahora mismo.'
-            );
-            return;
-        }
+        // REMOVED: isStoreClosed block. We now allow pre-orders.
+        // Instead of blocking, we add a note if it's closed.
 
         const deliveryAddress =
             deliveryType === 'pickup'
@@ -327,6 +325,9 @@ export default function CartPageSimple() {
         const notesArray = [];
         notesArray.push(`[TIPO: ${deliveryType === 'pickup' ? 'RECOGIDA EN LOCAL' : 'DOMICILIO'}]`);
         notesArray.push(`[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
+        if (isStoreClosed) {
+            notesArray.push('[PRE-ORDEN: Realizado con restaurante cerrado]');
+        }
         if (isScheduled && scheduledDate && scheduledTime) {
             notesArray.push(`[ENTREGA PROGRAMADA: ${scheduledDate} a las ${scheduledTime}]`);
         }
@@ -1527,6 +1528,19 @@ export default function CartPageSimple() {
                             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">
                                 Resumen
                             </h2>
+
+                            {isStoreClosed && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mb-4 p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-2 text-amber-900"
+                                >
+                                    <Clock size={16} className="shrink-0 mt-0.5" />
+                                    <p className="text-[11px] font-bold leading-tight m-0">
+                                        Restaurante cerrado. Puedes realizar tu pedido y nos pondremos en contacto contigo sin falta.
+                                    </p>
+                                </motion.div>
+                            )}
 
                             <div className="flex flex-col gap-3 mb-6">
                                 <div className="flex justify-between text-gray-500">
