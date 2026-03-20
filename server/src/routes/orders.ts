@@ -287,14 +287,19 @@ router.post(
         const paymentMethodIcon = isCard ? '💳' : '💵';
         const paymentMethodText = isCard ? 'Tarjeta' : 'Efectivo';
 
+        const itemsSummary = cartItems
+            .map(item => `• ${item.menu_items.name} x${item.quantity}`)
+            .join('\n');
+
         const waTextParts = [
             `🍣 ¡Hola Sushi de Maksim! Mi pedido #${String(order.id).padStart(5, '0')} ha sido realizado con éxito.`,
+            `📦 Productos:\n${itemsSummary}`,
             `📍 Dirección: ${deliveryAddress}`,
             `${paymentMethodIcon} Método de Pago: ${paymentMethodText}`,
             `💰 Total: ${finalTotal.toFixed(2)}€`,
             `Muchas gracias.`
         ];
-        const waText = encodeURIComponent(waTextParts.join('\n'));
+        const waText = encodeURIComponent(waTextParts.join('\n\n'));
         const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
 
         res.status(201).json({
