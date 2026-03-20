@@ -206,20 +206,31 @@ export default function CartPageSimple() {
         }
     };
 
-    const handleAddToCart = (item: MenuItem, isSuggestion = false) => {
+    const handleAddToCart = async (item: MenuItem, isSuggestion = false) => {
         const wasEmpty = items.length === 0;
 
-        addItem({
-            id: String(item.id),
-            name: item.name,
-            description: item.description || '',
-            price: item.price,
-            image: item.image,
-            category: item.category as any,
-        });
+        try {
+            await addItem({
+                id: String(item.id),
+                name: item.name,
+                description: item.description || '',
+                price: item.price,
+                image: item.image,
+                category: item.category as any,
+            });
 
-        if (isSuggestion) {
-            setSuggestions(prev => prev.filter(p => p.id !== item.id));
+            setAddedItems(prev => new Set(prev).add(item.id));
+
+            if (isSuggestion) {
+                setSuggestions(prev => prev.filter(p => p.id !== item.id));
+            }
+
+            if ('vibrate' in navigator) {
+                navigator.vibrate(15);
+            }
+        } catch (err) {
+            console.error('Failed to add item to cart:', err);
+            showError('No se pudo añadir el producto al carrito');
         }
 
         if (wasEmpty) {
