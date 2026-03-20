@@ -254,41 +254,6 @@ if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
 
 export default app;
 
-// ─── Background Jobs ───────────────────────────────────────────────────────────
-if (!process.env.VERCEL) {
-    setInterval(async () => {
-        try {
-            const sixtyMinsAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-
-            const { data: lateOrders } = await supabase
-                .from('orders')
-                .select('id, user_id, users(email)')
-                .not('status', 'in', '("delivered", "cancelled")')
-                .eq('discount_sent', false)
-                .lt('created_at', sixtyMinsAgo);
-
-            if (lateOrders && lateOrders.length > 0) {
-                for (const order of lateOrders) {
-                    const code = `LATE-20-${order.id}-${Math.floor(Math.random() * 1000)}`;
-
-                    await Promise.all([
-                        supabase
-                            .from('promo_codes')
-                            .insert({ code, discount_percentage: 20, user_id: order.user_id }),
-                        supabase.from('orders').update({ discount_sent: true }).eq('id', order.id),
-                    ]);
-
-                    console.log(
-                        `📧 Simulated email to ${(order.users as any)?.email}: Your order #${order.id} is late! Here is a 20% discount code for your next order: ${code}`
-                    );
-                }
-            }
-        } catch (e) {
-            console.error('Error checking late orders:', e);
-        }
-    }, 60 * 1000);
-}
-
 // ─── Graceful Shutdown ─────────────────────────────────────────────────────────
 function shutdown(signal: string) {
     console.log(`\n⚡ Received ${signal}. Shutting down gracefully...`);
