@@ -213,6 +213,8 @@ export default function DeliveryForm({
                                         <div className="flex-1 min-w-0">
                                             <p className="font-black text-sm text-gray-900 truncate">
                                                 {address}
+                                                {house && `, ${house}`}
+                                                {apartment && `, ${apartment}`}
                                             </p>
                                             <div className="flex items-center gap-2 mt-0.5">
                                                 {selectedZone && (
