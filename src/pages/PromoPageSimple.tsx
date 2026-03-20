@@ -86,7 +86,7 @@ export default function PromoPageSimple() {
             />
 
             {/* Hero Header */}
-            <section className="relative bg-[url('/sushi-hero.jpg')] bg-cover bg-center pt-24 pb-32 px-2 md:px-4">
+            <section className="relative bg-[url('/sushi-hero.webp')] bg-cover bg-center pt-24 pb-32 px-2 md:px-4">
                 <div className="absolute inset-0 bg-black/60"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF7] via-transparent to-transparent"></div>
                 <div className="max-w-4xl mx-auto text-center relative z-10">

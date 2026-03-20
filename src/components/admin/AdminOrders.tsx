@@ -24,6 +24,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
 import { OrderTimer } from './OrderTimer';
+import { Order, OrderItem } from '../../types';
 
 interface AdminOrdersProps {
     isGlobalSoundEnabled: boolean;
@@ -304,7 +305,7 @@ export default function AdminOrders({
                             <p className="text-gray-500 font-medium">Cargando pedidos...</p>
                         </div>
                     ) : (
-                        orders.map((order: any) => (
+                        orders.map((order: Order) => (
                             <div
                                 key={order.id}
                                 className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
@@ -636,7 +637,7 @@ export default function AdminOrders({
                                             Productos ({order.items?.length || 0})
                                         </p>
                                         <div className="space-y-0.5 px-1">
-                                            {order.items?.map((item: any, idx: number) => (
+                                            {order.items?.map((item: OrderItem, idx: number) => (
                                                 <div
                                                     key={idx}
                                                     className="flex items-center justify-between gap-2 py-1.5 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 px-1 rounded transition-colors"
@@ -666,7 +667,7 @@ export default function AdminOrders({
                                             <select
                                                 value={order.status}
                                                 onChange={e =>
-                                                    handleUpdateStatus(order.id, e.target.value)
+                                                    handleUpdateStatus(Number(order.id), e.target.value)
                                                 }
                                                 disabled={statusMutation.isPending}
                                                 className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${

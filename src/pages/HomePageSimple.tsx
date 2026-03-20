@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, ChevronRight, ChevronLeft, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
 import RatingsBanner from '../components/RatingsBanner';
-import { api } from '../utils/api';
 import { useCart } from '../hooks/useCart';
+import { useMenu, useCategories } from '../hooks/queries/useMenu';
 
 interface MenuItem {
     id: number;
@@ -165,9 +165,6 @@ const ProductCard = ({ item, index }: { item: MenuItem; index: number }) => {
 };
 
 export default function HomePageSimple() {
-    const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: 'left' | 'right') => {
@@ -181,47 +178,24 @@ export default function HomePageSimple() {
         }
     };
 
-    useEffect(() => {
-        let isMounted = true;
-        const fetchData = async () => {
-            try {
-                const [categoriesData, allItemsData] = await Promise.all([
-                    api.get('/menu/info/categories'),
-                    api.get('/menu'),
-                ]);
+    // Use TanStack Query
+    const { data: allItems = [], isLoading: itemsLoading } = useMenu('all', '');
+    const { data: categoriesData = [], isLoading: catsLoading } = useCategories();
 
-                if (!isMounted) return;
+    const isLoading = itemsLoading || catsLoading;
 
-                const allItems = allItemsData.items || [];
+    // Derived state
+    const popularItems = allItems.filter((item: any) => item.is_popular).slice(0, 8);
 
-                // Filter popular items from all items list locally to save an API call
-                const popular = allItems.filter((item: any) => item.is_popular).slice(0, 8);
-                setPopularItems(popular);
-
-                const enhancedCategories = (categoriesData.categories || []).map((cat: any) => {
-                    // Find the first item in this category that has an image
-                    const representativeItem = allItems.find(
-                        (item: any) => item.category === cat.id && item.image
-                    );
-                    return {
-                        ...cat,
-                        image: representativeItem?.image || null,
-                    };
-                });
-                setCategories(enhancedCategories);
-            } catch (error) {
-                if (!isMounted) return;
-                console.error('Error fetching data:', error);
-            } finally {
-                if (isMounted) setIsLoading(false);
-            }
+    const categories = categoriesData.map((cat: any) => {
+        const representativeItem = allItems.find(
+            (item: any) => item.category === cat.id && item.image
+        );
+        return {
+            ...cat,
+            image: representativeItem?.image || null,
         };
-
-        fetchData();
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+    });
 
     return (
         <div className="overflow-hidden">
@@ -233,7 +207,7 @@ export default function HomePageSimple() {
                     '@context': 'https://schema.org',
                     '@type': 'FoodEstablishment',
                     name: 'Sushi de Maksim',
-                    image: 'https://sushidemaksim.com/sushi-hero.jpg',
+                    image: 'https://sushidemaksim.com/sushi-hero.webp',
                     '@id': 'https://sushidemaksim.com',
                     url: 'https://sushidemaksim.com',
                     telephone: '+34600000000',
@@ -272,7 +246,7 @@ export default function HomePageSimple() {
             />
 
             {/* Hero Section */}
-            <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-[url('/sushi-hero.jpg')] bg-neutral-950 bg-cover bg-center">
+            <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-[url('/sushi-hero.webp')] bg-neutral-950 bg-cover bg-center">
                 {/* Background Overlay (Filter) */}
                 <div className="absolute inset-0 z-0 bg-black/50"></div>
                 <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
@@ -471,32 +445,7 @@ export default function HomePageSimple() {
                                 Nuestros <span className="text-red-600">Favoritos</span> Ineludibles
                             </h2>
                         </div>
-                        <div className="flex items-center gap-8">
-                            {/* Navigation Arrows for Desktop */}
-                            <div className="hidden md:flex items-center gap-3">
-                                <button
-                                    onClick={() => scroll('left')}
-                                    className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-all border border-gray-100 hover:scale-105 active:scale-95"
-                                    aria-label="Scroll left"
-                                >
-                                    <ChevronLeft
-                                        size={24}
-                                        strokeWidth={2.5}
-                                        className="text-gray-900"
-                                    />
-                                </button>
-                                <button
-                                    onClick={() => scroll('right')}
-                                    className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-all border border-gray-100 hover:scale-105 active:scale-95"
-                                    aria-label="Scroll right"
-                                >
-                                    <ChevronRight
-                                        size={24}
-                                        strokeWidth={2.5}
-                                        className="text-gray-900"
-                                    />
-                                </button>
-                            </div>
+                        <div className="flex items-center">
 
                             <Link
                                 to="/menu"
@@ -511,14 +460,34 @@ export default function HomePageSimple() {
                     </div>
 
                     {!isLoading && popularItems.length > 0 ? (
-                        <div
-                            ref={scrollContainerRef}
-                            className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth scroll-px-4"
-                        >
-                            <div className="flex gap-4 md:gap-8 flex-nowrap w-max min-w-full">
-                                {popularItems.map((item, index) => (
-                                    <ProductCard key={item.id} item={item} index={index} />
-                                ))}
+                        <div className="relative group/slider">
+                            {/* Desktop Arrows - Left */}
+                            <button
+                                onClick={() => scroll('left')}
+                                className="hidden md:flex absolute -left-4 lg:-left-16 top-[40%] -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/90 backdrop-blur-md shadow-2xl items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-gray-100/50 group-hover/slider:translate-x-[-4px]"
+                                aria-label="Scroll left"
+                            >
+                                <ChevronLeft size={28} strokeWidth={2.5} />
+                            </button>
+
+                            {/* Desktop Arrows - Right */}
+                            <button
+                                onClick={() => scroll('right')}
+                                className="hidden md:flex absolute -right-4 lg:-right-16 top-[40%] -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/90 backdrop-blur-md shadow-2xl items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-gray-100/50 group-hover/slider:translate-x-[4px]"
+                                aria-label="Scroll right"
+                            >
+                                <ChevronRight size={28} strokeWidth={2.5} />
+                            </button>
+
+                            <div
+                                ref={scrollContainerRef}
+                                className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth scroll-px-4"
+                            >
+                                <div className="flex gap-4 md:gap-8 flex-nowrap w-max min-w-full">
+                                    {popularItems.map((item, index) => (
+                                        <ProductCard key={item.id} item={item} index={index} />
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     ) : isLoading ? (

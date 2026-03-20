@@ -40,24 +40,56 @@ export interface UserAddress {
     isDefault: boolean;
 }
 
+export type OrderStatus =
+    | 'waiting_payment'
+    | 'pending'
+    | 'received'
+    | 'confirmed'
+    | 'preparing'
+    | 'on_the_way'
+    | 'delivered'
+    | 'cancelled';
+
 export interface OrderItem {
-    id: string;
+    id: string | number;
+    order_id?: string | number;
+    menu_item_id?: string | number;
     name: string;
     price: number;
+    price_at_time: number;
     quantity: number;
     image: string;
+    description?: string;
+    category?: SushiItem['category'];
+}
+
+export interface UserStats {
+    registrationDate: string;
+    orderCount: number;
+    totalSpent: number;
+    avgCheck: number;
+    frequency: string;
+    favoriteDish: string;
 }
 
 export interface Order {
-    id: string;
-    items: OrderItem[];
+    id: string | number;
+    user_id?: string;
+    items?: OrderItem[];
     total: number;
-    deliveryAddress: string;
-    phoneNumber: string;
+    delivery_address: string;
+    phone_number: string;
+    status: OrderStatus;
     notes?: string;
-    status: 'pending' | 'preparing' | 'ready' | 'delivered';
-    createdAt: string;
-    estimatedDeliveryTime: string;
+    created_at: string;
+    updated_at?: string;
+    estimated_delivery_time?: string;
+    promo_code?: string;
+    users?: {
+        name: string;
+        email: string;
+    };
+    user_stats?: UserStats;
 }
 
 export interface User {

@@ -171,7 +171,7 @@ export default function ContactsPage() {
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="/sushi-hero.jpg"
+                        src="/sushi-hero.webp"
                         alt="Contacto Sushi de Maksim"
                         fetchPriority="high"
                         decoding="async"

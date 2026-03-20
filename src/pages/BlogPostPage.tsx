@@ -88,7 +88,7 @@ export default function BlogPostPage() {
             {/* Hero Image Section */}
             <div className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden bg-gray-900">
                 <img
-                    src={post.image_url || '/sushi-hero.jpg'}
+                    src={post.image_url || '/sushi-hero.webp'}
                     alt={`Hero de ${post.title}`}
                     fetchPriority="high"
                     decoding="async"

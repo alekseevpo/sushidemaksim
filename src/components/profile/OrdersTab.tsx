@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Clock, RefreshCcw, Shield } from 'lucide-react';
-import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
+import { useAuth } from '../../hooks/useAuth';
+import { useOrdersQuery } from '../../hooks/queries/useOrders';
+import { useOrderRealtime } from '../../hooks/useOrderRealtime';
+import { Order } from '../../types';
 
 function OrderTimer({ createdAt, status }: { createdAt: string; status: string }) {
     const [timeLeft, setTimeLeft] = useState('');
@@ -88,47 +91,32 @@ function getStatusBadge(status: string) {
 export default function OrdersTab() {
     const navigate = useNavigate();
     const { addItem } = useCart();
-    const [orders, setOrders] = useState<any[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [isRepeating, setIsRepeating] = useState<number | null>(null);
-    const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
+    const { user } = useAuth();
+    const [page, setPage] = useState(1);
+    const [isRepeating, setIsRepeating] = useState<string | null>(null);
 
-    useEffect(() => {
-        loadOrders(pagination.page);
+    // Subscribe to real-time status updates via Supabase Broadcast
+    useOrderRealtime({ userId: user?.id });
 
-        // Polling every 30 seconds so order status updates instantly
-        const interval = setInterval(() => {
-            loadOrders(pagination.page, true);
-        }, 30000);
+    const { data: ordersData, isLoading } = useOrdersQuery(page, 10);
+    
+    const orders = ordersData?.orders || [];
+    const pagination = ordersData?.pagination || { page: 1, pages: 1, total: 0 };
 
-        return () => clearInterval(interval);
-    }, [pagination.page]);
-
-    const loadOrders = async (page: number, isPolling: boolean = false) => {
-        if (!isPolling) setLoading(true);
+    const handleRepeatOrder = async (order: Order) => {
+        setIsRepeating(String(order.id));
         try {
-            const data = await api.get(`/orders?page=${page}&limit=10`);
-            setOrders(data.orders);
-            setPagination(data.pagination);
-        } catch {
-            if (!isPolling) setOrders([]);
-        } finally {
-            if (!isPolling) setLoading(false);
-        }
-    };
-
-    const handleRepeatOrder = async (order: any) => {
-        setIsRepeating(order.id);
-        try {
-            for (const item of order.items) {
-                await addItem({
-                    id: String(item.menu_item_id || item.id),
-                    name: item.name,
-                    description: item.description || '',
-                    price: item.price,
-                    image: item.image || '',
-                    category: (item.category as any) || 'rollos-grandes',
-                });
+            if (order.items) {
+                for (const item of order.items) {
+                    await addItem({
+                        id: String(item.menu_item_id || item.id),
+                        name: item.name,
+                        description: item.description || '',
+                        price: item.price_at_time || item.price || 0,
+                        image: item.image || '',
+                        category: (item.category as any) || 'rollos-grandes',
+                    });
+                }
             }
             navigate('/cart');
         } catch (e) {
@@ -138,7 +126,7 @@ export default function OrdersTab() {
         }
     };
 
-    if (loading) {
+    if (isLoading && page === 1) {
         return (
             <div className="space-y-4 animate-in fade-in duration-500">
                 <div className="px-0 md:px-1 border-b border-gray-100 pb-4 mb-2">
@@ -198,7 +186,7 @@ export default function OrdersTab() {
             </div>
 
             <div className="space-y-3 md:space-y-4 px-0 md:px-0">
-                {orders.map(order => (
+                {orders.map((order: Order) => (
                     <div
                         key={order.id}
                         className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
@@ -234,10 +222,10 @@ export default function OrdersTab() {
                                     })()}
                                 </div>
                             </div>
-                            {order.status !== 'delivered' && order.status !== 'cancelled' && (
+                            {(order.status as string) !== 'delivered' && (order.status as string) !== 'cancelled' && (
                                 <div className="flex items-center gap-2">
-                                    {order.status !== 'delivered' &&
-                                        order.status !== 'cancelled' && (
+                                    {(order.status as string) !== 'delivered' &&
+                                        (order.status as string) !== 'cancelled' && (
                                             <Link
                                                 to={`/track/${order.id}?phone=${encodeURIComponent(order.phone_number)}`}
                                                 className="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl border border-red-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-red-100 transition-colors no-underline"
@@ -340,7 +328,7 @@ export default function OrdersTab() {
                     {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(p => (
                         <button
                             key={p}
-                            onClick={() => loadOrders(p)}
+                            onClick={() => setPage(p)}
                             className={`w-9 h-9 rounded-xl font-black text-[11px] transition-all
                                 ${
                                     p === pagination.page

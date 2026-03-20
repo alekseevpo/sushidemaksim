@@ -5,6 +5,8 @@ import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import { TrackSkeleton } from '../components/skeletons/TrackSkeleton';
 import OrderStepper from '../components/OrderStepper';
+import { Order, OrderItem } from '../types';
+import { useOrderRealtime } from '../hooks/useOrderRealtime';
 
 export default function OrderTrackingPage() {
     const { id } = useParams();
@@ -12,7 +14,7 @@ export default function OrderTrackingPage() {
     const navigate = useNavigate();
     const phone = searchParams.get('phone') || '';
 
-    const [order, setOrder] = useState<any>(null);
+    const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -28,14 +30,18 @@ export default function OrderTrackingPage() {
         }
     }, [id, phone]);
 
+    // Replace polling with Real-time listener
+    useOrderRealtime({ orderId: id, onUpdate: fetchOrder });
+
     useEffect(() => {
         fetchOrder();
-
-        const interval = setInterval(fetchOrder, 30000);
-        return () => clearInterval(interval);
     }, [fetchOrder]);
 
     if (loading) {
+        return <TrackSkeleton />;
+    }
+
+    if (!order && !error) {
         return <TrackSkeleton />;
     }
 
@@ -171,7 +177,7 @@ export default function OrderTrackingPage() {
                                 </h3>
 
                                 <div className="space-y-4 mb-8">
-                                    {order.items?.map((item: any, idx: number) => (
+                                    {order.items?.map((item: OrderItem, idx: number) => (
                                         <div
                                             key={idx}
                                             className="flex justify-between items-center text-sm"

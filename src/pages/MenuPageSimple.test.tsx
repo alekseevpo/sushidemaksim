@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithProviders, screen, fireEvent, waitFor } from '../test/test-utils';
 import MenuPageSimple from './MenuPageSimple';
-import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
 import { api } from '../utils/api';
 import React from 'react';
 
@@ -56,14 +54,7 @@ describe('MenuPageSimple (Integration)', () => {
         (api.get as any).mockResolvedValue({ items: mockItems });
     });
 
-    const renderMenu = () =>
-        render(
-            <HelmetProvider>
-                <BrowserRouter>
-                    <MenuPageSimple />
-                </BrowserRouter>
-            </HelmetProvider>
-        );
+    const renderMenu = () => renderWithProviders(<MenuPageSimple />);
 
     it('renders the menu items', async () => {
         renderMenu();

@@ -110,7 +110,7 @@ export default function BlogPage() {
                                 {/* Image Wrapper */}
                                 <div className="relative h-64 overflow-hidden">
                                     <img
-                                        src={post.image_url || '/sushi-hero.jpg'}
+                                        src={post.image_url || '/sushi-hero.webp'}
                                         alt={`Imagen del articulo ${post.title}`}
                                         loading="lazy"
                                         decoding="async"

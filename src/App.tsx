@@ -21,7 +21,7 @@ import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 
 // Lazy-loaded pages with retry logic
-const lazyRetry = (componentImport: any) => {
+const lazyRetry = (componentImport: () => Promise<{ default: React.ComponentType<any> }>) => {
     return lazy(async () => {
         const hasRetried = window.sessionStorage.getItem('retry-lazy');
         try {
@@ -31,7 +31,8 @@ const lazyRetry = (componentImport: any) => {
         } catch (error) {
             if (!hasRetried) {
                 window.sessionStorage.setItem('retry-lazy', 'true');
-                return window.location.reload() as any;
+                window.location.reload();
+                return { default: () => null } as any; 
             }
             throw error;
         }

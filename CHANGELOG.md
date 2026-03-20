@@ -1,17 +1,38 @@
 # Журнал разработки (Changelog)
 
-## [2026-03-20] - Cart Refactoring & Manual Store Control 🛒💎
+## [2026-03-20] - PWA, Abandoned Cart & Any-fest Done 🎯
+
+### 📱 PWA & Performance
+- **PWA Manifest & Icons**: Полная поддержка Progressive Web App. Приложение теперь можно установить, добавлены премиальные иконки и оффлайн-кэширование (Vite PWA).
+- **LCP Optimization**: Внедрена LCP-оптимизация (eager loading и fetchPriority="high") для первых 4-х карточек товаров в меню.
+
+### 💰 Бизнес-автоматизация (Marketing Automation)
+- **Abandoned Cart Recovery**: Реализован механизм восстановления брошенных корзин. Автоматическая отправка напоминаний пользователям через 24 часа.
+- **Enhanced Notifications**: Созданы HTML-шаблоны для напоминаний о корзине и других маркетинговых активностей.
+
+### 🛡 Типизация (Any-fest - Final Stage)
+- **100% Type Safety**: Завершен рефакторинг ключевых системных файлов (`api.ts`, `useAuth`, `App.tsx`, `Orders`). Удалены последние `any` в ядре приложения.
+- **Guest Real-time**: Поддержка Supabase Broadcast для гостевого отслеживания заказов по `order_id`.
+
+## [2026-03-20] - Profile Refactoring & Real-time Updates 🚀
+
+### 👤 Рефакторинг Профиля и Авторизации (Profile & Auth Refactoring)
+- **TanStack Query Migration**: Личный кабинет и авторизация полностью переведены на современное управление серверным состоянием.
+- **Type Safety (Any-fest Stage 1)**: Значительно улучшена типизация в `OrdersTab` и `useAuth`.
+
+### 🚀 Real-time Статус Заказов (Supabase Realtime)
+- **Supabase Broadcast Integration**: Внедрена система мгновенных уведомлений об изменении статуса заказа.
+- **useOrderRealtime Hook**: Создан специализированный хук для прослушивания событий `order_status_updated`.
 
 ### 🛠 Рефакторинг Корзины (Cart Megalith Refactoring)
+- **Atomic Components Extraction**: Проведен масштабный рефакторинг страницы корзины (`CartPageSimple.tsx`). Извлечено 6 компонентов.
 
-- **Atomic Components Extraction**: Проведен масштабный рефакторинг страницы корзины (`CartPageSimple.tsx`). Код сокращен с **1686 до ~450 строк**. Извлечено 6 независимых компонентов:
-    - `CartItemList`: Управление списком товаров и их количеством.
-    - `DeliveryForm`: Сложная логика выбора адреса, методов оплаты и времени доставки.
-    - `CartSummary`: Сводка заказа и кнопка подтверждения.
-    - `CartSuggestions`: Блок дополнительных товаров (адаптивные рекомендации).
-    - `CartEmptyView`: Мотивирующий экран пустой корзины с хитами продаж.
-    - `OrderSuccessModal`: Премиальное окно подтверждения заказа с деталями доставки и кнопками WhatsApp.
-- **Enhanced Maintainability**: Упрощена структура пропсов и стейта, что снижает риск регрессий при будущих изменениях.
+### 📋 Рефакторинг Меню (Menu Page Refactoring & Hybrid State)
+- **TanStack Query Integration**: Внедрена библиотека для эффективного управления серверным состоянием.
+- **Component Architecture**: Код `MenuPageSimple.tsx` сокращен с **969 до ~380 строк**.
+
+### 🍱 Интерфейс и UX (Slider & Layout Polish)
+- **Desktop Slider Navigation**: Кнопки-стрелки в «Nuestros Favoritos» теперь вынесены к самым краям экрана.
 
 ### 📊 Планирование и Аудит (Project Audit V2)
 

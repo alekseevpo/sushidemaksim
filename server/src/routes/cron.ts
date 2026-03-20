@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { supabase } from '../db/supabase.js';
 import { getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
-import { sendBirthdayGiftEmail } from '../utils/email.js';
+import { sendBirthdayGiftEmail, sendAbandonedCartEmail } from '../utils/email.js';
 
 const router = Router();
 
@@ -212,6 +212,77 @@ router.post('/cleanup-deleted-users', async (req, res) => {
 
         res.json({ success: true, permanentlyDeleted: results.length, ids: results });
     } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// CRON job to check for abandoned carts (> 24h) and send reminders
+router.post('/check-abandoned-carts', async (req, res) => {
+    const cronSecret = req.headers['x-cron-secret'];
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        
+        // 1. Get users who were active > 24h ago and have cart items
+        // We join cart_items with users to get email
+        const { data: abandonedCarts, error: fetchError } = await supabase
+            .from('cart_items')
+            .select(`
+                user_id,
+                users!inner(name, email, last_seen_at, abandoned_cart_reminder_sent_at),
+                menu_items(name, price)
+            `)
+            .lt('users.last_seen_at', twentyFourHoursAgo);
+
+        if (fetchError) throw fetchError;
+
+        // 2. Group items by user
+        const userCarts = new Map<string, { name: string, email: string, items: any[], lastReminder: string | null }>();
+        
+        (abandonedCarts || []).forEach((row: any) => {
+            if (!userCarts.has(row.user_id)) {
+                userCarts.set(row.user_id, {
+                    name: row.users.name,
+                    email: row.users.email,
+                    items: [],
+                    lastReminder: row.users.abandoned_cart_reminder_sent_at
+                });
+            }
+            userCarts.get(row.user_id)?.items.push(row);
+        });
+
+        const results = [];
+        const now = new Date().toISOString();
+
+        // 3. Filter and send
+        for (const [userId, data] of userCarts.entries()) {
+            // Only send if never sent or sent > 7 days ago (to avoid spamming)
+            const lastReminderDate = data.lastReminder ? new Date(data.lastReminder) : null;
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+            if (!lastReminderDate || lastReminderDate < sevenDaysAgo) {
+                try {
+                    await sendAbandonedCartEmail(data.email, data.name, data.items);
+                    
+                    // Update reminder timestamp
+                    await supabase
+                        .from('users')
+                        .update({ abandoned_cart_reminder_sent_at: now })
+                        .eq('id', userId);
+
+                    results.push({ userId, email: data.email });
+                } catch (err) {
+                    console.error(`❌ Failed to send abandoned cart email to ${data.email}:`, err);
+                }
+            }
+        }
+
+        res.json({ success: true, remindersSent: results.length, processed: results });
+    } catch (e: any) {
+        console.error('❌ Abandoned cart cron error:', e);
         res.status(500).json({ error: e.message });
     }
 });

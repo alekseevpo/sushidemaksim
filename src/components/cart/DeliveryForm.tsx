@@ -192,14 +192,14 @@ export default function DeliveryForm({
                             <button
                                 type="button"
                                 onClick={handleAddressClick}
-                                className="w-full bg-white border-2 border-red-100 rounded-3xl p-8 text-center hover:border-red-500 transition-all group mb-2 shadow-sm active:scale-95 duration-200 cursor-pointer"
+                                className="w-full bg-white border-2 border-red-50 rounded-[24px] p-5 text-center hover:border-red-500 transition-all group mb-2 shadow-sm active:scale-95 duration-200 cursor-pointer"
                             >
-                                <div className="flex flex-col items-center gap-3">
-                                    <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-inner">
-                                        <MapPin className="text-red-500" size={32} />
+                                <div className="flex flex-col items-center gap-2">
+                                    <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-inner">
+                                        <MapPin className="text-red-500" size={24} />
                                     </div>
-                                    <p className="font-black text-lg text-gray-900 tracking-tight">
-                                        🏠 ¿Dónde entregamos?
+                                    <p className="font-black text-base text-gray-900 tracking-tight">
+                                        ¿Dónde entregamos?
                                     </p>
                                 </div>
                             </button>

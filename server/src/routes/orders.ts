@@ -399,6 +399,36 @@ router.patch(
             .single();
 
         if (updateError) throw updateError;
+        
+        // Realtime Broadcast
+        if (updated) {
+            // User-specific channel
+            if (updated.user_id) {
+                const userChannel = supabase.channel(`user_orders:${updated.user_id}`);
+                userChannel.subscribe(status => {
+                    if (status === 'SUBSCRIBED') {
+                        userChannel.send({
+                            type: 'broadcast',
+                            event: 'order_status_updated',
+                            payload: { orderId: updated.id, status: updated.status },
+                        });
+                    }
+                });
+            }
+
+            // Public Tracking channel (Order-specific)
+            const orderChannel = supabase.channel(`order_tracking:${updated.id}`);
+            orderChannel.subscribe(status => {
+                if (status === 'SUBSCRIBED') {
+                    orderChannel.send({
+                        type: 'broadcast',
+                        event: 'order_status_updated',
+                        payload: { orderId: updated.id, status: updated.status },
+                    });
+                }
+            });
+        }
+
         res.json({ order: updated });
     })
 );

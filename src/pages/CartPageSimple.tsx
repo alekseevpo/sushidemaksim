@@ -15,6 +15,7 @@ import CartSummary from '../components/cart/CartSummary';
 import OrderSuccessModal from '../components/cart/OrderSuccessModal';
 import CartSuggestions from '../components/cart/CartSuggestions';
 import CartEmptyView from '../components/cart/CartEmptyView';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface MenuItem {
     id: number;
@@ -102,6 +103,8 @@ export default function CartPageSimple() {
 
     const [scheduledDate, setScheduledDate] = useState(todayStr);
     const [scheduledTime, setScheduledTime] = useState('');
+
+    useScrollLock(isAddressModalOpen || !!orderSuccess);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -205,7 +208,10 @@ export default function CartPageSimple() {
             if (!streetVal || streetVal.length < 3) return showError('Indica tu calle / dirección');
             if (!houseVal) return showError('Indica tu portal/casa');
             if (!aptVal) return showError('Indica tu piso/puerta');
-            if (total < MIN_ORDER) return showError(`El pedido mínimo es de ${MIN_ORDER.toFixed(2).replace('.', ',')}€`);
+            if (total < MIN_ORDER)
+                return showError(
+                    `El pedido mínimo es de ${MIN_ORDER.toFixed(2).replace('.', ',')}€`
+                );
         }
 
         if (!paymentMethod) return showError('Selecciona un método de pago');
@@ -268,13 +274,19 @@ export default function CartPageSimple() {
 
         const notesArray = [];
         notesArray.push(`[TIPO: ${deliveryType === 'pickup' ? 'RECOGIDA' : 'DOMICILIO'}]`);
-        if (paymentMethod) notesArray.push(`[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
+        if (paymentMethod)
+            notesArray.push(
+                `[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`
+            );
         if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
         if (customNote.trim()) notesArray.push(customNote.trim());
 
         try {
             const payload: any = {
-                deliveryAddress: deliveryType === 'pickup' ? 'RECOGIDA' : `${address}${house ? `, Portal: ${house}` : ''}${apartment ? `, Piso: ${apartment}` : ''}`,
+                deliveryAddress:
+                    deliveryType === 'pickup'
+                        ? 'RECOGIDA'
+                        : `${address}${house ? `, Portal: ${house}` : ''}${apartment ? `, Piso: ${apartment}` : ''}`,
                 phoneNumber: phone || user?.phone || '',
                 senderName: user?.name || '',
                 notes: notesArray.join(' | '),

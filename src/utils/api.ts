@@ -13,21 +13,21 @@ export const api = {
         return fetchApi(endpoint, { method: 'GET' });
     },
 
-    async post(endpoint: string, body?: any) {
+    async post(endpoint: string, body?: unknown) {
         return fetchApi(endpoint, {
             method: 'POST',
             body: JSON.stringify(body),
         });
     },
 
-    async put(endpoint: string, body?: any) {
+    async put(endpoint: string, body?: unknown) {
         return fetchApi(endpoint, {
             method: 'PUT',
             body: JSON.stringify(body),
         });
     },
 
-    async patch(endpoint: string, body?: any) {
+    async patch(endpoint: string, body?: unknown) {
         return fetchApi(endpoint, {
             method: 'PATCH',
             body: JSON.stringify(body),
@@ -93,8 +93,8 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
         }
 
         return data;
-    } catch (error: any) {
-        if (error.name === 'AbortError') {
+    } catch (error: unknown) {
+        if (error instanceof Error && error.name === 'AbortError') {
             throw new ApiError(
                 'La solicitud ha tardado demasiado tiempo. Reintenta de nuevo.',
                 408

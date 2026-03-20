@@ -436,13 +436,38 @@ router.patch(
             .select('*, order_items(*)')
             .single();
 
-        if (error) {
-            if (error.code === 'PGRST116')
-                return res.status(404).json({ error: 'Pedido no encontrado' });
-            throw error;
+        const orderWithItems = { ...order, items: order.order_items };
+
+        // Realtime Broadcast
+        if (order) {
+            // User-specific channel
+            if (order.user_id) {
+                const userChannel = supabase.channel(`user_orders:${order.user_id}`);
+                userChannel.subscribe(status => {
+                    if (status === 'SUBSCRIBED') {
+                        userChannel.send({
+                            type: 'broadcast',
+                            event: 'order_status_updated',
+                            payload: { orderId: order.id, status: order.status },
+                        });
+                    }
+                });
+            }
+
+            // Public Tracking channel (Order-specific)
+            const orderChannel = supabase.channel(`order_tracking:${order.id}`);
+            orderChannel.subscribe(status => {
+                if (status === 'SUBSCRIBED') {
+                    orderChannel.send({
+                        type: 'broadcast',
+                        event: 'order_status_updated',
+                        payload: { orderId: order.id, status: order.status },
+                    });
+                }
+            });
         }
 
-        res.json({ order: { ...order, items: order.order_items } });
+        res.json({ order: orderWithItems });
     })
 );
 

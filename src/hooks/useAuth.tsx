@@ -1,6 +1,22 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import {
+    createContext,
+    useContext,
+    useEffect,
+    ReactNode,
+    useMemo,
+    useCallback,
+    useRef,
+} from 'react';
 import { User, UserAddress, Order } from '../types';
 import { api } from '../utils/api';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+    useUserQuery,
+    useUpdateProfileMutation,
+    useAddressMutations,
+    useDeleteAccountMutation,
+    USER_QUERY_KEY,
+} from './queries/useUser';
 
 interface AuthContextType {
     user: User | null;
@@ -31,64 +47,37 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const { data: user, isLoading: isQueryLoading } = useUserQuery();
 
-    const loadUser = async () => {
-        const token = localStorage.getItem('sushi_token');
-        if (!token) {
-            setIsLoading(false);
-            return;
-        }
+    const { mutateAsync: updateProfileMutation } = useUpdateProfileMutation();
+    const { addAddress: addAddr, editAddress: editAddr, removeAddress: rmAddr, setDefaultAddress: setDefAddr } = useAddressMutations();
+    const { mutateAsync: delAcc } = useDeleteAccountMutation();
 
-        try {
-            const data = await api.get('/auth/me');
-            setUser(data.user);
-        } catch (error) {
-            localStorage.removeItem('sushi_token');
-            setUser(null);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const isAuthenticated = !!user;
 
+    // Transition tracking for sync events
     const prevAuthRef = useRef(false);
     useEffect(() => {
-        const isAuth = !!user;
-        const checkAndSync = async () => {
-            // If just logged in (transition from false to true)
-            if (!prevAuthRef.current && isAuth) {
-                // Delay slightly to ensure token is available in all contexts
-                setTimeout(() => {
-                    const event = new CustomEvent('auth:login_success');
-                    window.dispatchEvent(event);
-                }, 100);
-            }
-            prevAuthRef.current = isAuth;
-        };
-        checkAndSync();
-    }, [user]);
+        if (!prevAuthRef.current && isAuthenticated) {
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('auth:login_success'));
+            }, 100);
+        }
+        prevAuthRef.current = isAuthenticated;
+    }, [isAuthenticated]);
 
-    useEffect(() => {
-        loadUser();
-    }, []);
-
-    // ─── Activity Heartbeat ───────────────────────────────────────────────────────
+    // Heartbeat
     useEffect(() => {
         if (!user) return;
-
         const sendHeartbeat = async () => {
             try {
                 await api.put('/user/active');
-            } catch (error) {
-                // Silently ignore heartbeat failures
+            } catch (e) {
+                /* Ignore */
             }
         };
-
-        // Initial call
         sendHeartbeat();
-
-        // Repeat every 30 seconds
         const interval = setInterval(sendHeartbeat, 30000);
         return () => clearInterval(interval);
     }, [user]);
@@ -97,124 +86,89 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const data = await api.post('/auth/login', { email, password });
             localStorage.setItem('sushi_token', data.token);
-            setUser(data.user);
-            await loadUser(); // load addresses and full profile
+            await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
             return { success: true, wasReactivated: data.wasReactivated };
-        } catch (error: any) {
-            return { success: false, error: error.message };
+        } catch (error: unknown) {
+            return { 
+                success: false, 
+                error: error instanceof Error ? error.message : 'Ha ocurrido un error inesperado' 
+            };
         }
     };
 
     const register = async (name: string, email: string, phone: string, password: string) => {
         try {
             await api.post('/auth/register', { name, email, phone, password });
-            // Since activation is required, we don't log in here.
-            // The LoginModal will show the success message.
             return { success: true };
-        } catch (error: any) {
-            return { success: false, error: error.message };
+        } catch (error: unknown) {
+            return { 
+                success: false, 
+                error: error instanceof Error ? error.message : 'Ha ocurrido un error inesperado' 
+            };
         }
     };
 
-    const logout = () => {
+    const logout = useCallback(() => {
         localStorage.removeItem('sushi_token');
-        setUser(null);
+        queryClient.setQueryData(USER_QUERY_KEY, null);
+        queryClient.invalidateQueries();
         window.location.href = '/';
-    };
+    }, [queryClient]);
 
-    const updateProfile = async (
-        data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
-    ) => {
-        try {
-            const response = await api.put('/user/profile', data);
-            await loadUser(); // refresh
-            return response;
-        } catch (error) {
-            console.error('Failed to update profile', error);
-            throw error;
-        }
+    const updateProfile = async (data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>) => {
+        await updateProfileMutation(data);
     };
 
     const addAddress = async (address: Omit<UserAddress, 'id'>) => {
-        try {
-            await api.post('/user/addresses', address);
-            await loadUser();
-        } catch (error) {
-            console.error('Failed to add address', error);
-            throw error;
-        }
-    };
-
-    const removeAddress = async (id: string) => {
-        try {
-            await api.delete(`/user/addresses/${id}`);
-            await loadUser();
-        } catch (error) {
-            console.error('Failed to remove address', error);
-            throw error;
-        }
+        await addAddr.mutateAsync(address);
     };
 
     const editAddress = async (id: string, data: Partial<Omit<UserAddress, 'id'>>) => {
-        try {
-            await api.put(`/user/addresses/${id}`, data);
-            await loadUser();
-        } catch (error) {
-            console.error('Failed to edit address', error);
-            throw error;
-        }
+        await editAddr.mutateAsync({ id, data });
+    };
+
+    const removeAddress = async (id: string) => {
+        await rmAddr.mutateAsync(id);
     };
 
     const setDefaultAddress = async (id: string) => {
-        try {
-            await api.put(`/user/addresses/${id}/default`);
-            await loadUser();
-        } catch (error) {
-            console.error('Failed to set default address', error);
-            throw error;
-        }
-    };
-
-    const addOrder = (order: Order) => {
-        setUser(prev =>
-            prev
-                ? {
-                      ...prev,
-                      orders: prev.orders ? [order, ...prev.orders] : [order],
-                      orderCount: (prev.orderCount || 0) + 1,
-                  }
-                : null
-        );
+        await setDefAddr.mutateAsync(id);
     };
 
     const deleteAccount = async () => {
-        try {
-            await api.delete('/user/profile');
-            logout();
-        } catch (error) {
-            console.error('Failed to delete account', error);
-            throw error;
-        }
+        await delAcc();
+        logout();
     };
 
+    const addOrder = useCallback((order: Order) => {
+        queryClient.setQueryData<User>(USER_QUERY_KEY, (prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                orders: prev.orders ? [order, ...prev.orders] : [order],
+                orderCount: (prev.orderCount || 0) + 1,
+            };
+        });
+    }, [queryClient]);
+
+    const value = useMemo(() => ({
+        user: user || null,
+        isAuthenticated,
+        isLoading: isQueryLoading,
+        login,
+        register,
+        logout,
+        updateProfile,
+        addAddress,
+        editAddress,
+        removeAddress,
+        setDefaultAddress,
+        deleteAccount,
+        addOrder,
+    }), [user, isAuthenticated, isQueryLoading, logout, updateProfile, addAddress, editAddress, removeAddress, setDefaultAddress, deleteAccount, addOrder]);
+
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                isAuthenticated: !!user,
-                isLoading,
-                login,
-                register,
-                logout,
-                updateProfile,
-                addAddress,
-                editAddress,
-                removeAddress,
-                setDefaultAddress,
-                deleteAccount,
-                addOrder,
-            }}
-        >
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

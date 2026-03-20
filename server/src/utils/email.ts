@@ -533,3 +533,71 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
 </html>`,
     });
 }
+
+/**
+ * Send an abandoned cart reminder email.
+ */
+export async function sendAbandonedCartEmail(
+    to: string,
+    name: string,
+    items: any[]
+): Promise<void> {
+    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
+
+    const itemsHtml = items
+        .slice(0, 3)
+        .map(
+            (item: any) => `
+        <div style="display: flex; align-items: center; margin-bottom: 12px; background: #f9fafb; padding: 10px; border-radius: 12px; border: 1px solid #f1f5f9;">
+            <div style="font-weight: 800; font-size: 14px; color: #111827; flex: 1;">${item.menu_items?.name || 'Producto'}</div>
+            <div style="color: #6b7280; font-size: 14px; font-weight: 700;">${item.quantity} x ${item.menu_items?.price?.toFixed(2) || '0.00'} €</div>
+        </div>
+    `
+        )
+        .join('');
+
+    const moreItems = items.length > 3 ? `<p style="color: #6b7280; font-size: 13px; margin: 4px 0;">...y ${items.length - 3} productos más</p>` : '';
+
+    await transporter.sendMail({
+        from,
+        to,
+        subject: '🍣 Te has olvidado algo delicioso...',
+        html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#fdfbf7;font-family:Arial,sans-serif;">
+  <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.06);border:1px solid #f1f5f9;">
+    <div style="background:#000;padding:32px 24px;text-align:center;">
+       <div style="background:#dc2626;display:inline-block;padding:8px 12px;border-radius:12px;margin-bottom:12px;">
+         <span style="font-size:32px;">🍣</span>
+       </div>
+       <h1 style="color:#fff;margin:0;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¿Se te antoja algo?</h1>
+    </div>
+    <div style="padding:32px 24px;text-align:center;">
+      <p style="color:#111827;font-size:18px;margin:0 0 16px;font-weight:800;">¡Hola ${name}!</p>
+      <p style="color:#4b5563;font-size:15px;line-height:1.6;margin:0 0 24px;">
+        Hemos guardado los productos que dejaste en tu cesta. Siguen esperándote, pero no por mucho tiempo. El sushi sabe mejor cuando está fresco... ¡y ya mismo!
+      </p>
+      
+      <div style="text-align: left; margin-bottom: 32px;">
+        <h3 style="color: #9ca3af; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">En tu cesta:</h3>
+        ${itemsHtml}
+        ${moreItems}
+      </div>
+
+      <a href="${config.frontendUrl}/cart" style="display:inline-block;background:#dc2626;color:#ffffff;padding:18px 48px;border-radius:20px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 10px 30px rgba(220,38,38,0.2);">VOLVER A MI CESTA</a>
+      
+      <p style="color:#9ca3af;font-size:13px;margin:24px 0 0;">
+        Si tienes problemas con tu pedido, escríbenos por WhatsApp.
+      </p>
+    </div>
+    
+    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
+}

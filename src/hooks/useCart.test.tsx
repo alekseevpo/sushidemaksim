@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { CartProvider, useCart } from './useCart';
 import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock the API to avoid real network calls
 vi.mock('../utils/api', () => ({
@@ -22,15 +23,26 @@ vi.mock('./useAuth', () => ({
     AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: false,
+        },
+    },
+});
+
 // Helper to wrap with Provider
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <CartProvider>{children}</CartProvider>
+    <QueryClientProvider client={queryClient}>
+        <CartProvider>{children}</CartProvider>
+    </QueryClientProvider>
 );
 
 describe('useCart Hook (Integration)', () => {
     beforeEach(() => {
         localStorage.clear();
         vi.clearAllMocks();
+        queryClient.clear();
     });
 
     it('should start with an empty cart', () => {
@@ -56,7 +68,9 @@ describe('useCart Hook (Integration)', () => {
             await result.current.addItem(testItem);
         });
 
-        expect(result.current.items).toHaveLength(1);
+        await waitFor(() => {
+            expect(result.current.items).toHaveLength(1);
+        });
         expect(result.current.items[0].name).toBe('Salmon Roll');
         expect(result.current.total).toBe(10);
         expect(result.current.itemCount).toBe(1);
@@ -80,8 +94,10 @@ describe('useCart Hook (Integration)', () => {
             await result.current.addItem(testItem);
         });
 
-        expect(result.current.items).toHaveLength(1);
-        expect(result.current.items[0].quantity).toBe(2);
+        await waitFor(() => {
+            expect(result.current.items).toHaveLength(1);
+            expect(result.current.items[0].quantity).toBe(2);
+        });
         expect(result.current.total).toBe(10);
     });
 
@@ -104,7 +120,9 @@ describe('useCart Hook (Integration)', () => {
             await result.current.updateQuantity('1', 5);
         });
 
-        expect(result.current.items[0].quantity).toBe(5);
+        await waitFor(() => {
+            expect(result.current.items[0].quantity).toBe(5);
+        });
         expect(result.current.total).toBe(25);
     });
 
@@ -127,7 +145,9 @@ describe('useCart Hook (Integration)', () => {
             await result.current.removeItem('1');
         });
 
-        expect(result.current.items).toHaveLength(0);
+        await waitFor(() => {
+            expect(result.current.items).toHaveLength(0);
+        });
         expect(result.current.total).toBe(0);
     });
 
@@ -153,7 +173,9 @@ describe('useCart Hook (Integration)', () => {
             await result.current.clearCart();
         });
 
-        expect(result.current.items).toHaveLength(0);
-        expect(result.current.itemCount).toBe(0);
+        await waitFor(() => {
+            expect(result.current.items).toHaveLength(0);
+            expect(result.current.itemCount).toBe(0);
+        });
     });
 });
