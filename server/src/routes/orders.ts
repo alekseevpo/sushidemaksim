@@ -297,7 +297,7 @@ router.post(
             `📍 Dirección: ${deliveryAddress}`,
             `${paymentMethodIcon} Método de Pago: ${paymentMethodText}`,
             `💰 Total: ${finalTotal.toFixed(2)}€`,
-            `Muchas gracias.`
+            `Muchas gracias.`,
         ];
         const waText = encodeURIComponent(waTextParts.join('\n\n'));
         const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
