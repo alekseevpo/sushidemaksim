@@ -107,7 +107,7 @@ const ProductCard = ({ item, index }: { item: MenuItem; index: number }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
-            className="w-[280px] md:w-[320px] snap-center shrink-0 bg-white rounded-[32px] p-4 shadow-xl shadow-gray-100/50 border border-gray-100 group flex flex-col h-full"
+            className="w-[280px] md:w-[320px] snap-start shrink-0 bg-white rounded-[32px] p-4 shadow-xl shadow-gray-100/50 border border-gray-100 group flex flex-col h-full"
         >
             <div className="relative aspect-square mb-4 rounded-[24px] overflow-hidden bg-gray-50">
                 <img
@@ -513,9 +513,9 @@ export default function HomePageSimple() {
                     {!isLoading && popularItems.length > 0 ? (
                         <div
                             ref={scrollContainerRef}
-                            className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth"
+                            className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth scroll-px-4"
                         >
-                            <div className="flex gap-6 md:gap-8 flex-nowrap w-max min-w-full">
+                            <div className="flex gap-4 md:gap-8 flex-nowrap w-max min-w-full">
                                 {popularItems.map((item, index) => (
                                     <ProductCard key={item.id} item={item} index={index} />
                                 ))}
