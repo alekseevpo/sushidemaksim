@@ -1,7 +1,6 @@
 import { X, Copy, Check, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MenuItem } from '../../hooks/queries/useMenu';
-import React from 'react';
 
 interface ShareModalProps {
     item: MenuItem | null;

@@ -43,7 +43,18 @@ const Marquee = () => (
     </div>
 );
 
-const CategoryCard = ({ id, name, image, index }: any) => {
+const CategoryCard = ({
+    id,
+    name,
+    image,
+    index,
+}: {
+    id: string;
+    name: string;
+    icon?: string;
+    image: string | null;
+    index: number;
+}) => {
     const [imageFailed, setImageFailed] = useState(false);
 
     return (
@@ -366,7 +377,7 @@ export default function HomePageSimple() {
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                        {categories.slice(0, 8).map((cat, idx) => (
+                        {categories.slice(0, 8).map((cat: any, idx: number) => (
                             <CategoryCard
                                 key={cat.id}
                                 id={cat.id}

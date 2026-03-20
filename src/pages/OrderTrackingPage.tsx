@@ -37,15 +37,11 @@ export default function OrderTrackingPage() {
         fetchOrder();
     }, [fetchOrder]);
 
-    if (loading) {
+    if (loading || (!order && !error)) {
         return <TrackSkeleton />;
     }
 
-    if (!order && !error) {
-        return <TrackSkeleton />;
-    }
-
-    if (error) {
+    if (error || !order) {
         return (
             <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6">
                 <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
@@ -53,10 +49,11 @@ export default function OrderTrackingPage() {
                         🔍
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">
-                        Pedido no encontrado
+                        {error ? 'Error en el seguimiento' : 'Pedido no encontrado'}
                     </h1>
                     <p className="text-gray-500 font-medium mb-10 leading-relaxed italic">
-                        {error}. Comprueba el número de pedido y el teléfono.
+                        {error ||
+                            'No hemos podido encontrar tu pedido. Comprueba el número y el teléfono.'}
                     </p>
                     <button
                         onClick={() => navigate('/menu')}
@@ -89,14 +86,21 @@ export default function OrderTrackingPage() {
                     Volver
                 </button>
 
-                <div className="bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-white overflow-hidden">
-                    {/* Header */}
-                    <div className="bg-red-600 p-6 md:p-12 text-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+                <div className="bg-white rounded-[40px] overflow-hidden shadow-2xl shadow-red-100/30 border border-gray-100">
+                    {/* Header with gradient */}
+                    <div className="relative overflow-hidden bg-gradient-to-br from-red-600 to-red-800 p-8 md:p-12 text-white">
+                        {/* Abstract Background pattern */}
+                        <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
+                            <svg className="w-full h-full" viewBox="0 0 100 100">
+                                <circle cx="10" cy="10" r="30" fill="gray" />
+                                <circle cx="90" cy="90" r="40" fill="gray" />
+                            </svg>
+                        </div>
 
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                            <div>
-                                <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-80 decoration-white/30 underline underline-offset-4 mb-2 block">
+                        <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div className="space-y-4">
+                                <span className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">
+                                    <Package size={12} strokeWidth={2.5} />
                                     Enlace de seguimiento
                                 </span>
                                 <h1 className="text-4xl md:text-5xl font-black m-0 tracking-tighter decoration-white/20 underline underline-offset-8">

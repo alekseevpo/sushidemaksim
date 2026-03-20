@@ -73,7 +73,7 @@ export const useToggleFavorite = () => {
 
             return { previousFavorites };
         },
-        onError: (err, itemId, context: any) => {
+        onError: (_err, _itemId, context: any) => {
             if (context?.previousFavorites) {
                 queryClient.setQueryData(['favorites'], context.previousFavorites);
             }

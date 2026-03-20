@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import React from 'react';
 
 export interface FlyingItem {
     id: string;

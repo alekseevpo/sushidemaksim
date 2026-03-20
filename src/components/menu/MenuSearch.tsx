@@ -1,6 +1,5 @@
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import React from 'react';
 
 interface MenuSearchProps {
     search: string;

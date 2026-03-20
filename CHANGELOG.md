@@ -3,35 +3,43 @@
 ## [2026-03-20] - PWA, Abandoned Cart & Any-fest Done 🎯
 
 ### 📱 PWA & Performance
+
 - **PWA Manifest & Icons**: Полная поддержка Progressive Web App. Приложение теперь можно установить, добавлены премиальные иконки и оффлайн-кэширование (Vite PWA).
 - **LCP Optimization**: Внедрена LCP-оптимизация (eager loading и fetchPriority="high") для первых 4-х карточек товаров в меню.
 
 ### 💰 Бизнес-автоматизация (Marketing Automation)
+
 - **Abandoned Cart Recovery**: Реализован механизм восстановления брошенных корзин. Автоматическая отправка напоминаний пользователям через 24 часа.
 - **Enhanced Notifications**: Созданы HTML-шаблоны для напоминаний о корзине и других маркетинговых активностей.
 
 ### 🛡 Типизация (Any-fest - Final Stage)
+
 - **100% Type Safety**: Завершен рефакторинг ключевых системных файлов (`api.ts`, `useAuth`, `App.tsx`, `Orders`). Удалены последние `any` в ядре приложения.
 - **Guest Real-time**: Поддержка Supabase Broadcast для гостевого отслеживания заказов по `order_id`.
 
 ## [2026-03-20] - Profile Refactoring & Real-time Updates 🚀
 
 ### 👤 Рефакторинг Профиля и Авторизации (Profile & Auth Refactoring)
+
 - **TanStack Query Migration**: Личный кабинет и авторизация полностью переведены на современное управление серверным состоянием.
 - **Type Safety (Any-fest Stage 1)**: Значительно улучшена типизация в `OrdersTab` и `useAuth`.
 
 ### 🚀 Real-time Статус Заказов (Supabase Realtime)
+
 - **Supabase Broadcast Integration**: Внедрена система мгновенных уведомлений об изменении статуса заказа.
 - **useOrderRealtime Hook**: Создан специализированный хук для прослушивания событий `order_status_updated`.
 
 ### 🛠 Рефакторинг Корзины (Cart Megalith Refactoring)
+
 - **Atomic Components Extraction**: Проведен масштабный рефакторинг страницы корзины (`CartPageSimple.tsx`). Извлечено 6 компонентов.
 
 ### 📋 Рефакторинг Меню (Menu Page Refactoring & Hybrid State)
+
 - **TanStack Query Integration**: Внедрена библиотека для эффективного управления серверным состоянием.
 - **Component Architecture**: Код `MenuPageSimple.tsx` сокращен с **969 до ~380 строк**.
 
 ### 🍱 Интерфейс и UX (Slider & Layout Polish)
+
 - **Desktop Slider Navigation**: Кнопки-стрелки в «Nuestros Favoritos» теперь вынесены к самым краям экрана.
 
 ### 📊 Планирование и Аудит (Project Audit V2)
@@ -44,7 +52,7 @@
 ### 🛠 Управление Магазином (Manual Store Control)
 
 - **Manual Store Closure (Emergency Toggle)**: Реализована система ручного управления статусом магазина через админ-панель. Теперь администратор может мгновенно закрыть прием заказов (режим «Экстренное закрытие») одной кнопкой, независимо от графика работы.
-- **Smart Banner Logic**: Глобальный баннер статуса магазина теперь появляется только при ручном закрытии администратором. 
+- **Smart Banner Logic**: Глобальный баннер статуса магазина теперь появляется только при ручном закрытии администратором.
 - **Scheduled Countdown**: Если магазин закрыт вручную, баннер автоматически вычисляет и показывает время до следующего открытия по графику («Abrimos en: ...»), если текущее время находится вне рабочих часов.
 - **Pre-order Labeling**: Все заказы, оформленные при активном статусе «Закрыто», теперь автоматически помечаются в системе как `[PRE-ORDEN: Realizado con restaurante cerrado]`.
 - **Admin Awareness**: В дашборд администратора добавлен яркий предупреждающий баннер, если активен режим экстренного закрытия.
