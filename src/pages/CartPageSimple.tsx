@@ -330,14 +330,13 @@ export default function CartPageSimple() {
             : 0;
     const finalTotal = cartSubtotal + deliveryCost;
 
-    if ((cartLoading && items.length === 0) || (items.length > 0 && isLoadingSettings))
-        return <CartSkeleton />;
-
     return (
         <div className="min-h-screen bg-transparent flex flex-col">
             <SEO title="Tu Cesta" description="Finaliza tu pedido de sushi." />
 
-            {items.length === 0 ? (
+            {(cartLoading && items.length === 0) || (items.length > 0 && isLoadingSettings) ? (
+                <CartSkeleton />
+            ) : items.length === 0 ? (
                 <CartEmptyView
                     popularItems={popularItems}
                     isLoadingPopular={isLoadingPopular}
