@@ -6,9 +6,16 @@ import {
     Activity,
     TrendingUp,
     ChevronRight,
+    AlertTriangle,
+    Power,
+    Clock,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { OrderTimer } from './OrderTimer';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '../../utils/api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 
 interface AdminDashboardProps {
     stats: any;
@@ -41,32 +48,193 @@ export default function AdminDashboard({
     setActiveTab,
 }: AdminDashboardProps) {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+    // Settings Query for Store Status
+    const { data: storeSettings, isLoading: settingsLoading } = useQuery({
+        queryKey: ['admin-settings'],
+        queryFn: async () => {
+            const data = await api.get('/admin/settings');
+            return data;
+        },
+    });
+
+    const updateSettingsMutation = useMutation({
+        mutationFn: (payload: any) => api.put('/admin/settings', payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
+            setIsUpdatingStatus(false);
+        },
+        onError: () => {
+            setIsUpdatingStatus(false);
+            alert('Error updating store status');
+        },
+    });
+
+    const toggleStoreStatus = () => {
+        if (!storeSettings) return;
+        setIsUpdatingStatus(true);
+        updateSettingsMutation.mutate({
+            ...storeSettings,
+            is_store_closed: !storeSettings.is_store_closed,
+        });
+    };
+
+    const handleUpdateDeliveryTime = (time: string) => {
+        if (!storeSettings) return;
+        updateSettingsMutation.mutate({
+            ...storeSettings,
+            est_delivery_time: time,
+        });
+    };
+
+    const isClosed = storeSettings?.is_store_closed;
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <h2 className="text-lg font-bold text-gray-900">Resumen hoy</h2>
-                <div className="flex items-center gap-4">
+
+                <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => navigate('/menu')}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 transition shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition shadow-sm"
                     >
                         <ExternalLink size={16} strokeWidth={1.5} />
                         Ver Tienda
                     </button>
                     <button
                         onClick={() => loadStats()}
-                        className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition bg-white border border-gray-100 px-4 py-2 rounded-xl"
                     >
                         <RefreshCw
                             size={14}
                             strokeWidth={1.5}
                             className={loading ? 'animate-spin' : ''}
                         />
-                        Actualizar datos
+                        Actualizar
                     </button>
                 </div>
             </div>
+
+            {/* Store Status Toggle Section */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                        <Power size={120} strokeWidth={1} />
+                    </div>
+
+                    <div className="flex items-center gap-5 relative z-10">
+                        <div
+                            className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors shadow-inner
+                            ${isClosed ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}
+                        >
+                            <Power
+                                size={28}
+                                strokeWidth={2}
+                                className={isUpdatingStatus ? 'animate-pulse' : ''}
+                            />
+                        </div>
+                        <div>
+                            <h3 className="font-black text-gray-900 text-lg">
+                                Parámetros de la Tienda
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <span
+                                    className={`flex h-2 w-2 rounded-full ${isClosed ? 'bg-red-500' : 'bg-green-500 animate-pulse'}`}
+                                />
+                                <p className="text-sm font-bold text-gray-500 uppercase tracking-tight">
+                                    {isClosed
+                                        ? 'Tienda Cerrada Temporalmente'
+                                        : 'Tienda Abierta y Operativa'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={toggleStoreStatus}
+                        disabled={isUpdatingStatus || settingsLoading}
+                        className={`w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-sm font-black transition-all shadow-xl active:scale-95
+                            ${
+                                isClosed
+                                    ? 'bg-red-600 text-white hover:bg-black shadow-red-200'
+                                    : 'bg-green-600 text-white hover:bg-black shadow-green-200'
+                            }
+                            ${isUpdatingStatus ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        {isUpdatingStatus ? (
+                            <RefreshCw size={20} className="animate-spin" />
+                        ) : isClosed ? (
+                            'ABRIR TIENDA'
+                        ) : (
+                            'MARCAR CERRADA (EMERGENCIA)'
+                        )}
+                    </button>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner">
+                            <Clock size={20} strokeWidth={2} />
+                        </div>
+                        <h3 className="font-bold text-gray-900">Tiempo Entrega</h3>
+                    </div>
+                    <div className="relative group">
+                        <input
+                            type="text"
+                            defaultValue={storeSettings?.est_delivery_time || '30-60 min'}
+                            onBlur={e => handleUpdateDeliveryTime(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-black text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all font-mono"
+                            placeholder="Ej: 30-45 min"
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-[10px] font-bold text-blue-400 bg-white px-2 py-1 rounded-lg shadow-sm border border-blue-50">
+                                EDITAR
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Emergency Alert if Store is Closed */}
+            <AnimatePresence>
+                {isClosed && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                    >
+                        <div className="bg-red-600 text-white p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl shadow-red-100 border border-red-500">
+                            <div className="flex items-center gap-4">
+                                <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md">
+                                    <AlertTriangle
+                                        size={24}
+                                        className="text-white animate-bounce"
+                                    />
+                                </div>
+                                <div>
+                                    <p className="font-black text-base uppercase tracking-tight">
+                                        ¡Atención! La cocina está pausada
+                                    </p>
+                                    <p className="text-sm text-white/80 font-medium">
+                                        Los clientes verán el mensaje de cierre y no podrán procesar
+                                        el carrito.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={toggleStoreStatus}
+                                className="w-full md:w-auto bg-white text-red-600 px-8 py-3 rounded-xl text-sm font-black hover:bg-black hover:text-white transition-all shadow-lg active:scale-95"
+                            >
+                                ACTIVAR TIENDA AHORA
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

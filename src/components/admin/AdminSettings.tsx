@@ -208,63 +208,6 @@ export default function AdminSettings() {
             </div>
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">Parámetros de la Tienda</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">
-                            Tiempo estimado de entrega
-                        </label>
-                        <input
-                            value={localSettings.est_delivery_time}
-                            onChange={e =>
-                                setLocalSettings({
-                                    ...localSettings,
-                                    est_delivery_time: e.target.value,
-                                })
-                            }
-                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                            placeholder="30-60 min"
-                        />
-                    </div>
-                    <div className="md:col-span-2 flex items-center gap-4 pt-4 border-t border-gray-50 mt-2">
-                        <label className="flex items-center gap-3 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={localSettings.is_store_closed}
-                                onChange={e =>
-                                    setLocalSettings({
-                                        ...localSettings,
-                                        is_store_closed: e.target.checked,
-                                    })
-                                }
-                                className="w-5 h-5 accent-red-600"
-                            />
-                            <span className="font-bold text-sm text-red-700">
-                                MARCAR TIENDA COMO CERRADA (Emergencia)
-                            </span>
-                        </label>
-                    </div>
-                    {localSettings.is_store_closed && (
-                        <div className="md:col-span-3">
-                            <label className="block text-xs font-bold text-gray-500 mb-1">
-                                Mensaje para los clientes (Cierre)
-                            </label>
-                            <input
-                                value={localSettings.closed_message}
-                                onChange={e =>
-                                    setLocalSettings({
-                                        ...localSettings,
-                                        closed_message: e.target.value,
-                                    })
-                                }
-                                className="w-full border rounded-lg px-3 py-2 text-sm outline-none border-red-200 bg-red-50 focus:border-red-500"
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-bold text-lg text-gray-800">Redes Sociales</h3>
                     <button
