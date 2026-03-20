@@ -6,10 +6,11 @@ import { api } from '../utils/api';
 import { useLocation } from 'react-router-dom';
 import { isStoreOpen, getNextOpeningTime, formatTimeLeft } from '../utils/storeStatus';
 
+
 export default function StoreStatusBanner() {
     const [isVisible, setIsVisible] = useState(true);
     const [timeLeftDisplay, setTimeLeftDisplay] = useState<string | null>(null);
-    const [isAutoClosed, setIsAutoClosed] = useState(false);
+
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
 
@@ -24,8 +25,10 @@ export default function StoreStatusBanner() {
         const updateCountdown = () => {
             const now = new Date();
             const open = isStoreOpen(now);
-            setIsAutoClosed(!open);
 
+            // Even if store is open by schedule, if the admin closed it manually, 
+            // we still check for the next opening time to show a countdown if applicable.
+            // But usually we just show it if it's currently scheduled to be closed.
             if (!open) {
                 const nextOpening = getNextOpeningTime(now);
                 if (nextOpening) {
@@ -44,7 +47,7 @@ export default function StoreStatusBanner() {
         return () => clearInterval(timer);
     }, []);
 
-    const isStoreClosed = settings?.is_store_closed || isAutoClosed;
+    const isStoreClosed = !!settings?.is_store_closed;
 
     if (isAdminRoute || !isStoreClosed || !isVisible) {
         return null;

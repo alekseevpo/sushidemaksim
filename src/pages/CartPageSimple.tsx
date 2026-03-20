@@ -32,7 +32,6 @@ import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
-import { isStoreOpen } from '../utils/storeStatus';
 
 interface MenuItem {
     id: number;
@@ -90,8 +89,7 @@ export default function CartPageSimple() {
     const FREE_DELIVERY_THRESHOLD = selectedZone
         ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60)
         : (siteSettings?.free_delivery_threshold ?? 60);
-    const isStoreClosed = !!siteSettings?.is_store_closed || !isStoreOpen();
-
+    const isStoreClosed = !!siteSettings?.is_store_closed;
     const todayStr = (() => {
         const now = new Date();
         return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
