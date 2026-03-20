@@ -283,9 +283,18 @@ router.post(
         }
 
         // 7. Generate WhatsApp Link for return (Pointing to Store WhatsApp: +34 641 51 83 90)
-        const waText = encodeURIComponent(
-            `\u{1F363} ¡Hola Sushi de Maksim! Mi pedido #${String(order.id).padStart(5, '0')} ha sido realizado con éxito.\n\u{1F4CD} Dirección: ${deliveryAddress}\n\u{1F4B0} Total: ${finalTotal.toFixed(2)}€\nMuchas gracias.`
-        );
+        const isCard = notes?.includes('TARJETA');
+        const paymentMethodIcon = isCard ? '💳' : '💵';
+        const paymentMethodText = isCard ? 'Tarjeta' : 'Efectivo';
+
+        const waTextParts = [
+            `🍣 ¡Hola Sushi de Maksim! Mi pedido #${String(order.id).padStart(5, '0')} ha sido realizado con éxito.`,
+            `📍 Dirección: ${deliveryAddress}`,
+            `${paymentMethodIcon} Método de Pago: ${paymentMethodText}`,
+            `💰 Total: ${finalTotal.toFixed(2)}€`,
+            `Muchas gracias.`
+        ];
+        const waText = encodeURIComponent(waTextParts.join('\n'));
         const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
 
         res.status(201).json({
