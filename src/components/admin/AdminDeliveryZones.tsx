@@ -151,11 +151,9 @@ export default function AdminDeliveryZones() {
                         center={MADRID_CENTER}
                         zoom={13}
                         style={{ height: '600px', width: '100%', borderRadius: '12px' }}
+                        attributionControl={false}
                     >
-                        <TileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        />
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                         <Marker position={RESTAURANT_LOCATION}>
                             <Popup>
