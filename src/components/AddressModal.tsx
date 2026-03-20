@@ -138,7 +138,6 @@ export default function AddressModal({
     const performSearch = async (query: string) => {
         setIsSearching(true);
         try {
-            // Using our backend proxy to avoid CORS and set required User-Agent
             const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
             setSearchResults(Array.isArray(data) ? data : []);
         } catch (err) {
@@ -154,7 +153,6 @@ export default function AddressModal({
         try {
             const data = await api.get(`/delivery-zones/reverse?lat=${lat}&lon=${lon}`);
             if (data && data.address) {
-                // Determine street name from road, pedestrian, or other common fields
                 const street =
                     data.address.road ||
                     data.address.pedestrian ||
@@ -163,8 +161,6 @@ export default function AddressModal({
                     data.address.city ||
                     '';
                 const houseNum = data.address.house_number || '';
-
-                // If street is found, set it, otherwise fallback to a more generic name
                 setAddress(street || data.display_name?.split(',')[0] || '');
                 setHouse(houseNum);
                 if (data.address.postcode) setPostalCode(data.address.postcode);
@@ -177,14 +173,11 @@ export default function AddressModal({
     };
 
     const selectResult = (res: any) => {
-        // Mark that we shouldn't reverse geocode this position update
         skipReverseGeocodeRef.current = true;
-
         const lat = parseFloat(res.lat);
         const lon = parseFloat(res.lon);
         setMarkerPosition([lat, lon]);
 
-        // 1. Extract street name correctly
         let street =
             res.address?.road ||
             res.address?.pedestrian ||
@@ -193,10 +186,7 @@ export default function AddressModal({
             res.display_name?.split(',')[0] ||
             '';
 
-        // 2. Extract house number
         const houseNum = res.address?.house_number || '';
-
-        // If the street name contains the house number, try to clean it
         if (houseNum && street.includes(houseNum)) {
             street = street.replace(houseNum, '').replace(/,/g, '').trim();
         }
@@ -204,26 +194,20 @@ export default function AddressModal({
         setAddress(street);
         setHouse(houseNum);
 
-        // 3. Extract postal code
         const pc = res.address?.postcode || res.display_name?.match(/\b\d{5}\b/)?.[0] || '';
         if (pc) setPostalCode(pc);
-
         setSearchResults([]);
         setSearchQuery('');
     };
 
-    // Debounce reverse geocoding on manual marker move
     useEffect(() => {
-        // Skip for the restaurant's default location initialization
         const isDefault =
             Math.abs(markerPosition[0] - RESTAURANT_LOCATION[0]) < 0.0001 &&
             Math.abs(markerPosition[1] - RESTAURANT_LOCATION[1]) < 0.0001;
 
         if (isDefault) return;
-
-        // If we selected this from search, don't reverse geocode it (keep the search data)
         if (skipReverseGeocodeRef.current) {
-            skipReverseGeocodeRef.current = false; // Reset for next interaction
+            skipReverseGeocodeRef.current = false;
             return;
         }
 
@@ -303,13 +287,11 @@ export default function AddressModal({
                                     attributionControl={false}
                                 >
                                     <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
-
                                     <MapUpdater center={markerPosition} />
                                     <LocationMarker
                                         position={markerPosition}
                                         setPosition={setMarkerPosition}
                                     />
-
                                     {deliveryZones.map(zone => (
                                         <Polygon
                                             key={zone.id}
@@ -355,7 +337,6 @@ export default function AddressModal({
                                                             className="mt-1 text-gray-400 shrink-0"
                                                         />
                                                         <span className="text-sm font-bold text-gray-700">
-                                                            {/* Ensure it starts with Madrid for clarity, but avoid double Madrid */}
                                                             {res.display_name
                                                                 .toLowerCase()
                                                                 .startsWith('madrid')
@@ -369,17 +350,6 @@ export default function AddressModal({
                                                 ))}
                                             </div>
                                         )}
-                                    </div>
-                                </div>
-
-                                <div className="absolute bottom-4 left-4 z-[1000]">
-                                    <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-xl border border-white shadow-lg">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
-                                            Tu ubicación
-                                        </p>
-                                        <p className="text-xs font-bold text-gray-900">
-                                            {address || 'Selecciona un punto'}
-                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -443,48 +413,38 @@ export default function AddressModal({
                                     {/* Zone Status */}
                                     <div className="pt-1">
                                         {selectedZone ? (
-                                            <div className="p-4 bg-green-50 rounded-2xl border border-green-100 flex gap-4 animate-in slide-in-from-bottom-2 duration-300">
-                                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-green-100 shrink-0">
+                                            <div className="flex items-center gap-3 py-2 px-1 animate-in slide-in-from-bottom-2 duration-300">
+                                                <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center shrink-0">
                                                     <CheckCircle
-                                                        className="text-green-500"
-                                                        size={20}
+                                                        className="text-green-600"
+                                                        size={18}
                                                     />
                                                 </div>
-                                                <div>
-                                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-1 leading-none">
-                                                        Área de entrega
-                                                    </p>
-                                                    <p className="text-sm font-black text-green-900 tracking-tight">
-                                                        {selectedZone.name}
-                                                    </p>
-                                                    <div className="flex items-center gap-2 mt-2">
-                                                        <span className="text-[10px] font-bold bg-green-200/50 text-green-800 px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                                                            Envío:{' '}
-                                                            {selectedZone.cost === 0
-                                                                ? 'GRATIS'
-                                                                : `${selectedZone.cost}€`}
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm font-black text-gray-900 leading-tight">
+                                                            {selectedZone.name}
                                                         </span>
-                                                        <span className="text-[10px] font-bold bg-green-200/50 text-green-800 px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                                                            Mínimo: {selectedZone.min_order}€
+                                                        <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                                                            Zona de entrega
                                                         </span>
                                                     </div>
+                                                    <p className="text-xs text-gray-500 font-medium mt-0.5">
+                                                        Envío {selectedZone.cost === 0 ? 'Gratis' : `${selectedZone.cost}€`} • Min. {selectedZone.min_order}€
+                                                    </p>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="p-4 bg-red-50 rounded-2xl border border-red-100 flex gap-4 animate-in shake duration-500">
-                                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border-red-100 shrink-0">
-                                                    <Info className="text-red-500" size={20} />
+                                            <div className="flex items-center gap-3 py-2 px-1 animate-in shake duration-500">
+                                                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                                                    <Info className="text-red-500" size={18} />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-1 leading-none">
-                                                        Lo sentimos
-                                                    </p>
                                                     <p className="text-sm font-black text-red-900 tracking-tight">
                                                         Zona no cubierta
                                                     </p>
-                                                    <p className="text-[10px] font-bold text-red-600 mt-1 uppercase leading-tight">
+                                                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-tighter">
                                                         Mueve el marcador o prueba otra dirección
-                                                        dentro de Madrid.
                                                     </p>
                                                 </div>
                                             </div>
