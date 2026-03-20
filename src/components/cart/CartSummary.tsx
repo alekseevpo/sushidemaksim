@@ -41,7 +41,7 @@ export default function CartSummary({
                 >
                     <Clock size={16} className="shrink-0 mt-0.5" />
                     <p className="text-[11px] font-bold leading-tight m-0">
-                        Restaurante cerrado. Puedes realizar tu pedido и nos pondremos en contacto
+                        Restaurante cerrado. Puedes realizar tu pedido y nos pondremos en contacto
                         contigo sin falta.
                     </p>
                 </motion.div>
@@ -111,7 +111,7 @@ export default function CartSummary({
 
             {items.length > 0 && (
                 <p className="text-[10px] text-gray-400 mt-4 text-center font-medium px-4">
-                    Al pulsar "Realizar pedido" aceptas nuestras condiciones generales de venta и
+                    Al pulsar "Realizar pedido" aceptas nuestras condiciones generales de venta y
                     política de privacidad.
                 </p>
             )}

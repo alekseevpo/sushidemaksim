@@ -64,7 +64,7 @@ export default function OrderSuccessModal({
                         {isScheduled ? (
                             <> Lo prepararemos para la fecha y hora seleccionada.</>
                         ) : (
-                            <> и ya estamos preparando tus sushis с amor.</>
+                            <> y ya estamos preparando tus sushis con amor.</>
                         )}
                     </p>
 

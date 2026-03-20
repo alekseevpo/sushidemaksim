@@ -41,7 +41,7 @@ export default function ProductGrid({
                 <h3 className="text-xl font-black text-gray-900 mb-2">
                     {search
                         ? `No hay resultados para "${search}"`
-                        : 'No hay platos en esta категория'}
+                        : 'No hay platos en esta categoría'}
                 </h3>
                 <p className="text-gray-500">Prueba a cambiar los filtros</p>
                 <button
