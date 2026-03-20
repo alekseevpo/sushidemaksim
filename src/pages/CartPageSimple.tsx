@@ -1537,7 +1537,8 @@ export default function CartPageSimple() {
                                 >
                                     <Clock size={16} className="shrink-0 mt-0.5" />
                                     <p className="text-[11px] font-bold leading-tight m-0">
-                                        Restaurante cerrado. Puedes realizar tu pedido y nos pondremos en contacto contigo sin falta.
+                                        Restaurante cerrado. Puedes realizar tu pedido y nos
+                                        pondremos en contacto contigo sin falta.
                                     </p>
                                 </motion.div>
                             )}

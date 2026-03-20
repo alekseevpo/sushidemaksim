@@ -72,7 +72,9 @@ export default function StoreStatusBanner() {
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
                                     <p className="text-white font-black text-xs md:text-sm uppercase tracking-tight">
-                                        {settings?.is_store_closed ? 'Restaurante Cerrado' : 'Fuera de Horario'}
+                                        {settings?.is_store_closed
+                                            ? 'Restaurante Cerrado'
+                                            : 'Fuera de Horario'}
                                     </p>
                                     <span className="hidden md:block px-2 py-0.5 bg-red-600/20 text-red-500 text-[8px] font-black rounded-full border border-red-500/20">
                                         MODO PRE-ORDEN
@@ -81,7 +83,9 @@ export default function StoreStatusBanner() {
                                 <div className="flex items-center gap-2 mt-0.5">
                                     <span className="text-gray-400 text-[10px] md:text-xs font-bold leading-none flex items-center gap-1">
                                         <Calendar size={10} className="text-gray-500" />
-                                        {todaySchedule?.hours ? `Horario hoy: ${todaySchedule.hours}` : 'Consulta nuestro horario'}
+                                        {todaySchedule?.hours
+                                            ? `Horario hoy: ${todaySchedule.hours}`
+                                            : 'Consulta nuestro horario'}
                                     </span>
                                 </div>
                             </div>
@@ -104,7 +108,8 @@ export default function StoreStatusBanner() {
                                 <Info size={14} className="text-amber-400 shrink-0" />
                                 <div className="flex flex-col">
                                     <p className="text-[10px] md:text-[11px] text-gray-200 font-medium leading-tight">
-                                        Puedes realizar tu pedido y nos pondremos en contacto contigo.
+                                        Puedes realizar tu pedido y nos pondremos en contacto
+                                        contigo.
                                     </p>
                                     <p className="text-[9px] md:text-[10px] text-gray-400 mt-0.5">
                                         Se procesarán al abrir.
@@ -116,8 +121,8 @@ export default function StoreStatusBanner() {
                                     )}
                                 </div>
                             </div>
-                            
-                            <button 
+
+                            <button
                                 onClick={() => setIsVisible(false)}
                                 className="p-2 text-gray-500 hover:text-white transition-colors"
                                 aria-label="Cerrar aviso"

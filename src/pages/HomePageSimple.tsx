@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, ChevronRight, Plus } from 'lucide-react';
+import { ArrowRight, Star, ChevronRight, ChevronLeft, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
@@ -168,6 +168,18 @@ export default function HomePageSimple() {
     const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollContainerRef.current) {
+            const container = scrollContainerRef.current;
+            const scrollAmount = container.clientWidth * 0.8;
+            container.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth',
+            });
+        }
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -459,19 +471,50 @@ export default function HomePageSimple() {
                                 Nuestros <span className="text-red-600">Favoritos</span> Ineludibles
                             </h2>
                         </div>
-                        <Link
-                            to="/menu"
-                            className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-red-600 transition-colors no-underline"
-                        >
-                            VER CARTA COMPLETA
-                            <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
-                                <ArrowRight size={18} strokeWidth={2} />
+                        <div className="flex items-center gap-8">
+                            {/* Navigation Arrows for Desktop */}
+                            <div className="hidden md:flex items-center gap-3">
+                                <button
+                                    onClick={() => scroll('left')}
+                                    className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-all border border-gray-100 hover:scale-105 active:scale-95"
+                                    aria-label="Scroll left"
+                                >
+                                    <ChevronLeft
+                                        size={24}
+                                        strokeWidth={2.5}
+                                        className="text-gray-900"
+                                    />
+                                </button>
+                                <button
+                                    onClick={() => scroll('right')}
+                                    className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-all border border-gray-100 hover:scale-105 active:scale-95"
+                                    aria-label="Scroll right"
+                                >
+                                    <ChevronRight
+                                        size={24}
+                                        strokeWidth={2.5}
+                                        className="text-gray-900"
+                                    />
+                                </button>
                             </div>
-                        </Link>
+
+                            <Link
+                                to="/menu"
+                                className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-red-600 transition-colors no-underline"
+                            >
+                                VER CARTA COMPLETA
+                                <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                                    <ArrowRight size={18} strokeWidth={2} />
+                                </div>
+                            </Link>
+                        </div>
                     </div>
 
                     {!isLoading && popularItems.length > 0 ? (
-                        <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth">
+                        <div
+                            ref={scrollContainerRef}
+                            className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth"
+                        >
                             <div className="flex gap-6 md:gap-8 flex-nowrap w-max min-w-full">
                                 {popularItems.map((item, index) => (
                                     <ProductCard key={item.id} item={item} index={index} />

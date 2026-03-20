@@ -17,22 +17,24 @@ export const BUSINESS_HOURS: Record<number, { start: string; end: string }[]> = 
 
 export function isStoreOpen(date: Date = new Date()): boolean {
     const day = date.getDay();
-    const timeStr = date.getHours().toString().padStart(2, '0') + ':' + 
-                  date.getMinutes().toString().padStart(2, '0');
+    const timeStr =
+        date.getHours().toString().padStart(2, '0') +
+        ':' +
+        date.getMinutes().toString().padStart(2, '0');
 
     const todayIntervals = BUSINESS_HOURS[day] || [];
-    return todayIntervals.some(interval => 
-        timeStr >= interval.start && timeStr < interval.end
-    );
+    return todayIntervals.some(interval => timeStr >= interval.start && timeStr < interval.end);
 }
 
 export function getNextOpeningTime(now: Date = new Date()): Date | null {
     const day = now.getDay();
-    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                  now.getMinutes().toString().padStart(2, '0');
+    const timeStr =
+        now.getHours().toString().padStart(2, '0') +
+        ':' +
+        now.getMinutes().toString().padStart(2, '0');
 
     const todayIntervals = BUSINESS_HOURS[day] || [];
-    
+
     // Check remaining intervals today
     for (const interval of todayIntervals) {
         if (interval.start > timeStr) {
@@ -63,7 +65,7 @@ export function formatTimeLeft(diff: number): string {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
+
     let format = '';
     if (hours > 0) format += `${hours}h `;
     format += `${minutes}m ${seconds}s`;
