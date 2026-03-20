@@ -32,7 +32,7 @@ const lazyRetry = (componentImport: () => Promise<{ default: React.ComponentType
             if (!hasRetried) {
                 window.sessionStorage.setItem('retry-lazy', 'true');
                 window.location.reload();
-                return { default: () => null } as any; 
+                return { default: () => null } as any;
             }
             throw error;
         }

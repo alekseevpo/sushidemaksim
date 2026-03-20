@@ -27,7 +27,9 @@ export function useUserQuery() {
 export function useUpdateProfileMutation() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>) => {
+        mutationFn: async (
+            data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
+        ) => {
             return api.put('/user/profile', data);
         },
         onSuccess: () => {
@@ -47,7 +49,13 @@ export function useAddressMutations() {
     });
 
     const editAddress = useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: Partial<Omit<UserAddress, 'id'>> }) => {
+        mutationFn: async ({
+            id,
+            data,
+        }: {
+            id: string;
+            data: Partial<Omit<UserAddress, 'id'>>;
+        }) => {
             return api.put(`/user/addresses/${id}`, data);
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY }),

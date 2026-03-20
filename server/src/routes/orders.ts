@@ -399,7 +399,7 @@ router.patch(
             .single();
 
         if (updateError) throw updateError;
-        
+
         // Realtime Broadcast
         if (updated) {
             // User-specific channel

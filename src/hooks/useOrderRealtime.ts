@@ -16,22 +16,22 @@ export function useOrderRealtime({ userId, orderId, onUpdate }: RealtimeParams) 
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        const channelName = orderId 
-            ? `order_tracking:${orderId}` 
-            : userId 
-                ? `user_orders:${userId}` 
-                : null;
+        const channelName = orderId
+            ? `order_tracking:${orderId}`
+            : userId
+              ? `user_orders:${userId}`
+              : null;
 
         if (!channelName) return;
 
         console.log(`📡 Subscribing to: ${channelName}`);
-        
+
         const channel = supabase.channel(channelName);
-        
+
         channel
             .on('broadcast', { event: 'order_status_updated' }, ({ payload }) => {
                 console.log('🔔 Received order update broadcast:', payload);
-                
+
                 // 1. Trigger custom callback if provided
                 if (onUpdate) {
                     onUpdate();
@@ -43,7 +43,7 @@ export function useOrderRealtime({ userId, orderId, onUpdate }: RealtimeParams) 
                     queryClient.invalidateQueries({ queryKey: ['order', String(orderId)] });
                 }
             })
-            .subscribe((status) => {
+            .subscribe(status => {
                 console.log(`🔌 Channel status (${channelName}): ${status}`);
             });
 

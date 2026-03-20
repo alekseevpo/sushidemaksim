@@ -667,7 +667,10 @@ export default function AdminOrders({
                                             <select
                                                 value={order.status}
                                                 onChange={e =>
-                                                    handleUpdateStatus(Number(order.id), e.target.value)
+                                                    handleUpdateStatus(
+                                                        Number(order.id),
+                                                        e.target.value
+                                                    )
                                                 }
                                                 disabled={statusMutation.isPending}
                                                 className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${

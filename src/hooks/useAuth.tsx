@@ -51,7 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: user, isLoading: isQueryLoading } = useUserQuery();
 
     const { mutateAsync: updateProfileMutation } = useUpdateProfileMutation();
-    const { addAddress: addAddr, editAddress: editAddr, removeAddress: rmAddr, setDefaultAddress: setDefAddr } = useAddressMutations();
+    const {
+        addAddress: addAddr,
+        editAddress: editAddr,
+        removeAddress: rmAddr,
+        setDefaultAddress: setDefAddr,
+    } = useAddressMutations();
     const { mutateAsync: delAcc } = useDeleteAccountMutation();
 
     const isAuthenticated = !!user;
@@ -82,31 +87,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => clearInterval(interval);
     }, [user]);
 
-    const login = async (email: string, password: string) => {
-        try {
-            const data = await api.post('/auth/login', { email, password });
-            localStorage.setItem('sushi_token', data.token);
-            await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
-            return { success: true, wasReactivated: data.wasReactivated };
-        } catch (error: unknown) {
-            return { 
-                success: false, 
-                error: error instanceof Error ? error.message : 'Ha ocurrido un error inesperado' 
-            };
-        }
-    };
+    const login = useCallback(
+        async (email: string, password: string) => {
+            try {
+                const data = await api.post('/auth/login', { email, password });
+                localStorage.setItem('sushi_token', data.token);
+                await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
+                return { success: true, wasReactivated: data.wasReactivated };
+            } catch (error: unknown) {
+                return {
+                    success: false,
+                    error:
+                        error instanceof Error ? error.message : 'Ha ocurrido un error inesperado',
+                };
+            }
+        },
+        [queryClient]
+    );
 
-    const register = async (name: string, email: string, phone: string, password: string) => {
-        try {
-            await api.post('/auth/register', { name, email, phone, password });
-            return { success: true };
-        } catch (error: unknown) {
-            return { 
-                success: false, 
-                error: error instanceof Error ? error.message : 'Ha ocurrido un error inesperado' 
-            };
-        }
-    };
+    const register = useCallback(
+        async (name: string, email: string, phone: string, password: string) => {
+            try {
+                await api.post('/auth/register', { name, email, phone, password });
+                return { success: true };
+            } catch (error: unknown) {
+                return {
+                    success: false,
+                    error:
+                        error instanceof Error ? error.message : 'Ha ocurrido un error inesperado',
+                };
+            }
+        },
+        []
+    );
 
     const logout = useCallback(() => {
         localStorage.removeItem('sushi_token');
@@ -115,63 +128,94 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         window.location.href = '/';
     }, [queryClient]);
 
-    const updateProfile = async (data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>) => {
-        await updateProfileMutation(data);
-    };
+    const updateProfile = useCallback(
+        async (data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>) => {
+            await updateProfileMutation(data);
+        },
+        [updateProfileMutation]
+    );
 
-    const addAddress = async (address: Omit<UserAddress, 'id'>) => {
-        await addAddr.mutateAsync(address);
-    };
+    const addAddress = useCallback(
+        async (address: Omit<UserAddress, 'id'>) => {
+            await addAddr.mutateAsync(address);
+        },
+        [addAddr]
+    );
 
-    const editAddress = async (id: string, data: Partial<Omit<UserAddress, 'id'>>) => {
-        await editAddr.mutateAsync({ id, data });
-    };
+    const editAddress = useCallback(
+        async (id: string, data: Partial<Omit<UserAddress, 'id'>>) => {
+            await editAddr.mutateAsync({ id, data });
+        },
+        [editAddr]
+    );
 
-    const removeAddress = async (id: string) => {
-        await rmAddr.mutateAsync(id);
-    };
+    const removeAddress = useCallback(
+        async (id: string) => {
+            await rmAddr.mutateAsync(id);
+        },
+        [rmAddr]
+    );
 
-    const setDefaultAddress = async (id: string) => {
-        await setDefAddr.mutateAsync(id);
-    };
+    const setDefaultAddress = useCallback(
+        async (id: string) => {
+            await setDefAddr.mutateAsync(id);
+        },
+        [setDefAddr]
+    );
 
-    const deleteAccount = async () => {
+    const deleteAccount = useCallback(async () => {
         await delAcc();
         logout();
-    };
+    }, [delAcc, logout]);
 
-    const addOrder = useCallback((order: Order) => {
-        queryClient.setQueryData<User>(USER_QUERY_KEY, (prev) => {
-            if (!prev) return prev;
-            return {
-                ...prev,
-                orders: prev.orders ? [order, ...prev.orders] : [order],
-                orderCount: (prev.orderCount || 0) + 1,
-            };
-        });
-    }, [queryClient]);
-
-    const value = useMemo(() => ({
-        user: user || null,
-        isAuthenticated,
-        isLoading: isQueryLoading,
-        login,
-        register,
-        logout,
-        updateProfile,
-        addAddress,
-        editAddress,
-        removeAddress,
-        setDefaultAddress,
-        deleteAccount,
-        addOrder,
-    }), [user, isAuthenticated, isQueryLoading, logout, updateProfile, addAddress, editAddress, removeAddress, setDefaultAddress, deleteAccount, addOrder]);
-
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
+    const addOrder = useCallback(
+        (order: Order) => {
+            queryClient.setQueryData<User>(USER_QUERY_KEY, prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    orders: prev.orders ? [order, ...prev.orders] : [order],
+                    orderCount: (prev.orderCount || 0) + 1,
+                };
+            });
+        },
+        [queryClient]
     );
+
+    const value = useMemo(
+        () => ({
+            user: user || null,
+            isAuthenticated,
+            isLoading: isQueryLoading,
+            login,
+            register,
+            logout,
+            updateProfile,
+            addAddress,
+            editAddress,
+            removeAddress,
+            setDefaultAddress,
+            deleteAccount,
+            addOrder,
+        }),
+        [
+            user,
+            isAuthenticated,
+            isQueryLoading,
+            login,
+            register,
+            logout,
+            updateProfile,
+            addAddress,
+            editAddress,
+            removeAddress,
+            setDefaultAddress,
+            deleteAccount,
+            addOrder,
+        ]
+    );
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

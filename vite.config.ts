@@ -7,7 +7,13 @@ export default defineConfig({
         react(),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['favicon.ico', 'logo.svg', 'pwa-192.png', 'pwa-512.png', 'maskable-icon.png'],
+            includeAssets: [
+                'favicon.ico',
+                'logo.svg',
+                'pwa-192.png',
+                'pwa-512.png',
+                'maskable-icon.png',
+            ],
             manifest: {
                 name: 'Sushi de Maksim',
                 short_name: 'SushiMaksim',

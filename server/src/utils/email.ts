@@ -556,7 +556,10 @@ export async function sendAbandonedCartEmail(
         )
         .join('');
 
-    const moreItems = items.length > 3 ? `<p style="color: #6b7280; font-size: 13px; margin: 4px 0;">...y ${items.length - 3} productos más</p>` : '';
+    const moreItems =
+        items.length > 3
+            ? `<p style="color: #6b7280; font-size: 13px; margin: 4px 0;">...y ${items.length - 3} productos más</p>`
+            : '';
 
     await transporter.sendMail({
         from,

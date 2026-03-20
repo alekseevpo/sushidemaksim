@@ -7,12 +7,12 @@ import { useEffect } from 'react';
 export const useScrollLock = (isLocked: boolean) => {
     useEffect(() => {
         const lenis = (window as any).lenis;
-        
+
         if (isLocked) {
             // Standard CSS lock
             document.body.style.overflow = 'hidden';
             document.body.style.paddingRight = 'var(--scrollbar-width, 0px)'; // Prevent layout shift
-            
+
             // Lenis lock
             if (lenis) {
                 lenis.stop();
@@ -21,7 +21,7 @@ export const useScrollLock = (isLocked: boolean) => {
             // Release locks
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
-            
+
             if (lenis) {
                 lenis.start();
             }

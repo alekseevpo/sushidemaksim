@@ -1,10 +1,4 @@
-import {
-    createContext,
-    useContext,
-    ReactNode,
-    useCallback,
-    useMemo,
-} from 'react';
+import { createContext, useContext, ReactNode, useCallback, useMemo } from 'react';
 import { CartItem, SushiItem } from '../types';
 import { api } from '../utils/api';
 import { useAuth } from './useAuth';
@@ -43,8 +37,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const { mutateAsync: removeCartItem } = useRemoveItemMutation(user);
     const { mutateAsync: clearCartQuery } = useClearCartMutation(user);
 
-    const items = data?.items || [];
-    const total = data?.total || 0;
+    const items = useMemo(() => data?.items || [], [data]);
+    const total = useMemo(() => data?.total || 0, [data]);
 
     const syncGuestItems = useCallback(async () => {
         const localCart = localStorage.getItem('guest_cart');
@@ -68,22 +62,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [user, queryClient]);
 
-    const addItem = async (item: SushiItem) => {
-        if ('vibrate' in navigator) navigator.vibrate(50);
-        await addToCart(item);
-    };
+    const addItem = useCallback(
+        async (item: SushiItem) => {
+            if ('vibrate' in navigator) navigator.vibrate(50);
+            await addToCart(item);
+        },
+        [addToCart]
+    );
 
-    const removeItem = async (id: string, cartItemId?: number) => {
-        await removeCartItem({ id, cartItemId });
-    };
+    const removeItem = useCallback(
+        async (id: string, cartItemId?: number) => {
+            await removeCartItem({ id, cartItemId });
+        },
+        [removeCartItem]
+    );
 
-    const updateQuantity = async (id: string, quantity: number, cartItemId?: number) => {
-        await updateQty({ id, quantity, cartItemId });
-    };
+    const updateQuantity = useCallback(
+        async (id: string, quantity: number, cartItemId?: number) => {
+            await updateQty({ id, quantity, cartItemId });
+        },
+        [updateQty]
+    );
 
-    const clearCart = async () => {
+    const clearCart = useCallback(async () => {
         await clearCartQuery();
-    };
+    }, [clearCartQuery]);
 
     const itemCount = useMemo(
         () => items.reduce((count: number, item: CartItem) => count + item.quantity, 0),

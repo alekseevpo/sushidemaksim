@@ -429,7 +429,7 @@ router.patch(
     }),
     asyncHandler(async (req: Request, res: Response) => {
         const { status } = req.body;
-        const { data: order, error } = await supabase
+        const { data: order } = await supabase
             .from('orders')
             .update({ status })
             .eq('id', req.params.id)

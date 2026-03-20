@@ -225,30 +225,35 @@ router.post('/check-abandoned-carts', async (req, res) => {
 
     try {
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        
+
         // 1. Get users who were active > 24h ago and have cart items
         // We join cart_items with users to get email
         const { data: abandonedCarts, error: fetchError } = await supabase
             .from('cart_items')
-            .select(`
+            .select(
+                `
                 user_id,
                 users!inner(name, email, last_seen_at, abandoned_cart_reminder_sent_at),
                 menu_items(name, price)
-            `)
+            `
+            )
             .lt('users.last_seen_at', twentyFourHoursAgo);
 
         if (fetchError) throw fetchError;
 
         // 2. Group items by user
-        const userCarts = new Map<string, { name: string, email: string, items: any[], lastReminder: string | null }>();
-        
+        const userCarts = new Map<
+            string,
+            { name: string; email: string; items: any[]; lastReminder: string | null }
+        >();
+
         (abandonedCarts || []).forEach((row: any) => {
             if (!userCarts.has(row.user_id)) {
                 userCarts.set(row.user_id, {
                     name: row.users.name,
                     email: row.users.email,
                     items: [],
-                    lastReminder: row.users.abandoned_cart_reminder_sent_at
+                    lastReminder: row.users.abandoned_cart_reminder_sent_at,
                 });
             }
             userCarts.get(row.user_id)?.items.push(row);
@@ -266,7 +271,7 @@ router.post('/check-abandoned-carts', async (req, res) => {
             if (!lastReminderDate || lastReminderDate < sevenDaysAgo) {
                 try {
                     await sendAbandonedCartEmail(data.email, data.name, data.items);
-                    
+
                     // Update reminder timestamp
                     await supabase
                         .from('users')

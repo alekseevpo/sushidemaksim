@@ -99,7 +99,7 @@ export default function OrdersTab() {
     useOrderRealtime({ userId: user?.id });
 
     const { data: ordersData, isLoading } = useOrdersQuery(page, 10);
-    
+
     const orders = ordersData?.orders || [];
     const pagination = ordersData?.pagination || { page: 1, pages: 1, total: 0 };
 
@@ -222,27 +222,28 @@ export default function OrdersTab() {
                                     })()}
                                 </div>
                             </div>
-                            {(order.status as string) !== 'delivered' && (order.status as string) !== 'cancelled' && (
-                                <div className="flex items-center gap-2">
-                                    {(order.status as string) !== 'delivered' &&
-                                        (order.status as string) !== 'cancelled' && (
-                                            <Link
-                                                to={`/track/${order.id}?phone=${encodeURIComponent(order.phone_number)}`}
-                                                className="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl border border-red-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-red-100 transition-colors no-underline"
-                                            >
-                                                <span>🛵</span>
-                                                Seguir
-                                            </Link>
-                                        )}
-                                    <div className="bg-amber-50 px-2 py-1 rounded-lg border border-amber-100/50 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black">
-                                        <span className="animate-pulse">⏱️</span>
-                                        <OrderTimer
-                                            createdAt={order.created_at}
-                                            status={order.status}
-                                        />
+                            {(order.status as string) !== 'delivered' &&
+                                (order.status as string) !== 'cancelled' && (
+                                    <div className="flex items-center gap-2">
+                                        {(order.status as string) !== 'delivered' &&
+                                            (order.status as string) !== 'cancelled' && (
+                                                <Link
+                                                    to={`/track/${order.id}?phone=${encodeURIComponent(order.phone_number)}`}
+                                                    className="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl border border-red-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-red-100 transition-colors no-underline"
+                                                >
+                                                    <span>🛵</span>
+                                                    Seguir
+                                                </Link>
+                                            )}
+                                        <div className="bg-amber-50 px-2 py-1 rounded-lg border border-amber-100/50 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black">
+                                            <span className="animate-pulse">⏱️</span>
+                                            <OrderTimer
+                                                createdAt={order.created_at}
+                                                status={order.status}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
                         </div>
 
                         {/* Order Summary */}

@@ -82,7 +82,8 @@ export const useToggleFavorite = () => {
             queryClient.invalidateQueries({ queryKey: ['favorites'] });
         },
     });
-};export const useCategories = () => {
+};
+export const useCategories = () => {
     return useQuery({
         queryKey: ['categories'],
         queryFn: async () => {

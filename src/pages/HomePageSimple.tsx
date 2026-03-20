@@ -446,7 +446,6 @@ export default function HomePageSimple() {
                             </h2>
                         </div>
                         <div className="flex items-center">
-
                             <Link
                                 to="/menu"
                                 className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-red-600 transition-colors no-underline"

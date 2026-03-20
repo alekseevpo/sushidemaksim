@@ -53,7 +53,9 @@ export function useAddToCartMutation(user: any) {
                 const items = localCart ? JSON.parse(localCart) : [];
                 const existing = items.find((i: any) => i.id === item.id);
                 const newItems = existing
-                    ? items.map((i: any) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i))
+                    ? items.map((i: any) =>
+                          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                      )
                     : [...items, { ...item, quantity: 1 }];
                 localStorage.setItem('guest_cart', JSON.stringify(newItems));
                 return { items: newItems };
@@ -61,18 +63,22 @@ export function useAddToCartMutation(user: any) {
 
             return api.post('/cart', { menuItemId: parseInt(item.id), quantity: 1 });
         },
-        onMutate: async (newItem) => {
+        onMutate: async newItem => {
             await queryClient.cancelQueries({ queryKey });
-            const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(queryKey);
+            const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
+                queryKey
+            );
 
             if (previousCart) {
                 const existing = previousCart.items.find(i => i.id === newItem.id);
                 const updatedItems = existing
-                    ? previousCart.items.map(i => (i.id === newItem.id ? { ...i, quantity: i.quantity + 1 } : i))
+                    ? previousCart.items.map(i =>
+                          i.id === newItem.id ? { ...i, quantity: i.quantity + 1 } : i
+                      )
                     : [...previousCart.items, { ...newItem, quantity: 1 } as CartItem];
-                
+
                 const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-                
+
                 queryClient.setQueryData(queryKey, { items: updatedItems, total: updatedTotal });
             }
 
@@ -94,7 +100,15 @@ export function useUpdateQuantityMutation(user: any) {
     const queryKey = [...CART_QUERY_KEY, user?.id || 'guest'];
 
     return useMutation({
-        mutationFn: async ({ id, quantity, cartItemId }: { id: string; quantity: number; cartItemId?: number }) => {
+        mutationFn: async ({
+            id,
+            quantity,
+            cartItemId,
+        }: {
+            id: string;
+            quantity: number;
+            cartItemId?: number;
+        }) => {
             if (!user) {
                 const localCart = localStorage.getItem('guest_cart');
                 const items = localCart ? JSON.parse(localCart) : [];
@@ -113,10 +127,14 @@ export function useUpdateQuantityMutation(user: any) {
         },
         onMutate: async ({ id, quantity }) => {
             await queryClient.cancelQueries({ queryKey });
-            const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(queryKey);
+            const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
+                queryKey
+            );
 
             if (previousCart) {
-                const updatedItems = previousCart.items.map(i => (i.id === id ? { ...i, quantity } : i));
+                const updatedItems = previousCart.items.map(i =>
+                    i.id === id ? { ...i, quantity } : i
+                );
                 const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
                 queryClient.setQueryData(queryKey, { items: updatedItems, total: updatedTotal });
             }
@@ -158,7 +176,9 @@ export function useRemoveItemMutation(user: any) {
         },
         onMutate: async ({ id }) => {
             await queryClient.cancelQueries({ queryKey });
-            const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(queryKey);
+            const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
+                queryKey
+            );
 
             if (previousCart) {
                 const updatedItems = previousCart.items.filter(i => i.id !== id);
