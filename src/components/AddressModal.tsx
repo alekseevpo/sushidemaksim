@@ -421,17 +421,33 @@ export default function AddressModal({
                                                     />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-sm font-black text-gray-900 leading-tight">
-                                                            {selectedZone.name}
-                                                        </span>
-                                                        <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                                                            Zona de entrega
-                                                        </span>
+                                                    <div className="flex items-center justify-between flex-wrap gap-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-sm font-black text-gray-900 leading-tight">
+                                                                {selectedZone.name}
+                                                            </span>
+                                                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                                                                Zona de entrega
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3 text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                                                            <span className="flex items-center gap-1">
+                                                                Envío:{' '}
+                                                                <span className="text-gray-900">
+                                                                    {selectedZone.cost === 0
+                                                                        ? 'Gratis'
+                                                                        : `${selectedZone.cost}€`}
+                                                                </span>
+                                                            </span>
+                                                            <span className="w-1 h-1 bg-gray-200 rounded-full" />
+                                                            <span className="flex items-center gap-1">
+                                                                Mínimo:{' '}
+                                                                <span className="text-gray-900">
+                                                                    {selectedZone.min_order}€
+                                                                </span>
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-xs text-gray-500 font-medium mt-0.5">
-                                                        Envío {selectedZone.cost === 0 ? 'Gratis' : `${selectedZone.cost}€`} • Min. {selectedZone.min_order}€
-                                                    </p>
                                                 </div>
                                             </div>
                                         ) : (
