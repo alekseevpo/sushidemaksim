@@ -146,8 +146,8 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
 
         // RELLENAR DATOS DE ENVÍO (necesario para validación en handleInvite)
         await page.getByTestId('address-input').fill('Calle Falsa 123');
-        await page.getByTestId('house-input').fill('1');
-        await page.getByTestId('apartment-input').fill('2A');
+        await page.getByTestId('house-input-desktop').fill('1');
+        await page.getByTestId('apartment-input-desktop').fill('2A');
         await page.getByTestId('phone-input').fill('600111222');
 
         // Select payment method

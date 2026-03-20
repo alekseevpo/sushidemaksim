@@ -125,9 +125,11 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         renderPage();
 
         // Wait for page to load
-        const streetInput = await screen.findByPlaceholderText(/Nombre de tu calle/i);
-        const houseInput = screen.getByPlaceholderText(/Ej: 15/i);
-        const aptInput = screen.getByPlaceholderText(/Ej: 3ºB/i);
+        await waitFor(() => expect(screen.queryByTestId('house-input-desktop')).toBeInTheDocument());
+
+        const streetInput = screen.getByTestId('address-input');
+        const houseInput = screen.getByTestId('house-input-desktop');
+        const aptInput = screen.getByTestId('apartment-input-desktop');
 
         fireEvent.change(streetInput, { target: { value: 'Calle Principal' } });
         fireEvent.change(houseInput, { target: { value: '1' } });

@@ -95,8 +95,8 @@ test.describe('Critical E2E: Guest Checkout', () => {
 
         // Fill delivery info
         await page.getByTestId('address-input').fill('Calle Playwright');
-        await page.getByTestId('house-input').fill('42');
-        await page.getByTestId('apartment-input').fill('C');
+        await page.getByTestId('house-input-desktop').fill('42');
+        await page.getByTestId('apartment-input-desktop').fill('C');
         await page.getByTestId('phone-input').fill('600123456');
 
         // Select payment method
@@ -120,9 +120,9 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await page.locator('input[type="tel"]').fill('666555444');
 
         // Fill min required fields
-        await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Falla');
-        await page.getByPlaceholder(/Ej: 15/i).fill('1');
-        await page.getByPlaceholder(/Ej: 3ºB/i).fill('1');
+        await page.getByTestId('address-input').fill('Calle Falla');
+        await page.getByTestId('house-input-desktop').fill('1');
+        await page.getByTestId('apartment-input-desktop').fill('1');
 
         // Select payment method
         const paymentBtn2 = page.getByRole('button', { name: /Tarjeta/i });

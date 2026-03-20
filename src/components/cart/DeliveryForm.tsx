@@ -218,7 +218,9 @@ export default function DeliveryForm({
                                                 {selectedZone && (
                                                     <span
                                                         className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full text-white"
-                                                        style={{ backgroundColor: selectedZone.color }}
+                                                        style={{
+                                                            backgroundColor: selectedZone.color,
+                                                        }}
                                                     >
                                                         {selectedZone.name}
                                                     </span>
@@ -246,8 +248,8 @@ export default function DeliveryForm({
                                         <input
                                             value={house}
                                             onChange={e => setHouse(e.target.value)}
-                                            placeholder="Ej: 15"
-                                            data-testid="house-input"
+                                            placeholder="Ej: 20"
+                                            data-testid="house-input-mobile"
                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                         />
                                     </div>
@@ -258,8 +260,8 @@ export default function DeliveryForm({
                                         <input
                                             value={apartment}
                                             onChange={e => setApartment(e.target.value)}
-                                            placeholder="Ej: 3ºB"
-                                            data-testid="apartment-input"
+                                            placeholder="Ej: 1B"
+                                            data-testid="apartment-input-mobile"
                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                         />
                                     </div>
@@ -277,7 +279,7 @@ export default function DeliveryForm({
                                 <input
                                     value={address}
                                     onChange={e => setAddress(e.target.value)}
-                                    placeholder="Nombre de tu calle"
+                                    placeholder="Ej: Calle de Serrano"
                                     data-testid="address-input"
                                     className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                 />
@@ -290,8 +292,8 @@ export default function DeliveryForm({
                                     <input
                                         value={house}
                                         onChange={e => setHouse(e.target.value)}
-                                        placeholder="Ej: 15"
-                                        data-testid="house-input"
+                                        placeholder="Ej: 20"
+                                        data-testid="house-input-desktop"
                                         className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                     />
                                 </div>
@@ -302,8 +304,8 @@ export default function DeliveryForm({
                                     <input
                                         value={apartment}
                                         onChange={e => setApartment(e.target.value)}
-                                        placeholder="Ej: 3ºB"
-                                        data-testid="apartment-input"
+                                        placeholder="Ej: 1B"
+                                        data-testid="apartment-input-desktop"
                                         className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                     />
                                 </div>
