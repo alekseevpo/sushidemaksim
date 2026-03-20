@@ -578,7 +578,7 @@ export default function CartPageSimple() {
                                         <p className="text-[13px] font-black text-gray-900 leading-tight truncate">
                                             {deliveryType === 'pickup'
                                                 ? 'Calle Barrilero, 20, 28007 Madrid'
-                                                : `${address}${house ? `, Portal: ${house}` : ''}`}
+                                                : `${address}${house ? `, Portal: ${house}` : ''}${apartment ? `, Piso: ${apartment}` : ''}`}
                                         </p>
                                     </div>
                                 </div>
