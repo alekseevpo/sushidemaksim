@@ -125,7 +125,9 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         renderPage();
 
         // Wait for page to load
-        await waitFor(() => expect(screen.queryByTestId('house-input-desktop')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(screen.queryByTestId('house-input-desktop')).toBeInTheDocument()
+        );
 
         const streetInput = screen.getByTestId('address-input');
         const houseInput = screen.getByTestId('house-input-desktop');

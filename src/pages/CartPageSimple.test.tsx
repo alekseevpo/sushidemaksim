@@ -100,7 +100,9 @@ describe('CartPageSimple (Integration)', () => {
 
     it('shows minimum order error after filling address', async () => {
         renderCart();
-        await waitFor(() => expect(screen.queryByTestId('house-input-desktop')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(screen.queryByTestId('house-input-desktop')).toBeInTheDocument()
+        );
 
         fireEvent.change(screen.getByTestId('address-input'), {
             target: { value: 'Calle Real' },
