@@ -87,7 +87,7 @@ test.describe('Critical E2E: Guest Checkout', () => {
             await addButton.click({ force: true });
             // Just check it exists and is enabled
             await expect(addButton).toBeVisible();
-            await page.waitForTimeout(300);
+            await page.waitForTimeout(600);
         }
 
         await page.goto('/cart');

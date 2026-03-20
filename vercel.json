@@ -32,5 +32,17 @@
             "path": "/api/cron/check-late-orders",
             "schedule": "0 0 * * *"
         }
-    ]
+    ],
+    "images": {
+        "sizes": [256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+        "domains": [],
+        "minimumCacheTTL": 60,
+        "formats": ["image/avif", "image/webp"],
+        "remotePatterns": [
+            {
+                "protocol": "https",
+                "hostname": "*.supabase.co"
+            }
+        ]
+    }
 }

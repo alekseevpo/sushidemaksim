@@ -74,6 +74,26 @@ export default function BlogPostPage() {
                 description={post.excerpt}
                 image={post.image_url}
                 type="article"
+                schema={{
+                    '@context': 'https://schema.org',
+                    '@type': 'BlogPosting',
+                    headline: post.title,
+                    image: post.image_url,
+                    author: {
+                        '@type': 'Person',
+                        name: post.author || 'Equipo Editorial',
+                    },
+                    publisher: {
+                        '@type': 'Organization',
+                        name: 'Sushi de Maksim',
+                        logo: {
+                            '@type': 'ImageObject',
+                            url: 'https://sushidemaksim.vercel.app/logo.svg',
+                        },
+                    },
+                    datePublished: post.created_at,
+                    description: post.excerpt,
+                }}
             />
             {/* Minimalist Header with Back Button */}
             <div className="absolute top-24 left-4 md:left-8 z-50">

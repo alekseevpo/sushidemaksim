@@ -182,7 +182,7 @@ export default function MenuPageSimple() {
                 n.delete(itemId);
                 return n;
             });
-        }, 1200);
+        }, 500);
     };
 
     const menuSchema = {

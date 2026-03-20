@@ -1,4 +1,5 @@
 import { Sparkles, Plus } from 'lucide-react';
+import { getOptimizedImageUrl } from '../../utils/images';
 
 interface MenuItem {
     id: number;
@@ -61,7 +62,7 @@ export default function CartSuggestions({
                         <div className="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100 group/sug">
                             {!failedImages.has(item.id) ? (
                                 <img
-                                    src={item.image}
+                                    src={getOptimizedImageUrl(item.image, 128)}
                                     alt={item.name}
                                     className="w-full h-full object-cover group-hover/sug:scale-110 transition-transform duration-500"
                                     onError={() =>

@@ -1,4 +1,6 @@
 import { Heart, Share2, Sparkles, Check, Plus } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { getOptimizedImageUrl } from '../../utils/images';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { EMOJI } from '../../constants/menu';
 import { User } from '../../types';
@@ -67,7 +69,7 @@ export default function ProductCard({
             <div className="aspect-[4/3] md:h-56 bg-gray-50 overflow-hidden relative group/img">
                 {!failedImages.has(item.id) ? (
                     <img
-                        src={item.image}
+                        src={getOptimizedImageUrl(item.image, 640)}
                         alt={item.name}
                         loading={isPriority ? 'eager' : 'lazy'}
                         decoding="async"
@@ -121,21 +123,41 @@ export default function ProductCard({
                     <button
                         aria-label="Añadir"
                         data-testid="add-to-cart-button"
+                        disabled={isAdded}
                         onClick={e => onAddToCart(item, e)}
-                        className={`h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl font-black text-sm transition-all duration-300 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 ${
+                        className={`h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
                             isAdded
-                                ? 'bg-green-500 text-white'
-                                : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-200 active:scale-90'
+                                ? 'bg-green-500 text-white cursor-default'
+                                : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-200 active:scale-95'
                         }`}
                     >
-                        {isAdded ? (
-                            <Check size={16} />
-                        ) : (
-                            <>
-                                <Plus size={16} className="md:size-18" />
-                                <span className="hidden md:inline">Añadir</span>
-                            </>
-                        )}
+                        <AnimatePresence mode="wait" initial={false}>
+                            {isAdded ? (
+                                <motion.div
+                                    key="added"
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -15 }}
+                                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                                    className="flex items-center gap-2"
+                                >
+                                    <Check size={16} strokeWidth={3} />
+                                    <span className="hidden md:inline">Añadido</span>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="add"
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -15 }}
+                                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                                    className="flex items-center gap-2"
+                                >
+                                    <Plus size={16} strokeWidth={3} className="md:size-18" />
+                                    <span className="hidden md:inline">Añadir</span>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </button>
                 </div>
             </div>

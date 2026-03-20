@@ -1,24 +1,14 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, ChevronRight, ChevronLeft, Plus } from 'lucide-react';
+import { ArrowRight, Star, ChevronRight, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
 import RatingsBanner from '../components/RatingsBanner';
+import ReviewsSEO from '../components/ReviewsSEO';
 import { useCart } from '../hooks/useCart';
 import { useMenu, useCategories } from '../hooks/queries/useMenu';
-
-interface MenuItem {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-    category: string;
-    is_popular?: boolean;
-    is_chef_choice?: boolean;
-    pieces?: number;
-}
+import ProductCard from '../components/menu/ProductCard';
 
 const Marquee = () => (
     <div className="relative py-4 md:py-6 overflow-hidden bg-gray-950 border-y border-white/5 select-none">
@@ -95,88 +85,9 @@ const CategoryCard = ({
     );
 };
 
-const ProductCard = ({ item, index }: { item: MenuItem; index: number }) => {
-    const { addItem } = useCart();
-    const [isAdded, setIsAdded] = useState(false);
-
-    const handleAdd = (e: React.MouseEvent) => {
-        e.preventDefault();
-        // Convert MenuItem to SushiItem expected by addItem
-        const sushiItem: any = {
-            ...item,
-            id: String(item.id),
-            category: item.category as any,
-        };
-        addItem(sushiItem);
-        setIsAdded(true);
-        setTimeout(() => setIsAdded(false), 2000);
-    };
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
-            className="w-[280px] md:w-[320px] snap-start shrink-0 bg-white rounded-[32px] p-4 shadow-xl shadow-gray-100/50 border border-gray-100 group flex flex-col h-full"
-        >
-            <div className="relative aspect-square mb-4 rounded-[24px] overflow-hidden bg-gray-50">
-                <img
-                    src={item.image || '/placeholder-sushi.png'}
-                    alt={item.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 right-3 flex flex-col gap-2">
-                    {item.is_popular && (
-                        <span className="bg-amber-400 text-amber-950 text-[10px] font-black px-3 py-1 rounded-full shadow-lg flex items-center gap-1.5 uppercase tracking-wider">
-                            <Star size={10} fill="currentColor" />
-                            Popular
-                        </span>
-                    )}
-                </div>
-            </div>
-            <div className="flex-1 px-2">
-                <div className="flex justify-between items-start mb-1">
-                    <h4 className="text-lg font-black text-gray-900 line-clamp-1 flex-1">
-                        {item.name}
-                    </h4>
-                    {item.pieces && (
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 opacity-70 mt-1">
-                            {item.pieces} pzs
-                        </span>
-                    )}
-                </div>
-                <p className="text-gray-500 text-xs font-medium line-clamp-2 mb-4 leading-relaxed">
-                    {item.description}
-                </p>
-            </div>
-            <div className="px-2 pb-2 flex items-center justify-between mt-auto">
-                <span className="text-xl font-black text-gray-900">
-                    {item.price.toFixed(2).replace('.', ',')}€
-                </span>
-                <button
-                    onClick={handleAdd}
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-lg active:scale-90 shrink-0 ${
-                        isAdded
-                            ? 'bg-green-500 text-white translate-y-[-4px]'
-                            : 'bg-gray-900 text-white hover:bg-black'
-                    }`}
-                >
-                    {isAdded ? (
-                        <div className="text-xs font-black">OK</div>
-                    ) : (
-                        <Plus size={20} strokeWidth={2.5} />
-                    )}
-                </button>
-            </div>
-        </motion.div>
-    );
-};
-
 export default function HomePageSimple() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const { addItem } = useCart();
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
@@ -188,6 +99,9 @@ export default function HomePageSimple() {
             });
         }
     };
+
+    const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
+    const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
 
     // Use TanStack Query
     const { data: allItems = [], isLoading: itemsLoading } = useMenu('all', '');
@@ -208,11 +122,34 @@ export default function HomePageSimple() {
         };
     });
 
+    const handleAddToCart = (item: any) => {
+        addItem({
+            ...item,
+            id: String(item.id),
+            category: item.category as any,
+        });
+
+        const itemId = Number(item.id);
+        setAddedItems(prev => new Set(prev).add(itemId));
+        setTimeout(() => {
+            setAddedItems(prev => {
+                const next = new Set(prev);
+                next.delete(itemId);
+                return next;
+            });
+        }, 500);
+
+        // Haptic
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(10);
+        }
+    };
+
     return (
         <div className="overflow-hidden">
             <SEO
-                title="Sushibar en Madrid centro"
-                description="El mejor sushi artesanal de Madrid. Entrega rápida, atún Balfegó y salmón noruego. Pide online ahora y disfruta de la experiencia Maksim en tu casa."
+                title="Sushi a domicilio en Madrid — Sabor que Despierta Sentidos"
+                description="El mejor sushi artesanal de Madrid. Entreга rápida, atún Balfegó y salmón noruego. Pide online el mejor sushi a domicilio y disfruta de la experiencia Maksim en tu casa."
                 keywords="sushi, madrid, delivery, pedido a domicilio, rollo, maksim, atun balfego"
                 schema={{
                     '@context': 'https://schema.org',
@@ -495,7 +432,23 @@ export default function HomePageSimple() {
                             >
                                 <div className="flex gap-4 md:gap-8 flex-nowrap w-max min-w-full">
                                     {popularItems.map((item, index) => (
-                                        <ProductCard key={item.id} item={item} index={index} />
+                                        <div
+                                            key={item.id}
+                                            className="w-[260px] md:w-[320px] snap-start shrink-0"
+                                        >
+                                            <ProductCard
+                                                item={item as any}
+                                                user={null}
+                                                isFavorite={false}
+                                                onToggleFavorite={() => {}}
+                                                onShare={() => {}}
+                                                onAddToCart={item => handleAddToCart(item)}
+                                                isAdded={addedItems.has(Number(item.id))}
+                                                failedImages={failedImages}
+                                                setFailedImages={setFailedImages}
+                                                isPriority={index < 2}
+                                            />
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -528,6 +481,9 @@ export default function HomePageSimple() {
                     )}
                 </div>
             </section>
+
+            {/* Reviews Section */}
+            <ReviewsSEO />
 
             {/* Blog Teaser / SEO Section */}
             <section className="py-24 bg-transparent px-4 border-t border-gray-100">

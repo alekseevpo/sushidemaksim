@@ -91,6 +91,11 @@ export default function ProductGrid({
                                 <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
                             </div>
                         )}
+                        {selectedCategory === 'all' && !search && (cat as any).description && (
+                            <p className="text-gray-500 text-sm md:text-base max-w-2xl mb-8 leading-relaxed font-norma -mt-4">
+                                {(cat as any).description}
+                            </p>
+                        )}
                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
                             {sectionItems.map(item => (
                                 <ProductCard

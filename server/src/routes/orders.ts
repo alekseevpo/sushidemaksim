@@ -50,7 +50,15 @@ router.post(
 
             if (cartError) throw cartError;
             cartItems = dbCartItems || [];
-        } else if (guestItems && Array.isArray(guestItems) && guestItems.length > 0) {
+        }
+
+        // Fallback to guest items if DB cart is empty or the user is not authenticated
+        if (
+            cartItems.length === 0 &&
+            guestItems &&
+            Array.isArray(guestItems) &&
+            guestItems.length > 0
+        ) {
             const itemIds = guestItems.map((i: any) => i.menuItemId);
             const { data: menuData, error: menuErr } = await supabase
                 .from('menu_items')

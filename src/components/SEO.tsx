@@ -42,6 +42,7 @@ export default function SEO({
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
+            <link rel="canonical" href={url} />
 
             {/* Structured Data (Schema.org) */}
             {schema &&

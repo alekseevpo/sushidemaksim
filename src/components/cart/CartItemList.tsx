@@ -1,4 +1,5 @@
 import { Trash2, Minus, Plus, X } from 'lucide-react';
+import { getOptimizedImageUrl } from '../../utils/images';
 import { CartItem } from '../../types';
 
 interface CartItemListProps {
@@ -43,7 +44,7 @@ export default function CartItemList({
                         <div className="w-16 h-16 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img">
                             {!failedImages.has(item.id) ? (
                                 <img
-                                    src={item.image}
+                                    src={getOptimizedImageUrl(item.image, 256)}
                                     alt={`Producto ${item.name}`}
                                     loading="lazy"
                                     className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"

@@ -36,7 +36,9 @@ export function optionalAuthMiddleware(req: AuthRequest, res: Response, next: Ne
         const payload = jwt.verify(token, config.jwtSecret) as { userId: number };
         req.userId = payload.userId;
     } catch {
-        // Just ignore invalid tokens for optional auth
+        return res
+            .status(401)
+            .json({ error: 'Sesión expirada. Por favor, vuelve a iniciar sesión.' });
     }
 
     next();
