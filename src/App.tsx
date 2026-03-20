@@ -10,6 +10,8 @@ import FloatingCart from './components/FloatingCart';
 import SmoothScroll from './components/SmoothScroll';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartSkeleton } from './components/skeletons/CartSkeleton';
 import { MenuSkeleton } from './components/skeletons/MenuSkeleton';
 import { HomeSkeleton } from './components/skeletons/HomeSkeleton';
@@ -82,6 +84,8 @@ function App() {
                 <AuthProvider>
                     <CartProvider>
                         <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
+                            <Analytics />
+                            <SpeedInsights />
                             <SmoothScroll />
                             <CookieConsent />
                             <FloatingCart />

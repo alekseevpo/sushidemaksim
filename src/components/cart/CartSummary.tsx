@@ -82,6 +82,7 @@ export default function CartSummary({
                 onClick={handleOrder}
                 disabled={isOrdering || isInviting || items.length === 0}
                 className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-xl shadow-red-200 flex items-center justify-center gap-2 active:scale-[0.98] font-bold uppercase tracking-wide"
+                data-testid="order-button"
             >
                 {isOrdering ? (
                     'Procesando...'
@@ -103,6 +104,7 @@ export default function CartSummary({
                 }}
                 disabled={isOrdering || isInviting || items.length === 0}
                 className="bg-gray-900 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full text-sm hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] font-bold uppercase tracking-wide"
+                data-testid="invite-button"
             >
                 {isInviting ? 'Generando...' : '¡Que me inviten! 🎁'}
             </button>

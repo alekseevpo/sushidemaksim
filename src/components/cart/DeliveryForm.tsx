@@ -249,6 +249,7 @@ export default function DeliveryForm({
                                     value={address}
                                     onChange={e => setAddress(e.target.value)}
                                     placeholder="Nombre de tu calle"
+                                    data-testid="address-input"
                                     className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                 />
                             </div>
@@ -261,6 +262,7 @@ export default function DeliveryForm({
                                         value={house}
                                         onChange={e => setHouse(e.target.value)}
                                         placeholder="Ej: 15"
+                                        data-testid="house-input"
                                         className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                     />
                                 </div>
@@ -272,6 +274,7 @@ export default function DeliveryForm({
                                         value={apartment}
                                         onChange={e => setApartment(e.target.value)}
                                         placeholder="Ej: 3ºB"
+                                        data-testid="apartment-input"
                                         className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                     />
                                 </div>
@@ -302,6 +305,7 @@ export default function DeliveryForm({
                     <button
                         type="button"
                         onClick={() => setPaymentMethod('card')}
+                        data-testid="payment-method-card"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                             paymentMethod === 'card'
                                 ? 'border-red-600 bg-red-50/50 text-red-600 shadow-sm'
@@ -318,6 +322,7 @@ export default function DeliveryForm({
                     <button
                         type="button"
                         onClick={() => setPaymentMethod('cash')}
+                        data-testid="payment-method-cash"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                             paymentMethod === 'cash'
                                 ? 'border-red-600 bg-red-50/50 text-red-600 shadow-sm'
@@ -378,6 +383,7 @@ export default function DeliveryForm({
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
                         placeholder="+34 600 000 000"
+                        data-testid="phone-input"
                         className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
                     />
                 </div>

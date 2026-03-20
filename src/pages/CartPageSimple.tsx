@@ -147,7 +147,13 @@ export default function CartPageSimple() {
                 ...(beverages.items || []),
                 ...(desserts.items || []),
             ];
-            const filtered = all
+
+            // Remove duplicates by ID
+            const uniqueMap = new Map();
+            all.forEach(item => uniqueMap.set(item.id, item));
+            const unique = Array.from(uniqueMap.values());
+
+            const filtered = unique
                 .filter(item => !items.find(cartItem => cartItem.id === String(item.id)))
                 .slice(0, 8);
             setSuggestions(filtered);
@@ -306,7 +312,7 @@ export default function CartPageSimple() {
                 });
             } else {
                 await navigator.clipboard.writeText(data.shareUrl);
-                showInfo('Enlace copiado! 📋');
+                showInfo('Enlace de invitación generado! 📋');
             }
         } catch (err) {
             showError('Error al generar invitación');
@@ -327,124 +333,122 @@ export default function CartPageSimple() {
     if ((cartLoading && items.length === 0) || (items.length > 0 && isLoadingSettings))
         return <CartSkeleton />;
 
-    if (!cartLoading && items.length === 0) {
-        return (
-            <CartEmptyView
-                popularItems={popularItems}
-                isLoadingPopular={isLoadingPopular}
-                handleAddToCart={handleAddToCart}
-                getCategoryEmoji={getCategoryEmoji}
-                failedImages={failedImages}
-                setFailedImages={setFailedImages}
-                addedItems={addedItems}
-            />
-        );
-    }
-
     return (
         <div className="min-h-screen bg-transparent flex flex-col">
             <SEO title="Tu Cesta" description="Finaliza tu pedido de sushi." />
 
-            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
-                {isStoreClosed && (
-                    <div className="mb-6 animate-in slide-in-from-top duration-500">
-                        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-4">
-                            <div className="p-3 bg-red-100 text-red-600 rounded-xl shrink-0">
-                                <X size={24} strokeWidth={1.5} />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="font-bold text-red-900 leading-tight">
-                                    Tienda Cerrada
-                                </h3>
-                                <p className="text-sm text-red-700">
-                                    {siteSettings?.closed_message ||
-                                        'Nuestra cocina está descansando.'}
-                                </p>
+            {items.length === 0 ? (
+                <CartEmptyView
+                    popularItems={popularItems}
+                    isLoadingPopular={isLoadingPopular}
+                    handleAddToCart={handleAddToCart}
+                    getCategoryEmoji={getCategoryEmoji}
+                    failedImages={failedImages}
+                    setFailedImages={setFailedImages}
+                    addedItems={addedItems}
+                />
+            ) : (
+                <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
+                    {isStoreClosed && (
+                        <div className="mb-6 animate-in slide-in-from-top duration-500">
+                            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-4">
+                                <div className="p-3 bg-red-100 text-red-600 rounded-xl shrink-0">
+                                    <X size={24} strokeWidth={1.5} />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-bold text-red-900 leading-tight">
+                                        Tienda Cerrada
+                                    </h3>
+                                    <p className="text-sm text-red-700">
+                                        {siteSettings?.closed_message ||
+                                            'Nuestra cocina está descansando.'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                    )}
+
+                    <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-8 tracking-tight px-4 md:px-0">
+                        Tu cesta
+                    </h1>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2 flex flex-col gap-6">
+                            <CartItemList
+                                items={items}
+                                updateQuantity={updateQuantity}
+                                removeItem={removeItem}
+                                clearCart={clearCart}
+                                getCategoryEmoji={getCategoryEmoji}
+                                failedImages={failedImages}
+                                setFailedImages={setFailedImages}
+                            />
+
+                            <DeliveryForm
+                                deliveryType={deliveryType}
+                                setDeliveryType={setDeliveryType}
+                                address={address}
+                                setAddress={setAddress}
+                                house={house}
+                                setHouse={setHouse}
+                                apartment={apartment}
+                                setApartment={setApartment}
+                                postalCode={postalCode}
+                                setPostalCode={setPostalCode}
+                                phone={phone}
+                                setPhone={setPhone}
+                                customerNameState={customerNameState}
+                                setCustomerNameState={setCustomerNameState}
+                                guestEmailState={guestEmailState}
+                                setGuestEmailState={setGuestEmailState}
+                                paymentMethod={paymentMethod}
+                                setPaymentMethod={setPaymentMethod}
+                                isScheduled={isScheduled}
+                                setIsScheduled={setIsScheduled}
+                                scheduledDate={scheduledDate}
+                                setScheduledDate={setScheduledDate}
+                                scheduledTime={scheduledTime}
+                                setScheduledTime={setScheduledTime}
+                                noCall={noCall}
+                                setNoCall={setNoCall}
+                                noBuzzer={noBuzzer}
+                                setNoBuzzer={setNoBuzzer}
+                                customNote={customNote}
+                                setCustomNote={setCustomNote}
+                                selectedZone={selectedZone}
+                                setIsAddressModalOpen={setIsAddressModalOpen}
+                                user={user}
+                                isAuthenticated={isAuthenticated}
+                                todayStr={todayStr}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-8">
+                            <CartSuggestions
+                                suggestions={suggestions}
+                                isLoadingSuggestions={isLoadingSuggestions}
+                                handleAddToCart={handleAddToCart}
+                                getCategoryEmoji={getCategoryEmoji}
+                                failedImages={failedImages}
+                                setFailedImages={setFailedImages}
+                            />
+                            <CartSummary
+                                items={items}
+                                total={total}
+                                deliveryType={deliveryType}
+                                deliveryCost={deliveryCost}
+                                finalTotal={finalTotal}
+                                isStoreClosed={isStoreClosed}
+                                isOrdering={isOrdering}
+                                isInviting={isInviting}
+                                isAuthenticated={isAuthenticated}
+                                handleOrder={handleOrder}
+                                handleInvite={handleInvite}
+                            />
+                        </div>
                     </div>
-                )}
-
-                <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-8 tracking-tight px-4 md:px-0">
-                    Tu cesta
-                </h1>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 flex flex-col gap-6">
-                        <CartItemList
-                            items={items}
-                            updateQuantity={updateQuantity}
-                            removeItem={removeItem}
-                            clearCart={clearCart}
-                            getCategoryEmoji={getCategoryEmoji}
-                            failedImages={failedImages}
-                            setFailedImages={setFailedImages}
-                        />
-
-                        <DeliveryForm
-                            deliveryType={deliveryType}
-                            setDeliveryType={setDeliveryType}
-                            address={address}
-                            setAddress={setAddress}
-                            house={house}
-                            setHouse={setHouse}
-                            apartment={apartment}
-                            setApartment={setApartment}
-                            postalCode={postalCode}
-                            setPostalCode={setPostalCode}
-                            phone={phone}
-                            setPhone={setPhone}
-                            customerNameState={customerNameState}
-                            setCustomerNameState={setCustomerNameState}
-                            guestEmailState={guestEmailState}
-                            setGuestEmailState={setGuestEmailState}
-                            paymentMethod={paymentMethod}
-                            setPaymentMethod={setPaymentMethod}
-                            isScheduled={isScheduled}
-                            setIsScheduled={setIsScheduled}
-                            scheduledDate={scheduledDate}
-                            setScheduledDate={setScheduledDate}
-                            scheduledTime={scheduledTime}
-                            setScheduledTime={setScheduledTime}
-                            noCall={noCall}
-                            setNoCall={setNoCall}
-                            noBuzzer={noBuzzer}
-                            setNoBuzzer={setNoBuzzer}
-                            customNote={customNote}
-                            setCustomNote={setCustomNote}
-                            selectedZone={selectedZone}
-                            setIsAddressModalOpen={setIsAddressModalOpen}
-                            user={user}
-                            isAuthenticated={isAuthenticated}
-                            todayStr={todayStr}
-                        />
-                    </div>
-
-                    <div className="flex flex-col gap-8">
-                        <CartSuggestions
-                            suggestions={suggestions}
-                            isLoadingSuggestions={isLoadingSuggestions}
-                            handleAddToCart={handleAddToCart}
-                            getCategoryEmoji={getCategoryEmoji}
-                            failedImages={failedImages}
-                            setFailedImages={setFailedImages}
-                        />
-                        <CartSummary
-                            items={items}
-                            total={total}
-                            deliveryType={deliveryType}
-                            deliveryCost={deliveryCost}
-                            finalTotal={finalTotal}
-                            isStoreClosed={isStoreClosed}
-                            isOrdering={isOrdering}
-                            isInviting={isInviting}
-                            isAuthenticated={isAuthenticated}
-                            handleOrder={handleOrder}
-                            handleInvite={handleInvite}
-                        />
-                    </div>
-                </div>
-            </main>
+                </main>
+            )}
 
             <AddressModal
                 isOpen={isAddressModalOpen}

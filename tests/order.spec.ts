@@ -94,23 +94,20 @@ test.describe('Critical E2E: Guest Checkout', () => {
         await expect(page.locator('h2', { hasText: /Resumen/i })).toBeVisible();
 
         // Fill delivery info
-        await page.getByPlaceholder(/Nombre de tu calle/i).fill('Calle Playwright');
-        await page.getByPlaceholder(/Ej: 15/i).fill('42');
-        await page.getByPlaceholder(/Ej: 3ºB/i).fill('C');
-        await page.locator('input[type="tel"]').fill('600123456');
+        await page.getByTestId('address-input').fill('Calle Playwright');
+        await page.getByTestId('house-input').fill('42');
+        await page.getByTestId('apartment-input').fill('C');
+        await page.getByTestId('phone-input').fill('600123456');
 
         // Select payment method
         const paymentBtn1 = page.getByRole('button', { name: /Tarjeta/i });
         await paymentBtn1.scrollIntoViewIfNeeded();
         await paymentBtn1.click({ force: true });
 
-        await page
-            .getByRole('button', { name: /Realizar pedido/i })
-            .first()
-            .click();
+        await page.getByTestId('order-button').click();
 
         // Success check
-        await expect(page.locator('h1', { hasText: /¡Pedido exitoso!/i })).toBeVisible({
+        await expect(page.getByTestId('success-title')).toBeVisible({
             timeout: 10000,
         });
     });

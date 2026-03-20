@@ -49,7 +49,10 @@ export default function OrderSuccessModal({
                         <CheckCircle size={32} strokeWidth={1.5} className="text-green-600" />
                     </div>
 
-                    <h1 className="text-xl font-black mb-1 text-gray-900 tracking-tight">
+                    <h1
+                        className="text-xl font-black mb-1 text-gray-900 tracking-tight"
+                        data-testid="success-title"
+                    >
                         ¡Pedido exitoso!
                     </h1>
                     <p className="text-gray-500 text-[13px] font-medium mb-3 leading-relaxed px-2">
