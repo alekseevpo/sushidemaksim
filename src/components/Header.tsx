@@ -127,7 +127,7 @@ export default function Header() {
                         <Link
                             to="/"
                             onClick={() => setShowMobileMenu(false)}
-                            className="flex items-center no-underline gap-2.5 group py-1"
+                            className="flex items-center no-underline gap-0 group py-1"
                         >
                             <div className="bg-red-600 px-2.5 h-10 min-w-[60px] flex items-center justify-center rounded-xl group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-red-900/20 shrink-0">
                                 <img
@@ -137,18 +137,6 @@ export default function Header() {
                                     height={24}
                                     className="h-6 w-[76px] brightness-0 invert object-contain"
                                 />
-                            </div>
-                            <div className="flex flex-col leading-none -space-y-0.5">
-                                <span
-                                    className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 ${isScrolled || !isHome ? 'text-red-500' : 'text-red-400'}`}
-                                >
-                                    Sushi de
-                                </span>
-                                <span
-                                    className={`font-black text-xl tracking-tighter transition-colors duration-300 ${isScrolled || !isHome ? 'text-gray-900' : 'text-white'}`}
-                                >
-                                    MAKSIM<span className="text-red-600">.</span>
-                                </span>
                             </div>
                         </Link>
 

@@ -61,7 +61,7 @@ export default function Footer() {
                     <Link
                         to="/"
                         onClick={() => (window as any).lenis?.scrollTo(0)}
-                        className="flex items-center justify-center md:justify-start gap-4 md:gap-6 mb-8 no-underline group cursor-pointer"
+                        className="flex items-center justify-center md:justify-start gap-0 mb-8 no-underline group cursor-pointer"
                     >
                         <div className="transform group-hover:rotate-12 transition-transform duration-500 shrink-0">
                             <img
@@ -69,16 +69,8 @@ export default function Footer() {
                                 alt="Sushi de Maksim"
                                 width={120}
                                 height={40}
-                                className="h-10 md:h-14 w-auto brightness-0 invert object-contain"
+                                className="h-12 md:h-16 w-auto brightness-0 invert object-contain"
                             />
-                        </div>
-                        <div className="flex flex-col leading-none -space-y-1 md:-space-y-2">
-                            <span className="text-[11px] md:text-sm font-black uppercase tracking-[0.25em] text-red-500">
-                                Sushi de
-                            </span>
-                            <span className="font-black text-3xl md:text-6xl tracking-tighter text-white">
-                                MAKSIM<span className="text-red-600">.</span>
-                            </span>
                         </div>
                     </Link>
                     <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed font-medium text-gray-400/80">

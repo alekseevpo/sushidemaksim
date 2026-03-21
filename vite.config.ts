@@ -10,6 +10,7 @@ export default defineConfig({
             includeAssets: [
                 'favicon.ico',
                 'logo.svg',
+                'logo-icon.svg',
                 'pwa-192.png',
                 'pwa-512.png',
                 'maskable-icon.png',

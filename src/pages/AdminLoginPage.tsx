@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export default function AdminLoginPage() {
@@ -41,15 +41,19 @@ export default function AdminLoginPage() {
         <div className="flex-1 bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                        <ShieldCheck size={32} strokeWidth={1.5} className="text-red-600" />
+                    <div className="bg-red-600 px-6 py-4 rounded-3xl shadow-2xl shadow-red-900/20 group hover:rotate-3 transition-all duration-500">
+                        <img
+                            src="/logo.svg"
+                            alt="Sushi de Maksim"
+                            className="h-10 w-auto brightness-0 invert"
+                        />
                     </div>
                 </div>
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Admin Login
+                <h2 className="mt-8 text-center text-3xl font-black text-gray-900 tracking-tighter uppercase">
+                    Admin <span className="text-red-600">Access</span>
                 </h2>
-                <p className="mt-2 text-center text-sm text-gray-600">
-                    Acceso exclusivo para el personal de Sushi de Maksim
+                <p className="mt-2 text-center text-sm text-gray-400 font-medium">
+                    Panel de Gestión | Sushi de Maksim
                 </p>
             </div>
 
