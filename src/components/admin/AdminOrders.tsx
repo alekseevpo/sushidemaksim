@@ -517,30 +517,43 @@ export default function AdminOrders({
 
                                                 const parts = notes.split(' | ');
                                                 parts.forEach((part: string) => {
-                                                    if (part.includes('[MÉTODO DE PAGO:')) {
+                                                    if (
+                                                        part.includes('[MÉTODO DE PAGO:') ||
+                                                        part.includes('[PAGO:')
+                                                    ) {
                                                         paymentMethod = part
                                                             .replace('[MÉTODO DE PAGO: ', '')
+                                                            .replace('[MÉTODO DE PAGO:', '')
+                                                            .replace('[PAGO: ', '')
+                                                            .replace('[PAGO:', '')
                                                             .replace(']', '');
                                                     } else if (part.includes('[TIPO:')) {
                                                         deliveryType = part
                                                             .replace('[TIPO: ', '')
+                                                            .replace('[TIPO:', '')
                                                             .replace(']', '');
                                                     } else if (
-                                                        part.includes('[ENTREGA PROGRAMADA:')
+                                                        part.includes('[ENTREGA PROGRAMADA:') ||
+                                                        part.includes('[PROGRAMADO:')
                                                     ) {
                                                         scheduled = part
                                                             .replace('[ENTREGA PROGRAMADA: ', '')
+                                                            .replace('[ENTREGA PROGRAMADA:', '')
+                                                            .replace('[PROGRAMADO: ', '')
+                                                            .replace('[PROGRAMADO:', '')
                                                             .replace(']', '');
                                                     } else if (
                                                         part.includes(
                                                             '[NO LLAMAR PARA CONFIRMACIÓN]'
-                                                        )
+                                                        ) ||
+                                                        part.includes('[SIN CONFIRMACIÓN LLAMADA]')
                                                     ) {
                                                         noCall = true;
                                                     } else if (
                                                         part.includes(
                                                             '[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]'
-                                                        )
+                                                        ) ||
+                                                        part.includes('[NO LLAMAR TIMBRE]')
                                                     ) {
                                                         noBuzzer = true;
                                                     } else {
@@ -570,13 +583,14 @@ export default function AdminOrders({
                                                             )}
                                                             {paymentMethod && (
                                                                 <div
-                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${paymentMethod === 'TARJETA' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}
+                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${paymentMethod.includes('TARJETA') ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}
                                                                 >
-                                                                    {paymentMethod === 'TARJETA' ? (
-                                                                        <Wallet size={12} />
-                                                                    ) : (
-                                                                        <Wallet size={12} />
-                                                                    )}
+                                                                    <Wallet size={12} />
+                                                                    {paymentMethod.includes(
+                                                                        'TARJETA'
+                                                                    )
+                                                                        ? '💳 '
+                                                                        : '💵 '}
                                                                     {paymentMethod}
                                                                 </div>
                                                             )}
