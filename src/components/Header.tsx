@@ -142,7 +142,7 @@ export default function Header() {
                                         h-10 md:h-8 w-auto object-contain transition-all duration-500
                                         ${
                                             isScrolled || !isHome
-                                                ? '[filter:invert(16%)_sepia(89%)_saturate(6011%)_hue-rotate(356deg)_brightness(93%)_contrast(118%)]'
+                                                ? 'brightness-0'
                                                 : 'brightness-0 invert'
                                         }
                                     `}
