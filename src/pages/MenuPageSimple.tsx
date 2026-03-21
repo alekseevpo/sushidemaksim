@@ -217,7 +217,7 @@ export default function MenuPageSimple() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent px-2 md:px-4 py-4 md:py-8">
+        <div className="min-h-screen bg-transparent px-2 md:px-4 pb-4 md:pb-8 lg:pt-0 pt-4">
             <SEO
                 title="Menú y Carta de Sushi"
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
@@ -231,7 +231,7 @@ export default function MenuPageSimple() {
                     setSelectedCategory={setSelectedCategory}
                 />
 
-                <div className="flex-1 min-w-0" id="menu-content">
+                <div className="flex-1 min-w-0 md:pl-8 pt-4 md:pt-8" id="menu-content">
                     {/* Spacer for fixed category bar on mobile */}
                     <div className="h-12 lg:hidden" />
                     {/* Header Section with Search */}

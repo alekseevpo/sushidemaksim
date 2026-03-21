@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { CATEGORIES } from '../../constants/menu';
 
@@ -53,51 +52,34 @@ export default function MenuCategoryBar({
     }
 
     return (
-        <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-[96px] self-start z-30">
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                <h2 className="text-lg font-black text-gray-900 mb-6 px-2">Categorías</h2>
-                <nav className="flex flex-col gap-1">
+        <aside className="hidden lg:block w-[120px] flex-shrink-0 sticky top-[64px] self-start z-30">
+            <div className="bg-red-600 min-h-[calc(100vh-64px)] py-6 px-1 flex flex-col items-stretch shadow-xl">
+                <nav className="flex flex-col gap-2">
                     <button
                         onClick={() => setSelectedCategory('all')}
-                        className={`relative w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
+                        className={`relative w-full text-center py-4 rounded-xl font-black transition-all duration-200 flex flex-col items-center justify-center gap-1 border-none cursor-pointer group ${
                             selectedCategory === 'all'
-                                ? 'text-red-600'
-                                : 'text-gray-500 hover:text-gray-900'
+                                ? 'bg-white text-red-600 shadow-lg'
+                                : 'text-white/80 hover:text-white hover:bg-white/10'
                         }`}
                     >
-                        <Sparkles size={20} strokeWidth={1.5} className="relative z-10" />
-                        <span className="text-sm relative z-10 font-bold">Todos</span>
-                        {selectedCategory === 'all' && (
-                            <motion.div
-                                layoutId="category-bg"
-                                className="absolute inset-0 bg-red-50 rounded-2xl"
-                                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                            />
-                        )}
+                        <Sparkles size={24} strokeWidth={2} className="relative z-10" />
+                        <span className="text-[10px] uppercase tracking-wider relative z-10 font-black">Todos</span>
                     </button>
                     {CATEGORIES.map(cat => (
                         <button
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
-                            className={`relative w-full text-left px-4 py-3 rounded-2xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer ${
+                            className={`relative w-full text-center py-4 rounded-xl font-black transition-all duration-200 flex flex-col items-center justify-center gap-1 border-none cursor-pointer group ${
                                 selectedCategory === cat.id
-                                    ? 'text-red-600'
-                                    : 'text-gray-500 hover:text-gray-900'
+                                    ? 'bg-white text-red-600 shadow-lg'
+                                    : 'text-white/80 hover:text-white hover:bg-white/10'
                             }`}
                         >
-                            <cat.icon size={20} strokeWidth={1.5} className="relative z-10" />
-                            <span className="text-sm relative z-10 font-bold">{cat.name}</span>
-                            {selectedCategory === cat.id && (
-                                <motion.div
-                                    layoutId="category-bg"
-                                    className="absolute inset-0 bg-red-50 rounded-2xl"
-                                    transition={{
-                                        type: 'spring',
-                                        bounce: 0.2,
-                                        duration: 0.6,
-                                    }}
-                                />
-                            )}
+                            <cat.icon size={24} strokeWidth={2} className="relative z-10" />
+                            <span className="text-[10px] uppercase tracking-wider relative z-10 font-black leading-tight px-1">
+                                {cat.name}
+                            </span>
                         </button>
                     ))}
                 </nav>
