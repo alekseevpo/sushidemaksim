@@ -411,42 +411,50 @@ export default function AddressModal({
                                     </div>
 
                                     {/* Zone Status */}
-                                    <div className="pt-1">
+                                    <div className="pt-2">
                                         {selectedZone ? (
-                                            <div className="flex items-center gap-3 py-2 px-1 animate-in slide-in-from-bottom-2 duration-300">
-                                                <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center shrink-0">
-                                                    <CheckCircle
-                                                        className="text-green-600"
-                                                        size={18}
-                                                    />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center justify-between flex-wrap gap-2">
+                                            <div className="p-4 bg-green-50/50 rounded-3xl border border-green-100/50 animate-in slide-in-from-bottom-3 duration-500">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0">
+                                                        <CheckCircle
+                                                            className="text-green-600"
+                                                            size={22}
+                                                            strokeWidth={2.5}
+                                                        />
+                                                    </div>
+                                                    <div>
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-sm font-black text-gray-900 leading-tight">
+                                                            <h3 className="text-xl font-black text-gray-900 leading-tight">
                                                                 {selectedZone.name}
-                                                            </span>
-                                                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                                                                Zona de entrega
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-3 text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                                                            <span className="flex items-center gap-1">
-                                                                Envío:{' '}
-                                                                <span className="text-gray-900">
-                                                                    {selectedZone.cost === 0
-                                                                        ? 'Gratis'
-                                                                        : `${selectedZone.cost}€`}
-                                                                </span>
-                                                            </span>
-                                                            <span className="w-1 h-1 bg-gray-200 rounded-full" />
-                                                            <span className="flex items-center gap-1">
-                                                                Mínimo:{' '}
-                                                                <span className="text-gray-900">
-                                                                    {selectedZone.min_order}€
-                                                                </span>
+                                                            </h3>
+                                                            <span className="text-[10px] font-black text-green-700 bg-green-100 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                                                DISPONIBLE
                                                             </span>
                                                         </div>
+                                                        <p className="text-[11px] font-bold text-green-600/80 uppercase tracking-widest mt-0.5">
+                                                            Zona de entrega detectada
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
+                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
+                                                            Envío
+                                                        </p>
+                                                        <p className="text-lg font-black text-gray-900 leading-none">
+                                                            {selectedZone.cost === 0
+                                                                ? 'GRATIS'
+                                                                : `${selectedZone.cost}€`}
+                                                        </p>
+                                                    </div>
+                                                    <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
+                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
+                                                            Pedido mín.
+                                                        </p>
+                                                        <p className="text-lg font-black text-gray-900 leading-none">
+                                                            {selectedZone.min_order}€
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
