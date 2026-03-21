@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { CheckCircle, XCircle, Home, User } from 'lucide-react';
 import { api } from '../utils/api';
@@ -11,18 +11,16 @@ export default function VerifyEmailChangePage() {
     const navigate = useNavigate();
     const token = searchParams.get('token');
 
+    const hasVerified = useRef(false);
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [message, setMessage] = useState('');
     const { success: showSuccess, error: showError } = useToast();
 
     useEffect(() => {
-        if (!token) {
-            setStatus('error');
-            setMessage('El enlace de verificación no es válido o está incompleto.');
-            return;
-        }
+        if (!token || hasVerified.current) return;
 
         const verifyEmailChange = async () => {
+            hasVerified.current = true;
             try {
                 const response = await api.get(`/auth/verify-email-change/${token}`);
                 setStatus('success');
