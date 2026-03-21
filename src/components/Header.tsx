@@ -121,8 +121,7 @@ export default function Header() {
             >
                 <StoreStatusBanner />
                 <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex items-center justify-between h-16">
-                        {/* Logo */}
+                    <div className="flex items-center justify-between h-16">                        {/* Logo */}
                         <Link
                             to="/"
                             onClick={() => setShowMobileMenu(false)}
@@ -131,7 +130,7 @@ export default function Header() {
                             <div
                                 className={`
                                     transition-all duration-500 shrink-0 flex items-center justify-center
-                                    md:bg-red-600 md:px-2.5 md:h-10 md:min-w-[60px] md:rounded-xl md:shadow-lg md:shadow-red-900/20 md:group-hover:rotate-12
+                                    md:bg-red-600 md:px-2.5 md:h-10 md:min-w-[76px] md:rounded-xl md:shadow-lg md:shadow-red-900/20 md:group-hover:rotate-12
                                     bg-transparent h-12 w-auto
                                 `}
                             >
@@ -139,16 +138,17 @@ export default function Header() {
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
                                     className={`
-                                        h-10 md:h-8 w-auto object-contain transition-all duration-500
+                                        h-10 md:h-6 w-auto object-contain transition-all duration-500
                                         ${
                                             isScrolled || !isHome
-                                                ? 'brightness-0'
+                                                ? 'brightness-0 md:invert'
                                                 : 'brightness-0 invert'
                                         }
                                     `}
                                 />
                             </div>
                         </Link>
+
 
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex items-center gap-2">
