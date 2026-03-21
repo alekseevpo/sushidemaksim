@@ -552,12 +552,12 @@ export default function LoginModal({
 
                 <div className="p-6 md:p-8">
                     <div className="text-center mb-6 pt-2">
-                        <div className="inline-flex items-center justify-center w-12 h-12 bg-red-50 rounded-2xl mb-4 text-red-600 shadow-sm border-2 border-white">
-                            {mode === 'login' && <User size={24} strokeWidth={1.5} />}
-                            {mode === 'register' && <Mail size={24} strokeWidth={1.5} />}
-                            {mode === 'forgot' && <Mail size={24} strokeWidth={1.5} />}
-                            {mode === 'verify-sent' && <Mail size={24} strokeWidth={1.5} />}
-                            {mode === 'reset-password' && <KeyRound size={24} strokeWidth={1.5} />}
+                        <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-50 rounded-2xl mb-4 shadow-sm border-2 border-white overflow-hidden p-2">
+                            <img
+                                src="/logo.svg"
+                                alt="Sushi de Maksim"
+                                className="w-full h-full object-contain brightness-0"
+                            />
                         </div>
                         <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-tight">
                             {mode === 'login' && '¡Hola de nuevo!'}
