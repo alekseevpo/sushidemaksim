@@ -141,7 +141,7 @@ export default function Header() {
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
                                     className={`
-                                        h-14 md:h-14 w-auto object-contain transition-all duration-500
+                                        h-10 md:h-14 w-auto object-contain transition-all duration-500
                                         ${
                                             isScrolled || !isHome
                                                 ? 'brightness-0 md:invert'

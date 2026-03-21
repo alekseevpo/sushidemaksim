@@ -20,7 +20,7 @@ export default function MenuSearch({
     const categoryName = CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Todos';
 
     return (
-        <header className="mb-0 md:mb-12 relative">
+        <header className="mb-4 md:mb-12 relative">
             <AnimatePresence mode="wait">
                 {!isSearchExpanded ? (
                     <motion.div
@@ -31,10 +31,10 @@ export default function MenuSearch({
                         className="md:hidden flex items-center justify-between w-full h-16 pt-2"
                     >
                         <div className="flex items-baseline gap-2">
-                            <h1 className="text-3xl text-gray-900 font-black tracking-tighter mb-0">
+                            <h1 className="text-2xl text-gray-900 font-black tracking-tighter mb-0">
                                 Nuestro Menú
                             </h1>
-                            <span className="text-red-600 font-bold text-lg italic whitespace-nowrap">
+                            <span className="text-red-600 font-bold text-base italic whitespace-nowrap">
                                 {categoryName}
                             </span>
                         </div>
