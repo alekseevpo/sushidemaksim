@@ -130,7 +130,17 @@ export default function AdminBlog() {
                     <input
                         required
                         value={form.title}
-                        onChange={e => setForm({ ...form, title: e.target.value })}
+                        onChange={e => {
+                            const newTitle = e.target.value;
+                            const newSlug = newTitle
+                                .toLowerCase()
+                                .normalize('NFD')
+                                .replace(/[\u0300-\u036f]/g, '')
+                                .replace(/[^a-z0-0\s-]/g, '')
+                                .trim()
+                                .replace(/\s+/g, '-');
+                            setForm({ ...form, title: newTitle, slug: newSlug });
+                        }}
                         className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                     />
                 </div>
@@ -146,9 +156,20 @@ export default function AdminBlog() {
                     />
                 </div>
                 <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Extracto corto
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-gray-500">Extracto corto</label>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const excerpt =
+                                    form.content.slice(0, 150).replace(/[#*`]/g, '').trim() + '...';
+                                setForm({ ...form, excerpt });
+                            }}
+                            className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-800 transition"
+                        >
+                            Auto-generar
+                        </button>
+                    </div>
                     <textarea
                         required
                         value={form.excerpt}
@@ -157,9 +178,18 @@ export default function AdminBlog() {
                     />
                 </div>
                 <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Contenido HTML / Texto
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-gray-500">
+                            Contenido HTML / Texto
+                        </label>
+                        <button
+                            type="button"
+                            className="text-[10px] font-black uppercase text-red-600 opacity-50 cursor-not-allowed"
+                            title="AI Generator (Próximamente)"
+                        >
+                            AI Generate ✨
+                        </button>
+                    </div>
                     <textarea
                         required
                         value={form.content}
@@ -200,9 +230,22 @@ export default function AdminBlog() {
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Tiempo de lectura (ej: 5 min)
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-gray-500">
+                            Tiempo de lectura (ej: 5 min)
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const words = form.content.trim().split(/\s+/).length;
+                                const time = Math.ceil(words / 200);
+                                setForm({ ...form, read_time: `${time} min` });
+                            }}
+                            className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-800 transition"
+                        >
+                            Calcular
+                        </button>
+                    </div>
                     <input
                         required
                         value={form.read_time}
