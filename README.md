@@ -19,6 +19,7 @@ Una plataforma premium de e-commerce gastronómico diseñada para ofrecer la mej
 - **Menú Interactivo Premium**: Navegación fluida por categorías (Nigiri, Rolls, Combos) con diseño "Sticky" para facilitar la selección.
 - **Sistema de Favoritos**: Los usuarios registrados pueden guardar sus platos preferidos para pedirlos rápidamente después.
 - **Gestión de Carrito en Tiempo Real**: Carrito flotante interactivo con cálculos instantáneos de envío y subtotales.
+- **Extras & Quantity Control**: Selección inteligente de complementos (palillos, wasabi, jengibre) con selector de cantidad integrado en el carrito y menú.
 - **Blog & Recetas**: Un espacio dedicado a la cultura del sushi, noticias y promociones especiales.
 - **Totalmente Responsivo**: Optimización extrema para móviles y tablets, con botones de acción rápida y navegación táctil intuitiva.
 
@@ -118,6 +119,7 @@ A premium gastronomic e-commerce platform designed to offer the best user experi
 - **Premium Interactive Menu**: Fluid navigation by categories with a "Sticky" design.
 - **Advanced Admin Dashboard**: Real-time sales analytics, order management, and stock control.
 - **Authentication & Favorites**: Secure system for users to save their preferred items.
+- **Extras & Quantity Control**: Smart selection of add-ons (chopsticks, wasabi, ginger) with integrated quantity selectors in the cart and menu.
 - **SEO Optimized**: Dynamic metadata and semantic HTML for better search engine ranking.
 - **Tech Stack**: React 18, TypeScript, Tailwind CSS, Framer Motion, Express, PostgreSQL.
 
