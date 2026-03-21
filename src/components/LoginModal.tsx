@@ -31,15 +31,15 @@ const LoginForm = memo(
         return (
             <form
                 onSubmit={handleSubmit}
-                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
                 <div className="space-y-1">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                         Email
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Mail size={18} strokeWidth={1.5} />
+                            <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
                             type="email"
@@ -47,7 +47,7 @@ const LoginForm = memo(
                             required
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            className="w-full pl-11 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
@@ -55,20 +55,20 @@ const LoginForm = memo(
 
                 <div className="space-y-1">
                     <div className="flex justify-between items-center ml-1">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                             Contraseña
                         </label>
                         <button
                             type="button"
                             onClick={onSwitchForgot}
-                            className="text-xs font-bold text-red-600 hover:text-red-700 transition"
+                            className="text-[10px] font-bold text-red-600 hover:text-red-700 transition"
                         >
-                            ¿Olvidaste tu contraseña?
+                            ¿Olvidaste?
                         </button>
                     </div>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} strokeWidth={1.5} />
+                            <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -76,18 +76,18 @@ const LoginForm = memo(
                             required
                             value={password}
                             onChange={e => setPassword(e.target.value)}
-                            className="w-full pl-11 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Tu contraseña"
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
+                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition bg-transparent border-none p-0"
                         >
                             {showPassword ? (
-                                <EyeOff size={18} strokeWidth={1.5} />
+                                <EyeOff size={16} strokeWidth={1.5} />
                             ) : (
-                                <Eye size={18} strokeWidth={1.5} />
+                                <Eye size={16} strokeWidth={1.5} />
                             )}
                         </button>
                     </div>
@@ -96,18 +96,18 @@ const LoginForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2"
+                    className="w-full py-3.5 bg-red-600 text-white rounded-2xl font-black text-xs hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
                 >
-                    {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+                    {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
                 </button>
 
-                <div className="pt-4 text-center">
-                    <p className="text-sm font-medium text-gray-500">
+                <div className="pt-2 text-center">
+                    <p className="text-xs font-medium text-gray-500">
                         ¿No tienes cuenta?{' '}
                         <button
                             type="button"
                             onClick={onSwitchRegister}
-                            className="text-red-600 font-black hover:underline"
+                            className="text-red-600 font-black hover:underline bg-transparent border-none p-0 cursor-pointer"
                         >
                             Regístrate
                         </button>
@@ -133,40 +133,40 @@ const RegisterForm = memo(
         return (
             <form
                 onSubmit={onRegister}
-                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
-                <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-3">
                     <div className="space-y-1">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                             Nombre completo
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                                <User size={18} strokeWidth={1.5} />
+                                <User size={16} strokeWidth={1.5} />
                             </div>
                             <input
                                 type="text"
                                 name="name"
                                 required
-                                className="w-full pl-11 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="Tu nombre completo"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                             Teléfono
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                                <Phone size={18} strokeWidth={1.5} />
+                                <Phone size={16} strokeWidth={1.5} />
                             </div>
                             <input
                                 type="tel"
                                 name="phone"
                                 required
-                                className="w-full pl-11 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="+34 600 000 000"
                             />
                         </div>
@@ -174,47 +174,47 @@ const RegisterForm = memo(
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                         Email
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Mail size={18} strokeWidth={1.5} />
+                            <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
                             type="email"
                             name="email"
                             required
-                            className="w-full pl-11 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                         Contraseña
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} strokeWidth={1.5} />
+                            <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            className="w-full pl-11 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Mínimo 6 caracteres"
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
+                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition bg-transparent border-none p-0"
                         >
                             {showPassword ? (
-                                <EyeOff size={18} strokeWidth={1.5} />
+                                <EyeOff size={16} strokeWidth={1.5} />
                             ) : (
-                                <Eye size={18} strokeWidth={1.5} />
+                                <Eye size={16} strokeWidth={1.5} />
                             )}
                         </button>
                     </div>
@@ -223,18 +223,18 @@ const RegisterForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2"
+                    className="w-full py-3.5 bg-red-600 text-white rounded-2xl font-black text-xs hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
                 >
-                    {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
+                    {isLoading ? 'Creando...' : 'Crear cuenta'}
                 </button>
 
-                <div className="pt-4 text-center">
-                    <p className="text-sm font-medium text-gray-500">
+                <div className="pt-2 text-center">
+                    <p className="text-xs font-medium text-gray-500">
                         ¿Ya tienes cuenta?{' '}
                         <button
                             type="button"
                             onClick={onSwitchLogin}
-                            className="text-red-600 font-black hover:underline"
+                            className="text-red-600 font-black hover:underline bg-transparent border-none p-0 cursor-pointer"
                         >
                             Inicia sesión
                         </button>
@@ -261,24 +261,23 @@ const ForgotPasswordForm = memo(
                 className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
                 <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl mb-2">
-                    <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                        Introduce tu email y te enviaremos las instrucciones para restablecer tu
-                        contraseña.
+                    <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                        Introduce tu email и te enviaremos las instrucciones.
                     </p>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                         Email
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Mail size={18} strokeWidth={1.5} />
+                            <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
                             type="email"
                             name="email"
                             required
-                            className="w-full pl-11 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
@@ -287,17 +286,17 @@ const ForgotPasswordForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-2 mb-2"
+                    className="w-full py-3.5 bg-gray-900 text-white rounded-2xl font-black text-xs hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-2 mb-2 h-12"
                 >
-                    {isLoading ? 'Enviando email...' : 'Enviar instrucciones'}
+                    {isLoading ? 'Enviando...' : 'Enviar instrucciones'}
                 </button>
 
                 <button
                     type="button"
                     onClick={onBack}
-                    className="w-full py-4 bg-gray-50 text-gray-600 rounded-2xl font-black text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-gray-50 text-gray-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
                 >
-                    <ArrowLeft size={18} strokeWidth={1.5} /> Volver al login
+                    <ArrowLeft size={16} strokeWidth={1.5} /> Volver
                 </button>
             </form>
         );
@@ -319,59 +318,59 @@ const ResetPasswordForm = memo(
         return (
             <form
                 onSubmit={onReset}
-                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
                 <input type="hidden" name="token" value={token} />
-                <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl mb-2 flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-                        <KeyRound size={20} strokeWidth={1.5} />
+                <div className="bg-blue-50 border border-blue-100 p-3 rounded-2xl mb-1 flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600 shrink-0">
+                        <KeyRound size={16} strokeWidth={1.5} />
                     </div>
-                    <p className="text-xs text-blue-700 font-medium leading-relaxed">
-                        Crea una nueva contraseña fuerte para proteger tu cuenta.
+                    <p className="text-[10px] text-blue-700 font-medium leading-relaxed">
+                        Crea una nueva contraseña para proteger tu cuenta.
                     </p>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                         Nueva Contraseña
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} strokeWidth={1.5} />
+                            <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            className="w-full pl-11 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Mínimo 6 caracteres"
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
+                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition bg-transparent border-none p-0"
                         >
                             {showPassword ? (
-                                <EyeOff size={18} strokeWidth={1.5} />
+                                <EyeOff size={16} strokeWidth={1.5} />
                             ) : (
-                                <Eye size={18} strokeWidth={1.5} />
+                                <Eye size={16} strokeWidth={1.5} />
                             )}
                         </button>
                     </div>
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
-                        Confirmar Nueva Contraseña
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                        Confirmar
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
-                            <Lock size={18} strokeWidth={1.5} />
+                            <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             name="confirmPassword"
                             required
-                            className="w-full pl-11 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Repite la contraseña"
                         />
                     </div>
@@ -380,7 +379,7 @@ const ResetPasswordForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 mt-2"
+                    className="w-full py-3.5 bg-red-600 text-white rounded-2xl font-black text-xs hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 mt-2 h-12"
                 >
                     {isLoading ? 'Cambiando...' : 'Cambiar contraseña'}
                 </button>
@@ -541,7 +540,7 @@ export default function LoginModal({
                 className="absolute inset-0 cursor-pointer"
                 onClick={() => !isLoading && onClose()}
             />
-            <div className="relative max-w-sm w-full bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20">
+            <div className="relative max-w-sm w-full bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20 flex flex-col max-h-[92vh]">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
@@ -550,21 +549,21 @@ export default function LoginModal({
                     <X size={18} strokeWidth={1.5} />
                 </button>
 
-                <div className="p-6 md:p-8">
-                    <div className="text-center mb-6 pt-2">
+                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                    <div className="text-center mb-4 pt-1">
                         <img
                             src="/logo.svg"
                             alt="Sushi de Maksim"
-                            className="h-12 w-auto object-contain brightness-0 mx-auto mb-6"
+                            className="h-9 w-auto object-contain brightness-0 mx-auto mb-3"
                         />
-                        <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-tight">
+                        <h2 className="text-xl font-black text-gray-900 tracking-tight leading-tight">
                             {mode === 'login' && '¡Hola de nuevo!'}
                             {mode === 'register' && 'Crea tu cuenta'}
                             {mode === 'forgot' && 'Recuperar acceso'}
                             {mode === 'verify-sent' && 'Verifica tu email'}
                             {mode === 'reset-password' && 'Nueva contraseña'}
                         </h2>
-                        <p className="text-sm text-gray-400 font-medium mt-1 leading-tight">
+                        <p className="text-[13px] text-gray-400 font-medium mt-1 leading-tight">
                             {mode === 'login' && 'Entra и disfruta del mejor sushi.'}
                             {mode === 'register' && 'Únete a la familia Maksim.'}
                             {mode === 'forgot' && 'Te ayudamos a volver.'}
