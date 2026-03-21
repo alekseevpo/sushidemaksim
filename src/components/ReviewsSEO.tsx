@@ -172,9 +172,7 @@ export default function ReviewsSEO() {
                                     d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                                 />
                             </svg>
-                            <span className="text-[10px] font-bold text-gray-500">
-                                Google
-                            </span>
+                            <span className="text-[10px] font-bold text-gray-500">Google</span>
                         </div>
                     </div>
                     <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
@@ -209,7 +207,7 @@ export default function ReviewsSEO() {
                                         />
                                     ))}
                                 </div>
-                                
+
                                 <blockquote className="text-xl md:text-3xl font-bold text-gray-800 italic mb-8 leading-[1.3] md:leading-[1.4] tracking-tight">
                                     "{REVIEWS[currentIndex].text}"
                                 </blockquote>

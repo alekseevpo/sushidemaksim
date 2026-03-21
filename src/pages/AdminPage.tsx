@@ -236,7 +236,9 @@ export default function AdminPage() {
                         />
                     </div>
                     <div>
-                        <h2 className="font-black text-gray-900 leading-tight text-lg tracking-tight">Admin</h2>
+                        <h2 className="font-black text-gray-900 leading-tight text-lg tracking-tight">
+                            Admin
+                        </h2>
                         <p className="text-[10px] text-red-500 font-black uppercase tracking-widest">
                             Sushi de Maksim
                         </p>

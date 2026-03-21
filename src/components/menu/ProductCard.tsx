@@ -91,13 +91,13 @@ export default function ProductCard({
                 {/* Badges Lowered */}
                 <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1">
                     {item.is_popular && (
-                        <span className="bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
+                        <span className="bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black tracking-wider shadow-sm flex items-center gap-1">
                             <Sparkles size={8} className="md:size-[10px]" />
                             Popular
                         </span>
                     )}
                     {item.is_new && (
-                        <span className="bg-white text-gray-900 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black uppercase tracking-wider shadow-sm">
+                        <span className="bg-white text-gray-900 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black tracking-wider shadow-sm">
                             ✨ Nuevo
                         </span>
                     )}
@@ -107,11 +107,11 @@ export default function ProductCard({
             {/* Info Container */}
             <div className="p-3 md:p-6 flex flex-col flex-1">
                 <div className="mb-1 md:mb-2 text-left">
-                    <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto font-bold uppercase">
+                    <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto font-bold">
                         {item.name}
                     </h3>
                     {item.pieces && (
-                        <span className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest block opacity-70">
+                        <span className="text-[8px] md:text-[10px] font-black text-gray-400 tracking-widest block opacity-70">
                             {item.pieces} Unidades
                         </span>
                     )}

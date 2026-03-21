@@ -92,7 +92,7 @@ function App() {
                             {!isAdminRoute && <Header />}
                             <main
                                 className={`flex-1 flex flex-col relative w-full ${
-                                    !isAdminRoute && location.pathname !== '/' ? 'pt-20' : ''
+                                    !isAdminRoute && location.pathname !== '/' ? 'pt-16' : ''
                                 }`}
                             >
                                 <AnimatePresence mode="wait">
