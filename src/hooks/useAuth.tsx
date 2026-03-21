@@ -72,21 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         prevAuthRef.current = isAuthenticated;
     }, [isAuthenticated]);
 
-    // Heartbeat
-    useEffect(() => {
-        if (!user) return;
-        const sendHeartbeat = async () => {
-            try {
-                await api.put('/user/active');
-            } catch (e) {
-                /* Ignore */
-            }
-        };
-        sendHeartbeat();
-        const interval = setInterval(sendHeartbeat, 30000);
-        return () => clearInterval(interval);
-    }, [user]);
-
     const login = useCallback(
         async (email: string, password: string) => {
             try {
@@ -127,6 +112,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         queryClient.invalidateQueries();
         window.location.href = '/';
     }, [queryClient]);
+
+    // Heartbeat
+    useEffect(() => {
+        if (!user) return;
+        const sendHeartbeat = async () => {
+            try {
+                await api.put('/user/active');
+            } catch (e: any) {
+                // If unauthorized, the session is definitely dead. Logout immediately.
+                if (e.status === 401) {
+                    logout();
+                }
+            }
+        };
+        sendHeartbeat();
+        const interval = setInterval(sendHeartbeat, 30000);
+        return () => clearInterval(interval);
+    }, [user, logout]);
 
     const updateProfile = useCallback(
         async (data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>) => {
