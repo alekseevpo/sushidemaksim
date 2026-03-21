@@ -113,6 +113,10 @@ export default function MenuCategoryBar({
                         </button>
                     ))}
                 </nav>
+
+                <div className="mt-auto pb-4 pt-8 flex items-center justify-center opacity-10 pointer-events-none select-none">
+                    <span className="text-white text-7xl font-serif">福</span>
+                </div>
             </div>
         </aside>
     );
