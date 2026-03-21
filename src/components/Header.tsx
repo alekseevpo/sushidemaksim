@@ -125,20 +125,20 @@ export default function Header() {
                         <Link
                             to="/"
                             onClick={() => setShowMobileMenu(false)}
-                            className="flex items-center no-underline gap-0 group py-1"
+                            className="flex items-center no-underline gap-0 group"
                         >
                             <div
                                 className={`
                                     transition-all duration-500 shrink-0 flex items-center justify-center
-                                    md:bg-red-600 md:px-3 md:h-12 md:min-w-[84px] md:rounded-xl md:shadow-lg md:shadow-red-900/20 md:group-hover:rotate-12
-                                    bg-transparent h-12 w-auto
+                                    md:bg-red-600 md:px-4 md:h-14 md:min-w-[100px] md:rounded-2xl md:shadow-xl md:shadow-red-900/40 md:group-hover:rotate-12
+                                    bg-transparent h-14 w-auto
                                 `}
                             >
                                 <img
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
                                     className={`
-                                        h-10 md:h-10 w-auto object-contain transition-all duration-500
+                                        h-12 md:h-12 w-auto object-contain transition-all duration-500
                                         ${
                                             isScrolled || !isHome
                                                 ? 'brightness-0 md:invert'
