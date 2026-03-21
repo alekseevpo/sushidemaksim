@@ -23,18 +23,23 @@ interface BlogPost {
 export default function BlogPostPage() {
     const { slug } = useParams<{ slug: string }>();
     const [post, setPost] = useState<BlogPost | null>(null);
+    const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchPost = async () => {
+        const fetchData = async () => {
             setLoading(true);
             try {
-                const data = await api.get(`/blog/${slug}`);
-                setPost(data);
+                const [postData, postsData] = await Promise.all([
+                    api.get(`/blog/${slug}`),
+                    api.get('/blog'),
+                ]);
+                setPost(postData);
+                setAllPosts(postsData);
                 setError(null);
             } catch (err: any) {
-                console.error('Error fetching blog post:', err);
+                console.error('Error fetching blog data:', err);
                 setError(err.message || 'No se pudo cargar el artículo.');
             } finally {
                 setLoading(false);
@@ -42,7 +47,7 @@ export default function BlogPostPage() {
         };
 
         if (slug) {
-            fetchPost();
+            fetchData();
         }
     }, [slug]);
 
@@ -67,6 +72,57 @@ export default function BlogPostPage() {
         );
     }
 
+    const relatedPosts = allPosts
+        .filter(p => p.id !== post.id)
+        .filter(p => p.category === post.category || true) // Prioritize same category if we wanted more complex logic
+        .slice(0, 3);
+
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Inicio',
+                item: 'https://sushidemaksim.vercel.app/',
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Blog',
+                item: 'https://sushidemaksim.vercel.app/blog',
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: post.title,
+                item: `https://sushidemaksim.vercel.app/blog/${post.slug}`,
+            },
+        ],
+    };
+
+    const postSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        image: post.image_url,
+        author: {
+            '@type': 'Person',
+            name: post.author || 'Equipo Editorial',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Sushi de Maksim',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://sushidemaksim.vercel.app/logo.svg',
+            },
+        },
+        datePublished: post.created_at,
+        description: post.excerpt,
+    };
+
     return (
         <article className="min-h-screen bg-transparent pb-20">
             <SEO
@@ -74,35 +130,31 @@ export default function BlogPostPage() {
                 description={post.excerpt}
                 image={post.image_url}
                 type="article"
-                schema={{
-                    '@context': 'https://schema.org',
-                    '@type': 'BlogPosting',
-                    headline: post.title,
-                    image: post.image_url,
-                    author: {
-                        '@type': 'Person',
-                        name: post.author || 'Equipo Editorial',
-                    },
-                    publisher: {
-                        '@type': 'Organization',
-                        name: 'Sushi de Maksim',
-                        logo: {
-                            '@type': 'ImageObject',
-                            url: 'https://sushidemaksim.vercel.app/logo.svg',
-                        },
-                    },
-                    datePublished: post.created_at,
-                    description: post.excerpt,
-                }}
+                schema={[postSchema, breadcrumbSchema]}
             />
             {/* Minimalist Header with Back Button */}
-            <div className="absolute top-24 left-4 md:left-8 z-50">
+            <div className="absolute top-24 left-4 md:left-8 z-50 flex flex-col gap-4">
                 <Link
                     to="/blog"
-                    className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-red-600"
+                    className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-red-600 w-fit"
                 >
                     <ArrowLeft size={16} strokeWidth={1.5} /> Volver
                 </Link>
+
+                {/* Breadcrumbs UI */}
+                <nav className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-gray-400/80 bg-white/40 backdrop-blur-sm px-3 py-1 rounded-full w-fit">
+                    <Link to="/" className="hover:text-red-500 transition-colors">
+                        Inicio
+                    </Link>
+                    <span>/</span>
+                    <Link to="/blog" className="hover:text-red-500 transition-colors">
+                        Blog
+                    </Link>
+                    <span>/</span>
+                    <span className="text-gray-200 truncate max-w-[100px] md:max-w-xs">
+                        {post.title}
+                    </span>
+                </nav>
             </div>
 
             {/* Hero Image Section */}
@@ -198,6 +250,48 @@ export default function BlogPostPage() {
                     </Link>
                 </div>
             </div>
+
+            {/* Related Articles Section */}
+            {relatedPosts.length > 0 && (
+                <div className="max-w-5xl mx-auto px-4 md:px-6 mt-24">
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-2xl font-black text-gray-900">
+                            Artículos <span className="text-red-600 italic">Relacionados</span>
+                        </h3>
+                        <Link
+                            to="/blog"
+                            className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                            Ver todos
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {relatedPosts.map(rPost => (
+                            <Link
+                                key={rPost.id}
+                                to={`/blog/${rPost.slug}`}
+                                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 flex flex-col"
+                            >
+                                <div className="h-40 overflow-hidden">
+                                    <img
+                                        src={rPost.image_url || '/sushi-hero.webp'}
+                                        alt={rPost.title}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    />
+                                </div>
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <span className="text-[10px] font-black text-red-600 uppercase mb-2 tracking-widest">
+                                        {rPost.category}
+                                    </span>
+                                    <h4 className="font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-red-600 transition-colors">
+                                        {rPost.title}
+                                    </h4>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </article>
     );
 }
