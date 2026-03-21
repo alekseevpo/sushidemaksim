@@ -435,13 +435,19 @@ export default function AddressModal({
                                                     </div>
                                                     <div className="flex items-center gap-2 text-[11px] font-black text-gray-500 bg-white/50 px-2 py-1 rounded-lg">
                                                         <span className="flex items-center gap-1">
-                                                            {selectedZone.cost === 0 ? 'GRATIS' : `${selectedZone.cost}€`}
-                                                            <span className="text-[10px] opacity-40">Envío</span>
+                                                            {selectedZone.cost === 0
+                                                                ? 'GRATIS'
+                                                                : `${selectedZone.cost}€`}
+                                                            <span className="text-[10px] opacity-40">
+                                                                Envío
+                                                            </span>
                                                         </span>
                                                         <div className="w-1 h-1 rounded-full bg-gray-200" />
                                                         <span className="flex items-center gap-1">
                                                             {selectedZone.min_order}€
-                                                            <span className="text-[10px] opacity-40">Mín</span>
+                                                            <span className="text-[10px] opacity-40">
+                                                                Mín
+                                                            </span>
                                                         </span>
                                                     </div>
                                                 </div>
