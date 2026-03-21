@@ -160,14 +160,21 @@ export default function Header() {
                                         key={link.to}
                                         to={link.to}
                                         className={`relative no-underline font-bold px-4 py-2 transition-all duration-300 rounded-xl text-sm
-                      ${link.highlight ? 'text-red-600' : isScrolled || !isHome ? 'text-gray-600 hover:text-gray-900' : 'text-white/80 hover:text-white'}
-                      ${isActive ? (link.highlight ? 'text-red-600' : isScrolled || !isHome ? 'text-gray-900' : 'text-white') : ''}`}
+                                            ${
+                                                isActive
+                                                    ? 'text-white'
+                                                    : link.highlight
+                                                      ? 'text-red-600 hover:text-red-700'
+                                                      : isScrolled || !isHome
+                                                        ? 'text-gray-600 hover:text-gray-900'
+                                                        : 'text-white/80 hover:text-white'
+                                            }`}
                                     >
                                         {link.label}
                                         {isActive && (
                                             <motion.div
                                                 layoutId="nav-active"
-                                                className="absolute inset-0 bg-gray-100/50 -z-10 rounded-xl"
+                                                className="absolute inset-0 bg-red-600 -z-10 rounded-xl shadow-sm shadow-red-900/10"
                                                 transition={{
                                                     type: 'spring',
                                                     bounce: 0.25,
