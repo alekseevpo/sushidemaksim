@@ -91,11 +91,11 @@ export default function Header() {
 
     const initials = user
         ? user.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
         : '';
 
     const navLinks = [
@@ -111,13 +111,12 @@ export default function Header() {
         <>
             <header
                 className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color] duration-300
-                ${
-                    isScrolled
+                ${isScrolled
                         ? 'bg-[#FDFBF7] shadow-sm border-b border-gray-200'
                         : isHome
-                          ? 'bg-transparent border-b border-transparent'
-                          : 'bg-[#FDFBF7] border-b border-gray-100'
-                }
+                            ? 'bg-transparent border-b border-transparent'
+                            : 'bg-[#FDFBF7] border-b border-gray-100'
+                    }
             `}
             >
                 <StoreStatusBanner />
@@ -129,13 +128,23 @@ export default function Header() {
                             onClick={() => setShowMobileMenu(false)}
                             className="flex items-center no-underline gap-0 group py-1"
                         >
-                            <div className="bg-red-600 px-2.5 h-10 min-w-[60px] flex items-center justify-center rounded-xl group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-red-900/20 shrink-0">
+                            <div
+                                className={`
+                                    transition-all duration-500 shrink-0 flex items-center justify-center
+                                    md:bg-red-600 md:px-2.5 md:h-10 md:min-w-[60px] md:rounded-xl md:shadow-lg md:shadow-red-900/20 md:group-hover:rotate-12
+                                    bg-transparent h-12 w-auto
+                                `}
+                            >
                                 <img
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
-                                    width={76}
-                                    height={24}
-                                    className="h-6 w-[76px] brightness-0 invert object-contain"
+                                    className={`
+                                        h-9 md:h-6 w-auto object-contain transition-all duration-500
+                                        ${isScrolled || !isHome
+                                            ? '[filter:invert(16%)_sepia(89%)_saturate(6011%)_hue-rotate(356deg)_brightness(93%)_contrast(118%)] md:brightness-0 md:invert md:filter-none'
+                                            : 'brightness-0 invert'
+                                        }
+                                    `}
                                 />
                             </div>
                         </Link>
@@ -278,9 +287,9 @@ export default function Header() {
                                 animate={
                                     isCartBumping
                                         ? {
-                                              scale: [1, 1.3, 0.95, 1],
-                                              rotate: [0, -8, 8, 0],
-                                          }
+                                            scale: [1, 1.3, 0.95, 1],
+                                            rotate: [0, -8, 8, 0],
+                                        }
                                         : {}
                                 }
                                 transition={{ duration: 0.4, ease: 'easeInOut' }}
@@ -288,11 +297,10 @@ export default function Header() {
                                 <Link
                                     id="cart-icon"
                                     to="/cart"
-                                    className={`relative p-3 no-underline rounded-xl transition-all flex items-center justify-center min-w-[44px] min-h-[44px] ${
-                                        isScrolled || !isHome
+                                    className={`relative p-3 no-underline rounded-xl transition-all flex items-center justify-center min-w-[44px] min-h-[44px] ${isScrolled || !isHome
                                             ? 'text-gray-800 bg-gray-50 hover:bg-gray-100'
                                             : 'text-white bg-white/15 hover:bg-white/25 border border-white/20'
-                                    }`}
+                                        }`}
                                 >
                                     <ShoppingCart size={22} strokeWidth={1.5} />
                                     <AnimatePresence>
@@ -318,11 +326,10 @@ export default function Header() {
 
                             <button
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
-                                    isScrolled || !isHome
+                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${isScrolled || !isHome
                                         ? 'bg-gray-50 text-gray-800'
                                         : 'bg-white/15 text-white border border-white/20'
-                                }`}
+                                    }`}
                             >
                                 {showMobileMenu ? (
                                     <X size={22} strokeWidth={1.5} />
@@ -378,11 +385,10 @@ export default function Header() {
                                                         to={link.to}
                                                         onClick={() => setShowMobileMenu(false)}
                                                         className={`group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97]
-                                                        ${
-                                                            isActive
+                                                        ${isActive
                                                                 ? 'text-red-600 bg-red-50/50'
                                                                 : 'text-gray-600 hover:text-gray-900'
-                                                        }`}
+                                                            }`}
                                                     >
                                                         <div
                                                             className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}

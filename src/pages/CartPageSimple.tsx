@@ -434,6 +434,7 @@ export default function CartPageSimple() {
                                 isOrdering={isOrdering}
                                 isInviting={isInviting}
                                 isAuthenticated={isAuthenticated}
+                                hasAddress={!!address.trim()}
                                 handleOrder={handleOrder}
                                 handleInvite={handleInvite}
                             />

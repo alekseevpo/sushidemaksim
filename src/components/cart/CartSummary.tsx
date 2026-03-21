@@ -12,6 +12,7 @@ interface CartSummaryProps {
     isOrdering: boolean;
     isInviting: boolean;
     isAuthenticated: boolean;
+    hasAddress: boolean;
     handleOrder: () => void;
     handleInvite: () => void;
 }
@@ -26,6 +27,7 @@ export default function CartSummary({
     isOrdering,
     isInviting,
     isAuthenticated,
+    hasAddress,
     handleOrder,
     handleInvite,
 }: CartSummaryProps) {
@@ -57,13 +59,17 @@ export default function CartSummary({
                 {deliveryType === 'delivery' && (
                     <div className="flex justify-between text-gray-500 text-sm animate-in fade-in duration-300">
                         <span>Envío</span>
-                        <span
-                            className={`font-bold ${deliveryCost <= 0 ? 'text-green-600' : 'text-gray-900'}`}
-                        >
-                            {deliveryCost <= 0
-                                ? 'GRATIS'
-                                : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
-                        </span>
+                        {!hasAddress ? (
+                            <span className="text-gray-400 italic">A determinar</span>
+                        ) : (
+                            <span
+                                className={`font-bold ${deliveryCost <= 0 ? 'text-green-600' : 'text-gray-900'}`}
+                            >
+                                {deliveryCost <= 0
+                                    ? 'GRATIS'
+                                    : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
+                            </span>
+                        )}
                     </div>
                 )}
                 <div className="border-t border-gray-200 pt-3 mt-1">
