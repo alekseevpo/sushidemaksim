@@ -179,7 +179,8 @@ export default function AdminPage() {
     };
 
     // While waiting for auth status, show the skeleton to prevent layout shift and "restricted" flash
-    if (isLoading) {
+    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('sushi_token');
+    if (isLoading || (hasToken && !user)) {
         return <AdminSkeleton />;
     }
 
@@ -187,11 +188,11 @@ export default function AdminPage() {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div className="bg-white rounded-3xl shadow-xl p-10 max-w-md w-full text-center border border-gray-100">
-                    <div className="w-24 h-24 bg-red-600 rounded-3xl shrink-0 flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-red-900/20">
+                    <div className="shrink-0 flex items-center justify-center mx-auto mb-10 overflow-hidden">
                         <img
-                            src="/logo-icon.svg"
-                            alt="Logo"
-                            className="w-14 h-auto brightness-0 invert"
+                            src="/logo.svg"
+                            alt="Sushi de Maksim"
+                            className="h-14 w-auto object-contain"
                         />
                     </div>
                     <h2 className="text-2xl font-black text-gray-900 mb-2">Acceso Restringido</h2>
@@ -227,21 +228,19 @@ export default function AdminPage() {
             />
             {/* Sidebar */}
             <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col md:fixed h-full z-10">
-                <div className="p-6 border-b border-gray-100 flex items-center gap-4">
-                    <div className="bg-red-600 w-11 h-11 min-w-[44px] flex items-center justify-center rounded-xl shadow-lg shadow-red-900/10 shrink-0">
+                <div className="p-6 border-b border-gray-100">
+                    <div className="flex flex-col gap-3">
                         <img
-                            src="/logo-icon.svg"
-                            alt="Logo"
-                            className="w-7 h-auto brightness-0 invert"
+                            src="/logo.svg"
+                            alt="Sushi de Maksim"
+                            className="h-10 w-auto object-contain"
                         />
-                    </div>
-                    <div>
-                        <h2 className="font-black text-gray-900 leading-tight text-lg tracking-tight">
-                            Admin
-                        </h2>
-                        <p className="text-[10px] text-red-500 font-black uppercase tracking-widest">
-                            Sushi de Maksim
-                        </p>
+                        <div className="flex items-center gap-2">
+                            <div className="h-[1px] w-4 bg-red-200" />
+                            <span className="text-[10px] text-red-600 font-black uppercase tracking-widest">
+                                Admin Panel
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
