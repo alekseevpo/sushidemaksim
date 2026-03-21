@@ -257,9 +257,9 @@ export default function AddressModal({
                         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
                         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-[1002] max-h-[90vh] overflow-hidden flex flex-col md:max-w-2xl md:mx-auto md:top-20 md:bottom-20 md:rounded-[32px] shadow-3xl"
                     >
-                        {/* Header */}
-                        <div className="px-2 py-0.5 md:px-6 md:py-4 flex justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
-                            <div className="hidden md:block">
+                        {/* Header (Desktop only) */}
+                        <div className="hidden md:flex px-6 py-4 justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
+                            <div>
                                 <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
                                     <MapPin size={18} className="text-red-500" />
                                     ¿Dónde entregamos?
@@ -270,7 +270,7 @@ export default function AddressModal({
                             </div>
                             <button
                                 onClick={onClose}
-                                className="absolute top-0 right-2 md:top-5 md:right-5 p-1 text-gray-400 hover:text-gray-900 transition-all hover:bg-gray-50 rounded-lg"
+                                className="absolute top-5 right-5 p-1.5 text-gray-400 hover:text-gray-900 transition-all hover:bg-gray-50 rounded-lg"
                             >
                                 <X size={20} strokeWidth={2.5} />
                             </button>
@@ -278,7 +278,14 @@ export default function AddressModal({
 
                         <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl">
                             {/* Map Side */}
-                            <div className="h-36 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100">
+                            <div className="h-56 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none overflow-hidden">
+                                {/* Floating Close Button (Mobile Only) */}
+                                <button
+                                    onClick={onClose}
+                                    className="md:hidden absolute top-4 right-4 z-[1001] w-10 h-10 bg-white/90 backdrop-blur shadow-xl rounded-full flex items-center justify-center text-gray-900 active:scale-95 transition"
+                                >
+                                    <X size={20} strokeWidth={3} />
+                                </button>
                                 <MapContainer
                                     center={markerPosition}
                                     zoom={15}
@@ -307,7 +314,7 @@ export default function AddressModal({
                                 </MapContainer>
 
                                 {/* Search Overlay */}
-                                <div className="absolute top-4 left-4 right-4 z-[1000] space-y-2">
+                                <div className="absolute top-2 left-2 right-2 z-[1000] space-y-2">
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition">
                                             {isSearching ? (
@@ -411,49 +418,77 @@ export default function AddressModal({
                                     </div>
 
                                     {/* Zone Status */}
-                                    <div className="pt-2">
+                                    <div className="pt-0.5">
                                         {selectedZone ? (
-                                            <div className="p-3 md:p-4 bg-green-50/50 rounded-3xl border border-green-100/50 animate-in slide-in-from-bottom-3 duration-500">
-                                                <div className="flex items-center gap-3 mb-2 md:mb-3">
-                                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0">
+                                            <div className="p-2.5 md:p-4 bg-green-50/50 rounded-2xl md:rounded-3xl border border-green-100/50 animate-in slide-in-from-bottom-3 duration-500">
+                                                {/* Mobile Row Layout */}
+                                                <div className="md:hidden flex items-center justify-between py-0.5">
+                                                    <div className="flex items-center gap-1.5 min-w-0">
                                                         <CheckCircle
-                                                            className="text-green-600 w-[18px] h-[18px] md:w-[22px] md:h-[22px]"
-                                                            strokeWidth={2.5}
+                                                            className="text-green-600 shrink-0"
+                                                            size={14}
+                                                            strokeWidth={3}
                                                         />
+                                                        <span className="text-sm font-black text-gray-900 truncate">
+                                                            {selectedZone.name}
+                                                        </span>
                                                     </div>
-                                                    <div>
-                                                        <div className="flex items-center gap-2">
-                                                            <h3 className="text-base md:text-xl font-black text-gray-900 leading-tight">
-                                                                {selectedZone.name}
-                                                            </h3>
-                                                            <span className="text-[8px] md:text-[10px] font-black text-green-700 bg-green-100 px-2 md:px-2.5 py-0.5 md:py-1 rounded-md md:rounded-lg uppercase tracking-wider">
-                                                                DISPONIBLE
-                                                            </span>
-                                                        </div>
-                                                        <p className="hidden md:block text-[11px] font-bold text-green-600/80 uppercase tracking-widest mt-0.5">
-                                                            Zona de entrega detectada
-                                                        </p>
+                                                    <div className="flex items-center gap-2 text-[11px] font-black text-gray-500 bg-white/50 px-2 py-1 rounded-lg">
+                                                        <span className="flex items-center gap-1">
+                                                            {selectedZone.cost === 0 ? 'GRATIS' : `${selectedZone.cost}€`}
+                                                            <span className="text-[10px] opacity-40">Envío</span>
+                                                        </span>
+                                                        <div className="w-1 h-1 rounded-full bg-gray-200" />
+                                                        <span className="flex items-center gap-1">
+                                                            {selectedZone.min_order}€
+                                                            <span className="text-[10px] opacity-40">Mín</span>
+                                                        </span>
                                                     </div>
                                                 </div>
 
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
-                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
-                                                            Envío
-                                                        </p>
-                                                        <p className="text-lg font-black text-gray-900 leading-none">
-                                                            {selectedZone.cost === 0
-                                                                ? 'GRATIS'
-                                                                : `${selectedZone.cost}€`}
-                                                        </p>
+                                                {/* Desktop Full Layout */}
+                                                <div className="hidden md:block">
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0">
+                                                            <CheckCircle
+                                                                className="text-green-600 w-[22px] h-[22px]"
+                                                                strokeWidth={2.5}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <h3 className="text-xl font-black text-gray-900 leading-tight">
+                                                                    {selectedZone.name}
+                                                                </h3>
+                                                                <span className="text-[10px] font-black text-green-700 bg-green-100 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                                                    DISPONIBLE
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[11px] font-bold text-green-600/80 uppercase tracking-widest mt-0.5">
+                                                                Zona de entrega detectada
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
-                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
-                                                            Pedido mín.
-                                                        </p>
-                                                        <p className="text-lg font-black text-gray-900 leading-none">
-                                                            {selectedZone.min_order}€
-                                                        </p>
+
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
+                                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
+                                                                Envío
+                                                            </p>
+                                                            <p className="text-lg font-black text-gray-900 leading-none">
+                                                                {selectedZone.cost === 0
+                                                                    ? 'GRATIS'
+                                                                    : `${selectedZone.cost}€`}
+                                                            </p>
+                                                        </div>
+                                                        <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
+                                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
+                                                                Pedido mín.
+                                                            </p>
+                                                            <p className="text-lg font-black text-gray-900 leading-none">
+                                                                {selectedZone.min_order}€
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -476,7 +511,7 @@ export default function AddressModal({
                                 </div>
 
                                 {/* Sticky Footer with Gradient */}
-                                <div className="p-4 md:p-5 bg-white border-t border-gray-50 relative pb-6 md:pb-6 shrink-0">
+                                <div className="p-3 md:p-5 bg-white border-t border-gray-50 relative pb-4 md:pb-6 shrink-0">
                                     <div className="absolute bottom-full left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                                     <button
                                         onClick={handleContinue}
