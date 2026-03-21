@@ -133,14 +133,30 @@ export async function sendOrderReceiptEmail(
     let deliveryType = 'DOMICILIO';
     parts.forEach((part: string) => {
         if (part.includes('[TIPO:')) {
-            deliveryType = part.replace('[TIPO: ', '').replace(']', '');
-        } else if (part.includes('[MÉTODO DE PAGO:')) {
-            paymentMethod = part.replace('[MÉTODO DE PAGO: ', '').replace(']', '');
-        } else if (part.includes('[ENTREGA PROGRAMADA:')) {
-            scheduledTime = part.replace('[ENTREGA PROGRAMADA: ', '').replace(']', '');
-        } else if (part.includes('[NO LLAMAR PARA CONFIRMACIÓN]')) {
+            deliveryType = part.replace('[TIPO: ', '').replace(']', '').replace('[TIPO:', '');
+        } else if (part.includes('[MÉTODO DE PAGO:') || part.includes('[PAGO:')) {
+            paymentMethod = part
+                .replace('[MÉTODO DE PAGO: ', '')
+                .replace('[MÉTODO DE PAGO:', '')
+                .replace('[PAGO: ', '')
+                .replace('[PAGO:', '')
+                .replace(']', '');
+        } else if (part.includes('[ENTREGA PROGRAMADA:') || part.includes('[PROGRAMADO:')) {
+            scheduledTime = part
+                .replace('[ENTREGA PROGRAMADA: ', '')
+                .replace('[ENTREGA PROGRAMADA:', '')
+                .replace('[PROGRAMADO: ', '')
+                .replace('[PROGRAMADO:', '')
+                .replace(']', '');
+        } else if (
+            part.includes('[NO LLAMAR PARA CONFIRMACIÓN]') ||
+            part.includes('[SIN CONFIRMACIÓN LLAMADA]')
+        ) {
             noCall = true;
-        } else if (part.includes('[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]')) {
+        } else if (
+            part.includes('[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]') ||
+            part.includes('[NO LLAMAR TIMBRE]')
+        ) {
             noBuzzer = true;
         } else {
             customerNote += (customerNote ? ' | ' : '') + part;
@@ -215,13 +231,13 @@ export async function sendOrderReceiptEmail(
             <td style="width: 50%; vertical-align: top;">
               <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Método de Pago</h4>
               <div style="color: #111827; font-size: 15px; font-weight: 700;">
-                ${paymentMethod === 'TARJETA' ? '💳 Tarjeta' : '💵 Efectivo'}
+                ${paymentMethod.includes('TARJETA') ? '💳 Tarjeta' : '💵 Efectivo'}
               </div>
             </td>
             <td style="width: 50%; vertical-align: top;">
-              <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Tipo de Entrega</h4>
+              <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Tipo de Entreга</h4>
               <div style="color: #111827; font-size: 15px; font-weight: 700;">
-                ${deliveryType === 'RECOGIDA EN LOCAL' ? '🏬 Recogida en Local' : '🚚 Entrega a Domicilio'}
+                ${deliveryType.includes('RECOGIDA') ? '🏬 Recogida en Local' : '🚚 Entrega a Domicilio'}
               </div>
             </td>
           </tr>
@@ -243,11 +259,11 @@ export async function sendOrderReceiptEmail(
       </div>
 
       <!-- Delivery Details -->
-      <h4 style="color: #9ca3af; margin: 0 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType === 'RECOGIDA EN LOCAL' ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
+      <h4 style="color: #9ca3af; margin: 0 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${deliveryType.includes('RECOGIDA') ? 'Punto de Recogida' : 'Detalles de Envío'}</h4>
       <div style="background-color: #f8fafc; border-radius: 12px; padding: 12px; border: 1px solid #e2e8f0;">
         <div style="color: #4b5563; font-size: 13px; line-height: 1.5;">
           ${
-              deliveryType === 'RECOGIDA EN LOCAL'
+              deliveryType.includes('RECOGIDA')
                   ? '<strong>📍 Dirección:</strong> Calle Barrilero, 20, 28007 Madrid'
                   : `<strong>📍 Dirección:</strong> ${orderData.deliveryAddress}`
           }
@@ -260,11 +276,19 @@ export async function sendOrderReceiptEmail(
       <div style="margin-top: 12px; padding: 16px; background-color: #000000; border-radius: 16px; color: #ffffff;">
         <h4 style="color: #dc2626; margin: 0 0 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center;">¿Necesitas algo? Contáctanos</h4>
         
-        <div style="text-align: center; margin-bottom: 16px;">
-          <a href="https://wa.me/34641518390" style="display: inline-block; background-color: #25D366; color: #ffffff; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; margin: 0 4px;">WhatsApp</a>
-          <a href="mailto:info@sushidemaksim.com" style="display: inline-block; background-color: #ffffff; color: #000000; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; margin: 0 4px;">Email</a>
-          <a href="tel:+34641518390" style="display: inline-block; background-color: #dc2626; color: #ffffff; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; margin: 0 4px;">Llamar</a>
-        </div>
+        <table style="width:100%; border-collapse:collapse; margin-bottom: 16px;">
+          <tr>
+            <td style="width: 33%; padding: 0 4px;">
+              <a href="https://wa.me/34641518390" style="display: block; background-color: #25D366; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">WhatsApp</a>
+            </td>
+            <td style="width: 33%; padding: 0 4px;">
+              <a href="mailto:info@sushidemaksim.com" style="display: block; background-color: #ffffff; color: #000000; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Email</a>
+            </td>
+            <td style="width: 33%; padding: 0 4px;">
+              <a href="tel:+34641518390" style="display: block; background-color: #dc2626; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Llamar</a>
+            </td>
+          </tr>
+        </table>
 
         <h4 style="color: #6b7280; margin: 16px 0 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Horario de Atención</h4>
         <table style="width: 100%; color: #9ca3af; font-size: 11px; border-collapse: collapse;">

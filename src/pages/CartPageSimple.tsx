@@ -222,7 +222,7 @@ export default function CartPageSimple() {
 
         const notesArray = [];
         notesArray.push(`[TIPO: ${deliveryType === 'pickup' ? 'RECOGIDA' : 'DOMICILIO'}]`);
-        notesArray.push(`[PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
+        notesArray.push(`[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
         if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
         if (isScheduled && scheduledDate && scheduledTime)
             notesArray.push(`[PROGRAMADO: ${scheduledDate} ${scheduledTime}]`);
