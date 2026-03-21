@@ -552,13 +552,11 @@ export default function LoginModal({
 
                 <div className="p-6 md:p-8">
                     <div className="text-center mb-6 pt-2">
-                        <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-50 rounded-2xl mb-4 shadow-sm border-2 border-white overflow-hidden p-2">
-                            <img
-                                src="/logo.svg"
-                                alt="Sushi de Maksim"
-                                className="w-full h-full object-contain brightness-0"
-                            />
-                        </div>
+                        <img
+                            src="/logo.svg"
+                            alt="Sushi de Maksim"
+                            className="h-12 w-auto object-contain brightness-0 mx-auto mb-6"
+                        />
                         <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-tight">
                             {mode === 'login' && '¡Hola de nuevo!'}
                             {mode === 'register' && 'Crea tu cuenta'}
