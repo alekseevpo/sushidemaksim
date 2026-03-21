@@ -541,37 +541,37 @@ export default function LoginModal({
                 className="absolute inset-0 cursor-pointer"
                 onClick={() => !isLoading && onClose()}
             />
-            <div className="relative max-w-md w-full bg-white rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20">
+            <div className="relative max-w-sm w-full bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-6 right-6 p-2 rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all z-20"
+                    className="absolute top-4 right-4 p-2 rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all z-20"
                 >
-                    <X size={20} strokeWidth={1.5} />
+                    <X size={18} strokeWidth={1.5} />
                 </button>
 
-                <div className="p-8 md:p-10">
-                    <div className="text-center mb-8 pt-2">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-red-50 rounded-[28px] mb-6 text-red-600 shadow-inner border-2 border-white">
-                            {mode === 'login' && <User size={32} strokeWidth={1.5} />}
-                            {mode === 'register' && <Mail size={32} strokeWidth={1.5} />}
-                            {mode === 'forgot' && <Mail size={32} strokeWidth={1.5} />}
-                            {mode === 'verify-sent' && <Mail size={32} strokeWidth={1.5} />}
-                            {mode === 'reset-password' && <KeyRound size={32} strokeWidth={1.5} />}
+                <div className="p-6 md:p-8">
+                    <div className="text-center mb-6 pt-2">
+                        <div className="inline-flex items-center justify-center w-12 h-12 bg-red-50 rounded-2xl mb-4 text-red-600 shadow-sm border-2 border-white">
+                            {mode === 'login' && <User size={24} strokeWidth={1.5} />}
+                            {mode === 'register' && <Mail size={24} strokeWidth={1.5} />}
+                            {mode === 'forgot' && <Mail size={24} strokeWidth={1.5} />}
+                            {mode === 'verify-sent' && <Mail size={24} strokeWidth={1.5} />}
+                            {mode === 'reset-password' && <KeyRound size={24} strokeWidth={1.5} />}
                         </div>
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">
+                        <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-tight">
                             {mode === 'login' && '¡Hola de nuevo!'}
                             {mode === 'register' && 'Crea tu cuenta'}
                             {mode === 'forgot' && 'Recuperar acceso'}
                             {mode === 'verify-sent' && 'Verifica tu email'}
                             {mode === 'reset-password' && 'Nueva contraseña'}
                         </h2>
-                        <p className="text-gray-500 font-medium mt-2">
-                            {mode === 'login' && 'Entra y disfruta del mejor sushi'}
-                            {mode === 'register' && 'Únete a la familia Maksim'}
-                            {mode === 'forgot' && 'Te ayudamos a volver'}
-                            {mode === 'verify-sent' && 'Te hemos enviado un enlace'}
-                            {mode === 'reset-password' && 'Casi has terminado'}
+                        <p className="text-sm text-gray-400 font-medium mt-1 leading-tight">
+                            {mode === 'login' && 'Entra и disfruta del mejor sushi.'}
+                            {mode === 'register' && 'Únete a la familia Maksim.'}
+                            {mode === 'forgot' && 'Te ayudamos a volver.'}
+                            {mode === 'verify-sent' && 'Hemos enviado un enlace.'}
+                            {mode === 'reset-password' && 'Casi has terminado.'}
                         </p>
                     </div>
 
@@ -621,11 +621,13 @@ export default function LoginModal({
                     )}
 
                     {mode === 'reset-password' && (
-                        <ResetPasswordForm
-                            onReset={handleReset}
-                            isLoading={isLoading}
-                            token={resetToken}
-                        />
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <ResetPasswordForm
+                                onReset={handleReset}
+                                isLoading={isLoading}
+                                token={resetToken}
+                            />
+                        </div>
                     )}
                 </div>
             </div>
