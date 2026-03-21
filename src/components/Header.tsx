@@ -130,15 +130,15 @@ export default function Header() {
                             <div
                                 className={`
                                     transition-all duration-500 shrink-0 flex items-center justify-center
-                                    md:bg-red-600 md:px-4 md:h-14 md:min-w-[100px] md:rounded-2xl md:shadow-xl md:shadow-red-900/40 md:group-hover:rotate-12
-                                    bg-transparent h-14 w-auto
+                                    md:bg-red-600 md:px-5 md:h-16 md:min-w-[120px] md:group-hover:rotate-6
+                                    bg-transparent h-16 w-auto
                                 `}
                             >
                                 <img
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
                                     className={`
-                                        h-12 md:h-12 w-auto object-contain transition-all duration-500
+                                        h-14 md:h-14 w-auto object-contain transition-all duration-500
                                         ${
                                             isScrolled || !isHome
                                                 ? 'brightness-0 md:invert'
