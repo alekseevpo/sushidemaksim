@@ -47,6 +47,7 @@ const LoginForm = memo(
                             required
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                            autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
@@ -76,6 +77,7 @@ const LoginForm = memo(
                             required
                             value={password}
                             onChange={e => setPassword(e.target.value)}
+                            autoComplete="current-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Tu contraseña"
                         />
@@ -148,6 +150,7 @@ const RegisterForm = memo(
                                 type="text"
                                 name="name"
                                 required
+                                autoComplete="name"
                                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="Tu nombre completo"
                             />
@@ -166,6 +169,7 @@ const RegisterForm = memo(
                                 type="tel"
                                 name="phone"
                                 required
+                                autoComplete="tel"
                                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="+34 600 000 000"
                             />
@@ -185,6 +189,7 @@ const RegisterForm = memo(
                             type="email"
                             name="email"
                             required
+                            autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
@@ -203,6 +208,7 @@ const RegisterForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
+                            autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Mínimo 6 caracteres"
                         />
@@ -277,6 +283,7 @@ const ForgotPasswordForm = memo(
                             type="email"
                             name="email"
                             required
+                            autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
@@ -341,6 +348,7 @@ const ResetPasswordForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
+                            autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Mínimo 6 caracteres"
                         />
@@ -370,6 +378,7 @@ const ResetPasswordForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="confirmPassword"
                             required
+                            autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Repite la contraseña"
                         />
