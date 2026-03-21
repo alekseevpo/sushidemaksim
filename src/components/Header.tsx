@@ -282,12 +282,26 @@ export default function Header() {
                                         </AnimatePresence>
                                     </div>
                                 ) : (
-                                    <button
-                                        onClick={() => setIsLoginModalOpen(true)}
-                                        className="btn-premium bg-gray-900 text-white px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95"
-                                    >
-                                        ACCEDER
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setLoginModalMode('login');
+                                                setIsLoginModalOpen(true);
+                                            }}
+                                            className="bg-gray-900 text-white px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 transition-all hover:bg-black"
+                                        >
+                                            ACCEDER
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setLoginModalMode('register');
+                                                setIsLoginModalOpen(true);
+                                            }}
+                                            className="bg-white text-gray-900 border-2 border-gray-900 px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-sm active:scale-95 transition-all hover:bg-gray-50"
+                                        >
+                                            REGISTRO
+                                        </button>
+                                    </div>
                                 )}
                             </div>
 
@@ -483,16 +497,27 @@ export default function Header() {
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <div className="pb-4">
+                                                <div className="pb-4 grid grid-cols-2 gap-3">
                                                     <button
                                                         onClick={() => {
+                                                            setLoginModalMode('login');
                                                             setShowMobileMenu(false);
                                                             setIsLoginModalOpen(true);
                                                         }}
-                                                        className="w-full py-5 rounded-[24px] bg-gray-900 text-white border-none cursor-pointer font-black text-[15px] shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-3"
+                                                        className="w-full py-4 rounded-[20px] bg-gray-900 text-white border-none cursor-pointer font-black text-[14px] shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-2"
                                                     >
-                                                        <User size={20} />
-                                                        ACCEDER / REGISTRO
+                                                        <User size={18} />
+                                                        Acceder
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setLoginModalMode('register');
+                                                            setShowMobileMenu(false);
+                                                            setIsLoginModalOpen(true);
+                                                        }}
+                                                        className="w-full py-4 rounded-[20px] bg-white text-gray-900 border-2 border-gray-900 cursor-pointer font-black text-[14px] shadow-lg shadow-gray-100 active:scale-95 flex items-center justify-center gap-2"
+                                                    >
+                                                        Registro
                                                     </button>
                                                 </div>
                                             )}
