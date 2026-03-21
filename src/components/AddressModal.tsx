@@ -258,8 +258,8 @@ export default function AddressModal({
                         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-[1002] max-h-[90vh] overflow-hidden flex flex-col md:max-w-2xl md:mx-auto md:top-20 md:bottom-20 md:rounded-[32px] shadow-3xl"
                     >
                         {/* Header */}
-                        <div className="p-4 md:px-6 md:py-4 flex justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-10">
-                            <div>
+                        <div className="px-2 py-0.5 md:px-6 md:py-4 flex justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
+                            <div className="hidden md:block">
                                 <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
                                     <MapPin size={18} className="text-red-500" />
                                     ¿Dónde entregamos?
@@ -270,7 +270,7 @@ export default function AddressModal({
                             </div>
                             <button
                                 onClick={onClose}
-                                className="absolute top-4 right-4 md:top-5 md:right-5 p-1.5 text-gray-400 hover:text-gray-900 transition-all hover:bg-gray-50 rounded-lg"
+                                className="absolute top-0 right-2 md:top-5 md:right-5 p-1 text-gray-400 hover:text-gray-900 transition-all hover:bg-gray-50 rounded-lg"
                             >
                                 <X size={20} strokeWidth={2.5} />
                             </button>
@@ -278,7 +278,7 @@ export default function AddressModal({
 
                         <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl">
                             {/* Map Side */}
-                            <div className="h-48 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100">
+                            <div className="h-36 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100">
                                 <MapContainer
                                     center={markerPosition}
                                     zoom={15}
@@ -321,7 +321,7 @@ export default function AddressModal({
                                             value={searchQuery}
                                             onChange={e => setSearchQuery(e.target.value)}
                                             placeholder="Buscar mi calle en Madrid..."
-                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
+                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
                                         />
 
                                         {searchResults.length > 0 && (
@@ -358,53 +358,53 @@ export default function AddressModal({
                             <div className="w-full md:w-[300px] bg-white flex flex-col overflow-hidden border-l border-gray-100">
                                 <div className="flex-1 overflow-y-auto p-4 md:px-5 md:py-4 space-y-3 scrollbar-hide">
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
                                             Calle / Avenida *
                                         </label>
                                         <input
                                             value={address}
                                             onChange={e => setAddress(e.target.value)}
                                             data-testid="address-input"
-                                            className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                            className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                             placeholder="Ej: Calle de Serrano"
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
                                                 Número / Portal *
                                             </label>
                                             <input
                                                 value={house}
                                                 onChange={e => setHouse(e.target.value)}
                                                 data-testid="house-input"
-                                                className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                                className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                                 placeholder="Ej: 20"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
                                                 Piso / Puerta
                                             </label>
                                             <input
                                                 value={apartment}
                                                 onChange={e => setApartment(e.target.value)}
                                                 data-testid="apartment-input"
-                                                className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                                className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                                 placeholder="Ej: 1B"
                                             />
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1.5 px-1 tracking-widest leading-none">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
                                             Código Postal
                                         </label>
                                         <input
                                             value={postalCode}
                                             onChange={e => setPostalCode(e.target.value)}
-                                            className="w-full bg-gray-50 rounded-2xl px-5 py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                            className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                             placeholder="28001"
                                             maxLength={5}
                                         />
@@ -413,25 +413,24 @@ export default function AddressModal({
                                     {/* Zone Status */}
                                     <div className="pt-2">
                                         {selectedZone ? (
-                                            <div className="p-4 bg-green-50/50 rounded-3xl border border-green-100/50 animate-in slide-in-from-bottom-3 duration-500">
-                                                <div className="flex items-center gap-3 mb-3">
-                                                    <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0">
+                                            <div className="p-3 md:p-4 bg-green-50/50 rounded-3xl border border-green-100/50 animate-in slide-in-from-bottom-3 duration-500">
+                                                <div className="flex items-center gap-3 mb-2 md:mb-3">
+                                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0">
                                                         <CheckCircle
-                                                            className="text-green-600"
-                                                            size={22}
+                                                            className="text-green-600 w-[18px] h-[18px] md:w-[22px] md:h-[22px]"
                                                             strokeWidth={2.5}
                                                         />
                                                     </div>
                                                     <div>
                                                         <div className="flex items-center gap-2">
-                                                            <h3 className="text-xl font-black text-gray-900 leading-tight">
+                                                            <h3 className="text-base md:text-xl font-black text-gray-900 leading-tight">
                                                                 {selectedZone.name}
                                                             </h3>
-                                                            <span className="text-[10px] font-black text-green-700 bg-green-100 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                                            <span className="text-[8px] md:text-[10px] font-black text-green-700 bg-green-100 px-2 md:px-2.5 py-0.5 md:py-1 rounded-md md:rounded-lg uppercase tracking-wider">
                                                                 DISPONIBLE
                                                             </span>
                                                         </div>
-                                                        <p className="text-[11px] font-bold text-green-600/80 uppercase tracking-widest mt-0.5">
+                                                        <p className="hidden md:block text-[11px] font-bold text-green-600/80 uppercase tracking-widest mt-0.5">
                                                             Zona de entrega detectada
                                                         </p>
                                                     </div>

@@ -252,7 +252,7 @@ export default function DeliveryForm({
                                             onChange={e => setHouse(e.target.value)}
                                             placeholder="Ej: 20"
                                             data-testid="house-input-mobile"
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                         />
                                     </div>
                                     <div>
@@ -264,7 +264,7 @@ export default function DeliveryForm({
                                             onChange={e => setApartment(e.target.value)}
                                             placeholder="Ej: 1B"
                                             data-testid="apartment-input-mobile"
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
                                         />
                                     </div>
                                 </div>
