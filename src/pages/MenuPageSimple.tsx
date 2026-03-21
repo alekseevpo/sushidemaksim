@@ -219,7 +219,11 @@ export default function MenuPageSimple() {
     return (
         <div className="min-h-screen bg-transparent px-0 md:px-4 pb-0 pt-0 flex flex-col">
             <SEO
-                title="Menú y Carta de Sushi"
+                title={
+                    selectedCategory === 'all'
+                        ? 'Menú y Carta de Sushi'
+                        : `Menú: ${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'}`
+                }
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
