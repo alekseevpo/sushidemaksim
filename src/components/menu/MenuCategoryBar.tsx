@@ -114,8 +114,10 @@ export default function MenuCategoryBar({
                     ))}
                 </nav>
 
-                <div className="mt-auto pb-4 pt-8 flex items-center justify-center opacity-10 pointer-events-none select-none">
-                    <span className="text-white text-7xl font-serif">福</span>
+                <div className="mt-auto pb-4 pt-8 flex items-center justify-center pointer-events-none select-none">
+                    <span className="text-white text-7xl font-serif drop-shadow-[2px_2px_3px_rgba(0,0,0,0.4)]">
+                        福
+                    </span>
                 </div>
             </div>
         </aside>
