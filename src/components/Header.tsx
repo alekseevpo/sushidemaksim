@@ -139,10 +139,11 @@ export default function Header() {
                                     src="/logo.svg"
                                     alt="Sushi de Maksim"
                                     className={`
-                                        h-9 md:h-6 w-auto object-contain transition-all duration-500
-                                        ${isScrolled || !isHome
-                                            ? '[filter:invert(16%)_sepia(89%)_saturate(6011%)_hue-rotate(356deg)_brightness(93%)_contrast(118%)] md:brightness-0 md:invert md:filter-none'
-                                            : 'brightness-0 invert'
+                                        h-10 md:h-8 w-auto object-contain transition-all duration-500
+                                        ${
+                                            isScrolled || !isHome
+                                                ? '[filter:invert(16%)_sepia(89%)_saturate(6011%)_hue-rotate(356deg)_brightness(93%)_contrast(118%)]'
+                                                : 'brightness-0 invert'
                                         }
                                     `}
                                 />
