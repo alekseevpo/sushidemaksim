@@ -314,7 +314,7 @@ export default function AddressModal({
                                 </MapContainer>
 
                                 {/* Search Overlay */}
-                                <div className="absolute top-2 left-2 right-2 z-[1000] space-y-2">
+                                <div className="absolute top-4 left-6 right-16 md:top-4 md:left-4 md:right-4 z-[1000] space-y-2">
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition">
                                             {isSearching ? (
