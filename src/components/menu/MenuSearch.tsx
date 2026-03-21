@@ -1,11 +1,13 @@
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CATEGORIES } from '../../constants/menu';
 
 interface MenuSearchProps {
     search: string;
     setSearch: (val: string) => void;
     isSearchExpanded: boolean;
     setIsSearchExpanded: (val: boolean) => void;
+    selectedCategory: string;
 }
 
 export default function MenuSearch({
@@ -13,7 +15,10 @@ export default function MenuSearch({
     setSearch,
     isSearchExpanded,
     setIsSearchExpanded,
+    selectedCategory,
 }: MenuSearchProps) {
+    const categoryName = CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Todos';
+
     return (
         <header className="mb-0 md:mb-12 relative">
             <AnimatePresence mode="wait">
@@ -25,9 +30,14 @@ export default function MenuSearch({
                         exit={{ opacity: 0, y: -10 }}
                         className="md:hidden flex items-center justify-between w-full h-16 pt-2"
                     >
-                        <h1 className="text-3xl text-gray-900 font-black tracking-tighter mb-0">
-                            Nuestro Menú
-                        </h1>
+                        <div className="flex items-baseline gap-2">
+                            <h1 className="text-3xl text-gray-900 font-black tracking-tighter mb-0">
+                                Nuestro Menú
+                            </h1>
+                            <span className="text-red-600 font-bold text-lg italic whitespace-nowrap">
+                                {categoryName}
+                            </span>
+                        </div>
                         <button
                             onClick={() => setIsSearchExpanded(true)}
                             className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
@@ -81,9 +91,14 @@ export default function MenuSearch({
 
             {/* Desktop Header */}
             <div className="hidden md:flex items-center justify-between w-full pt-8">
-                <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0">
-                    Nuestro Menú
-                </h1>
+                <div className="flex items-baseline gap-4">
+                    <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0 whitespace-nowrap">
+                        Nuestro Menú
+                    </h1>
+                    <span className="text-red-600 font-bold text-2xl italic whitespace-nowrap">
+                        {categoryName}
+                    </span>
+                </div>
                 <div className="relative w-full max-w-md ml-8">
                     <Search
                         size={18}
@@ -95,7 +110,7 @@ export default function MenuSearch({
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         placeholder="¿Qué te apetece hoy?"
-                        className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                        className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4_rgba(220,38,38,0.05)] transition-all shadow-sm"
                     />
                     {search && (
                         <button

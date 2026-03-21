@@ -86,7 +86,7 @@ export default function FavoritesTab() {
                 n.delete(item.id);
                 return n;
             });
-        }, 1200);
+        }, 1600);
     };
 
     if (loading) {

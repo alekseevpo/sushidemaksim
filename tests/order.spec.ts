@@ -82,12 +82,13 @@ test.describe('Critical E2E: Guest Checkout', () => {
         const addButton = page.getByTestId('add-to-cart-button').first();
 
         // Add 3 times to exceed 20€ (3 * 6.9 = 20.7)
+        // We wait for 1700ms because the app has a 1600ms delay between additions
         for (let i = 0; i < 3; i++) {
             await addButton.scrollIntoViewIfNeeded();
             await addButton.click({ force: true });
             // Just check it exists and is enabled
             await expect(addButton).toBeVisible();
-            await page.waitForTimeout(600);
+            await page.waitForTimeout(1700);
         }
 
         await page.goto('/cart');

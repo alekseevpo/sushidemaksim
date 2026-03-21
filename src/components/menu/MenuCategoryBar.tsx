@@ -10,11 +10,11 @@ interface MenuCategoryBarProps {
 
 const KatanaUnderline = () => (
     <motion.div
-        layoutId="katana-underline"
-        className="absolute -bottom-10 left-4 right-0 flex items-center justify-start pointer-events-none z-0"
-        initial={{ opacity: 0, scaleX: 0, originX: 0 }}
+        initial={{ opacity: 0, scaleX: 0 }}
         animate={{ opacity: 1, scaleX: 1 }}
-        transition={{ type: 'spring', stiffness: 150, damping: 25 }}
+        exit={{ opacity: 0, scaleX: 0 }}
+        className="absolute -bottom-10 left-4 right-0 flex items-center justify-start pointer-events-none z-0 origin-left"
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
     >
         <img src="/katana.png" alt="Katana" className="w-[250px] h-24 object-contain" />
     </motion.div>

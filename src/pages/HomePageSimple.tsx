@@ -140,7 +140,7 @@ export default function HomePageSimple() {
                 next.delete(itemId);
                 return next;
             });
-        }, 500);
+        }, 1600);
 
         // Haptic
         if (typeof navigator !== 'undefined' && navigator.vibrate) {

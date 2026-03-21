@@ -192,7 +192,7 @@ export default function CartPageSimple() {
                     n.delete(item.id);
                     return n;
                 });
-            }, 1200);
+            }, 1600);
         } catch (err) {
             showError('No se pudo añadir el producto al carrito');
         }

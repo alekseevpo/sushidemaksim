@@ -189,7 +189,7 @@ export default function MenuPageSimple() {
                 n.delete(itemId);
                 return n;
             });
-        }, 500);
+        }, 1600);
     };
 
     const menuSchema = {
@@ -240,6 +240,7 @@ export default function MenuPageSimple() {
                         setSearch={setSearch}
                         isSearchExpanded={isSearchExpanded}
                         setIsSearchExpanded={setIsSearchExpanded}
+                        selectedCategory={selectedCategory}
                     />
 
                     {/* Fixed category bar on mobile */}

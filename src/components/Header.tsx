@@ -173,12 +173,12 @@ export default function Header() {
                                         {link.label}
                                         {isActive && (
                                             <motion.div
-                                                layoutId="nav-active"
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
                                                 className="absolute inset-0 bg-red-600 -z-10 rounded-xl shadow-sm shadow-red-900/10"
                                                 transition={{
-                                                    type: 'spring',
-                                                    bounce: 0.25,
-                                                    duration: 0.5,
+                                                    duration: 0.3,
+                                                    ease: 'easeOut',
                                                 }}
                                             />
                                         )}
