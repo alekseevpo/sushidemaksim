@@ -52,32 +52,32 @@ export default function MenuCategoryBar({
     }
 
     return (
-        <aside className="hidden lg:block w-[120px] flex-shrink-0 sticky top-[64px] self-start z-30">
-            <div className="bg-red-600 min-h-[calc(100vh-64px)] py-6 px-1 flex flex-col items-stretch shadow-xl">
-                <nav className="flex flex-col gap-2">
+        <aside className="hidden lg:block w-[218px] flex-shrink-0 sticky top-[64px] self-start z-30">
+            <div className="bg-red-600 h-[calc(100vh-64px)] pb-8 px-3 flex flex-col items-stretch overflow-y-auto no-scrollbar rounded-none">
+                <nav className="flex flex-col">
                     <button
                         onClick={() => setSelectedCategory('all')}
-                        className={`relative w-full text-center py-4 rounded-xl font-black transition-all duration-200 flex flex-col items-center justify-center gap-1 border-none cursor-pointer group ${
+                        className={`relative w-full text-left px-4 py-4 transition-all duration-200 flex items-center gap-3 border-none cursor-pointer group ${
                             selectedCategory === 'all'
-                                ? 'bg-white text-red-600 shadow-lg'
-                                : 'text-white/80 hover:text-white hover:bg-white/10'
-                        }`}
+                                ? 'bg-white text-red-600 shadow-md rounded-b-xl'
+                                : 'text-white/80 hover:text-white hover:bg-white/10 rounded-b-xl'
+                        } rounded-t-none`}
                     >
-                        <Sparkles size={24} strokeWidth={2} className="relative z-10" />
-                        <span className="text-[10px] uppercase tracking-wider relative z-10 font-black">Todos</span>
+                        <Sparkles size={20} strokeWidth={2} className="relative z-10" />
+                        <span className="text-sm relative z-10 font-bold">Todos</span>
                     </button>
-                    {CATEGORIES.map(cat => (
+                    {CATEGORIES.map((cat, idx) => (
                         <button
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
-                            className={`relative w-full text-center py-4 rounded-xl font-black transition-all duration-200 flex flex-col items-center justify-center gap-1 border-none cursor-pointer group ${
+                            className={`relative w-full text-left px-4 py-4 rounded-xl font-black transition-all duration-200 flex items-center gap-3 border-none cursor-pointer mt-1.5 group ${
                                 selectedCategory === cat.id
-                                    ? 'bg-white text-red-600 shadow-lg'
+                                    ? 'bg-white text-red-600 shadow-md'
                                     : 'text-white/80 hover:text-white hover:bg-white/10'
                             }`}
                         >
-                            <cat.icon size={24} strokeWidth={2} className="relative z-10" />
-                            <span className="text-[10px] uppercase tracking-wider relative z-10 font-black leading-tight px-1">
+                            <cat.icon size={20} strokeWidth={2} className="relative z-10" />
+                            <span className="text-sm relative z-10 font-bold truncate">
                                 {cat.name}
                             </span>
                         </button>
