@@ -385,7 +385,7 @@ export default function Header() {
 
                                     {/* Scrollable Content Area */}
                                     <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
-                                        <div className="px-6 pt-4 pb-2 space-y-2">
+                                        <div className="px-3 pt-4 pb-2 space-y-2">
                                             {navLinks.map(link => {
                                                 const Icon = link.icon;
                                                 const isActive = location.pathname === link.to;
@@ -424,7 +424,7 @@ export default function Header() {
                                             })}
                                         </div>
 
-                                        <div className="px-6 pb-8 space-y-3">
+                                        <div className="px-3 pb-8 space-y-3">
                                             <div className="h-px bg-gray-100 my-2 mx-2" />
 
                                             {isLoading ? (
