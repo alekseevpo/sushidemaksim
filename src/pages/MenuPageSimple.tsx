@@ -112,7 +112,11 @@ export default function MenuPageSimple() {
         }
     };
 
-    const handleAddToCart = (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleAddToCart = (
+        item: MenuItem,
+        e: React.MouseEvent<HTMLButtonElement>,
+        quantity: number = 1
+    ) => {
         try {
             // Determine start and end coordinates for animation
             const cartIcon = document.getElementById('cart-icon');
@@ -159,18 +163,21 @@ export default function MenuPageSimple() {
         }
 
         // Add to real cart
-        addItem({
-            id: String(item.id),
-            name: item.name,
-            description: item.description,
-            price: item.price,
-            image: item.image,
-            category: item.category as any,
-            pieces: item.pieces,
-            spicy: item.spicy,
-            vegetarian: item.vegetarian,
-            isPromo: item.is_promo,
-        });
+        addItem(
+            {
+                id: String(item.id),
+                name: item.name,
+                description: item.description,
+                price: item.price,
+                image: item.image,
+                category: item.category as any,
+                pieces: item.pieces,
+                spicy: item.spicy,
+                vegetarian: item.vegetarian,
+                isPromo: item.is_promo,
+            },
+            quantity
+        );
 
         const itemId = item.id;
         setAddedItems(prev => new Set(prev).add(itemId));

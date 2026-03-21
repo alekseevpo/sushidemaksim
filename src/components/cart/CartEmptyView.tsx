@@ -14,7 +14,7 @@ interface MenuItem {
 interface CartEmptyViewProps {
     popularItems: MenuItem[];
     isLoadingPopular: boolean;
-    handleAddToCart: (item: MenuItem) => void;
+    handleAddToCart: (item: MenuItem, quantity?: number, isSuggestion?: boolean) => void;
     getCategoryEmoji: (category: string) => string;
     failedImages: Set<string | number>;
     setFailedImages: React.Dispatch<React.SetStateAction<Set<string | number>>>;

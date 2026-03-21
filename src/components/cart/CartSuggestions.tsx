@@ -1,4 +1,5 @@
-import { Sparkles, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Plus, Minus } from 'lucide-react';
 import { getOptimizedImageUrl } from '../../utils/images';
 
 interface MenuItem {
@@ -13,7 +14,7 @@ interface MenuItem {
 interface CartSuggestionsProps {
     suggestions: MenuItem[];
     isLoadingSuggestions: boolean;
-    handleAddToCart: (item: MenuItem, isSuggestion?: boolean) => void;
+    handleAddToCart: (item: MenuItem, quantity: number, isSuggestion?: boolean) => void;
     getCategoryEmoji: (category: string) => string;
     failedImages: Set<string | number>;
     setFailedImages: React.Dispatch<React.SetStateAction<Set<string | number>>>;
@@ -27,6 +28,17 @@ export default function CartSuggestions({
     failedImages,
     setFailedImages,
 }: CartSuggestionsProps) {
+    const [localQuantities, setLocalQuantities] = useState<Record<number, number>>({});
+
+    const getQuantity = (id: number) => localQuantities[id] || 1;
+
+    const updateQuantity = (id: number, delta: number) => {
+        setLocalQuantities(prev => ({
+            ...prev,
+            [id]: Math.max(1, (prev[id] || 1) + delta),
+        }));
+    };
+
     if (isLoadingSuggestions) {
         return (
             <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6">
@@ -78,20 +90,40 @@ export default function CartSuggestions({
                                 </div>
                             )}
                         </div>
-                        <div className="flex-1 min-w-0 pr-2">
-                            <p className="text-sm font-bold text-gray-900 truncate m-0 leading-tight">
+                        <div className="flex-1 min-w-0 pr-1">
+                            <p className="text-[13px] font-bold text-gray-900 truncate m-0 leading-tight">
                                 {item.name}
                             </p>
                             <p className="text-[11px] text-red-600 font-black m-0">
                                 {item.price.toFixed(2).replace('.', ',')} €
                             </p>
                         </div>
+
+                        {/* Quantity Selector */}
+                        <div className="flex items-center bg-gray-100 rounded-full px-1 py-0.5">
+                            <button
+                                onClick={() => updateQuantity(item.id, -1)}
+                                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+                            >
+                                <Minus size={12} strokeWidth={2.5} />
+                            </button>
+                            <span className="w-4 text-center text-[12px] font-bold text-gray-900">
+                                {getQuantity(item.id)}
+                            </span>
+                            <button
+                                onClick={() => updateQuantity(item.id, 1)}
+                                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+                            >
+                                <Plus size={12} strokeWidth={2.5} />
+                            </button>
+                        </div>
+
                         <button
-                            onClick={() => handleAddToCart(item, true)}
-                            className="bg-gray-900 text-white rounded-full p-1.5 hover:bg-red-600 active:scale-90 transition-all duration-300 shadow-sm flex items-center justify-center border-none cursor-pointer"
+                            onClick={() => handleAddToCart(item, getQuantity(item.id), true)}
+                            className="bg-gray-900 text-white rounded-full p-2 hover:bg-red-600 active:scale-95 transition-all duration-300 shadow-sm flex items-center justify-center border-none cursor-pointer ml-1"
                             title="Añadir al pedido"
                         >
-                            <Plus size={14} strokeWidth={1.5} />
+                            <Plus size={16} strokeWidth={1.5} />
                         </button>
                     </div>
                 ))}

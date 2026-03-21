@@ -13,7 +13,7 @@ interface ProductGridProps {
     favorites: Set<number>;
     onToggleFavorite: (id: number) => void;
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
-    onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>) => void;
+    onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>, quantity: number) => void;
     addedItems: Set<number>;
     failedImages: Set<number>;
     setFailedImages: React.Dispatch<React.SetStateAction<Set<number>>>;

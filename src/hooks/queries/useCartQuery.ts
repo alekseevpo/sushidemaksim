@@ -46,7 +46,7 @@ export function useAddToCartMutation(user: any) {
     const queryKey = [...CART_QUERY_KEY, user?.id || 'guest'];
 
     return useMutation({
-        mutationFn: async (item: SushiItem) => {
+        mutationFn: async ({ item, quantity = 1 }: { item: SushiItem; quantity?: number }) => {
             if (!user) {
                 // Logic already handled in onMutate for guest, but we repeat for safety
                 const localCart = localStorage.getItem('guest_cart');
@@ -54,16 +54,16 @@ export function useAddToCartMutation(user: any) {
                 const existing = items.find((i: any) => i.id === item.id);
                 const newItems = existing
                     ? items.map((i: any) =>
-                          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                          i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
                       )
-                    : [...items, { ...item, quantity: 1 }];
+                    : [...items, { ...item, quantity }];
                 localStorage.setItem('guest_cart', JSON.stringify(newItems));
                 return { items: newItems };
             }
 
-            return api.post('/cart', { menuItemId: parseInt(item.id), quantity: 1 });
+            return api.post('/cart', { menuItemId: parseInt(item.id), quantity });
         },
-        onMutate: async newItem => {
+        onMutate: async ({ item: newItem, quantity = 1 }) => {
             await queryClient.cancelQueries({ queryKey });
             const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
                 queryKey
@@ -73,9 +73,9 @@ export function useAddToCartMutation(user: any) {
                 const existing = previousCart.items.find(i => i.id === newItem.id);
                 const updatedItems = existing
                     ? previousCart.items.map(i =>
-                          i.id === newItem.id ? { ...i, quantity: i.quantity + 1 } : i
+                          i.id === newItem.id ? { ...i, quantity: i.quantity + quantity } : i
                       )
-                    : [...previousCart.items, { ...newItem, quantity: 1 } as CartItem];
+                    : [...previousCart.items, { ...newItem, quantity } as CartItem];
 
                 const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
 

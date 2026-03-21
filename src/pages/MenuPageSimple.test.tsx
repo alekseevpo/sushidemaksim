@@ -103,7 +103,8 @@ describe('MenuPageSimple (Integration)', () => {
             expect.objectContaining({
                 id: '1',
                 name: 'Salmon Roll',
-            })
+            }),
+            1
         );
     });
 });

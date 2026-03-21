@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -124,47 +124,28 @@ export default function CartPageSimple() {
         loadInitialData();
     }, []);
 
-    useEffect(() => {
-        if (items.length === 0) {
-            loadPopularItems();
-        } else {
-            loadSuggestions();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [items.length]);
+    const loadSuggestions = useCallback(async () => {
+        if (suggestions.length > 0) return;
 
-    const loadSuggestions = async () => {
         setIsLoadingSuggestions(true);
         try {
-            const [extras, beverages, desserts] = await Promise.all([
-                api.get('/menu?category=extras'),
-                api.get('/menu?category=entrantes'),
-                api.get('/menu?category=postre'),
-            ]);
+            const data = await api.get('/menu?category=extras');
+            const all = data.items || [];
 
-            const all = [
-                ...(extras.items || []),
-                ...(beverages.items || []),
-                ...(desserts.items || []),
-            ];
+            // Filter out items already in cart
+            const filtered = all
+                .filter((item: any) => !items.find(cartItem => cartItem.id === String(item.id)))
+                .slice(0, 10);
 
-            // Remove duplicates by ID
-            const uniqueMap = new Map();
-            all.forEach(item => uniqueMap.set(item.id, item));
-            const unique = Array.from(uniqueMap.values());
-
-            const filtered = unique
-                .filter(item => !items.find(cartItem => cartItem.id === String(item.id)))
-                .slice(0, 8);
             setSuggestions(filtered);
         } catch (err) {
             console.error('Failed to load suggestions', err);
         } finally {
             setIsLoadingSuggestions(false);
         }
-    };
+    }, [items, suggestions.length]);
 
-    const loadPopularItems = async () => {
+    const loadPopularItems = useCallback(async () => {
         setIsLoadingPopular(true);
         try {
             const data = await api.get('/menu?limit=6');
@@ -174,18 +155,30 @@ export default function CartPageSimple() {
         } finally {
             setIsLoadingPopular(false);
         }
-    };
+    }, []);
 
-    const handleAddToCart = async (item: MenuItem, isSuggestion = false) => {
+    useEffect(() => {
+        if (items.length === 0) {
+            loadPopularItems();
+        } else if (suggestions.length === 0) {
+            // Only load suggestions if we don't have any yet
+            loadSuggestions();
+        }
+    }, [items.length, suggestions.length, loadSuggestions, loadPopularItems]);
+
+    const handleAddToCart = async (item: MenuItem, quantity: number = 1, isSuggestion = false) => {
         try {
-            await addItem({
+            // Map our local MenuItem to the global SushiItem type
+            const sushiItem = {
                 id: String(item.id),
                 name: item.name,
                 description: item.description || '',
                 price: item.price,
                 image: item.image,
                 category: item.category as any,
-            });
+            };
+
+            await addItem(sushiItem, quantity);
 
             setAddedItems(prev => new Set(prev).add(item.id));
             if (isSuggestion) {

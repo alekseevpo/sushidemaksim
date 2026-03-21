@@ -14,20 +14,22 @@ vi.mock('../utils/api', () => ({
     },
 }));
 
+const mockCartItems = [
+    {
+        id: '1',
+        name: 'Sushi A',
+        price: 10,
+        quantity: 1,
+        category: 'rollos-grandes' as any,
+        image: '',
+        description: '',
+    },
+];
+
 // Mock useCart
 vi.mock('../hooks/useCart', () => ({
     useCart: () => ({
-        items: [
-            {
-                id: '1',
-                name: 'Sushi A',
-                price: 10,
-                quantity: 1,
-                category: 'rollos-grandes',
-                image: '',
-                description: '',
-            },
-        ],
+        items: mockCartItems,
         total: 10,
         updateQuantity: vi.fn(),
         removeItem: vi.fn(),

@@ -122,12 +122,15 @@ export default function HomePageSimple() {
         };
     });
 
-    const handleAddToCart = (item: any) => {
-        addItem({
-            ...item,
-            id: String(item.id),
-            category: item.category as any,
-        });
+    const handleAddToCart = (item: any, _e?: any, quantity: number = 1) => {
+        addItem(
+            {
+                ...item,
+                id: String(item.id),
+                category: item.category as any,
+            },
+            quantity
+        );
 
         const itemId = Number(item.id);
         setAddedItems(prev => new Set(prev).add(itemId));
@@ -442,7 +445,7 @@ export default function HomePageSimple() {
                                                 isFavorite={false}
                                                 onToggleFavorite={() => {}}
                                                 onShare={() => {}}
-                                                onAddToCart={item => handleAddToCart(item)}
+                                                onAddToCart={handleAddToCart}
                                                 isAdded={addedItems.has(Number(item.id))}
                                                 failedImages={failedImages}
                                                 setFailedImages={setFailedImages}

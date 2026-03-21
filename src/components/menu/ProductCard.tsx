@@ -1,4 +1,5 @@
-import { Heart, Share2, Sparkles, Check, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Heart, Share2, Sparkles, Check, Plus, Minus } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
 import { MenuItem } from '../../hooks/queries/useMenu';
@@ -11,7 +12,7 @@ interface ProductCardProps {
     isFavorite: boolean;
     onToggleFavorite: (id: number) => void;
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
-    onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>) => void;
+    onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>, quantity: number) => void;
     isAdded: boolean;
     failedImages: Set<number>;
     setFailedImages: React.Dispatch<React.SetStateAction<Set<number>>>;
@@ -30,6 +31,10 @@ export default function ProductCard({
     setFailedImages,
     isPriority,
 }: ProductCardProps) {
+    const [quantity, setQuantity] = useState(1);
+
+    const isExtra = item.category === 'extras';
+
     return (
         <div
             id={`item-${item.id}`}
@@ -117,14 +122,37 @@ export default function ProductCard({
                 </p>
 
                 <div className="mt-auto flex items-center justify-between gap-1">
-                    <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
-                        {item.price.toFixed(2).replace('.', ',')} €
-                    </span>
+                    <div className="flex flex-col">
+                        <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
+                            {item.price.toFixed(2).replace('.', ',')} €
+                        </span>
+                        {isExtra && !isAdded && (
+                            <div className="flex items-center bg-gray-100 rounded-lg md:rounded-xl px-1 py-0.5 mt-1 md:w-fit">
+                                <button
+                                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                    className="w-5 h-5 md:w-7 md:h-7 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer"
+                                    aria-label="Disminuir cantidad"
+                                >
+                                    <Minus size={12} strokeWidth={3} />
+                                </button>
+                                <span className="w-4 md:w-6 text-center text-[10px] md:text-[12px] font-black text-gray-900">
+                                    {quantity}
+                                </span>
+                                <button
+                                    onClick={() => setQuantity(q => q + 1)}
+                                    className="w-5 h-5 md:w-7 md:h-7 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer"
+                                    aria-label="Aumentar cantidad"
+                                >
+                                    <Plus size={12} strokeWidth={3} />
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <button
                         aria-label="Añadir"
                         data-testid="add-to-cart-button"
                         disabled={isAdded}
-                        onClick={e => onAddToCart(item, e)}
+                        onClick={e => onAddToCart(item, e, quantity)}
                         className={`h-8 w-8 md:h-11 md:w-auto md:px-6 rounded-lg md:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
                             isAdded
                                 ? 'bg-green-500 text-white cursor-default'

@@ -16,7 +16,7 @@ interface CartContextType {
     items: CartItem[];
     total: number;
     isLoading: boolean;
-    addItem: (item: SushiItem) => Promise<void>;
+    addItem: (item: SushiItem, quantity?: number) => Promise<void>;
     removeItem: (id: string, cartItemId?: number) => Promise<void>;
     updateQuantity: (id: string, quantity: number, cartItemId?: number) => Promise<void>;
     clearCart: () => Promise<void>;
@@ -63,9 +63,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [user, queryClient]);
 
     const addItem = useCallback(
-        async (item: SushiItem) => {
+        async (item: SushiItem, quantity: number = 1) => {
             if ('vibrate' in navigator) navigator.vibrate(50);
-            await addToCart(item);
+            await addToCart({ item, quantity });
         },
         [addToCart]
     );
