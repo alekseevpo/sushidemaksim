@@ -217,14 +217,14 @@ export default function MenuPageSimple() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent px-2 md:px-4 pb-0 pt-0 flex flex-col">
+        <div className="min-h-screen bg-transparent px-0 md:px-4 pb-0 pt-0 flex flex-col">
             <SEO
                 title="Menú y Carta de Sushi"
                 description="Explora nuestra carta completa de sushi. Rolles, nigiri, sashimi, combos y más opciones deliciosas con entrega a domicilio en Madrid."
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />
-            <div className="max-w-7xl mx-auto flex-1 lg:flex px-4 w-full">
+            <div className="max-w-7xl mx-auto flex-1 lg:flex px-3 md:px-4 w-full">
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
                     selectedCategory={selectedCategory}

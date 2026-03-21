@@ -29,7 +29,7 @@ export default function MenuCategoryBar({
         return (
             <div className="fixed top-16 left-0 right-0 z-[40] bg-[#FDFBF7] border-b border-gray-200 lg:hidden">
                 <div className="max-w-7xl mx-auto">
-                    <div className="overflow-x-auto no-scrollbar px-4 py-3">
+                    <div className="overflow-x-auto no-scrollbar px-3 py-3">
                         <div className="flex gap-2 flex-nowrap">
                             <button
                                 id="cat-all"
