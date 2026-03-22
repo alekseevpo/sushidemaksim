@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Gift, Mail, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export default function RegistrationPrompt() {
@@ -74,14 +73,20 @@ export default function RegistrationPrompt() {
                         </p>
 
                         <div className="space-y-3">
-                            <Link
-                                to="/login?mode=signup"
-                                onClick={() => setIsVisible(false)}
+                            <button
+                                onClick={() => {
+                                    setIsVisible(false);
+                                    document.dispatchEvent(
+                                        new CustomEvent('custom:openLogin', {
+                                            detail: { mode: 'register' },
+                                        })
+                                    );
+                                }}
                                 className="w-full flex items-center justify-center gap-3 bg-red-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-red-200 border-none cursor-pointer hover:bg-red-700 transition-all no-underline"
                             >
                                 <Mail size={20} />
                                 REGISTRARME AHORA
-                            </Link>
+                            </button>
 
                             <button
                                 onClick={() => setIsVisible(false)}

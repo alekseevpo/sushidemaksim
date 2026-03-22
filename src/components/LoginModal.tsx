@@ -617,12 +617,31 @@ export default function LoginModal({
                                     (No olvides revisar la carpeta de SPAM)
                                 </p>
                             </div>
-                            <button
-                                onClick={() => setMode('login')}
-                                className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
-                            >
-                                <ArrowLeft size={18} strokeWidth={1.5} /> Volver al login
-                            </button>
+                            <div className="grid grid-cols-1 gap-3">
+                                <a
+                                    href="https://mail.google.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2 no-underline"
+                                >
+                                    <Mail size={18} strokeWidth={1.5} /> Abrir Gmail
+                                </a>
+                                <button
+                                    onClick={() => {
+                                        onClose();
+                                        navigate('/menu');
+                                    }}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
+                                >
+                                    Explorar Menú
+                                </button>
+                                <button
+                                    onClick={() => setMode('login')}
+                                    className="w-full py-3 text-gray-400 font-bold hover:text-gray-600 transition-colors text-[10px] uppercase tracking-widest"
+                                >
+                                    Volver al login
+                                </button>
+                            </div>
                         </div>
                     )}
 

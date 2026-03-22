@@ -645,16 +645,34 @@ router.delete(
             return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
         }
 
-        // Delete related data first (optional if CASCADE is set, but better safe)
-        const tables = ['user_addresses', 'user_favorites', 'orders', 'promo_codes'];
-        for (const table of tables) {
+        // 1. Get all order IDs for this user
+        const { data: userOrders } = await supabase
+            .from('orders')
+            .select('id')
+            .eq('user_id', id);
+
+        const orderIds = (userOrders || []).map(o => o.id);
+
+        // 2. Delete dependencies in order
+        if (orderIds.length > 0) {
+            await supabase.from('order_items').delete().in('order_id', orderIds);
+            await supabase.from('orders').delete().in('id', orderIds);
+        }
+
+        // 3. Delete other user data
+        const otherTables = ['user_addresses', 'user_favorites', 'promo_codes'];
+        for (const table of otherTables) {
             await supabase.from(table).delete().eq('user_id', id);
         }
 
+        // 4. Finally delete user from auth (users table)
         const { error } = await supabase.from('users').delete().eq('id', id);
 
         if (error) throw error;
-        res.json({ success: true, message: `Usuario #${id} eliminado permanentemente` });
+        res.json({
+            success: true,
+            message: `Usuario #${id} и ${orderIds.length} pedidos eliminados permanentemente`,
+        });
     })
 );
 

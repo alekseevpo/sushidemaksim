@@ -219,10 +219,10 @@ const UserRow = memo(
                         </span>
                     )}
                 </td>
-                {currentUser?.is_superadmin && (
-                    <td className="px-4 py-2 text-center flex items-center justify-center gap-1.5 min-w-[140px]">
-                        {!user.is_superadmin && (
-                            <>
+                <td className="px-4 py-2 text-center flex items-center justify-center gap-1.5 min-w-[140px]">
+                    {!user.is_superadmin && (
+                        <>
+                            {currentUser?.is_superadmin && (
                                 <button
                                     onClick={() => onToggleRole(user)}
                                     className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
@@ -233,17 +233,17 @@ const UserRow = memo(
                                 >
                                     {user.role === 'admin' ? 'Revocar' : 'Hacer Admin'}
                                 </button>
-                                <button
-                                    onClick={() => onDelete(user)}
-                                    className="p-1 text-gray-400 hover:text-red-600 transition"
-                                    title="Eliminar permanentemente"
-                                >
-                                    <Trash2 size={16} strokeWidth={1.5} />
-                                </button>
-                            </>
-                        )}
-                    </td>
-                )}
+                            )}
+                            <button
+                                onClick={() => onDelete(user)}
+                                className="p-1 text-gray-400 hover:text-red-600 transition"
+                                title="Eliminar permanentemente"
+                            >
+                                <Trash2 size={16} strokeWidth={1.5} />
+                            </button>
+                        </>
+                    )}
+                </td>
             </tr>
         );
     }
@@ -611,18 +611,22 @@ export default function AdminUsers() {
                                 <Trash2 size={32} strokeWidth={1.5} />
                             </div>
                             <h3 className="text-xl font-black text-gray-900 mb-2">
-                                ¿Eliminar permanentemente?
+                                ¿Eliminar usuario PARA SIEMPRE?
                             </h3>
                             <p className="text-sm text-gray-500 font-medium mb-6">
-                                Estás a punto de borrar a{' '}
+                                Estás a punto de borrar definitivamente a{' '}
                                 <span className="text-red-600 font-black">
-                                    {userToDelete.name} (ID: #{userToDelete.id})
+                                    {userToDelete.name} (ID: #{userToDelete.id}, Email:{' '}
+                                    {userToDelete.email})
                                 </span>
                                 .
                                 <br />
                                 <br />
-                                Esta acción <span className="font-black">ELIMINARÁ TODOS</span> los
-                                pedidos, direcciones y datos asociados de forma definitiva.
+                                <span className="p-3 bg-red-50 border border-red-100 rounded-xl block text-red-700 font-bold text-xs uppercase tracking-tight">
+                                    ¡Atención! Esta acción es irreversible. Se ELIMINARÁN PARA SIEMPRE
+                                    todos sus pedidos, direcciones, historial y cualquier dato
+                                    asociado.
+                                </span>
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button

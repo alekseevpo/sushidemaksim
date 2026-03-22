@@ -61,20 +61,20 @@ export default function VerifyPage() {
                         <div className="grid grid-cols-1 gap-4 w-full">
                             <button
                                 onClick={() => {
-                                    navigate('/');
+                                    navigate('/menu');
                                     setTimeout(() => {
                                         document.dispatchEvent(new CustomEvent('custom:openLogin'));
                                     }, 100);
                                 }}
                                 className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
                             >
-                                <LogIn size={18} strokeWidth={1.5} /> Iniciar sesión
+                                <LogIn size={18} strokeWidth={1.5} /> Iniciar sesión y Pedir
                             </button>
                             <Link
-                                to="/"
+                                to="/menu"
                                 className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-black text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
                             >
-                                <Home size={18} strokeWidth={1.5} /> Ir al inicio
+                                <Home size={18} strokeWidth={1.5} /> Explorar Menú
                             </Link>
                         </div>
                     </div>
