@@ -49,7 +49,7 @@ export default function RegistrationPrompt() {
                 >
                     {/* Top Accent */}
                     <div className="h-2 bg-gradient-to-r from-red-500 via-red-600 to-red-700" />
-                    
+
                     <button
                         onClick={() => setIsVisible(false)}
                         className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors border-none bg-transparent cursor-pointer z-10"
@@ -63,12 +63,14 @@ export default function RegistrationPrompt() {
                         </div>
 
                         <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
-                            ¡Regístrate y recibe un <span className="text-red-600">10% de descuento</span>!
+                            ¡Regístrate y recibe un{' '}
+                            <span className="text-red-600">10% de descuento</span>!
                         </h3>
-                        
+
                         <p className="text-gray-500 mb-8 font-medium">
-                            Únete a la familia Maksim y obtén un 10% de descuento en tu primer pedido superior a 70€. 
-                            Recibirás un código promocional en tu email tras registrarte.
+                            Únete a la familia Maksim y obtén un 10% de descuento en tu primer
+                            pedido superior a 70€. Recibirás un código promocional en tu email tras
+                            registrarte.
                         </p>
 
                         <div className="space-y-3">
@@ -80,7 +82,7 @@ export default function RegistrationPrompt() {
                                 <Mail size={20} />
                                 REGISTRARME AHORA
                             </Link>
-                            
+
                             <button
                                 onClick={() => setIsVisible(false)}
                                 className="w-full py-4 text-gray-400 font-bold hover:text-gray-600 transition-colors border-none bg-transparent cursor-pointer text-sm"

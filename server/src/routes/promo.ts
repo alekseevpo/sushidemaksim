@@ -11,9 +11,9 @@ router.use(authMiddleware);
 router.post(
     '/validate',
     promoLimiter,
-    validate({ 
+    validate({
         code: { required: true, type: 'string' },
-        subtotal: { type: 'number', required: false }
+        subtotal: { type: 'number', required: false },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { code, subtotal } = req.body;
@@ -50,9 +50,9 @@ router.post(
 
             // 2. Min Order Check (70€)
             if (subtotal !== undefined && subtotal < 70) {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     error: 'El pedido mínimo para este código es de 70,00€',
-                    minOrder: 70
+                    minOrder: 70,
                 });
             }
         }

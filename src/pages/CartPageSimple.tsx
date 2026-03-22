@@ -49,7 +49,7 @@ export default function CartPageSimple() {
 
     const discountAmount = promoDiscount ? (cartSubtotal * promoDiscount) / 100 : 0;
     const { deliveryType, selectedZone } = deliveryDetails;
-    
+
     // We need siteSettings for these. But they are loaded in useEffect.
     // I'll keep them where they are if they need it, or move siteSettings load to useCart?
     // Actually, I can just calculate them later OR handle nulls.
@@ -214,9 +214,9 @@ export default function CartPageSimple() {
         setIsApplyingPromo(true);
         setPromoError(null);
         try {
-            const data = await api.post('/promo/validate', { 
+            const data = await api.post('/promo/validate', {
                 code: code.trim().toUpperCase(),
-                subtotal: cartSubtotal
+                subtotal: cartSubtotal,
             });
             setPromoDiscount(data.percentage);
             setPromoCode(code.trim().toUpperCase());
@@ -368,9 +368,9 @@ export default function CartPageSimple() {
                   ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60)
                   : (siteSettings?.free_delivery_threshold ?? 60))
                 ? 0
-                : (selectedZone
-                    ? (selectedZone.cost ?? 0)
-                    : (siteSettings?.delivery_fee ?? 3.5))
+                : selectedZone
+                  ? (selectedZone.cost ?? 0)
+                  : (siteSettings?.delivery_fee ?? 3.5)
             : 0;
     const finalTotal = cartSubtotal - discountAmount + deliveryCost;
 

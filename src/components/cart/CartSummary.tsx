@@ -90,7 +90,7 @@ export default function CartSummary({
                     <div className="flex justify-between text-green-600 text-sm animate-in zoom-in duration-300">
                         <span>Descuento ({promoDiscount}%)</span>
                         <span className="font-bold">
-                            -{(total * promoDiscount / 100).toFixed(2).replace('.', ',')} €
+                            -{((total * promoDiscount) / 100).toFixed(2).replace('.', ',')} €
                         </span>
                     </div>
                 )}
@@ -112,7 +112,7 @@ export default function CartSummary({
                         <input
                             type="text"
                             value={promoCode}
-                            onChange={(e) => setPromoCode(e.target.value)}
+                            onChange={e => setPromoCode(e.target.value)}
                             placeholder="Código promo"
                             className={`flex-1 px-4 py-3 bg-gray-50 border ${promoError ? 'border-red-300' : 'border-gray-200'} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all uppercase font-bold`}
                         />
@@ -128,14 +128,20 @@ export default function CartSummary({
                     <div className="flex items-center justify-between p-3 bg-green-50 border border-green-100 rounded-xl animate-in slide-in-from-top-2 duration-300">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
-                                <span className="text-green-600 font-black text-xs">%{promoDiscount}</span>
+                                <span className="text-green-600 font-black text-xs">
+                                    %{promoDiscount}
+                                </span>
                             </div>
                             <div>
-                                <p className="text-[10px] text-green-700 font-black uppercase tracking-widest leading-none mb-1">Código Activo</p>
-                                <p className="text-xs font-bold text-gray-900 uppercase">{promoCode}</p>
+                                <p className="text-[10px] text-green-700 font-black uppercase tracking-widest leading-none mb-1">
+                                    Código Activo
+                                </p>
+                                <p className="text-xs font-bold text-gray-900 uppercase">
+                                    {promoCode}
+                                </p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={handleRemovePromo}
                             className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer"
                         >
