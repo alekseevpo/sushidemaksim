@@ -105,3 +105,78 @@ describe('LoginModal - Registration', () => {
         });
     });
 });
+
+const mockPost = vi.fn();
+vi.mock('../utils/api', () => ({
+    api: {
+        post: (...args: any[]) => mockPost(...args),
+    },
+}));
+
+describe('LoginModal - Password Recovery', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('switches from login to forgot password mode', () => {
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="login" />);
+        fireEvent.click(screen.getByText('¿Olvidaste?'));
+        expect(screen.getByText('Recuperar acceso')).toBeInTheDocument();
+        expect(screen.getByText('Te ayudamos a volver.')).toBeInTheDocument();
+    });
+
+    it('handles forgot password submission successfully', async () => {
+        mockPost.mockResolvedValue({ data: { success: true } });
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="forgot" />);
+
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), { target: { value: 'test@example.com' } });
+        fireEvent.submit(screen.getByText('Enviar instrucciones').closest('form')!);
+
+        await waitFor(() => {
+            expect(mockPost).toHaveBeenCalledWith('/auth/forgot-password', { email: 'test@example.com' });
+            expect(screen.getByText('Verifica tu email')).toBeInTheDocument();
+            expect(mockSuccess).toHaveBeenCalledWith('Email de recuperación enviado');
+        });
+    });
+
+    it('navigates from verify-sent to reset-password when clicking "Ya tengo el código"', async () => {
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="verify-sent" />);
+        fireEvent.click(screen.getByText('Ya tengo el código'));
+        expect(screen.getByText('Nueva contraseña')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Pega aquí tu código')).toBeInTheDocument();
+    });
+
+    it('handles password reset successfully', async () => {
+        mockPost.mockResolvedValue({ data: { success: true } });
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
+
+        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), { target: { value: '123456' } });
+        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), { target: { value: 'newpassword123' } });
+        fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), { target: { value: 'newpassword123' } });
+
+        fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
+
+        await waitFor(() => {
+            expect(mockPost).toHaveBeenCalledWith('/auth/reset-password', {
+                token: '123456',
+                newPassword: 'newpassword123',
+            });
+            expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
+            expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('Contraseña actualizada'));
+        });
+    });
+
+    it('shows error when passwords do not match in reset mode', async () => {
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
+
+        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), { target: { value: '123456' } });
+        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), { target: { value: 'pass1' } });
+        fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), { target: { value: 'pass2' } });
+
+        fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
+
+        await waitFor(() => {
+            expect(mockError).toHaveBeenCalledWith('Las contraseñas no coinciden');
+        });
+    });
+});

@@ -328,10 +328,31 @@ const ResetPasswordForm = memo(
                 onSubmit={onReset}
                 className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
-                <input type="hidden" name="token" value={token} />
+                {token ? (
+                    <input type="hidden" name="token" value={token} />
+                ) : (
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                            Código de recuperación
+                        </label>
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                                <KeyRound size={16} strokeWidth={1.5} />
+                            </div>
+                            <input
+                                type="text"
+                                name="token"
+                                required
+                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900 uppercase tracking-widest placeholder:tracking-normal placeholder:font-normal"
+                                placeholder="Pega aquí tu código"
+                            />
+                        </div>
+                    </div>
+                )}
+
                 <div className="bg-blue-50 border border-blue-100 p-3 rounded-2xl mb-1 flex items-center gap-3">
                     <div className="p-2 bg-blue-100 rounded-lg text-blue-600 shrink-0">
-                        <KeyRound size={16} strokeWidth={1.5} />
+                        <Lock size={16} strokeWidth={1.5} />
                     </div>
                     <p className="text-[10px] text-blue-700 font-medium leading-relaxed">
                         Crea una nueva contraseña para proteger tu cuenta.
@@ -637,6 +658,12 @@ export default function LoginModal({
                                     className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
                                 >
                                     Explorar Menú
+                                </button>
+                                <button
+                                    onClick={() => setMode('reset-password')}
+                                    className="w-full py-4 bg-white border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-sm hover:border-red-600 hover:text-red-600 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <KeyRound size={18} strokeWidth={1.5} /> Ya tengo el código
                                 </button>
                                 <button
                                     onClick={() => setMode('login')}
