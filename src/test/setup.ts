@@ -36,3 +36,26 @@ Object.defineProperty(window, 'IntersectionObserver', {
     configurable: true,
     value: IntersectionObserverMock,
 });
+
+// Mock window.scrollTo which is missing in JSDOM
+Object.defineProperty(window, 'scrollTo', {
+    writable: true,
+    configurable: true,
+    value: vi.fn(),
+});
+
+// Mock window.matchMedia which is often missing in JSDOM
+Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: vi.fn().mockImplementation(query => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(), // Deprecated
+        removeListener: vi.fn(), // Deprecated
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+    })),
+});

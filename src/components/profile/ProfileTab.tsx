@@ -13,7 +13,6 @@ import {
     Calendar,
     Trash2,
     Camera,
-    Upload,
     RotateCcw,
 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
