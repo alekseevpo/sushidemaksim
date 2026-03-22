@@ -49,8 +49,14 @@ export default function MenuPageSimple() {
             }
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
-                const offset = 100;
-                const top = menuTop.getBoundingClientRect().top + window.pageYOffset - offset;
+                const headerHeight =
+                    parseInt(
+                        getComputedStyle(document.documentElement).getPropertyValue(
+                            '--header-height'
+                        )
+                    ) || 80;
+                const offset = headerHeight + 32; // Align to md:pt-8 or similar
+                const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: 'smooth' });
             }
         }
@@ -72,8 +78,14 @@ export default function MenuPageSimple() {
             }
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
-                const offset = 100;
-                const top = menuTop.getBoundingClientRect().top + window.pageYOffset - offset;
+                const headerHeight =
+                    parseInt(
+                        getComputedStyle(document.documentElement).getPropertyValue(
+                            '--header-height'
+                        )
+                    ) || 80;
+                const offset = headerHeight + 32;
+                const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: 'smooth' });
             }
         }
@@ -88,8 +100,14 @@ export default function MenuPageSimple() {
                 setTimeout(() => {
                     const el = document.getElementById(id);
                     if (el) {
-                        const offset = 120;
-                        const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+                        const headerHeight =
+                            parseInt(
+                                getComputedStyle(document.documentElement).getPropertyValue(
+                                    '--header-height'
+                                )
+                            ) || 80;
+                        const offset = headerHeight + 32;
+                        const top = el.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
                     }
                 }, 300);
