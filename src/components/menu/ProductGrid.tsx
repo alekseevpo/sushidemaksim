@@ -17,6 +17,7 @@ interface ProductGridProps {
     addedItems: Set<number>;
     failedImages: Set<number>;
     setFailedImages: React.Dispatch<React.SetStateAction<Set<number>>>;
+    highlightedItemId?: string | null;
 }
 
 export default function ProductGrid({
@@ -33,6 +34,7 @@ export default function ProductGrid({
     addedItems,
     failedImages,
     setFailedImages,
+    highlightedItemId,
 }: ProductGridProps) {
     if (items.length === 0) {
         return (
@@ -109,6 +111,7 @@ export default function ProductGrid({
                                     isAdded={addedItems.has(item.id)}
                                     failedImages={failedImages}
                                     setFailedImages={setFailedImages}
+                                    isHighlighted={String(item.id) === highlightedItemId}
                                 />
                             ))}
                         </div>

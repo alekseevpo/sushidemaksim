@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import FloatingCart from './components/FloatingCart';
 import SmoothScroll from './components/SmoothScroll';
+import RegistrationPrompt from './components/RegistrationPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
 import { Analytics } from '@vercel/analytics/react';
@@ -88,6 +89,7 @@ function App() {
                             <SpeedInsights />
                             <SmoothScroll />
                             <CookieConsent />
+                            <RegistrationPrompt />
                             <FloatingCart />
                             {!isAdminRoute && <Header />}
                             <main

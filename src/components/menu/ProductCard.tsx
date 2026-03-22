@@ -17,6 +17,7 @@ interface ProductCardProps {
     failedImages: Set<number>;
     setFailedImages: React.Dispatch<React.SetStateAction<Set<number>>>;
     isPriority?: boolean;
+    isHighlighted?: boolean;
 }
 
 export default function ProductCard({
@@ -30,6 +31,7 @@ export default function ProductCard({
     failedImages,
     setFailedImages,
     isPriority,
+    isHighlighted,
 }: ProductCardProps) {
     const [quantity, setQuantity] = useState(1);
 
@@ -38,7 +40,9 @@ export default function ProductCard({
     return (
         <div
             id={`item-${item.id}`}
-            className="premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden"
+            className={`premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden ${
+                isHighlighted ? 'highlight-item' : ''
+            }`}
         >
             {/* Action Buttons */}
             <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">

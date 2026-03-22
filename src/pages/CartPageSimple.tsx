@@ -42,6 +42,18 @@ export default function CartPageSimple() {
     const { isAuthenticated, user } = useAuth();
     const { success: showSuccess, error: showError, info: showInfo } = useToast();
 
+    const cartSubtotal = Number(total) || 0;
+    const [promoCode, setPromoCode] = useState('');
+    const [promoDiscount, setPromoDiscount] = useState<number | null>(null);
+    const [promoError, setPromoError] = useState<string | null>(null);
+
+    const discountAmount = promoDiscount ? (cartSubtotal * promoDiscount) / 100 : 0;
+    const { deliveryType, selectedZone } = deliveryDetails;
+    
+    // We need siteSettings for these. But they are loaded in useEffect.
+    // I'll keep them where they are if they need it, or move siteSettings load to useCart?
+    // Actually, I can just calculate them later OR handle nulls.
+
     const [isOrdering, setIsOrdering] = useState(false);
     const [isInviting, setIsInviting] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
@@ -60,6 +72,8 @@ export default function CartPageSimple() {
     const [isLoadingPopular, setIsLoadingPopular] = useState(false);
     const [siteSettings, setSiteSettings] = useState<any>(null);
 
+    const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
     const todayStr = new Date().toISOString().split('T')[0];
 
     const {
@@ -71,8 +85,6 @@ export default function CartPageSimple() {
         customerName: customerNameState,
         guestEmail: guestEmailState,
         paymentMethod,
-        deliveryType,
-        selectedZone,
         noCall,
         noBuzzer,
         isScheduled,
@@ -81,15 +93,9 @@ export default function CartPageSimple() {
         customNote,
     } = deliveryDetails;
 
-    const DELIVERY_FEE = selectedZone
-        ? (selectedZone.cost ?? 0)
-        : (siteSettings?.delivery_fee ?? 3.5);
     const MIN_ORDER = selectedZone
         ? (selectedZone.min_order ?? 0)
         : (siteSettings?.min_order ?? 15);
-    const FREE_DELIVERY_THRESHOLD = selectedZone
-        ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60)
-        : (siteSettings?.free_delivery_threshold ?? 60);
     const isStoreClosed = !!siteSettings?.is_store_closed;
 
     const EMOJI: Record<string, string> = {
@@ -203,6 +209,41 @@ export default function CartPageSimple() {
         }
     };
 
+    const handleApplyPromo = async (code: string) => {
+        if (!code.trim()) return;
+        setIsApplyingPromo(true);
+        setPromoError(null);
+        try {
+            const data = await api.post('/promo/validate', { 
+                code: code.trim().toUpperCase(),
+                subtotal: cartSubtotal
+            });
+            setPromoDiscount(data.percentage);
+            setPromoCode(code.trim().toUpperCase());
+            showSuccess(`¡Código aplicado! -${data.percentage}%`);
+        } catch (err: any) {
+            setPromoError(err.message || 'Código inválido');
+            setPromoDiscount(null);
+            showError(err.message || 'Código inválido o requisitos no cumplidos');
+        } finally {
+            setIsApplyingPromo(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setPromoCode('');
+        setPromoDiscount(null);
+        setPromoError(null);
+    };
+
+    useEffect(() => {
+        // If welcome promo is applied and subtotal drops below 70, invalidate it
+        if (promoDiscount && promoCode.startsWith('NUEVO') && cartSubtotal < 70) {
+            handleRemovePromo();
+            setPromoError('El código de bienvenida requiere un pedido mínimo de 70,00€');
+        }
+    }, [cartSubtotal, promoCode, promoDiscount]);
+
     const handleOrder = async () => {
         const streetVal = address.trim();
         const houseVal = house.trim();
@@ -247,6 +288,7 @@ export default function CartPageSimple() {
                 postalCode: postalCode || (selectedZone ? selectedZone.postal_codes?.[0] : ''),
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
+                promoCode: promoDiscount ? promoCode : undefined,
             };
 
             if (!isAuthenticated) {
@@ -319,14 +361,18 @@ export default function CartPageSimple() {
         }
     };
 
-    const cartSubtotal = Number(total) || 0;
     const deliveryCost =
         deliveryType === 'delivery'
-            ? cartSubtotal >= Number(FREE_DELIVERY_THRESHOLD)
+            ? cartSubtotal >=
+              (selectedZone
+                  ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60)
+                  : (siteSettings?.free_delivery_threshold ?? 60))
                 ? 0
-                : Number(DELIVERY_FEE)
+                : (selectedZone
+                    ? (selectedZone.cost ?? 0)
+                    : (siteSettings?.delivery_fee ?? 3.5))
             : 0;
-    const finalTotal = cartSubtotal + deliveryCost;
+    const finalTotal = cartSubtotal - discountAmount + deliveryCost;
 
     return (
         <div className="min-h-screen bg-transparent flex flex-col">
@@ -454,6 +500,13 @@ export default function CartPageSimple() {
                                 hasAddress={!!address.trim()}
                                 handleOrder={handleOrder}
                                 handleInvite={handleInvite}
+                                promoCode={promoCode}
+                                setPromoCode={setPromoCode}
+                                promoDiscount={promoDiscount}
+                                handleApplyPromo={handleApplyPromo}
+                                isApplyingPromo={isApplyingPromo}
+                                promoError={promoError}
+                                handleRemovePromo={handleRemovePromo}
                             />
                         </div>
                     </div>

@@ -11,9 +11,12 @@ router.use(authMiddleware);
 router.post(
     '/validate',
     promoLimiter,
-    validate({ code: { required: true, type: 'string' } }),
+    validate({ 
+        code: { required: true, type: 'string' },
+        subtotal: { type: 'number', required: false }
+    }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { code } = req.body;
+        const { code, subtotal } = req.body;
 
         // ─── Hardcoded Test Promo ───
         if (code === 'TEST10') {
@@ -34,14 +37,23 @@ router.post(
             return res.status(400).json({ error: 'Código inválido o ya utilizado' });
         }
 
-        // ─── 24h Expiry Check for Welcome Promos ───
-        if (promo.code.startsWith('NUEVO5')) {
+        // ─── Requirements Check for Welcome Promos ───
+        if (promo.code.startsWith('NUEVO')) {
+            // 1. Expiry Check (24h)
             const createdAt = new Date(promo.created_at);
             const expiredAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
             if (new Date() > expiredAt) {
                 return res
                     .status(400)
                     .json({ error: 'Este código de bienvenida ha expirado (válido 24h)' });
+            }
+
+            // 2. Min Order Check (70€)
+            if (subtotal !== undefined && subtotal < 70) {
+                return res.status(400).json({ 
+                    error: 'El pedido mínimo para este código es de 70,00€',
+                    minOrder: 70
+                });
             }
         }
 

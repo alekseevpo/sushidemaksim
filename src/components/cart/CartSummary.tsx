@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Clock, ArrowRight } from 'lucide-react';
+import { Clock, ArrowRight, X } from 'lucide-react';
 import { CartItem } from '../../types';
 
 interface CartSummaryProps {
@@ -15,6 +15,13 @@ interface CartSummaryProps {
     hasAddress: boolean;
     handleOrder: () => void;
     handleInvite: () => void;
+    promoCode: string;
+    setPromoCode: (val: string) => void;
+    promoDiscount: number | null;
+    handleApplyPromo: (code: string) => void;
+    isApplyingPromo: boolean;
+    promoError: string | null;
+    handleRemovePromo: () => void;
 }
 
 export default function CartSummary({
@@ -30,6 +37,13 @@ export default function CartSummary({
     hasAddress,
     handleOrder,
     handleInvite,
+    promoCode,
+    setPromoCode,
+    promoDiscount,
+    handleApplyPromo,
+    isApplyingPromo,
+    promoError,
+    handleRemovePromo,
 }: CartSummaryProps) {
     return (
         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] md:rounded-xl border-b md:border-none border-gray-50 h-fit">
@@ -72,6 +86,14 @@ export default function CartSummary({
                         )}
                     </div>
                 )}
+                {promoDiscount && (
+                    <div className="flex justify-between text-green-600 text-sm animate-in zoom-in duration-300">
+                        <span>Descuento ({promoDiscount}%)</span>
+                        <span className="font-bold">
+                            -{(total * promoDiscount / 100).toFixed(2).replace('.', ',')} €
+                        </span>
+                    </div>
+                )}
                 <div className="border-t border-gray-200 pt-3 mt-1">
                     <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
@@ -82,6 +104,50 @@ export default function CartSummary({
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div className="mb-6">
+                {!promoDiscount ? (
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={promoCode}
+                            onChange={(e) => setPromoCode(e.target.value)}
+                            placeholder="Código promo"
+                            className={`flex-1 px-4 py-3 bg-gray-50 border ${promoError ? 'border-red-300' : 'border-gray-200'} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all uppercase font-bold`}
+                        />
+                        <button
+                            onClick={() => handleApplyPromo(promoCode)}
+                            disabled={isApplyingPromo || !promoCode.trim()}
+                            className="px-4 py-3 bg-gray-900 text-white rounded-xl text-xs font-black hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 transition-colors border-none cursor-pointer uppercase"
+                        >
+                            {isApplyingPromo ? '...' : 'Aplicar'}
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-between p-3 bg-green-50 border border-green-100 rounded-xl animate-in slide-in-from-top-2 duration-300">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                                <span className="text-green-600 font-black text-xs">%{promoDiscount}</span>
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-green-700 font-black uppercase tracking-widest leading-none mb-1">Código Activo</p>
+                                <p className="text-xs font-bold text-gray-900 uppercase">{promoCode}</p>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={handleRemovePromo}
+                            className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer"
+                        >
+                            <X size={18} />
+                        </button>
+                    </div>
+                )}
+                {promoError && (
+                    <p className="mt-2 text-[11px] text-red-600 font-bold px-1 italic">
+                        {promoError}
+                    </p>
+                )}
             </div>
 
             <button

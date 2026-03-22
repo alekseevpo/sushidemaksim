@@ -57,14 +57,14 @@ router.post(
             { expiresIn: '24h' }
         );
 
-        // Create welcome promo code (5% discount, valid for 1 day)
+        // Create welcome promo code (10% discount, valid for 1 day)
         // We use a prefix so we can easily check expiration in the promo route
         const promoSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
-        const promoCode = `NUEVO5-${promoSuffix}`;
+        const promoCode = `NUEVO10-${promoSuffix}`;
 
         await supabase.from('promo_codes').insert({
             code: promoCode,
-            discount_percentage: 5,
+            discount_percentage: 10,
             user_id: newUser.id,
             is_used: false,
         });

@@ -417,8 +417,11 @@ export async function sendVerificationEmail(
 
       <!-- Welcome Gift Section -->
       <div style="background: #fff1f2; border: 2px dashed #fecdd3; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
-        <p style="color: #be123c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-5%)</p>
+        <p style="color: #be123c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-10%)</p>
         <div style="color: #dc2626; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
+        <p style="color: #9f1239; font-size: 14px; font-weight: bold; margin: 0 0 4px;">
+          * Mínimo de pedido: <strong>70€</strong>
+        </p>
         <p style="color: #9f1239; font-size: 14px; font-weight: bold; margin: 0;">
           ⚠️ Válido solo durante <strong>24 horas</strong>
         </p>

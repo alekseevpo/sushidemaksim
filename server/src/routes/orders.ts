@@ -113,6 +113,21 @@ router.post(
                 const { data: promo } = await query.maybeSingle();
 
                 if (promo) {
+                    // Check if NEW user promo (NUEVO*)
+                    if (promo.code.startsWith('NUEVO')) {
+                        // 1. Expiry Check (24h)
+                        const createdAt = new Date(promo.created_at);
+                        const expiredAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+                        if (new Date() > expiredAt) {
+                            return res.status(400).json({ error: 'El código de bienvenida ha expirado' });
+                        }
+
+                        // 2. Min Order Check (70€)
+                        if (subtotal < 70) {
+                            return res.status(400).json({ error: 'El pedido mínimo para el código de bienvenida es de 70,00€' });
+                        }
+                    }
+
                     finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
                     usedPromoId = promo.id;
                 }

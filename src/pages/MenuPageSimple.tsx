@@ -28,6 +28,7 @@ export default function MenuPageSimple() {
     const { data: items = [], isLoading } = useMenu(selectedCategory, debouncedSearch);
     const { data: favorites } = useFavorites(user);
     const { mutate: toggleFavorite } = useToggleFavorite();
+    const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
 
     // Debounce search input
     useEffect(() => {
@@ -97,12 +98,19 @@ export default function MenuPageSimple() {
         }
     }, [debouncedSearch, isLoading, items.length]);
 
-    // Handle initial hash scroll
+    // Handle initial hash scroll and highlight
     useEffect(() => {
         if (!isLoading && items.length > 0) {
             const hash = window.location.hash;
             if (hash) {
                 const id = hash.replace('#', '');
+                // If it's a specific product link (item-ID), highlight it
+                if (id.startsWith('item-')) {
+                    const itemId = id.replace('item-', '');
+                    setHighlightedItemId(itemId);
+                    setTimeout(() => setHighlightedItemId(null), 3000);
+                }
+
                 setTimeout(() => {
                     const el = document.getElementById(id);
                     if (el) {
@@ -117,7 +125,7 @@ export default function MenuPageSimple() {
                         const top = el.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
                     }
-                }, 300);
+                }, 400); // Slightly more delay for better stability
             }
         }
     }, [isLoading, items.length]);
@@ -299,6 +307,7 @@ export default function MenuPageSimple() {
                             addedItems={addedItems}
                             failedImages={failedImages}
                             setFailedImages={setFailedImages}
+                            highlightedItemId={highlightedItemId}
                         />
                     )}
                 </div>
