@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Plus, Star, Trash2, Pencil, X, Phone } from 'lucide-react';
+import { MapPin, Plus, Star, Trash2, Pencil, X } from 'lucide-react';
 import { UserAddress } from '../../types';
 import { useToast } from '../../context/ToastContext';
 
@@ -198,7 +198,7 @@ export default function AddressesTab({
     };
 
     return (
-        <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-4 md:px-0">
+        <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 md:px-0">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
                 <div>
@@ -396,7 +396,7 @@ export default function AddressesTab({
             )}
 
             {/* Address List */}
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4">
                 {addresses.length === 0 && !showAddAddress ? (
                     <div className="bg-gray-50 rounded-[40px] p-12 text-center border-2 border-dashed border-gray-200">
                         <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 text-3xl">
@@ -417,64 +417,62 @@ export default function AddressesTab({
                     addresses.map(addr => (
                         <div
                             key={addr.id}
-                            className={`group p-6 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row gap-6
+                            className={`group p-3 md:p-4 rounded-[24px] border transition-all duration-300 flex flex-row items-center gap-3 md:gap-5
                                 ${
                                     addr.isDefault
-                                        ? 'bg-red-50/50 border-red-200 border-2 shadow-xl shadow-red-100/50'
-                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-gray-100'
+                                        ? 'bg-red-50/50 border-red-200 shadow-lg shadow-red-100/30'
+                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-md'
                                 }`}
                         >
                             <div
-                                className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-sm
+                                className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-sm
                                 ${addr.isDefault ? 'bg-red-600 text-white shadow-red-200' : 'bg-gray-100 text-gray-400'}`}
                             >
-                                <MapPin size={24} strokeWidth={1.5} />
+                                <MapPin size={addr.isDefault ? 18 : 20} strokeWidth={1.5} />
                             </div>
 
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center flex-wrap gap-2 mb-2">
-                                    <h4 className="text-lg font-black text-gray-900 m-0 truncate">
+                                <div className="flex items-center flex-wrap gap-1.5 md:gap-2 mb-0.5 md:mb-1">
+                                    <h4 className="text-sm md:text-base font-black text-gray-900 m-0 truncate">
                                         {addr.label}
                                     </h4>
                                     {addr.isDefault && (
-                                        <div className="bg-green-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg shadow-green-100">
-                                            Predeterminada
+                                        <div className="bg-green-600 text-white text-[8px] md:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-sm">
+                                            Default
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-[13px] font-bold text-gray-900 m-0 mb-1 leading-relaxed">
+                                <p className="text-[11px] md:text-[13px] font-bold text-gray-800 m-0 leading-tight truncate">
                                     {addr.street}
                                     {addr.house && `, ${addr.house}`}
                                     {addr.apartment && `, ${addr.apartment}`}
                                 </p>
-                                <p className="text-xs font-medium text-gray-500 m-0">
-                                    {addr.postalCode} • {addr.city}
+                                <p className="text-[10px] md:text-xs font-medium text-gray-500 m-0 truncate">
+                                    {addr.postalCode} • {addr.city} •{' '}
+                                    <span className="opacity-70 font-bold">{addr.phone}</span>
                                 </p>
-                                <div className="flex items-center gap-4 mt-3">
-                                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
-                                        <Phone size={12} strokeWidth={1.5} /> {addr.phone}
-                                    </div>
-                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 shrink-0 md:self-center">
+                            <div className="flex items-center gap-1 shrink-0">
                                 {!addr.isDefault && (
                                     <button
                                         onClick={() => setDefaultAddress(addr.id)}
-                                        className="h-10 px-4 bg-white border border-gray-200 text-gray-500 rounded-xl text-xs font-black hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-all flex items-center gap-2"
+                                        className="h-8 w-8 md:h-10 md:px-4 bg-white border border-gray-200 text-gray-500 rounded-lg md:rounded-xl text-[10px] font-black hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-all flex items-center justify-center gap-2"
+                                        title="Establecer como predeterminada"
                                     >
-                                        <Star size={14} strokeWidth={1.5} /> Predeterminar
+                                        <Star size={16} strokeWidth={1.5} />
+                                        <span className="hidden md:inline">Principal</span>
                                     </button>
                                 )}
                                 <button
                                     onClick={() => startEditing(addr)}
-                                    className="h-10 w-10 flex items-center justify-center bg-white border border-gray-200 text-gray-400 rounded-xl hover:text-gray-900 hover:border-gray-900 transition-all"
+                                    className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center bg-white border border-gray-200 text-gray-400 rounded-lg md:rounded-xl hover:text-gray-900 hover:border-gray-900 transition-all"
                                 >
                                     <Pencil size={14} strokeWidth={1.5} />
                                 </button>
                                 <button
                                     onClick={() => removeAddress(addr.id)}
-                                    className="h-10 w-10 flex items-center justify-center bg-red-50 text-red-400 border border-red-100 rounded-xl hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
+                                    className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center bg-red-50 text-red-400 border border-red-100 rounded-lg md:rounded-xl hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
                                 >
                                     <Trash2 size={14} strokeWidth={1.5} />
                                 </button>

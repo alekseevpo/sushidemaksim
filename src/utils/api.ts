@@ -37,15 +37,28 @@ export const api = {
     async delete(endpoint: string) {
         return fetchApi(endpoint, { method: 'DELETE' });
     },
+
+    async formData(endpoint: string, formData: FormData) {
+        return fetchApi(endpoint, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                // Let the browser set the Content-Type with boundary
+            },
+        });
+    },
 };
 
 async function fetchApi(endpoint: string, options: RequestInit = {}) {
     const token = localStorage.getItem('sushi_token');
 
     const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
         ...((options.headers as Record<string, string>) || {}),
     };
+
+    if (!(options.body instanceof FormData)) {
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+    }
 
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;

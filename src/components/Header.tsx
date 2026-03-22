@@ -35,19 +35,38 @@ export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
 
-    // Track scroll for dynamic header styling
+    const headerRef = useRef<HTMLElement>(null);
+
+    // Track scroll for dynamic header styling and measure height
     useEffect(() => {
         const handleScroll = () => {
             const scrolled = window.scrollY > 20;
             setIsScrolled(prev => {
-                if (prev === scrolled) return prev; // No re-render if unchanged
+                if (prev === scrolled) return prev;
                 return scrolled;
             });
         };
+
+        const updateHeight = () => {
+            if (headerRef.current) {
+                const height = headerRef.current.offsetHeight;
+                document.documentElement.style.setProperty('--header-height', `${height}px`);
+            }
+        };
+
         window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // Check initial scroll
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+        window.addEventListener('resize', updateHeight);
+
+        // Initial check and after a small delay for banner animations
+        handleScroll();
+        updateHeight();
+        setTimeout(updateHeight, 500);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', updateHeight);
+        };
+    }, [location.pathname]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -110,6 +129,7 @@ export default function Header() {
     return (
         <>
             <header
+                ref={headerRef}
                 className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color] duration-300
                 ${
                     isScrolled
@@ -200,10 +220,22 @@ export default function Header() {
                         ${showUserMenu ? 'ring-2 ring-red-600/20 bg-white' : ''}`}
                                         >
                                             <div
-                                                className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm
-                        ${user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden
+                        ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
                                             >
-                                                {user.avatar ? user.avatar : initials}
+                                                {user.avatar ? (
+                                                    user.avatar.startsWith('http') ? (
+                                                        <img
+                                                            src={user.avatar}
+                                                            alt={user.name}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        user.avatar
+                                                    )
+                                                ) : (
+                                                    initials
+                                                )}
                                             </div>
                                             <span className="text-sm font-bold text-gray-700 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
                                                 {user.name.split(' ')[0]}
@@ -446,8 +478,23 @@ export default function Header() {
                                             ) : isAuthenticated && user ? (
                                                 <div className="space-y-4">
                                                     <div className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white font-black text-sm">
-                                                            {user.avatar ? user.avatar : initials}
+                                                        <div
+                                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm overflow-hidden
+                                                        ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                        >
+                                                            {user.avatar ? (
+                                                                user.avatar.startsWith('http') ? (
+                                                                    <img
+                                                                        src={user.avatar}
+                                                                        alt={user.name}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    user.avatar
+                                                                )
+                                                            ) : (
+                                                                initials
+                                                            )}
                                                         </div>
                                                         <div>
                                                             <p className="font-black text-gray-900 text-[14px] leading-none mb-1">

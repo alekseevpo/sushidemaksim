@@ -105,4 +105,28 @@ router.get(
     })
 );
 
+// POST /api/menu/:id/share — track share events
+router.post(
+    '/:id/share',
+    asyncHandler(async (req: Request, res: Response) => {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+        // We use a generic analytics table. If it doesn't exist, we just log and continue
+        // as the user might need to run the migration first.
+        const { error } = await supabase.from('menu_item_analytics').insert({
+            menu_item_id: id,
+            event_type: 'share',
+        });
+
+        if (error) {
+            console.error('📊 Analytics Error (Share):', error.message);
+            // Don't fail the request if analytics fails
+            return res.json({ success: false, note: 'Migration might be needed' });
+        }
+
+        res.json({ success: true });
+    })
+);
+
 export default router;

@@ -146,7 +146,7 @@ export default function ProfilePage() {
     const tabs: { id: TabId; label: string; icon: typeof User; color: string }[] = [
         { id: 'profile', label: 'Mi Perfil', icon: User, color: 'bg-blue-500' },
         { id: 'addresses', label: 'Direcciones', icon: MapPin, color: 'bg-green-500' },
-        { id: 'orders', label: 'Mis Pedidos', icon: Package, color: 'bg-amber-500' },
+        { id: 'orders', label: 'Pedidos', icon: Package, color: 'bg-amber-500' },
         { id: 'favorites', label: 'Favoritos', icon: Heart, color: 'bg-red-50' },
     ];
 
@@ -167,7 +167,25 @@ export default function ProfilePage() {
                     <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                         <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white p-1 shadow-xl relative">
                             <div className="w-full h-full rounded-[22px] bg-red-50 flex items-center justify-center text-2xl md:text-4xl border-2 border-white overflow-hidden shadow-inner">
-                                {user.avatar ? user.avatar : initials}
+                                {user.avatar ? (
+                                    user.avatar.startsWith('http') ? (
+                                        <img
+                                            src={user.avatar}
+                                            alt={user.name}
+                                            className="w-full h-full object-cover"
+                                            onError={e => {
+                                                (
+                                                    e.currentTarget as HTMLImageElement
+                                                ).style.display = 'none';
+                                                e.currentTarget.parentElement!.innerText = initials;
+                                            }}
+                                        />
+                                    ) : (
+                                        user.avatar
+                                    )
+                                ) : (
+                                    initials
+                                )}
                             </div>
                             <div className="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white w-6 h-6 rounded-full shadow-lg flex items-center justify-center">
                                 <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
@@ -179,7 +197,7 @@ export default function ProfilePage() {
                                 <h1 className="text-2xl md:text-3xl font-black text-white m-0 tracking-tight">
                                     {user.name}
                                 </h1>
-                                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 w-fit mx-auto md:mx-0">
+                                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-2 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 w-fit mx-auto md:mx-0">
                                     <Trophy size={10} className="text-amber-400" />
                                     {(user.orderCount || 0) >= 50
                                         ? 'Leyenda del Sushi 👑'
@@ -314,8 +332,13 @@ export default function ProfilePage() {
 
                 <div className="flex flex-col lg:flex-row gap-6">
                     {/* Navigation Sidebar */}
-                    <aside className="lg:w-80 shrink-0 sticky top-[63px] lg:top-24 z-40 mb-5 lg:mb-0">
-                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-1 px-3 md:px-2 snap-x snap-mandatory">
+                    <aside
+                        className="lg:w-80 shrink-0 sticky z-40 mb-5 lg:mb-0 transition-[top] duration-300"
+                        style={{
+                            top: 'calc(var(--header-height, 64px) + 12px)',
+                        }}
+                    >
+                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-2 px-1 md:px-2 snap-x snap-mandatory scroll-px-1">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
@@ -324,7 +347,7 @@ export default function ProfilePage() {
                                         key={tab.id}
                                         id={`tab-${tab.id}`}
                                         onClick={() => handleTabChange(tab.id)}
-                                        className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-2xl transition-all duration-300 group snap-start relative
+                                        className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-3 md:p-4 rounded-2xl transition-all duration-300 group snap-center relative
                                             ${
                                                 isActive
                                                     ? 'text-white'
@@ -349,7 +372,7 @@ export default function ProfilePage() {
                                             <Icon size={16} strokeWidth={1.5} />
                                         </div>
                                         <span
-                                            className={`relative z-10 font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider ${isActive ? 'translate-x-0.5' : ''} transition-transform`}
+                                            className={`relative z-10 font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider transition-transform ${isActive ? 'md:translate-x-0.5' : ''}`}
                                         >
                                             {tab.label}
                                         </span>

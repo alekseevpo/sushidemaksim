@@ -12,10 +12,15 @@ import {
     EyeOff,
     Calendar,
     Trash2,
+    Camera,
+    Upload,
+    RotateCcw,
 } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
 import { User as UserType } from '../../types';
+import { USER_QUERY_KEY } from '../../hooks/queries/useUser';
 
 interface Props {
     user: UserType;
@@ -91,8 +96,20 @@ export default function ProfileTab({ user, updateProfile }: Props) {
     const [showCurrPwd, setShowCurrPwd] = useState(false);
     const [showNewPwd, setShowNewPwd] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const queryClient = useQueryClient();
     const { deleteAccount } = useAuth();
     const { success, error } = useToast();
+
+    // Calculate initials based on current editing state or original user data
+    const currentInitials =
+        (isEditing ? editName : user.name)
+            .split(' ')
+            .filter(Boolean)
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2) || '??';
 
     const startEditing = () => {
         setEditName(user.name);
@@ -147,8 +164,40 @@ export default function ProfileTab({ user, updateProfile }: Props) {
         }
     };
 
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validations
+        if (file.size > 5 * 1024 * 1024) {
+            error('La imagen no debe superar los 5MB');
+            return;
+        }
+
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+            error('Formato no permitido. Usa JPG, PNG o WebP');
+            return;
+        }
+
+        try {
+            setIsUploading(true);
+            const { api } = await import('../../utils/api');
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            const res = await api.formData('/user/upload-avatar', formData);
+            setEditAvatar(res.url);
+            queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+            success('¡Foto de perfil subida con éxito! 📸');
+        } catch (err: any) {
+            error(err.message || 'Error al subir la imagen');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-0 md:px-0">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 md:px-0">
             {/* Header with Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
                 <div className="text-center sm:text-left">
@@ -278,10 +327,73 @@ export default function ProfileTab({ user, updateProfile }: Props) {
 
                     <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/50 mb-8 flex items-center gap-3">
                         <div className="w-2 h-2 bg-red-600 rounded-full animate-ping" />
-                        Personaliza tu Identidad
+                        Avatar & Foto
                     </h3>
 
-                    <div className="space-y-8 relative z-10">
+                    <div className="flex flex-col items-center justify-center p-8 mb-10 bg-white/5 rounded-[40px] border border-white/10 backdrop-blur-md relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
+
+                        <div className="relative mb-6">
+                            <div className="w-32 h-32 md:w-36 md:h-36 rounded-[42px] bg-gray-800 border-4 border-white/20 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:border-red-500">
+                                {editAvatar && editAvatar.startsWith('http') ? (
+                                    <img
+                                        src={editAvatar}
+                                        alt="Avatar"
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="text-5xl md:text-6xl select-none">
+                                        {editAvatar || currentInitials}
+                                    </div>
+                                )}
+
+                                {isUploading && (
+                                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
+                                        <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin" />
+                                    </div>
+                                )}
+                            </div>
+
+                            <label className="absolute -bottom-2 -right-2 w-11 h-11 bg-white text-gray-900 rounded-2xl flex items-center justify-center shadow-xl cursor-pointer hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 active:scale-90 group/cam">
+                                <Camera size={20} />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleFileUpload}
+                                    disabled={isUploading}
+                                />
+                            </label>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-3">
+                            <h4 className="text-sm font-black text-white uppercase tracking-wider m-0">
+                                {editAvatar && editAvatar.startsWith('http')
+                                    ? 'Tu foto personalizada'
+                                    : 'Personaliza tu avatar'}
+                            </h4>
+                            <div className="flex gap-2">
+                                {editAvatar && editAvatar.startsWith('http') && (
+                                    <button
+                                        onClick={() => setEditAvatar('')}
+                                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-red-500/20 text-[10px] font-black uppercase text-white rounded-xl border border-white/10 transition-all"
+                                    >
+                                        <Trash2 size={12} /> Quitar Foto
+                                    </button>
+                                )}
+                                {!editAvatar.startsWith('http') && editAvatar !== '' && (
+                                    <button
+                                        onClick={() => setEditAvatar('')}
+                                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-[10px] font-black uppercase text-white rounded-xl border border-white/10 transition-all"
+                                    >
+                                        <RotateCcw size={12} /> Resetear
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-8 relative z-10" id="avatar-grid">
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 ml-1">
                                 Original

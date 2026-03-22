@@ -66,39 +66,71 @@ const UserRow = memo(
         const regDate = new Date(user.created_at).toLocaleDateString();
         const birthDate = user.birth_date ? new Date(user.birth_date).toLocaleDateString() : null;
 
+        const initials =
+            user.name
+                .split(' ')
+                .filter(Boolean)
+                .map((n: string) => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2) || '??';
+
         return (
             <tr className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-2 font-semibold text-gray-900">#{user.id}</td>
                 <td className="px-4 py-2">
-                    <div className="flex items-center gap-2">
-                        <div className="font-bold text-gray-900">{user.name}</div>
-                        {user.is_verified ? (
-                            <span
-                                title="Email verificado"
-                                className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100"
-                            >
-                                <CheckCircle size={12} strokeWidth={1.5} />
-                            </span>
-                        ) : (
-                            <div className="flex items-center gap-1">
-                                <span
-                                    title="Email pendiente de verificación"
-                                    className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100"
-                                >
-                                    <Clock size={12} strokeWidth={1.5} />
-                                </span>
-                                <button
-                                    onClick={() => onVerifyEmail(user)}
-                                    className="px-1.5 py-0.5 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded text-[9px] font-bold uppercase transition-colors"
-                                    title="Verificar email manualmente"
-                                >
-                                    Verificar
-                                </button>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-sm transition-transform hover:scale-110">
+                            {user.avatar ? (
+                                user.avatar.startsWith('http') ? (
+                                    <img
+                                        src={user.avatar}
+                                        alt={user.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="text-xl">{user.avatar}</div>
+                                )
+                            ) : (
+                                <div className="text-[10px] font-black text-gray-400">
+                                    {initials}
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                                <div className="font-bold text-gray-900">{user.name}</div>
+                                {user.is_verified ? (
+                                    <span
+                                        title="Email verificado"
+                                        className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100"
+                                    >
+                                        <CheckCircle size={12} strokeWidth={1.5} />
+                                    </span>
+                                ) : (
+                                    <div className="flex items-center gap-1">
+                                        <span
+                                            title="Email pendiente de verificación"
+                                            className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100"
+                                        >
+                                            <Clock size={12} strokeWidth={1.5} />
+                                        </span>
+                                        <button
+                                            onClick={() => onVerifyEmail(user)}
+                                            className="px-1.5 py-0.5 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded text-[9px] font-bold uppercase transition-colors"
+                                            title="Verificar email manualmente"
+                                        >
+                                            Verificar
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                            <div className="text-gray-500 text-xs">{user.email}</div>
+                            {user.phone && (
+                                <div className="text-gray-400 text-[10px]">{user.phone}</div>
+                            )}
+                        </div>
                     </div>
-                    <div className="text-gray-500 text-xs">{user.email}</div>
-                    {user.phone && <div className="text-gray-400 text-xs">{user.phone}</div>}
                 </td>
                 <td className="px-4 py-2">
                     <div className="flex flex-col gap-1.5">

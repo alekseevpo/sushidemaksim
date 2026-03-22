@@ -1,4 +1,13 @@
-import { Monitor, Users, Activity, ExternalLink, TrendingUp, Clock } from 'lucide-react';
+import {
+    Monitor,
+    Users,
+    Activity,
+    ExternalLink,
+    TrendingUp,
+    Clock,
+    Heart,
+    Share2,
+} from 'lucide-react';
 import {
     BarChart,
     Bar,
@@ -481,6 +490,104 @@ export default function AdminAnalytics({ stats, loading }: AdminAnalyticsProps) 
                         **Зачем это нужно:** Показывает основные районы доставки. Помогает
                         оптимизировать логистику и понять, где живет ваша основная аудитория для
                         точечной рекламы.
+                    </p>
+                </div>
+            </div>
+
+            {/* Engagement Analytics (Favorites & Shares) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Top Favorited */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                        <Heart size={16} strokeWidth={1.5} className="text-red-500 fill-red-50" />
+                        Productos más deseados (Favoritos)
+                    </h3>
+                    <div className="space-y-4">
+                        {loading ? (
+                            Array(5)
+                                .fill(0)
+                                .map((_, i) => <div key={i} className="h-8 skeleton rounded-lg" />)
+                        ) : (stats?.topFavorited || []).length > 0 ? (
+                            stats.topFavorited.map((item: any, idx: number) => (
+                                <div key={idx} className="flex items-center justify-between group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-5 h-5 rounded bg-red-50 flex items-center justify-center text-[10px] font-black text-red-600">
+                                            {idx + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-gray-700 group-hover:text-red-600 transition-colors truncate max-w-[150px]">
+                                            {item.name}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-xs font-black text-gray-900">
+                                            {item.count}
+                                        </span>
+                                        <Heart size={10} className="text-red-400 fill-red-400" />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-[10px] text-gray-400 text-center py-4 italic font-medium">
+                                No hay datos de favoritos aún
+                            </p>
+                        )}
+                    </div>
+                    <p className="text-[10px] text-gray-500 mt-6 leading-relaxed bg-red-50/50 p-3 rounded-lg border border-red-100/50">
+                        <span className="font-bold text-red-700">Что это значит:</span> Это товары с
+                        высоким "скрытым" спросом. Люди добавляют их в избранное, чтобы купить позже
+                        или не забыть.
+                        <br />
+                        <br />
+                        <span className="font-bold text-red-700">Совет:</span> Запустите временную
+                        акцию на эти позиции, чтобы превратить "хотелки" в реальные заказы.
+                    </p>
+                </div>
+
+                {/* Top Shared */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
+                        <Share2 size={16} strokeWidth={1.5} className="text-blue-500" />
+                        Productos virales (Compartidos)
+                    </h3>
+                    <div className="space-y-4">
+                        {loading ? (
+                            Array(5)
+                                .fill(0)
+                                .map((_, i) => <div key={i} className="h-8 skeleton rounded-lg" />)
+                        ) : (stats?.topShared || []).length > 0 ? (
+                            stats.topShared.map((item: any, idx: number) => (
+                                <div key={idx} className="flex items-center justify-between group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-5 h-5 rounded bg-blue-50 flex items-center justify-center text-[10px] font-black text-blue-600">
+                                            {idx + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-gray-700 group-hover:text-blue-600 transition-colors truncate max-w-[150px]">
+                                            {item.name}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-xs font-black text-gray-900">
+                                            {item.count}
+                                        </span>
+                                        <Share2 size={10} className="text-blue-400" />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-[10px] text-gray-400 text-center py-4 italic font-medium">
+                                No hay datos de compartidos aún
+                            </p>
+                        )}
+                    </div>
+                    <p className="text-[10px] text-gray-500 mt-6 leading-relaxed bg-blue-50/50 p-3 rounded-lg border border-blue-100/50">
+                        <span className="font-bold text-blue-700">Что это значит:</span> Эти товары
+                        чаще всего пересылают друзьям в мессенджерах. Они визуально привлекательны
+                        или имеют "виральный" потенциал.
+                        <br />
+                        <br />
+                        <span className="font-bold text-blue-700">Совет:</span> Используйте фото
+                        именно этих блюд в своей рекламе в Instagram и Facebook — они лучше всего
+                        привлекают новых клиентов.
                     </p>
                 </div>
             </div>

@@ -1,10 +1,13 @@
 import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import multer from 'multer';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, passwordRule } from '../middleware/validate.js';
 import { strictLimiter } from '../middleware/rateLimiters.js';
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
 router.use(authMiddleware);
@@ -142,6 +145,67 @@ router.put(
                 lastSeenAt: user.last_seen_at,
             },
             message: 'Perfil actualizado correctamente',
+        });
+    })
+);
+
+// POST /api/user/upload-avatar
+router.post(
+    '/upload-avatar',
+    upload.single('avatar'),
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se subió ninguna imagen' });
+        }
+
+        const file = req.file;
+        const fileExt = file.originalname.split('.').pop();
+        const fileName = `${req.userId}-${Date.now()}.${fileExt}`;
+        const filePath = `avatars/${fileName}`;
+
+        // Upload to Supabase Storage 'images' bucket
+        const { error: uploadError } = await supabase.storage
+            .from('images')
+            .upload(filePath, file.buffer, {
+                contentType: file.mimetype,
+                upsert: true,
+            });
+
+        if (uploadError) {
+            console.error('❌ Supabase storage error:', uploadError);
+            return res.status(500).json({
+                error: 'Error al subir la imagen a Supabase Storage',
+                details: uploadError.message,
+            });
+        }
+
+        // Get Public URL
+        const {
+            data: { publicUrl },
+        } = supabase.storage.from('images').getPublicUrl(filePath);
+
+        // Update user profile with new avatar URL
+        const { data: user, error: updateError } = await supabase
+            .from('users')
+            .update({ avatar: publicUrl })
+            .eq('id', req.userId)
+            .select(
+                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at'
+            )
+            .single();
+
+        if (updateError) throw updateError;
+
+        res.json({
+            url: publicUrl,
+            user: {
+                ...user,
+                createdAt: user.created_at,
+                birthDate: user.birth_date,
+                birthDateVerified: user.birth_date_verified,
+                lastSeenAt: user.last_seen_at,
+            },
+            message: 'Foto de perfil actualizada correctamente',
         });
     })
 );
@@ -371,6 +435,13 @@ router.post(
             await supabase.from('user_favorites').delete().eq('id', exists.id);
             res.json({ isFavorite: false });
         } else {
+            // Track in analytics (ignore error if table not migrated yet)
+            await supabase.from('menu_item_analytics').insert({
+                menu_item_id: menuItemId,
+                event_type: 'favorite_add',
+                user_id: req.userId,
+            });
+
             await supabase
                 .from('user_favorites')
                 .insert({ user_id: req.userId, menu_item_id: menuItemId });

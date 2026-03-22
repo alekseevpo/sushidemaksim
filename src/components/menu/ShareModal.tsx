@@ -1,6 +1,7 @@
 import { X, Copy, Check, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MenuItem } from '../../hooks/queries/useMenu';
+import { api } from '../../utils/api';
 
 interface ShareModalProps {
     item: MenuItem | null;
@@ -11,6 +12,14 @@ interface ShareModalProps {
 
 export default function ShareModal({ item, onClose, onCopy, copying }: ShareModalProps) {
     if (!item) return null;
+
+    const trackShare = async () => {
+        try {
+            await api.post(`/menu/${item.id}/share`);
+        } catch (e) {
+            console.error('Failed to track share:', e);
+        }
+    };
 
     const shareUrl = `${window.location.origin}/menu#item-${item.id}`;
     const shareText = `¡Mira este ${item.name} en Sushi de Maksim! 🍣\n\n${item.description}\n\nPídelo aquí: ${shareUrl}`;
@@ -62,6 +71,7 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
                             {typeof navigator !== 'undefined' && navigator.share && (
                                 <button
                                     onClick={() => {
+                                        trackShare();
                                         navigator.share({
                                             title: item.name,
                                             text: shareText,
@@ -77,7 +87,10 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
                             )}
 
                             <button
-                                onClick={() => onCopy(shareText)}
+                                onClick={() => {
+                                    trackShare();
+                                    onCopy(shareText);
+                                }}
                                 className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black transition-all border-none cursor-pointer ${
                                     copying
                                         ? 'bg-green-500 text-white'

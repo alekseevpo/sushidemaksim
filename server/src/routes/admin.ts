@@ -916,11 +916,53 @@ router.get(
 
         const growth = Object.values(dailyStats);
 
+        // --- 4. ADVANCED ENGAGEMENT (Favorites & Shares) ---
+        const [{ data: favoriteData, error: favError }, { data: shareData, error: shareError }] =
+            await Promise.all([
+                supabase.from('user_favorites').select('menu_item_id'),
+                supabase
+                    .from('menu_item_analytics')
+                    .select('menu_item_id')
+                    .eq('event_type', 'share'),
+            ]);
+
+        if (favError) console.error('📊 Error fetching favorites stats:', favError.message);
+        if (shareError)
+            console.error('📊 Error fetching analytics (share) stats:', shareError.message);
+
+        const favoriteCounts: Record<number, number> = {};
+        favoriteData?.forEach(f => {
+            favoriteCounts[f.menu_item_id] = (favoriteCounts[f.menu_item_id] || 0) + 1;
+        });
+
+        const shareCounts: Record<number, number> = {};
+        shareData?.forEach(s => {
+            shareCounts[s.menu_item_id] = (shareCounts[s.menu_item_id] || 0) + 1;
+        });
+
+        const { data: menuInfo } = await supabase.from('menu_items').select('id, name');
+        const menuNames = (menuInfo || []).reduce((acc: any, item: any) => {
+            acc[item.id] = item.name;
+            return acc;
+        }, {});
+
+        const topFavorited = Object.entries(favoriteCounts)
+            .map(([id, count]) => ({ id: Number(id), name: menuNames[id] || `ID ${id}`, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
+        const topShared = Object.entries(shareCounts)
+            .map(([id, count]) => ({ id: Number(id), name: menuNames[id] || `ID ${id}`, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
         res.json({
             revenueToday,
             ordersToday,
             pendingOrders,
             usersToday,
+            topFavorited,
+            topShared,
             stats: {
                 totalUsers,
                 totalOrders,

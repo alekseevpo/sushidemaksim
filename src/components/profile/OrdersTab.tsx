@@ -128,8 +128,8 @@ export default function OrdersTab() {
 
     if (isLoading && page === 1) {
         return (
-            <div className="space-y-4 animate-in fade-in duration-500">
-                <div className="px-0 md:px-1 border-b border-gray-100 pb-4 mb-2">
+            <div className="space-y-8 animate-in fade-in duration-500 px-2 md:px-0 pb-10 text-center">
+                <div className="px-4 md:px-1 border-b border-gray-100 pb-4 mb-2">
                     <div className="h-8 w-48 skeleton rounded-xl mb-2" />
                     <div className="h-4 w-64 skeleton rounded-lg opacity-40" />
                 </div>
@@ -158,7 +158,7 @@ export default function OrdersTab() {
 
     if (orders.length === 0) {
         return (
-            <div className="text-center py-12">
+            <div className="text-center py-12 px-2">
                 <div className="text-4xl mb-4 grayscale opacity-30">📦</div>
                 <h3 className="text-lg font-black text-gray-900 mb-2">Sin pedidos aún</h3>
                 <p className="text-gray-400 text-sm mb-6 max-w-[200px] mx-auto leading-relaxed">
@@ -175,8 +175,8 @@ export default function OrdersTab() {
     }
 
     return (
-        <div className="space-y-4 md:space-y-5 animate-in fade-in duration-500 pb-10">
-            <div className="px-0 md:px-1 border-b border-gray-100 pb-4 mb-2">
+        <div className="space-y-4 md:space-y-5 animate-in fade-in duration-500 pb-10 px-2 md:px-0">
+            <div className="px-2 md:px-1 border-b border-gray-100 pb-4 mb-2">
                 <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">
                     Mis Pedidos
                 </h2>
@@ -185,7 +185,7 @@ export default function OrdersTab() {
                 </p>
             </div>
 
-            <div className="space-y-3 md:space-y-4 px-0 md:px-0">
+            <div className="space-y-3 md:space-y-4 px-2 md:px-0">
                 {orders.map((order: Order) => (
                     <div
                         key={order.id}

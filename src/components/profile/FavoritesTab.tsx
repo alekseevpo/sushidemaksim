@@ -91,7 +91,7 @@ export default function FavoritesTab() {
 
     if (loading) {
         return (
-            <div className="space-y-8 animate-in fade-in duration-500">
+            <div className="space-y-8 animate-in fade-in duration-500 pb-10 px-2 md:px-0">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
                     <div className="h-8 w-48 skeleton rounded-xl" />
                 </div>
@@ -148,7 +148,7 @@ export default function FavoritesTab() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 md:px-0">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5 mb-6">
                 <div>
