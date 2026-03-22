@@ -23,16 +23,16 @@ vi.mock('../hooks/queries/useCartQuery', () => ({
     CART_QUERY_KEY: ['cart'],
 }));
 
-vi.mock('../hooks/useAuth', async (importOriginal) => {
-    const actual = await importOriginal() as any;
+vi.mock('../hooks/useAuth', async importOriginal => {
+    const actual = (await importOriginal()) as any;
     return {
         ...actual,
         useAuth: vi.fn(),
     };
 });
 
-vi.mock('@tanstack/react-query', async (importOriginal) => {
-    const actual = await importOriginal() as any;
+vi.mock('@tanstack/react-query', async importOriginal => {
+    const actual = (await importOriginal()) as any;
     return {
         ...actual,
         useQueryClient: () => ({
