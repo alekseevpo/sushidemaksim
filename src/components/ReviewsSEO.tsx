@@ -145,7 +145,7 @@ export default function ReviewsSEO() {
     };
 
     return (
-        <section className="py-24 bg-white overflow-hidden relative border-y border-gray-50">
+        <section className="py-12 md:py-20 bg-transparent overflow-hidden relative">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex flex-col items-center text-center mb-16">
                     <div className="flex items-center gap-2 mb-4">
@@ -196,8 +196,8 @@ export default function ReviewsSEO() {
                             }}
                             className="absolute inset-0 px-2"
                         >
-                            <div className="bg-gray-50 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] h-full flex flex-col justify-center border border-gray-100/50 hover:bg-white hover:shadow-2xl hover:border-red-100 transition-all duration-700">
-                                <div className="flex gap-1 mb-6">
+                            <div className="h-full flex flex-col items-center justify-center text-center transition-all duration-700">
+                                <div className="flex gap-1 mb-8">
                                     {[...Array(REVIEWS[currentIndex].rating)].map((_, i) => (
                                         <Star
                                             key={i}
@@ -208,24 +208,24 @@ export default function ReviewsSEO() {
                                     ))}
                                 </div>
 
-                                <blockquote className="text-xl md:text-3xl font-bold text-gray-800 italic mb-8 leading-[1.3] md:leading-[1.4] tracking-tight">
+                                <blockquote className="text-2xl md:text-4xl font-black text-gray-900 italic mb-10 leading-tight md:leading-tight tracking-tighter max-w-4xl">
                                     "{REVIEWS[currentIndex].text}"
                                 </blockquote>
 
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-red-200">
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="w-14 h-14 bg-red-600 rounded-3xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-red-200 transform rotate-3">
                                         {REVIEWS[currentIndex].name.charAt(0)}
                                     </div>
-                                    <div>
-                                        <div className="font-black text-gray-900 text-sm uppercase tracking-wider">
+                                    <div className="flex flex-col items-center">
+                                        <div className="font-black text-gray-900 text-base uppercase tracking-widest">
                                             {REVIEWS[currentIndex].name}
                                         </div>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            <div className="text-[10px] text-red-500 font-bold tracking-widest uppercase">
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <div className="text-[10px] text-red-500 font-black tracking-[0.2em] uppercase">
                                                 Cliente Verificado
                                             </div>
                                             <div className="w-1 h-1 bg-gray-300 rounded-full" />
-                                            <div className="flex items-center gap-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                            <div className="flex items-center gap-1 text-[10px] text-gray-400 font-black uppercase tracking-widest">
                                                 <MapPin size={10} className="text-red-400" />
                                                 {REVIEWS[currentIndex].location}
                                             </div>
