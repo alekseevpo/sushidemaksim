@@ -7,8 +7,9 @@ import Newsletter from '../components/Newsletter';
 import RatingsBanner from '../components/RatingsBanner';
 import ReviewsSEO from '../components/ReviewsSEO';
 import { useCart } from '../hooks/useCart';
-import { useMenu, useCategories } from '../hooks/queries/useMenu';
+import { useMenu, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ProductCard from '../components/menu/ProductCard';
+import ShareModal from '../components/menu/ShareModal';
 
 const Marquee = () => (
     <div className="relative py-4 md:py-6 overflow-hidden bg-gray-950 border-y border-white/5 select-none">
@@ -102,6 +103,8 @@ export default function HomePageSimple() {
 
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
     const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
+    const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
+    const [copying, setCopying] = useState(false);
 
     // Use TanStack Query
     const { data: allItems = [], isLoading: itemsLoading } = useMenu('all', '');
@@ -121,6 +124,21 @@ export default function HomePageSimple() {
             image: representativeItem?.image || null,
         };
     });
+
+    const handleShare = (item: MenuItem, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSharingItem(item);
+    };
+
+    const copyToClipboard = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopying(true);
+            setTimeout(() => setCopying(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy', err);
+        }
+    };
 
     const handleAddToCart = (item: any, _e?: any, quantity: number = 1) => {
         addItem(
@@ -444,7 +462,7 @@ export default function HomePageSimple() {
                                                 user={null}
                                                 isFavorite={false}
                                                 onToggleFavorite={() => {}}
-                                                onShare={() => {}}
+                                                onShare={handleShare}
                                                 onAddToCart={handleAddToCart}
                                                 isAdded={addedItems.has(Number(item.id))}
                                                 failedImages={failedImages}
@@ -589,6 +607,15 @@ export default function HomePageSimple() {
 
             {/* Newsletter Section */}
             <Newsletter />
+
+            {sharingItem && (
+                <ShareModal
+                    item={sharingItem}
+                    onClose={() => setSharingItem(null)}
+                    onCopy={copyToClipboard}
+                    copying={copying}
+                />
+            )}
         </div>
     );
 }
