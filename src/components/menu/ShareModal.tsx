@@ -21,7 +21,7 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
         }
     };
 
-    const shareUrl = `${window.location.origin}/menu#item-${item.id}`;
+    const shareUrl = `${import.meta.env.VITE_FRONTEND_URL || window.location.origin}/menu#item-${item.id}`;
     const shareText = `¡Mira este ${item.name} en Sushi de Maksim! 🍣\n\n${item.description}\n\nPídelo aquí: ${shareUrl}`;
 
     return (
