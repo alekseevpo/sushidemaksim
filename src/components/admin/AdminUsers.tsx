@@ -441,15 +441,15 @@ export default function AdminUsers() {
 
                     <button
                         onClick={() => refetch()}
-                    className="p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-100 rounded-xl shadow-sm transition"
-                    title="Actualizar"
-                >
-                    <RefreshCw
-                        size={18}
-                        strokeWidth={1.5}
-                        className={isFetching ? 'animate-spin' : ''}
-                    />
-                </button>
+                        className="p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-100 rounded-xl shadow-sm transition"
+                        title="Actualizar"
+                    >
+                        <RefreshCw
+                            size={18}
+                            strokeWidth={1.5}
+                            className={isFetching ? 'animate-spin' : ''}
+                        />
+                    </button>
                 </div>
             </div>
 
@@ -674,9 +674,9 @@ export default function AdminUsers() {
                                 <br />
                                 <br />
                                 <span className="p-3 bg-red-50 border border-red-100 rounded-xl block text-red-700 font-bold text-xs uppercase tracking-tight">
-                                    ¡Atención! Esta acción es irreversible. Se ELIMINARÁN PARA SIEMPRE
-                                    todos sus pedidos, direcciones, historial y cualquier dato
-                                    asociado.
+                                    ¡Atención! Esta acción es irreversible. Se ELIMINARÁN PARA
+                                    SIEMPRE todos sus pedidos, direcciones, historial y cualquier
+                                    dato asociado.
                                 </span>
                             </p>
                             <div className="flex flex-col gap-3">

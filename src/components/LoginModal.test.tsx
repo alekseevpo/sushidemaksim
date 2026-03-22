@@ -55,16 +55,29 @@ describe('LoginModal - Registration', () => {
 
         render(<LoginModal isOpen={true} onClose={mockOnClose} initialMode="register" />);
 
-        fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), { target: { value: 'John Doe' } });
-        fireEvent.change(screen.getByPlaceholderText('+34 600 000 000'), { target: { value: '123456789' } });
-        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), { target: { value: 'john@example.com' } });
-        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), { target: { value: 'password123' } });
+        fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), {
+            target: { value: 'John Doe' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('+34 600 000 000'), {
+            target: { value: '123456789' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
+            target: { value: 'john@example.com' },
+        });
+        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), {
+            target: { value: 'password123' },
+        });
 
         fireEvent.submit(screen.getByTestId('register-form'));
 
         await waitFor(() => {
             expect(mockRegister).toHaveBeenCalled();
-            expect(mockRegister).toHaveBeenCalledWith('John Doe', 'john@example.com', '123456789', 'password123');
+            expect(mockRegister).toHaveBeenCalledWith(
+                'John Doe',
+                'john@example.com',
+                '123456789',
+                'password123'
+            );
             expect(mockOnClose).toHaveBeenCalled();
             expect(mockNavigate).toHaveBeenCalledWith('/menu');
             expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('¡Cuenta creada!'));
@@ -76,10 +89,18 @@ describe('LoginModal - Registration', () => {
 
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="register" />);
 
-        fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), { target: { value: 'John Doe' } });
-        fireEvent.change(screen.getByPlaceholderText('+34 600 000 000'), { target: { value: '123456789' } });
-        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), { target: { value: 'john@example.com' } });
-        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), { target: { value: 'password123' } });
+        fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), {
+            target: { value: 'John Doe' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('+34 600 000 000'), {
+            target: { value: '123456789' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
+            target: { value: 'john@example.com' },
+        });
+        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), {
+            target: { value: 'password123' },
+        });
 
         fireEvent.submit(screen.getByTestId('register-form'));
 
@@ -94,9 +115,15 @@ describe('LoginModal - Registration', () => {
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="register" />);
 
         // Fill only required fields to trigger handleRegister
-        fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), { target: { value: 'John' } });
-        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), { target: { value: 'j@e.com' } });
-        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), { target: { value: 'pass123' } });
+        fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), {
+            target: { value: 'John' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
+            target: { value: 'j@e.com' },
+        });
+        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), {
+            target: { value: 'pass123' },
+        });
 
         fireEvent.submit(screen.getByTestId('register-form'));
 
@@ -129,11 +156,15 @@ describe('LoginModal - Password Recovery', () => {
         mockPost.mockResolvedValue({ data: { success: true } });
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="forgot" />);
 
-        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
+            target: { value: 'test@example.com' },
+        });
         fireEvent.submit(screen.getByText('Enviar instrucciones').closest('form')!);
 
         await waitFor(() => {
-            expect(mockPost).toHaveBeenCalledWith('/auth/forgot-password', { email: 'test@example.com' });
+            expect(mockPost).toHaveBeenCalledWith('/auth/forgot-password', {
+                email: 'test@example.com',
+            });
             expect(screen.getByText('Verifica tu email')).toBeInTheDocument();
             expect(mockSuccess).toHaveBeenCalledWith('Email de recuperación enviado');
         });
@@ -150,9 +181,15 @@ describe('LoginModal - Password Recovery', () => {
         mockPost.mockResolvedValue({ data: { success: true } });
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
 
-        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), { target: { value: '123456' } });
-        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), { target: { value: 'newpassword123' } });
-        fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), { target: { value: 'newpassword123' } });
+        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), {
+            target: { value: '123456' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), {
+            target: { value: 'newpassword123' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), {
+            target: { value: 'newpassword123' },
+        });
 
         fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
 
@@ -162,16 +199,24 @@ describe('LoginModal - Password Recovery', () => {
                 newPassword: 'newpassword123',
             });
             expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
-            expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('Contraseña actualizada'));
+            expect(mockSuccess).toHaveBeenCalledWith(
+                expect.stringContaining('Contraseña actualizada')
+            );
         });
     });
 
     it('shows error when passwords do not match in reset mode', async () => {
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
 
-        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), { target: { value: '123456' } });
-        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), { target: { value: 'pass1' } });
-        fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), { target: { value: 'pass2' } });
+        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), {
+            target: { value: '123456' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), {
+            target: { value: 'pass1' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), {
+            target: { value: 'pass2' },
+        });
 
         fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
 

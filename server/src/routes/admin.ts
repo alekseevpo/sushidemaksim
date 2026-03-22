@@ -495,13 +495,13 @@ router.get(
         // Base query for sorting & counts
         const getBaseQuery = (options = {}) => {
             let q = supabase.from('users').select('*, orders(total)', options);
-            
+
             if (filter === 'active') {
                 q = q.is('deleted_at', null);
             } else if (filter === 'archived') {
                 q = q.not('deleted_at', 'is', null);
             }
-            
+
             return q;
         };
 
@@ -676,10 +676,7 @@ router.patch(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = parseInt(req.params.id);
 
-        const { error } = await supabase
-            .from('users')
-            .update({ deleted_at: null })
-            .eq('id', id);
+        const { error } = await supabase.from('users').update({ deleted_at: null }).eq('id', id);
 
         if (error) throw error;
         res.json({ success: true, message: `Usuario #${id} restaurado correctamente` });
