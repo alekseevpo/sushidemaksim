@@ -35,43 +35,51 @@ export default function CartPageSimple() {
         removeItem,
         clearCart,
         addItem,
+        deliveryDetails,
+        updateDeliveryDetails,
     } = useCart();
+
     const { isAuthenticated, user } = useAuth();
     const { success: showSuccess, error: showError, info: showInfo } = useToast();
+
+    const [isOrdering, setIsOrdering] = useState(false);
+    const [isInviting, setIsInviting] = useState(false);
+    const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
+    const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
+    const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+    const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
+
+    const [failedImages, setFailedImages] = useState<Set<string | number>>(new Set());
+    const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
 
     const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
     const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const [isLoadingPopular, setIsLoadingPopular] = useState(false);
-
-    const [address, setAddress] = useState('');
-    const [customerNameState, setCustomerNameState] = useState('');
-    const [guestEmailState, setGuestEmailState] = useState('');
-    const [house, setHouse] = useState('');
-    const [apartment, setApartment] = useState('');
-    const [phone, setPhone] = useState('');
-    const [postalCode, setPostalCode] = useState('');
-    const [isOrdering, setIsOrdering] = useState(false);
-    const [isInviting, setIsInviting] = useState(false);
-    const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
-    const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
-    const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | null>(null);
     const [siteSettings, setSiteSettings] = useState<any>(null);
-    const [isLoadingSettings, setIsLoadingSettings] = useState(true);
-
-    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-    const [selectedZone, setSelectedZone] = useState<any>(null);
-    const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
-
-    const [noCall, setNoCall] = useState(false);
-    const [noBuzzer, setNoBuzzer] = useState(false);
-    const [isScheduled, setIsScheduled] = useState(false);
-    const [customNote, setCustomNote] = useState('');
-    const [failedImages, setFailedImages] = useState<Set<string | number>>(new Set());
-    const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
-    const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
 
     const todayStr = new Date().toISOString().split('T')[0];
+
+    const {
+        address,
+        house,
+        apartment,
+        phone,
+        postalCode,
+        customerName: customerNameState,
+        guestEmail: guestEmailState,
+        paymentMethod,
+        deliveryType,
+        selectedZone,
+        noCall,
+        noBuzzer,
+        isScheduled,
+        scheduledDate,
+        scheduledTime,
+        customNote,
+    } = deliveryDetails;
 
     const DELIVERY_FEE = selectedZone
         ? (selectedZone.cost ?? 0)
@@ -100,9 +108,6 @@ export default function CartPageSimple() {
     };
 
     const getCategoryEmoji = (category: string) => EMOJI[category] || '🍱';
-
-    const [scheduledDate, setScheduledDate] = useState(todayStr);
-    const [scheduledTime, setScheduledTime] = useState('');
 
     useScrollLock(isAddressModalOpen || !!orderSuccess);
 
@@ -378,35 +383,47 @@ export default function CartPageSimple() {
 
                             <DeliveryForm
                                 deliveryType={deliveryType}
-                                setDeliveryType={setDeliveryType}
+                                setDeliveryType={val =>
+                                    updateDeliveryDetails({ deliveryType: val })
+                                }
                                 address={address}
-                                setAddress={setAddress}
+                                setAddress={val => updateDeliveryDetails({ address: val })}
                                 house={house}
-                                setHouse={setHouse}
+                                setHouse={val => updateDeliveryDetails({ house: val })}
                                 apartment={apartment}
-                                setApartment={setApartment}
+                                setApartment={val => updateDeliveryDetails({ apartment: val })}
                                 postalCode={postalCode}
-                                setPostalCode={setPostalCode}
+                                setPostalCode={val => updateDeliveryDetails({ postalCode: val })}
                                 phone={phone}
-                                setPhone={setPhone}
+                                setPhone={val => updateDeliveryDetails({ phone: val })}
                                 customerNameState={customerNameState}
-                                setCustomerNameState={setCustomerNameState}
+                                setCustomerNameState={val =>
+                                    updateDeliveryDetails({ customerName: val })
+                                }
                                 guestEmailState={guestEmailState}
-                                setGuestEmailState={setGuestEmailState}
+                                setGuestEmailState={val =>
+                                    updateDeliveryDetails({ guestEmail: val })
+                                }
                                 paymentMethod={paymentMethod}
-                                setPaymentMethod={setPaymentMethod}
+                                setPaymentMethod={val =>
+                                    updateDeliveryDetails({ paymentMethod: val })
+                                }
                                 isScheduled={isScheduled}
-                                setIsScheduled={setIsScheduled}
+                                setIsScheduled={val => updateDeliveryDetails({ isScheduled: val })}
                                 scheduledDate={scheduledDate}
-                                setScheduledDate={setScheduledDate}
+                                setScheduledDate={val =>
+                                    updateDeliveryDetails({ scheduledDate: val })
+                                }
                                 scheduledTime={scheduledTime}
-                                setScheduledTime={setScheduledTime}
+                                setScheduledTime={val =>
+                                    updateDeliveryDetails({ scheduledTime: val })
+                                }
                                 noCall={noCall}
-                                setNoCall={setNoCall}
+                                setNoCall={val => updateDeliveryDetails({ noCall: val })}
                                 noBuzzer={noBuzzer}
-                                setNoBuzzer={setNoBuzzer}
+                                setNoBuzzer={val => updateDeliveryDetails({ noBuzzer: val })}
                                 customNote={customNote}
-                                setCustomNote={setCustomNote}
+                                setCustomNote={val => updateDeliveryDetails({ customNote: val })}
                                 selectedZone={selectedZone}
                                 setIsAddressModalOpen={setIsAddressModalOpen}
                                 user={user}
@@ -447,11 +464,13 @@ export default function CartPageSimple() {
                 isOpen={isAddressModalOpen}
                 onClose={() => setIsAddressModalOpen(false)}
                 onSelect={res => {
-                    setAddress(res.street || '');
-                    setHouse(res.house || '');
-                    setApartment(res.apartment || '');
-                    setPostalCode(res.postalCode || '');
-                    setSelectedZone(res.zone);
+                    updateDeliveryDetails({
+                        address: res.street || '',
+                        house: res.house || '',
+                        apartment: res.apartment || '',
+                        postalCode: res.postalCode || '',
+                        selectedZone: res.zone,
+                    });
                 }}
                 deliveryZones={deliveryZones}
             />

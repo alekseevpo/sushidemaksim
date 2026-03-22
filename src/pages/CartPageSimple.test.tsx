@@ -4,7 +4,9 @@ import CartPageSimple from './CartPageSimple';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { api } from '../utils/api';
-import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { CartProvider } from '../hooks/useCart';
+import { AuthProvider } from '../hooks/useAuth';
 
 // Mock API
 vi.mock('../utils/api', () => ({
@@ -26,28 +28,54 @@ const mockCartItems = [
     },
 ];
 
-// Mock useCart
-vi.mock('../hooks/useCart', () => ({
-    useCart: () => ({
-        items: mockCartItems,
-        total: 10,
-        updateQuantity: vi.fn(),
-        removeItem: vi.fn(),
-        addItem: vi.fn(),
-        clearCart: vi.fn(),
+// Mock useCartQuery
+vi.mock('../hooks/queries/useCartQuery', () => ({
+    useCartQuery: vi.fn(() => ({
+        data: { items: mockCartItems, total: 10 },
         isLoading: false,
-    }),
-    CartProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    })),
+    useAddToCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useUpdateQuantityMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useRemoveItemMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useClearCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    CART_QUERY_KEY: ['cart'],
+}));
+
+// Mock useCartQuery
+vi.mock('../hooks/queries/useCartQuery', () => ({
+    useCartQuery: vi.fn(() => ({
+        data: { items: mockCartItems, total: 10 },
+        isLoading: false,
+    })),
+    useAddToCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useUpdateQuantityMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useRemoveItemMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useClearCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    CART_QUERY_KEY: ['cart'],
 }));
 
 // Mock useAuth
-vi.mock('../hooks/useAuth', () => ({
-    useAuth: () => ({
-        isAuthenticated: false,
-        user: null,
-    }),
-    AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+vi.mock('../hooks/useAuth', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        useAuth: () => ({
+            isAuthenticated: false,
+            user: null,
+        }),
+    };
+});
+
+// Mock @tanstack/react-query
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        useQueryClient: () => ({
+            invalidateQueries: vi.fn(),
+        }),
+    };
+});
 
 // Mock useToast - we'll capture the functions to assert on them later
 const mockError = vi.fn();
@@ -63,6 +91,7 @@ vi.mock('../context/ToastContext', () => ({
 describe('CartPageSimple (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        localStorage.clear();
         (api.get as any).mockImplementation((url: string) => {
             if (url === '/settings')
                 return Promise.resolve({
@@ -75,14 +104,26 @@ describe('CartPageSimple (Integration)', () => {
         });
     });
 
-    const renderCart = () =>
-        render(
-            <HelmetProvider>
-                <BrowserRouter>
-                    <CartPageSimple />
-                </BrowserRouter>
-            </HelmetProvider>
+    const renderCart = () => {
+        const queryClient = new QueryClient({
+            defaultOptions: {
+                queries: { retry: false, staleTime: Infinity },
+            },
+        });
+        return render(
+            <QueryClientProvider client={queryClient}>
+                <AuthProvider>
+                    <CartProvider>
+                        <HelmetProvider>
+                            <BrowserRouter>
+                                <CartPageSimple />
+                            </BrowserRouter>
+                        </HelmetProvider>
+                    </CartProvider>
+                </AuthProvider>
+            </QueryClientProvider>
         );
+    };
 
     it('renders the cart content', async () => {
         renderCart();

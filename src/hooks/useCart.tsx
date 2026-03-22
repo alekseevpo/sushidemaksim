@@ -1,4 +1,12 @@
-import { createContext, useContext, ReactNode, useCallback, useMemo } from 'react';
+import {
+    createContext,
+    useContext,
+    ReactNode,
+    useCallback,
+    useMemo,
+    useState,
+    useEffect,
+} from 'react';
 import { CartItem, SushiItem } from '../types';
 import { api } from '../utils/api';
 import { useAuth } from './useAuth';
@@ -12,6 +20,25 @@ import {
     CART_QUERY_KEY,
 } from './queries/useCartQuery';
 
+interface DeliveryDetails {
+    address: string;
+    house: string;
+    apartment: string;
+    phone: string;
+    postalCode: string;
+    customerName: string;
+    guestEmail: string;
+    paymentMethod: 'cash' | 'card' | null;
+    deliveryType: 'delivery' | 'pickup';
+    selectedZone: any | null;
+    noCall: boolean;
+    noBuzzer: boolean;
+    isScheduled: boolean;
+    scheduledDate: string;
+    scheduledTime: string;
+    customNote: string;
+}
+
 interface CartContextType {
     items: CartItem[];
     total: number;
@@ -22,11 +49,71 @@ interface CartContextType {
     clearCart: () => Promise<void>;
     syncGuestItems: () => Promise<void>;
     itemCount: number;
+    // Delivery Persistance
+    deliveryDetails: DeliveryDetails;
+    updateDeliveryDetails: (details: Partial<DeliveryDetails>) => void;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+    const [deliveryDetails, setDeliveryDetails] = useState<DeliveryDetails>(() => {
+        if (typeof window === 'undefined')
+            return {
+                address: '',
+                house: '',
+                apartment: '',
+                phone: '',
+                postalCode: '',
+                customerName: '',
+                guestEmail: '',
+                paymentMethod: null,
+                deliveryType: 'delivery',
+                selectedZone: null,
+                noCall: false,
+                noBuzzer: false,
+                isScheduled: false,
+                scheduledDate: new Date().toISOString().split('T')[0],
+                scheduledTime: '',
+                customNote: '',
+            };
+
+        const saved = localStorage.getItem('delivery_details');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.error('Failed to parse delivery details', e);
+            }
+        }
+        return {
+            address: '',
+            house: '',
+            apartment: '',
+            phone: '',
+            postalCode: '',
+            customerName: '',
+            guestEmail: '',
+            paymentMethod: null,
+            deliveryType: 'delivery',
+            selectedZone: null,
+            noCall: false,
+            noBuzzer: false,
+            isScheduled: false,
+            scheduledDate: new Date().toISOString().split('T')[0],
+            scheduledTime: '',
+            customNote: '',
+        };
+    });
+
+    useEffect(() => {
+        localStorage.setItem('delivery_details', JSON.stringify(deliveryDetails));
+    }, [deliveryDetails]);
+
+    const updateDeliveryDetails = useCallback((details: Partial<DeliveryDetails>) => {
+        setDeliveryDetails(prev => ({ ...prev, ...details }));
+    }, []);
+
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
@@ -105,6 +192,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 clearCart,
                 syncGuestItems,
                 itemCount,
+                deliveryDetails,
+                updateDeliveryDetails,
             }}
         >
             {children}

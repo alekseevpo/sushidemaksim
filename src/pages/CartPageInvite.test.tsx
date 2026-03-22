@@ -1,20 +1,45 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CartPageSimple from './CartPageSimple';
-import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
-// Mock hooks
-vi.mock('../hooks/useCart', () => ({
-    useCart: vi.fn(),
+import { CartProvider } from '../hooks/useCart';
+import { AuthProvider } from '../hooks/useAuth';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Mock useCartQuery
+vi.mock('../hooks/queries/useCartQuery', () => ({
+    useCartQuery: vi.fn(() => ({
+        data: { items: mockCartItems, total: 20 },
+        isLoading: false,
+    })),
+    useAddToCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useUpdateQuantityMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useRemoveItemMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    useClearCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
+    CART_QUERY_KEY: ['cart'],
 }));
 
-vi.mock('../hooks/useAuth', () => ({
-    useAuth: vi.fn(),
-}));
+vi.mock('../hooks/useAuth', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        useAuth: vi.fn(),
+    };
+});
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        useQueryClient: () => ({
+            invalidateQueries: vi.fn(),
+        }),
+    };
+});
 
 // Mock useToast - we'll capture the functions to assert on them later
 const mockError = vi.fn();
@@ -56,20 +81,9 @@ const mockCartItems = [
 describe('CartPageSimple - Invitations (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        localStorage.clear();
 
-        // Default mock implementations
-        vi.mocked(useCart).mockReturnValue({
-            items: mockCartItems,
-            total: 20,
-            itemCount: 2,
-            updateQuantity: vi.fn(),
-            removeItem: vi.fn(),
-            clearCart: vi.fn(),
-            isLoading: false,
-            addItem: vi.fn(),
-            syncGuestItems: vi.fn().mockResolvedValue(undefined),
-        });
-
+        // Reset mock implementation if needed
         vi.mocked(api.get).mockImplementation((url: string) => {
             if (url === '/settings')
                 return Promise.resolve({
@@ -90,14 +104,26 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         }
     });
 
-    const renderPage = () =>
-        render(
-            <HelmetProvider>
-                <BrowserRouter>
-                    <CartPageSimple />
-                </BrowserRouter>
-            </HelmetProvider>
+    const renderPage = () => {
+        const queryClient = new QueryClient({
+            defaultOptions: {
+                queries: { retry: false, staleTime: Infinity },
+            },
+        });
+        return render(
+            <QueryClientProvider client={queryClient}>
+                <AuthProvider>
+                    <CartProvider>
+                        <HelmetProvider>
+                            <BrowserRouter>
+                                <CartPageSimple />
+                            </BrowserRouter>
+                        </HelmetProvider>
+                    </CartProvider>
+                </AuthProvider>
+            </QueryClientProvider>
         );
+    };
 
     it('shows invitation button even for guests', async () => {
         vi.mocked(useAuth).mockReturnValue({
