@@ -67,7 +67,11 @@ export default function MenuPageSimple() {
     useEffect(() => {
         const activeCat = document.getElementById(`cat-${selectedCategory}`);
         if (activeCat && activeCat.scrollIntoView) {
-            activeCat.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            activeCat.scrollIntoView({
+                behavior: 'smooth',
+                inline: selectedCategory === 'all' ? 'start' : 'center',
+                block: 'nearest',
+            });
         }
     }, [selectedCategory]);
 

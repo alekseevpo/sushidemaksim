@@ -30,7 +30,7 @@ export default function MenuCategoryBar({
             <div className="fixed top-16 left-0 right-0 z-[40] bg-[#FDFBF7] border-b border-gray-200 lg:hidden shadow-sm">
                 <div className="max-w-7xl mx-auto">
                     <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory py-3 flex items-center">
-                        <div className="flex gap-2 flex-nowrap px-[40vw]">
+                        <div className="flex gap-2 flex-nowrap px-4">
                             <button
                                 id="cat-all"
                                 onClick={() => setSelectedCategory('all')}
