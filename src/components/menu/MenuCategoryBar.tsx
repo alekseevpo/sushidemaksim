@@ -27,16 +27,16 @@ export default function MenuCategoryBar({
 }: MenuCategoryBarProps) {
     if (isMobile) {
         return (
-            <div className="fixed top-16 left-0 right-0 z-[40] bg-[#FDFBF7] border-b border-gray-200 lg:hidden">
+            <div className="fixed top-16 left-0 right-0 z-[40] bg-[#FDFBF7] border-b border-gray-200 lg:hidden shadow-sm">
                 <div className="max-w-7xl mx-auto">
-                    <div className="overflow-x-auto no-scrollbar px-3 py-3">
-                        <div className="flex gap-2 flex-nowrap">
+                    <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory py-3 flex items-center">
+                        <div className="flex gap-2 flex-nowrap px-[40vw]">
                             <button
                                 id="cat-all"
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center border ${
+                                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center border transition-all duration-300 ${
                                     selectedCategory === 'all'
-                                        ? 'bg-red-600 text-white border-red-600'
+                                        ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-200'
                                         : 'bg-white text-gray-700 border-gray-200'
                                 }`}
                             >
@@ -47,9 +47,9 @@ export default function MenuCategoryBar({
                                     key={cat.id}
                                     id={`cat-${cat.id}`}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center border ${
+                                    className={`whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center border transition-all duration-300 ${
                                         selectedCategory === cat.id
-                                            ? 'bg-red-600 text-white border-red-600'
+                                            ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-200'
                                             : 'bg-white text-gray-700 border-gray-200'
                                     }`}
                                 >

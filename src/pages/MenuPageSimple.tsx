@@ -55,7 +55,8 @@ export default function MenuPageSimple() {
                             '--header-height'
                         )
                     ) || 80;
-                const offset = headerHeight + 32; // Align to md:pt-8 or similar
+                const isMobile = window.innerWidth < 1024;
+                const offset = headerHeight + (isMobile ? 80 : 32);
                 const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: 'smooth' });
             }
@@ -84,7 +85,8 @@ export default function MenuPageSimple() {
                             '--header-height'
                         )
                     ) || 80;
-                const offset = headerHeight + 32;
+                const isMobile = window.innerWidth < 1024;
+                const offset = headerHeight + (isMobile ? 80 : 32);
                 const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: 'smooth' });
             }
@@ -106,7 +108,8 @@ export default function MenuPageSimple() {
                                     '--header-height'
                                 )
                             ) || 80;
-                        const offset = headerHeight + 32;
+                        const isMobile = window.innerWidth < 1024;
+                        const offset = headerHeight + (isMobile ? 80 : 32);
                         const top = el.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
                     }
