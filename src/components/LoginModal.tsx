@@ -135,6 +135,7 @@ const RegisterForm = memo(
         return (
             <form
                 onSubmit={onRegister}
+                data-testid="register-form"
                 className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
                 <div className="space-y-3">
