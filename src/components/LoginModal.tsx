@@ -477,17 +477,19 @@ export default function LoginModal({
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        const form = e.target as HTMLFormElement;
-        const name = (form.elements.namedItem('name') as HTMLInputElement).value;
-        const phone = (form.elements.namedItem('phone') as HTMLInputElement).value;
-        const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-        const password = (form.elements.namedItem('password') as HTMLInputElement).value;
 
         try {
+            const form = e.target as HTMLFormElement;
+            const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || '';
+            const phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value || '';
+            const email = (form.elements.namedItem('email') as HTMLInputElement)?.value || '';
+            const password = (form.elements.namedItem('password') as HTMLInputElement)?.value || '';
+
             const res = await register(name, email, phone, password);
             if (res.success) {
-                setMode('verify-sent');
-                showSuccess('¡Cuenta creada! Verifica tu email.');
+                onClose();
+                showSuccess('¡Cuenta creada! Verifica tu email para tu descuento. 🍣');
+                navigate('/menu');
             } else {
                 showError(res.error || 'Error al registrarse');
             }
