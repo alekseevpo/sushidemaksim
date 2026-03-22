@@ -484,6 +484,7 @@ router.get(
         const order = (req.query.order as string) || 'desc';
         const search = (req.query.search as string) || '';
         const ascending = order === 'asc';
+        const filter = (req.query.filter as string) || 'active';
 
         // Fields directly sortable by Supabase
         const directSortFields = ['id', 'name', 'email', 'created_at', 'last_seen_at'];
@@ -491,9 +492,22 @@ router.get(
         let usersWithStats: any[] = [];
         let totalCount = 0;
 
+        // Base query for sorting & counts
+        const getBaseQuery = (options = {}) => {
+            let q = supabase.from('users').select('*, orders(total)', options);
+            
+            if (filter === 'active') {
+                q = q.is('deleted_at', null);
+            } else if (filter === 'archived') {
+                q = q.not('deleted_at', 'is', null);
+            }
+            
+            return q;
+        };
+
         if (sortBy === 'orderCount' || sortBy === 'totalSpent') {
             // Complex sort: Fetch all users and their order totals, then sort and paginate in memory
-            let query = supabase.from('users').select('*, orders(total)');
+            let query = getBaseQuery();
 
             if (search) {
                 const searchNum = parseInt(search);
@@ -530,7 +544,7 @@ router.get(
             usersWithStats = allUsersWithStats.slice(offset, offset + limit);
         } else {
             // Direct sort via Supabase
-            let query = supabase.from('users').select('*, orders(total)', { count: 'exact' });
+            let query = getBaseQuery({ count: 'exact' });
 
             if (search) {
                 const searchNum = parseInt(search);
@@ -645,34 +659,30 @@ router.delete(
             return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
         }
 
-        // 1. Get all order IDs for this user
-        const { data: userOrders } = await supabase
-            .from('orders')
-            .select('id')
-            .eq('user_id', id);
-
-        const orderIds = (userOrders || []).map(o => o.id);
-
-        // 2. Delete dependencies in order
-        if (orderIds.length > 0) {
-            await supabase.from('order_items').delete().in('order_id', orderIds);
-            await supabase.from('orders').delete().in('id', orderIds);
-        }
-
-        // 3. Delete other user data
-        const otherTables = ['user_addresses', 'user_favorites', 'promo_codes'];
-        for (const table of otherTables) {
-            await supabase.from(table).delete().eq('user_id', id);
-        }
-
-        // 4. Finally delete user from auth (users table)
-        const { error } = await supabase.from('users').delete().eq('id', id);
+        // Soft Delete (Archive)
+        const { error } = await supabase
+            .from('users')
+            .update({ deleted_at: new Date().toISOString() })
+            .eq('id', id);
 
         if (error) throw error;
-        res.json({
-            success: true,
-            message: `Usuario #${id} и ${orderIds.length} pedidos eliminados permanentemente`,
-        });
+        res.json({ success: true, message: `Usuario #${id} archivado correctamente` });
+    })
+);
+
+// PATCH /api/admin/users/:id/restore — Restore archived user
+router.patch(
+    '/users/:id/restore',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const id = parseInt(req.params.id);
+
+        const { error } = await supabase
+            .from('users')
+            .update({ deleted_at: null })
+            .eq('id', id);
+
+        if (error) throw error;
+        res.json({ success: true, message: `Usuario #${id} restaurado correctamente` });
     })
 );
 

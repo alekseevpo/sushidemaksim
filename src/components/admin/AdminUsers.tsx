@@ -15,6 +15,7 @@ import {
     Trash2,
     Search,
     X,
+    RotateCcw,
 } from 'lucide-react';
 
 import { api, ApiError } from '../../utils/api';
@@ -27,6 +28,7 @@ const UserRow = memo(
         currentUser,
         onToggleRole,
         onDelete,
+        onRestore,
         onToggleBirthday,
         onVerifyEmail,
     }: {
@@ -34,6 +36,7 @@ const UserRow = memo(
         currentUser: any;
         onToggleRole: (user: any) => void;
         onDelete: (user: any) => void;
+        onRestore: (user: any) => void;
         onToggleBirthday: (id: number, verified: boolean) => void;
         onVerifyEmail: (user: any) => void;
     }) => {
@@ -218,30 +221,49 @@ const UserRow = memo(
                             <UsersIcon size={12} strokeWidth={1.5} /> Cliente
                         </span>
                     )}
+                    {user.deleted_at && (
+                        <div className="mt-1">
+                            <span className="inline-flex items-center gap-1 bg-gray-900 text-white px-2 py-0.5 rounded-full font-black text-[9px] uppercase tracking-tighter">
+                                Archivivado
+                            </span>
+                        </div>
+                    )}
                 </td>
                 <td className="px-4 py-2 text-center flex items-center justify-center gap-1.5 min-w-[140px]">
                     {!user.is_superadmin && (
-                        <>
-                            {currentUser?.is_superadmin && (
+                        <div className="flex items-center gap-1.5">
+                            {user.deleted_at ? (
                                 <button
-                                    onClick={() => onToggleRole(user)}
-                                    className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
-                                        user.role === 'admin'
-                                            ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                            : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                    }`}
+                                    onClick={() => onRestore(user)}
+                                    className="p-1 px-2 flex items-center gap-1 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg font-black text-[10px] uppercase tracking-wider transition border border-green-100"
+                                    title="Restaurar usuario"
                                 >
-                                    {user.role === 'admin' ? 'Revocar' : 'Hacer Admin'}
+                                    <RotateCcw size={14} strokeWidth={2} /> Restaurar
                                 </button>
+                            ) : (
+                                <>
+                                    {currentUser?.is_superadmin && (
+                                        <button
+                                            onClick={() => onToggleRole(user)}
+                                            className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
+                                                user.role === 'admin'
+                                                    ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                                            }`}
+                                        >
+                                            {user.role === 'admin' ? 'Revocar' : 'Hacer Admin'}
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => onDelete(user)}
+                                        className="p-1 text-gray-400 hover:text-red-600 transition"
+                                        title="Archivar usuario"
+                                    >
+                                        <Trash2 size={16} strokeWidth={1.5} />
+                                    </button>
+                                </>
                             )}
-                            <button
-                                onClick={() => onDelete(user)}
-                                className="p-1 text-gray-400 hover:text-red-600 transition"
-                                title="Eliminar permanentemente"
-                            >
-                                <Trash2 size={16} strokeWidth={1.5} />
-                            </button>
-                        </>
+                        </div>
                     )}
                 </td>
             </tr>
@@ -258,6 +280,7 @@ export default function AdminUsers() {
     const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [filter, setFilter] = useState('active'); // 'active', 'archived', 'all'
 
     // Modal state
     const [userToDelete, setUserToDelete] = useState<any>(null);
@@ -283,10 +306,10 @@ export default function AdminUsers() {
         isFetching,
         refetch,
     } = useQuery({
-        queryKey: ['admin-users', page, sort.field, sort.order, debouncedSearch],
+        queryKey: ['admin-users', page, sort.field, sort.order, debouncedSearch, filter],
         queryFn: () =>
             api.get(
-                `/admin/users?page=${page}&limit=${LIMIT}&sortBy=${sort.field}&order=${sort.order}&search=${debouncedSearch}`
+                `/admin/users?page=${page}&limit=${LIMIT}&sortBy=${sort.field}&order=${sort.order}&search=${debouncedSearch}&filter=${filter}`
             ),
     });
 
@@ -320,6 +343,13 @@ export default function AdminUsers() {
     const verifyBirthdayMutation = useMutation({
         mutationFn: ({ id, verified }: { id: number; verified: boolean }) =>
             api.patch(`/admin/users/${id}/verify-birthday`, { verified }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+        },
+    });
+
+    const restoreMutation = useMutation({
+        mutationFn: (userId: number) => api.patch(`/admin/users/${userId}/restore`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
         },
@@ -388,8 +418,29 @@ export default function AdminUsers() {
                         </button>
                     )}
                 </div>
-                <button
-                    onClick={() => refetch()}
+
+                <div className="flex items-center gap-3">
+                    <select
+                        value={filter}
+                        onChange={e => {
+                            setFilter(e.target.value);
+                            setPage(1);
+                        }}
+                        className="pl-4 pr-10 py-2 border border-gray-100 rounded-xl bg-white shadow-sm outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all text-sm font-bold text-gray-700 appearance-none cursor-pointer"
+                        style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'right 0.75rem center',
+                            backgroundSize: '1rem',
+                        }}
+                    >
+                        <option value="active">Solo Activos</option>
+                        <option value="archived">Solo Archivados</option>
+                        <option value="all">Todos</option>
+                    </select>
+
+                    <button
+                        onClick={() => refetch()}
                     className="p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-100 rounded-xl shadow-sm transition"
                     title="Actualizar"
                 >
@@ -399,6 +450,7 @@ export default function AdminUsers() {
                         className={isFetching ? 'animate-spin' : ''}
                     />
                 </button>
+                </div>
             </div>
 
             {fetchError && (
@@ -545,11 +597,9 @@ export default function AdminUsers() {
                                         )}
                                     </div>
                                 </th>
-                                {currentUser?.is_superadmin && (
-                                    <th className="px-4 py-3 text-center whitespace-nowrap">
-                                        Acciones
-                                    </th>
-                                )}
+                                <th className="px-4 py-3 text-center whitespace-nowrap">
+                                    Acciones
+                                </th>
                             </tr>
                         </thead>
 
@@ -561,6 +611,7 @@ export default function AdminUsers() {
                                     currentUser={currentUser}
                                     onToggleRole={setUserToChangeRole}
                                     onDelete={setUserToDelete}
+                                    onRestore={u => restoreMutation.mutate(u.id)}
                                     onToggleBirthday={toggleBirthdayVerified}
                                     onVerifyEmail={setUserToVerify}
                                 />
