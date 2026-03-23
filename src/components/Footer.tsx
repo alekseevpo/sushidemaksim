@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Phone, Heart } from 'lucide-react';
+import { Phone, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { api } from '../utils/api';
 
@@ -55,13 +55,13 @@ export default function Footer() {
     };
 
     return (
-        <footer className="bg-black text-gray-400 py-16 mt-auto border-t border-white/5">
+        <footer className="bg-black text-gray-400 pt-10 pb-16 mt-auto border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-12">
                 <div className="text-center md:text-left">
                     <Link
                         to="/"
                         onClick={() => (window as any).lenis?.scrollTo(0)}
-                        className="flex items-center justify-center md:justify-start gap-0 mb-8 no-underline group cursor-pointer"
+                        className="flex items-center justify-center md:justify-start gap-0 mb-4 no-underline group cursor-pointer"
                     >
                         <div className="transform group-hover:rotate-12 transition-transform duration-500 shrink-0">
                             <img
@@ -126,15 +126,6 @@ export default function Footer() {
                             <Phone size={24} strokeWidth={2} />
                         </a>
                     </div>
-
-                    {/* Botón discreto para administradores */}
-                    <Link
-                        to="/admin"
-                        className="inline-flex items-center gap-2 text-[10px] uppercase font-black tracking-widest text-gray-800 hover:text-gray-500 transition-colors mt-4"
-                    >
-                        <Shield size={12} strokeWidth={1.5} />
-                        <span>Staff Access</span>
-                    </Link>
                 </div>
             </div>
 

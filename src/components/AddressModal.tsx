@@ -255,7 +255,7 @@ export default function AddressModal({
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-modal max-h-[90vh] overflow-hidden flex flex-col md:max-w-2xl md:mx-auto md:top-20 md:bottom-20 md:rounded-[32px] shadow-3xl"
+                        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-modal max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:top-12 md:bottom-12 md:rounded-[32px] shadow-3xl"
                     >
                         {/* Header (Desktop only) */}
                         <div className="hidden md:flex px-6 py-4 justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
@@ -362,7 +362,7 @@ export default function AddressModal({
                             </div>
 
                             {/* Form Side */}
-                            <div className="w-full md:w-[300px] bg-white flex flex-col overflow-hidden border-l border-gray-100">
+                            <div className="w-full md:w-[380px] bg-white flex flex-col overflow-hidden border-l border-gray-100">
                                 <div className="flex-1 overflow-y-auto p-4 md:px-5 md:py-4 space-y-3 scrollbar-hide">
                                     <div>
                                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
