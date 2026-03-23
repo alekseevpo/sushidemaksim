@@ -311,94 +311,93 @@ const ForgotPasswordForm = memo(
     }
 );
 
-const PinInput = memo(
-    ({ value, onChange }: { value: string; onChange: (val: string) => void }) => {
-        const inputs = React.useRef<(HTMLInputElement | null)[]>([]);
+const PinInput = memo(({ value, onChange }: { value: string; onChange: (val: string) => void }) => {
+    const inputs = React.useRef<(HTMLInputElement | null)[]>([]);
 
-        const handleChange = (index: number, val: string) => {
-            if (val && !/^\d+$/.test(val)) return;
+    const handleChange = (index: number, val: string) => {
+        if (val && !/^\d+$/.test(val)) return;
+        const newVal = value.split('');
+        // Handle multiple characters if someone types fast or browser behavior
+        const char = val.slice(-1);
+        newVal[index] = char;
+        const combined = newVal.join('').slice(0, 6);
+        onChange(combined);
+
+        if (char && index < 5) {
+            inputs.current[index + 1]?.focus();
+        }
+    };
+
+    const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+        if (e.key === 'Backspace' && !value[index] && index > 0) {
+            inputs.current[index - 1]?.focus();
             const newVal = value.split('');
-            // Handle multiple characters if someone types fast or browser behavior
-            const char = val.slice(-1);
-            newVal[index] = char;
-            const combined = newVal.join('').slice(0, 6);
-            onChange(combined);
+            newVal[index - 1] = '';
+            onChange(newVal.join(''));
+        }
+    };
 
-            if (char && index < 5) {
-                inputs.current[index + 1]?.focus();
-            }
-        };
+    const handlePaste = (e: React.ClipboardEvent) => {
+        e.preventDefault();
+        const data = e.clipboardData.getData('text').trim().slice(0, 6).replace(/\D/g, '');
+        onChange(data);
+        if (data.length > 0) {
+            const nextIndex = Math.min(data.length, 5);
+            inputs.current[nextIndex]?.focus();
+        }
+    };
 
-        const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-            if (e.key === 'Backspace' && !value[index] && index > 0) {
-                inputs.current[index - 1]?.focus();
-                const newVal = value.split('');
-                newVal[index - 1] = '';
-                onChange(newVal.join(''));
-            }
-        };
-
-        const handlePaste = (e: React.ClipboardEvent) => {
-            e.preventDefault();
-            const data = e.clipboardData.getData('text').trim().slice(0, 6).replace(/\D/g, '');
+    const handlePasteButtonClick = async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            const data = text.trim().slice(0, 6).replace(/\D/g, '');
             onChange(data);
             if (data.length > 0) {
                 const nextIndex = Math.min(data.length, 5);
                 inputs.current[nextIndex]?.focus();
             }
-        };
+        } catch (err) {
+            // Fallback: focus first input if paste fails
+            inputs.current[0]?.focus();
+        }
+    };
 
-        const handlePasteButtonClick = async () => {
-            try {
-                const text = await navigator.clipboard.readText();
-                const data = text.trim().slice(0, 6).replace(/\D/g, '');
-                onChange(data);
-                if (data.length > 0) {
-                    const nextIndex = Math.min(data.length, 5);
-                    inputs.current[nextIndex]?.focus();
-                }
-            } catch (err) {
-                // Fallback: focus first input if paste fails
-                inputs.current[0]?.focus();
-            }
-        };
-
-        return (
-            <div className="space-y-3 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="flex justify-between items-center px-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                        Código de recuperación
-                    </label>
-                    <button
-                        type="button"
-                        onClick={handlePasteButtonClick}
-                        className="text-[10px] font-bold text-red-600 hover:text-red-700 transition flex items-center gap-1 bg-transparent border-none p-0 cursor-pointer"
-                    >
-                        <KeyRound size={12} strokeWidth={2} /> Pegar código
-                    </button>
-                </div>
-                <div className="flex justify-between gap-1.5" onPaste={handlePaste}>
-                    {[0, 1, 2, 3, 4, 5].map(i => (
-                        <input
-                            key={i}
-                            ref={el => (inputs.current[i] = el)}
-                            type="text"
-                            inputMode="numeric"
-                            autoComplete="one-time-code"
-                            maxLength={1}
-                            value={value[i] || ''}
-                            onChange={e => handleChange(i, e.target.value)}
-                            onKeyDown={e => handleKeyDown(i, e)}
-                            className="w-full h-12 text-center text-lg font-black bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-red-600 outline-none transition-all text-gray-900 shadow-sm"
-                            placeholder="•"
-                        />
-                    ))}
-                </div>
-                <input type="hidden" name="code" value={value} />
+    return (
+        <div className="space-y-3 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex justify-between items-center px-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Código de recuperación
+                </label>
+                <button
+                    type="button"
+                    onClick={handlePasteButtonClick}
+                    className="text-[10px] font-bold text-red-600 hover:text-red-700 transition flex items-center gap-1 bg-transparent border-none p-0 cursor-pointer"
+                >
+                    <KeyRound size={12} strokeWidth={2} /> Pegar código
+                </button>
             </div>
-        );
-    }
-);
+            <div className="flex justify-between gap-1.5" onPaste={handlePaste}>
+                {[0, 1, 2, 3, 4, 5].map(i => (
+                    <input
+                        key={i}
+                        ref={el => (inputs.current[i] = el)}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        maxLength={1}
+                        value={value[i] || ''}
+                        onChange={e => handleChange(i, e.target.value)}
+                        onKeyDown={e => handleKeyDown(i, e)}
+                        className="w-full h-12 text-center text-lg font-black bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-red-600 outline-none transition-all text-gray-900 shadow-sm"
+                        placeholder="•"
+                    />
+                ))}
+            </div>
+            <input type="hidden" name="code" value={value} />
+        </div>
+    );
+});
+PinInput.displayName = 'PinInput';
 
 const ResetPasswordForm = memo(
     ({
@@ -492,6 +491,7 @@ const ResetPasswordForm = memo(
         );
     }
 );
+ResetPasswordForm.displayName = 'ResetPasswordForm';
 
 // ========== MAIN COMPONENT ==========
 
@@ -515,11 +515,12 @@ export default function LoginModal({
     const navigate = useNavigate();
 
     useEffect(() => {
-        const handleOpen = (e: any) => {
-            if (e.detail?.mode) setMode(e.detail.mode);
-            if (e.detail?.token) {
+        const handleOpen = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            if (customEvent.detail?.mode) setMode(customEvent.detail.mode);
+            if (customEvent.detail?.token) {
                 setMode('reset-password');
-                setResetToken(e.detail.token);
+                setResetToken(customEvent.detail.token);
             }
         };
 
@@ -565,8 +566,9 @@ export default function LoginModal({
             } else {
                 showError(res.error || 'Error al iniciar sesión');
             }
-        } catch (err: any) {
-            showError(err.message || 'Error inesperado');
+        } catch (err: unknown) {
+            const error = err as Error;
+            showError(error.message || 'Error inesperado');
         } finally {
             setIsLoading(false);
         }
@@ -591,8 +593,9 @@ export default function LoginModal({
             } else {
                 showError(res.error || 'Error al registrarse');
             }
-        } catch (err: any) {
-            showError(err.message || 'Error inesperado');
+        } catch (err: unknown) {
+            const error = err as Error;
+            showError(error.message || 'Error inesperado');
         } finally {
             setIsLoading(false);
         }
@@ -609,8 +612,9 @@ export default function LoginModal({
             setRecoveryEmail(email);
             setMode('verify-sent');
             showSuccess('Email de recuperación enviado');
-        } catch (err: any) {
-            showError(err.message || 'Error al procesar la solicitud');
+        } catch (err: unknown) {
+            const error = err as Error;
+            showError(error.message || 'Error al procesar la solicitud');
         } finally {
             setIsLoading(false);
         }
@@ -640,8 +644,9 @@ export default function LoginModal({
             setMode('login');
             showSuccess('Contraseña actualizada con éxito. Ya puedes iniciar sesión.');
             setRecoveryEmail('');
-        } catch (err: any) {
-            showError(err.message || 'Error al actualizar la contraseña');
+        } catch (err: unknown) {
+            const error = err as Error;
+            showError(error.message || 'Error al actualizar la contraseña');
         } finally {
             setIsLoading(false);
         }
