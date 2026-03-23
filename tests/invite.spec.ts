@@ -14,6 +14,22 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         await context.addInitScript(() => {
             window.localStorage.setItem('cookieConsent', 'accepted');
             window.localStorage.removeItem('sushi_token');
+
+            // Mock date to a Saturday night (Open)
+            const mockDate = new Date('2026-03-21T21:00:00').getTime();
+            Date.now = () => mockDate;
+            const RealDate = Date;
+            // @ts-expect-error - overriding global Date
+            globalThis.Date = class extends RealDate {
+                constructor(...args: any[]) {
+                    if (args.length === 0) {
+                        super(mockDate);
+                    } else {
+                        // @ts-expect-error - spreading args
+                        super(...args);
+                    }
+                }
+            } as any;
         });
 
         // Configuración básica de mocks de API
@@ -145,9 +161,8 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         const inviteBtn = page.getByTestId('invite-button');
 
         // RELLENAR DATOS DE ENVÍO (necesario para validación en handleInvite)
-        await page.getByTestId('address-input').fill('Calle Falsa 123');
-        await page.getByTestId('house-input-desktop').fill('1');
-        await page.getByTestId('apartment-input-desktop').fill('2A');
+        // Usamos RECOGIDA para simplificar el test E2E
+        await page.getByRole('button', { name: /Recogida/i }).click();
         await page.getByTestId('phone-input').fill('600111222');
 
         // Select payment method
