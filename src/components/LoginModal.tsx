@@ -315,15 +315,31 @@ const PinInput = memo(({ value, onChange }: { value: string; onChange: (val: str
     const inputs = React.useRef<(HTMLInputElement | null)[]>([]);
 
     const handleChange = (index: number, val: string) => {
-        if (val && !/^\d+$/.test(val)) return;
+        const cleanVal = val.replace(/\D/g, '');
+        if (!cleanVal) {
+            const newVal = value.split('');
+            newVal[index] = '';
+            onChange(newVal.join('').slice(0, 6));
+            return;
+        }
+
+        if (cleanVal.length > 1) {
+            const data = cleanVal.slice(0, 6);
+            onChange(data);
+            const nextIndex = Math.min(data.length, 5);
+            inputs.current[nextIndex]?.focus();
+            return;
+        }
+
         const newVal = value.split('');
-        // Handle multiple characters if someone types fast or browser behavior
-        const char = val.slice(-1);
-        newVal[index] = char;
+        for (let i = 0; i < 6; i++) {
+            if (newVal[i] === undefined) newVal[i] = '';
+        }
+        newVal[index] = cleanVal;
         const combined = newVal.join('').slice(0, 6);
         onChange(combined);
 
-        if (char && index < 5) {
+        if (index < 5) {
             inputs.current[index + 1]?.focus();
         }
     };
