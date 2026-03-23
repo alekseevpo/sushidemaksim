@@ -1,13 +1,5 @@
 import { motion } from 'framer-motion';
-import {
-    MapPin,
-    Truck,
-    Store,
-    ArrowRight,
-    CreditCard,
-    Wallet,
-    Smartphone,
-} from 'lucide-react';
+import { MapPin, Truck, Store, ArrowRight, CreditCard, Wallet, Smartphone } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
 interface DeliveryFormProps {
