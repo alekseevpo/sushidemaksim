@@ -108,5 +108,4 @@ jobs:
               uses: vercel/repository-dispatch/actions/status@v1
               with:
                   name: CI Check
-                  status: ${{ job.status }}
-                  token: ${{ secrets.VERCEL_TOKEN }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
