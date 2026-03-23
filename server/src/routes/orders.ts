@@ -8,6 +8,7 @@ import { UAParser } from 'ua-parser-js';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
 import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus.js';
+import { formatOrder } from '../utils/helpers.js';
 
 const router = Router();
 
@@ -355,7 +356,7 @@ router.post(
         const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
 
         res.status(201).json({
-            order: { ...fullOrder, items: fullOrder.order_items },
+            order: formatOrder(fullOrder),
             whatsappUrl,
         });
     })
@@ -383,10 +384,7 @@ router.get(
 
         if (error) throw error;
 
-        const formattedOrders = (orders || []).map((o: any) => ({
-            ...o,
-            items: o.order_items,
-        }));
+        const formattedOrders = (orders || []).map(o => formatOrder(o));
 
         res.json({
             orders: formattedOrders || [],
@@ -418,7 +416,7 @@ router.get(
             return res.status(404).json({ error: 'Pedido no encontrado' });
         }
 
-        res.json({ order: { ...order, items: order.order_items } });
+        res.json({ order: formatOrder(order) });
     })
 );
 
@@ -719,7 +717,7 @@ router.get(
             return res.status(404).json({ error: 'Invitación no encontrada o ya ha sido pagada.' });
         }
 
-        res.json({ order: { ...order, items: order.order_items } });
+        res.json({ order: formatOrder(order) });
     })
 );
 
@@ -755,7 +753,7 @@ router.get(
             return res.status(403).json({ error: 'El teléfono no coincide con el pedido.' });
         }
 
-        res.json({ order });
+        res.json({ order: formatOrder(order) });
     })
 );
 
@@ -781,9 +779,10 @@ router.post(
             .single();
 
         if (updateErr) throw updateErr;
-        res.json({ success: true, order: updated });
+        res.json({ success: true, order: formatOrder(updated) });
     })
 );
 
 // Note: /deliver and other status updates (except cancel) should be in admin.ts
 export default router;
+

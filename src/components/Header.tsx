@@ -130,7 +130,7 @@ export default function Header() {
         <>
             <header
                 ref={headerRef}
-                className={`fixed top-0 inset-x-0 z-[100] transition-[background-color,border-color] duration-300
+                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
                 ${
                     isScrolled
                         ? 'bg-[#FDFBF7] shadow-sm border-b border-gray-200'

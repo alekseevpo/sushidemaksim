@@ -11,10 +11,10 @@ export interface MenuItem {
     pieces?: number;
     spicy?: boolean;
     vegetarian?: boolean;
-    is_promo?: boolean;
-    is_popular?: boolean;
-    is_chef_choice?: boolean;
-    is_new?: boolean;
+    isPromo?: boolean;
+    isPopular?: boolean;
+    isChefChoice?: boolean;
+    isNew?: boolean;
     allergens?: string[];
 }
 

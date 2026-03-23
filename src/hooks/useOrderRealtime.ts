@@ -29,7 +29,7 @@ export function useOrderRealtime({ userId, orderId, onUpdate }: RealtimeParams) 
         const channel = supabase.channel(channelName);
 
         channel
-            .on('broadcast', { event: 'order_status_updated' }, ({ payload }) => {
+            .on('broadcast', { event: 'orderStatus_updated' }, ({ payload }) => {
                 console.log('🔔 Received order update broadcast:', payload);
 
                 // 1. Trigger custom callback if provided

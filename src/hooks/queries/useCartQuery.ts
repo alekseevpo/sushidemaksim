@@ -25,7 +25,7 @@ export function useCartQuery(user: any) {
 
             const data = await api.get('/cart');
             const mappedItems = data.items.map((item: any) => ({
-                id: item.menu_item_id.toString(),
+                id: item.menuItemId.toString(),
                 name: item.name,
                 description: item.description,
                 price: item.price,
@@ -119,7 +119,7 @@ export function useUpdateQuantityMutation(user: any) {
 
             if (!cartItemId) {
                 const data = await api.get('/cart');
-                const realItem = data.items.find((i: any) => i.menu_item_id.toString() === id);
+                const realItem = data.items.find((i: any) => i.menuItemId.toString() === id);
                 if (realItem) return api.put(`/cart/${realItem.id}`, { quantity });
                 return;
             }
@@ -168,7 +168,7 @@ export function useRemoveItemMutation(user: any) {
 
             if (!cartItemId) {
                 const data = await api.get('/cart');
-                const realItem = data.items.find((i: any) => i.menu_item_id.toString() === id);
+                const realItem = data.items.find((i: any) => i.menuItemId.toString() === id);
                 if (realItem) return api.delete(`/cart/${realItem.id}`);
                 return;
             }

@@ -4,6 +4,8 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
 
+import { formatMenuItem } from '../utils/helpers.js';
+
 const router = Router();
 router.use(authMiddleware);
 
@@ -13,25 +15,29 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: items, error } = await supabase
             .from('cart_items')
-            .select(
-                `
-            id, quantity, menu_item_id,
-            menu_items(name, price, image, description, category)
-        `
-            )
+            .select(`
+                id, quantity, menu_item_id,
+                menu_items(*)
+            `)
             .eq('user_id', req.userId)
             .order('id');
 
         if (error) throw error;
 
-        const formattedItems = (items || []).map((item: any) => ({
-            id: item.id,
-            quantity: item.quantity,
-            menu_item_id: item.menu_item_id,
-            ...item.menu_items,
-        }));
+        const formattedItems = (items || [])
+            .map((item: any) => {
+                const sushi = formatMenuItem(item.menu_items);
+                if (!sushi) return null;
+                return {
+                    ...sushi,
+                    id: item.id, // ID of the cart record
+                    menuItemId: item.menu_item_id,
+                    quantity: item.quantity,
+                };
+            })
+            .filter((i): i is any => i !== null);
 
-        const total = formattedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const total = formattedItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
         res.json({ items: formattedItems, total: Math.round(total * 100) / 100 });
     })
 );

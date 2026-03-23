@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db/supabase.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
+import { formatBlogPost } from '../utils/helpers.js';
 
 const router = Router();
 
@@ -23,7 +24,8 @@ router.get(
                 .json({ error: 'Error interno del servidor al obtener las publicaciones' });
         }
 
-        res.json(posts);
+        const formatted = (posts || []).map(formatBlogPost);
+        res.json(formatted);
     })
 );
 
@@ -48,7 +50,7 @@ router.get(
             return res.status(404).json({ error: 'Publicación no encontrada' });
         }
 
-        res.json(post);
+        res.json(formatBlogPost(post));
     })
 );
 

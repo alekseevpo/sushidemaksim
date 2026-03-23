@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -18,16 +18,16 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
-import AdminMenu from '../components/admin/AdminMenu';
-import AdminUsers from '../components/admin/AdminUsers';
-import AdminOrders from '../components/admin/AdminOrders';
-import AdminPromos from '../components/admin/AdminPromos';
-import AdminBlog from '../components/admin/AdminBlog';
-import AdminSettings from '../components/admin/AdminSettings';
-import AdminDashboard from '../components/admin/AdminDashboard';
-import AdminAnalytics from '../components/admin/AdminAnalytics';
-import AdminDeliveryZones from '../components/admin/AdminDeliveryZones';
-import { AdminSkeleton } from '../components/skeletons/AdminSkeleton';
+const AdminMenu = lazy(() => import('../components/admin/AdminMenu'));
+const AdminUsers = lazy(() => import('../components/admin/AdminUsers'));
+const AdminOrders = lazy(() => import('../components/admin/AdminOrders'));
+const AdminPromos = lazy(() => import('../components/admin/AdminPromos'));
+const AdminBlog = lazy(() => import('../components/admin/AdminBlog'));
+const AdminSettings = lazy(() => import('../components/admin/AdminSettings'));
+const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
+const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
+const AdminDeliveryZones = lazy(() => import('../components/admin/AdminDeliveryZones'));
+import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
 import { Map as MapIcon } from 'lucide-react';
 
 type TabId =
@@ -76,7 +76,7 @@ export default function AdminPage() {
         queryFn: () => api.get('/admin/stats'),
         enabled:
             isAuthenticated &&
-            (user?.role === 'admin' || user?.is_superadmin) &&
+            (user?.role === 'admin' || user?.isSuperadmin) &&
             (activeTab === 'dashboard' || activeTab === 'analytics'),
         refetchInterval: 60000,
     });
@@ -91,7 +91,7 @@ export default function AdminPage() {
         queryFn: () => api.get('/admin/reports'),
         enabled:
             isAuthenticated &&
-            (user?.role === 'admin' || user?.is_superadmin) &&
+            (user?.role === 'admin' || user?.isSuperadmin) &&
             activeTab === 'dashboard',
         refetchInterval: 60000,
     });
@@ -100,7 +100,7 @@ export default function AdminPage() {
     const { data: pendingData } = useQuery({
         queryKey: ['admin-pending-monitor'],
         queryFn: () => api.get('/admin/orders?status=pending&limit=100'),
-        enabled: isAuthenticated && (user?.role === 'admin' || user?.is_superadmin),
+        enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
         refetchInterval: 30000,
     });
 
@@ -167,7 +167,7 @@ export default function AdminPage() {
 
     // Authorization Check
     useEffect(() => {
-        if (!isLoading && isAuthenticated && user && user.role !== 'admin' && !user.is_superadmin) {
+        if (!isLoading && isAuthenticated && user && user.role !== 'admin' && !user.isSuperadmin) {
             navigate('/profile');
         }
     }, [isLoading, isAuthenticated, user, navigate]);
@@ -184,7 +184,7 @@ export default function AdminPage() {
         return <AdminSkeleton />;
     }
 
-    if (!isAuthenticated || (user?.role !== 'admin' && !user?.is_superadmin)) {
+    if (!isAuthenticated || (user?.role !== 'admin' && !user?.isSuperadmin)) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div className="bg-white rounded-3xl shadow-xl p-10 max-w-md w-full text-center border border-gray-100">
@@ -368,33 +368,35 @@ export default function AdminPage() {
                     )}
 
                     {/* Tab Contents */}
-                    {activeTab === 'dashboard' && (
-                        <AdminDashboard
-                            stats={stats}
-                            reports={reports}
-                            loading={statsLoading || reportsLoading}
-                            loadStats={handleRefetchStats}
-                            setActiveTab={setActiveTab}
-                        />
-                    )}
+                    <Suspense fallback={<AdminContentSkeleton />}>
+                        {activeTab === 'dashboard' && (
+                            <AdminDashboard
+                                stats={stats}
+                                reports={reports}
+                                loading={statsLoading || reportsLoading}
+                                loadStats={handleRefetchStats}
+                                setActiveTab={setActiveTab}
+                            />
+                        )}
 
-                    {activeTab === 'analytics' && (
-                        <AdminAnalytics stats={stats} loading={statsLoading} />
-                    )}
+                        {activeTab === 'analytics' && (
+                            <AdminAnalytics stats={stats} loading={statsLoading} />
+                        )}
 
-                    {activeTab === 'menu' && <AdminMenu />}
-                    {activeTab === 'users' && <AdminUsers />}
-                    {activeTab === 'orders' && (
-                        <AdminOrders
-                            isGlobalSoundEnabled={isSoundEnabled}
-                            setIsGlobalSoundEnabled={setIsSoundEnabled}
-                            globalPendingCount={pendingCount}
-                        />
-                    )}
-                    {activeTab === 'settings' && <AdminSettings />}
-                    {activeTab === 'delivery' && <AdminDeliveryZones />}
-                    {activeTab === 'promos' && <AdminPromos />}
-                    {activeTab === 'blog' && <AdminBlog />}
+                        {activeTab === 'menu' && <AdminMenu />}
+                        {activeTab === 'users' && <AdminUsers />}
+                        {activeTab === 'orders' && (
+                            <AdminOrders
+                                isGlobalSoundEnabled={isSoundEnabled}
+                                setIsGlobalSoundEnabled={setIsSoundEnabled}
+                                globalPendingCount={pendingCount}
+                            />
+                        )}
+                        {activeTab === 'settings' && <AdminSettings />}
+                        {activeTab === 'delivery' && <AdminDeliveryZones />}
+                        {activeTab === 'promos' && <AdminPromos />}
+                        {activeTab === 'blog' && <AdminBlog />}
+                    </Suspense>
 
                     {/* Developer Footer */}
                     <footer className="mt-auto py-8 border-t border-gray-100">

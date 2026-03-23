@@ -87,7 +87,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
         vi.mocked(api.get).mockImplementation((url: string) => {
             if (url === '/settings')
                 return Promise.resolve({
-                    min_order: 15,
+                    minOrder: 15,
                     free_delivery_threshold: 25,
                     delivery_fee: 3.5,
                 });

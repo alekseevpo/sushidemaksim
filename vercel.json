@@ -30,7 +30,23 @@
     "crons": [
         {
             "path": "/api/cron/check-late-orders",
-            "schedule": "0 0 * * *"
+            "schedule": "*/30 * * * *"
+        },
+        {
+            "path": "/api/cron/check-birthdays",
+            "schedule": "0 9 * * *"
+        },
+        {
+            "path": "/api/cron/generate-daily-report",
+            "schedule": "5 0 * * *"
+        },
+        {
+            "path": "/api/cron/cleanup-deleted-users",
+            "schedule": "0 3 * * *"
+        },
+        {
+            "path": "/api/cron/check-abandoned-carts",
+            "schedule": "0 18 * * *"
         }
     ],
     "images": {

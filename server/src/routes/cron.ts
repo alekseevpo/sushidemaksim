@@ -292,4 +292,47 @@ router.post('/check-abandoned-carts', async (req, res) => {
     }
 });
 
+// CRON job to check for late orders (> 60m from creation and still not delivered)
+router.post('/check-late-orders', async (req, res) => {
+    const cronSecret = req.headers['x-cron-secret'];
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const sixtyMinutesAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+
+        // 1. Get orders that are still active but were created > 60m ago
+        const { data: lateOrders, error: fetchError } = await supabase
+            .from('orders')
+            .select('id, status, created_at, phone_number, delivery_address')
+            .in('status', ['pending', 'confirmed', 'preparing', 'on_the_way'])
+            .lt('created_at', sixtyMinutesAgo);
+
+        if (fetchError) throw fetchError;
+
+        const results = (lateOrders || []).map(order => {
+            const created = new Date(order.created_at);
+            const diffMins = Math.round((Date.now() - created.getTime()) / 60000);
+            return {
+                id: order.id,
+                status: order.status,
+                minsLate: diffMins,
+                phone: order.phone_number,
+                address: order.delivery_address,
+            };
+        });
+
+        if (results.length > 0) {
+            console.warn(`🕒 CRON (Late Orders): Found ${results.length} orders that are LATE!`);
+            // Here we could send a notification to Admin via Telegram/Email
+        }
+
+        res.json({ success: true, lateOrdersCount: results.length, detections: results });
+    } catch (e: any) {
+        console.error('❌ Late orders cron error:', e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
 export default router;

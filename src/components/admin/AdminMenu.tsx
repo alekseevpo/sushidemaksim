@@ -22,10 +22,10 @@ interface MenuItem {
     pieces?: number;
     spicy?: boolean;
     vegetarian?: boolean;
-    is_promo?: boolean;
-    is_popular?: boolean;
-    is_chef_choice?: boolean;
-    is_new?: boolean;
+    isPromo?: boolean;
+    isPopular?: boolean;
+    isChefChoice?: boolean;
+    isNew?: boolean;
     allergens?: string[];
 }
 
@@ -99,10 +99,10 @@ export default function AdminMenu() {
             pieces: 0,
             spicy: false,
             vegetarian: false,
-            is_promo: false,
-            is_popular: false,
-            is_chef_choice: false,
-            is_new: false,
+            isPromo: false,
+            isPopular: false,
+            isChefChoice: false,
+            isNew: false,
             allergens: [],
         });
         setFormError('');
@@ -353,17 +353,17 @@ export default function AdminMenu() {
                                                         Veggie
                                                     </span>
                                                 )}
-                                                {item.is_popular && (
+                                                {item.isPopular && (
                                                     <span className="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-1 rounded-full">
                                                         Top
                                                     </span>
                                                 )}
-                                                {item.is_chef_choice && (
+                                                {item.isChefChoice && (
                                                     <span className="text-[10px] bg-purple-100 text-purple-700 font-bold px-2 py-1 rounded-full">
                                                         Chef
                                                     </span>
                                                 )}
-                                                {item.is_new && (
+                                                {item.isNew && (
                                                     <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded-full">
                                                         Nuevo
                                                     </span>
@@ -627,10 +627,10 @@ export default function AdminMenu() {
                                     {[
                                         'spicy',
                                         'vegetarian',
-                                        'is_promo',
-                                        'is_popular',
-                                        'is_chef_choice',
-                                        'is_new',
+                                        'isPromo',
+                                        'isPopular',
+                                        'isChefChoice',
+                                        'isNew',
                                     ].map(field => (
                                         <label
                                             key={field}

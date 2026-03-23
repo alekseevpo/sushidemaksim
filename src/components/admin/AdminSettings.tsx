@@ -16,17 +16,16 @@ export default function AdminSettings() {
         queryFn: async () => {
             const data = await api.get('/admin/settings');
             return {
-                contact_phone: data.contact_phone || '',
-                contact_email: data.contact_email || '',
-                contact_address_line1: data.contact_address_line1 || '',
-                contact_address_line2: data.contact_address_line2 || '',
-                contact_google_maps_url: data.contact_google_maps_url || '',
-                contact_schedule: Array.isArray(data.contact_schedule) ? data.contact_schedule : [],
-                social_links: Array.isArray(data.social_links) ? data.social_links : [],
-                est_delivery_time: data.est_delivery_time || '30-60 min',
-                is_store_closed: !!data.is_store_closed,
-                closed_message:
-                    data.closed_message || 'Lo sentimos, la cocina está cerrada temporalmente.',
+                contactPhone: data.contactPhone || '',
+                contactEmail: data.contactEmail || '',
+                contactAddressLine1: data.contactAddressLine1 || '',
+                contactAddressLine2: data.contactAddressLine2 || '',
+                contactGoogleMapsUrl: data.contactGoogleMapsUrl || '',
+                contactSchedule: Array.isArray(data.contactSchedule) ? data.contactSchedule : [],
+                socialLinks: Array.isArray(data.socialLinks) ? data.socialLinks : [],
+                estDeliveryTime: data.estDeliveryTime || '30-60 min',
+                isStoreClosed: !!data.isStoreClosed,
+                closedMessage: data.closedMessage || 'Lo sentimos, la cocina está cerrada temporalmente.',
             };
         },
     });
@@ -62,8 +61,8 @@ export default function AdminSettings() {
         if (!localSettings) return;
         setLocalSettings({
             ...localSettings,
-            social_links: [
-                ...localSettings.social_links,
+            socialLinks: [
+                ...localSettings.socialLinks,
                 { platform: 'Nueva Red', url: '#', icon: 'facebook' },
             ],
         });
@@ -71,17 +70,17 @@ export default function AdminSettings() {
 
     const confirmRemoveSocial = () => {
         if (socialToRemove === null || !localSettings) return;
-        const newLinks = [...localSettings.social_links];
+        const newLinks = [...localSettings.socialLinks];
         newLinks.splice(socialToRemove, 1);
-        setLocalSettings({ ...localSettings, social_links: newLinks });
+        setLocalSettings({ ...localSettings, socialLinks: newLinks });
         setSocialToRemove(null);
     };
 
     const handleUpdateSocial = (index: number, key: string, value: string) => {
         if (!localSettings) return;
-        const newLinks = [...localSettings.social_links];
+        const newLinks = [...localSettings.socialLinks];
         newLinks[index] = { ...newLinks[index], [key]: value };
-        setLocalSettings({ ...localSettings, social_links: newLinks });
+        setLocalSettings({ ...localSettings, socialLinks: newLinks });
     };
 
     if (isLoading || !localSettings)
@@ -109,11 +108,11 @@ export default function AdminSettings() {
                             Teléfono
                         </label>
                         <input
-                            value={localSettings.contact_phone}
+                            value={localSettings.contactPhone}
                             onChange={e =>
                                 setLocalSettings({
                                     ...localSettings,
-                                    contact_phone: e.target.value,
+                                    contactPhone: e.target.value,
                                 })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
@@ -122,11 +121,11 @@ export default function AdminSettings() {
                     <div>
                         <label className="block text-xs font-bold text-gray-500 mb-1">Email</label>
                         <input
-                            value={localSettings.contact_email}
+                            value={localSettings.contactEmail}
                             onChange={e =>
                                 setLocalSettings({
                                     ...localSettings,
-                                    contact_email: e.target.value,
+                                    contactEmail: e.target.value,
                                 })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
@@ -141,11 +140,11 @@ export default function AdminSettings() {
                             Dirección (Línea 1)
                         </label>
                         <input
-                            value={localSettings.contact_address_line1}
+                            value={localSettings.contactAddressLine1}
                             onChange={e =>
                                 setLocalSettings({
                                     ...localSettings,
-                                    contact_address_line1: e.target.value,
+                                    contactAddressLine1: e.target.value,
                                 })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
@@ -157,11 +156,11 @@ export default function AdminSettings() {
                             Dirección (Línea 2)
                         </label>
                         <input
-                            value={localSettings.contact_address_line2}
+                            value={localSettings.contactAddressLine2}
                             onChange={e =>
                                 setLocalSettings({
                                     ...localSettings,
-                                    contact_address_line2: e.target.value,
+                                    contactAddressLine2: e.target.value,
                                 })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
@@ -173,17 +172,17 @@ export default function AdminSettings() {
                             <label className="block text-xs font-bold text-gray-500">
                                 URL Google Maps (al hacer clic en 'Ver Mapa')
                             </label>
-                            {(localSettings.contact_address_line1 ||
-                                localSettings.contact_address_line2) && (
+                            {(localSettings.contactAddressLine1 ||
+                                localSettings.contactAddressLine2) && (
                                 <button
                                     type="button"
                                     onClick={() => {
                                         const fullAddress =
-                                            `${localSettings.contact_address_line1} ${localSettings.contact_address_line2}`.trim();
+                                            `${localSettings.contactAddressLine1} ${localSettings.contactAddressLine2}`.trim();
                                         const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
                                         setLocalSettings({
                                             ...localSettings,
-                                            contact_google_maps_url: url,
+                                            contactGoogleMapsUrl: url,
                                         });
                                     }}
                                     className="text-[10px] font-bold text-blue-600 hover:underline"
@@ -193,11 +192,11 @@ export default function AdminSettings() {
                             )}
                         </div>
                         <input
-                            value={localSettings.contact_google_maps_url}
+                            value={localSettings.contactGoogleMapsUrl}
                             onChange={e =>
                                 setLocalSettings({
                                     ...localSettings,
-                                    contact_google_maps_url: e.target.value,
+                                    contactGoogleMapsUrl: e.target.value,
                                 })
                             }
                             className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
@@ -220,7 +219,7 @@ export default function AdminSettings() {
                 </div>
 
                 <div className="space-y-4">
-                    {localSettings.social_links.map((link: any, idx: number) => (
+                    {localSettings.socialLinks.map((link: any, idx: number) => (
                         <div
                             key={idx}
                             className="flex flex-col md:flex-row gap-3 items-end bg-gray-50 p-4 rounded-xl border border-gray-100 relative group"
@@ -280,7 +279,7 @@ export default function AdminSettings() {
                             </div>
                         </div>
                     ))}
-                    {localSettings.social_links.length === 0 && (
+                    {localSettings.socialLinks.length === 0 && (
                         <p className="text-sm text-gray-500 italic">
                             No hay redes sociales configuradas.
                         </p>
@@ -295,11 +294,11 @@ export default function AdminSettings() {
                     (propiedades: "days", "hours", "closed")
                 </p>
                 <textarea
-                    value={JSON.stringify(localSettings.contact_schedule, null, 2)}
+                    value={JSON.stringify(localSettings.contactSchedule, null, 2)}
                     onChange={e => {
                         try {
                             const parsed = JSON.parse(e.target.value);
-                            setLocalSettings({ ...localSettings, contact_schedule: parsed });
+                            setLocalSettings({ ...localSettings, contactSchedule: parsed });
                         } catch {
                             // ignore parsing errors while typing
                         }
@@ -372,7 +371,7 @@ export default function AdminSettings() {
                             <p className="text-sm text-gray-500 font-medium mb-8">
                                 Estás a punto de quitar{' '}
                                 <span className="text-red-600 font-bold uppercase">
-                                    "{localSettings.social_links[socialToRemove]?.platform}"
+                                    "{localSettings.socialLinks[socialToRemove]?.platform}"
                                 </span>{' '}
                                 de la lista.
                             </p>

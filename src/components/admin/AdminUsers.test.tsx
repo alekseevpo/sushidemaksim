@@ -19,7 +19,7 @@ vi.mock('../../utils/api', () => ({
 // Mock useAuth
 vi.mock('../../hooks/useAuth', () => ({
     useAuth: () => ({
-        user: { id: 1, name: 'SuperAdmin', is_superadmin: true },
+        user: { id: 1, name: 'SuperAdmin', isSuperadmin: true },
     }),
 }));
 
@@ -31,7 +31,7 @@ const mockUsers = [
         role: 'user',
         orderCount: 5,
         totalSpent: 100,
-        created_at: '2023-01-01',
+        createdAt: '2023-01-01',
     },
 ];
 

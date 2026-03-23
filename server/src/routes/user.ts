@@ -6,6 +6,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, passwordRule } from '../middleware/validate.js';
 import { strictLimiter } from '../middleware/rateLimiters.js';
+import { formatUser } from '../utils/helpers.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -39,21 +40,7 @@ router.get(
             .select('*', { count: 'exact', head: true })
             .eq('user_id', req.userId);
 
-        const formattedUser = {
-            ...user,
-            createdAt: user.created_at,
-            birthDate: user.birth_date,
-            birthDateVerified: user.birth_date_verified,
-            lastSeenAt: user.last_seen_at,
-            addresses: addresses?.map(a => ({
-                ...a,
-                postalCode: a.postal_code,
-                isDefault: a.is_default,
-            })),
-            orderCount: orderCount || 0,
-        };
-
-        res.json({ user: formattedUser });
+        res.json({ user: formatUser(user, orderCount || 0, addresses || []) });
     })
 );
 

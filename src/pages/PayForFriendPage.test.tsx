@@ -22,11 +22,11 @@ const mockOrder = {
     id: 123,
     total: 45.5,
     status: 'waiting_payment',
-    delivery_address: 'Calle Mayor 10, Madrid',
+    deliveryAddress: 'Calle Mayor 10, Madrid',
     notes: '[De parte de: Maksim] Por favor extra jengibre',
     items: [
-        { id: 1, name: 'Dragon Roll', quantity: 2, price_at_time: 15.0, image: '/dragon.jpg' },
-        { id: 2, name: 'Miso Soup', quantity: 1, price_at_time: 5.5, image: '/miso.jpg' },
+        { id: 1, name: 'Dragon Roll', quantity: 2, priceAtTime: 15.0, image: '/dragon.jpg' },
+        { id: 2, name: 'Miso Soup', quantity: 1, priceAtTime: 5.5, image: '/miso.jpg' },
     ],
 };
 

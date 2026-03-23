@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, Truck, Store, ArrowRight, CreditCard, Wallet, Smartphone } from 'lucide-react';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface DeliveryFormProps {
     deliveryType: 'delivery' | 'pickup';
@@ -91,7 +92,10 @@ export default function DeliveryForm({
             <div className="flex bg-gray-50 p-1.5 rounded-2xl mb-6 border border-gray-100">
                 <button
                     type="button"
-                    onClick={() => setDeliveryType('delivery')}
+                    onClick={() => {
+                        triggerHaptic();
+                        setDeliveryType('delivery');
+                    }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all border-none cursor-pointer ${
                         deliveryType === 'delivery'
                             ? 'bg-white text-red-600 shadow-sm border border-gray-100'
@@ -103,7 +107,10 @@ export default function DeliveryForm({
                 </button>
                 <button
                     type="button"
-                    onClick={() => setDeliveryType('pickup')}
+                    onClick={() => {
+                        triggerHaptic();
+                        setDeliveryType('pickup');
+                    }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all border-none cursor-pointer ${
                         deliveryType === 'pickup'
                             ? 'bg-white text-red-600 shadow-sm border border-gray-100'
@@ -339,7 +346,10 @@ export default function DeliveryForm({
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         type="button"
-                        onClick={() => setPaymentMethod('card')}
+                        onClick={() => {
+                            triggerHaptic();
+                            setPaymentMethod('card');
+                        }}
                         data-testid="payment-method-card"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                             paymentMethod === 'card'
@@ -356,7 +366,10 @@ export default function DeliveryForm({
                     </button>
                     <button
                         type="button"
-                        onClick={() => setPaymentMethod('cash')}
+                        onClick={() => {
+                            triggerHaptic();
+                            setPaymentMethod('cash');
+                        }}
                         data-testid="payment-method-cash"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                             paymentMethod === 'cash'
@@ -429,7 +442,10 @@ export default function DeliveryForm({
                             type="checkbox"
                             className="w-4 h-4 accent-red-600 rounded cursor-pointer"
                             checked={noCall}
-                            onChange={e => setNoCall(e.target.checked)}
+                            onChange={e => {
+                                triggerHaptic();
+                                setNoCall(e.target.checked);
+                            }}
                         />
                         Sin llamada de confirmación de pedido
                     </label>
@@ -438,7 +454,10 @@ export default function DeliveryForm({
                             type="checkbox"
                             className="w-4 h-4 accent-red-600 rounded cursor-pointer"
                             checked={noBuzzer}
-                            onChange={e => setNoBuzzer(e.target.checked)}
+                            onChange={e => {
+                                triggerHaptic();
+                                setNoBuzzer(e.target.checked);
+                            }}
                         />
                         No llamar al timbre / El repartidor llama al móvil
                     </label>
@@ -447,7 +466,10 @@ export default function DeliveryForm({
                             type="checkbox"
                             className="w-4 h-4 accent-red-600 rounded cursor-pointer"
                             checked={isScheduled}
-                            onChange={e => setIsScheduled(e.target.checked)}
+                            onChange={e => {
+                                triggerHaptic();
+                                setIsScheduled(e.target.checked);
+                            }}
                         />
                         🔥 Entrega programada (Opcional)
                     </label>

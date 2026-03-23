@@ -57,7 +57,7 @@ test.describe('Authentication Flow', () => {
                 contentType: 'application/json',
                 body: JSON.stringify({
                     token: 'fake-jwt',
-                    user: { id: 1, name: 'Pavel', full_name: 'Pavel', email: 'test@test.com' },
+                    user: { id: 1, name: 'Pavel', email: 'test@test.com' },
                 }),
             })
         );
@@ -72,10 +72,10 @@ test.describe('Authentication Flow', () => {
                         user: {
                             id: 1,
                             name: 'Pavel',
-                            full_name: 'Pavel',
                             email: 'test@test.com',
                             role: 'user',
                             addresses: [],
+                            createdAt: new Date().toISOString(),
                         },
                     }),
                 });
@@ -122,4 +122,30 @@ test.describe('Authentication Flow', () => {
             timeout: 10000,
         });
     });
+
+    test('SUCCESS: should handle password recovery flow', async ({ page }) => {
+        await page.route('**/api/auth/me', route =>
+            route.fulfill({ status: 401, body: '{"error":"No"}' })
+        );
+        await page.route('**/api/auth/reset-password', route =>
+            route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, message: 'Email enviado' }),
+            })
+        );
+
+        await page
+            .getByRole('button', { name: /ACCEDER/i })
+            .first()
+            .click();
+        await page.getByRole('button', { name: /¿Olvidaste tu contraseña?/i }).click();
+        await page.getByPlaceholder(/tu@email.com/i).fill('recovery@test.com');
+        await page.getByRole('button', { name: /Recuperar contraseña/i }).click();
+
+        await expect(page.getByText(/email|enviado|revisa/i).first()).toBeVisible({
+            timeout: 10000,
+        });
+    });
 });
+

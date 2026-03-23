@@ -10,6 +10,7 @@ import { useCart } from '../hooks/useCart';
 import { useMenu, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ProductCard from '../components/menu/ProductCard';
 import ShareModal from '../components/menu/ShareModal';
+import { getOptimizedImageUrl } from '../utils/images';
 
 const Marquee = () => (
     <div className="relative py-4 md:py-6 overflow-hidden bg-gray-950 border-y border-white/5 select-none">
@@ -59,7 +60,7 @@ const CategoryCard = ({
             <Link to={`/menu#section-${id}`} className="absolute inset-0 z-10" />
             {image && !imageFailed ? (
                 <img
-                    src={image}
+                    src={getOptimizedImageUrl(image, 400)}
                     alt={name}
                     onError={() => setImageFailed(true)}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
@@ -113,7 +114,7 @@ export default function HomePageSimple() {
     const isLoading = itemsLoading || catsLoading;
 
     // Derived state
-    const popularItems = allItems.filter((item: any) => item.is_popular).slice(0, 8);
+    const popularItems = allItems.filter((item: any) => item.isPopular).slice(0, 8);
 
     const categories = categoriesData.map((cat: any) => {
         const representativeItem = allItems.find(
@@ -215,7 +216,10 @@ export default function HomePageSimple() {
             />
 
             {/* Hero Section */}
-            <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-[url('/sushi-hero.webp')] bg-neutral-950 bg-cover bg-center">
+            <section 
+                className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-neutral-950 bg-cover bg-center"
+                style={{ backgroundImage: `url(${getOptimizedImageUrl('/sushi-hero.webp', 1920)})` }}
+            >
                 {/* Background Overlay (Filter) */}
                 <div className="absolute inset-0 z-0 bg-black/50"></div>
                 <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
@@ -288,7 +292,7 @@ export default function HomePageSimple() {
                                     repeat: Infinity,
                                     ease: 'easeInOut',
                                 }}
-                                src="/blog_post_chef_hands.png"
+                                src={getOptimizedImageUrl('/blog_post_chef_hands.png', 800)}
                                 alt="Experiencia Chef en Sushi de Maksim"
                                 fetchPriority="high"
                                 decoding="async"
@@ -519,7 +523,7 @@ export default function HomePageSimple() {
                     >
                         <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
                             <img
-                                src="/blog_post_chef_hands.png"
+                                src={getOptimizedImageUrl('/blog_post_chef_hands.png', 800)}
                                 alt="Preparación artesanal de sushi"
                                 loading="lazy"
                                 decoding="async"

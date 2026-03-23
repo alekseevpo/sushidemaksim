@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowLeft, AlertCircle } from 'lucide-react';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
+import { getOptimizedImageUrl } from '../utils/images';
 
 import { PostSkeleton } from '../components/skeletons/PostSkeleton';
 
@@ -13,11 +14,11 @@ interface BlogPost {
     slug: string;
     excerpt: string;
     content: string;
-    image_url: string;
+    imageUrl: string;
     author: string;
-    read_time: string;
+    readTime: number;
     category: string;
-    created_at: string;
+    createdAt: string;
 }
 
 export default function BlogPostPage() {
@@ -106,7 +107,7 @@ export default function BlogPostPage() {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: post.title,
-        image: post.image_url,
+        image: post.imageUrl,
         author: {
             '@type': 'Person',
             name: post.author || 'Equipo Editorial',
@@ -119,7 +120,7 @@ export default function BlogPostPage() {
                 url: 'https://sushidemaksim.vercel.app/logo.svg',
             },
         },
-        datePublished: post.created_at,
+        datePublished: post.createdAt,
         description: post.excerpt,
     };
 
@@ -128,7 +129,7 @@ export default function BlogPostPage() {
             <SEO
                 title={post.title}
                 description={post.excerpt}
-                image={post.image_url}
+                image={post.imageUrl}
                 type="article"
                 schema={[postSchema, breadcrumbSchema]}
             />
@@ -157,10 +158,9 @@ export default function BlogPostPage() {
                 </nav>
             </div>
 
-            {/* Hero Image Section */}
             <div className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden bg-gray-900">
                 <img
-                    src={post.image_url || '/sushi-hero.webp'}
+                    src={getOptimizedImageUrl(post.imageUrl || '/sushi-hero.webp', 1200)}
                     alt={`Hero de ${post.title}`}
                     fetchPriority="high"
                     decoding="async"
@@ -184,11 +184,11 @@ export default function BlogPostPage() {
                         <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm font-medium">
                             <span className="flex items-center gap-2">
                                 <Calendar size={16} strokeWidth={1.5} className="text-red-500" />
-                                {new Date(post.created_at).toLocaleDateString()}
+                                {new Date(post.createdAt).toLocaleDateString()}
                             </span>
                             <span className="flex items-center gap-2">
                                 <Clock size={16} strokeWidth={1.5} className="text-red-500" />
-                                {post.read_time || '5 min'} de lectura
+                                {post.readTime || '5'} min de lectura
                             </span>
                         </div>
                     </motion.div>
@@ -274,7 +274,7 @@ export default function BlogPostPage() {
                             >
                                 <div className="h-40 overflow-hidden">
                                     <img
-                                        src={rPost.image_url || '/sushi-hero.webp'}
+                                        src={getOptimizedImageUrl(rPost.imageUrl || '/sushi-hero.webp', 400)}
                                         alt={rPost.title}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                     />

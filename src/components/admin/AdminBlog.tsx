@@ -11,9 +11,9 @@ export default function AdminBlog() {
         slug: '',
         excerpt: '',
         content: '',
-        image_url: '',
+        imageUrl: '',
         author: '',
-        read_time: '',
+        readTime: '',
         category: '',
         published: true,
     });
@@ -44,9 +44,9 @@ export default function AdminBlog() {
                 slug: '',
                 excerpt: '',
                 content: '',
-                image_url: '',
+                imageUrl: '',
                 author: '',
-                read_time: '',
+                readTime: '',
                 category: '',
                 published: true,
             });
@@ -102,9 +102,9 @@ export default function AdminBlog() {
                                 slug: '',
                                 excerpt: '',
                                 content: '',
-                                image_url: '',
+                                imageUrl: '',
                                 author: '',
-                                read_time: '',
+                                readTime: '',
                                 category: '',
                                 published: true,
                             });
@@ -203,8 +203,8 @@ export default function AdminBlog() {
                     </label>
                     <input
                         required
-                        value={form.image_url}
-                        onChange={e => setForm({ ...form, image_url: e.target.value })}
+                        value={form.imageUrl}
+                        onChange={e => setForm({ ...form, imageUrl: e.target.value })}
                         className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
                         placeholder="https://..."
                     />
@@ -232,14 +232,14 @@ export default function AdminBlog() {
                 <div>
                     <div className="flex items-center justify-between mb-1">
                         <label className="text-xs font-bold text-gray-500">
-                            Tiempo de lectura (ej: 5 min)
+                            Tiempo de lectura (ej: 5)
                         </label>
                         <button
                             type="button"
                             onClick={() => {
                                 const words = form.content.trim().split(/\s+/).length;
                                 const time = Math.ceil(words / 200);
-                                setForm({ ...form, read_time: `${time} min` });
+                                setForm({ ...form, readTime: String(time) });
                             }}
                             className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-800 transition"
                         >
@@ -248,10 +248,10 @@ export default function AdminBlog() {
                     </div>
                     <input
                         required
-                        value={form.read_time}
-                        onChange={e => setForm({ ...form, read_time: e.target.value })}
+                        value={form.readTime}
+                        onChange={e => setForm({ ...form, readTime: e.target.value })}
                         className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                        placeholder="5 min"
+                        placeholder="5"
                     />
                 </div>
 
@@ -297,7 +297,7 @@ export default function AdminBlog() {
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
                                         <img
-                                            src={p.image_url}
+                                            src={p.imageUrl}
                                             alt=""
                                             className="w-12 h-12 rounded-lg object-cover bg-gray-100"
                                         />
@@ -306,7 +306,7 @@ export default function AdminBlog() {
                                                 {p.title}
                                             </div>
                                             <div className="text-xs text-gray-500">
-                                                {new Date(p.created_at).toLocaleDateString()}
+                                                {new Date(p.createdAt).toLocaleDateString()}
                                             </div>
                                         </div>
                                     </div>

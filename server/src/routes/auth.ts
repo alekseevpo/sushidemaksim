@@ -8,6 +8,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate, emailRule, passwordRule } from '../middleware/validate.js';
 import { sendVerificationEmail } from '../utils/email.js';
 import { authLimiter, strictLimiter } from '../middleware/rateLimiters.js';
+import { formatUser } from '../utils/helpers.js';
 
 const router = Router();
 
@@ -240,12 +241,7 @@ router.post(
         res.json({
             token,
             wasReactivated: wasDeleted,
-            user: {
-                ...userRest,
-                createdAt: created_at,
-                birthDate: birth_date,
-                birthDateVerified: birth_date_verified,
-            },
+            user: formatUser(user),
         });
     })
 );
@@ -282,21 +278,7 @@ router.get(
 
         if (orderError) throw orderError;
 
-        const formattedUser = {
-            ...user,
-            createdAt: user.created_at,
-            birthDate: user.birth_date,
-            birthDateVerified: user.birth_date_verified,
-            lastSeenAt: user.last_seen_at,
-            orderCount: orderCount || 0,
-            addresses: addresses?.map(a => ({
-                ...a,
-                postalCode: a.postal_code,
-                isDefault: a.is_default,
-            })),
-        };
-
-        res.json({ user: formattedUser });
+        res.json({ user: formatUser(user, orderCount || 0, addresses || []) });
     })
 );
 

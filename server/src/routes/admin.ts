@@ -11,6 +11,10 @@ import { validate } from '../middleware/validate.js';
 import { AuthRequest } from '../middleware/auth.js';
 import {
     formatMenuItem,
+    formatOrder,
+    formatUser,
+    formatBlogPost,
+    formatDeliveryZone,
     getMadridStartOfDay,
     getMadridYesterdayStartOfDay,
 } from '../utils/helpers.js';
@@ -120,10 +124,10 @@ router.post(
             pieces,
             spicy,
             vegetarian,
-            is_promo,
-            is_popular,
-            is_chef_choice,
-            is_new,
+            isPromo,
+            isPopular,
+            isChefChoice,
+            isNew,
             allergens,
         } = req.body;
 
@@ -139,10 +143,10 @@ router.post(
                 pieces: pieces || null,
                 spicy: !!spicy,
                 vegetarian: !!vegetarian,
-                is_promo: !!is_promo,
-                is_popular: !!is_popular,
-                is_chef_choice: !!is_chef_choice,
-                is_new: !!is_new,
+                is_promo: !!isPromo,
+                is_popular: !!isPopular,
+                is_chef_choice: !!isChefChoice,
+                is_new: !!isNew,
                 allergens: allergens || [],
             })
             .select()
@@ -195,10 +199,10 @@ router.put(
             pieces,
             spicy,
             vegetarian,
-            is_promo,
-            is_popular,
-            is_chef_choice,
-            is_new,
+            isPromo,
+            isPopular,
+            isChefChoice,
+            isNew,
             allergens,
         } = req.body;
 
@@ -214,10 +218,10 @@ router.put(
         // Ensure boolean values for Supabase
         if (spicy !== undefined) updateData.spicy = Boolean(spicy);
         if (vegetarian !== undefined) updateData.vegetarian = Boolean(vegetarian);
-        if (is_promo !== undefined) updateData.is_promo = Boolean(is_promo);
-        if (is_popular !== undefined) updateData.is_popular = Boolean(is_popular);
-        if (is_chef_choice !== undefined) updateData.is_chef_choice = Boolean(is_chef_choice);
-        if (is_new !== undefined) updateData.is_new = Boolean(is_new);
+        if (isPromo !== undefined) updateData.is_promo = Boolean(isPromo);
+        if (isPopular !== undefined) updateData.is_popular = Boolean(isPopular);
+        if (isChefChoice !== undefined) updateData.is_chef_choice = Boolean(isChefChoice);
+        if (isNew !== undefined) updateData.is_new = Boolean(isNew);
         if (allergens !== undefined) updateData.allergens = allergens;
 
         const { data: item, error } = await supabase
@@ -387,13 +391,10 @@ router.get(
             });
         }
 
-        const formattedOrders = (orders || []).map((o: any) => ({
-            ...o,
-            user_name: o.users?.name || 'Cliente',
-            user_email: o.users?.email || 'N/A',
-            user_stats: o.user_id ? userStatsMap[o.user_id] || null : null,
-            items: o.items || [],
-        }));
+        const formattedOrders = (orders || []).map((o: any) => {
+            const stats = o.user_id ? userStatsMap[o.user_id] || null : null;
+            return formatOrder(o, stats);
+        });
 
         res.json({
             orders: formattedOrders,
@@ -480,14 +481,21 @@ router.get(
         const page = Math.max(1, parseInt(req.query.page as string) || 1);
         const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
         const offset = (page - 1) * limit;
-        const sortBy = (req.query.sortBy as string) || 'last_seen_at';
+        const sortBy = (req.query.sortBy as string) || 'lastSeenAt';
         const order = (req.query.order as string) || 'desc';
         const search = (req.query.search as string) || '';
         const ascending = order === 'asc';
         const filter = (req.query.filter as string) || 'active';
 
-        // Fields directly sortable by Supabase
-        const directSortFields = ['id', 'name', 'email', 'created_at', 'last_seen_at'];
+        const sortMap: Record<string, string> = {
+            id: 'id',
+            name: 'name',
+            email: 'email',
+            createdAt: 'created_at',
+            lastSeenAt: 'last_seen_at',
+            role: 'role',
+        };
+        const dbSortBy = sortMap[sortBy] || 'last_seen_at';
 
         let usersWithStats: any[] = [];
         let totalCount = 0;
@@ -541,7 +549,9 @@ router.get(
             });
 
             totalCount = allUsersWithStats.length;
-            usersWithStats = allUsersWithStats.slice(offset, offset + limit);
+            usersWithStats = allUsersWithStats.slice(offset, offset + limit).map(u => 
+                formatUser(u, u.orderCount, u.addresses, u.totalSpent)
+            );
         } else {
             // Direct sort via Supabase
             let query = getBaseQuery({ count: 'exact' });
@@ -560,26 +570,21 @@ router.get(
                 query = query
                     .order('is_superadmin', { ascending: ascending })
                     .order('role', { ascending: !ascending });
-            } else if (directSortFields.includes(sortBy)) {
-                query = query.order(sortBy, { ascending: ascending, nullsFirst: false });
             } else {
-                // Default fallback
-                query = query.order('last_seen_at', { ascending: false, nullsFirst: false });
+                query = query.order(dbSortBy, { ascending: ascending, nullsFirst: false });
             }
 
             const { data: users, count, error } = await query.range(offset, offset + limit - 1);
             if (error) throw error;
 
             totalCount = count || 0;
-            usersWithStats = (users || []).map((u: any) => ({
-                ...u,
-                orderCount: u.orders?.length || 0,
-                totalSpent:
-                    Math.round(
-                        (u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) ||
-                            0) * 100
-                    ) / 100,
-            }));
+            usersWithStats = (users || []).map((u: any) => {
+                const orderCount = u.orders?.length || 0;
+                const totalSpent = Math.round(
+                    (u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0) * 100
+                ) / 100;
+                return formatUser(u, orderCount, u.addresses, totalSpent);
+            });
         }
 
         res.json({
@@ -636,13 +641,13 @@ router.patch(
 router.patch(
     '/users/:id/verify-email',
     validate({
-        is_verified: { required: true, type: 'boolean' },
+        isVerified: { required: true, type: 'boolean' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = parseInt(req.params.id);
-        const { is_verified } = req.body;
+        const { isVerified } = req.body;
 
-        const { error } = await supabase.from('users').update({ is_verified }).eq('id', id);
+        const { error } = await supabase.from('users').update({ is_verified: isVerified }).eq('id', id);
 
         if (error) throw error;
         res.json({ success: true });
@@ -1083,15 +1088,26 @@ router.get(
             .select('*')
             .order('created_at', { ascending: false });
         if (error) throw error;
-        res.json(posts);
+        res.json((posts || []).map(formatBlogPost));
     })
 );
 
 router.post(
     '/blog_posts',
     asyncHandler(async (req: Request, res: Response) => {
-        const { title, slug, excerpt, content, image_url, author, category, read_time, published } =
-            req.body;
+        const {
+            title,
+            slug,
+            excerpt,
+            content,
+            image_url,
+            imageUrl,
+            author,
+            category,
+            read_time,
+            readTime,
+            published,
+        } = req.body;
         const { data: post, error } = await supabase
             .from('blog_posts')
             .insert({
@@ -1099,24 +1115,35 @@ router.post(
                 slug,
                 excerpt,
                 content,
-                image_url,
+                image_url: imageUrl || image_url,
                 author,
                 category,
-                read_time,
+                read_time: readTime || read_time,
                 published,
             })
             .select()
             .single();
         if (error) throw error;
-        res.json(post);
+        res.json(formatBlogPost(post));
     })
 );
 
 router.put(
     '/blog_posts/:id',
     asyncHandler(async (req: Request, res: Response) => {
-        const { title, slug, excerpt, content, image_url, author, category, read_time, published } =
-            req.body;
+        const {
+            title,
+            slug,
+            excerpt,
+            content,
+            image_url,
+            imageUrl,
+            author,
+            category,
+            read_time,
+            readTime,
+            published,
+        } = req.body;
         const { data: post, error } = await supabase
             .from('blog_posts')
             .update({
@@ -1124,17 +1151,17 @@ router.put(
                 slug,
                 excerpt,
                 content,
-                image_url,
+                image_url: imageUrl || image_url,
                 author,
                 category,
-                read_time,
+                read_time: readTime || read_time,
                 published,
             })
             .eq('id', req.params.id)
             .select()
             .single();
         if (error) throw error;
-        res.json(post);
+        res.json(formatBlogPost(post));
     })
 );
 
@@ -1155,10 +1182,12 @@ router.get(
         if (error) throw error;
 
         const settingsMap = settings.reduce((acc: any, curr: any) => {
+            const camelKey = curr.key.replace(/_([a-z0-9])/g, (g: any) => g[1].toUpperCase());
             try {
-                acc[curr.key] = JSON.parse(curr.value);
+                acc[camelKey] =
+                    typeof curr.value === 'string' ? JSON.parse(curr.value) : curr.value;
             } catch {
-                acc[curr.key] = curr.value;
+                acc[camelKey] = curr.value;
             }
             return acc;
         }, {});
@@ -1170,11 +1199,16 @@ router.get(
 router.put(
     '/settings',
     asyncHandler(async (req: Request, res: Response) => {
-        const updates = Object.keys(req.body).map(key => ({
-            key,
-            value:
-                typeof req.body[key] === 'object' ? JSON.stringify(req.body[key]) : req.body[key],
-        }));
+        const updates = Object.keys(req.body).map(key => {
+            const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+            return {
+                key: snakeKey,
+                value:
+                    typeof req.body[key] === 'object'
+                        ? JSON.stringify(req.body[key])
+                        : req.body[key],
+            };
+        });
 
         const { error } = await supabase
             .from('site_settings')
@@ -1305,7 +1339,7 @@ router.get(
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        res.json({ zones });
+        res.json({ zones: (zones || []).map(formatDeliveryZone) });
     })
 );
 
@@ -1320,24 +1354,24 @@ router.post(
         coordinates: { required: true, type: 'array' },
     }),
     asyncHandler(async (req: Request, res: Response) => {
-        const { name, cost, min_order, color, opacity, coordinates, is_active } = req.body;
+        const { name, cost, minOrder, color, opacity, coordinates, isActive } = req.body;
 
         const { data: zone, error } = await supabase
             .from('delivery_zones')
             .insert({
                 name: name.trim(),
                 cost,
-                min_order: min_order || 0,
+                min_order: minOrder || 0,
                 color: color || '#EF4444',
                 opacity: opacity || 0.3,
                 coordinates,
-                is_active: is_active !== undefined ? is_active : true,
+                is_active: isActive !== undefined ? isActive : true,
             })
             .select()
             .single();
 
         if (error) throw error;
-        res.status(201).json({ zone });
+        res.status(201).json({ zone: formatDeliveryZone(zone) });
     })
 );
 
@@ -1346,25 +1380,25 @@ router.put(
     '/delivery-zones/:id',
     asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
-        const { name, cost, min_order, color, opacity, coordinates, is_active } = req.body;
+        const { name, cost, minOrder, color, opacity, coordinates, isActive } = req.body;
 
         const { data: zone, error } = await supabase
             .from('delivery_zones')
             .update({
                 name: name?.trim(),
                 cost,
-                min_order,
+                min_order: minOrder,
                 color,
                 opacity,
                 coordinates,
-                is_active,
+                is_active: isActive,
             })
             .eq('id', id)
             .select()
             .single();
 
         if (error) throw error;
-        res.json({ zone });
+        res.json({ zone: formatDeliveryZone(zone) });
     })
 );
 

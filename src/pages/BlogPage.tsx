@@ -6,17 +6,18 @@ import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
 import { BlogSkeleton } from '../components/skeletons/BlogSkeleton';
+import { getOptimizedImageUrl } from '../utils/images';
 
 interface BlogPost {
     id: number;
     title: string;
     slug: string;
     excerpt: string;
-    image_url: string;
+    imageUrl: string;
     author: string;
-    read_time: string;
+    readTime: number;
     category: string;
-    created_at: string;
+    createdAt: string;
 }
 
 export default function BlogPage() {
@@ -67,7 +68,7 @@ export default function BlogPage() {
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="/blog_post_sushi_art.png"
+                        src={getOptimizedImageUrl('/blog_post_sushi_art.png', 1200)}
                         alt="Mundo Sushi de Maksim"
                         fetchPriority="high"
                         decoding="async"
@@ -125,7 +126,7 @@ export default function BlogPage() {
                                 {/* Image Wrapper */}
                                 <div className="relative h-64 overflow-hidden">
                                     <img
-                                        src={post.image_url || '/sushi-hero.webp'}
+                                        src={getOptimizedImageUrl(post.imageUrl || '/sushi-hero.webp', 600)}
                                         alt={`Imagen del articulo ${post.title}`}
                                         loading="lazy"
                                         decoding="async"
@@ -147,7 +148,7 @@ export default function BlogPage() {
                                                 strokeWidth={1.5}
                                                 className="text-red-500"
                                             />{' '}
-                                            {new Date(post.created_at).toLocaleDateString()}
+                                            {new Date(post.createdAt).toLocaleDateString()}
                                         </span>
                                         <span className="flex items-center gap-1.5">
                                             <Clock
@@ -155,7 +156,7 @@ export default function BlogPage() {
                                                 strokeWidth={1.5}
                                                 className="text-red-500"
                                             />{' '}
-                                            {post.read_time || '5 min'}
+                                            {post.readTime || '5'} min
                                         </span>
                                     </div>
 

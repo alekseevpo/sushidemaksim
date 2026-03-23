@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Clock, ArrowRight, X } from 'lucide-react';
 import { CartItem } from '../../types';
+import { triggerHaptic, HAPTIC_PATTERNS } from '../../utils/haptics';
 
 interface CartSummaryProps {
     items: CartItem[];
@@ -117,7 +118,10 @@ export default function CartSummary({
                             className={`flex-1 px-4 py-3 bg-gray-50 border ${promoError ? 'border-red-300' : 'border-gray-200'} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all uppercase font-bold`}
                         />
                         <button
-                            onClick={() => handleApplyPromo(promoCode)}
+                            onClick={() => {
+                                triggerHaptic();
+                                handleApplyPromo(promoCode);
+                            }}
                             disabled={isApplyingPromo || !promoCode.trim()}
                             className="px-4 py-3 bg-gray-900 text-white rounded-xl text-xs font-black hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 transition-colors border-none cursor-pointer uppercase"
                         >
@@ -142,7 +146,10 @@ export default function CartSummary({
                             </div>
                         </div>
                         <button
-                            onClick={handleRemovePromo}
+                            onClick={() => {
+                                triggerHaptic(HAPTIC_PATTERNS.MEDIUM);
+                                handleRemovePromo();
+                            }}
                             className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer"
                         >
                             <X size={18} />
@@ -157,7 +164,10 @@ export default function CartSummary({
             </div>
 
             <button
-                onClick={handleOrder}
+                onClick={() => {
+                    triggerHaptic(HAPTIC_PATTERNS.SUCCESS);
+                    handleOrder();
+                }}
                 disabled={isOrdering || isInviting || items.length === 0}
                 className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-xl shadow-red-200 flex items-center justify-center gap-2 active:scale-[0.98] font-bold uppercase tracking-wide"
                 data-testid="order-button"
@@ -174,6 +184,7 @@ export default function CartSummary({
 
             <button
                 onClick={() => {
+                    triggerHaptic(HAPTIC_PATTERNS.MEDIUM);
                     if (isAuthenticated) {
                         handleInvite();
                     } else {

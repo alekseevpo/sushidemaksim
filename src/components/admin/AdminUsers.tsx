@@ -40,13 +40,13 @@ const UserRow = memo(
         onToggleBirthday: (id: number, verified: boolean) => void;
         onVerifyEmail: (user: any) => void;
     }) => {
-        const isOnline = user.last_seen_at
-            ? new Date().getTime() - new Date(user.last_seen_at).getTime() < 5 * 60 * 1000
+        const isOnline = user.lastSeenAt
+            ? new Date().getTime() - new Date(user.lastSeenAt).getTime() < 5 * 60 * 1000
             : false;
 
-        const lastSeenStr = user.last_seen_at
+        const lastSeenStr = user.lastSeenAt
             ? (() => {
-                  const lastSeenDate = new Date(user.last_seen_at);
+                  const lastSeenDate = new Date(user.lastSeenAt);
                   const today = new Date();
                   if (lastSeenDate.toLocaleDateString() === today.toLocaleDateString()) {
                       return (
@@ -66,8 +66,8 @@ const UserRow = memo(
               })()
             : 'Nunca';
 
-        const regDate = new Date(user.created_at).toLocaleDateString();
-        const birthDate = user.birth_date ? new Date(user.birth_date).toLocaleDateString() : null;
+        const regDate = new Date(user.createdAt).toLocaleDateString();
+        const birthDate = user.birthDate ? new Date(user.birthDate).toLocaleDateString() : null;
 
         const initials =
             user.name
@@ -108,7 +108,7 @@ const UserRow = memo(
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2">
                                 <div className="font-bold text-gray-900">{user.name}</div>
-                                {user.is_verified ? (
+                                {user.isVerified ? (
                                     <span
                                         title="Email verificado"
                                         className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100"
@@ -153,14 +153,14 @@ const UserRow = memo(
 
                         {birthDate && (
                             <button
-                                onClick={() => onToggleBirthday(user.id, user.birth_date_verified)}
+                                onClick={() => onToggleBirthday(user.id, user.birthDate_verified)}
                                 className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
-                                    user.birth_date_verified
+                                    user.birthDate_verified
                                         ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                         : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
                                 }`}
                             >
-                                {user.birth_date_verified ? (
+                                {user.birthDate_verified ? (
                                     <>
                                         <CheckCircle size={10} strokeWidth={1.5} /> Verificado
                                     </>
@@ -189,7 +189,7 @@ const UserRow = memo(
 
                 <td className="px-4 py-2">
                     <div className="flex flex-col gap-1">
-                        {user.last_seen_at ? (
+                        {user.lastSeenAt ? (
                             <div className="flex items-center gap-2">
                                 {isOnline ? (
                                     <div className="relative flex h-2 w-2">
@@ -213,7 +213,7 @@ const UserRow = memo(
                 </td>
                 <td className="px-4 py-2">{regDate}</td>
                 <td className="px-4 py-2 text-center">
-                    {user.is_superadmin ? (
+                    {user.isSuperadmin ? (
                         <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold text-xs">
                             <Crown size={12} strokeWidth={1.5} /> Owner
                         </span>
@@ -235,7 +235,7 @@ const UserRow = memo(
                     )}
                 </td>
                 <td className="px-4 py-2 text-center flex items-center justify-center gap-1.5 min-w-[140px]">
-                    {!user.is_superadmin && (
+                    {!user.isSuperadmin && (
                         <div className="flex items-center gap-1.5">
                             {user.deleted_at ? (
                                 <button
@@ -247,7 +247,7 @@ const UserRow = memo(
                                 </button>
                             ) : (
                                 <>
-                                    {currentUser?.is_superadmin && (
+                                    {currentUser?.isSuperadmin && (
                                         <button
                                             onClick={() => onToggleRole(user)}
                                             className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
@@ -282,7 +282,7 @@ export default function AdminUsers() {
 
     // UI state
     const [page, setPage] = useState(1);
-    const [sort, setSort] = useState({ field: 'last_seen_at', order: 'desc' });
+    const [sort, setSort] = useState({ field: 'lastSeenAt', order: 'desc' });
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [filter, setFilter] = useState('active'); // 'active', 'archived', 'all'
@@ -339,7 +339,7 @@ export default function AdminUsers() {
 
     const verifyEmailMutation = useMutation({
         mutationFn: (id: number) =>
-            api.patch(`/admin/users/${id}/verify-email`, { is_verified: true }),
+            api.patch(`/admin/users/${id}/verify-email`, { isVerified: true }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
         },
@@ -541,11 +541,11 @@ export default function AdminUsers() {
                                 </th>
                                 <th
                                     className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
-                                    onClick={() => handleSort('last_seen_at')}
+                                    onClick={() => handleSort('lastSeenAt')}
                                 >
                                     <div className="flex items-center gap-1">
                                         Actividad{' '}
-                                        {sort.field === 'last_seen_at' ? (
+                                        {sort.field === 'lastSeenAt' ? (
                                             sort.order === 'desc' ? (
                                                 <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (
@@ -562,11 +562,11 @@ export default function AdminUsers() {
                                 </th>
                                 <th
                                     className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
-                                    onClick={() => handleSort('created_at')}
+                                    onClick={() => handleSort('createdAt')}
                                 >
                                     <div className="flex items-center gap-1">
                                         Reg.{' '}
-                                        {sort.field === 'created_at' ? (
+                                        {sort.field === 'createdAt' ? (
                                             sort.order === 'desc' ? (
                                                 <ChevronDown size={14} strokeWidth={1.5} />
                                             ) : (

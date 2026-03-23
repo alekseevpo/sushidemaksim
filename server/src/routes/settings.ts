@@ -20,13 +20,14 @@ router.get(
                 return res.json({});
             }
 
-            // Convert array of rows to a single object map
+            // Convert array of rows to a single object map with camelCase keys
             const settingsMap = settings.reduce((acc: any, curr: any) => {
+                const camelKey = curr.key.replace(/_([a-z0-9])/g, (g: any) => g[1].toUpperCase());
                 try {
-                    acc[curr.key] =
+                    acc[camelKey] =
                         typeof curr.value === 'string' ? JSON.parse(curr.value) : curr.value;
                 } catch {
-                    acc[curr.key] = curr.value;
+                    acc[camelKey] = curr.value;
                 }
                 return acc;
             }, {});

@@ -1,6 +1,7 @@
 import { Trash2, Minus, Plus, X } from 'lucide-react';
 import { getOptimizedImageUrl } from '../../utils/images';
 import { CartItem } from '../../types';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface CartItemListProps {
     items: CartItem[];
@@ -71,11 +72,12 @@ export default function CartItemList({
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center bg-gray-50 rounded-lg p-0.5 border border-gray-100">
                                     <button
-                                        onClick={() =>
+                                        onClick={() => {
+                                            triggerHaptic();
                                             item.quantity > 1
                                                 ? updateQuantity(item.id, item.quantity - 1)
-                                                : removeItem(item.id)
-                                        }
+                                                : removeItem(item.id);
+                                        }}
                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
                                     >
                                         <Minus size={14} strokeWidth={1.5} />
@@ -84,7 +86,10 @@ export default function CartItemList({
                                         {item.quantity}
                                     </span>
                                     <button
-                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                        onClick={() => {
+                                            triggerHaptic();
+                                            updateQuantity(item.id, item.quantity + 1);
+                                        }}
                                         className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
                                     >
                                         <Plus size={14} strokeWidth={1.5} />
@@ -96,7 +101,10 @@ export default function CartItemList({
                                         €
                                     </span>
                                     <button
-                                        onClick={() => removeItem(item.id)}
+                                        onClick={() => {
+                                            triggerHaptic(40); // HEAVY
+                                            removeItem(item.id);
+                                        }}
                                         className="text-gray-300 hover:text-red-500 cursor-pointer p-0 transition-colors flex items-center justify-center border-none bg-transparent"
                                         aria-label="Eliminar"
                                     >

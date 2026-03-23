@@ -247,7 +247,7 @@ export default function AddressModal({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1001]"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-backdrop"
                     />
 
                     <motion.div
@@ -255,7 +255,7 @@ export default function AddressModal({
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-[1002] max-h-[90vh] overflow-hidden flex flex-col md:max-w-2xl md:mx-auto md:top-20 md:bottom-20 md:rounded-[32px] shadow-3xl"
+                        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-modal max-h-[90vh] overflow-hidden flex flex-col md:max-w-2xl md:mx-auto md:top-20 md:bottom-20 md:rounded-[32px] shadow-3xl"
                     >
                         {/* Header (Desktop only) */}
                         <div className="hidden md:flex px-6 py-4 justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
@@ -444,7 +444,7 @@ export default function AddressModal({
                                                         </span>
                                                         <div className="w-1 h-1 rounded-full bg-gray-200" />
                                                         <span className="flex items-center gap-1">
-                                                            {selectedZone.min_order}€
+                                                            {selectedZone.minOrder}€
                                                             <span className="text-[10px] opacity-40">
                                                                 Mín
                                                             </span>
@@ -492,7 +492,7 @@ export default function AddressModal({
                                                                 Pedido mín.
                                                             </p>
                                                             <p className="text-lg font-black text-gray-900 leading-none">
-                                                                {selectedZone.min_order}€
+                                                                {selectedZone.minOrder}€
                                                             </p>
                                                         </div>
                                                     </div>

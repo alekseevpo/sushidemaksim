@@ -21,14 +21,14 @@ const mockOrders = [
         id: 123,
         total: 25.5,
         status: 'pending',
-        created_at: '2023-01-01 10:00:00',
+        createdAt: '2023-01-01 10:00:00',
         users: {
             name: 'John Doe',
             email: 'john@example.com',
         },
-        delivery_address: 'Calle Falsa 123',
-        phone_number: '123456789',
-        items: [{ id: 1, name: 'Sushi Set', quantity: 1, price_at_time: 25.5 }],
+        deliveryAddress: 'Calle Falsa 123',
+        phoneNumber: '123456789',
+        items: [{ id: 1, name: 'Sushi Set', quantity: 1, priceAtTime: 25.5 }],
     },
 ];
 

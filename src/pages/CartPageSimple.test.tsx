@@ -95,7 +95,7 @@ describe('CartPageSimple (Integration)', () => {
         (api.get as any).mockImplementation((url: string) => {
             if (url === '/settings')
                 return Promise.resolve({
-                    min_order: 20,
+                    minOrder: 20,
                     delivery_fee: 3.5,
                     free_delivery_threshold: 25,
                     is_store_closed: false,

@@ -121,7 +121,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                 body: JSON.stringify({
                     items: [
                         {
-                            menu_item_id: 1,
+                            menuItemId: 1,
                             name: 'Gyozas con carne',
                             price: 6.9,
                             quantity: 3,
@@ -209,7 +209,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                         id: fakeOrderId,
                         total: 20.7,
                         status: 'pending',
-                        delivery_address: 'Calle Invitación, 7, B',
+                        deliveryAddress: 'Calle Invitación, 7, B',
                         items: [{ name: 'Gyozas con carne', quantity: 3, price: 6.9 }],
                     },
                 }),

@@ -109,10 +109,10 @@ export default function OrdersTab() {
             if (order.items) {
                 for (const item of order.items) {
                     await addItem({
-                        id: String(item.menu_item_id || item.id),
+                        id: String(item.menuItemId || item.id),
                         name: item.name,
                         description: item.description || '',
-                        price: item.price_at_time || item.price || 0,
+                        price: item.priceAtTime || item.price || 0,
                         image: item.image || '',
                         category: (item.category as any) || 'rollos-grandes',
                     });
@@ -203,12 +203,12 @@ export default function OrdersTab() {
                                 <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-gray-400 opacity-80">
                                     <Clock size={10} strokeWidth={1.5} />
                                     {(() => {
-                                        const d = new Date(order.created_at);
+                                        const d = new Date(order.createdAt);
                                         const validDate = isNaN(d.getTime())
                                             ? new Date(
-                                                  order.created_at.replace(' ', 'T') +
-                                                      (order.created_at.includes('Z') ||
-                                                      order.created_at.includes('+')
+                                                  order.createdAt.replace(' ', 'T') +
+                                                      (order.createdAt.includes('Z') ||
+                                                      order.createdAt.includes('+')
                                                           ? ''
                                                           : 'Z')
                                               )
@@ -228,7 +228,7 @@ export default function OrdersTab() {
                                         {(order.status as string) !== 'delivered' &&
                                             (order.status as string) !== 'cancelled' && (
                                                 <Link
-                                                    to={`/track/${order.id}?phone=${encodeURIComponent(order.phone_number)}`}
+                                                    to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
                                                     className="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl border border-red-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-red-100 transition-colors no-underline"
                                                 >
                                                     <span>🛵</span>
@@ -238,7 +238,7 @@ export default function OrdersTab() {
                                         <div className="bg-amber-50 px-2 py-1 rounded-lg border border-amber-100/50 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black">
                                             <span className="animate-pulse">⏱️</span>
                                             <OrderTimer
-                                                createdAt={order.created_at}
+                                                createdAt={order.createdAt}
                                                 status={order.status}
                                             />
                                         </div>
@@ -280,7 +280,7 @@ export default function OrdersTab() {
                                             </span>
                                         </div>
                                         <span className="text-[11px] md:text-xs font-black text-gray-300 shrink-0 tabular-nums">
-                                            {(item.price_at_time * item.quantity)
+                                            {(item.priceAtTime * item.quantity)
                                                 .toFixed(2)
                                                 .replace('.', ',')}{' '}
                                             €

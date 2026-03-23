@@ -25,11 +25,11 @@ interface DeliveryZone {
     id: string;
     name: string;
     cost: number;
-    min_order: number;
+    minOrder: number;
     color: string;
     opacity: number;
     coordinates: [number, number][];
-    is_active: boolean;
+    isActive: boolean;
 }
 
 const MADRID_CENTER: [number, number] = [40.4168, -3.7038];
@@ -85,11 +85,11 @@ export default function AdminDeliveryZones() {
             setEditingZone({
                 name: '',
                 cost: 0,
-                min_order: 0,
+                minOrder: 0,
                 color: '#EF4444',
                 opacity: 0.3,
                 coordinates: latlngs,
-                is_active: true,
+                isActive: true,
             });
             setIsModalOpen(true);
             // Remove the temporary layer from the map so we can render it from state
@@ -194,7 +194,7 @@ export default function AdminDeliveryZones() {
                                     <Popup>
                                         <div className="font-bold">{zone.name}</div>
                                         <div className="text-xs">Envío: {zone.cost}€</div>
-                                        <div className="text-xs">Mínimo: {zone.min_order}€</div>
+                                        <div className="text-xs">Mínimo: {zone.minOrder}€</div>
                                     </Popup>
                                 </Polygon>
                             ))}
@@ -258,7 +258,7 @@ export default function AdminDeliveryZones() {
                                             Min. Pedido
                                         </span>
                                         <span className="font-bold text-gray-900">
-                                            {zone.min_order} €
+                                            {zone.minOrder} €
                                         </span>
                                     </div>
                                 </div>
@@ -319,11 +319,11 @@ export default function AdminDeliveryZones() {
                                     </label>
                                     <input
                                         type="number"
-                                        value={editingZone.min_order || 0}
+                                        value={editingZone.minOrder || 0}
                                         onChange={e =>
                                             setEditingZone({
                                                 ...editingZone,
-                                                min_order: parseFloat(e.target.value),
+                                                minOrder: parseFloat(e.target.value),
                                             })
                                         }
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"

@@ -11,7 +11,7 @@ interface OrderItem {
     id: number;
     name: string;
     quantity: number;
-    price_at_time: number;
+    priceAtTime: number;
     image: string;
 }
 
@@ -19,7 +19,7 @@ interface Order {
     id: number;
     total: number;
     status: string;
-    delivery_address: string;
+    deliveryAddress: string;
     notes: string;
     items: OrderItem[];
     users?: {
@@ -243,7 +243,7 @@ export default function PayForFriendPage() {
                                                 </p>
                                             </div>
                                             <p className="font-black text-gray-900 text-xs md:text-sm">
-                                                {(item.price_at_time * item.quantity)
+                                                {(item.priceAtTime * item.quantity)
                                                     .toFixed(2)
                                                     .replace('.', ',')}{' '}
                                                 €
@@ -273,7 +273,7 @@ export default function PayForFriendPage() {
                                             Entrega en:
                                         </div>
                                         <p className="text-[10px] text-gray-400 font-medium max-w-[150px] leading-tight">
-                                            {order.delivery_address}
+                                            {order.deliveryAddress}
                                         </p>
                                     </div>
                                 </div>

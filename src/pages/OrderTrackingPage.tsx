@@ -197,7 +197,7 @@ export default function OrderTrackingPage() {
                                         Dirección de entrega
                                     </h3>
                                     <p className="text-gray-600 font-medium leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                        {order.delivery_address}
+                                        {order.deliveryAddress}
                                     </p>
                                 </div>
 
@@ -244,7 +244,7 @@ export default function OrderTrackingPage() {
                                                 </span>
                                             </div>
                                             <span className="font-black text-gray-400">
-                                                {(item.price_at_time * item.quantity)
+                                                {(item.priceAtTime * item.quantity)
                                                     .toFixed(2)
                                                     .replace('.', ',')}{' '}
                                                 €

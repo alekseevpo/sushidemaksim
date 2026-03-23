@@ -95,8 +95,8 @@ export default function CartPageSimple() {
     } = deliveryDetails;
 
     const MIN_ORDER = selectedZone
-        ? (selectedZone.min_order ?? 0)
-        : (siteSettings?.min_order ?? 15);
+        ? (selectedZone.minOrder ?? 0)
+        : (siteSettings?.minOrder ?? 15);
     const isManualClosed = !!siteSettings?.is_store_closed;
     const isOpenNow = isStoreOpen();
     const isStoreClosed = isManualClosed || !isOpenNow;
@@ -304,7 +304,7 @@ export default function CartPageSimple() {
                 phoneNumber: deliveryPhone,
                 customerName: isAuthenticated ? user?.name || '' : customerNameState,
                 email: isAuthenticated ? user?.email || '' : guestEmailState,
-                postalCode: postalCode || (selectedZone ? selectedZone.postal_codes?.[0] : ''),
+                postalCode: postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
                 promoCode: promoDiscount ? promoCode : undefined,

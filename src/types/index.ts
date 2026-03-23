@@ -52,11 +52,11 @@ export type OrderStatus =
 
 export interface OrderItem {
     id: string | number;
-    order_id?: string | number;
-    menu_item_id?: string | number;
+    orderId?: string | number;
+    menuItemId?: string | number;
     name: string;
     price: number;
-    price_at_time: number;
+    priceAtTime: number;
     quantity: number;
     image: string;
     description?: string;
@@ -74,23 +74,23 @@ export interface UserStats {
 
 export interface Order {
     id: string | number;
-    user_id?: string;
+    userId?: string;
     items?: OrderItem[];
     total: number;
-    delivery_address: string;
-    phone_number: string;
+    deliveryAddress: string;
+    phoneNumber: string;
     status: OrderStatus;
     notes?: string;
-    created_at: string;
-    updated_at?: string;
-    estimated_delivery_time?: string;
-    promo_code?: string;
+    createdAt: string;
+    updatedAt?: string;
+    estimatedDeliveryTime?: string;
+    promoCode?: string;
     users?: {
         name: string;
         email: string;
         avatar?: string;
     };
-    user_stats?: UserStats;
+    userStats?: UserStats;
 }
 
 export interface User {
@@ -101,12 +101,13 @@ export interface User {
     password?: string;
     avatar?: string;
     birthDate?: string;
-    birthDateVerified?: boolean;
+    isBirthDateVerified?: boolean;
     addresses: UserAddress[];
     orders: Order[];
     createdAt: string;
     role?: 'user' | 'admin';
-    is_superadmin?: boolean;
+    isSuperadmin?: boolean;
     orderCount: number;
+    totalSpent?: number;
     isVerified?: boolean;
 }

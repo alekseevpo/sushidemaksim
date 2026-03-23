@@ -94,13 +94,13 @@ export default function ProductCard({
 
                 {/* Badges Lowered */}
                 <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1">
-                    {item.is_popular && (
+                    {item.isPopular && (
                         <span className="bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black tracking-wider shadow-sm flex items-center gap-1">
                             <Sparkles size={8} className="md:size-[10px]" />
                             Popular
                         </span>
                     )}
-                    {item.is_new && (
+                    {item.isNew && (
                         <span className="bg-white text-gray-900 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black tracking-wider shadow-sm">
                             ✨ Nuevo
                         </span>

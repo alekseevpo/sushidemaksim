@@ -371,7 +371,7 @@ export default function AdminDashboard({
                                             {Number(order.total).toFixed(2).replace('.', ',')} €
                                         </p>
                                         <OrderTimer
-                                            createdAt={order.created_at}
+                                            createdAt={order.createdAt}
                                             status={order.status}
                                         />
                                     </div>
@@ -497,7 +497,7 @@ export default function AdminDashboard({
                                         <td className="px-4 py-4">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm font-black text-gray-900">
-                                                    {report.orders_count ?? report.order_count ?? 0}
+                                                    {report.orders_count ?? report.orderCount ?? 0}
                                                 </span>
                                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                     pedidos

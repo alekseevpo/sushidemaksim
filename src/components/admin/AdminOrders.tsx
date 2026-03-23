@@ -349,7 +349,7 @@ export default function AdminOrders({
                                                 )}
                                             </div>
                                             <p className="text-xs text-gray-500 font-medium">
-                                                {new Date(order.created_at).toLocaleString(
+                                                {new Date(order.createdAt).toLocaleString(
                                                     'es-ES',
                                                     {
                                                         day: '2-digit',
@@ -364,7 +364,7 @@ export default function AdminOrders({
 
                                     <div className="flex items-center gap-4 ml-auto sm:ml-0">
                                         <OrderTimer
-                                            createdAt={order.created_at}
+                                            createdAt={order.createdAt}
                                             status={order.status}
                                         />
                                         <div className="text-right">
@@ -435,12 +435,12 @@ export default function AdminOrders({
                                                     <p className="font-bold text-gray-900 text-sm truncate">
                                                         {order.users?.name || 'Invitado'}
                                                     </p>
-                                                    {order.user_stats && (
+                                                    {order.userStats && (
                                                         <div className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] font-bold border border-blue-100 w-fit">
                                                             <Calendar size={10} strokeWidth={2} />
                                                             REG.{' '}
                                                             {new Date(
-                                                                order.user_stats.registrationDate
+                                                                order.userStats.registrationDate
                                                             ).toLocaleDateString()}
                                                         </div>
                                                     )}
@@ -448,10 +448,10 @@ export default function AdminOrders({
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <p className="text-xs text-gray-600 font-bold">
-                                                    {order.phone_number}
+                                                    {order.phoneNumber}
                                                 </p>
                                                 <a
-                                                    href={`https://wa.me/${order.phone_number.replace(/\D/g, '')}`}
+                                                    href={`https://wa.me/${order.phoneNumber.replace(/\D/g, '')}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="p-1 px-2 bg-green-50 text-green-600 rounded-lg text-[10px] font-black border border-green-100 hover:bg-green-100 transition-colors flex items-center gap-1"
@@ -467,7 +467,7 @@ export default function AdminOrders({
                                             )}
                                         </div>
 
-                                        {order.user_stats && (
+                                        {order.userStats && (
                                             <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
                                                 <div className="space-y-0.5">
                                                     <div className="flex items-center gap-1.5 text-gray-400">
@@ -477,7 +477,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900">
-                                                        {order.user_stats.orderCount || 0}
+                                                        {order.userStats.orderCount || 0}
                                                     </p>
                                                 </div>
                                                 <div className="space-y-0.5">
@@ -489,7 +489,7 @@ export default function AdminOrders({
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900">
                                                         {formatCurrency(
-                                                            order.user_stats.totalSpent || 0
+                                                            order.userStats.totalSpent || 0
                                                         )}
                                                     </p>
                                                 </div>
@@ -502,7 +502,7 @@ export default function AdminOrders({
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900">
                                                         {formatCurrency(
-                                                            order.user_stats.avgCheck || 0
+                                                            order.userStats.avgCheck || 0
                                                         )}
                                                     </p>
                                                 </div>
@@ -514,7 +514,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <p className="text-[10px] font-black text-gray-900 leading-none">
-                                                        {order.user_stats.frequency ||
+                                                        {order.userStats.frequency ||
                                                             'Primer pedido'}
                                                     </p>
                                                 </div>
@@ -530,7 +530,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <p className="text-xs font-black text-gray-900 line-clamp-1">
-                                                        {order.user_stats.favoriteDish || 'N/A'}
+                                                        {order.userStats.favoriteDish || 'N/A'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -544,7 +544,7 @@ export default function AdminOrders({
                                                 </span>
                                             </div>
                                             <p className="text-sm text-gray-700 leading-relaxed font-medium break-words">
-                                                {order.delivery_address}
+                                                {order.deliveryAddress}
                                             </p>
                                         </div>
 
@@ -708,7 +708,7 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <span className="text-[10px] font-bold text-gray-400 tabular-nums">
-                                                        {formatCurrency(item.price_at_time)}
+                                                        {formatCurrency(item.priceAtTime)}
                                                     </span>
                                                 </div>
                                             ))}

@@ -207,7 +207,7 @@ export default function MenuPageSimple() {
                 pieces: item.pieces,
                 spicy: item.spicy,
                 vegetarian: item.vegetarian,
-                isPromo: item.is_promo,
+                isPromo: item.isPromo,
             },
             quantity
         );

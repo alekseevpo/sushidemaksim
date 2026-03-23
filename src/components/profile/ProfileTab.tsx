@@ -310,9 +310,9 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 </p>
                                 {field.label === 'Fecha de Cumpleaños' && user.birthDate && (
                                     <div
-                                        className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.birthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} border-none`}
+                                        className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.isBirthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} border-none`}
                                     >
-                                        {user.birthDateVerified ? 'Verificado' : 'Pendiente'}
+                                        {user.isBirthDateVerified ? 'Verificado' : 'Pendiente'}
                                     </div>
                                 )}
                             </div>

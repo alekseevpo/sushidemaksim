@@ -1,56 +1,156 @@
 /**
  * Shared helpers used across multiple route files.
- * Avoids duplication between menu.ts and admin.ts.
+ * Provides clean camelCase formatting for frontend consumption.
  */
 
-/** Convert SQLite integer booleans (0/1) to JS booleans for menu items */
+/** Cleanly maps a menu item from DB (snake_case) to Frontend (camelCase) */
 export function formatMenuItem(item: any) {
     if (!item) return null;
     return {
-        ...item,
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        price: Number(item.price),
+        image: item.image,
+        category: item.category,
+        weight: item.weight,
+        pieces: item.pieces,
         spicy: !!item.spicy,
         vegetarian: !!item.vegetarian,
-        is_promo: !!item.is_promo,
         isPromo: !!item.is_promo,
-        is_popular: !!item.is_popular,
         isPopular: !!item.is_popular,
-        is_chef_choice: !!item.is_chef_choice,
         isChefChoice: !!item.is_chef_choice,
-        is_new: !!item.is_new,
         isNew: !!item.is_new,
         allergens: Array.isArray(item.allergens) ? item.allergens : [],
     };
 }
 
-/**
- * Returns a JS Date object representing 00:00:00 of the current day in Madrid (Europe/Madrid).
- * Use this to fetch "Today" records from Supabase correctly.
- */
+/** Cleanly maps a user from DB (snake_case) to Frontend (camelCase) */
+export function formatUser(
+    u: any,
+    orderCount: number = 0,
+    addresses: any[] = [],
+    totalSpent: number = 0
+) {
+    if (!u) return null;
+    return {
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        phone: u.phone,
+        avatar: u.avatar,
+        role: u.role,
+        isSuperadmin: u.role === 'admin' || !!u.is_superadmin,
+        isVerified: !!u.is_verified,
+        birthDate: u.birth_date,
+        isBirthDateVerified: !!u.birth_date_verified,
+        createdAt: u.created_at,
+        lastSeenAt: u.last_seen_at,
+        orderCount: orderCount,
+        totalSpent: totalSpent,
+        addresses: (addresses || []).map(a => ({
+            id: a.id,
+            label: a.label,
+            street: a.street,
+            house: a.house,
+            apartment: a.apartment,
+            city: a.city,
+            postalCode: a.postal_code,
+            phone: a.phone,
+            isDefault: !!a.is_default,
+        })),
+    };
+}
+
+/** Cleanly maps an order from DB (snake_case) to Frontend (camelCase) */
+export function formatOrder(o: any, userStats: any = null) {
+    if (!o) return null;
+    const items = (o.order_items || o.items || []).map((item: any) => ({
+        id: item.id,
+        orderId: item.order_id,
+        menuItemId: item.menu_item_id,
+        name: item.name,
+        price: Number(item.price),
+        priceAtTime: Number(item.price_at_time || item.price),
+        quantity: Number(item.quantity),
+        image: item.image,
+        description: item.description,
+        category: item.category,
+    }));
+
+    return {
+        id: o.id,
+        userId: o.user_id,
+        total: Number(o.total),
+        deliveryAddress: o.delivery_address,
+        phoneNumber: o.phone_number,
+        status: o.status,
+        notes: o.notes,
+        paymentMethod: o.payment_method,
+        paymentStatus: o.payment_status,
+        createdAt: o.created_at,
+        updatedAt: o.updated_at,
+        estimatedDeliveryTime: o.estimated_delivery_time,
+        promoCode: o.promo_code,
+        items,
+        users: o.users
+            ? {
+                  name: o.users.name,
+                  email: o.users.email,
+                  avatar: o.users.avatar,
+              }
+            : undefined,
+        userStats: userStats || o.userStats || undefined,
+    };
+}
+
+/** Cleanly maps a delivery zone from DB (snake_case) to Frontend (camelCase) */
+export function formatDeliveryZone(z: any) {
+    if (!z) return null;
+    return {
+        id: z.id,
+        name: z.name,
+        cost: Number(z.cost),
+        minOrder: Number(z.min_order || 0),
+        color: z.color,
+        opacity: Number(z.opacity || 0.3),
+        coordinates: z.coordinates,
+        isActive: !!z.is_active,
+    };
+}
+
+/** Cleanly maps a blog post from DB (snake_case) to Frontend (camelCase) */
+export function formatBlogPost(p: any) {
+    if (!p) return null;
+    return {
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        excerpt: p.excerpt,
+        content: p.content,
+        imageUrl: p.image_url,
+        author: p.author,
+        readTime: Number(p.read_time),
+        category: p.category,
+        published: !!p.published,
+        createdAt: p.created_at,
+        updatedAt: p.updated_at,
+    };
+}
+
+/** Madrid Time Helpers */
 export function getMadridStartOfDay() {
-    // Current time specifically in Madrid timezone
     const madridNowString = new Date().toLocaleString('en-US', {
         timeZone: 'Europe/Madrid',
         hour12: false,
     });
-    // This creates a date object that "thinks" its local time is Madrid time
     const madridDate = new Date(madridNowString);
-
-    // Set it to midnight
     const madridMidnight = new Date(madridDate);
     madridMidnight.setHours(0, 0, 0, 0);
-
-    // Calculate how many milliseconds have passed since midnight IN MADRID
     const msSinceMidnightInMadrid = madridDate.getTime() - madridMidnight.getTime();
-
-    // Subtract those milliseconds from the TRUE global now (Date.now())
-    // This gives us the global UTC time corresponding to 00:00:00 Madrid time
     return new Date(Date.now() - msSinceMidnightInMadrid);
 }
 
-/**
- * Returns a JS Date object representing 00:00:00 of YESTERDAY in Madrid.
- * Perfect for daily CRON reports that run at 0:01 AM.
- */
 export function getMadridYesterdayStartOfDay() {
     const today = getMadridStartOfDay();
     const yesterday = new Date(today);
@@ -58,7 +158,6 @@ export function getMadridYesterdayStartOfDay() {
     return yesterday;
 }
 
-/** Get the current hour in Madrid (0-23) */
 export function getMadridHour() {
     return parseInt(
         new Date().toLocaleString('en-GB', {
