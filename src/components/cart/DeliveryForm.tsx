@@ -7,7 +7,6 @@ import {
     CreditCard,
     Wallet,
     Smartphone,
-    Search,
 } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
@@ -239,8 +238,7 @@ export default function DeliveryForm({
                                         ¿Dónde entregamos el pedido?
                                     </p>
                                     <p className="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2">
-                                        <Search size={14} className="text-red-300" /> Indica tu
-                                        dirección y descubre nuestras zonas
+                                        Indica tu dirección y descubre nuestras zonas
                                     </p>
                                 </div>
                             </button>
