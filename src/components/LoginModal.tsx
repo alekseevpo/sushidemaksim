@@ -329,7 +329,7 @@ const ResetPasswordForm = memo(
                 className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
                 {token ? (
-                    <input type="hidden" name="token" value={token} />
+                    <input type="hidden" name="code" value={token} />
                 ) : (
                     <div className="space-y-1">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
@@ -341,7 +341,7 @@ const ResetPasswordForm = memo(
                             </div>
                             <input
                                 type="text"
-                                name="token"
+                                name="code"
                                 required
                                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900 uppercase tracking-widest placeholder:tracking-normal placeholder:font-normal"
                                 placeholder="Pega aquí tu código"
@@ -435,6 +435,7 @@ export default function LoginModal({
     >(initialMode);
     const [isLoading, setIsLoading] = useState(false);
     const [resetToken, setResetToken] = useState('');
+    const [recoveryEmail, setRecoveryEmail] = useState('');
     const { login, register } = useAuth();
     const { success: showSuccess, error: showError } = useToast();
     const navigate = useNavigate();
@@ -466,6 +467,7 @@ export default function LoginModal({
             document.body.classList.add('overflow-hidden');
         } else {
             document.body.classList.remove('overflow-hidden');
+            setRecoveryEmail('');
         }
 
         return () => {
@@ -530,6 +532,7 @@ export default function LoginModal({
 
         try {
             await api.post('/auth/forgot-password', { email });
+            setRecoveryEmail(email);
             setMode('verify-sent');
             showSuccess('Email de recuperación enviado');
         } catch (err: any) {
@@ -546,7 +549,7 @@ export default function LoginModal({
         const password = (form.elements.namedItem('password') as HTMLInputElement).value;
         const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement)
             .value;
-        const token = (form.elements.namedItem('token') as HTMLInputElement).value;
+        const code = (form.elements.namedItem('code') as HTMLInputElement).value;
 
         if (password !== confirmPassword) {
             showError('Las contraseñas no coinciden');
@@ -555,9 +558,14 @@ export default function LoginModal({
         }
 
         try {
-            await api.post('/auth/reset-password', { token, newPassword: password });
+            await api.post('/auth/reset-password', {
+                email: recoveryEmail,
+                code,
+                newPassword: password,
+            });
             setMode('login');
             showSuccess('Contraseña actualizada con éxito. Ya puedes iniciar sesión.');
+            setRecoveryEmail('');
         } catch (err: any) {
             showError(err.message || 'Error al actualizar la contraseña');
         } finally {
@@ -635,21 +643,13 @@ export default function LoginModal({
                             <div className="bg-green-50 text-green-700 p-6 rounded-3xl border border-green-100 font-medium text-sm leading-relaxed">
                                 <p>
                                     Hemos enviado un email de confirmación. Por favor, revisa tu
-                                    bandeja de entrada y pulsa en el enlace para continuar.
+                                    bandеja de entrada и pulсa en el enlace para continuar.
                                 </p>
                                 <p className="mt-2 text-xs opacity-75 italic">
                                     (No olvides revisar la carpeta de SPAM)
                                 </p>
                             </div>
                             <div className="grid grid-cols-1 gap-3">
-                                <a
-                                    href="https://mail.google.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2 no-underline"
-                                >
-                                    <Mail size={18} strokeWidth={1.5} /> Abrir Gmail
-                                </a>
                                 <button
                                     onClick={() => {
                                         onClose();

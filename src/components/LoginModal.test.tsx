@@ -195,7 +195,8 @@ describe('LoginModal - Password Recovery', () => {
 
         await waitFor(() => {
             expect(mockPost).toHaveBeenCalledWith('/auth/reset-password', {
-                token: '123456',
+                email: '',
+                code: '123456',
                 newPassword: 'newpassword123',
             });
             expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
