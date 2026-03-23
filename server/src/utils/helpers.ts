@@ -46,6 +46,7 @@ export function formatUser(
         isBirthDateVerified: !!u.birth_date_verified,
         createdAt: u.created_at,
         lastSeenAt: u.last_seen_at,
+        deletedAt: u.deleted_at,
         orderCount: orderCount,
         totalSpent: totalSpent,
         addresses: (addresses || []).map(a => ({

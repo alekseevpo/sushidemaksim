@@ -153,14 +153,14 @@ const UserRow = memo(
 
                         {birthDate && (
                             <button
-                                onClick={() => onToggleBirthday(user.id, user.birthDate_verified)}
+                                onClick={() => onToggleBirthday(user.id, user.isBirthDateVerified)}
                                 className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
-                                    user.birthDate_verified
+                                    user.isBirthDateVerified
                                         ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                         : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
                                 }`}
                             >
-                                {user.birthDate_verified ? (
+                                {user.isBirthDateVerified ? (
                                     <>
                                         <CheckCircle size={10} strokeWidth={1.5} /> Verificado
                                     </>
@@ -226,7 +226,7 @@ const UserRow = memo(
                             <UsersIcon size={12} strokeWidth={1.5} /> Cliente
                         </span>
                     )}
-                    {user.deleted_at && (
+                    {user.deletedAt && (
                         <div className="mt-1">
                             <span className="inline-flex items-center gap-1 bg-gray-900 text-white px-2 py-0.5 rounded-full font-black text-[9px] uppercase tracking-tighter">
                                 Archivivado
@@ -237,7 +237,7 @@ const UserRow = memo(
                 <td className="px-4 py-2 text-center flex items-center justify-center gap-1.5 min-w-[140px]">
                     {!user.isSuperadmin && (
                         <div className="flex items-center gap-1.5">
-                            {user.deleted_at ? (
+                            {user.deletedAt ? (
                                 <button
                                     onClick={() => onRestore(user)}
                                     className="p-1 px-2 flex items-center gap-1 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg font-black text-[10px] uppercase tracking-wider transition border border-green-100"

@@ -111,4 +111,5 @@ export interface User {
     orderCount: number;
     totalSpent?: number;
     isVerified?: boolean;
+    deletedAt?: string;
 }
