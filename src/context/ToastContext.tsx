@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
@@ -65,8 +66,8 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
     toasts,
     removeToast,
 }) => {
-    return (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:right-6 md:translate-x-0 z-[12000] flex flex-col gap-3 w-[calc(100%-32px)] md:w-full md:max-w-[400px] pointer-events-none">
+    return createPortal(
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:right-6 md:translate-x-0 z-[99999] flex flex-col gap-3 w-[calc(100%-32px)] md:w-full md:max-w-[400px] pointer-events-none">
             <AnimatePresence mode="popLayout">
                 {toasts.map(toast => (
                     <motion.div
@@ -81,7 +82,8 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
                     </motion.div>
                 ))}
             </AnimatePresence>
-        </div>
+        </div>,
+        document.body
     );
 };
 
