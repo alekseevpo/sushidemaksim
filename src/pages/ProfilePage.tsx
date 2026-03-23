@@ -59,6 +59,11 @@ export default function ProfilePage() {
         }
     }, [searchParams, activeTab]);
 
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // Scroll active tab into view on mobile
     useEffect(() => {
         const activeElement = document.getElementById(`tab-${activeTab}`);
