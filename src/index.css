@@ -264,7 +264,8 @@ img {
 /* Premium Mesh Background */
 .mesh-bg {
     background-color: #fdfbf7;
-    background-image: radial-gradient(at 0% 0%, hsla(0, 72%, 51%, 0.05) 0px, transparent 50%),
+    background-image:
+        radial-gradient(at 0% 0%, hsla(0, 72%, 51%, 0.05) 0px, transparent 50%),
         radial-gradient(at 50% 0%, hsla(38, 100%, 50%, 0.03) 0px, transparent 50%),
         radial-gradient(at 100% 0%, hsla(0, 72%, 51%, 0.05) 0px, transparent 50%);
 }
@@ -304,6 +305,8 @@ img {
 @media (hover: hover) {
     .premium-card-hover:hover {
         @apply -translate-y-2;
-        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.1), 0 18px 36px -18px rgba(0, 0, 0, 0.12);
+        box-shadow:
+            0 30px 60px -12px rgba(0, 0, 0, 0.1),
+            0 18px 36px -18px rgba(0, 0, 0, 0.12);
     }
 }
