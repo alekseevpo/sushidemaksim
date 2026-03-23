@@ -343,9 +343,8 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                         alt="Avatar"
                                         className="w-full h-full object-cover"
                                         onError={e => {
-                                            (
-                                                e.currentTarget as HTMLImageElement
-                                            ).style.display = 'none';
+                                            (e.currentTarget as HTMLImageElement).style.display =
+                                                'none';
                                             e.currentTarget.parentElement!.innerText =
                                                 currentInitials;
                                         }}

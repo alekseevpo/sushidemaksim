@@ -178,7 +178,7 @@ export default function AddressesTab({
         setSearchQuery('');
         setEditId(null);
         setShowAddAddress(false);
-        
+
         // Scroll back to top of tab when form closes
         const headerOffset = window.innerWidth < 768 ? 140 : 100;
         const element = document.getElementById('profile-content');

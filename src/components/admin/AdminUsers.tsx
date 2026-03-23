@@ -91,9 +91,8 @@ const UserRow = memo(
                                         alt={user.name}
                                         className="w-full h-full object-cover"
                                         onError={e => {
-                                            (
-                                                e.currentTarget as HTMLImageElement
-                                            ).style.display = 'none';
+                                            (e.currentTarget as HTMLImageElement).style.display =
+                                                'none';
                                             e.currentTarget.parentElement!.innerText = initials;
                                         }}
                                     />

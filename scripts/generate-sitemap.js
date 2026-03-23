@@ -19,13 +19,7 @@ const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_
 async function generateSitemap() {
     console.log('🚀 Starting Sitemap Generation...');
 
-    const staticRoutes = [
-        '',
-        '/menu',
-        '/promo',
-        '/contacts',
-        '/blog',
-    ];
+    const staticRoutes = ['', '/menu', '/promo', '/contacts', '/blog'];
 
     let dynamicRoutes = [];
 
@@ -33,23 +27,24 @@ async function generateSitemap() {
     if (SUPABASE_URL && SUPABASE_KEY) {
         try {
             const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-            
+
             // 1. Fetch Blog Posts
             const { data: posts, error: postsError } = await supabase
                 .from('blog_posts')
                 .select('slug, updated_at')
                 .eq('published', true);
-            
+
             if (postsError) throw postsError;
-            
+
             if (posts) {
                 dynamicRoutes = posts.map(post => ({
                     url: `/blog/${post.slug}`,
-                    lastmod: post.updated_at ? new Date(post.updated_at).toISOString().split('T')[0] : today
+                    lastmod: post.updated_at
+                        ? new Date(post.updated_at).toISOString().split('T')[0]
+                        : today,
                 }));
                 console.log(`✅ Found ${posts.length} published blog posts.`);
             }
-
         } catch (err) {
             console.error('⚠️ Could not fetch dynamic routes:', err.message);
         }
@@ -61,18 +56,26 @@ async function generateSitemap() {
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${staticRoutes.map(route => `    <url>
+${staticRoutes
+    .map(
+        route => `    <url>
         <loc>${BASE_URL}${route}</loc>
         <lastmod>${today}</lastmod>
         <changefreq>${route === '' ? 'daily' : 'weekly'}</changefreq>
         <priority>${route === '' ? '1.0' : '0.8'}</priority>
-    </url>`).join('\n')}
-${dynamicRoutes.map(route => `    <url>
+    </url>`
+    )
+    .join('\n')}
+${dynamicRoutes
+    .map(
+        route => `    <url>
         <loc>${BASE_URL}${route.url}</loc>
         <lastmod>${route.lastmod}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
-    </url>`).join('\n')}
+    </url>`
+    )
+    .join('\n')}
 </urlset>`;
 
     try {

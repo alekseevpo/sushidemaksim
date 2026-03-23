@@ -151,14 +151,15 @@ export default function PayForFriendPage() {
                                                     (
                                                         e.currentTarget as HTMLImageElement
                                                     ).style.display = 'none';
-                                                    e.currentTarget.parentElement!.innerText =
-                                                        (order.users!.name || '?')
-                                                            .split(' ')
-                                                            .filter(Boolean)
-                                                            .map((n: string) => n[0])
-                                                            .join('')
-                                                            .toUpperCase()
-                                                            .slice(0, 2);
+                                                    e.currentTarget.parentElement!.innerText = (
+                                                        order.users!.name || '?'
+                                                    )
+                                                        .split(' ')
+                                                        .filter(Boolean)
+                                                        .map((n: string) => n[0])
+                                                        .join('')
+                                                        .toUpperCase()
+                                                        .slice(0, 2);
                                                 }}
                                             />
                                         ) : (

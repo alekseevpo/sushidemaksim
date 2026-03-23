@@ -138,68 +138,64 @@ export default function OrderTrackingPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             {/* Order Info */}
                             <div className="space-y-8">
-                                        {order.users && (
-                                            <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-6">
-                                                <div
-                                                    className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg overflow-hidden shrink-0 shadow-sm border-2 border-white
+                                {order.users && (
+                                    <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-6">
+                                        <div
+                                            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg overflow-hidden shrink-0 shadow-sm border-2 border-white
                                                         ${order.users.avatar?.startsWith('http') ? 'bg-gray-100' : order.users.avatar ? 'bg-gray-100' : 'bg-red-600'}`}
-                                                >
-                                                    {order.users.avatar ? (
-                                                        order.users.avatar.startsWith('http') ? (
-                                                            <img
-                                                                src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                                                                alt={order.users.name}
-                                                                className="w-full h-full object-cover"
-                                                                onError={e => {
-                                                                    (
-                                                                        e.currentTarget as HTMLImageElement
-                                                                    ).style.display = 'none';
-                                                                    e.currentTarget.parentElement!.innerText =
-                                                                        order.users!.name.split(
-                                                                            ' '
-                                                                        )[0][0] +
-                                                                        (order.users!.name.split(
-                                                                            ' '
-                                                                        )[1]?.[0] || '');
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <span className="select-none">
-                                                                {order.users.avatar}
-                                                            </span>
-                                                        )
-                                                    ) : (
-                                                        <span className="select-none">
-                                                            {order.users.name.split(' ')[0][0] +
-                                                                (order.users.name.split(
+                                        >
+                                            {order.users.avatar ? (
+                                                order.users.avatar.startsWith('http') ? (
+                                                    <img
+                                                        src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                        alt={order.users.name}
+                                                        className="w-full h-full object-cover"
+                                                        onError={e => {
+                                                            (
+                                                                e.currentTarget as HTMLImageElement
+                                                            ).style.display = 'none';
+                                                            e.currentTarget.parentElement!.innerText =
+                                                                order.users!.name.split(' ')[0][0] +
+                                                                (order.users!.name.split(
                                                                     ' '
-                                                                )[1]?.[0] || '')}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <span className="block text-[10px] uppercase font-black tracking-widest text-gray-400 mb-0.5">
-                                                        Cliente
+                                                                )[1]?.[0] || '');
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <span className="select-none">
+                                                        {order.users.avatar}
                                                     </span>
-                                                    <h4 className="font-black text-gray-900 leading-tight">
-                                                        {order.users.name}
-                                                    </h4>
-                                                    <p className="text-[10px] text-gray-500 font-medium">
-                                                        {order.users.email}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        )}
+                                                )
+                                            ) : (
+                                                <span className="select-none">
+                                                    {order.users.name.split(' ')[0][0] +
+                                                        (order.users.name.split(' ')[1]?.[0] || '')}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <span className="block text-[10px] uppercase font-black tracking-widest text-gray-400 mb-0.5">
+                                                Cliente
+                                            </span>
+                                            <h4 className="font-black text-gray-900 leading-tight">
+                                                {order.users.name}
+                                            </h4>
+                                            <p className="text-[10px] text-gray-500 font-medium">
+                                                {order.users.email}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
 
-                                        <div>
-                                            <h3 className="flex items-center gap-2 text-sm font-black text-gray-900 uppercase tracking-widest mb-4">
-                                                <MapPin
-                                                    size={18}
-                                                    strokeWidth={1.5}
-                                                    className="text-red-600"
-                                                />
-                                                Dirección de entrega
-                                            </h3>
+                                <div>
+                                    <h3 className="flex items-center gap-2 text-sm font-black text-gray-900 uppercase tracking-widest mb-4">
+                                        <MapPin
+                                            size={18}
+                                            strokeWidth={1.5}
+                                            className="text-red-600"
+                                        />
+                                        Dirección de entrega
+                                    </h3>
                                     <p className="text-gray-600 font-medium leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
                                         {order.delivery_address}
                                     </p>

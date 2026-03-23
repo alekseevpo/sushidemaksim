@@ -279,7 +279,8 @@ export default function Header() {
                                                                         onError={e => {
                                                                             (
                                                                                 e.currentTarget as HTMLImageElement
-                                                                            ).style.display = 'none';
+                                                                            ).style.display =
+                                                                                'none';
                                                                             e.currentTarget.parentElement!.innerText =
                                                                                 initials;
                                                                         }}
@@ -531,7 +532,8 @@ export default function Header() {
                                                                         onError={e => {
                                                                             (
                                                                                 e.currentTarget as HTMLImageElement
-                                                                            ).style.display = 'none';
+                                                                            ).style.display =
+                                                                                'none';
                                                                             e.currentTarget.parentElement!.innerText =
                                                                                 initials;
                                                                         }}
