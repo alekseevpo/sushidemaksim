@@ -21,6 +21,7 @@ import settingsRoutes from './routes/settings.js';
 import newsletterRoutes from './routes/newsletter.js';
 import contactRoutes from './routes/contact.js';
 import deliveryZonesRoutes from './routes/deliveryZones.js';
+import analyticsRoutes from './routes/analytics.js';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -111,6 +112,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/delivery-zones', deliveryZonesRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────
 // Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them

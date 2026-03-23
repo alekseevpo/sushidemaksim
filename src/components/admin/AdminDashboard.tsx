@@ -248,7 +248,7 @@ export default function AdminDashboard({
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <StatCard
                         title="Ingresos de hoy"
                         value={`${Number(stats?.revenueToday || 0)
@@ -257,6 +257,15 @@ export default function AdminDashboard({
                         icon={DollarSign}
                         colorClass="bg-green-100 text-green-600"
                         desc="Total cobrado (Madrid)"
+                    />
+                    <StatCard
+                        title="Упущенная выручка"
+                        value={`${Number(stats?.missedRevenueToday || 0)
+                            .toFixed(2)
+                            .replace('.', ',')} €`}
+                        icon={AlertTriangle}
+                        colorClass="bg-red-100 text-red-600"
+                        desc="Заказы, застрявшие в корзине"
                     />
                     <StatCard
                         title="Nuevos Pedidos"

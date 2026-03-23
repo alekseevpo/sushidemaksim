@@ -16,6 +16,7 @@ import OrderSuccessModal from '../components/cart/OrderSuccessModal';
 import CartSuggestions from '../components/cart/CartSuggestions';
 import CartEmptyView from '../components/cart/CartEmptyView';
 import { useScrollLock } from '../hooks/useScrollLock';
+import { funnelTracker } from '../analytics/funnel';
 
 interface MenuItem {
     id: number;
@@ -178,6 +179,17 @@ export default function CartPageSimple() {
         }
     }, [items.length, suggestions.length, loadSuggestions, loadPopularItems]);
 
+    // Analytics: Track cart view
+    useEffect(() => {
+        if (!cartLoading && items.length > 0) {
+            funnelTracker.trackStep('cart_view', {
+                totalValue: cartSubtotal,
+                itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+                userId: user?.id,
+            });
+        }
+    }, [cartLoading, items, cartSubtotal, user?.id]);
+
     const handleAddToCart = async (item: MenuItem, quantity: number = 1, isSuggestion = false) => {
         try {
             // Map our local MenuItem to the global SushiItem type
@@ -283,6 +295,14 @@ export default function CartPageSimple() {
             }
         }
 
+        // Analytics: Track checkout start
+        funnelTracker.trackStep('checkout_start', {
+            totalValue: cartSubtotal,
+            itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+            userId: user?.id,
+            metadata: { deliveryType, paymentMethod },
+        });
+
         setIsOrdering(true);
 
         const notesArray = [];
@@ -336,9 +356,21 @@ export default function CartPageSimple() {
                 }
             }
 
+            // Analytics: Track order placed
+            funnelTracker.trackStep('order_placed', {
+                totalValue: cartSubtotal,
+                itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+                userId: user?.id,
+                metadata: { orderId: data.order.id },
+            });
+
             setOrderSuccess(data.order.id);
             setOrderWhatsappUrl(data.whatsappUrl || null);
             clearCart();
+
+            // Reset for next order session
+            funnelTracker.resetSession();
+
             showSuccess('¡Pedido realizado! 🍣');
             if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
         } catch (err: any) {
@@ -525,6 +557,8 @@ export default function CartPageSimple() {
                                 saveAddress={saveAddress}
                                 setSaveAddress={val => updateDeliveryDetails({ saveAddress: val })}
                                 deliveryCost={deliveryCost}
+                                totalValue={cartSubtotal}
+                                itemsCount={items.reduce((s, i) => s + i.quantity, 0)}
                             />
                         </div>
 

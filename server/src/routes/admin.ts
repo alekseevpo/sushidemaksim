@@ -745,6 +745,7 @@ router.get(
             { count: ordersToday },
             { count: pendingOrders },
             { count: usersToday },
+            { data: missedRevData },
         ] = await Promise.all([
             supabase
                 .from('orders')
@@ -763,11 +764,19 @@ router.get(
                 .from('users')
                 .select('*', { count: 'exact', head: true })
                 .gte('created_at', todayISO),
+            supabase
+                .from('missed_revenue_stats')
+                .select('missed_revenue')
+                .gte('day', todayISO)
+                .single(),
         ]);
 
         const revenueToday =
             Math.round((revTodayData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) /
             100;
+
+        const missedRevenueToday =
+            Math.round(Number(missedRevData?.missed_revenue || 0) * 100) / 100;
 
         // 3. Status breakdown
         const { data: statusData } = await supabase.from('orders').select('status');
@@ -997,6 +1006,7 @@ router.get(
             ordersToday,
             pendingOrders,
             usersToday,
+            missedRevenueToday,
             topFavorited,
             topShared,
             stats: {

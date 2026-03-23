@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { MapPin, Truck, Store, ArrowRight, CreditCard, Wallet, Smartphone } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
+import { useEffect, useRef } from 'react';
+import { funnelTracker } from '../../analytics/funnel';
 
 interface DeliveryFormProps {
     deliveryType: 'delivery' | 'pickup';
@@ -42,6 +44,8 @@ interface DeliveryFormProps {
     saveAddress: boolean;
     setSaveAddress: (val: boolean) => void;
     deliveryCost?: number;
+    totalValue?: number;
+    itemsCount?: number;
 }
 
 export default function DeliveryForm({
@@ -84,7 +88,24 @@ export default function DeliveryForm({
     saveAddress,
     setSaveAddress,
     deliveryCost = 0,
+    totalValue = 0,
+    itemsCount = 0,
 }: DeliveryFormProps) {
+    const hasSentDeliveryStep = useRef(false);
+
+    // Analytics: Track when delivery info is mostly filled
+    useEffect(() => {
+        const isAddressFilled = deliveryType === 'pickup' || (address && house && apartment);
+        if (isAddressFilled && !hasSentDeliveryStep.current) {
+            funnelTracker.trackStep('delivery_info_filled', {
+                totalValue,
+                itemsCount,
+                metadata: { deliveryType },
+            });
+            hasSentDeliveryStep.current = true;
+        }
+    }, [address, house, apartment, deliveryType, totalValue, itemsCount]);
+
     const handleAddressClick = () => {
         setIsAddressModalOpen(true);
     };
@@ -383,6 +404,11 @@ export default function DeliveryForm({
                         onClick={() => {
                             triggerHaptic();
                             setPaymentMethod('card');
+                            funnelTracker.trackStep('payment_method_selected', {
+                                totalValue,
+                                itemsCount,
+                                metadata: { paymentMethod: 'card' },
+                            });
                         }}
                         data-testid="payment-method-card"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
@@ -403,6 +429,11 @@ export default function DeliveryForm({
                         onClick={() => {
                             triggerHaptic();
                             setPaymentMethod('cash');
+                            funnelTracker.trackStep('payment_method_selected', {
+                                totalValue,
+                                itemsCount,
+                                metadata: { paymentMethod: 'cash' },
+                            });
                         }}
                         data-testid="payment-method-cash"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
