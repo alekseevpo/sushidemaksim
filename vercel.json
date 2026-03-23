@@ -30,7 +30,7 @@
     "crons": [
         {
             "path": "/api/cron/check-late-orders",
-            "schedule": "*/30 * * * *"
+            "schedule": "0 0 * * *"
         },
         {
             "path": "/api/cron/check-birthdays",
