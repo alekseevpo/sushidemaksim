@@ -357,7 +357,7 @@ router.post(
 
         waTextParts.push(`Total: ${finalTotal.toFixed(2)}€`);
         waTextParts.push(`Muchas gracias.`);
-        
+
         const waText = encodeURIComponent(waTextParts.join('\n\n'));
         const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
 

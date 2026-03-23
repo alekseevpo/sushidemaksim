@@ -326,7 +326,8 @@ export default function CartPageSimple() {
                         street: streetVal,
                         house: houseVal,
                         apartment: aptVal,
-                        postalCode: postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
+                        postalCode:
+                            postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
                         phone: deliveryPhone,
                         label: 'Ultima dirección',
                     });

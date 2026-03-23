@@ -81,9 +81,9 @@ export function formatOrder(o: any, userStats: any = null) {
     // Extract the special delivery item (id: -1)
     const deliveryItem = allItems.find((i: any) => i.menuItemId === -1);
     const deliveryFee = deliveryItem ? deliveryItem.priceAtTime : 0;
-    
-    // Filter out delivery item from the regular items list if needed, 
-    // or keep it but let the UI filter. 
+
+    // Filter out delivery item from the regular items list if needed,
+    // or keep it but let the UI filter.
     // We'll keep all for now but provide the helper field.
     const items = allItems.filter((i: any) => i.menuItemId !== -1);
 

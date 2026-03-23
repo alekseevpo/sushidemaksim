@@ -63,7 +63,8 @@ export default function CartSuggestions({
     return (
         <div className="bg-white/60 backdrop-blur-md rounded-[24px] shadow-xl shadow-gray-900/5 p-4 md:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700 border border-white/50">
             <h3 className="text-[13px] md:text-sm font-black mb-4 flex items-center gap-2 uppercase tracking-[0.15em] text-gray-800">
-                <Sparkles size={16} strokeWidth={2.5} className="text-amber-500" /> Completa tu pedido
+                <Sparkles size={16} strokeWidth={2.5} className="text-amber-500" /> Completa tu
+                pedido
             </h3>
             <div className="flex flex-col gap-3">
                 {suggestions.map(item => (

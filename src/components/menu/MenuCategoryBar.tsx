@@ -27,7 +27,7 @@ export default function MenuCategoryBar({
 }: MenuCategoryBarProps) {
     if (isMobile) {
         return (
-            <div 
+            <div
                 className="fixed left-0 right-0 z-[40] bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-200 lg:hidden shadow-sm select-none"
                 style={{ top: 'var(--header-height, 64px)' }}
             >

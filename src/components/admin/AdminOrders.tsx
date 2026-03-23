@@ -700,15 +700,19 @@ export default function AdminOrders({
                                                         </span>
                                                     </div>
                                                     <span className="text-[10px] font-bold text-gray-400 tabular-nums">
-                                                        {formatCurrency(item.priceAtTime * item.quantity)}
+                                                        {formatCurrency(
+                                                            item.priceAtTime * item.quantity
+                                                        )}
                                                     </span>
                                                 </div>
                                             ))}
-                                            
+
                                             {order.deliveryFee && order.deliveryFee > 0 ? (
                                                 <div className="flex items-center justify-between gap-2 py-1.5 border-t border-gray-100 mt-1 px-1">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Gastos de Envío</span>
+                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                            Gastos de Envío
+                                                        </span>
                                                     </div>
                                                     <span className="text-[10px] font-bold text-gray-900 tabular-nums">
                                                         {formatCurrency(order.deliveryFee)}

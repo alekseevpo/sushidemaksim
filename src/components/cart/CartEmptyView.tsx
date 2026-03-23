@@ -36,7 +36,11 @@ export default function CartEmptyView({
                 <div className="flex justify-center mb-8">
                     <div className="w-28 h-28 bg-white rounded-[40px] flex items-center justify-center animate-float shadow-2xl shadow-red-500/10 border border-white/50 relative">
                         <div className="absolute inset-0 bg-red-500/5 rounded-[40px] blur-xl"></div>
-                        <ShoppingCart size={48} className="text-red-500 relative z-10" strokeWidth={1.2} />
+                        <ShoppingCart
+                            size={48}
+                            className="text-red-500 relative z-10"
+                            strokeWidth={1.2}
+                        />
                     </div>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-black mb-4 text-gray-900 tracking-tight text-shadow-sm">
@@ -161,7 +165,9 @@ export default function CartEmptyView({
                                                       ) : (
                                                           <>
                                                               <Plus size={18} strokeWidth={2.5} />
-                                                              <span className="hidden md:inline">Añadir</span>
+                                                              <span className="hidden md:inline">
+                                                                  Añadir
+                                                              </span>
                                                           </>
                                                       )}
                                                   </button>

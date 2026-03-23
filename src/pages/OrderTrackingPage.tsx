@@ -255,8 +255,12 @@ export default function OrderTrackingPage() {
 
                                 {order.deliveryFee && order.deliveryFee > 0 ? (
                                     <div className="pt-4 mb-2 flex justify-between items-center text-sm font-bold text-gray-500">
-                                        <span className="uppercase tracking-widest text-[10px]">Gastos de Envío</span>
-                                        <span>{order.deliveryFee.toFixed(2).replace('.', ',')} €</span>
+                                        <span className="uppercase tracking-widest text-[10px]">
+                                            Gastos de Envío
+                                        </span>
+                                        <span>
+                                            {order.deliveryFee.toFixed(2).replace('.', ',')} €
+                                        </span>
                                     </div>
                                 ) : null}
 

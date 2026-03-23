@@ -186,7 +186,7 @@ export default function AdminDeliveryZones() {
                                         color: zone.color,
                                         fillColor: zone.color,
                                         fillOpacity: zone.opacity,
-                                        // @ts-ignore - store id for leaflet-draw edit events
+                                        // @ts-expect-error - store id for leaflet-draw edit events
                                         id: zone.id,
                                     }}
                                     eventHandlers={{
