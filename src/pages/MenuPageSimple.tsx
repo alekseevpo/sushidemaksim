@@ -261,7 +261,7 @@ export default function MenuPageSimple() {
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />
-            <div className="max-w-7xl mx-auto flex-1 lg:flex px-3 md:px-4 w-full">
+            <div className="max-w-7xl mx-auto flex-1 lg:flex px-4 md:px-6 w-full">
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
                     selectedCategory={selectedCategory}

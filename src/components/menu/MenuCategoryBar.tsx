@@ -68,7 +68,7 @@ export default function MenuCategoryBar({
     }
 
     return (
-        <aside className="hidden lg:block w-[218px] flex-shrink-0 bg-red-600 min-h-full z-30">
+        <aside className="hidden lg:block w-[220px] flex-shrink-0 bg-red-600 min-h-full z-30">
             <div className="sticky top-[64px] h-[calc(100vh-64px)] pb-8 px-3 flex flex-col items-stretch overflow-y-auto no-scrollbar rounded-none">
                 <nav className="flex flex-col py-4">
                     <button
