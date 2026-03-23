@@ -51,7 +51,7 @@ export default function CartSummary({
     handleRemovePromo,
 }: CartSummaryProps) {
     return (
-        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] md:rounded-xl border-b md:border-none border-gray-50 h-fit">
+        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] border-b md:border-none border-gray-50 h-fit">
             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
 
             {isStoreClosed && (
@@ -218,7 +218,7 @@ export default function CartSummary({
                     items.length === 0 ||
                     (deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasApartment))
                 }
-                className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-xl shadow-red-200 flex items-center justify-center gap-2 active:scale-[0.98] font-bold uppercase tracking-wide"
+                className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-xl shadow-red-200 flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide"
                 data-testid="order-button"
             >
                 {isOrdering ? (
@@ -241,7 +241,7 @@ export default function CartSummary({
                     }
                 }}
                 disabled={isOrdering || isInviting || items.length === 0}
-                className="bg-gray-900 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full text-sm hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] font-bold uppercase tracking-wide"
+                className="bg-gray-900 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full text-sm hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide"
                 data-testid="invite-button"
             >
                 {isInviting ? 'Generando...' : '¡Que me inviten! 🎁'}

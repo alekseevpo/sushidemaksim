@@ -257,7 +257,7 @@ export default function OrderSuccessModal({
                                                 })
                                             )
                                         }
-                                        className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-[11px] hover:bg-gray-800 transition transform active:scale-95 uppercase tracking-wider font-bold"
+                                        className="bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold text-[11px] hover:bg-gray-800 transition transform active:scale-95 uppercase tracking-wider"
                                     >
                                         Crear cuenta
                                     </button>

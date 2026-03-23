@@ -90,7 +90,7 @@ export default function DeliveryForm({
     };
 
     return (
-        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px] md:rounded-xl">
+        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px]">
             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
                 <MapPin size={18} strokeWidth={1.5} className="text-red-600" /> Datos de entrega
             </h2>
