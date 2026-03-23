@@ -65,10 +65,10 @@ export function formatUser(
 /** Cleanly maps an order from DB (snake_case) to Frontend (camelCase) */
 export function formatOrder(o: any, userStats: any = null) {
     if (!o) return null;
-    const items = (o.order_items || o.items || []).map((item: any) => ({
+    const allItems = (o.order_items || o.items || []).map((item: any) => ({
         id: item.id,
         orderId: item.order_id,
-        menuItemId: item.menu_item_id,
+        menuItemId: Number(item.menu_item_id),
         name: item.name,
         price: Number(item.price),
         priceAtTime: Number(item.price_at_time || item.price),
@@ -78,10 +78,20 @@ export function formatOrder(o: any, userStats: any = null) {
         category: item.category,
     }));
 
+    // Extract the special delivery item (id: -1)
+    const deliveryItem = allItems.find((i: any) => i.menuItemId === -1);
+    const deliveryFee = deliveryItem ? deliveryItem.priceAtTime : 0;
+    
+    // Filter out delivery item from the regular items list if needed, 
+    // or keep it but let the UI filter. 
+    // We'll keep all for now but provide the helper field.
+    const items = allItems.filter((i: any) => i.menuItemId !== -1);
+
     return {
         id: o.id,
         userId: o.user_id,
         total: Number(o.total),
+        deliveryFee,
         deliveryAddress: o.delivery_address,
         phoneNumber: o.phone_number,
         status: o.status,

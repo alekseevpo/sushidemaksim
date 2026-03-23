@@ -27,17 +27,20 @@ export default function MenuCategoryBar({
 }: MenuCategoryBarProps) {
     if (isMobile) {
         return (
-            <div className="fixed top-16 left-0 right-0 z-[40] bg-[#FDFBF7] border-b border-gray-200 lg:hidden shadow-sm">
+            <div 
+                className="fixed left-0 right-0 z-[40] bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-200 lg:hidden shadow-sm select-none"
+                style={{ top: 'var(--header-height, 64px)' }}
+            >
                 <div className="max-w-7xl mx-auto">
-                    <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory py-3 flex items-center">
+                    <div className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain scroll-smooth scroll-px-4">
                         <div className="flex gap-2 flex-nowrap px-4">
                             <button
                                 id="cat-all"
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center border transition-all duration-300 ${
+                                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 ${
                                     selectedCategory === 'all'
-                                        ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-200'
-                                        : 'bg-white text-gray-700 border-gray-200'
+                                        ? 'bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-900/10'
+                                        : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
                                 }`}
                             >
                                 Todos
@@ -47,13 +50,13 @@ export default function MenuCategoryBar({
                                     key={cat.id}
                                     id={`cat-${cat.id}`}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-sm snap-center border transition-all duration-300 ${
+                                    className={`whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 ${
                                         selectedCategory === cat.id
-                                            ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-200'
-                                            : 'bg-white text-gray-700 border-gray-200'
+                                            ? 'bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-900/10'
+                                            : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
                                     }`}
                                 >
-                                    <cat.icon size={18} strokeWidth={1.5} />
+                                    <cat.icon size={16} strokeWidth={2.5} />
                                     {cat.name}
                                 </button>
                             ))}

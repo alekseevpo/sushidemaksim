@@ -7,7 +7,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
-import { Trash2, Save, MapPin, RefreshCw, X } from 'lucide-react';
+import { Trash2, Settings, MapPin, RefreshCw, X } from 'lucide-react';
 
 // Fix Leaflet marker icons
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -102,9 +102,12 @@ export default function AdminDeliveryZones() {
         layers.eachLayer((layer: any) => {
             const id = layer.options.id;
             const latlngs = layer.getLatLngs()[0].map((ll: any) => [ll.lat, ll.lng]);
+            console.log('📍 Editing zone ID:', id, 'New latlngs:', latlngs);
             const zone = zones.find(z => z.id === id);
             if (zone) {
                 upsertMutation.mutate({ ...zone, coordinates: latlngs });
+            } else {
+                console.warn('⚠️ Zone not found for ID:', id);
             }
         });
     };
@@ -183,6 +186,8 @@ export default function AdminDeliveryZones() {
                                         color: zone.color,
                                         fillColor: zone.color,
                                         fillOpacity: zone.opacity,
+                                        // @ts-ignore - store id for leaflet-draw edit events
+                                        id: zone.id,
                                     }}
                                     eventHandlers={{
                                         click: () => {
@@ -234,7 +239,7 @@ export default function AdminDeliveryZones() {
                                             }}
                                             className="p-1.5 text-blue-500 hover:bg-blue-50 rounded"
                                         >
-                                            <Save size={14} />
+                                            <Settings size={14} />
                                         </button>
                                         <button
                                             onClick={() => deleteMutation.mutate(zone.id)}

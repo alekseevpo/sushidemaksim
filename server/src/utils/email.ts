@@ -163,7 +163,10 @@ export async function sendOrderReceiptEmail(
         }
     });
 
-    const itemsHtml = orderData.items
+    const regularItems = orderData.items.filter((item: any) => Number(item.menu_item_id) !== -1);
+    const deliveryItem = orderData.items.find((item: any) => Number(item.menu_item_id) === -1);
+
+    const itemsHtml = regularItems
         .map(
             (item: any) => `
     <tr style="border-bottom: 1px solid #f3f4f6;">
@@ -178,6 +181,17 @@ export async function sendOrderReceiptEmail(
   `
         )
         .join('');
+
+    const deliveryHtml = deliveryItem
+        ? `
+    <tr>
+      <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 600;">Gastos de Envío</td>
+      <td style="padding: 8px 0; text-align: right; color: #111827; font-size: 14px; font-weight: 700;">
+        ${deliveryItem.price_at_time.toFixed(2).replace('.', ',')} €
+      </td>
+    </tr>
+  `
+        : '';
 
     const html = `
 <!DOCTYPE html>
@@ -212,6 +226,7 @@ export async function sendOrderReceiptEmail(
         
         <table style="width:100%; border-collapse:collapse;">
           ${itemsHtml}
+          ${deliveryHtml}
         </table>
 
         <div style="margin-top: 8px; padding-top: 8px; border-top: 2px solid #e2e8f0;">

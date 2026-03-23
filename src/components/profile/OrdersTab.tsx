@@ -234,6 +234,13 @@ export default function OrdersTab() {
                                 ))}
                             </div>
 
+                            {order.deliveryFee && order.deliveryFee > 0 ? (
+                                <div className="mt-2 pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] md:text-xs">
+                                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Gastos de Envío</span>
+                                    <span className="font-black text-gray-500">{order.deliveryFee.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                            ) : null}
+
                             {order.notes && (
                                 <div className="mt-2 py-2 px-3 bg-amber-50/50 rounded-xl border-l-2 border-amber-300 flex items-start gap-2">
                                     <Shield

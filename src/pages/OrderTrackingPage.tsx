@@ -253,6 +253,13 @@ export default function OrderTrackingPage() {
                                     ))}
                                 </div>
 
+                                {order.deliveryFee && order.deliveryFee > 0 ? (
+                                    <div className="pt-4 mb-2 flex justify-between items-center text-sm font-bold text-gray-500">
+                                        <span className="uppercase tracking-widest text-[10px]">Gastos de Envío</span>
+                                        <span>{order.deliveryFee.toFixed(2).replace('.', ',')} €</span>
+                                    </div>
+                                ) : null}
+
                                 <div className="pt-6 border-t border-gray-200 flex justify-between items-end">
                                     <span className="text-xs uppercase font-black text-gray-400 tracking-widest">
                                         Total pagado

@@ -130,19 +130,19 @@ export default function Header() {
         <>
             <header
                 ref={headerRef}
-                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
+                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color,backdrop-filter] duration-500
                 ${
                     isScrolled
-                        ? 'bg-[#FDFBF7] shadow-sm border-b border-gray-200'
+                        ? 'bg-[#FDFBF7]/85 backdrop-blur-xl shadow-sm border-b border-gray-200'
                         : isHome
                           ? 'bg-transparent border-b border-transparent'
-                          : 'bg-[#FDFBF7] border-b border-gray-100'
+                          : 'bg-[#FDFBF7]/85 backdrop-blur-xl border-b border-gray-100'
                 }
             `}
             >
                 <StoreStatusBanner />
-                <div className="max-w-7xl mx-auto px-3 md:px-4">
-                    <div className="flex items-center justify-between h-16">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
+                    <div className="flex items-center justify-between h-16 md:h-18">
                         {' '}
                         {/* Logo */}
                         <Link
@@ -153,8 +153,8 @@ export default function Header() {
                             <div
                                 className={`
                                     transition-all duration-500 shrink-0 flex items-center justify-center
-                                    md:bg-red-600 md:px-5 md:h-16 md:w-[218px] md:group-hover:rotate-6
-                                    bg-transparent h-16 w-auto
+                                    md:bg-red-600 md:px-5 md:h-20 md:w-[220px] md:group-hover:rotate-6
+                                    bg-transparent h-16 w-auto px-1
                                 `}
                             >
                                 <img

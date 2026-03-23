@@ -8,13 +8,11 @@ test.describe('Order Checkout Flow', () => {
             const mockDate = new Date('2026-03-21T21:00:00').getTime();
             Date.now = () => mockDate;
             const RealDate = Date;
-            // @ts-expect-error - mock
             globalThis.Date = class extends RealDate {
                 constructor(...args: any[]) {
                     if (args.length === 0) {
                         super(mockDate);
                     } else {
-                        // @ts-expect-error - mock
                         super(...(args as [any]));
                     }
                 }
@@ -85,7 +83,7 @@ test.describe('Order Checkout Flow', () => {
         await page.goto('/cart');
 
         // Wait for recommendations block
-        await expect(page.getByText(/Top Ventas y Ofertas/i)).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText(/Los Favoritos/i)).toBeVisible({ timeout: 15000 });
         await expect(page.getByText(/Gyozas con carne/i)).toBeVisible();
     });
 

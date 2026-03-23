@@ -37,6 +37,7 @@ interface DeliveryDetails {
     scheduledDate: string;
     scheduledTime: string;
     customNote: string;
+    saveAddress: boolean;
 }
 
 interface CartContextType {
@@ -76,6 +77,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 scheduledDate: new Date().toISOString().split('T')[0],
                 scheduledTime: '',
                 customNote: '',
+                saveAddress: true,
             };
 
         const saved = localStorage.getItem('delivery_details');
@@ -103,6 +105,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             scheduledDate: new Date().toISOString().split('T')[0],
             scheduledTime: '',
             customNote: '',
+            saveAddress: true,
         };
     });
 

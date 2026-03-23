@@ -249,7 +249,7 @@ export default function HomePageSimple() {
                             Artesanía Japonesa en tu Mesa
                         </motion.span>
 
-                        <h1 className="text-4xl md:text-7xl font-black text-white mb-6 leading-[1.1] tracking-tight">
+                        <h1 className="text-[38px] leading-[1] md:text-7xl font-black text-white mb-6 tracking-tight">
                             Sabor que <br className="hidden md:block" />
                             <span className="text-red-500 italic">Despierta</span> Sentidos
                         </h1>
@@ -319,7 +319,7 @@ export default function HomePageSimple() {
             <RatingsBanner />
 
             {/* Categories Section */}
-            <section className="py-8 md:py-12 px-4 bg-transparent overflow-hidden">
+            <section className="py-12 md:py-16 px-4 bg-transparent overflow-hidden">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div className="max-w-xl text-center md:text-left">
@@ -376,7 +376,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Promo Banner Section */}
-            <section className="px-4 py-8 md:py-10">
+            <section className="px-4 py-6 md:py-12">
                 <div className="max-w-7xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -410,7 +410,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Chef's Recommendations / Popular Section */}
-            <section className="py-8 md:py-12 bg-gray-50/50 overflow-hidden">
+            <section className="py-12 md:py-16 bg-gray-50/50 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div className="max-w-xl text-center md:text-left">
@@ -518,7 +518,7 @@ export default function HomePageSimple() {
             <ReviewsSEO />
 
             {/* Blog Teaser / SEO Section */}
-            <section className="py-8 md:py-12 bg-transparent px-4 border-t border-gray-100">
+            <section className="py-12 md:py-20 bg-transparent px-4 border-t border-gray-100">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}

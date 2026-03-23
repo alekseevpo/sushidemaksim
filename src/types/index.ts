@@ -77,6 +77,7 @@ export interface Order {
     userId?: string;
     items?: OrderItem[];
     total: number;
+    deliveryFee?: number;
     deliveryAddress: string;
     phoneNumber: string;
     status: OrderStatus;

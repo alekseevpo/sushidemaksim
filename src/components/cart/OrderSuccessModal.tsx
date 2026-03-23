@@ -15,6 +15,8 @@ interface OrderSuccessModalProps {
     house: string;
     apartment: string;
     orderWhatsappUrl: string | null;
+    total: number;
+    deliveryCost: number;
 }
 
 export default function OrderSuccessModal({
@@ -30,6 +32,8 @@ export default function OrderSuccessModal({
     house,
     apartment,
     orderWhatsappUrl,
+    total,
+    deliveryCost,
 }: OrderSuccessModalProps) {
     const navigate = useNavigate();
 
@@ -102,8 +106,8 @@ export default function OrderSuccessModal({
                         </div>
 
                         {/* Address Block */}
-                        <div className="bg-gray-50/50 p-2.5 rounded-2xl border border-gray-100">
-                            <div className="flex items-start gap-3 text-left">
+                        <div className="bg-gray-50/50 p-2.5 rounded-2xl border border-gray-100 mb-1.5 text-left">
+                            <div className="flex items-start gap-3">
                                 <div className="p-2 bg-white rounded-xl text-red-600 shadow-sm shrink-0 border border-gray-100">
                                     {deliveryType === 'pickup' ? (
                                         <Store size={18} />
@@ -122,6 +126,38 @@ export default function OrderSuccessModal({
                                             ? 'Calle Barrilero, 20, 28007 Madrid'
                                             : `${address}${house ? `, Portal: ${house}` : ''}${apartment ? `, Piso: ${apartment}` : ''}`}
                                     </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Order Summary / Receipt */}
+                        <div className="bg-gray-900 rounded-3xl p-4 text-white shadow-xl shadow-gray-900/10 mb-1.5">
+                            <h4 className="text-[9px] font-black uppercase text-white/50 tracking-widest mb-3 text-center">
+                                Resumen del pedido
+                            </h4>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center text-[11px] font-bold text-white/70">
+                                    <span className="uppercase tracking-wider">Productos</span>
+                                    <span>{total.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                                <div className="flex justify-between items-center text-[11px] font-bold text-white/70">
+                                    <span className="uppercase tracking-wider">Envío</span>
+                                    <span className={deliveryCost <= 0 ? 'text-green-400' : ''}>
+                                        {deliveryCost <= 0
+                                            ? 'GRATIS'
+                                            : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
+                                    </span>
+                                </div>
+                                <div className="pt-2 mt-2 border-t border-white/10 flex justify-between items-end">
+                                    <span className="text-[10px] uppercase font-black text-white/40 tracking-widest">
+                                        Total Pagado
+                                    </span>
+                                    <div className="text-xl font-black text-white tracking-tighter">
+                                        {(total + (deliveryCost > 0 ? deliveryCost : 0))
+                                            .toFixed(2)
+                                            .replace('.', ',')}
+                                        <span className="text-xs text-red-400 ml-1">€</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

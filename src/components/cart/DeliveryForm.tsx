@@ -39,6 +39,9 @@ interface DeliveryFormProps {
     isAuthenticated: boolean;
     todayStr: string;
     isStoreClosed: boolean;
+    saveAddress: boolean;
+    setSaveAddress: (val: boolean) => void;
+    deliveryCost?: number;
 }
 
 export default function DeliveryForm({
@@ -78,6 +81,9 @@ export default function DeliveryForm({
     isAuthenticated,
     todayStr,
     isStoreClosed,
+    saveAddress,
+    setSaveAddress,
+    deliveryCost = 0,
 }: DeliveryFormProps) {
     const handleAddressClick = () => {
         setIsAddressModalOpen(true);
@@ -236,34 +242,41 @@ export default function DeliveryForm({
                             </button>
                         ) : (
                             <div className="flex flex-col gap-4">
-                                {/* Enhanced Address Card - Works for both mobile and desktop */}
+                                {/* Enhanced Address Card */}
                                 <div
                                     data-testid="address-display"
-                                    className="bg-gray-50/80 backdrop-blur-sm rounded-[32px] md:rounded-[40px] p-5 md:p-8 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
+                                    className="bg-gray-50/80 backdrop-blur-sm rounded-[24px] md:rounded-[32px] p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
                                 >
-                                    <div className="flex items-center gap-4 md:gap-8 overflow-hidden">
-                                        <div className="w-14 h-14 md:w-20 md:h-20 bg-white rounded-2xl md:rounded-[32px] flex items-center justify-center shadow-md border border-gray-50 shrink-0 group-hover:scale-105 transition-all duration-500">
-                                            <MapPin className="text-red-500 w-6 h-6 md:w-10 md:h-10" />
+                                    <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
+                                        <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl md:rounded-[24px] flex items-center justify-center shadow-md border border-gray-50 shrink-0 group-hover:scale-105 transition-all duration-500">
+                                            <MapPin className="text-red-500 w-5 h-5 md:w-8 md:h-8" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-black text-lg md:text-2xl text-gray-900 truncate tracking-tight">
+                                            <p className="font-black text-base md:text-xl text-gray-900 leading-tight tracking-tight truncate">
                                                 {address}
                                             </p>
-                                            <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-1 md:mt-2">
-                                                <div className="flex items-center gap-1.5 bg-white/80 px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-50">
+                                            <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-1 md:mt-1.5">
+                                                <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 max-w-full">
                                                     <div
-                                                        className="w-2 h-2 rounded-full"
+                                                        className="w-1.5 h-1.5 rounded-full shrink-0"
                                                         style={{
                                                             backgroundColor:
                                                                 selectedZone?.color || '#EF4444',
                                                         }}
                                                     />
-                                                    <span className="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-widest">
+                                                    <span className="text-[9px] md:text-xs font-black text-gray-900 uppercase tracking-widest whitespace-nowrap">
                                                         {selectedZone?.name || 'Zona no detectada'}
                                                     </span>
+                                                    {selectedZone && (
+                                                        <span className="ml-1 text-[9px] md:text-xs font-black text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                                                            {deliveryCost > 0
+                                                                ? `+${deliveryCost.toFixed(2).replace('.', ',')}€ envío`
+                                                                : 'Envío GRATIS'}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                <div className="flex items-center gap-1.5 bg-gray-100/50 px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl border border-gray-100">
-                                                    <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                                <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-2xl border border-gray-100">
+                                                    <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
                                                         CP {postalCode}
                                                     </span>
                                                 </div>
@@ -273,12 +286,11 @@ export default function DeliveryForm({
                                     <button
                                         type="button"
                                         onClick={handleAddressClick}
-                                        className="bg-red-600 w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-[24px] shadow-lg shadow-red-200 flex items-center justify-center hover:bg-black hover:scale-105 active:scale-90 transition-all duration-300 shrink-0 ml-4 group/btn"
+                                        className="bg-red-600 w-11 h-11 md:w-14 md:h-14 rounded-xl md:rounded-[20px] shadow-lg shadow-red-200 flex items-center justify-center hover:bg-black hover:scale-105 active:scale-90 transition-all duration-300 shrink-0 ml-3 group/btn"
                                     >
-                                        <ArrowRight className="text-white w-6 h-6 md:w-8 md:h-8 group-hover/btn:translate-x-1 transition-transform" />
+                                        <ArrowRight className="text-white w-5 h-5 md:w-7 md:h-7 group-hover/btn:translate-x-1 transition-transform" />
                                     </button>
                                 </div>
-
                                 {/* Form Fields below the card */}
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 -mt-1 px-1">
                                     <div className="lg:col-span-1">
@@ -290,20 +302,30 @@ export default function DeliveryForm({
                                             onChange={e => setHouse(e.target.value)}
                                             placeholder="Ej: 20"
                                             data-testid="house-input"
-                                            className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
+                                            className={`w-full px-5 py-3 md:py-4 bg-gray-50 border rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition ${!house && address ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}
                                         />
+                                        {!house && address && (
+                                            <p className="text-[9px] font-black text-amber-600 mt-1 ml-2 uppercase tracking-widest animate-pulse">
+                                                Falta número
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="lg:col-span-1">
                                         <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
-                                            Piso / Puerta
+                                            Piso / Puerta *
                                         </label>
                                         <input
                                             value={apartment}
                                             onChange={e => setApartment(e.target.value)}
                                             placeholder="Ej: 1B"
                                             data-testid="apartment-input"
-                                            className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
+                                            className={`w-full px-5 py-3 md:py-4 bg-gray-50 border rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition ${!apartment && address ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}
                                         />
+                                        {!apartment && address && (
+                                            <p className="text-[9px] font-black text-amber-600 mt-1 ml-2 uppercase tracking-widest animate-pulse">
+                                                Falta piso/puerta
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="col-span-2 lg:col-span-1">
                                         <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
@@ -317,18 +339,33 @@ export default function DeliveryForm({
                                             className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
                                         />
                                     </div>
-
-                                    {/* Desktop Info Note - Only visible on really wide screens or if we want to fill space */}
-                                    <div className="hidden lg:flex col-span-3 items-center gap-3 p-4 bg-red-50/30 rounded-3xl border border-red-100/30 mt-2">
-                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0">
-                                            <MapPin size={16} className="text-red-500" />
-                                        </div>
-                                        <p className="text-[11px] font-bold text-red-900/60 leading-tight">
-                                            Si el mapa no detectó tu calle exacta, puedes corregirla
-                                            pulsando de nuevo en el selector de arriba.
-                                        </p>
-                                    </div>
                                 </div>
+
+                                {isAuthenticated && (
+                                    <div className="px-2">
+                                        <label className="flex items-center gap-3 p-3 bg-red-50/20 rounded-2xl border border-red-100/30 cursor-pointer group hover:bg-red-50/40 transition-all select-none">
+                                            <div className="relative flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    className="w-5 h-5 accent-red-600 rounded-md cursor-pointer border-2 border-red-200"
+                                                    checked={saveAddress}
+                                                    onChange={e => {
+                                                        triggerHaptic();
+                                                        setSaveAddress(e.target.checked);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight leading-none mb-1">
+                                                    Guardar dirección
+                                                </p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
+                                                    Para tus futuros pedidos 🍣
+                                                </p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

@@ -14,6 +14,8 @@ interface CartSummaryProps {
     isInviting: boolean;
     isAuthenticated: boolean;
     hasAddress: boolean;
+    hasHouse: boolean;
+    hasApartment: boolean;
     handleOrder: () => void;
     handleInvite: () => void;
     promoCode: string;
@@ -36,6 +38,8 @@ export default function CartSummary({
     isInviting,
     isAuthenticated,
     hasAddress,
+    hasHouse,
+    hasApartment,
     handleOrder,
     handleInvite,
     promoCode,
@@ -201,10 +205,19 @@ export default function CartSummary({
 
             <button
                 onClick={() => {
+                    if (deliveryType === 'delivery' && (!hasHouse || !hasApartment)) {
+                        triggerHaptic(HAPTIC_PATTERNS.ERROR);
+                        return; // Should be handled by parent toast/validation but just in case
+                    }
                     triggerHaptic(HAPTIC_PATTERNS.SUCCESS);
                     handleOrder();
                 }}
-                disabled={isOrdering || isInviting || items.length === 0}
+                disabled={
+                    isOrdering ||
+                    isInviting ||
+                    items.length === 0 ||
+                    (deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasApartment))
+                }
                 className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-xl shadow-red-200 flex items-center justify-center gap-2 active:scale-[0.98] font-bold uppercase tracking-wide"
                 data-testid="order-button"
             >

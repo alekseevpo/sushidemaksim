@@ -349,9 +349,15 @@ router.post(
             `PRODUCTOS:\n${itemsSummary}`,
             `Direccion: ${deliveryAddress}`,
             `Metodo de Pago: ${paymentMethodText}`,
-            `Total: ${finalTotal.toFixed(2)}€`,
-            `Muchas gracias.`,
         ];
+
+        if (deliveryFee > 0) {
+            waTextParts.push(`Gastos de Envío: ${deliveryFee.toFixed(2)}€`);
+        }
+
+        waTextParts.push(`Total: ${finalTotal.toFixed(2)}€`);
+        waTextParts.push(`Muchas gracias.`);
+        
         const waText = encodeURIComponent(waTextParts.join('\n\n'));
         const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
 

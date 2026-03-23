@@ -270,7 +270,7 @@ export default function MenuPageSimple() {
 
                 <div className="flex-1 min-w-0 md:pl-8 pt-4 md:pt-8" id="menu-content">
                     {/* Spacer for fixed category bar on mobile */}
-                    <div className="h-12 lg:hidden" />
+                    <div className="h-16 lg:hidden" />
                     {/* Header Section with Search */}
                     <MenuSearch
                         search={search}

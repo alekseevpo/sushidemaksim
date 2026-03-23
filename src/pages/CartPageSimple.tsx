@@ -91,6 +91,7 @@ export default function CartPageSimple() {
         scheduledDate,
         scheduledTime,
         customNote,
+        saveAddress,
     } = deliveryDetails;
 
     const MIN_ORDER = selectedZone ? (selectedZone.minOrder ?? 0) : (siteSettings?.minOrder ?? 15);
@@ -258,6 +259,7 @@ export default function CartPageSimple() {
         if (deliveryType === 'delivery') {
             if (!streetVal || streetVal.length < 3) return showError('Indica tu calle / dirección');
             if (!houseVal) return showError('Indica tu portal/casa');
+            if (!aptVal) return showError('Indica tu piso / puerta');
         }
 
         if (!paymentMethod) return showError('Selecciona un método de pago');
@@ -316,6 +318,23 @@ export default function CartPageSimple() {
             }
 
             const data = await api.post('/orders', payload);
+
+            // Save address if requested
+            if (isAuthenticated && saveAddress && deliveryType === 'delivery') {
+                try {
+                    await api.post('/user/addresses', {
+                        street: streetVal,
+                        house: houseVal,
+                        apartment: aptVal,
+                        postalCode: postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
+                        phone: deliveryPhone,
+                        label: 'Ultima dirección',
+                    });
+                } catch (saveErr) {
+                    console.error('Failed to save address to profile', saveErr);
+                }
+            }
+
             setOrderSuccess(data.order.id);
             setOrderWhatsappUrl(data.whatsappUrl || null);
             clearCart();
@@ -502,6 +521,9 @@ export default function CartPageSimple() {
                                 isAuthenticated={isAuthenticated}
                                 todayStr={todayStr}
                                 isStoreClosed={isStoreClosed}
+                                saveAddress={saveAddress}
+                                setSaveAddress={val => updateDeliveryDetails({ saveAddress: val })}
+                                deliveryCost={deliveryCost}
                             />
                         </div>
 
@@ -525,6 +547,8 @@ export default function CartPageSimple() {
                                 isInviting={isInviting}
                                 isAuthenticated={isAuthenticated}
                                 hasAddress={!!address.trim()}
+                                hasHouse={!!house.trim()}
+                                hasApartment={!!apartment.trim()}
                                 handleOrder={handleOrder}
                                 handleInvite={handleInvite}
                                 promoCode={promoCode}
@@ -569,6 +593,8 @@ export default function CartPageSimple() {
                     house={house}
                     apartment={apartment}
                     orderWhatsappUrl={orderWhatsappUrl}
+                    total={cartSubtotal - discountAmount}
+                    deliveryCost={deliveryCost}
                 />
             )}
         </div>
