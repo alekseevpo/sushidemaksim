@@ -15,7 +15,7 @@
 ### 🧪 Тестирование (QA & Testing)
 - **Test Sync**: Тесты Playwright обновлены под актуальные заголовки («Los Favoritos»). Подтверждена работоспособность всех 16 сценариев.
 
-## [2026-03-24] - Elite UX, Performance & Global Stability V3 🍱
+## [2026-03-23] - Elite UX, Performance & Global Stability V3 🍱
 
 ### ⚡ Производительность и Инфраструктура (Performance & Infra)
 
