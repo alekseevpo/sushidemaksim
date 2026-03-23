@@ -216,9 +216,11 @@ export default function HomePageSimple() {
             />
 
             {/* Hero Section */}
-            <section 
+            <section
                 className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-neutral-950 bg-cover bg-center"
-                style={{ backgroundImage: `url(${getOptimizedImageUrl('/sushi-hero.webp', 1920)})` }}
+                style={{
+                    backgroundImage: `url(${getOptimizedImageUrl('/sushi-hero.webp', 1920)})`,
+                }}
             >
                 {/* Background Overlay (Filter) */}
                 <div className="absolute inset-0 z-0 bg-black/50"></div>

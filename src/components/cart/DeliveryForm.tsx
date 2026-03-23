@@ -525,9 +525,13 @@ export default function DeliveryForm({
                                 </p>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] font-bold text-blue-800/70">
                                     <span>Mié – Vie: 20:00 – 23:00</span>
-                                    <span className="text-right">Sáb: 14:00 – 17:00 / 20:00 – 23:00</span>
+                                    <span className="text-right">
+                                        Sáb: 14:00 – 17:00 / 20:00 – 23:00
+                                    </span>
                                     <span>Dom: 14:00 – 17:00</span>
-                                    <span className="text-right text-red-400/60 uppercase">Lun – Mar: Cerrado</span>
+                                    <span className="text-right text-red-400/60 uppercase">
+                                        Lun – Mar: Cerrado
+                                    </span>
                                 </div>
                             </div>
                         </motion.div>

@@ -15,10 +15,12 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: items, error } = await supabase
             .from('cart_items')
-            .select(`
+            .select(
+                `
                 id, quantity, menu_item_id,
                 menu_items(*)
-            `)
+            `
+            )
             .eq('user_id', req.userId)
             .order('id');
 
@@ -37,7 +39,10 @@ router.get(
             })
             .filter((i): i is any => i !== null);
 
-        const total = formattedItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
+        const total = formattedItems.reduce(
+            (sum, item) => sum + (item.price || 0) * item.quantity,
+            0
+        );
         res.json({ items: formattedItems, total: Math.round(total * 100) / 100 });
     })
 );

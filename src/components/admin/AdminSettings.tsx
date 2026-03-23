@@ -25,7 +25,8 @@ export default function AdminSettings() {
                 socialLinks: Array.isArray(data.socialLinks) ? data.socialLinks : [],
                 estDeliveryTime: data.estDeliveryTime || '30-60 min',
                 isStoreClosed: !!data.isStoreClosed,
-                closedMessage: data.closedMessage || 'Lo sentimos, la cocina está cerrada temporalmente.',
+                closedMessage:
+                    data.closedMessage || 'Lo sentimos, la cocina está cerrada temporalmente.',
             };
         },
     });

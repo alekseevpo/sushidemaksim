@@ -94,9 +94,7 @@ export default function CartPageSimple() {
         customNote,
     } = deliveryDetails;
 
-    const MIN_ORDER = selectedZone
-        ? (selectedZone.minOrder ?? 0)
-        : (siteSettings?.minOrder ?? 15);
+    const MIN_ORDER = selectedZone ? (selectedZone.minOrder ?? 0) : (siteSettings?.minOrder ?? 15);
     const isManualClosed = !!siteSettings?.is_store_closed;
     const isOpenNow = isStoreOpen();
     const isStoreClosed = isManualClosed || !isOpenNow;
@@ -426,8 +424,10 @@ export default function CartPageSimple() {
                                             ? siteSettings?.closed_message ||
                                               'Nuestra cocina está tomando un breve descanso, ¡encantados de atenderte pronto!'
                                             : 'Actualmente nuestra cocina está fuera de servicio, ¡pero no te preocupes!'}
-                                        {'\n\n'}
-                                        ✨ **Estaremos encantados de recibir tu pedido programado.** Selecciona la opción "Entrega programada" más abajo para que podamos entregártelo en nuestro próximo horario de apertura.
+                                        {'\n\n'}✨ **Estaremos encantados de recibir tu pedido
+                                        programado.** Selecciona la opción "Entrega programada" más
+                                        abajo para que podamos entregártelo en nuestro próximo
+                                        horario de apertura.
                                         {'\n\n'}
                                         🕒 **Horario de Servicio:**
                                         {'\n'}• Miércoles a Viernes: 20:00 – 23:00

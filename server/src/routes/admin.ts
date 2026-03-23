@@ -549,9 +549,9 @@ router.get(
             });
 
             totalCount = allUsersWithStats.length;
-            usersWithStats = allUsersWithStats.slice(offset, offset + limit).map(u => 
-                formatUser(u, u.orderCount, u.addresses, u.totalSpent)
-            );
+            usersWithStats = allUsersWithStats
+                .slice(offset, offset + limit)
+                .map(u => formatUser(u, u.orderCount, u.addresses, u.totalSpent));
         } else {
             // Direct sort via Supabase
             let query = getBaseQuery({ count: 'exact' });
@@ -580,9 +580,11 @@ router.get(
             totalCount = count || 0;
             usersWithStats = (users || []).map((u: any) => {
                 const orderCount = u.orders?.length || 0;
-                const totalSpent = Math.round(
-                    (u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) || 0) * 100
-                ) / 100;
+                const totalSpent =
+                    Math.round(
+                        (u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) ||
+                            0) * 100
+                    ) / 100;
                 return formatUser(u, orderCount, u.addresses, totalSpent);
             });
         }
@@ -647,7 +649,10 @@ router.patch(
         const id = parseInt(req.params.id);
         const { isVerified } = req.body;
 
-        const { error } = await supabase.from('users').update({ is_verified: isVerified }).eq('id', id);
+        const { error } = await supabase
+            .from('users')
+            .update({ is_verified: isVerified })
+            .eq('id', id);
 
         if (error) throw error;
         res.json({ success: true });

@@ -51,7 +51,9 @@ async function deleteUserByEmail() {
     if (deleteError) {
         console.error('❌ Error deleting user record:', deleteError.message);
     } else {
-        console.log(`🚀 User ${email} (ID: ${userId}) has been successfully removed from the database.`);
+        console.log(
+            `🚀 User ${email} (ID: ${userId}) has been successfully removed from the database.`
+        );
     }
 }
 

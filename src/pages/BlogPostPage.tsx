@@ -274,7 +274,10 @@ export default function BlogPostPage() {
                             >
                                 <div className="h-40 overflow-hidden">
                                     <img
-                                        src={getOptimizedImageUrl(rPost.imageUrl || '/sushi-hero.webp', 400)}
+                                        src={getOptimizedImageUrl(
+                                            rPost.imageUrl || '/sushi-hero.webp',
+                                            400
+                                        )}
                                         alt={rPost.title}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                     />

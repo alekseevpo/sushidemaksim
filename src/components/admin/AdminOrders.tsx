@@ -349,15 +349,12 @@ export default function AdminOrders({
                                                 )}
                                             </div>
                                             <p className="text-xs text-gray-500 font-medium">
-                                                {new Date(order.createdAt).toLocaleString(
-                                                    'es-ES',
-                                                    {
-                                                        day: '2-digit',
-                                                        month: 'short',
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
-                                                    }
-                                                )}
+                                                {new Date(order.createdAt).toLocaleString('es-ES', {
+                                                    day: '2-digit',
+                                                    month: 'short',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
                                             </p>
                                         </div>
                                     </div>
