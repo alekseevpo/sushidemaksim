@@ -684,7 +684,7 @@ router.get(
     asyncHandler(async (req: Request, res: Response) => {
         const { data: order, error } = await supabase
             .from('orders')
-            .select('*, order_items(*)')
+            .select('*, users(name, avatar), order_items(*)')
             .eq('id', req.params.id)
             .eq('status', 'waiting_payment')
             .single();
@@ -710,7 +710,7 @@ router.get(
 
         const { data: order, error } = await supabase
             .from('orders')
-            .select('*, items:order_items(*)')
+            .select('*, users(name, email, avatar), items:order_items(*)')
             .eq('id', id)
             .single();
 

@@ -87,15 +87,21 @@ const UserRow = memo(
                             {user.avatar ? (
                                 user.avatar.startsWith('http') ? (
                                     <img
-                                        src={user.avatar}
+                                        src={`${user.avatar}${user.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
                                         alt={user.name}
                                         className="w-full h-full object-cover"
+                                        onError={e => {
+                                            (
+                                                e.currentTarget as HTMLImageElement
+                                            ).style.display = 'none';
+                                            e.currentTarget.parentElement!.innerText = initials;
+                                        }}
                                     />
                                 ) : (
-                                    <div className="text-xl">{user.avatar}</div>
+                                    <div className="text-xl select-none">{user.avatar}</div>
                                 )
                             ) : (
-                                <div className="text-[10px] font-black text-gray-400">
+                                <div className="text-[10px] font-black text-gray-400 select-none">
                                     {initials}
                                 </div>
                             )}

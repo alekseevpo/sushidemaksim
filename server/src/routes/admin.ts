@@ -282,7 +282,7 @@ router.get(
 
         let query = supabase
             .from('orders')
-            .select('*, users(name, email), items:order_items(*)', { count: 'exact' });
+            .select('*, users(name, email, avatar), items:order_items(*)', { count: 'exact' });
 
         if (status) {
             if (status.includes(',')) {
@@ -769,13 +769,14 @@ router.get(
         // 4. Recent orders (still 5 recent orders)
         const { data: recentOrders } = await supabase
             .from('orders')
-            .select('id, total, status, created_at, users(name)')
+            .select('id, total, status, created_at, users(name, avatar)')
             .order('created_at', { ascending: false })
             .limit(5);
 
         const formattedRecent = (recentOrders || []).map((o: any) => ({
             ...o,
             user_name: o.users?.name,
+            user_avatar: o.users?.avatar,
         }));
 
         // 5. Unified Data Processing (Last 90 days)

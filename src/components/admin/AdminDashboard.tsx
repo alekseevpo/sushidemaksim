@@ -315,11 +315,56 @@ export default function AdminDashboard({
                                     key={order.id}
                                     className="py-3 flex items-center justify-between text-left"
                                 >
-                                    <div>
-                                        <p className="font-bold text-gray-900 text-sm">
-                                            #{String(order.id).padStart(5, '0')}
-                                        </p>
-                                        <p className="text-xs text-gray-500">{order.user_name}</p>
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border border-gray-50
+                                                ${order.user_avatar?.startsWith('http') ? 'bg-gray-100' : order.user_avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                        >
+                                            {order.user_avatar ? (
+                                                order.user_avatar.startsWith('http') ? (
+                                                    <img
+                                                        src={`${order.user_avatar}${order.user_avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                        alt={order.user_name}
+                                                        className="w-full h-full object-cover"
+                                                        onError={e => {
+                                                            (
+                                                                e.currentTarget as HTMLImageElement
+                                                            ).style.display = 'none';
+                                                            e.currentTarget.parentElement!.innerText =
+                                                                (order.user_name || '?')
+                                                                    .split(' ')
+                                                                    .filter(Boolean)
+                                                                    .map((n: string) => n[0])
+                                                                    .join('')
+                                                                    .toUpperCase()
+                                                                    .slice(0, 2);
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <span className="select-none">
+                                                        {order.user_avatar}
+                                                    </span>
+                                                )
+                                            ) : (
+                                                <span className="select-none">
+                                                    {(order.user_name || 'Invitado')
+                                                        .split(' ')
+                                                        .filter(Boolean)
+                                                        .map((n: string) => n[0])
+                                                        .join('')
+                                                        .toUpperCase()
+                                                        .slice(0, 2)}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900 text-sm">
+                                                #{String(order.id).padStart(5, '0')}
+                                            </p>
+                                            <p className="text-xs text-gray-500 truncate max-w-[120px]">
+                                                {order.user_name || 'Invitado'}
+                                            </p>
+                                        </div>
                                     </div>
                                     <div className="text-right flex flex-col items-end gap-1">
                                         <p className="font-bold text-gray-900 text-sm">

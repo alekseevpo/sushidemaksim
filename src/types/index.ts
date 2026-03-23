@@ -88,6 +88,7 @@ export interface Order {
     users?: {
         name: string;
         email: string;
+        avatar?: string;
     };
     user_stats?: UserStats;
 }

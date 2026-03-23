@@ -220,7 +220,7 @@ export default function Header() {
                         ${showUserMenu ? 'ring-2 ring-red-600/20 bg-white' : ''}`}
                                         >
                                             <div
-                                                className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden
+                                                className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden shrink-0
                         ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
                                             >
                                                 {user.avatar ? (
@@ -229,12 +229,21 @@ export default function Header() {
                                                             src={user.avatar}
                                                             alt={user.name}
                                                             className="w-full h-full object-cover"
+                                                            onError={e => {
+                                                                (
+                                                                    e.currentTarget as HTMLImageElement
+                                                                ).style.display = 'none';
+                                                                e.currentTarget.parentElement!.innerText =
+                                                                    initials;
+                                                            }}
                                                         />
                                                     ) : (
-                                                        user.avatar
+                                                        <span className="select-none">
+                                                            {user.avatar}
+                                                        </span>
                                                     )
                                                 ) : (
-                                                    initials
+                                                    <span className="select-none">{initials}</span>
                                                 )}
                                             </div>
                                             <span className="text-sm font-bold text-gray-700 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
@@ -256,13 +265,44 @@ export default function Header() {
                                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     className="absolute top-[calc(100%+12px)] right-0 bg-white rounded-2xl shadow-2xl p-2 w-[240px] z-[100] border border-gray-100"
                                                 >
-                                                    <div className="px-4 py-3 border-b border-gray-50 mb-1">
-                                                        <p className="text-sm font-black text-gray-900 mb-0.5">
-                                                            {user.name}
-                                                        </p>
-                                                        <p className="text-xs text-gray-500 font-medium line-clamp-1">
-                                                            {user.email}
-                                                        </p>
+                                                    <div className="px-4 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
+                                                        <div
+                                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0
+                                    ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-red-600'}`}
+                                                        >
+                                                            {user.avatar ? (
+                                                                user.avatar.startsWith('http') ? (
+                                                                    <img
+                                                                        src={user.avatar}
+                                                                        alt={user.name}
+                                                                        className="w-full h-full object-cover"
+                                                                        onError={e => {
+                                                                            (
+                                                                                e.currentTarget as HTMLImageElement
+                                                                            ).style.display = 'none';
+                                                                            e.currentTarget.parentElement!.innerText =
+                                                                                initials;
+                                                                        }}
+                                                                    />
+                                                                ) : (
+                                                                    <span className="select-none">
+                                                                        {user.avatar}
+                                                                    </span>
+                                                                )
+                                                            ) : (
+                                                                <span className="select-none">
+                                                                    {initials}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-black text-gray-900 mb-0.5 truncate">
+                                                                {user.name}
+                                                            </p>
+                                                            <p className="text-[10px] text-gray-500 font-bold truncate tracking-tight uppercase">
+                                                                {user.email}
+                                                            </p>
+                                                        </div>
                                                     </div>
 
                                                     {user.role === 'admin' && (
@@ -479,8 +519,8 @@ export default function Header() {
                                                 <div className="space-y-4">
                                                     <div className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3">
                                                         <div
-                                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm overflow-hidden
-                                                        ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                            className={`w-12 h-12 rounded-[20px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner
+                                                        ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-100 text-[20px]' : 'bg-red-600'}`}
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
@@ -488,12 +528,23 @@ export default function Header() {
                                                                         src={user.avatar}
                                                                         alt={user.name}
                                                                         className="w-full h-full object-cover"
+                                                                        onError={e => {
+                                                                            (
+                                                                                e.currentTarget as HTMLImageElement
+                                                                            ).style.display = 'none';
+                                                                            e.currentTarget.parentElement!.innerText =
+                                                                                initials;
+                                                                        }}
                                                                     />
                                                                 ) : (
-                                                                    user.avatar
+                                                                    <span className="select-none text-2xl">
+                                                                        {user.avatar}
+                                                                    </span>
                                                                 )
                                                             ) : (
-                                                                initials
+                                                                <span className="select-none text-sm">
+                                                                    {initials}
+                                                                </span>
                                                             )}
                                                         </div>
                                                         <div>

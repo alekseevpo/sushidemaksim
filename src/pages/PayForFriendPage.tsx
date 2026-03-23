@@ -22,6 +22,10 @@ interface Order {
     delivery_address: string;
     notes: string;
     items: OrderItem[];
+    users?: {
+        name: string;
+        avatar: string | null;
+    };
 }
 
 export default function PayForFriendPage() {
@@ -133,17 +137,47 @@ export default function PayForFriendPage() {
                                 transition={{ type: 'spring', delay: 0.1 }}
                                 className="relative mb-6"
                             >
-                                <motion.img
-                                    src={hungryPandaUrl}
-                                    alt="Panda hambriento"
-                                    animate={{ y: [0, -8, 0] }}
-                                    transition={{
-                                        repeat: Infinity,
-                                        duration: 4,
-                                        ease: 'easeInOut',
-                                    }}
-                                    className="w-32 h-32 mx-auto rounded-full border-4 border-white shadow-2xl object-cover bg-amber-50"
-                                />
+                                <div
+                                    className={`w-32 h-32 mx-auto rounded-[32px] flex items-center justify-center text-white font-black text-3xl overflow-hidden shadow-2xl border-4 border-white
+                                        ${order.users?.avatar?.startsWith('http') ? 'bg-gray-100' : order.users?.avatar ? 'bg-gray-100 dark:text-gray-900' : 'bg-red-600'}`}
+                                >
+                                    {order.users?.avatar ? (
+                                        order.users.avatar.startsWith('http') ? (
+                                            <img
+                                                src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                alt={order.users.name}
+                                                className="w-full h-full object-cover"
+                                                onError={e => {
+                                                    (
+                                                        e.currentTarget as HTMLImageElement
+                                                    ).style.display = 'none';
+                                                    e.currentTarget.parentElement!.innerText =
+                                                        (order.users!.name || '?')
+                                                            .split(' ')
+                                                            .filter(Boolean)
+                                                            .map((n: string) => n[0])
+                                                            .join('')
+                                                            .toUpperCase()
+                                                            .slice(0, 2);
+                                                }}
+                                            />
+                                        ) : (
+                                            <span className="select-none">
+                                                {order.users.avatar}
+                                            </span>
+                                        )
+                                    ) : (
+                                        <span className="select-none uppercase">
+                                            {(order.users?.name || senderName)
+                                                .split(' ')
+                                                .filter(Boolean)
+                                                .map((n: string) => n[0])
+                                                .join('')
+                                                .toUpperCase()
+                                                .slice(0, 2)}
+                                        </span>
+                                    )}
+                                </div>
                                 <motion.div
                                     initial={{ scale: 0, rotate: 10 }}
                                     animate={{ scale: 1, rotate: -5 }}

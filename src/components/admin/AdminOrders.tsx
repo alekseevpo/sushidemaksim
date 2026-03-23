@@ -389,19 +389,62 @@ export default function AdminOrders({
                                                     Cliente y Contacto
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <p className="font-bold text-gray-900 text-sm">
-                                                    {order.users?.name || 'Invitado'}
-                                                </p>
-                                                {order.user_stats && (
-                                                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] font-bold border border-blue-100">
-                                                        <Calendar size={10} strokeWidth={2} />
-                                                        REG.{' '}
-                                                        {new Date(
-                                                            order.user_stats.registrationDate
-                                                        ).toLocaleDateString()}
-                                                    </div>
-                                                )}
+                                            <div className="flex items-center gap-3">
+                                                <div
+                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border border-white
+                                                        ${order.users?.avatar?.startsWith('http') ? 'bg-gray-100' : order.users?.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                >
+                                                    {order.users?.avatar ? (
+                                                        order.users.avatar.startsWith('http') ? (
+                                                            <img
+                                                                src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                                alt={order.users.name}
+                                                                className="w-full h-full object-cover"
+                                                                onError={e => {
+                                                                    (
+                                                                        e.currentTarget as HTMLImageElement
+                                                                    ).style.display = 'none';
+                                                                    e.currentTarget.parentElement!.innerText =
+                                                                        (order.users?.name || '?')
+                                                                            .split(' ')
+                                                                            .filter(Boolean)
+                                                                            .map(n => n[0])
+                                                                            .join('')
+                                                                            .toUpperCase()
+                                                                            .slice(0, 2);
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <span className="select-none">
+                                                                {order.users.avatar}
+                                                            </span>
+                                                        )
+                                                    ) : (
+                                                        <span className="select-none">
+                                                            {(order.users?.name || 'Invitado')
+                                                                .split(' ')
+                                                                .filter(Boolean)
+                                                                .map(n => n[0])
+                                                                .join('')
+                                                                .toUpperCase()
+                                                                .slice(0, 2)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-bold text-gray-900 text-sm truncate">
+                                                        {order.users?.name || 'Invitado'}
+                                                    </p>
+                                                    {order.user_stats && (
+                                                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] font-bold border border-blue-100 w-fit">
+                                                            <Calendar size={10} strokeWidth={2} />
+                                                            REG.{' '}
+                                                            {new Date(
+                                                                order.user_stats.registrationDate
+                                                            ).toLocaleDateString()}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <p className="text-xs text-gray-600 font-bold">

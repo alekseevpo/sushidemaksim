@@ -102,7 +102,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
 
     // Calculate initials based on current editing state or original user data
     const currentInitials =
-        (isEditing ? editName : user.name)
+        (isEditing ? editName || '?' : user.name || '?')
             .split(' ')
             .filter(Boolean)
             .map(n => n[0])
@@ -185,8 +185,11 @@ export default function ProfileTab({ user, updateProfile }: Props) {
             formData.append('avatar', file);
 
             const res = await api.formData('/user/upload-avatar', formData);
+            if (!res.url) throw new Error('No se recibió la URL de la imagen');
+
+            // Force query refresh immediately to sync global state
+            await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
             setEditAvatar(res.url);
-            queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
             success('¡Foto de perfil subida con éxito! 📸');
         } catch (err: any) {
             error(err.message || 'Error al subir la imagen');
@@ -336,12 +339,19 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                             <div className="w-32 h-32 md:w-36 md:h-36 rounded-[42px] bg-gray-800 border-4 border-white/20 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:border-red-500">
                                 {editAvatar && editAvatar.startsWith('http') ? (
                                     <img
-                                        src={editAvatar}
+                                        src={`${editAvatar}${editAvatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
                                         alt="Avatar"
                                         className="w-full h-full object-cover"
+                                        onError={e => {
+                                            (
+                                                e.currentTarget as HTMLImageElement
+                                            ).style.display = 'none';
+                                            e.currentTarget.parentElement!.innerText =
+                                                currentInitials;
+                                        }}
                                     />
                                 ) : (
-                                    <div className="text-5xl md:text-6xl select-none">
+                                    <div className="text-5xl md:text-6xl select-none font-black text-white/90">
                                         {editAvatar || currentInitials}
                                     </div>
                                 )}
