@@ -737,8 +737,8 @@ export default function LoginModal({
                         <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="bg-green-50 text-green-700 p-6 rounded-3xl border border-green-100 font-medium text-sm leading-relaxed">
                                 <p>
-                                    Hemos enviado un email de confirmación. Por favor, revisa tu
-                                    bandеja de entrada и pulсa en el enlace para continuar.
+                                    Te hemos enviado un código de 6 dígitos. Por favor, revísalo en
+                                    tu correo e introdúcelo para restablecer tu contraseña.
                                 </p>
                                 <p className="mt-2 text-xs opacity-75 italic">
                                     (No olvides revisar la carpeta de SPAM)
@@ -746,19 +746,19 @@ export default function LoginModal({
                             </div>
                             <div className="grid grid-cols-1 gap-3">
                                 <button
+                                    onClick={() => setMode('reset-password')}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 animate-in zoom-in-95 duration-500"
+                                >
+                                    <KeyRound size={18} strokeWidth={1.5} /> Introducir el código
+                                </button>
+                                <button
                                     onClick={() => {
                                         onClose();
                                         navigate('/menu');
                                     }}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
-                                >
-                                    Explorar Menú
-                                </button>
-                                <button
-                                    onClick={() => setMode('reset-password')}
                                     className="w-full py-4 bg-white border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-sm hover:border-red-600 hover:text-red-600 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <KeyRound size={18} strokeWidth={1.5} /> Ya tengo el código
+                                    Explorar Menú
                                 </button>
                                 <button
                                     onClick={() => setMode('login')}
