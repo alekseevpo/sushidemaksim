@@ -174,16 +174,19 @@ describe('LoginModal - Password Recovery', () => {
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="verify-sent" />);
         fireEvent.click(screen.getByText('Ya tengo el código'));
         expect(screen.getByText('Nueva contraseña')).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('Pega aquí tu código')).toBeInTheDocument();
+        expect(screen.getAllByPlaceholderText('•')).toHaveLength(6);
     });
 
     it('handles password reset successfully', async () => {
         mockPost.mockResolvedValue({ data: { success: true } });
-        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
+        const { container } = render(
+            <LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />
+        );
 
-        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), {
-            target: { value: '123456' },
-        });
+        // Set values in the form
+        const codeInput = container.querySelector('input[name="code"]') as HTMLInputElement;
+        fireEvent.change(codeInput, { target: { value: '123456' } });
+
         fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), {
             target: { value: 'newpassword123' },
         });
@@ -207,22 +210,22 @@ describe('LoginModal - Password Recovery', () => {
     });
 
     it('shows error when passwords do not match in reset mode', async () => {
-        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
+        const { container } = render(
+            <LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />
+        );
 
-        fireEvent.change(screen.getByPlaceholderText('Pega aquí tu código'), {
-            target: { value: '123456' },
-        });
+        const codeInput = container.querySelector('input[name="code"]') as HTMLInputElement;
+        fireEvent.change(codeInput, { target: { value: '123456' } });
+
         fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), {
-            target: { value: 'pass1' },
+            target: { value: 'password123' },
         });
         fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), {
-            target: { value: 'pass2' },
+            target: { value: 'different' },
         });
 
         fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
 
-        await waitFor(() => {
-            expect(mockError).toHaveBeenCalledWith('Las contraseñas no coinciden');
-        });
+        expect(mockError).toHaveBeenCalledWith('Las contraseñas no coinciden');
     });
 });
