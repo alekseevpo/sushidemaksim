@@ -120,7 +120,7 @@ export default function CartSummary({
                 </div>
                 {!promoDiscount ? (
                     <div className="relative group">
-                        <div className="flex gap-1 p-1 pr-2 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl transition-all duration-300 focus-within:border-red-500/30 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-red-500/5">
+                        <div className="flex gap-1 p-1 pr-1.5 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl transition-all duration-300 focus-within:border-red-500/30 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-red-500/5">
                             <input
                                 type="text"
                                 value={promoCode}
