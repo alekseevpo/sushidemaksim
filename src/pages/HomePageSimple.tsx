@@ -117,12 +117,15 @@ export default function HomePageSimple() {
     const popularItems = allItems.filter((item: any) => item.isPopular).slice(0, 8);
 
     const categories = categoriesData.map((cat: any) => {
-        const representativeItem = allItems.find(
-            (item: any) => item.category === cat.id && item.image
-        );
+        // Use the image provided by the categories API if available,
+        // otherwise fallback to searching in allItems (for safety/backward compatibility)
+        const representativeItem = !cat.image
+            ? allItems.find((item: any) => item.category === cat.id && item.image)
+            : null;
+
         return {
             ...cat,
-            image: representativeItem?.image || null,
+            image: cat.image || representativeItem?.image || null,
         };
     });
 

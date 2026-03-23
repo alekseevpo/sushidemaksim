@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
-import { OrderTimer } from './OrderTimer';
 import { Order, OrderItem } from '../../types';
 
 interface AdminOrdersProps {
@@ -360,10 +359,6 @@ export default function AdminOrders({
                                     </div>
 
                                     <div className="flex items-center gap-4 ml-auto sm:ml-0">
-                                        <OrderTimer
-                                            createdAt={order.createdAt}
-                                            status={order.status}
-                                        />
                                         <div className="text-right">
                                             <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">
                                                 Total

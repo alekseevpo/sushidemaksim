@@ -149,17 +149,35 @@ export default function DeliveryForm({
                                 <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
                                     Horario de recogida
                                 </p>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] font-medium text-amber-800">
-                                    <span>Miércoles – Viernes:</span>
-                                    <span className="text-right">20:00 – 23:00</span>
-                                    <span>Sábado (Comida):</span>
-                                    <span className="text-right">14:00 – 17:00</span>
-                                    <span>Sábado (Cena):</span>
-                                    <span className="text-right">20:00 – 23:00</span>
-                                    <span>Domingo:</span>
-                                    <span className="text-right">14:00 – 17:00</span>
-                                    <span className="text-amber-900/40">Lunes – Martes:</span>
-                                    <span className="text-right text-amber-900/40">Cerrado</span>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px] font-medium text-amber-800">
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="opacity-50 uppercase text-[9px] tracking-tight">
+                                            Mié – Vie
+                                        </span>
+                                        <span className="font-bold">20:00 – 23:00</span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="opacity-50 uppercase text-[9px] tracking-tight">
+                                            Sábado
+                                        </span>
+                                        <span className="font-bold leading-tight">
+                                            14:00 – 17:00 / 20:00 – 23:00
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="opacity-50 uppercase text-[9px] tracking-tight">
+                                            Domingo
+                                        </span>
+                                        <span className="font-bold">14:00 – 17:00</span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="text-amber-900/40 uppercase text-[9px] tracking-tight font-black">
+                                            Lun – Mar
+                                        </span>
+                                        <span className="text-amber-900/40 font-black uppercase">
+                                            Cerrado
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -508,19 +526,39 @@ export default function DeliveryForm({
                                     />
                                 </div>
                             </div>
-                            <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
-                                <p className="text-[10px] font-black text-blue-900/40 uppercase tracking-widest mb-1.5">
+                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50">
+                                <p className="text-[10px] font-black text-blue-900/40 uppercase tracking-widest mb-3">
                                     Horario de atención
                                 </p>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] font-bold text-blue-800/70">
-                                    <span>Mié – Vie: 20:00 – 23:00</span>
-                                    <span className="text-right">
-                                        Sáb: 14:00 – 17:00 / 20:00 – 23:00
-                                    </span>
-                                    <span>Dom: 14:00 – 17:00</span>
-                                    <span className="text-right text-red-400/60 uppercase">
-                                        Lun – Mar: Cerrado
-                                    </span>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px] font-bold text-blue-800/70">
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="opacity-50 uppercase text-[8px] tracking-tight">
+                                            Mié – Vie
+                                        </span>
+                                        <span>20:00 – 23:00</span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="opacity-50 uppercase text-[8px] tracking-tight">
+                                            Sábado
+                                        </span>
+                                        <span className="leading-tight">
+                                            14:00 – 17:00 / 20:00 – 23:00
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="opacity-50 uppercase text-[8px] tracking-tight">
+                                            Domingo
+                                        </span>
+                                        <span>14:00 – 17:00</span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="text-red-400/60 uppercase text-[8px] tracking-tight font-black">
+                                            Lun – Mar
+                                        </span>
+                                        <span className="text-red-400/80 font-black uppercase">
+                                            Cerrado
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

@@ -47,17 +47,25 @@ router.get(
     })
 );
 
-// GET /api/menu/info/categories — category list with counts
+// GET /api/menu/info/categories — category list with counts and representative images
 router.get(
     '/info/categories',
     asyncHandler(async (_req: Request, res: Response) => {
-        const { data, error } = await supabase.from('menu_items').select('category');
+        const { data, error } = await supabase
+            .from('menu_items')
+            .select('category, image')
+            .order('id');
 
         if (error) throw error;
 
         const counts: Record<string, number> = {};
+        const images: Record<string, string | null> = {};
+
         data?.forEach(item => {
             counts[item.category] = (counts[item.category] || 0) + 1;
+            if (!images[item.category] && item.image) {
+                images[item.category] = item.image;
+            }
         });
 
         const categoryMap: Record<string, { name: string; icon: string }> = {
@@ -75,6 +83,7 @@ router.get(
             id: cat,
             ...(categoryMap[cat] || { name: cat, icon: '📋' }),
             count,
+            image: images[cat] || null,
         }));
 
         res.json({ categories: result });

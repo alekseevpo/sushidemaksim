@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Clock, RefreshCcw, Shield } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
@@ -6,51 +6,6 @@ import { useAuth } from '../../hooks/useAuth';
 import { useOrdersQuery } from '../../hooks/queries/useOrders';
 import { useOrderRealtime } from '../../hooks/useOrderRealtime';
 import { Order } from '../../types';
-
-function OrderTimer({ createdAt, status }: { createdAt: string; status: string }) {
-    const [timeLeft, setTimeLeft] = useState('');
-    const [isLate, setIsLate] = useState(false);
-
-    useEffect(() => {
-        if (status === 'delivered' || status === 'cancelled') return;
-
-        const calculateTimeLeft = () => {
-            const d = new Date(createdAt);
-            const validDate = isNaN(d.getTime())
-                ? new Date(
-                      createdAt.replace(' ', 'T') +
-                          (createdAt.includes('Z') || createdAt.includes('+') ? '' : 'Z')
-                  )
-                : d;
-            const start = validDate.getTime();
-            const end = start + 60 * 60 * 1000; // 60 minutes
-            const now = new Date().getTime();
-            const diff = end - now;
-
-            if (diff <= 0) {
-                setIsLate(true);
-                setTimeLeft('00:00');
-            } else {
-                setIsLate(false);
-                const minutes = Math.floor(diff / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                setTimeLeft(
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-                );
-            }
-        };
-
-        calculateTimeLeft();
-        const interval = setInterval(calculateTimeLeft, 1000);
-        return () => clearInterval(interval);
-    }, [createdAt, status]);
-
-    if (status === 'delivered' || status === 'cancelled') {
-        return null;
-    }
-
-    return <span className={isLate ? 'text-red-500' : 'text-amber-600'}>{timeLeft}</span>;
-}
 
 function getStatusBadge(status: string) {
     const styles: Record<string, { bg: string; color: string; label: string; icon?: string }> = {
@@ -225,23 +180,13 @@ export default function OrdersTab() {
                             {(order.status as string) !== 'delivered' &&
                                 (order.status as string) !== 'cancelled' && (
                                     <div className="flex items-center gap-2">
-                                        {(order.status as string) !== 'delivered' &&
-                                            (order.status as string) !== 'cancelled' && (
-                                                <Link
-                                                    to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
-                                                    className="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl border border-red-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-red-100 transition-colors no-underline"
-                                                >
-                                                    <span>🛵</span>
-                                                    Seguir
-                                                </Link>
-                                            )}
-                                        <div className="bg-amber-50 px-2 py-1 rounded-lg border border-amber-100/50 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black">
-                                            <span className="animate-pulse">⏱️</span>
-                                            <OrderTimer
-                                                createdAt={order.createdAt}
-                                                status={order.status}
-                                            />
-                                        </div>
+                                        <Link
+                                            to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
+                                            className="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl border border-red-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-red-100 transition-colors no-underline"
+                                        >
+                                            <span>🛵</span>
+                                            Seguir
+                                        </Link>
                                     </div>
                                 )}
                         </div>

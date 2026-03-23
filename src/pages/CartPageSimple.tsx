@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
@@ -412,12 +411,9 @@ export default function CartPageSimple() {
                 <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
                     {isStoreClosed && (
                         <div className="mb-6 animate-in slide-in-from-top duration-500">
-                            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-4">
-                                <div className="p-3 bg-red-100 text-red-600 rounded-xl shrink-0">
-                                    <X size={24} strokeWidth={1.5} />
-                                </div>
+                            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 md:p-6">
                                 <div className="flex-1">
-                                    <h3 className="font-bold text-red-900 leading-tight">
+                                    <h3 className="font-bold text-red-900 leading-tight mb-2">
                                         Tienda Cerrada
                                     </h3>
                                     <p className="text-sm text-red-700 whitespace-pre-line leading-relaxed">
@@ -425,12 +421,12 @@ export default function CartPageSimple() {
                                             ? siteSettings?.closed_message ||
                                               'Nuestra cocina está tomando un breve descanso, ¡encantados de atenderte pronto!'
                                             : 'Actualmente nuestra cocina está fuera de servicio, ¡pero no te preocupes!'}
-                                        {'\n\n'}✨ **Estaremos encantados de recibir tu pedido
+                                        {'\n\n'}**Estaremos encantados de recibir tu pedido
                                         programado.** Selecciona la opción "Entrega programada" más
                                         abajo para que podamos entregártelo en nuestro próximo
                                         horario de apertura.
                                         {'\n\n'}
-                                        🕒 **Horario de Servicio:**
+                                        **Horario de Servicio:**
                                         {'\n'}• Miércoles a Viernes: 20:00 – 23:00
                                         {'\n'}• Sábado (Comida): 14:00 – 17:00
                                         {'\n'}• Sábado (Cena): 20:00 – 23:00

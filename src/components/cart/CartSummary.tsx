@@ -107,59 +107,95 @@ export default function CartSummary({
                 </div>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-8">
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1.5 h-4 bg-red-600 rounded-full" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        Cupón de descuento
+                    </span>
+                </div>
                 {!promoDiscount ? (
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            value={promoCode}
-                            onChange={e => setPromoCode(e.target.value)}
-                            placeholder="Código promo"
-                            className={`flex-1 px-4 py-3 bg-gray-50 border ${promoError ? 'border-red-300' : 'border-gray-200'} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all uppercase font-bold`}
-                        />
-                        <button
-                            onClick={() => {
-                                triggerHaptic();
-                                handleApplyPromo(promoCode);
-                            }}
-                            disabled={isApplyingPromo || !promoCode.trim()}
-                            className="px-4 py-3 bg-gray-900 text-white rounded-xl text-xs font-black hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 transition-colors border-none cursor-pointer uppercase"
-                        >
-                            {isApplyingPromo ? '...' : 'Aplicar'}
-                        </button>
+                    <div className="relative group">
+                        <div className="flex gap-2 p-1.5 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl transition-all duration-300 focus-within:border-red-500/30 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-red-500/5">
+                            <input
+                                type="text"
+                                value={promoCode}
+                                onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                                placeholder="Introduce tu código"
+                                className="flex-1 px-3 py-2 bg-transparent border-none text-sm focus:outline-none uppercase font-black tracking-tight placeholder:text-gray-300 placeholder:font-bold"
+                            />
+                            <button
+                                onClick={() => {
+                                    triggerHaptic();
+                                    handleApplyPromo(promoCode);
+                                }}
+                                disabled={isApplyingPromo || !promoCode.trim()}
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border-none cursor-pointer flex items-center gap-2 shadow-sm
+                                    ${
+                                        isApplyingPromo || !promoCode.trim()
+                                            ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                                            : 'bg-red-600 text-white hover:bg-black hover:scale-105 active:scale-95 shadow-red-100'
+                                    }`}
+                            >
+                                {isApplyingPromo ? (
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    'Aplicar'
+                                )}
+                            </button>
+                        </div>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-between p-3 bg-green-50 border border-green-100 rounded-xl animate-in slide-in-from-top-2 duration-300">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
-                                <span className="text-green-600 font-black text-xs">
-                                    %{promoDiscount}
-                                </span>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative overflow-hidden p-4 bg-green-50 rounded-2xl border-2 border-green-200/50 shadow-lg shadow-green-500/5 group"
+                    >
+                        {/* Decorative background element */}
+                        <div className="absolute top-0 right-0 -mr-4 -mt-4 w-12 h-12 bg-green-500/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
+
+                        <div className="relative flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md border border-green-100 shrink-0">
+                                    <span className="text-green-600 font-black text-xs">
+                                        -{promoDiscount}%
+                                    </span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[9px] text-green-700 font-black uppercase tracking-[0.2em] leading-none mb-1 opacity-60">
+                                        Código Aplicado
+                                    </span>
+                                    <span className="text-sm font-black text-gray-900 uppercase tracking-tight">
+                                        {promoCode}
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[10px] text-green-700 font-black uppercase tracking-widest leading-none mb-1">
-                                    Código Activo
-                                </p>
-                                <p className="text-xs font-bold text-gray-900 uppercase">
-                                    {promoCode}
-                                </p>
-                            </div>
+                            <button
+                                onClick={() => {
+                                    triggerHaptic(HAPTIC_PATTERNS.MEDIUM);
+                                    handleRemovePromo();
+                                }}
+                                className="w-8 h-8 rounded-full hover:bg-red-50 text-gray-300 hover:text-red-500 transition-all duration-300 bg-white shadow-sm border border-gray-100 flex items-center justify-center cursor-pointer group/close"
+                            >
+                                <X
+                                    size={14}
+                                    className="group-hover/close:rotate-90 transition-transform"
+                                />
+                            </button>
                         </div>
-                        <button
-                            onClick={() => {
-                                triggerHaptic(HAPTIC_PATTERNS.MEDIUM);
-                                handleRemovePromo();
-                            }}
-                            className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors bg-transparent border-none cursor-pointer"
-                        >
-                            <X size={18} />
-                        </button>
-                    </div>
+                    </motion.div>
                 )}
                 {promoError && (
-                    <p className="mt-2 text-[11px] text-red-600 font-bold px-1 italic">
-                        {promoError}
-                    </p>
+                    <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-3 flex items-center gap-2 px-2"
+                    >
+                        <div className="w-1 h-1 rounded-full bg-red-400 animate-pulse" />
+                        <p className="text-[10px] text-red-500 font-black uppercase tracking-wider italic">
+                            {promoError}
+                        </p>
+                    </motion.div>
                 )}
             </div>
 

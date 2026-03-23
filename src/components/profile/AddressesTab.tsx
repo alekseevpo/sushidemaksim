@@ -179,18 +179,20 @@ export default function AddressesTab({
         setEditId(null);
         setShowAddAddress(false);
 
-        // Scroll back to top of tab when form closes
-        const headerOffset = window.innerWidth < 768 ? 140 : 100;
-        const element = document.getElementById('profile-content');
-        if (element) {
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition =
-                elementPosition + (window.scrollY || window.pageYOffset) - headerOffset;
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth',
-            });
-        }
+        // Scroll back to top of tab when form closes - use a small delay for layout settling
+        setTimeout(() => {
+            const headerOffset = window.innerWidth < 768 ? 140 : 100;
+            const element = document.getElementById('profile-content');
+            if (element) {
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition =
+                    elementPosition + (window.scrollY || window.pageYOffset) - headerOffset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth',
+                });
+            }
+        }, 100);
     };
 
     const handleSaveAddress = async () => {

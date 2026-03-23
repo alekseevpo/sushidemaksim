@@ -11,7 +11,6 @@ import {
     Clock,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { OrderTimer } from './OrderTimer';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -370,10 +369,6 @@ export default function AdminDashboard({
                                         <p className="font-bold text-gray-900 text-sm">
                                             {Number(order.total).toFixed(2).replace('.', ',')} €
                                         </p>
-                                        <OrderTimer
-                                            createdAt={order.createdAt}
-                                            status={order.status}
-                                        />
                                     </div>
                                 </div>
                             ))}
