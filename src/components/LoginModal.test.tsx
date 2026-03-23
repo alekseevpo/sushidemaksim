@@ -170,9 +170,9 @@ describe('LoginModal - Password Recovery', () => {
         });
     });
 
-    it('navigates from verify-sent to reset-password when clicking "Ya tengo el código"', async () => {
+    it('navigates from verify-sent to reset-password when clicking "Introducir el código"', async () => {
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="verify-sent" />);
-        fireEvent.click(screen.getByText('Ya tengo el código'));
+        fireEvent.click(screen.getByText('Introducir el código'));
         expect(screen.getByText('Nueva contraseña')).toBeInTheDocument();
         expect(screen.getAllByPlaceholderText('•')).toHaveLength(6);
     });
