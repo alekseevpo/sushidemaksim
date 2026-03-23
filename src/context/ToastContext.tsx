@@ -104,6 +104,7 @@ const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onC
 
     return (
         <div
+            role="alert"
             className={`flex items-center gap-4 p-4 rounded-2xl border shadow-2xl ${bgColors[toast.type]} overflow-hidden relative group`}
         >
             <div className="flex-shrink-0">{icons[toast.type]}</div>

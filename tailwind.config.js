@@ -12,8 +12,8 @@ export default {
             },
             zIndex: {
                 sticky: '100',
-                header: '200',
-                fixed: '300',
+                header: '500',
+                fixed: '600',
                 backdrop: '1000',
                 modal: '1100',
                 popover: '1200',

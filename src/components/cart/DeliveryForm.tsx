@@ -1,5 +1,14 @@
 import { motion } from 'framer-motion';
-import { MapPin, Truck, Store, ArrowRight, CreditCard, Wallet, Smartphone } from 'lucide-react';
+import {
+    MapPin,
+    Truck,
+    Store,
+    ArrowRight,
+    CreditCard,
+    Wallet,
+    Smartphone,
+    Search,
+} from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
 interface DeliveryFormProps {
@@ -195,145 +204,125 @@ export default function DeliveryForm({
                         </div>
                     )}
 
-                    {/* Address Trigger */}
-                    <div className="md:hidden">
+                    {/* Unified Address Component for Mobile & Desktop */}
+                    <div className="w-full">
                         {!address ? (
                             <button
                                 type="button"
                                 onClick={handleAddressClick}
-                                className="w-full bg-white border-2 border-red-50 rounded-[24px] p-5 text-center hover:border-red-500 transition-all group mb-2 shadow-sm active:scale-95 duration-200 cursor-pointer"
+                                data-testid="address-input"
+                                className="w-full bg-white border-2 border-red-50 rounded-[24px] p-6 md:p-10 text-center hover:border-red-500 hover:bg-red-50/10 transition-all group mb-4 shadow-sm active:scale-95 duration-200 cursor-pointer flex flex-col items-center gap-3 md:gap-4"
                             >
-                                <div className="flex flex-col items-center gap-2">
-                                    <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-inner">
-                                        <MapPin className="text-red-500" size={24} />
-                                    </div>
-                                    <p className="font-black text-base text-gray-900 tracking-tight">
-                                        ¿Dónde entregamos?
+                                <div className="w-14 h-14 md:w-20 md:h-20 bg-red-50 rounded-2xl md:rounded-[28px] flex items-center justify-center group-hover:scale-110 transition duration-500 shadow-inner group-hover:shadow-[0_10px_30px_-10px_rgba(220,38,38,0.3)]">
+                                    <MapPin className="text-red-500 w-8 h-8 md:w-12 md:h-12" />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="font-black text-lg md:text-2xl text-gray-900 tracking-tight">
+                                        ¿Dónde entregamos el pedido?
+                                    </p>
+                                    <p className="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2">
+                                        <Search size={14} className="text-red-300" /> Indica tu
+                                        dirección y descubre nuestras zonas
                                     </p>
                                 </div>
                             </button>
                         ) : (
-                            <div className="flex flex-col gap-3">
-                                <div className="bg-gray-50 rounded-[32px] p-6 border border-gray-100 flex items-center justify-between">
-                                    <div className="flex items-center gap-4 overflow-hidden">
-                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 shrink-0">
-                                            <MapPin className="text-red-500" size={20} />
+                            <div className="flex flex-col gap-4">
+                                {/* Enhanced Address Card - Works for both mobile and desktop */}
+                                <div
+                                    data-testid="address-display"
+                                    className="bg-gray-50/80 backdrop-blur-sm rounded-[32px] md:rounded-[40px] p-5 md:p-8 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
+                                >
+                                    <div className="flex items-center gap-4 md:gap-8 overflow-hidden">
+                                        <div className="w-14 h-14 md:w-20 md:h-20 bg-white rounded-2xl md:rounded-[32px] flex items-center justify-center shadow-md border border-gray-50 shrink-0 group-hover:scale-105 transition-all duration-500">
+                                            <MapPin className="text-red-500 w-6 h-6 md:w-10 md:h-10" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-black text-sm text-gray-900 truncate">
+                                            <p className="font-black text-lg md:text-2xl text-gray-900 truncate tracking-tight">
                                                 {address}
-                                                {house && `, ${house}`}
-                                                {apartment && `, ${apartment}`}
                                             </p>
-                                            <div className="flex items-center gap-2 mt-0.5">
-                                                {selectedZone && (
-                                                    <span
-                                                        className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full text-white"
+                                            <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-1 md:mt-2">
+                                                <div className="flex items-center gap-1.5 bg-white/80 px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-50">
+                                                    <div
+                                                        className="w-2 h-2 rounded-full"
                                                         style={{
-                                                            backgroundColor: selectedZone.color,
+                                                            backgroundColor:
+                                                                selectedZone?.color || '#EF4444',
                                                         }}
-                                                    >
-                                                        {selectedZone.name}
+                                                    />
+                                                    <span className="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-widest">
+                                                        {selectedZone?.name || 'Zona no detectada'}
                                                     </span>
-                                                )}
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                                                    CP: {postalCode}
-                                                </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 bg-gray-100/50 px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl border border-gray-100">
+                                                    <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                                        CP {postalCode}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <button
                                         type="button"
                                         onClick={handleAddressClick}
-                                        className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:bg-gray-50 active:scale-90 transition shrink-0 ml-2 cursor-pointer"
+                                        className="bg-red-600 w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-[24px] shadow-lg shadow-red-200 flex items-center justify-center hover:bg-black hover:scale-105 active:scale-90 transition-all duration-300 shrink-0 ml-4 group/btn"
                                     >
-                                        <ArrowRight size={18} className="text-gray-400" />
+                                        <ArrowRight className="text-white w-6 h-6 md:w-8 md:h-8 group-hover/btn:translate-x-1 transition-transform" />
                                     </button>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3 -mt-1">
-                                    <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 px-1 tracking-wider">
-                                            Portal / Casa
+                                {/* Form Fields below the card */}
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 -mt-1 px-1">
+                                    <div className="lg:col-span-1">
+                                        <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
+                                            Portal / Casa *
                                         </label>
                                         <input
                                             value={house}
                                             onChange={e => setHouse(e.target.value)}
                                             placeholder="Ej: 20"
-                                            data-testid="house-input-mobile"
-                                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                            data-testid="house-input"
+                                            className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 px-1 tracking-wider">
+                                    <div className="lg:col-span-1">
+                                        <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
                                             Piso / Puerta
                                         </label>
                                         <input
                                             value={apartment}
                                             onChange={e => setApartment(e.target.value)}
                                             placeholder="Ej: 1B"
-                                            data-testid="apartment-input-mobile"
-                                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
+                                            data-testid="apartment-input"
+                                            className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
                                         />
+                                    </div>
+                                    <div className="col-span-2 lg:col-span-1">
+                                        <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
+                                            Código Postal
+                                        </label>
+                                        <input
+                                            value={postalCode}
+                                            onChange={e => setPostalCode(e.target.value)}
+                                            placeholder="Ej: 28001"
+                                            maxLength={5}
+                                            className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
+                                        />
+                                    </div>
+
+                                    {/* Desktop Info Note - Only visible on really wide screens or if we want to fill space */}
+                                    <div className="hidden lg:flex col-span-3 items-center gap-3 p-4 bg-red-50/30 rounded-3xl border border-red-100/30 mt-2">
+                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0">
+                                            <MapPin size={16} className="text-red-500" />
+                                        </div>
+                                        <p className="text-[11px] font-bold text-red-900/60 leading-tight">
+                                            Si el mapa no detectó tu calle exacta, puedes corregirla
+                                            pulsando de nuevo en el selector de arriba.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         )}
-                    </div>
-
-                    <div className="hidden md:block">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-                            <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
-                                    Calle / Avenida *
-                                </label>
-                                <input
-                                    value={address}
-                                    onChange={e => setAddress(e.target.value)}
-                                    placeholder="Ej: Calle de Serrano"
-                                    data-testid="address-input"
-                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
-                                        Portal
-                                    </label>
-                                    <input
-                                        value={house}
-                                        onChange={e => setHouse(e.target.value)}
-                                        placeholder="Ej: 20"
-                                        data-testid="house-input-desktop"
-                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
-                                        Piso
-                                    </label>
-                                    <input
-                                        value={apartment}
-                                        onChange={e => setApartment(e.target.value)}
-                                        placeholder="Ej: 1B"
-                                        data-testid="apartment-input-desktop"
-                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-black text-gray-400 uppercase mb-1 px-1">
-                                Código Postal
-                            </label>
-                            <input
-                                value={postalCode}
-                                onChange={e => setPostalCode(e.target.value)}
-                                placeholder="28001"
-                                maxLength={5}
-                                className="w-64 px-4 py-3 bg-gray-50 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-red-500/10 transition"
-                            />
-                        </div>
                     </div>
                 </div>
             )}

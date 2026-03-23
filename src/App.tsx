@@ -91,7 +91,7 @@ function App() {
                             <CookieConsent />
                             <RegistrationPrompt />
                             <FloatingCart />
-                            {!isAdminRoute && <Header />}
+
                             <main
                                 className="flex-1 flex flex-col relative w-full"
                                 style={{
@@ -210,6 +210,7 @@ function App() {
                                     </Routes>
                                 </AnimatePresence>
                             </main>
+                            {!isAdminRoute && <Header />}
                             {!isAdminRoute && <Footer />}
                         </div>
                     </CartProvider>

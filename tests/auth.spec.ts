@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
     test.beforeEach(async ({ page, context }) => {
+        // Pipe logs
+        page.on('console', msg => console.log(`BROWSER_AUTH: ${msg.text()}`));
+
         // Set cookie consent before any script runs.
         // We only clear sushi_token once at the start.
         await context.addInitScript(() => {
@@ -17,7 +20,7 @@ test.describe('Authentication Flow', () => {
             route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ site_name: 'Sushi de Maksim', min_order: 20 }),
+                body: JSON.stringify({ siteName: 'Sushi de Maksim', minOrder: 20 }),
             })
         );
         await page.route('**/api/user/active', route =>
@@ -139,9 +142,9 @@ test.describe('Authentication Flow', () => {
             .getByRole('button', { name: /ACCEDER/i })
             .first()
             .click();
-        await page.getByRole('button', { name: /¿Olvidaste tu contraseña?/i }).click();
+        await page.getByRole('button', { name: /olvidaste/i }).click();
         await page.getByPlaceholder(/tu@email.com/i).fill('recovery@test.com');
-        await page.getByRole('button', { name: /Recuperar contraseña/i }).click();
+        await page.getByRole('button', { name: /Enviar instrucciones/i }).click();
 
         await expect(page.getByText(/email|enviado|revisa/i).first()).toBeVisible({
             timeout: 10000,

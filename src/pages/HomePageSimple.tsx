@@ -223,10 +223,12 @@ export default function HomePageSimple() {
                 }}
             >
                 {/* Background Overlay (Filter) */}
-                <div className="absolute inset-0 z-0 bg-black/50"></div>
-                <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-                <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-                <div className="absolute inset-0 z-0 backdrop-blur-[2px] md:backdrop-blur-none"></div>
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                    <div className="absolute inset-0 bg-black/50"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                    <div className="absolute inset-0 backdrop-blur-[2px] md:backdrop-blur-none"></div>
+                </div>
 
                 <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <motion.div

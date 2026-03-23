@@ -110,7 +110,7 @@ router.get(
             const { data: user, error: findError } = await supabase
                 .from('users')
                 .select('id, is_verified')
-                .eq('id', payload.userId)
+                .eq('id', Number(payload.userId))
                 .single();
 
             if (findError || !user) {

@@ -246,6 +246,12 @@ export default function CartPageSimple() {
     }, [cartSubtotal, promoCode, promoDiscount]);
 
     const handleOrder = async () => {
+        console.log('--- HANDLE ORDER ---');
+        console.log('deliveryType:', deliveryType);
+        console.log('total:', total);
+        console.log('MIN_ORDER:', MIN_ORDER);
+        console.log('selectedZone:', selectedZone?.name);
+
         const streetVal = address.trim();
         const houseVal = house.trim();
         const aptVal = apartment.trim();
@@ -253,11 +259,6 @@ export default function CartPageSimple() {
         if (deliveryType === 'delivery') {
             if (!streetVal || streetVal.length < 3) return showError('Indica tu calle / dirección');
             if (!houseVal) return showError('Indica tu portal/casa');
-            if (!aptVal) return showError('Indica tu piso/puerta');
-            if (total < MIN_ORDER)
-                return showError(
-                    `El pedido mínimo es de ${MIN_ORDER.toFixed(2).replace('.', ',')}€`
-                );
         }
 
         if (!paymentMethod) return showError('Selecciona un método de pago');

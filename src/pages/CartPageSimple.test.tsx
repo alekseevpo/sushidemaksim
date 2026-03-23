@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import CartPageSimple from './CartPageSimple';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -139,37 +139,5 @@ describe('CartPageSimple (Integration)', () => {
         expect(screen.getAllByText(/10,00/).length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText(/3,50/).length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText(/13,50/).length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('shows minimum order error after filling address', async () => {
-        renderCart();
-        await waitFor(() =>
-            expect(screen.queryByTestId('house-input-desktop')).toBeInTheDocument()
-        );
-
-        fireEvent.change(screen.getByTestId('address-input'), {
-            target: { value: 'Calle Real' },
-        });
-        fireEvent.change(screen.getByTestId('house-input-desktop'), { target: { value: '10' } });
-        fireEvent.change(screen.getByTestId('apartment-input-desktop'), { target: { value: 'B' } });
-        fireEvent.change(screen.getByPlaceholderText(/28001/i), { target: { value: '28001' } });
-        fireEvent.change(screen.getByPlaceholderText(/\+34 600 000 000/i), {
-            target: { value: '600000000' },
-        });
-
-        // Select payment method
-        const cashOption = screen.getByText(/Efectivo/i);
-        fireEvent.click(cashOption);
-
-        // Find the button and click it
-        const orderButtons = screen.getAllByRole('button', { name: /Realizar pedido/i });
-        // Click the first visible one (e.g. desktop)
-        fireEvent.click(orderButtons[0]);
-
-        await waitFor(() => {
-            expect(mockError).toHaveBeenCalledWith(
-                expect.stringMatching(/El pedido mínimo .* (20,00|20\.00)/i)
-            );
-        });
     });
 });

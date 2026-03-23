@@ -34,7 +34,7 @@ export default function OrderSuccessModal({
     const navigate = useNavigate();
 
     return (
-        <div className="fixed inset-0 z-[200] overflow-y-auto bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-500">
+        <div className="fixed inset-0 z-modal overflow-y-auto bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-500">
             <div className="flex min-h-full items-center justify-center p-2 md:p-4">
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0, y: 20 }}

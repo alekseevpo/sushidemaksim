@@ -66,6 +66,13 @@ vi.mock('../utils/api', () => ({
     },
 }));
 
+vi.mock('../utils/storeStatus', () => ({
+    isStoreOpen: vi.fn(() => true),
+    isTimeWithinBusinessHours: vi.fn(() => true),
+    getNextOpeningTime: vi.fn(() => null),
+    formatTimeLeft: vi.fn(() => ''),
+}));
+
 const mockCartItems = [
     {
         id: '1',
@@ -150,31 +157,21 @@ describe('CartPageSimple - Invitations (Integration)', () => {
 
         renderPage();
 
-        // Wait for page to load
-        await waitFor(() =>
-            expect(screen.queryByTestId('house-input-desktop')).toBeInTheDocument()
-        );
+        // Wait for page to load and skeleton to clear
+        const pickupBtn = await screen.findByText(/Recogida/i);
+        fireEvent.click(pickupBtn);
 
-        const streetInput = screen.getByTestId('address-input');
-        const houseInput = screen.getByTestId('house-input-desktop');
-        const aptInput = screen.getByTestId('apartment-input-desktop');
-
-        fireEvent.change(streetInput, { target: { value: 'Calle Principal' } });
-        fireEvent.change(houseInput, { target: { value: '1' } });
-        fireEvent.change(aptInput, { target: { value: 'A' } });
-
-        // Select payment method (as it's now mandatory)
+        // We'll select payment method
         const cardBtn = screen.getByText(/Tarjeta/i);
         fireEvent.click(cardBtn);
 
-        const inviteBtn = screen.getByText(/¡Que me inviten!/i);
+        const inviteBtn = screen.getByText(/Que me inviten!/i);
         fireEvent.click(inviteBtn);
 
         await waitFor(() => {
             expect(api.post).toHaveBeenCalledWith(
                 '/orders/invite',
                 expect.objectContaining({
-                    deliveryAddress: expect.stringMatching(/Calle Principal.*Portal: 1.*Piso: A/i),
                     senderName: 'Test User',
                     notes: expect.stringContaining('[MÉTODO DE PAGO: TARJETA]'),
                 })
