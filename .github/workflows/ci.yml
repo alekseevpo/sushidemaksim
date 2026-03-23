@@ -102,3 +102,11 @@ jobs:
               run: cd server && npm install
             - name: Build backend (check types)
               run: cd server && npm run build
+
+            - name: Notify Vercel
+              if: always()
+              uses: vercel/repository-dispatch/actions/status@v1
+              with:
+                  name: CI Check
+                  status: ${{ job.status }}
+                  token: ${{ secrets.VERCEL_TOKEN }}
