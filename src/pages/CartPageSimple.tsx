@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
+import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
 
@@ -96,7 +97,9 @@ export default function CartPageSimple() {
     const MIN_ORDER = selectedZone
         ? (selectedZone.min_order ?? 0)
         : (siteSettings?.min_order ?? 15);
-    const isStoreClosed = !!siteSettings?.is_store_closed;
+    const isManualClosed = !!siteSettings?.is_store_closed;
+    const isOpenNow = isStoreOpen();
+    const isStoreClosed = isManualClosed || !isOpenNow;
 
     const EMOJI: Record<string, string> = {
         rolls: '🍣',
@@ -264,6 +267,22 @@ export default function CartPageSimple() {
         const deliveryPhone = phone.trim() || user?.phone || '';
         if (!deliveryPhone || deliveryPhone.length < 9) return showError('Teléfono no válido');
 
+        // Business Hour Validation
+        if (isStoreClosed && !isScheduled) {
+            return showError(
+                'Nuestra cocina está descansando en este momento, ¡pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona "Entrega programada".'
+            );
+        }
+
+        if (isScheduled && scheduledDate && scheduledTime) {
+            const date = new Date(scheduledDate);
+            if (!isTimeWithinBusinessHours(date, scheduledTime)) {
+                return showError(
+                    'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!'
+                );
+            }
+        }
+
         setIsOrdering(true);
 
         const notesArray = [];
@@ -402,9 +421,19 @@ export default function CartPageSimple() {
                                     <h3 className="font-bold text-red-900 leading-tight">
                                         Tienda Cerrada
                                     </h3>
-                                    <p className="text-sm text-red-700">
-                                        {siteSettings?.closed_message ||
-                                            'Nuestra cocina está descansando.'}
+                                    <p className="text-sm text-red-700 whitespace-pre-line leading-relaxed">
+                                        {isManualClosed
+                                            ? siteSettings?.closed_message ||
+                                              'Nuestra cocina está tomando un breve descanso, ¡encantados de atenderte pronto!'
+                                            : 'Actualmente nuestra cocina está fuera de servicio, ¡pero no te preocupes!'}
+                                        {'\n\n'}
+                                        ✨ **Estaremos encantados de recibir tu pedido programado.** Selecciona la opción "Entrega programada" más abajo para que podamos entregártelo en nuestro próximo horario de apertura.
+                                        {'\n\n'}
+                                        🕒 **Horario de Servicio:**
+                                        {'\n'}• Miércoles a Viernes: 20:00 – 23:00
+                                        {'\n'}• Sábado (Comida): 14:00 – 17:00
+                                        {'\n'}• Sábado (Cena): 20:00 – 23:00
+                                        {'\n'}• Domingo: 14:00 – 17:00
                                     </p>
                                 </div>
                             </div>
@@ -475,6 +504,7 @@ export default function CartPageSimple() {
                                 user={user}
                                 isAuthenticated={isAuthenticated}
                                 todayStr={todayStr}
+                                isStoreClosed={isStoreClosed}
                             />
                         </div>
 

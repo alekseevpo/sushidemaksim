@@ -37,6 +37,7 @@ interface DeliveryFormProps {
     user: any;
     isAuthenticated: boolean;
     todayStr: string;
+    isStoreClosed: boolean;
 }
 
 export default function DeliveryForm({
@@ -75,6 +76,7 @@ export default function DeliveryForm({
     user,
     isAuthenticated,
     todayStr,
+    isStoreClosed,
 }: DeliveryFormProps) {
     const handleAddressClick = () => {
         setIsAddressModalOpen(true);
@@ -450,34 +452,61 @@ export default function DeliveryForm({
                         🔥 Entrega programada (Opcional)
                     </label>
 
+                    {isStoreClosed && !isScheduled && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="p-3 bg-red-50 border border-red-100 rounded-xl mt-2"
+                        >
+                            <p className="text-[11px] font-bold text-red-600 m-0">
+                                🏪 El restaurante está cerrado. Por favor, selecciona la opción
+                                "Entrega programada" para recibir tu pedido en el próximo horario de
+                                apertura.
+                            </p>
+                        </motion.div>
+                    )}
+
                     {isScheduled && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className="grid grid-cols-2 gap-3 mt-2 overflow-hidden"
+                            className="flex flex-col gap-3 mt-2 overflow-hidden"
                         >
-                            <div>
-                                <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
-                                    Fecha
-                                </label>
-                                <input
-                                    type="date"
-                                    min={todayStr}
-                                    value={scheduledDate}
-                                    onChange={e => setScheduledDate(e.target.value)}
-                                    className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
-                                />
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
+                                        Fecha
+                                    </label>
+                                    <input
+                                        type="date"
+                                        min={todayStr}
+                                        value={scheduledDate}
+                                        onChange={e => setScheduledDate(e.target.value)}
+                                        className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
+                                        Hora
+                                    </label>
+                                    <input
+                                        type="time"
+                                        value={scheduledTime}
+                                        onChange={e => setScheduledTime(e.target.value)}
+                                        className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
-                                    Hora
-                                </label>
-                                <input
-                                    type="time"
-                                    value={scheduledTime}
-                                    onChange={e => setScheduledTime(e.target.value)}
-                                    className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
-                                />
+                            <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                                <p className="text-[10px] font-black text-blue-900/40 uppercase tracking-widest mb-1.5">
+                                    Horario de atención
+                                </p>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] font-bold text-blue-800/70">
+                                    <span>Mié – Vie: 20:00 – 23:00</span>
+                                    <span className="text-right">Sáb: 14:00 – 17:00 / 20:00 – 23:00</span>
+                                    <span>Dom: 14:00 – 17:00</span>
+                                    <span className="text-right text-red-400/60 uppercase">Lun – Mar: Cerrado</span>
+                                </div>
                             </div>
                         </motion.div>
                     )}

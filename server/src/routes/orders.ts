@@ -7,6 +7,7 @@ import { validate } from '../middleware/validate.js';
 import { UAParser } from 'ua-parser-js';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
+import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus.js';
 
 const router = Router();
 
@@ -33,6 +34,31 @@ router.post(
             email,
             customerName,
         } = req.body;
+
+        // 0. Business Hour Validation
+        const { data: globalSettings } = await supabase.from('site_settings').select('*');
+        const manualClosed =
+            globalSettings?.find(s => s.key === 'is_store_closed')?.value === 'true';
+        const isOpenNow = isStoreOpen();
+        const isStoreClosed = manualClosed || !isOpenNow;
+
+        if (isStoreClosed) {
+            const scheduledMatch = notes?.match(
+                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\]/
+            );
+            if (!scheduledMatch) {
+                return res.status(400).json({
+                    error: 'Nuestra cocina está descansando ahora. ¡Pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona una "Entrega programada".',
+                });
+            }
+            const [, dateStr, timeStr] = scheduledMatch;
+            const scheduledDate = new Date(dateStr);
+            if (!isTimeWithinBusinessHours(scheduledDate, timeStr)) {
+                return res.status(400).json({
+                    error: 'Esa hora está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!',
+                });
+            }
+        }
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
