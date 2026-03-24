@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    X,
     Calendar,
     Mail,
     User,
@@ -118,7 +117,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
     return (
         <AnimatePresence>
             {isOpen && (
-                <div 
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     className="fixed inset-0 z-[1000] flex items-start justify-center"
                     onClick={onClose}
                 >
@@ -371,7 +373,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                             )}
                         </div>
                     </motion.div>
-                </div>
+                </motion.div>
             )}
         </AnimatePresence>
     );
