@@ -107,12 +107,16 @@ export default function MenuPageSimple() {
         }
     }, [debouncedSearch, isLoading, items.length]);
 
+    const hasScrolledToHash = useRef(false);
+
     // Handle initial hash scroll and highlight
     useEffect(() => {
-        if (!isLoading && items.length > 0) {
+        if (!isLoading && items.length > 0 && !hasScrolledToHash.current) {
             const hash = window.location.hash;
             if (hash) {
                 const id = hash.replace('#', '');
+                hasScrolledToHash.current = true;
+
                 // If it's a specific product link (item-ID), highlight it
                 if (id.startsWith('item-')) {
                     const itemId = id.replace('item-', '');
