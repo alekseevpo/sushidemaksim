@@ -282,7 +282,7 @@ export default function AddressModal({
         }, 2000); // Longer debounce for manual typing
 
         return () => clearTimeout(timer);
-    }, [address, house, postalCode]);
+    }, [address, house, postalCode, isReverseGeocoding, markerPosition]);
 
     const handleContinue = () => {
         onSelect({

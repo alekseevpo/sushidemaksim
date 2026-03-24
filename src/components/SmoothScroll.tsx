@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 
 export default function SmoothScroll() {
-
     useEffect(() => {
         const lenis = new Lenis({
             duration: 1.2,
@@ -31,7 +30,7 @@ export default function SmoothScroll() {
         };
     }, []);
 
-    // Global scroll-to-top is now handled by components within AnimatePresence 
+    // Global scroll-to-top is now handled by components within AnimatePresence
     // to prevent jumping during exit animations.
 
     return null;
