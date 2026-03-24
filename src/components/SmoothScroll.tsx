@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
-import { useLocation } from 'react-router-dom';
 
 export default function SmoothScroll() {
-    const { pathname } = useLocation();
 
     useEffect(() => {
         const lenis = new Lenis({
@@ -33,13 +31,8 @@ export default function SmoothScroll() {
         };
     }, []);
 
-    // Scroll to top on route change
-    useEffect(() => {
-        const lenis = (window as any).lenis;
-        if (lenis) {
-            lenis.scrollTo(0, { immediate: true });
-        }
-    }, [pathname]);
+    // Global scroll-to-top is now handled by components within AnimatePresence 
+    // to prevent jumping during exit animations.
 
     return null;
 }

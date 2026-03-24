@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CartProvider } from './hooks/useCart';
@@ -61,20 +61,33 @@ const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 const PageWrapper = ({
     children,
     skeleton,
+    isHome = false,
+    isAdmin = false,
 }: {
     children: React.ReactNode;
     skeleton: React.ReactNode;
-}) => (
-    <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="flex-1 flex flex-col"
-    >
-        <Suspense fallback={skeleton}>{children}</Suspense>
-    </motion.div>
-);
+    isHome?: boolean;
+    isAdmin?: boolean;
+}) => {
+    useEffect(() => {
+        (window as any).lenis?.scrollTo(0, { immediate: true });
+    }, []);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="flex-1 flex flex-col"
+            style={{
+                paddingTop: !isAdmin && !isHome ? 'var(--header-height, 4rem)' : '0',
+            }}
+        >
+            <Suspense fallback={skeleton}>{children}</Suspense>
+        </motion.div>
+    );
+};
 
 function PageTracker() {
     usePageTracking();
@@ -99,21 +112,16 @@ function App() {
                             <RegistrationPrompt />
                             <FloatingCart />
 
-                            <main
-                                className="flex-1 flex flex-col relative w-full"
-                                style={{
-                                    paddingTop:
-                                        !isAdminRoute && location.pathname !== '/'
-                                            ? 'var(--header-height, 4rem)'
-                                            : '0',
-                                }}
-                            >
+                            <main className="flex-1 flex flex-col relative w-full">
                                 <AnimatePresence mode="wait">
                                     <Routes location={location} key={location.pathname}>
                                         <Route
                                             path="/"
                                             element={
-                                                <PageWrapper skeleton={<HomeSkeleton />}>
+                                                <PageWrapper
+                                                    skeleton={<HomeSkeleton />}
+                                                    isHome={true}
+                                                >
                                                     <HomePageSimple />
                                                 </PageWrapper>
                                             }
