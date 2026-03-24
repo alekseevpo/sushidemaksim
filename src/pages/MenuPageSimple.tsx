@@ -50,32 +50,28 @@ export default function MenuPageSimple() {
 
     // Scroll to top of menu section when category changes
     useEffect(() => {
-        if (!isLoading) {
-            if (initialCategoryMount.current) {
-                initialCategoryMount.current = false;
-                return;
-            }
-
-            tracker.track('category_click', {
-                metadata: { category: selectedCategory },
-                userId: user?.id,
-            });
-
-            const menuTop = document.getElementById('menu-content');
-            if (menuTop) {
-                const headerHeight =
-                    parseInt(
-                        getComputedStyle(document.documentElement).getPropertyValue(
-                            '--header-height'
-                        )
-                    ) || 80;
-                const isMobile = window.innerWidth < 1024;
-                const offset = headerHeight + (isMobile ? 80 : 32);
-                const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top, behavior: 'smooth' });
-            }
+        if (initialCategoryMount.current) {
+            initialCategoryMount.current = false;
+            return;
         }
-    }, [selectedCategory, isLoading, user?.id]);
+
+        tracker.track('category_click', {
+            metadata: { category: selectedCategory },
+            userId: user?.id,
+        });
+
+        const menuTop = document.getElementById('menu-content');
+        if (menuTop) {
+            const headerHeight =
+                parseInt(
+                    getComputedStyle(document.documentElement).getPropertyValue('--header-height')
+                ) || 80;
+            const isMobile = window.innerWidth < 1024;
+            const offset = headerHeight + (isMobile ? 80 : 32);
+            const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+        }
+    }, [selectedCategory, user?.id]);
 
     // Scroll active category into view on mobile
     useEffect(() => {
@@ -292,7 +288,7 @@ export default function MenuPageSimple() {
                     setSelectedCategory={setSelectedCategory}
                 />
 
-                <div className="flex-1 min-w-0 md:pl-8 pt-4 md:pt-8" id="menu-content">
+                <div className="flex-1 min-w-0 md:pl-8 pt-4 md:pt-8 min-h-[70vh]" id="menu-content">
                     {/* Spacer for fixed category bar on mobile */}
                     <div className="h-16 lg:hidden" />
                     {/* Header Section with Search */}
