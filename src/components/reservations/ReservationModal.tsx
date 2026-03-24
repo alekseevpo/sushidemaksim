@@ -126,7 +126,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     </div>
                                 ))}
                             </div>
-                            <h2 className="text-xl md:text-3xl font-black text-white tracking-tighter uppercase italic">
+                            <h2 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase italic">
                                 Reservar Mesa
                             </h2>
                             <button
@@ -137,7 +137,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                             </button>
                         </div>
 
-                        <div className="p-4 md:p-8">
+                        <div className="p-3 md:p-6">
                             {isSuccess ? (
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
@@ -164,23 +164,23 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     </button>
                                 </motion.div>
                             ) : (
-                                <form onSubmit={handleSubmit} className="space-y-4">
+                                <form onSubmit={handleSubmit} className="space-y-3">
                                     {error && (
-                                        <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold">
-                                            <AlertCircle size={18} />
+                                        <div className="p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 text-red-600 text-[11px] font-bold">
+                                            <AlertCircle size={14} />
                                             {error}
                                         </div>
                                     )}
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Fecha
                                             </label>
                                             <div className="relative">
                                                 <Calendar
-                                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                                                    size={18}
+                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                    size={16}
                                                 />
                                                 <input
                                                     required
@@ -189,38 +189,38 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     min={today}
                                                     value={formData.date}
                                                     onChange={handleChange}
-                                                    className="w-full pl-12 pr-4 h-11 md:h-13 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Hora
                                             </label>
                                             {!formData.date ? (
-                                                <div className="h-11 md:h-13 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-2xl text-[10px] font-bold text-gray-400 uppercase text-center tracking-widest px-4">
-                                                    Selecciona fecha primero
+                                                <div className="h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[8px] font-bold text-gray-400 uppercase text-center tracking-widest px-2">
+                                                    Fecha primero
                                                 </div>
                                             ) : isDayClosed ? (
-                                                <div className="h-11 md:h-13 flex items-center justify-center bg-red-50 border border-red-100 rounded-2xl text-[10px] font-bold text-red-500 uppercase text-center tracking-widest px-4">
-                                                    Restaurante cerrado
+                                                <div className="h-10 flex items-center justify-center bg-red-50 border border-red-100 rounded-xl text-[8px] font-bold text-red-500 uppercase text-center tracking-widest px-2">
+                                                    Cerrado
                                                 </div>
                                             ) : (
                                                 <div className="relative">
                                                     <Clock
-                                                        className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                                                        size={18}
+                                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                        size={16}
                                                     />
                                                     <select
                                                         required
                                                         name="time"
                                                         value={formData.time}
                                                         onChange={handleChange}
-                                                        className="w-full pl-12 pr-10 h-11 md:h-13 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none appearance-none cursor-pointer"
+                                                        className="w-full pl-10 pr-8 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none appearance-none cursor-pointer"
                                                     >
                                                         <option value="" disabled>
-                                                            Selecciona una hora
+                                                            Hora
                                                         </option>
                                                         {availableSlots.map(slot => (
                                                             <option key={slot} value={slot}>
@@ -229,122 +229,120 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                         ))}
                                                     </select>
                                                     <ChevronDown
-                                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                                                        size={16}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                                                        size={14}
                                                     />
                                                 </div>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">
-                                                Personas
-                                            </label>
-                                            <div className="flex bg-gray-50 border border-gray-100 rounded-2xl p-1 gap-1 h-11 md:h-13">
-                                                {[1, 2, 3, 4, 5, 6].map(num => (
-                                                    <button
-                                                        key={num}
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setFormData(prev => ({
-                                                                ...prev,
-                                                                guests: num,
-                                                            }))
-                                                        }
-                                                        className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
-                                                            formData.guests === num
-                                                                ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                                                : 'text-gray-400 hover:text-gray-500 bg-transparent opacity-60'
-                                                        }`}
-                                                    >
-                                                        {num}
-                                                    </button>
-                                                ))}
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                            Personas
+                                        </label>
+                                        <div className="flex bg-gray-50 border border-gray-100 rounded-xl p-1 gap-1 h-10">
+                                            {[1, 2, 3, 4, 5, 6].map(num => (
                                                 <button
+                                                    key={num}
                                                     type="button"
                                                     onClick={() =>
                                                         setFormData(prev => ({
                                                             ...prev,
-                                                            guests:
-                                                                prev.guests < 7
-                                                                    ? 7
-                                                                    : prev.guests + 1,
+                                                            guests: num,
                                                         }))
                                                     }
-                                                    className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
-                                                        formData.guests > 6
-                                                            ? 'bg-red-600 text-white shadow-md border border-red-500'
+                                                    className={`flex-1 rounded-lg text-[10px] font-black transition-all ${
+                                                        formData.guests === num
+                                                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
                                                             : 'text-gray-400 hover:text-gray-500 bg-transparent opacity-60'
                                                     }`}
                                                 >
-                                                    {formData.guests > 6 ? formData.guests : '+'}
+                                                    {num}
                                                 </button>
-                                            </div>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        guests:
+                                                            prev.guests < 7 ? 7 : prev.guests + 1,
+                                                    }))
+                                                }
+                                                className={`flex-1 rounded-lg text-[10px] font-black transition-all ${
+                                                    formData.guests > 6
+                                                        ? 'bg-red-600 text-white shadow-md border border-red-500'
+                                                        : 'text-gray-400 hover:text-gray-500 bg-transparent opacity-60'
+                                                }`}
+                                            >
+                                                {formData.guests > 6 ? formData.guests : '+'}
+                                            </button>
                                         </div>
+                                    </div>
 
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Teléfono
                                             </label>
                                             <div className="relative">
                                                 <Phone
-                                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                                                    size={18}
+                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                    size={16}
                                                 />
                                                 <input
                                                     required
                                                     type="tel"
                                                     name="phone"
-                                                    placeholder="600 000 000"
+                                                    placeholder="Teléfono"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    className="w-full pl-12 pr-4 h-11 md:h-13 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                                Nombre
+                                            </label>
+                                            <div className="relative">
+                                                <User
+                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                    size={16}
+                                                />
+                                                <input
+                                                    required
+                                                    type="text"
+                                                    name="name"
+                                                    placeholder="Nombre"
+                                                    value={formData.name}
+                                                    onChange={handleChange}
+                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">
-                                            Nombre
-                                        </label>
-                                        <div className="relative">
-                                            <User
-                                                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                                                size={18}
-                                            />
-                                            <input
-                                                required
-                                                type="text"
-                                                name="name"
-                                                placeholder="Tu nombre completo"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                className="w-full pl-12 pr-4 h-11 md:h-13 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
-                                            />
-                                        </div>
-                                    </div>
-
                                     {!isAuthenticated && (
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Email
                                             </label>
                                             <div className="relative">
                                                 <Mail
-                                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                                                    size={18}
+                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                    size={16}
                                                 />
                                                 <input
                                                     required
                                                     type="email"
                                                     name="email"
-                                                    placeholder="email@ejemplo.com"
+                                                    placeholder="Email"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full pl-12 pr-4 h-11 md:h-13 bg-gray-50 border border-gray-100 rounded-2xl text-base font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -353,7 +351,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     <button
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="w-full py-3 md:py-4 bg-red-600 text-white rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-red-600/20 hover:bg-red-700 transition-all disabled:opacity-50 mt-2"
+                                        className="w-full py-3 bg-red-600 text-white rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-red-600/20 hover:bg-red-700 transition-all disabled:opacity-50 mt-1"
                                     >
                                         {isSubmitting ? 'PROCESANDO...' : 'RESERVAR AHORA'}
                                         <ChevronRight size={18} />
