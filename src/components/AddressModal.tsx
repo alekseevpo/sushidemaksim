@@ -17,14 +17,21 @@ import * as turf from '@turf/turf';
 
 // Fix Leaflet marker icons
 import icon from 'leaflet/dist/images/marker-icon.png';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
+    iconRetinaUrl: iconRetina,
     shadowUrl: iconShadow,
     iconSize: [25, 41],
     iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    tooltipAnchor: [16, -28],
+    shadowSize: [41, 41],
 });
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const RESTAURANT_LOCATION: [number, number] = [40.40798, -3.67342];
 
@@ -241,6 +248,41 @@ export default function AddressModal({
 
         return () => clearTimeout(timer);
     }, [markerPosition]);
+
+    // Sync manual address input to marker (Geocoding)
+    useEffect(() => {
+        const fullAddress = `${address} ${house} ${postalCode}`.trim();
+        if (fullAddress.length < 8) return;
+        if (isReverseGeocoding) return; // Don't loop back if we are currently reverse geocoding
+
+        const timer = setTimeout(async () => {
+            setIsSearching(true);
+            try {
+                const query = `${fullAddress}, Madrid, Spain`;
+                const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
+                if (data && data.length > 0) {
+                    const best = data[0];
+                    const lat = parseFloat(best.lat);
+                    const lon = parseFloat(best.lon);
+
+                    // Only update if difference is significant to avoid jitter
+                    const diffLat = Math.abs(lat - markerPosition[0]);
+                    const diffLon = Math.abs(lon - markerPosition[1]);
+
+                    if (diffLat > 0.001 || diffLon > 0.001) {
+                        skipReverseGeocodeRef.current = true;
+                        setMarkerPosition([lat, lon]);
+                    }
+                }
+            } catch (err) {
+                console.error('Auto-geocoding failed', err);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 2000); // Longer debounce for manual typing
+
+        return () => clearTimeout(timer);
+    }, [address, house, postalCode]);
 
     const handleContinue = () => {
         onSelect({
