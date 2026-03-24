@@ -1,6 +1,7 @@
 import { Router, Response, Request } from 'express';
 import { supabase } from '../db/supabase.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
+import { formatDeliveryZone } from '../utils/helpers.js';
 
 import axios from 'axios';
 
@@ -17,7 +18,7 @@ router.get(
             .order('updated_at', { ascending: false });
 
         if (error) throw error;
-        res.json({ zones });
+        res.json({ zones: (zones || []).map(formatDeliveryZone) });
     })
 );
 

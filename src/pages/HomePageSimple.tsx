@@ -11,6 +11,7 @@ import { useMenu, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ProductCard from '../components/menu/ProductCard';
 import ShareModal from '../components/menu/ShareModal';
 import { getOptimizedImageUrl } from '../utils/images';
+import ReservationModal from '../components/reservations/ReservationModal';
 
 const Marquee = () => (
     <div className="relative py-4 md:py-6 overflow-hidden bg-gray-950 border-y border-white/5 select-none">
@@ -106,6 +107,7 @@ export default function HomePageSimple() {
     const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
     const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
     const [copying, setCopying] = useState(false);
+    const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
     // Use TanStack Query
     const { data: allItems = [], isLoading: itemsLoading } = useMenu('all', '');
@@ -220,7 +222,7 @@ export default function HomePageSimple() {
 
             {/* Hero Section */}
             <section
-                className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-20 md:pb-32 bg-neutral-950 bg-cover bg-center"
+                className="relative min-h-[100dvh] flex items-center justify-center px-4 pt-20 md:pt-0 pb-10 bg-neutral-950 bg-cover bg-center overflow-hidden"
                 style={{
                     backgroundImage: `url(${getOptimizedImageUrl('/sushi-hero.webp', 1920)})`,
                 }}
@@ -273,12 +275,12 @@ export default function HomePageSimple() {
                                     <ArrowRight size={18} strokeWidth={2} />
                                 </motion.div>
                             </Link>
-                            <Link
-                                to="/blog"
+                            <button
+                                onClick={() => setIsReservationModalOpen(true)}
                                 className="w-full sm:w-auto btn-premium glass-dark text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-3 hover:bg-white/10 transition-all uppercase"
                             >
-                                NUESTRO BLOG
-                            </Link>
+                                RESERVAR MESA
+                            </button>
                         </div>
                     </motion.div>
 
@@ -301,7 +303,7 @@ export default function HomePageSimple() {
                                 }}
                                 src={getOptimizedImageUrl('/blog_post_chef_hands.png', 800)}
                                 alt="Experiencia Chef en Sushi de Maksim"
-                                fetchPriority="high"
+                                {...({ fetchpriority: 'high' } as any)}
                                 decoding="async"
                                 className="w-full h-full object-cover"
                             />
@@ -311,6 +313,24 @@ export default function HomePageSimple() {
                         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-red-600/20 blur-[80px] rounded-full"></div>
                     </motion.div>
                 </div>
+
+                {/* Scroll Down Indicator */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        delay: 1.5,
+                        duration: 1,
+                        repeat: Infinity,
+                        repeatType: 'reverse',
+                    }}
+                    className="absolute bottom-6 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none"
+                >
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-center ml-[0.3em]">
+                        Scrollea
+                    </span>
+                    <ArrowRight className="rotate-90" size={16} />
+                </motion.div>
             </section>
 
             <Marquee />
@@ -406,6 +426,50 @@ export default function HomePageSimple() {
                             </Link>
                         </div>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Reservation Section */}
+            <section className="py-12 md:py-20 px-4 bg-white overflow-hidden">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="relative h-[300px] md:h-[500px] rounded-[3rem] overflow-hidden order-last lg:order-first"
+                    >
+                        <img
+                            src={getOptimizedImageUrl('/blog_post_chef_hands.png', 1000)}
+                            alt="Reserva tu mesa"
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div className="absolute bottom-10 left-10">
+                            <p className="text-white font-black text-2xl uppercase tracking-tighter">
+                                Ambiente <span className="text-red-500">Exclusivo</span>
+                            </p>
+                        </div>
+                    </motion.div>
+
+                    <div className="text-center lg:text-left">
+                        <span className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 block">
+                            Vive la experiencia completa
+                        </span>
+                        <h2 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tighter leading-tight mb-6">
+                            Reserva tu <span className="text-red-600">Mesa</span>
+                        </h2>
+                        <p className="text-gray-500 text-lg mb-10 max-w-lg mx-auto lg:mx-0 font-medium">
+                            Disfruta de nuestro sushi recién preparado en un ambiente diseñado para
+                            deleitar todos tus sentidos. Ideal para cenas románticas, reuniones o
+                            celebraciones especiales.
+                        </p>
+                        <button
+                            onClick={() => setIsReservationModalOpen(true)}
+                            className="w-full sm:w-auto px-12 py-6 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-red-600 transition-all shadow-xl active:scale-95"
+                        >
+                            SOLICITAR RESERVA
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -627,6 +691,10 @@ export default function HomePageSimple() {
                     copying={copying}
                 />
             )}
+            <ReservationModal
+                isOpen={isReservationModalOpen}
+                onClose={() => setIsReservationModalOpen(false)}
+            />
         </div>
     );
 }

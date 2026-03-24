@@ -6,7 +6,7 @@ import { triggerHaptic, HAPTIC_PATTERNS } from '../../utils/haptics';
 interface CartSummaryProps {
     items: CartItem[];
     total: number;
-    deliveryType: 'delivery' | 'pickup';
+    deliveryType: 'delivery' | 'pickup' | 'reservation';
     deliveryCost: number;
     finalTotal: number;
     isStoreClosed: boolean;

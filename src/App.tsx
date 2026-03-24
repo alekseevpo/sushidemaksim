@@ -22,6 +22,7 @@ import { PromoSkeleton } from './components/skeletons/PromoSkeleton';
 import { BlogSkeleton } from './components/skeletons/BlogSkeleton';
 import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
+import { usePageTracking } from './hooks/usePageTracking';
 
 // Lazy-loaded pages with retry logic
 const lazyRetry = (componentImport: () => Promise<{ default: React.ComponentType<any> }>) => {
@@ -75,6 +76,11 @@ const PageWrapper = ({
     </motion.div>
 );
 
+function PageTracker() {
+    usePageTracking();
+    return null;
+}
+
 function App() {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
@@ -84,6 +90,7 @@ function App() {
             <ToastProvider>
                 <AuthProvider>
                     <CartProvider>
+                        <PageTracker />
                         <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
                             <Analytics />
                             <SpeedInsights />

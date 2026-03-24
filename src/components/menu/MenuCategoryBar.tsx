@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, LayoutGroup } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { CATEGORIES } from '../../constants/menu';
 
@@ -10,13 +10,17 @@ interface MenuCategoryBarProps {
 
 const KatanaUnderline = () => (
     <motion.div
-        initial={{ opacity: 0, scaleX: 0 }}
-        animate={{ opacity: 1, scaleX: 1 }}
-        exit={{ opacity: 0, scaleX: 0 }}
-        className="absolute -bottom-10 left-4 right-0 flex items-center justify-start pointer-events-none z-0 origin-left"
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        layoutId="katana-active"
+        initial={false}
+        className="absolute -bottom-10 left-4 right-0 flex items-center justify-start pointer-events-none z-0"
+        transition={{
+            type: 'spring',
+            stiffness: 250,
+            damping: 25,
+            mass: 0.5,
+        }}
     >
-        <img src="/katana.png" alt="Katana" className="w-[250px] h-24 object-contain" />
+        <img src="/katana.png" alt="Katana" className="w-[240px] h-24 object-contain" />
     </motion.div>
 );
 
@@ -70,52 +74,58 @@ export default function MenuCategoryBar({
     return (
         <aside className="hidden lg:block w-[220px] flex-shrink-0 bg-red-600 min-h-full z-30">
             <div className="sticky top-[64px] h-[calc(100vh-64px)] pb-8 px-3 flex flex-col items-stretch overflow-y-auto no-scrollbar rounded-none">
-                <nav className="flex flex-col py-4">
-                    <button
-                        onClick={() => setSelectedCategory('all')}
-                        className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group ${
-                            selectedCategory === 'all'
-                                ? 'text-white'
-                                : 'text-white/40 hover:text-white'
-                        }`}
-                    >
-                        <Sparkles
-                            size={20}
-                            strokeWidth={selectedCategory === 'all' ? 2.5 : 2}
-                            className={`relative z-10 transition-transform duration-300 ${
-                                selectedCategory === 'all' ? 'scale-110' : 'group-hover:scale-110'
-                            }`}
-                        />
-                        <span className="text-sm relative z-10 font-bold tracking-wide">Todos</span>
-                        {selectedCategory === 'all' && <KatanaUnderline />}
-                    </button>
-
-                    {CATEGORIES.map(cat => (
+                <LayoutGroup id="sidebar-katana">
+                    <nav className="flex flex-col py-4">
                         <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
+                            onClick={() => setSelectedCategory('all')}
                             className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group ${
-                                selectedCategory === cat.id
+                                selectedCategory === 'all'
                                     ? 'text-white'
                                     : 'text-white/40 hover:text-white'
                             }`}
                         >
-                            <cat.icon
+                            <Sparkles
                                 size={20}
-                                strokeWidth={selectedCategory === cat.id ? 2.5 : 2}
+                                strokeWidth={selectedCategory === 'all' ? 2.5 : 2}
                                 className={`relative z-10 transition-transform duration-300 ${
-                                    selectedCategory === cat.id
-                                        ? 'scale-110'
+                                    selectedCategory === 'all'
+                                        ? 'stroke-current scale-110'
                                         : 'group-hover:scale-110'
                                 }`}
                             />
                             <span className="text-sm relative z-10 font-bold tracking-wide">
-                                {cat.name}
+                                Todos
                             </span>
-                            {selectedCategory === cat.id && <KatanaUnderline />}
+                            {selectedCategory === 'all' && <KatanaUnderline />}
                         </button>
-                    ))}
-                </nav>
+
+                        {CATEGORIES.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group ${
+                                    selectedCategory === cat.id
+                                        ? 'text-white'
+                                        : 'text-white/40 hover:text-white'
+                                }`}
+                            >
+                                <cat.icon
+                                    size={20}
+                                    strokeWidth={selectedCategory === cat.id ? 2.5 : 2}
+                                    className={`relative z-10 transition-transform duration-300 ${
+                                        selectedCategory === cat.id
+                                            ? 'scale-110'
+                                            : 'group-hover:scale-110'
+                                    }`}
+                                />
+                                <span className="text-sm relative z-10 font-bold tracking-wide">
+                                    {cat.name}
+                                </span>
+                                {selectedCategory === cat.id && <KatanaUnderline />}
+                            </button>
+                        ))}
+                    </nav>
+                </LayoutGroup>
 
                 <div className="mt-auto pb-4 pt-8 flex items-center justify-center pointer-events-none select-none">
                     <span className="text-white text-7xl font-serif drop-shadow-[2px_2px_3px_rgba(0,0,0,0.4)]">

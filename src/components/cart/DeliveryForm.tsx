@@ -1,12 +1,22 @@
 import { motion } from 'framer-motion';
-import { MapPin, Truck, Store, ArrowRight, CreditCard, Wallet, Smartphone } from 'lucide-react';
+import {
+    MapPin,
+    Truck,
+    Store,
+    ArrowRight,
+    CreditCard,
+    Wallet,
+    Smartphone,
+    Users,
+} from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 import { useEffect, useRef } from 'react';
-import { funnelTracker } from '../../analytics/funnel';
+import { tracker } from '../../analytics/tracker';
+import { BUSINESS_HOURS } from '../../utils/storeStatus';
 
 interface DeliveryFormProps {
-    deliveryType: 'delivery' | 'pickup';
-    setDeliveryType: (type: 'delivery' | 'pickup') => void;
+    deliveryType: 'delivery' | 'pickup' | 'reservation';
+    setDeliveryType: (type: 'delivery' | 'pickup' | 'reservation') => void;
     address: string;
     setAddress: (val: string) => void;
     house: string;
@@ -46,6 +56,8 @@ interface DeliveryFormProps {
     deliveryCost?: number;
     totalValue?: number;
     itemsCount?: number;
+    guestsCount: number;
+    setGuestsCount: (val: number) => void;
 }
 
 export default function DeliveryForm({
@@ -90,25 +102,54 @@ export default function DeliveryForm({
     deliveryCost = 0,
     totalValue = 0,
     itemsCount = 0,
+    guestsCount,
+    setGuestsCount,
 }: DeliveryFormProps) {
     const hasSentDeliveryStep = useRef(false);
 
     // Analytics: Track when delivery info is mostly filled
     useEffect(() => {
         const isAddressFilled = deliveryType === 'pickup' || (address && house && apartment);
-        if (isAddressFilled && !hasSentDeliveryStep.current) {
-            funnelTracker.trackStep('delivery_info_filled', {
-                totalValue,
-                itemsCount,
-                metadata: { deliveryType },
+        const hasContactInfo = phone.length > 5;
+
+        if (isAddressFilled && hasContactInfo && !hasSentDeliveryStep.current) {
+            tracker.track('delivery_info_filled', {
+                metadata: {
+                    deliveryType,
+                    customerName: customerNameState,
+                    guestEmail: guestEmailState,
+                    phone,
+                },
             });
             hasSentDeliveryStep.current = true;
         }
-    }, [address, house, apartment, deliveryType, totalValue, itemsCount]);
+    }, [address, house, apartment, deliveryType, customerNameState, guestEmailState, phone]);
 
     const handleAddressClick = () => {
         setIsAddressModalOpen(true);
     };
+
+    const getTimeSlots = () => {
+        if (!scheduledDate) return [];
+        const dateObj = new Date(scheduledDate);
+        const day = dateObj.getDay();
+        const intervals = BUSINESS_HOURS[day] || [];
+
+        const slots: string[] = [];
+        intervals.forEach(interval => {
+            const [startH] = interval.start.split(':').map(Number);
+            const [endH] = interval.end.split(':').map(Number);
+
+            for (let h = startH; h < endH; h++) {
+                slots.push(`${h.toString().padStart(2, '0')}:00`);
+                slots.push(`${h.toString().padStart(2, '0')}:30`);
+            }
+        });
+        return slots;
+    };
+
+    const availableSlots = getTimeSlots();
+    const isDayClosedSelect = Boolean(scheduledDate && availableSlots.length === 0);
 
     return (
         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px]">
@@ -146,6 +187,22 @@ export default function DeliveryForm({
                 >
                     <Store size={16} strokeWidth={2} />
                     Recogida
+                </button>
+                <button
+                    type="button"
+                    onClick={() => {
+                        triggerHaptic();
+                        setDeliveryType('reservation');
+                        setIsScheduled(true); // Mandatory for reservation
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all border-none cursor-pointer ${
+                        deliveryType === 'reservation'
+                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                            : 'text-gray-400 hover:text-gray-500 bg-transparent'
+                    }`}
+                >
+                    <Users size={16} strokeWidth={2} />
+                    Reserva
                 </button>
             </div>
 
@@ -198,6 +255,27 @@ export default function DeliveryForm({
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {deliveryType === 'reservation' && (
+                <div className="mb-6 p-4 bg-red-50 rounded-2xl border border-red-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-start gap-3">
+                        <div className="p-2 bg-red-100 rounded-xl text-red-600">
+                            <Users size={20} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                            <p className="text-sm font-black text-red-900 uppercase tracking-tight mb-1">
+                                Reserva de Mesa
+                            </p>
+                            <p className="text-sm text-red-800 font-medium">
+                                Prepararemos tu pedido para que esté listo cuando llegues a tu mesa.
+                            </p>
+                            <p className="text-[10px] text-red-600 font-black uppercase mt-2">
+                                * Se requiere reserva previa confirmada
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -404,10 +482,8 @@ export default function DeliveryForm({
                         onClick={() => {
                             triggerHaptic();
                             setPaymentMethod('card');
-                            funnelTracker.trackStep('payment_method_selected', {
-                                totalValue,
-                                itemsCount,
-                                metadata: { paymentMethod: 'card' },
+                            tracker.track('payment_method_selected', {
+                                metadata: { paymentMethod: 'card', totalValue, itemsCount },
                             });
                         }}
                         data-testid="payment-method-card"
@@ -429,10 +505,8 @@ export default function DeliveryForm({
                         onClick={() => {
                             triggerHaptic();
                             setPaymentMethod('cash');
-                            funnelTracker.trackStep('payment_method_selected', {
-                                totalValue,
-                                itemsCount,
-                                metadata: { paymentMethod: 'cash' },
+                            tracker.track('payment_method_selected', {
+                                metadata: { paymentMethod: 'cash', totalValue, itemsCount },
                             });
                         }}
                         data-testid="payment-method-cash"
@@ -576,14 +650,91 @@ export default function DeliveryForm({
                                     <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
                                         Hora
                                     </label>
-                                    <input
-                                        type="time"
-                                        value={scheduledTime}
-                                        onChange={e => setScheduledTime(e.target.value)}
-                                        className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
-                                    />
+                                    {!isDayClosedSelect && availableSlots.length > 0 ? (
+                                        <select
+                                            value={scheduledTime}
+                                            onChange={e => setScheduledTime(e.target.value)}
+                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
+                                        >
+                                            <option value="">Selecciona hora</option>
+                                            {availableSlots.map(slot => (
+                                                <option key={slot} value={slot}>
+                                                    {slot}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type="time"
+                                            value={scheduledTime}
+                                            onChange={e => setScheduledTime(e.target.value)}
+                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                                            disabled={isDayClosedSelect}
+                                        />
+                                    )}
                                 </div>
                             </div>
+
+                            {deliveryType === 'reservation' && (
+                                <div className="mt-1">
+                                    <label className="block text-[10px] uppercase font-black text-gray-400 mb-1.5 ml-1 tracking-wider">
+                                        Número de personas
+                                    </label>
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex-1 flex bg-gray-50 border border-gray-100 rounded-2xl p-1">
+                                            {[1, 2, 3, 4, 5, 6].map(num => (
+                                                <button
+                                                    key={num}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        triggerHaptic();
+                                                        setGuestsCount(num);
+                                                    }}
+                                                    className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+                                                        guestsCount === num
+                                                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                                            : 'text-gray-400 hover:text-gray-500 bg-transparent'
+                                                    }`}
+                                                >
+                                                    {num}
+                                                </button>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const val = prompt('Número de personas:', '7');
+                                                    if (val) setGuestsCount(parseInt(val) || 2);
+                                                }}
+                                                className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+                                                    guestsCount > 6
+                                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                                        : 'text-gray-400 hover:text-gray-500 bg-transparent'
+                                                }`}
+                                            >
+                                                {guestsCount > 6 ? guestsCount : '+'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 mt-2 ml-1 font-medium">
+                                        Para grupos de más de 8 personas, por favor contáctanos por
+                                        teléfono.
+                                    </p>
+                                </div>
+                            )}
+
+                            {isDayClosedSelect && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="p-3 bg-red-50 border border-red-100 rounded-xl"
+                                >
+                                    <p className="text-[10px] font-bold text-red-600 m-0 text-center">
+                                        ⚠️ El restaurante está cerrado este día. Por favor elige
+                                        otra fecha.
+                                    </p>
+                                </motion.div>
+                            )}
+
                             <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50">
                                 <p className="text-[10px] font-black text-blue-900/40 uppercase tracking-widest mb-3">
                                     Horario de atención

@@ -15,6 +15,8 @@ import {
     ArrowLeft,
     BarChart3,
     Heart,
+    CalendarDays,
+    ShoppingCart,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
@@ -26,7 +28,9 @@ const AdminBlog = lazy(() => import('../components/admin/AdminBlog'));
 const AdminSettings = lazy(() => import('../components/admin/AdminSettings'));
 const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
 const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
+const AdminAbandonedCarts = lazy(() => import('../components/admin/AdminAbandonedCarts'));
 const AdminDeliveryZones = lazy(() => import('../components/admin/AdminDeliveryZones'));
+const AdminReservations = lazy(() => import('../components/admin/AdminReservations'));
 import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
 import { Map as MapIcon } from 'lucide-react';
 
@@ -39,7 +43,9 @@ type TabId =
     | 'blog'
     | 'settings'
     | 'analytics'
-    | 'delivery';
+    | 'abandoned'
+    | 'delivery'
+    | 'reservations';
 
 export default function AdminPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
@@ -104,6 +110,14 @@ export default function AdminPage() {
         refetchInterval: 30000,
     });
 
+    // Pending Reservations Query
+    const { data: pendingResData } = useQuery({
+        queryKey: ['admin-pending-res-monitor'],
+        queryFn: () => api.get('/admin/reservations?status=pending'),
+        enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
+        refetchInterval: 60000,
+    });
+
     const pendingOrders = useMemo(() => pendingData?.orders || [], [pendingData]);
     const pendingCount = pendingData?.pagination?.total || pendingOrders.length;
 
@@ -149,6 +163,7 @@ export default function AdminPage() {
         () => [
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'analytics', label: 'Analítica Avanzada', icon: BarChart3 },
+            { id: 'abandoned', label: 'Carritos Abandonados', icon: ShoppingCart },
             {
                 id: 'orders',
                 label: 'Gestión de Pedidos',
@@ -160,9 +175,15 @@ export default function AdminPage() {
             { id: 'promos', label: 'Gestión de Promociones', icon: ShoppingBag },
             { id: 'blog', label: 'Gestión de Blog', icon: Activity },
             { id: 'settings', label: 'Ajustes de Contacto', icon: DollarSign },
+            {
+                id: 'reservations',
+                label: 'Reservas de Mesas',
+                icon: CalendarDays,
+                badge: pendingResData?.total > 0 ? pendingResData.total : null,
+            },
             { id: 'delivery', label: 'Zonas de Entrega', icon: MapIcon },
         ],
-        [pendingCount]
+        [pendingCount, pendingResData?.total]
     );
 
     // Authorization Check
@@ -357,6 +378,8 @@ export default function AdminPage() {
                                             'Maneja tu blog aquí. Crea artículos nuevos, edita los existentes o cambia su estado de publicación.'}
                                         {activeTab === 'analytics' &&
                                             'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes (móviles vs ordenador), a qué horas prefieren pedir y qué días de la semana tienes más trabajo. Úsalo para planificar turnos de personal o lanzar promociones en horas bajas.'}
+                                        {activeTab === 'abandoned' &&
+                                            'Recupera ventas perdidas. Aquí verás clientes que añadieron platos al carrito o rellenaron sus datos pero no terminaron el pedido. ¡Pruéba a escribirles por WhatsApp para ofrecerles ayuda!'}
                                         {activeTab === 'settings' &&
                                             'Personaliza cómo te contactan tus clientes. Cambia tus teléfonos, emails y redes sociales en un solo lugar.'}
                                         {activeTab === 'delivery' &&
@@ -383,6 +406,8 @@ export default function AdminPage() {
                             <AdminAnalytics stats={stats} loading={statsLoading} />
                         )}
 
+                        {activeTab === 'abandoned' && <AdminAbandonedCarts />}
+
                         {activeTab === 'menu' && <AdminMenu />}
                         {activeTab === 'users' && <AdminUsers />}
                         {activeTab === 'orders' && (
@@ -396,6 +421,7 @@ export default function AdminPage() {
                         {activeTab === 'delivery' && <AdminDeliveryZones />}
                         {activeTab === 'promos' && <AdminPromos />}
                         {activeTab === 'blog' && <AdminBlog />}
+                        {activeTab === 'reservations' && <AdminReservations />}
                     </Suspense>
 
                     {/* Developer Footer */}

@@ -1,5 +1,9 @@
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { config } from '../config.js';
+
+// Initialize Resend
+const resend = config.resendApiKey ? new Resend(config.resendApiKey) : null;
 
 export const transporter = nodemailer.createTransport({
     host: config.smtp.host,
@@ -12,18 +16,80 @@ export const transporter = nodemailer.createTransport({
 });
 
 /**
+ * Global sendMail function that prioritizes Resend SDK if available
+ */
+async function sendEmail({
+    to,
+    subject,
+    html,
+}: {
+    to: string;
+    subject: string;
+    html: string;
+}): Promise<void> {
+    const defaultFrom = `Sushi de Maksim <${resend ? 'info@sushidemaksim.vercel.app' : config.smtp.user}>`;
+
+    if (resend) {
+        try {
+            const { error } = await resend.emails.send({
+                from: defaultFrom,
+                to: [to],
+                subject,
+                html,
+            });
+
+            if (error) {
+                // Handle "Domain not verified" error (403 or specific message)
+                // If it's a verification issue and we're sending to the admin, try the sandbox domain
+                if (
+                    (error as any).message?.includes('not verified') ||
+                    (error as any).statusCode === 403
+                ) {
+                    console.warn(
+                        '⚠️ Domain sushidemaksim.vercel.app not verified. Retrying via Resend Sandbox...'
+                    );
+                    const sandboxFrom = 'Sushi de Maksim <onboarding@resend.dev>';
+
+                    const { error: retryError } = await resend.emails.send({
+                        from: sandboxFrom,
+                        to: [to], // Note: Resend sandbox only sends to the account owner's email
+                        subject: `[SANDBOX] ${subject}`,
+                        html,
+                    });
+
+                    if (!retryError) {
+                        console.log('✅ Sent via Sandbox successfully');
+                        return;
+                    }
+                    console.error('❌ Resend Sandbox Error:', retryError);
+                } else {
+                    console.error('❌ Resend Error:', error);
+                }
+
+                // Final fallback to Nodemailer
+                console.log('🔄 Falling back to Nodemailer...');
+                await transporter.sendMail({ from: defaultFrom, to, subject, html });
+            }
+        } catch (err) {
+            console.error('❌ Resend Exception:', err);
+            try {
+                await transporter.sendMail({ from: defaultFrom, to, subject, html });
+            } catch (smtpErr) {
+                console.error('❌ Nodemailer Fallback also failed:', smtpErr);
+            }
+        }
+    } else {
+        await transporter.sendMail({ from: defaultFrom, to, subject, html });
+    }
+}
+
+/**
  * Send a password-reset email with a 6-digit code.
  */
 export async function sendResetCodeEmail(to: string, code: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-
-    await transporter.sendMail({
-        from,
-        to,
-        subject: 'Código de recuperación — Sushi de Maksim',
-        html: `
+    const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
@@ -50,23 +116,18 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
     </div>
   </div>
 </body>
-</html>`,
-    });
+</html>`;
+
+    await sendEmail({ to, subject: 'Código de recuperación — Sushi de Maksim', html });
 }
 
 /**
  * Send a birthday gift email with a 10% discount code.
  */
 export async function sendBirthdayGiftEmail(to: string, name: string, code: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
-        html: `
+    const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
@@ -91,7 +152,7 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
         *Válido para tu próximo pedido desde hoy. Solo tienes que introducir el código al finalizar tu compra.
       </p>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#white;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);color:#ffffff;">CANJEAR MI REGALO</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">CANJEAR MI REGALO</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
@@ -101,7 +162,12 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
     </div>
   </div>
 </body>
-</html>`,
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
+        html,
     });
 }
 
@@ -113,8 +179,6 @@ export async function sendOrderReceiptEmail(
     orderData: any,
     isAdminCopy = false
 ): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-
     const subject = isAdminCopy
         ? `🚨 [NUEVO PEDIDO] #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`
         : `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`;
@@ -195,7 +259,7 @@ export async function sendOrderReceiptEmail(
 
     const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -250,7 +314,7 @@ export async function sendOrderReceiptEmail(
               </div>
             </td>
             <td style="width: 50%; vertical-align: top;">
-              <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Tipo de Entreга</h4>
+              <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Tipo de Entrega</h4>
               <div style="color: #111827; font-size: 15px; font-weight: 700;">
                 ${deliveryType.includes('RECOGIDA') ? '🏬 Recogida en Local' : '🚚 Entrega a Domicilio'}
               </div>
@@ -297,7 +361,7 @@ export async function sendOrderReceiptEmail(
               <a href="https://wa.me/34641518390" style="display: block; background-color: #25D366; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">WhatsApp</a>
             </td>
             <td style="width: 33%; padding: 0 4px;">
-              <a href="mailto:info@sushidemaksim.com" style="display: block; background-color: #ffffff; color: #000000; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Email</a>
+              <a href="mailto:info@sushidemaksim.vercel.app" style="display: block; background-color: #ffffff; color: #000000; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Email</a>
             </td>
             <td style="width: 33%; padding: 0 4px;">
               <a href="tel:+34641518390" style="display: block; background-color: #dc2626; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Llamar</a>
@@ -340,27 +404,16 @@ export async function sendOrderReceiptEmail(
 </html>
   `;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject,
-        html,
-    });
+    await sendEmail({ to: isAdminCopy ? config.adminEmail : to, subject, html });
 }
 
 /**
  * Send a welcome email to a new user.
  */
 export async function sendWelcomeEmail(to: string, name: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Bienvenido a Sushi de Maksim! 🍣',
-        html: `
+    const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
@@ -382,7 +435,12 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
     </div>
   </div>
 </body>
-</html>`,
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '¡Bienvenido a Sushi de Maksim! 🍣',
+        html,
     });
 }
 
@@ -395,16 +453,10 @@ export async function sendVerificationEmail(
     token: string,
     promoCode: string
 ): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
     const activationUrl = `${config.frontendUrl}/verify?token=${token}`;
-
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Activa tu cuenta y recibe un regalo! 🎁 — Sushi de Maksim',
-        html: `
+    const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -457,13 +509,18 @@ export async function sendVerificationEmail(
     <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
       <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
       <div style="color: #e5e7eb; font-size: 11px;">
-        Recibiste este correo porque te registraste en sushidemaksim.com
+        Recibiste este correo porque te registraste en sushidemaksim.vercel.app
       </div>
     </div>
 
   </div>
 </body>
-</html>`,
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '¡Activa tu cuenta y recibe un regalo! 🎁 — Sushi de Maksim',
+        html,
     });
 }
 
@@ -475,16 +532,10 @@ export async function sendEmailChangeVerificationEmail(
     name: string,
     token: string
 ): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
     const activationUrl = `${config.frontendUrl}/verify-email-change?token=${token}`;
-
-    await transporter.sendMail({
-        from,
-        to,
-        subject: 'Confirma tu nuevo correo electrónico — Sushi de Maksim',
-        html: `
+    const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -522,7 +573,12 @@ export async function sendEmailChangeVerificationEmail(
     </div>
   </div>
 </body>
-</html>`,
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: 'Confirma tu nuevo correo electrónico — Sushi de Maksim',
+        html,
     });
 }
 
@@ -530,15 +586,9 @@ export async function sendEmailChangeVerificationEmail(
  * Send a welcome email to a new newsletter subscriber.
  */
 export async function sendNewsletterWelcomeEmail(to: string, promoCode: string): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '¡Bienvenido al Club! 🎉 Tu regalo de Sushi de Maksim te espera',
-        html: `
+    const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
@@ -563,16 +613,21 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
         *Válido durante las próximas 24 horas. Solo tienes que introducir el código al finalizar tu compra en la web.
       </p>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);color:#ffffff;">¡PEDIR AHORA!</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">¡PEDIR AHORA!</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
       <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-      <p style="color:#E5E7EB;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en sushidemaksim.com</p>
+      <p style="color:#E5E7EB;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en sushidemaksim.vercel.app</p>
     </div>
   </div>
 </body>
-</html>`,
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '¡Bienvenido al Club! 🎉 Tu regalo de Sushi de Maksim te espera',
+        html,
     });
 }
 
@@ -584,8 +639,6 @@ export async function sendAbandonedCartEmail(
     name: string,
     items: any[]
 ): Promise<void> {
-    const from = `"${config.smtp.fromName}" <${config.smtp.user}>`;
-
     const itemsHtml = items
         .slice(0, 3)
         .map(
@@ -603,13 +656,9 @@ export async function sendAbandonedCartEmail(
             ? `<p style="color: #6b7280; font-size: 13px; margin: 4px 0;">...y ${items.length - 3} productos más</p>`
             : '';
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: '🍣 Te has olvidado algo delicioso...',
-        html: `
+    const html = `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#fdfbf7;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.06);border:1px solid #f1f5f9;">
@@ -622,7 +671,7 @@ export async function sendAbandonedCartEmail(
     <div style="padding:32px 24px;text-align:center;">
       <p style="color:#111827;font-size:18px;margin:0 0 16px;font-weight:800;">¡Hola ${name}!</p>
       <p style="color:#4b5563;font-size:15px;line-height:1.6;margin:0 0 24px;">
-        Hemos guardado los productos que dejaste en tu cesta. Siguen esperándote, pero no por mucho tiempo. El sushi sabe mejor cuando está fresco... ¡y ya mismo!
+        Hemos guardado los productos que dejaste en tu cesta. Siguen esperándote, pero no por mucho tiempo. El sushi sabe mejor cuando está fresco... ¡y ahora mismo!
       </p>
       
       <div style="text-align: left; margin-bottom: 32px;">
@@ -643,6 +692,135 @@ export async function sendAbandonedCartEmail(
     </div>
   </div>
 </body>
-</html>`,
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '🍣 Te has olvidado algo delicioso...',
+        html,
     });
+}
+
+/**
+ * Send a reservation confirmation email to the customer and admin.
+ */
+export async function sendReservationEmail(
+    reservationData: any,
+    isAdminCopy = false
+): Promise<void> {
+    const subject = isAdminCopy
+        ? `📅 [NUEVA RESERVA] - ${reservationData.name} (${reservationData.guests} pers.)`
+        : `Confirmación de Reserva — Sushi de Maksim 🍣`;
+
+    const greeting = isAdminCopy ? '¡Hola Administrador!' : `¡Hola ${reservationData.name}! 🎉`;
+
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+    <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
+        
+        <!-- Header -->
+        <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
+            <div style="margin-bottom: 8px;">
+                <span style="background-color: #dc2626; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
+            </div>
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
+                MAKSIM<span style="color:#dc2626;">.</span>
+            </h1>
+            <p style="color: #6b7280; margin: 4px 0 0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Reserva de Mesa</p>
+        </div>
+
+        <div style="padding: 32px 24px;">
+            <h2 style="color: #111827; margin: 0 0 8px; font-size: 24px; font-weight: 800;">${greeting}</h2>
+            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                ${
+                    isAdminCopy
+                        ? `Has recibido una nueva solicitud de reserva. Revisa los detalles a continuación:`
+                        : `Hemos recibido tu solicitud de reserva en **Sushi de Maksim**. Nuestro equipo revisará la disponibilidad y te contactará pronto para confirmar.`
+                }
+            </p>
+
+            <!-- Reservation Details Card -->
+            <div style="background-color: #f9fafb; border-radius: 20px; padding: 24px; margin-bottom: 32px; border: 1px solid #f1f5f9;">
+                <h3 style="color: #9ca3af; margin: 0 0 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Detalles de la Reserva</h3>
+                
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                            <div style="color: #6b7280; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Fecha</div>
+                            <div style="color: #111827; font-size: 16px; font-weight: 700;">${new Date(reservationData.reservation_date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                            <div style="color: #6b7280; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Hora</div>
+                            <div style="color: #111827; font-size: 16px; font-weight: 700;">${reservationData.reservation_time}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                            <div style="color: #6b7280; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Personas</div>
+                            <div style="color: #111827; font-size: 16px; font-weight: 700;">${reservationData.guests} comensales</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0;">
+                            <div style="color: #6b7280; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Contacto</div>
+                            <div style="color: #111827; font-size: 16px; font-weight: 700;">${reservationData.phone}</div>
+                        </td>
+                    </tr>
+                </table>
+
+                ${
+                    reservationData.notes
+                        ? `
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 2px solid #e2e8f0;">
+                    <div style="color: #6b7280; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Notas / Comentarios</div>
+                    <div style="color: #4b5563; font-size: 14px; font-style: italic; line-height: 1.5;">"${reservationData.notes}"</div>
+                </div>
+                `
+                        : ''
+                }
+            </div>
+
+            <!-- Next Steps / Actions -->
+            ${
+                !isAdminCopy
+                    ? `
+            <div style="background-color: #fff1f2; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #fecdd3;">
+                <p style="color: #be123c; font-size: 14px; font-weight: 800; margin: 0;">
+                    ⏳ Tu reserva está en estado: PENDIENTE
+                </p>
+                <p style="color: #4b5563; font-size: 13px; margin: 8px 0 0;">
+                    Te enviaremos otro email o te llamaremos para confirmar la mesa.
+                </p>
+            </div>
+            `
+                    : `
+            <div style="text-align: center;">
+                <a href="${config.frontendUrl}/admin" style="display:inline-block;background:#000000;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:14px;box-shadow:0 8px 25px rgba(0,0,0,0.1);">GESTIONAR EN PANEL</a>
+            </div>
+            `
+            }
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+            <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+            <div style="color: #e5e7eb; font-size: 11px;">
+                Este es un correo automático de sushidemaksim.vercel.app
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+    `;
+
+    await sendEmail({ to: isAdminCopy ? config.adminEmail : reservationData.email, subject, html });
 }

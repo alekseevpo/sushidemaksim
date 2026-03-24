@@ -173,7 +173,7 @@ export default function ContactsPage() {
                     <img
                         src="/sushi-hero.webp"
                         alt="Contacto Sushi de Maksim"
-                        fetchPriority="high"
+                        {...({ fetchpriority: 'high' } as any)}
                         decoding="async"
                         className="w-full h-full object-cover opacity-40 scale-105"
                     />

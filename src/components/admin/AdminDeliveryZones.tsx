@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker, Popup } from 'react-leaflet';
+import {
+    MapContainer,
+    TileLayer,
+    Polygon,
+    FeatureGroup,
+    Marker,
+    Popup,
+    Circle,
+} from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -7,7 +15,16 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
-import { Trash2, Settings, MapPin, RefreshCw, X } from 'lucide-react';
+import {
+    Trash2,
+    Settings,
+    MapPin,
+    RefreshCw,
+    X,
+    PlusCircle,
+    Circle as CircleIcon,
+    Map as MapIcon,
+} from 'lucide-react';
 
 // Fix Leaflet marker icons
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -30,6 +47,10 @@ interface DeliveryZone {
     opacity: number;
     coordinates: [number, number][];
     isActive: boolean;
+    type: 'polygon' | 'radius';
+    minRadius: number;
+    maxRadius: number;
+    freeThreshold?: number | null;
 }
 
 const MADRID_CENTER: [number, number] = [40.4168, -3.7038];
@@ -90,11 +111,30 @@ export default function AdminDeliveryZones() {
                 opacity: 0.3,
                 coordinates: latlngs,
                 isActive: true,
+                type: 'polygon',
+                minRadius: 0,
+                maxRadius: 0,
             });
             setIsModalOpen(true);
             // Remove the temporary layer from the map so we can render it from state
             layer.remove();
         }
+    };
+
+    const addNewRadiusZone = () => {
+        setEditingZone({
+            name: '',
+            cost: 0,
+            minOrder: 0,
+            color: '#3B82F6',
+            opacity: 0.1,
+            coordinates: [],
+            isActive: true,
+            type: 'radius',
+            minRadius: 0,
+            maxRadius: 1,
+        });
+        setIsModalOpen(true);
     };
 
     const handleEdited = (e: any) => {
@@ -132,8 +172,15 @@ export default function AdminDeliveryZones() {
                 </div>
                 <div className="flex items-center gap-2">
                     <button
+                        onClick={addNewRadiusZone}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold text-sm shadow-sm"
+                    >
+                        <PlusCircle size={18} />
+                        Nueva Zona Radio
+                    </button>
+                    <button
                         onClick={() => refetch()}
-                        className="p-2 text-gray-400 hover:text-gray-600 transition"
+                        className="p-2 text-gray-400 hover:text-gray-600 transition border border-gray-100 rounded-lg bg-gray-50"
                         title="Refrescar"
                     >
                         <RefreshCw size={20} />
@@ -178,31 +225,72 @@ export default function AdminDeliveryZones() {
                                     polyline: false,
                                 }}
                             />
-                            {zones.map(zone => (
-                                <Polygon
-                                    key={zone.id}
-                                    positions={zone.coordinates}
-                                    pathOptions={{
-                                        color: zone.color,
-                                        fillColor: zone.color,
-                                        fillOpacity: zone.opacity,
-                                        // @ts-expect-error - store id for leaflet-draw edit events
-                                        id: zone.id,
-                                    }}
-                                    eventHandlers={{
-                                        click: () => {
-                                            setEditingZone(zone);
-                                            setIsModalOpen(true);
-                                        },
-                                    }}
-                                >
-                                    <Popup>
-                                        <div className="font-bold">{zone.name}</div>
-                                        <div className="text-xs">Envío: {zone.cost}€</div>
-                                        <div className="text-xs">Mínimo: {zone.minOrder}€</div>
-                                    </Popup>
-                                </Polygon>
-                            ))}
+                            {zones.map(zone => {
+                                if (zone.type === 'radius') {
+                                    return (
+                                        <Circle
+                                            key={zone.id}
+                                            center={RESTAURANT_LOCATION}
+                                            radius={zone.maxRadius * 1000}
+                                            pathOptions={{
+                                                color: zone.color,
+                                                fillColor: zone.color,
+                                                fillOpacity: zone.opacity,
+                                                weight: 1,
+                                                dashArray: '5, 10',
+                                            }}
+                                            eventHandlers={{
+                                                click: () => {
+                                                    setEditingZone(zone);
+                                                    setIsModalOpen(true);
+                                                },
+                                            }}
+                                        >
+                                            <Popup>
+                                                <div className="font-bold">{zone.name}</div>
+                                                <div className="text-xs">
+                                                    Distancia: {zone.minRadius}-{zone.maxRadius} км
+                                                </div>
+                                                <div className="text-xs">Envío: {zone.cost}€</div>
+                                            </Popup>
+                                        </Circle>
+                                    );
+                                }
+                                if (
+                                    zone.coordinates &&
+                                    Array.isArray(zone.coordinates) &&
+                                    zone.coordinates.length >= 3
+                                ) {
+                                    return (
+                                        <Polygon
+                                            key={zone.id}
+                                            positions={zone.coordinates}
+                                            pathOptions={{
+                                                color: zone.color,
+                                                fillColor: zone.color,
+                                                fillOpacity: zone.opacity,
+                                                // @ts-expect-error - store id for leaflet-draw edit events
+                                                id: zone.id,
+                                            }}
+                                            eventHandlers={{
+                                                click: () => {
+                                                    setEditingZone(zone);
+                                                    setIsModalOpen(true);
+                                                },
+                                            }}
+                                        >
+                                            <Popup>
+                                                <div className="font-bold">{zone.name}</div>
+                                                <div className="text-xs">Envío: {zone.cost}€</div>
+                                                <div className="text-xs">
+                                                    Mínimo: {zone.minOrder}€
+                                                </div>
+                                            </Popup>
+                                        </Polygon>
+                                    );
+                                }
+                                return null;
+                            })}
                         </FeatureGroup>
                     </MapContainer>
                 </div>
@@ -223,48 +311,72 @@ export default function AdminDeliveryZones() {
                                 key={zone.id}
                                 className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 group"
                             >
-                                <div className="flex justify-between items-start mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <div
-                                            className="w-3 h-3 rounded-full"
-                                            style={{ backgroundColor: zone.color }}
-                                        />
-                                        <h4 className="font-bold text-gray-900">{zone.name}</h4>
+                                <div className="flex items-center gap-3">
+                                    {/* Color Indicator & Icon */}
+                                    <div
+                                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-black/5"
+                                        style={{ backgroundColor: zone.color }}
+                                    >
+                                        {zone.type === 'radius' ? (
+                                            <CircleIcon size={14} className="text-white" />
+                                        ) : (
+                                            <MapIcon size={14} className="text-white" />
+                                        )}
                                     </div>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+
+                                    {/* Name and Basic Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="font-bold text-gray-900 truncate text-sm">
+                                                {zone.name}
+                                            </h4>
+                                            {zone.type === 'radius' && (
+                                                <span className="text-[10px] text-gray-400 font-medium">
+                                                    ({zone.minRadius}–{zone.maxRadius} км)
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
+                                            <span>
+                                                Envío: <b className="text-gray-800">{zone.cost}€</b>
+                                            </span>
+                                            <span className="text-gray-300">|</span>
+                                            <span>
+                                                Mín:{' '}
+                                                <b className="text-gray-800">{zone.minOrder}€</b>
+                                            </span>
+                                            {zone.freeThreshold && (
+                                                <>
+                                                    <span className="text-gray-300">|</span>
+                                                    <span className="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">
+                                                        Gratis &gt;{zone.freeThreshold}€
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button
                                             onClick={() => {
                                                 setEditingZone(zone);
                                                 setIsModalOpen(true);
                                             }}
-                                            className="p-1.5 text-blue-500 hover:bg-blue-50 rounded"
+                                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                         >
                                             <Settings size={14} />
                                         </button>
                                         <button
-                                            onClick={() => deleteMutation.mutate(zone.id)}
-                                            className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                                            onClick={() => {
+                                                if (window.confirm('¿Eliminar esta zona?')) {
+                                                    deleteMutation.mutate(zone.id);
+                                                }
+                                            }}
+                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                         >
                                             <Trash2 size={14} />
                                         </button>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
-                                    <div className="bg-gray-50 p-2 rounded-lg">
-                                        <span className="block text-[10px] uppercase font-bold text-gray-400">
-                                            Envío
-                                        </span>
-                                        <span className="font-bold text-gray-900">
-                                            {zone.cost} €
-                                        </span>
-                                    </div>
-                                    <div className="bg-gray-50 p-2 rounded-lg">
-                                        <span className="block text-[10px] uppercase font-bold text-gray-400">
-                                            Min. Pedido
-                                        </span>
-                                        <span className="font-bold text-gray-900">
-                                            {zone.minOrder} €
-                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -287,20 +399,79 @@ export default function AdminDeliveryZones() {
                             </button>
                         </div>
                         <div className="p-6 space-y-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold text-gray-500 uppercase">
-                                    Nombre de la Zona
-                                </label>
-                                <input
-                                    type="text"
-                                    value={editingZone.name || ''}
-                                    onChange={e =>
-                                        setEditingZone({ ...editingZone, name: e.target.value })
-                                    }
-                                    placeholder="Ej: Retiro Norte"
-                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
-                                />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500 uppercase">
+                                        Tipo de Zona
+                                    </label>
+                                    <select
+                                        value={editingZone.type || 'polygon'}
+                                        onChange={e =>
+                                            setEditingZone({
+                                                ...editingZone,
+                                                type: e.target.value as any,
+                                            })
+                                        }
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
+                                    >
+                                        <option value="polygon">Polígono (Personalizado)</option>
+                                        <option value="radius">Radio (Círculo)</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500 uppercase">
+                                        Nombre de la Zona
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={editingZone.name || ''}
+                                        onChange={e =>
+                                            setEditingZone({ ...editingZone, name: e.target.value })
+                                        }
+                                        placeholder="Ej: Retiro Norte"
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
+                                    />
+                                </div>
                             </div>
+
+                            {editingZone.type === 'radius' && (
+                                <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">
+                                            Radio Mín (км)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            value={editingZone.minRadius || 0}
+                                            onChange={e =>
+                                                setEditingZone({
+                                                    ...editingZone,
+                                                    minRadius: parseFloat(e.target.value),
+                                                })
+                                            }
+                                            className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">
+                                            Radio Máx (км)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            value={editingZone.maxRadius || 0}
+                                            onChange={e =>
+                                                setEditingZone({
+                                                    ...editingZone,
+                                                    maxRadius: parseFloat(e.target.value),
+                                                })
+                                            }
+                                            className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
@@ -332,6 +503,27 @@ export default function AdminDeliveryZones() {
                                             })
                                         }
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500 uppercase">
+                                        Envío Gratis desde (€)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        placeholder="P. ej. 60"
+                                        value={editingZone.freeThreshold || ''}
+                                        onChange={e =>
+                                            setEditingZone({
+                                                ...editingZone,
+                                                freeThreshold: e.target.value
+                                                    ? parseFloat(e.target.value)
+                                                    : null,
+                                            })
+                                        }
+                                        className="w-full px-4 py-2 bg-green-50/30 border border-green-100 rounded-lg focus:outline-none focus:border-green-400 transition"
                                     />
                                 </div>
                             </div>

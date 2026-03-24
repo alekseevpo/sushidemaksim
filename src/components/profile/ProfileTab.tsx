@@ -19,6 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
 import { User as UserType } from '../../types';
+import { getSharpAvatar } from '../../utils/avatar';
 import { USER_QUERY_KEY } from '../../hooks/queries/useUser';
 
 interface Props {
@@ -339,7 +340,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                             <div className="w-32 h-32 md:w-36 md:h-36 rounded-[42px] bg-gray-800 border-4 border-white/20 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:border-red-500">
                                 {editAvatar && editAvatar.startsWith('http') ? (
                                     <img
-                                        src={`${editAvatar}${editAvatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                        src={`${getSharpAvatar(editAvatar)}${editAvatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
                                         alt="Avatar"
                                         className="w-full h-full object-cover"
                                         onError={e => {

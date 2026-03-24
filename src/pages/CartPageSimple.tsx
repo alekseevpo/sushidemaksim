@@ -16,7 +16,7 @@ import OrderSuccessModal from '../components/cart/OrderSuccessModal';
 import CartSuggestions from '../components/cart/CartSuggestions';
 import CartEmptyView from '../components/cart/CartEmptyView';
 import { useScrollLock } from '../hooks/useScrollLock';
-import { funnelTracker } from '../analytics/funnel';
+import { tracker } from '../analytics/tracker';
 
 interface MenuItem {
     id: number;
@@ -49,7 +49,7 @@ export default function CartPageSimple() {
     const [promoError, setPromoError] = useState<string | null>(null);
 
     const discountAmount = promoDiscount ? (cartSubtotal * promoDiscount) / 100 : 0;
-    const { deliveryType, selectedZone } = deliveryDetails;
+    const { deliveryType, selectedZone, guestsCount } = deliveryDetails;
 
     // We need siteSettings for these. But they are loaded in useEffect.
     // I'll keep them where they are if they need it, or move siteSettings load to useCart?
@@ -60,6 +60,10 @@ export default function CartPageSimple() {
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
     const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
     const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+    const [lastOrderSummary, setLastOrderSummary] = useState<{
+        total: number;
+        deliveryCost: number;
+    } | null>(null);
 
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
@@ -182,9 +186,17 @@ export default function CartPageSimple() {
     // Analytics: Track cart view
     useEffect(() => {
         if (!cartLoading && items.length > 0) {
-            funnelTracker.trackStep('cart_view', {
-                totalValue: cartSubtotal,
-                itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+            tracker.track('cart_view', {
+                metadata: {
+                    totalValue: cartSubtotal,
+                    itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+                    items: items.map(i => ({
+                        id: i.id,
+                        name: i.name,
+                        price: i.price,
+                        quantity: i.quantity,
+                    })),
+                },
                 userId: user?.id,
             });
         }
@@ -296,17 +308,32 @@ export default function CartPageSimple() {
         }
 
         // Analytics: Track checkout start
-        funnelTracker.trackStep('checkout_start', {
-            totalValue: cartSubtotal,
-            itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+        tracker.track('checkout_start', {
+            metadata: {
+                totalValue: cartSubtotal,
+                itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+                deliveryType,
+                paymentMethod,
+            },
             userId: user?.id,
-            metadata: { deliveryType, paymentMethod },
         });
 
         setIsOrdering(true);
 
         const notesArray = [];
-        notesArray.push(`[TIPO: ${deliveryType === 'pickup' ? 'RECOGIDA' : 'DOMICILIO'}]`);
+        const typeLabel =
+            deliveryType === 'pickup'
+                ? 'RECOGIDA'
+                : deliveryType === 'reservation'
+                  ? 'RESERVA'
+                  : 'DOMICILIO';
+        notesArray.push(`[TIPO: ${typeLabel}]`);
+        if (deliveryType === 'reservation' && guestsCount) {
+            notesArray.push(`[PERSONAS: ${guestsCount}]`);
+        }
+        if (deliveryType === 'reservation') {
+            notesArray.push(`[PERSONAS: ${guestsCount}]`);
+        }
         notesArray.push(`[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
         if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
         if (isScheduled && scheduledDate && scheduledTime)
@@ -357,11 +384,19 @@ export default function CartPageSimple() {
             }
 
             // Analytics: Track order placed
-            funnelTracker.trackStep('order_placed', {
-                totalValue: cartSubtotal,
-                itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+            tracker.track('order_placed', {
+                metadata: {
+                    totalValue: cartSubtotal,
+                    itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+                    orderId: data.order.id,
+                },
                 userId: user?.id,
-                metadata: { orderId: data.order.id },
+            });
+
+            // Capture summary before clearing cart
+            setLastOrderSummary({
+                total: cartSubtotal - discountAmount,
+                deliveryCost: deliveryCost,
             });
 
             setOrderSuccess(data.order.id);
@@ -369,11 +404,19 @@ export default function CartPageSimple() {
             clearCart();
 
             // Reset for next order session
-            funnelTracker.resetSession();
+            tracker.resetSession();
 
             showSuccess('¡Pedido realizado! 🍣');
             if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
         } catch (err: any) {
+            tracker.track('error_notice', {
+                metadata: {
+                    errorSource: 'handleOrder',
+                    errorMessage: err.message,
+                    errorCode: err.errorCode || err.code,
+                },
+                userId: user?.id,
+            });
             showError(err.message || 'Error al realizar el pedido');
         } finally {
             setIsOrdering(false);
@@ -544,10 +587,12 @@ export default function CartPageSimple() {
                                 }
                                 noCall={noCall}
                                 setNoCall={val => updateDeliveryDetails({ noCall: val })}
-                                noBuzzer={noBuzzer}
+                                noBuzzer={deliveryDetails.noBuzzer}
                                 setNoBuzzer={val => updateDeliveryDetails({ noBuzzer: val })}
-                                customNote={customNote}
+                                customNote={deliveryDetails.customNote}
                                 setCustomNote={val => updateDeliveryDetails({ customNote: val })}
+                                guestsCount={guestsCount}
+                                setGuestsCount={val => updateDeliveryDetails({ guestsCount: val })}
                                 selectedZone={selectedZone}
                                 setIsAddressModalOpen={setIsAddressModalOpen}
                                 user={user}
@@ -617,19 +662,20 @@ export default function CartPageSimple() {
             {orderSuccess && (
                 <OrderSuccessModal
                     orderId={orderSuccess}
-                    phone={phone || user?.phone || ''}
+                    phone={phone || ''}
                     isAuthenticated={isAuthenticated}
                     user={user}
-                    isScheduled={isScheduled}
-                    scheduledDate={scheduledDate}
-                    scheduledTime={scheduledTime}
+                    isScheduled={deliveryDetails.isScheduled}
+                    scheduledDate={deliveryDetails.scheduledDate}
+                    scheduledTime={deliveryDetails.scheduledTime}
                     deliveryType={deliveryType}
                     address={address}
                     house={house}
                     apartment={apartment}
                     orderWhatsappUrl={orderWhatsappUrl}
-                    total={cartSubtotal - discountAmount}
-                    deliveryCost={deliveryCost}
+                    total={lastOrderSummary?.total ?? cartSubtotal - discountAmount}
+                    deliveryCost={lastOrderSummary?.deliveryCost ?? deliveryCost}
+                    guestsCount={guestsCount}
                 />
             )}
         </div>

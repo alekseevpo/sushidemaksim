@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, ArrowRight, Loader2, Search, CheckCircle, Info } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap, Polygon } from 'react-leaflet';
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    useMapEvents,
+    useMap,
+    Polygon,
+    Circle,
+} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { api } from '../utils/api';
@@ -89,34 +97,50 @@ export default function AddressModal({
     useEffect(() => {
         if (!markerPosition || deliveryZones.length === 0) return;
 
-        const point = turf.point([markerPosition[1], markerPosition[0]]); // [lng, lat] for turf
+        const userPoint = turf.point([markerPosition[1], markerPosition[0]]); // [lng, lat] for turf
+        const restaurantPoint = turf.point([RESTAURANT_LOCATION[1], RESTAURANT_LOCATION[0]]);
+        const distanceKm = turf.distance(restaurantPoint, userPoint);
+
         const matchingZones: any[] = [];
 
         for (const zone of deliveryZones) {
-            if (!zone.coordinates || zone.coordinates.length < 3) continue;
-
-            const turfCoords = zone.coordinates.map((c: number[]) => [c[1], c[0]]);
             if (
-                turfCoords[0][0] !== turfCoords[turfCoords.length - 1][0] ||
-                turfCoords[0][1] !== turfCoords[turfCoords.length - 1][1]
+                zone.type === 'radius' ||
+                (zone.maxRadius > 0 && (!zone.coordinates || zone.coordinates.length < 3))
             ) {
-                turfCoords.push(turfCoords[0]);
-            }
-
-            try {
-                const poly = turf.polygon([turfCoords]);
-                if (turf.booleanPointInPolygon(point, poly)) {
-                    // Calculate area to find the "smallest" zone in case of overlap
-                    const area = turf.area(poly);
-                    matchingZones.push({ ...zone, area });
+                // Radius-based detection
+                if (distanceKm >= (zone.minRadius || 0) && distanceKm < zone.maxRadius) {
+                    matchingZones.push({ ...zone, area: zone.maxRadius - (zone.minRadius || 0) });
                 }
-            } catch (err) {
-                console.warn('Invalid polygon for zone:', zone.name);
+            } else if (
+                (zone.type === 'polygon' || !zone.type) &&
+                zone.coordinates &&
+                Array.isArray(zone.coordinates) &&
+                zone.coordinates.length >= 3
+            ) {
+                // Legacy Polygon-based detection
+                const turfCoords = zone.coordinates.map((c: number[]) => [c[1], c[0]]);
+                if (
+                    turfCoords[0][0] !== turfCoords[turfCoords.length - 1][0] ||
+                    turfCoords[0][1] !== turfCoords[turfCoords.length - 1][1]
+                ) {
+                    turfCoords.push(turfCoords[0]);
+                }
+
+                try {
+                    const poly = turf.polygon([turfCoords]);
+                    if (turf.booleanPointInPolygon(userPoint, poly)) {
+                        const area = turf.area(poly);
+                        matchingZones.push({ ...zone, area: area / 1000000 }); // Area in km2 for comparison
+                    }
+                } catch (err) {
+                    console.warn('Invalid polygon for zone:', zone.name);
+                }
             }
         }
 
         if (matchingZones.length > 0) {
-            // Sort by area ascending so the most specific (smallest) zone wins
+            // Sort by area/diff ascending so the most specific zone wins
             matchingZones.sort((a, b) => a.area - b.area);
             setSelectedZone(matchingZones[0]);
         } else {
@@ -299,18 +323,50 @@ export default function AddressModal({
                                         position={markerPosition}
                                         setPosition={setMarkerPosition}
                                     />
-                                    {deliveryZones.map(zone => (
-                                        <Polygon
-                                            key={zone.id}
-                                            positions={zone.coordinates}
-                                            pathOptions={{
-                                                color: zone.color,
-                                                fillColor: zone.color,
-                                                fillOpacity: 0.1,
-                                                weight: 2,
-                                            }}
-                                        />
-                                    ))}
+                                    {deliveryZones.map(zone => {
+                                        if (
+                                            zone.type === 'radius' ||
+                                            (zone.maxRadius > 0 &&
+                                                (!zone.coordinates || zone.coordinates.length < 3))
+                                        ) {
+                                            return (
+                                                <Circle
+                                                    key={zone.id}
+                                                    center={RESTAURANT_LOCATION}
+                                                    radius={zone.maxRadius * 1000} // Leaflet uses meters
+                                                    pathOptions={{
+                                                        color: zone.color,
+                                                        fillColor: zone.color,
+                                                        fillOpacity: 0.05,
+                                                        weight: 1,
+                                                        dashArray: '5, 10',
+                                                    }}
+                                                />
+                                            );
+                                        }
+                                        if (
+                                            zone.coordinates &&
+                                            Array.isArray(zone.coordinates) &&
+                                            zone.coordinates.length >= 3
+                                        ) {
+                                            return (
+                                                <Polygon
+                                                    key={zone.id}
+                                                    positions={zone.coordinates}
+                                                    pathOptions={{
+                                                        color: zone.color,
+                                                        fillColor: zone.color,
+                                                        fillOpacity: 0.1,
+                                                        weight: 2,
+                                                    }}
+                                                />
+                                            );
+                                        }
+                                        return null;
+                                    })}
+                                    <Marker position={RESTAURANT_LOCATION} opacity={0.6}>
+                                        {/* Optional: Add a label or different icon for restaurant */}
+                                    </Marker>
                                 </MapContainer>
 
                                 {/* Search Overlay */}

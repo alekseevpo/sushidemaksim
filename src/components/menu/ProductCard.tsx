@@ -82,7 +82,7 @@ export default function ProductCard({
                         alt={item.name}
                         loading={isPriority ? 'eager' : 'lazy'}
                         decoding="async"
-                        {...({ fetchPriority: isPriority ? 'high' : 'auto' } as any)}
+                        {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
                         className="w-full h-full object-cover transition-transform duration-700"
                         onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
                     />

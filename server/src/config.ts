@@ -33,6 +33,8 @@ export const config = {
         pass: process.env.SMTP_PASS || '',
         fromName: process.env.SMTP_FROM_NAME || 'Sushi de Maksim',
     },
+    resendApiKey: process.env.RESEND_API_KEY || '',
+    adminEmail: process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'alekseevpo@gmail.com',
     supabase: {
         url: process.env.SUPABASE_URL || '',
         key: process.env.SUPABASE_KEY || '',

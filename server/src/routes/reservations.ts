@@ -1,0 +1,79 @@
+import { Router } from 'express';
+import { supabase } from '../db/supabase.js';
+import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { isTimeWithinBusinessHours } from '../utils/storeStatus.js';
+import { sendReservationEmail } from '../utils/email.js';
+
+const router = Router();
+
+// Create a new reservation
+router.post('/', async (req, res) => {
+    try {
+        const { name, email, phone, date, time, guests, notes, user_id } = req.body;
+
+        if (!name || !email || !phone || !date || !time || !guests) {
+            return res.status(400).json({ error: 'Faltan campos obligatorios' });
+        }
+
+        // Validate time within business hours
+        // Parse "YYYY-MM-DD" to get the correct day of the week regardless of server TZ
+        const [year, month, day] = date.split('-').map(Number);
+        const resDate = new Date(year, month - 1, day);
+
+        if (!isTimeWithinBusinessHours(resDate, time)) {
+            return res
+                .status(400)
+                .json({ error: 'El restaurante está cerrado en el horario seleccionado' });
+        }
+
+        const { data, error } = await supabase
+            .from('reservations')
+            .insert({
+                name,
+                email,
+                phone,
+                reservation_date: date,
+                reservation_time: time,
+                guests: parseInt(guests),
+                notes,
+                user_id: user_id || null,
+                status: 'pending',
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // Send confirmation emails (don't wait for them)
+        sendReservationEmail(data).catch(err =>
+            console.error('Error sending customer reservation email:', err)
+        );
+        sendReservationEmail(data, true).catch(err =>
+            console.error('Error sending admin reservation email:', err)
+        );
+
+        res.status(201).json(data);
+    } catch (error: any) {
+        console.error('Error creating reservation:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get user reservations (authenticated)
+router.get('/my', authMiddleware, async (req: AuthRequest, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('reservations')
+            .select('*')
+            .eq('user_id', req.userId)
+            .order('reservation_date', { ascending: false });
+
+        if (error) throw error;
+
+        res.json(data);
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+export default router;

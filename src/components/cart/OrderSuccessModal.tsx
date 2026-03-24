@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { CheckCircle, Store, MapPin, Mail, Phone } from 'lucide-react';
+import { CheckCircle, Store, MapPin, Mail, Phone, Users } from 'lucide-react';
 
 interface OrderSuccessModalProps {
     orderId: number;
@@ -10,13 +10,14 @@ interface OrderSuccessModalProps {
     isScheduled: boolean;
     scheduledDate: string;
     scheduledTime: string;
-    deliveryType: 'delivery' | 'pickup';
+    deliveryType: 'delivery' | 'pickup' | 'reservation';
     address: string;
     house: string;
     apartment: string;
     orderWhatsappUrl: string | null;
     total: number;
     deliveryCost: number;
+    guestsCount?: number;
 }
 
 export default function OrderSuccessModal({
@@ -34,6 +35,7 @@ export default function OrderSuccessModal({
     orderWhatsappUrl,
     total,
     deliveryCost,
+    guestsCount,
 }: OrderSuccessModalProps) {
     const navigate = useNavigate();
 
@@ -65,7 +67,9 @@ export default function OrderSuccessModal({
                             #{String(orderId).padStart(5, '0')}
                         </span>{' '}
                         ha sido recibido.
-                        {isScheduled ? (
+                        {deliveryType === 'reservation' && guestsCount ? (
+                            <> Prepararemos tu mesa para {guestsCount} personas.</>
+                        ) : isScheduled ? (
                             <> Lo prepararemos para la fecha y hora seleccionada.</>
                         ) : (
                             <> y ya estamos preparando tus sushis con amor.</>
@@ -81,7 +85,9 @@ export default function OrderSuccessModal({
                                         ? 'Entrega programada'
                                         : deliveryType === 'pickup'
                                           ? 'Tiempo de preparación'
-                                          : 'Entrega estimada'}
+                                          : deliveryType === 'reservation'
+                                            ? 'Hora de comida'
+                                            : 'Entrega estimada'}
                                 </span>
                                 <div className="text-base font-black text-red-600 text-center">
                                     {isScheduled ? (
@@ -98,6 +104,8 @@ export default function OrderSuccessModal({
                                         </div>
                                     ) : deliveryType === 'pickup' ? (
                                         '20 – 30 min'
+                                    ) : deliveryType === 'reservation' ? (
+                                        scheduledTime
                                     ) : (
                                         '30 – 60 min'
                                     )}
@@ -111,6 +119,8 @@ export default function OrderSuccessModal({
                                 <div className="p-2 bg-white rounded-xl text-red-600 shadow-sm shrink-0 border border-gray-100">
                                     {deliveryType === 'pickup' ? (
                                         <Store size={18} />
+                                    ) : deliveryType === 'reservation' ? (
+                                        <Users size={18} />
                                     ) : (
                                         <MapPin size={18} />
                                     )}
@@ -119,10 +129,12 @@ export default function OrderSuccessModal({
                                     <h4 className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">
                                         {deliveryType === 'pickup'
                                             ? 'Punto de Recogida'
-                                            : 'Dirección de Entrega'}
+                                            : deliveryType === 'reservation'
+                                              ? 'Lugar de Reserva'
+                                              : 'Dirección de Entrega'}
                                     </h4>
                                     <p className="text-[13px] font-black text-gray-900 leading-tight truncate">
-                                        {deliveryType === 'pickup'
+                                        {deliveryType === 'pickup' || deliveryType === 'reservation'
                                             ? 'Calle Barrilero, 20, 28007 Madrid'
                                             : `${address}${house ? `, Portal: ${house}` : ''}${apartment ? `, Piso: ${apartment}` : ''}`}
                                     </p>

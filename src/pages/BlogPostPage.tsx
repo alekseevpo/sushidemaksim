@@ -162,7 +162,7 @@ export default function BlogPostPage() {
                 <img
                     src={getOptimizedImageUrl(post.imageUrl || '/sushi-hero.webp', 1200)}
                     alt={`Hero de ${post.title}`}
-                    fetchPriority="high"
+                    {...({ fetchpriority: 'high' } as any)}
                     decoding="async"
                     className="w-full h-full object-cover opacity-60"
                 />

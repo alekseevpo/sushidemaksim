@@ -127,6 +127,10 @@ export function formatDeliveryZone(z: any) {
         opacity: Number(z.opacity || 0.3),
         coordinates: z.coordinates,
         isActive: !!z.is_active,
+        type: z.type || 'polygon',
+        minRadius: z.min_radius ? Number(z.min_radius) : 0,
+        maxRadius: z.max_radius ? Number(z.max_radius) : 0,
+        freeThreshold: z.free_threshold ? Number(z.free_threshold) : null,
     };
 }
 

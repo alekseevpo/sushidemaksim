@@ -70,7 +70,7 @@ export default function BlogPage() {
                     <img
                         src={getOptimizedImageUrl('/blog_post_sushi_art.png', 1200)}
                         alt="Mundo Sushi de Maksim"
-                        fetchPriority="high"
+                        {...({ fetchpriority: 'high' } as any)}
                         decoding="async"
                         className="w-full h-full object-cover opacity-40 scale-105"
                     />

@@ -1366,10 +1366,22 @@ router.post(
         cost: { required: true, type: 'number', min: 0 },
         min_order: { type: 'number', min: 0 },
         color: { type: 'string' },
-        coordinates: { required: true, type: 'array' },
+        // coordinates optional because we might use radii
     }),
     asyncHandler(async (req: Request, res: Response) => {
-        const { name, cost, minOrder, color, opacity, coordinates, isActive } = req.body;
+        const {
+            name,
+            cost,
+            minOrder,
+            freeThreshold,
+            color,
+            opacity,
+            coordinates,
+            isActive,
+            type,
+            minRadius,
+            maxRadius,
+        } = req.body;
 
         const { data: zone, error } = await supabase
             .from('delivery_zones')
@@ -1377,10 +1389,14 @@ router.post(
                 name: name.trim(),
                 cost,
                 min_order: minOrder || 0,
+                free_threshold: freeThreshold || null,
                 color: color || '#EF4444',
                 opacity: opacity || 0.3,
-                coordinates,
+                coordinates: coordinates || [],
                 is_active: isActive !== undefined ? isActive : true,
+                type: type || (coordinates ? 'polygon' : 'radius'),
+                min_radius: minRadius || 0,
+                max_radius: maxRadius || 0,
             })
             .select()
             .single();
@@ -1395,7 +1411,19 @@ router.put(
     '/delivery-zones/:id',
     asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
-        const { name, cost, minOrder, color, opacity, coordinates, isActive } = req.body;
+        const {
+            name,
+            cost,
+            minOrder,
+            freeThreshold,
+            color,
+            opacity,
+            coordinates,
+            isActive,
+            type,
+            minRadius,
+            maxRadius,
+        } = req.body;
 
         const { data: zone, error } = await supabase
             .from('delivery_zones')
@@ -1403,10 +1431,14 @@ router.put(
                 name: name?.trim(),
                 cost,
                 min_order: minOrder,
+                free_threshold: freeThreshold,
                 color,
                 opacity,
                 coordinates,
                 is_active: isActive,
+                type,
+                min_radius: minRadius,
+                max_radius: maxRadius,
             })
             .eq('id', id)
             .select()
@@ -1425,6 +1457,149 @@ router.delete(
         const { error } = await supabase.from('delivery_zones').delete().eq('id', id);
         if (error) throw error;
         res.json({ success: true });
+    })
+);
+
+// ─── RESERVATIONS MANAGEMENT ───────────────────────────────────────────────
+
+// GET /api/admin/reservations
+router.get(
+    '/reservations',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { status, date } = req.query;
+        let query = supabase
+            .from('reservations')
+            .select('*')
+            .order('reservation_date', { ascending: true });
+
+        if (status) query = query.eq('status', status);
+        if (date) query = query.eq('reservation_date', date);
+
+        const { data: reservations, error } = await query;
+        if (error) throw error;
+        res.json({ reservations, total: (reservations || []).length });
+    })
+);
+
+// PATCH /api/admin/reservations/:id
+router.patch(
+    '/reservations/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const { status, notes } = req.body;
+
+        const updateData: any = {};
+        if (status) updateData.status = status;
+        if (notes !== undefined) updateData.notes = notes;
+
+        const { data: reservation, error } = await supabase
+            .from('reservations')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json(reservation);
+    })
+);
+
+// DELETE /api/admin/reservations/:id
+router.delete(
+    '/reservations/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const { error } = await supabase.from('reservations').delete().eq('id', id);
+        if (error) throw error;
+        res.status(204).send();
+    })
+);
+
+// ─── ABANDONED CARTS ANALYSIS ──────────────────────────────────────────
+router.get(
+    '/abandoned-carts',
+    asyncHandler(async (_req: Request, res: Response) => {
+        // 1. Get events from the last 7 days
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { data: events, error } = await supabase
+            .from('site_events')
+            .select('*')
+            .gte('created_at', sevenDaysAgo)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        // 2. Map sessions to their state
+        const sessions = new Map<string, any>();
+
+        events?.forEach(e => {
+            const sid = e.session_id;
+            if (!sessions.has(sid)) {
+                sessions.set(sid, {
+                    sessionId: sid,
+                    userId: e.user_id,
+                    lastActivity: e.created_at,
+                    hasOrdered: false,
+                    items: [],
+                    contact: { name: '', email: '', phone: '' },
+                    events: [],
+                });
+            }
+
+            const s = sessions.get(sid);
+            s.events.push(e);
+
+            if (e.event_name === 'order_placed') {
+                s.hasOrdered = true;
+            }
+
+            if (e.event_name === 'cart_view' && e.metadata?.items) {
+                if (s.items.length === 0) s.items = e.metadata.items;
+            }
+
+            if (e.event_name === 'delivery_info_filled' && e.metadata) {
+                if (!s.contact.email) s.contact.email = e.metadata.guestEmail || '';
+                if (!s.contact.phone) s.contact.phone = e.metadata.phone || '';
+                if (!s.contact.name) s.contact.name = e.metadata.customerName || '';
+            }
+        });
+
+        // 3. Filter for abandoned ones (has items/contact but no order)
+        const abandoned = Array.from(sessions.values())
+            .filter(
+                s => !s.hasOrdered && (s.items.length > 0 || s.contact.phone || s.contact.email)
+            )
+            .map(s => {
+                // Determine "Stage"
+                let stage = 'Cart';
+                if (s.contact.phone || s.contact.email) stage = 'Contact Info';
+                if (s.events.some((e: any) => e.event_name === 'payment_method_selected'))
+                    stage = 'Payment';
+
+                return {
+                    sessionId: s.sessionId,
+                    userId: s.userId,
+                    lastActivity: s.lastActivity,
+                    items: s.items,
+                    contact: s.contact,
+                    stage,
+                    totalValue: s.items.reduce(
+                        (sum: number, i: any) => sum + i.price * i.quantity,
+                        0
+                    ),
+                };
+            })
+            // Only show those with at least 30 mins of inactivity to be "abandoned"
+            .filter(s => {
+                const last = new Date(s.lastActivity).getTime();
+                const now = Date.now();
+                return now - last > 30 * 60 * 1000;
+            })
+            .sort(
+                (a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime()
+            );
+
+        res.json({ abandoned, total: abandoned.length });
     })
 );
 

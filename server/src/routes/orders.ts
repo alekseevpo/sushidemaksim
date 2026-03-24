@@ -217,13 +217,16 @@ router.post(
                 );
             }
 
-            const currentFee = matchedZone ? (Number(matchedZone.cost) ?? defaultFee) : defaultFee;
-            const currentFreeThreshold = matchedZone
-                ? (Number(matchedZone.free_threshold) ?? defaultFreeThreshold)
-                : defaultFreeThreshold;
-            const currentMinOrder = matchedZone
-                ? (Number(matchedZone.min_order) ?? defaultMinOrder)
-                : defaultMinOrder;
+            const currentFee =
+                matchedZone && matchedZone.cost !== null ? Number(matchedZone.cost) : defaultFee;
+            const currentFreeThreshold =
+                matchedZone && matchedZone.free_threshold !== null
+                    ? Number(matchedZone.free_threshold)
+                    : defaultFreeThreshold;
+            const currentMinOrder =
+                matchedZone && matchedZone.min_order !== null
+                    ? Number(matchedZone.min_order)
+                    : defaultMinOrder;
 
             // Enforce Min Order on Server
             if (subtotal < currentMinOrder) {
@@ -272,7 +275,7 @@ router.post(
         if (deliveryFee > 0) {
             orderItemsToInsert.push({
                 order_id: order.id,
-                menu_item_id: -1, // Virtual ID for delivery
+                menu_item_id: null, // Virtual ID for delivery
                 name: 'Gastos de Envío',
                 quantity: 1,
                 price_at_time: deliveryFee,
@@ -619,7 +622,7 @@ router.post(
         if (deliveryFee > 0) {
             itemsToInsert.push({
                 order_id: order.id,
-                menu_item_id: -1,
+                menu_item_id: null,
                 name: 'Gastos de Envío',
                 quantity: 1,
                 price_at_time: deliveryFee,

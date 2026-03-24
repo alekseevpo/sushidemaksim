@@ -29,7 +29,7 @@ interface DeliveryDetails {
     customerName: string;
     guestEmail: string;
     paymentMethod: 'cash' | 'card' | null;
-    deliveryType: 'delivery' | 'pickup';
+    deliveryType: 'delivery' | 'pickup' | 'reservation';
     selectedZone: any | null;
     noCall: boolean;
     noBuzzer: boolean;
@@ -38,6 +38,7 @@ interface DeliveryDetails {
     scheduledTime: string;
     customNote: string;
     saveAddress: boolean;
+    guestsCount: number;
 }
 
 interface CartContextType {
@@ -78,6 +79,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 scheduledTime: '',
                 customNote: '',
                 saveAddress: true,
+                guestsCount: 2,
             };
 
         const saved = localStorage.getItem('delivery_details');
@@ -106,6 +108,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             scheduledTime: '',
             customNote: '',
             saveAddress: true,
+            guestsCount: 2,
         };
     });
 

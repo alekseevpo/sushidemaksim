@@ -13,6 +13,7 @@ import {
     BookOpen,
     Phone,
     Star,
+    Calendar,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
@@ -20,9 +21,11 @@ import { useAuth } from '../hooks/useAuth';
 import StoreStatusBanner from './StoreStatusBanner';
 import LoginModal from './LoginModal';
 import { useScrollLock } from '../hooks/useScrollLock';
+import ReservationModal from './reservations/ReservationModal';
+import { getSharpAvatar } from '../utils/avatar';
 
 export default function Header() {
-    const { itemCount } = useCart();
+    const { itemCount, total } = useCart();
     const { user, isAuthenticated, logout, isLoading } = useAuth();
     const location = useLocation();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -33,6 +36,7 @@ export default function Header() {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [isCartBumping, setIsCartBumping] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
 
     const headerRef = useRef<HTMLElement>(null);
@@ -122,6 +126,12 @@ export default function Header() {
         { to: '/blog', label: 'Blog', icon: BookOpen },
         { to: '/contacts', label: 'Contactos', icon: Phone },
         { to: '/promo', label: 'Promo', highlight: true, icon: Star },
+        {
+            label: 'Reserva',
+            onClick: () => setIsReservationModalOpen(true),
+            highlight: true,
+            icon: Calendar,
+        },
     ];
 
     const isHome = location.pathname === '/';
@@ -142,63 +152,82 @@ export default function Header() {
             >
                 <StoreStatusBanner />
                 <div className="max-w-7xl mx-auto px-4 md:px-6">
-                    <div className="flex items-center justify-between h-16 md:h-18">
-                        {' '}
-                        {/* Logo */}
-                        <Link
-                            to="/"
-                            onClick={() => setShowMobileMenu(false)}
-                            className="flex items-center no-underline gap-0 group"
-                        >
-                            <div
-                                className={`
-                                    transition-all duration-500 shrink-0 flex items-center justify-center
-                                    md:bg-red-600 md:px-5 md:h-20 md:w-[220px] md:group-hover:rotate-6
-                                    bg-transparent h-16 w-auto px-1
-                                `}
+                    <div className="flex md:grid md:grid-cols-3 items-center justify-between h-16 md:h-18">
+                        {/* Logo Container */}
+                        <div className="flex-1 flex justify-start items-center h-full">
+                            <Link
+                                to="/"
+                                onClick={() => setShowMobileMenu(false)}
+                                className="flex items-center no-underline gap-0 group"
                             >
-                                <img
-                                    src="/logo.svg"
-                                    alt="Sushi de Maksim"
+                                <div
                                     className={`
-                                        h-10 md:h-14 w-auto object-contain transition-all duration-500
-                                        ${
-                                            isScrolled || !isHome
-                                                ? 'brightness-0 md:invert'
-                                                : 'brightness-0 invert'
-                                        }
+                                        transition-all duration-500 shrink-0 flex items-center justify-center
+                                        md:bg-red-600 md:px-5 md:h-20 md:w-[220px] md:group-hover:rotate-6
+                                        bg-transparent h-16 w-auto px-1
                                     `}
-                                />
-                            </div>
-                        </Link>
+                                >
+                                    <img
+                                        src="/logo.svg"
+                                        alt="Sushi de Maksim"
+                                        className={`
+                                            h-10 md:h-14 w-auto object-contain transition-all duration-500
+                                            ${
+                                                isScrolled || !isHome
+                                                    ? 'brightness-0 md:invert'
+                                                    : 'brightness-0 invert'
+                                            }
+                                        `}
+                                    />
+                                </div>
+                            </Link>
+                        </div>
+
                         {/* Desktop Navigation */}
-                        <nav className="hidden md:flex items-center gap-2">
-                            {navLinks.map(link => {
-                                const isActive = location.pathname === link.to;
+                        <nav className="hidden md:flex items-center gap-1 flex-none justify-self-center">
+                            {navLinks.map((link, idx) => {
+                                const isActive = link.to ? location.pathname === link.to : false;
+                                const isAction = !!link.onClick;
+
+                                const commonStyles = `relative no-underline font-bold px-4 py-2 transition-all duration-300 rounded-xl text-sm border-none bg-transparent cursor-pointer
+                                    ${
+                                        isActive
+                                            ? 'text-white'
+                                            : link.highlight
+                                              ? 'text-red-600 hover:text-red-700'
+                                              : isScrolled || !isHome
+                                                ? 'text-gray-600 hover:text-gray-900'
+                                                : 'text-white/80 hover:text-white'
+                                    }`;
+
+                                if (isAction) {
+                                    return (
+                                        <button
+                                            key={link.label || idx}
+                                            onClick={link.onClick}
+                                            type="button"
+                                            className={commonStyles}
+                                        >
+                                            {link.label}
+                                        </button>
+                                    );
+                                }
+
                                 return (
                                     <Link
-                                        key={link.to}
-                                        to={link.to}
-                                        className={`relative no-underline font-bold px-4 py-2 transition-all duration-300 rounded-xl text-sm
-                                            ${
-                                                isActive
-                                                    ? 'text-white'
-                                                    : link.highlight
-                                                      ? 'text-red-600 hover:text-red-700'
-                                                      : isScrolled || !isHome
-                                                        ? 'text-gray-600 hover:text-gray-900'
-                                                        : 'text-white/80 hover:text-white'
-                                            }`}
+                                        key={link.to || idx}
+                                        to={link.to!}
+                                        className={commonStyles}
                                     >
-                                        {link.label}
+                                        <span className="relative z-10">{link.label}</span>
                                         {isActive && (
                                             <motion.div
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                className="absolute inset-0 bg-red-600 -z-10 rounded-xl shadow-sm shadow-red-900/10"
+                                                layoutId="active-nav"
+                                                className="absolute inset-0 bg-red-600 rounded-xl shadow-lg shadow-red-600/20"
                                                 transition={{
-                                                    duration: 0.3,
-                                                    ease: 'easeOut',
+                                                    type: 'spring',
+                                                    stiffness: 380,
+                                                    damping: 30,
                                                 }}
                                             />
                                         )}
@@ -206,8 +235,9 @@ export default function Header() {
                                 );
                             })}
                         </nav>
-                        {/* Right side */}
-                        <div className="flex items-center gap-3">
+
+                        {/* Right side Container */}
+                        <div className="flex-1 flex items-center justify-end gap-3">
                             {/* Desktop: User button or login */}
                             <div className="hidden md:block">
                                 {isLoading ? (
@@ -220,13 +250,13 @@ export default function Header() {
                         ${showUserMenu ? 'ring-2 ring-red-600/20 bg-white' : ''}`}
                                         >
                                             <div
-                                                className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden shrink-0
-                        ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden shrink-0 border border-black/5
+                                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
                                             >
                                                 {user.avatar ? (
                                                     user.avatar.startsWith('http') ? (
                                                         <img
-                                                            src={user.avatar}
+                                                            src={getSharpAvatar(user.avatar)}
                                                             alt={user.name}
                                                             className="w-full h-full object-cover"
                                                             onError={e => {
@@ -267,13 +297,15 @@ export default function Header() {
                                                 >
                                                     <div className="px-4 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
                                                         <div
-                                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0
-                                    ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-red-600'}`}
+                                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0 border border-black/10
+                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-red-600'}`}
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
                                                                     <img
-                                                                        src={user.avatar}
+                                                                        src={getSharpAvatar(
+                                                                            user.avatar
+                                                                        )}
                                                                         alt={user.name}
                                                                         className="w-full h-full object-cover"
                                                                         onError={e => {
@@ -399,6 +431,11 @@ export default function Header() {
                                     }`}
                                 >
                                     <ShoppingCart size={22} strokeWidth={1.5} />
+                                    {total > 0 && (
+                                        <span className="hidden md:block ml-2 text-sm font-black whitespace-nowrap">
+                                            {total.toFixed(2)} €
+                                        </span>
+                                    )}
                                     <AnimatePresence>
                                         {itemCount > 0 && (
                                             <motion.span
@@ -473,21 +510,22 @@ export default function Header() {
                                     {/* Scrollable Content Area */}
                                     <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
                                         <div className="px-3 pt-4 pb-2 space-y-2">
-                                            {navLinks.map(link => {
+                                            {navLinks.map((link, idx) => {
                                                 const Icon = link.icon;
-                                                const isActive = location.pathname === link.to;
-                                                return (
-                                                    <Link
-                                                        key={link.to}
-                                                        to={link.to}
-                                                        onClick={() => setShowMobileMenu(false)}
-                                                        className={`group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97]
-                                                        ${
-                                                            isActive
-                                                                ? 'text-red-600 bg-red-50/50'
-                                                                : 'text-gray-600 hover:text-gray-900'
-                                                        }`}
-                                                    >
+                                                const isActive = link.to
+                                                    ? location.pathname === link.to
+                                                    : false;
+                                                const isAction = !!link.onClick;
+
+                                                const commonStyles = `group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left w-full
+                                                    ${
+                                                        isActive
+                                                            ? 'text-red-600 bg-red-50/50'
+                                                            : 'text-gray-600 hover:text-gray-900'
+                                                    }`;
+
+                                                const content = (
+                                                    <>
                                                         <div
                                                             className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}
                                                         >
@@ -506,6 +544,33 @@ export default function Header() {
                                                             strokeWidth={isActive ? 2.5 : 2}
                                                             className={`transition-all duration-300 ${isActive ? 'translate-x-0 opacity-100' : 'opacity-0 -translate-x-2'}`}
                                                         />
+                                                    </>
+                                                );
+
+                                                if (isAction) {
+                                                    return (
+                                                        <button
+                                                            key={link.label || idx}
+                                                            onClick={() => {
+                                                                setShowMobileMenu(false);
+                                                                link.onClick?.();
+                                                            }}
+                                                            type="button"
+                                                            className={commonStyles}
+                                                        >
+                                                            {content}
+                                                        </button>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <Link
+                                                        key={link.to || idx}
+                                                        to={link.to!}
+                                                        onClick={() => setShowMobileMenu(false)}
+                                                        className={commonStyles}
+                                                    >
+                                                        {content}
                                                     </Link>
                                                 );
                                             })}
@@ -520,13 +585,15 @@ export default function Header() {
                                                 <div className="space-y-4">
                                                     <div className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3">
                                                         <div
-                                                            className={`w-12 h-12 rounded-[20px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner
-                                                        ${user.avatar?.startsWith('http') ? 'bg-gray-100' : user.avatar ? 'bg-gray-100 text-[20px]' : 'bg-red-600'}`}
+                                                            className={`w-12 h-12 rounded-[20px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner border border-black/10
+                                                        ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[20px]' : 'bg-red-600'}`}
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
                                                                     <img
-                                                                        src={user.avatar}
+                                                                        src={getSharpAvatar(
+                                                                            user.avatar
+                                                                        )}
                                                                         alt={user.name}
                                                                         className="w-full h-full object-cover"
                                                                         onError={e => {
@@ -636,6 +703,13 @@ export default function Header() {
                     isOpen={isLoginModalOpen}
                     onClose={() => setIsLoginModalOpen(false)}
                     initialMode={loginModalMode}
+                />
+            )}
+
+            {isReservationModalOpen && (
+                <ReservationModal
+                    isOpen={isReservationModalOpen}
+                    onClose={() => setIsReservationModalOpen(false)}
                 />
             )}
         </>

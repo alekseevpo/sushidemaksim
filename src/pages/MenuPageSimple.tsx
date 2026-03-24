@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
+import { tracker } from '../analytics/tracker';
 import { MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
 import { CATEGORIES, EMOJI } from '../constants/menu';
 import { MenuItem, useMenu, useFavorites, useToggleFavorite } from '../hooks/queries/useMenu';
@@ -34,9 +35,15 @@ export default function MenuPageSimple() {
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedSearch(search);
+            if (search.trim().length > 2) {
+                tracker.track('search', {
+                    metadata: { query: search },
+                    userId: user?.id,
+                });
+            }
         }, 350);
         return () => clearTimeout(handler);
-    }, [search]);
+    }, [search, user?.id]);
 
     const initialCategoryMount = useRef(true);
     const initialSearchMount = useRef(true);
@@ -48,6 +55,12 @@ export default function MenuPageSimple() {
                 initialCategoryMount.current = false;
                 return;
             }
+
+            tracker.track('category_click', {
+                metadata: { category: selectedCategory },
+                userId: user?.id,
+            });
+
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
                 const headerHeight =
@@ -62,7 +75,7 @@ export default function MenuPageSimple() {
                 window.scrollTo({ top, behavior: 'smooth' });
             }
         }
-    }, [selectedCategory, isLoading]);
+    }, [selectedCategory, isLoading, user?.id]);
 
     // Scroll active category into view on mobile
     useEffect(() => {
@@ -211,6 +224,17 @@ export default function MenuPageSimple() {
             },
             quantity
         );
+
+        tracker.track('add_to_cart', {
+            metadata: {
+                productId: item.id,
+                productName: item.name,
+                category: item.category,
+                price: item.price,
+                quantity,
+            },
+            userId: user?.id,
+        });
 
         const itemId = item.id;
         setAddedItems(prev => new Set(prev).add(itemId));

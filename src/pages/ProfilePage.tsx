@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
+import { getSharpAvatar } from '../utils/avatar';
 import ProfileTab from '../components/profile/ProfileTab';
 import AddressesTab from '../components/profile/AddressesTab';
 import OrdersTab from '../components/profile/OrdersTab';
@@ -175,7 +176,7 @@ export default function ProfilePage() {
                                 {user.avatar ? (
                                     user.avatar.startsWith('http') ? (
                                         <img
-                                            src={user.avatar}
+                                            src={getSharpAvatar(user.avatar)}
                                             alt={user.name}
                                             className="w-full h-full object-cover"
                                             onError={e => {
@@ -377,7 +378,7 @@ export default function ProfilePage() {
                                             <Icon size={16} strokeWidth={1.5} />
                                         </div>
                                         <span
-                                            className={`relative z-10 font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider transition-transform ${isActive ? 'md:translate-x-0.5' : ''}`}
+                                            className={`relative z-20 font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider transition-transform ${isActive ? 'md:translate-x-0.5' : ''}`}
                                         >
                                             {tab.label}
                                         </span>
