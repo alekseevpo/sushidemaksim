@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     X,
     Calendar,
-    Phone,
     Mail,
     User,
     CheckCircle2,
@@ -11,6 +10,8 @@ import {
     AlertCircle,
     Clock,
     ChevronDown,
+    Minus,
+    Plus,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
@@ -85,7 +86,11 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         setError(null);
 
         try {
-            await api.post('/reservations', formData);
+            const submissionData = {
+                ...formData,
+                phone: `+34${formData.phone.replace(/\s/g, '')}`,
+            };
+            await api.post('/reservations', submissionData);
             setIsSuccess(true);
         } catch (err: any) {
             console.error('Error creating reservation:', err);
@@ -97,12 +102,26 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         }
     };
 
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
     const today = new Date().toISOString().split('T')[0];
 
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+                <div 
+                    className="fixed inset-0 z-[1000] flex items-start justify-center"
+                    onClick={onClose}
+                >
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -112,32 +131,28 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                     />
 
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-[95%] max-w-md bg-white rounded-[2rem] shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+                        initial={{ y: '-100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '-100%' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="relative w-[95%] max-w-md bg-white rounded-b-[2rem] shadow-2xl flex flex-col overflow-hidden"
                     >
                         {/* Header Image/Pattern */}
-                        <div className="h-20 md:h-28 bg-red-600 relative overflow-hidden flex items-center justify-center">
-                            <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-4 pointer-events-none">
-                                {[...Array(20)].map((_, i) => (
-                                    <div key={i} className="text-4xl font-serif">
+                        <div className="h-14 md:h-18 bg-red-600 relative overflow-hidden flex items-center justify-center shrink-0">
+                            <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-2 pointer-events-none">
+                                {[...Array(15)].map((_, i) => (
+                                    <div key={i} className="text-2xl font-serif">
                                         福
                                     </div>
                                 ))}
                             </div>
-                            <h2 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase italic">
+                            <h2 className="text-lg md:text-xl font-black text-white tracking-tighter uppercase italic">
                                 Reservar Mesa
                             </h2>
-                            <button
-                                onClick={onClose}
-                                className="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/20 text-white flex items-center justify-center hover:bg-black/40 transition-colors"
-                            >
-                                <X size={16} />
-                            </button>
                         </div>
 
-                        <div className="p-3 md:p-6">
+                        <div className="px-4 py-4 md:p-6 flex flex-col gap-4">
                             {isSuccess ? (
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
@@ -237,91 +252,87 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                         </div>
                                     </div>
 
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
-                                            Personas
-                                        </label>
-                                        <div className="flex bg-gray-50 border border-gray-100 rounded-xl p-1 gap-1 h-10">
-                                            {[1, 2, 3, 4, 5, 6].map(num => (
-                                                <button
-                                                    key={num}
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setFormData(prev => ({
-                                                            ...prev,
-                                                            guests: num,
-                                                        }))
-                                                    }
-                                                    className={`flex-1 rounded-lg text-[10px] font-black transition-all ${
-                                                        formData.guests === num
-                                                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                                            : 'text-gray-400 hover:text-gray-500 bg-transparent opacity-60'
-                                                    }`}
-                                                >
-                                                    {num}
-                                                </button>
-                                            ))}
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setFormData(prev => ({
-                                                        ...prev,
-                                                        guests:
-                                                            prev.guests < 7 ? 7 : prev.guests + 1,
-                                                    }))
-                                                }
-                                                className={`flex-1 rounded-lg text-[10px] font-black transition-all ${
-                                                    formData.guests > 6
-                                                        ? 'bg-red-600 text-white shadow-md border border-red-500'
-                                                        : 'text-gray-400 hover:text-gray-500 bg-transparent opacity-60'
-                                                }`}
-                                            >
-                                                {formData.guests > 6 ? formData.guests : '+'}
-                                            </button>
+                                    <div className="grid grid-cols-2 gap-3 pb-1">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                                Personas
+                                            </label>
+                                            <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-10">
+                                                <div className="pl-2">
+                                                    <span className="text-[10px] font-black text-gray-900 leading-none">
+                                                        {formData.guests}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-0.5 bg-white p-0.5 rounded-lg shadow-sm border border-gray-100">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                guests: Math.max(1, prev.guests - 1),
+                                                            }))
+                                                        }
+                                                        className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                    >
+                                                        <Minus size={14} strokeWidth={3} />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                guests: prev.guests + 1,
+                                                            }))
+                                                        }
+                                                        className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                    >
+                                                        <Plus size={14} strokeWidth={3} />
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         <div className="space-y-1">
                                             <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Teléfono
                                             </label>
                                             <div className="relative">
-                                                <Phone
-                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                                                    size={16}
-                                                />
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[10px]">
+                                                    +34
+                                                </div>
                                                 <input
                                                     required
                                                     type="tel"
                                                     name="phone"
-                                                    placeholder="Teléfono"
+                                                    placeholder="000000000"
+                                                    minLength={9}
+                                                    pattern="[0-9]{9,}"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
-                                                Nombre
-                                            </label>
-                                            <div className="relative">
-                                                <User
-                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                                                    size={16}
-                                                />
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    name="name"
-                                                    placeholder="Nombre"
-                                                    value={formData.name}
-                                                    onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
-                                                />
-                                            </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                            Nombre Completo
+                                        </label>
+                                        <div className="relative">
+                                            <User
+                                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                size={16}
+                                            />
+                                            <input
+                                                required
+                                                type="text"
+                                                name="name"
+                                                placeholder="Tu nombre"
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                className="w-full pl-9 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                            />
                                         </div>
                                     </div>
 
@@ -351,7 +362,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     <button
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="w-full py-3 bg-red-600 text-white rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-red-600/20 hover:bg-red-700 transition-all disabled:opacity-50 mt-1"
+                                        className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-red-600/20 hover:bg-red-700 active:scale-[0.98] transition-all disabled:opacity-50 mt-2"
                                     >
                                         {isSubmitting ? 'PROCESANDO...' : 'RESERVAR AHORA'}
                                         <ChevronRight size={18} />

@@ -83,7 +83,7 @@ export default function Header() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    useScrollLock(showMobileMenu || isLoginModalOpen);
+    useScrollLock(showMobileMenu || isLoginModalOpen || isReservationModalOpen);
 
     // Close mobile menu on route change
     useEffect(() => {
@@ -96,9 +96,15 @@ export default function Header() {
             else setLoginModalMode('login');
             setIsLoginModalOpen(true);
         };
+        const handleOpenReservation = () => {
+            setIsReservationModalOpen(true);
+        };
         document.addEventListener('custom:openLogin', handleOpenLogin as EventListener);
-        return () =>
+        window.addEventListener('open:reservation', handleOpenReservation);
+        return () => {
             document.removeEventListener('custom:openLogin', handleOpenLogin as EventListener);
+            window.removeEventListener('open:reservation', handleOpenReservation);
+        };
     }, []);
 
     // Cart bump animation trigger
@@ -201,14 +207,22 @@ export default function Header() {
                                     }`;
 
                                 if (isAction) {
+                                    const isHighlight = link.label === 'Reserva';
                                     return (
                                         <button
                                             key={link.label || idx}
                                             onClick={link.onClick}
                                             type="button"
-                                            className={commonStyles}
+                                            className={`${commonStyles} ${
+                                                isHighlight
+                                                    ? 'bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20 px-6 py-2.5 rounded-xl ml-2'
+                                                    : ''
+                                            }`}
                                         >
-                                            {link.label}
+                                            <div className="flex items-center gap-2">
+                                                {isHighlight && <Calendar size={16} />}
+                                                {link.label}
+                                            </div>
                                         </button>
                                     );
                                 }
@@ -509,71 +523,87 @@ export default function Header() {
 
                                     {/* Scrollable Content Area */}
                                     <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
-                                        <div className="px-3 pt-4 pb-2 space-y-2">
-                                            {navLinks.map((link, idx) => {
-                                                const Icon = link.icon;
-                                                const isActive = link.to
-                                                    ? location.pathname === link.to
-                                                    : false;
-                                                const isAction = !!link.onClick;
+                                        <div className="px-3 pt-4 pb-2 space-y-1">
+                                            {/* Primary Reservation CTA in Mobile Menu */}
+                                            <div className="px-1 pb-4">
+                                                <button
+                                                    onClick={() => {
+                                                        setShowMobileMenu(false);
+                                                        setIsReservationModalOpen(true);
+                                                    }}
+                                                    className="w-full py-5 bg-red-600 text-white rounded-[24px] font-black text-[16px] tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-red-600/20 active:scale-[0.98] transition-all border-none"
+                                                >
+                                                    <Calendar size={22} strokeWidth={2.5} />
+                                                    RESERVAR MESA
+                                                </button>
+                                            </div>
 
-                                                const commonStyles = `group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left w-full
-                                                    ${
-                                                        isActive
-                                                            ? 'text-red-600 bg-red-50/50'
-                                                            : 'text-gray-600 hover:text-gray-900'
-                                                    }`;
+                                            {navLinks
+                                                .filter(l => l.label !== 'Reserva')
+                                                .map((link, idx) => {
+                                                    const Icon = link.icon;
+                                                    const isActive = link.to
+                                                        ? location.pathname === link.to
+                                                        : false;
+                                                    const isAction = !!link.onClick;
 
-                                                const content = (
-                                                    <>
-                                                        <div
-                                                            className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}
-                                                        >
-                                                            <Icon
-                                                                size={22}
-                                                                strokeWidth={isActive ? 2.5 : 1.8}
+                                                    const commonStyles = `group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left w-full
+                                                        ${
+                                                            isActive
+                                                                ? 'text-red-600 bg-red-50/50'
+                                                                : 'text-gray-600 hover:text-gray-900'
+                                                        }`;
+
+                                                    const content = (
+                                                        <>
+                                                            <div
+                                                                className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}
+                                                            >
+                                                                <Icon
+                                                                    size={22}
+                                                                    strokeWidth={isActive ? 2.5 : 1.8}
+                                                                />
+                                                            </div>
+                                                            <span
+                                                                className={`flex-1 tracking-tight ${isActive ? 'text-red-600' : 'text-gray-900'}`}
+                                                            >
+                                                                {link.label}
+                                                            </span>
+                                                            <ChevronRight
+                                                                size={18}
+                                                                strokeWidth={isActive ? 2.5 : 2}
+                                                                className={`transition-all duration-300 ${isActive ? 'translate-x-0 opacity-100' : 'opacity-0 -translate-x-2'}`}
                                                             />
-                                                        </div>
-                                                        <span
-                                                            className={`flex-1 tracking-tight ${isActive ? 'text-red-600' : 'text-gray-900'}`}
-                                                        >
-                                                            {link.label}
-                                                        </span>
-                                                        <ChevronRight
-                                                            size={18}
-                                                            strokeWidth={isActive ? 2.5 : 2}
-                                                            className={`transition-all duration-300 ${isActive ? 'translate-x-0 opacity-100' : 'opacity-0 -translate-x-2'}`}
-                                                        />
-                                                    </>
-                                                );
+                                                        </>
+                                                    );
 
-                                                if (isAction) {
+                                                    if (isAction) {
+                                                        return (
+                                                            <button
+                                                                key={link.label || idx}
+                                                                onClick={() => {
+                                                                    setShowMobileMenu(false);
+                                                                    link.onClick?.();
+                                                                }}
+                                                                type="button"
+                                                                className={commonStyles}
+                                                            >
+                                                                {content}
+                                                            </button>
+                                                        );
+                                                    }
+
                                                     return (
-                                                        <button
-                                                            key={link.label || idx}
-                                                            onClick={() => {
-                                                                setShowMobileMenu(false);
-                                                                link.onClick?.();
-                                                            }}
-                                                            type="button"
+                                                        <Link
+                                                            key={link.to || idx}
+                                                            to={link.to!}
+                                                            onClick={() => setShowMobileMenu(false)}
                                                             className={commonStyles}
                                                         >
                                                             {content}
-                                                        </button>
+                                                        </Link>
                                                     );
-                                                }
-
-                                                return (
-                                                    <Link
-                                                        key={link.to || idx}
-                                                        to={link.to!}
-                                                        onClick={() => setShowMobileMenu(false)}
-                                                        className={commonStyles}
-                                                    >
-                                                        {content}
-                                                    </Link>
-                                                );
-                                            })}
+                                                })}
                                         </div>
 
                                         <div className="px-3 pb-8 space-y-3">
