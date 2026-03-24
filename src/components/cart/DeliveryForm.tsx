@@ -3,7 +3,6 @@ import {
     MapPin,
     Truck,
     Store,
-    ArrowRight,
     CreditCard,
     Wallet,
     Smartphone,
@@ -343,8 +342,10 @@ export default function DeliveryForm({
                             </button>
                         ) : (
                             <div className="flex flex-col gap-4">
-                                {/* Enhanced Address Card */}
-                                <div
+                                {/* Enhanced Address Card - Full block click */}
+                                <button
+                                    type="button"
+                                    onClick={handleAddressClick}
                                     data-testid="address-display"
                                     className="bg-gray-50/80 backdrop-blur-sm rounded-[24px] md:rounded-[32px] p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
                                 >
@@ -353,9 +354,15 @@ export default function DeliveryForm({
                                             <MapPin className="text-red-500 w-5 h-5 md:w-8 md:h-8" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-black text-base md:text-xl text-gray-900 leading-tight tracking-tight truncate">
+                                            <p className="font-black text-lg md:text-3xl text-gray-900 leading-tight tracking-tight mb-1">
                                                 {address}
                                             </p>
+                                            {(house || apartment) && (
+                                                <p className="text-sm md:text-lg font-black text-red-600 uppercase tracking-tight -mt-0.5">
+                                                    {house && `Portal / Casa: ${house}`}
+                                                    {apartment && ` • Piso / Puerta: ${apartment}`}
+                                                </p>
+                                            )}
                                             <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-1 md:mt-1.5">
                                                 <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 max-w-full">
                                                     <div
@@ -384,14 +391,7 @@ export default function DeliveryForm({
                                             </div>
                                         </div>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={handleAddressClick}
-                                        className="bg-red-600 w-11 h-11 md:w-14 md:h-14 rounded-xl md:rounded-[20px] shadow-lg shadow-red-200 flex items-center justify-center hover:bg-black hover:scale-105 active:scale-90 transition-all duration-300 shrink-0 ml-3 group/btn"
-                                    >
-                                        <ArrowRight className="text-white w-5 h-5 md:w-7 md:h-7 group-hover/btn:translate-x-1 transition-transform" />
-                                    </button>
-                                </div>
+                                </button>
                                 {/* Form Fields below the card */}
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 -mt-1 px-1">
                                     <div className="lg:col-span-1">
