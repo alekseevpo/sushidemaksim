@@ -8,6 +8,8 @@ import {
     Wallet,
     Smartphone,
     Users,
+    Minus,
+    Plus,
 } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 import { useEffect, useRef } from 'react';
@@ -680,38 +682,33 @@ export default function DeliveryForm({
                                     <label className="block text-[10px] uppercase font-black text-gray-400 mb-1.5 ml-1 tracking-wider">
                                         Número de personas
                                     </label>
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex-1 flex bg-gray-50 border border-gray-100 rounded-2xl p-1">
-                                            {[1, 2, 3, 4, 5, 6].map(num => (
-                                                <button
-                                                    key={num}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        triggerHaptic();
-                                                        setGuestsCount(num);
-                                                    }}
-                                                    className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
-                                                        guestsCount === num
-                                                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                                            : 'text-gray-400 hover:text-gray-500 bg-transparent'
-                                                    }`}
-                                                >
-                                                    {num}
-                                                </button>
-                                            ))}
+                                    <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-[46px]">
+                                        <div className="pl-3">
+                                            <span className="text-xs font-black text-gray-900 leading-none">
+                                                {guestsCount}{' '}
+                                                {guestsCount === 1 ? 'Persona' : 'Personas'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-100">
                                             <button
                                                 type="button"
                                                 onClick={() => {
-                                                    const val = prompt('Número de personas:', '7');
-                                                    if (val) setGuestsCount(parseInt(val) || 2);
+                                                    triggerHaptic();
+                                                    setGuestsCount(Math.max(1, guestsCount - 1));
                                                 }}
-                                                className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
-                                                    guestsCount > 6
-                                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                                                        : 'text-gray-400 hover:text-gray-500 bg-transparent'
-                                                }`}
+                                                className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
-                                                {guestsCount > 6 ? guestsCount : '+'}
+                                                <Minus size={16} strokeWidth={3} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    triggerHaptic();
+                                                    setGuestsCount(guestsCount + 1);
+                                                }}
+                                                className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                            >
+                                                <Plus size={16} strokeWidth={3} />
                                             </button>
                                         </div>
                                     </div>
