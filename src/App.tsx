@@ -70,6 +70,7 @@ const PageWrapper = ({
     isAdmin?: boolean;
 }) => {
     useEffect(() => {
+        window.scrollTo(0, 0);
         (window as any).lenis?.scrollTo(0, { immediate: true });
     }, []);
 

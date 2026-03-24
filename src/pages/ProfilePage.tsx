@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -60,9 +60,10 @@ export default function ProfilePage() {
         }
     }, [searchParams, activeTab]);
 
-    // Scroll to top on mount
+    const isFirstMount = useRef(true);
+
     useEffect(() => {
-        window.scrollTo(0, 0);
+        isFirstMount.current = false;
     }, []);
 
     // Scroll active tab into view on mobile
@@ -79,6 +80,7 @@ export default function ProfilePage() {
 
     // Scroll to content when tab changes (especially on mobile)
     useEffect(() => {
+        if (isFirstMount.current) return;
         if (activeTab === 'orders' || activeTab === 'addresses' || activeTab === 'favorites') {
             const contentElement = document.getElementById('profile-content');
             if (contentElement && typeof contentElement.scrollIntoView === 'function') {
