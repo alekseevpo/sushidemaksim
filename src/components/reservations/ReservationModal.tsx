@@ -117,7 +117,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
     return (
         <AnimatePresence>
             {isOpen && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -137,7 +137,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                         animate={{ y: 0 }}
                         exit={{ y: '-100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={e => e.stopPropagation()}
                         className="relative w-[95%] max-w-md bg-white rounded-b-[2rem] shadow-2xl flex flex-col overflow-hidden"
                     >
                         {/* Header Image/Pattern */}
@@ -271,7 +271,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                         onClick={() =>
                                                             setFormData(prev => ({
                                                                 ...prev,
-                                                                guests: Math.max(1, prev.guests - 1),
+                                                                guests: Math.max(
+                                                                    1,
+                                                                    prev.guests - 1
+                                                                ),
                                                             }))
                                                         }
                                                         className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"

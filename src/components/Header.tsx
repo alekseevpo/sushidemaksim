@@ -561,7 +561,9 @@ export default function Header() {
                                                             >
                                                                 <Icon
                                                                     size={22}
-                                                                    strokeWidth={isActive ? 2.5 : 1.8}
+                                                                    strokeWidth={
+                                                                        isActive ? 2.5 : 1.8
+                                                                    }
                                                                 />
                                                             </div>
                                                             <span
