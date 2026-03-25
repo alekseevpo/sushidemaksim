@@ -171,7 +171,7 @@ export default function Header() {
                                 <div
                                     className={`
                                         transition-all duration-500 shrink-0 flex items-center justify-center
-                                        md:bg-red-600 md:h-full md:w-[220px] md:group-hover:rotate-6
+                                        md:bg-red-600 md:h-20 md:w-[220px] md:group-hover:rotate-6
                                         bg-transparent h-16 w-auto px-1
                                     `}
                                 >
