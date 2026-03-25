@@ -292,7 +292,10 @@ export default function MenuPageSimple() {
                     setSelectedCategory={setSelectedCategory}
                 />
 
-                <div className="flex-1 min-w-0 md:pl-8 pt-4 md:pt-8 min-h-[70vh]" id="menu-content">
+                <div
+                    className="flex-1 min-w-0 md:pl-8 pt-20 md:pt-8 min-h-[70vh]"
+                    id="menu-content"
+                >
                     {/* Header Section with Search */}
                     <div className="mb-4">
                         <MenuSearch
