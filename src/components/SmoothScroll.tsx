@@ -3,6 +3,11 @@ import Lenis from 'lenis';
 
 export default function SmoothScroll() {
     useEffect(() => {
+        // Disable Lenis on touch devices for better performance and to avoid ghost scrolling issues
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        if (isTouchDevice) return;
+
         const lenis = new Lenis({
             lerp: 0.1,
             orientation: 'vertical',
@@ -28,9 +33,6 @@ export default function SmoothScroll() {
             delete (window as any).lenis;
         };
     }, []);
-
-    // Global scroll-to-top is now handled by components within AnimatePresence
-    // to prevent jumping during exit animations.
 
     return null;
 }
