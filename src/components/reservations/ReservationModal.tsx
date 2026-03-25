@@ -138,10 +138,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                     />
 
                     <motion.div
-                        initial={{ y: '-100%' }}
-                        animate={{ y: 0 }}
-                        exit={{ y: '-100%' }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        initial={{ y: '-100%', opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: '-100%', opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
                         onClick={e => e.stopPropagation()}
                         className="relative w-full max-w-md bg-white md:rounded-b-[2rem] shadow-2xl flex flex-col overflow-hidden"
                     >
@@ -154,7 +154,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     </div>
                                 ))}
                             </div>
-                            <h2 className="relative z-10 text-base md:text-xl font-black text-white tracking-[0.2em] uppercase italic">
+                            <h2 className="relative z-10 text-base md:text-xl font-black text-white tracking-[0.1em] uppercase">
                                 Reservar Mesa
                             </h2>
                         </div>
@@ -174,15 +174,17 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     </h3>
                                     <p className="text-gray-500 font-medium mb-8">
                                         Hemos recibido tu solicitud para el{' '}
-                                        <strong className="text-gray-900">
+                                        <span className="text-gray-900 font-bold">
                                             {(() => {
                                                 const d = new Date(formData.date);
-                                                return `${d.getDate()} de ${d.toLocaleString('es-ES', { month: 'long' })} de ${d.getFullYear()}`;
+                                                return `${d.getDate()} de ${d.toLocaleString('es-ES', { month: 'long' })} ${d.getFullYear()}`;
                                             })()}
-                                        </strong>{' '}
+                                        </span>{' '}
                                         a las{' '}
-                                        <strong className="text-gray-900">{formData.time}</strong>.
-                                        Te contactaremos pronto para confirmar.
+                                        <span className="text-gray-900 font-bold">
+                                            {formData.time}
+                                        </span>
+                                        . Te contactaremos pronto para confirmar.
                                     </p>
                                     <button
                                         onClick={onClose}
@@ -217,7 +219,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     min={today}
                                                     value={formData.date}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -245,10 +247,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                         name="time"
                                                         value={formData.time}
                                                         onChange={handleChange}
-                                                        className="w-full pl-10 pr-8 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none appearance-none cursor-pointer"
+                                                        className="w-full pl-10 pr-8 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none appearance-none cursor-pointer"
                                                     >
                                                         <option value="" disabled>
-                                                            Hora
+                                                            Selecciona hora
                                                         </option>
                                                         {availableSlots.map(slot => (
                                                             <option key={slot} value={slot}>
@@ -272,7 +274,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                             </label>
                                             <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-11">
                                                 <div className="pl-3">
-                                                    <span className="text-[12px] font-black text-gray-900 leading-none">
+                                                    <span className="text-sm font-black text-gray-900 leading-none">
                                                         {formData.guests}
                                                     </span>
                                                 </div>
@@ -313,19 +315,19 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                 Teléfono
                                             </label>
                                             <div className="relative">
-                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[11px]">
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">
                                                     +34
                                                 </div>
                                                 <input
                                                     required
                                                     type="tel"
                                                     name="phone"
-                                                    placeholder="000 000 000"
+                                                    placeholder="Ej: 600 000 000"
                                                     minLength={9}
                                                     pattern="[0-9]{9,}"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    className="w-full pl-11 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-11 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -369,7 +371,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     placeholder="tucorreo@ejemplo.com"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -378,7 +380,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     <button
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="w-full py-4.5 bg-red-600 text-white rounded-[24px] font-black text-[13px] tracking-[0.2em] uppercase italic flex items-center justify-center gap-3 shadow-xl shadow-red-600/20 hover:bg-red-700 active:scale-[0.98] transition-all disabled:opacity-50 mt-4 group"
+                                        className="w-full py-4.5 bg-red-600 text-white rounded-[1.5rem] font-black text-[14px] tracking-widest uppercase flex items-center justify-center gap-3 shadow-xl shadow-red-600/20 hover:bg-red-700 active:scale-[0.98] transition-all disabled:opacity-50 mt-4 group"
                                     >
                                         {isSubmitting ? (
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -386,7 +388,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                             <>
                                                 RESERVAR AHORA
                                                 <ChevronRight
-                                                    size={20}
+                                                    size={22}
                                                     className="group-hover:translate-x-1 transition-transform"
                                                 />
                                             </>

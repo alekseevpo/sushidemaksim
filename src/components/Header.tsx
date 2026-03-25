@@ -141,6 +141,8 @@ export default function Header() {
     ];
 
     const isHome = location.pathname === '/';
+    const hasToken = !!localStorage.getItem('sushi_token');
+    const showSkeleton = authLoading || (hasToken && !user);
 
     return (
         <>
@@ -246,7 +248,7 @@ export default function Header() {
                         <div className="flex-1 flex items-center justify-end gap-3">
                             {/* Desktop: User button or login */}
                             <div className="hidden md:block">
-                                {authLoading ? (
+                                {showSkeleton ? (
                                     <div className="w-24 h-10 bg-gray-100 skeleton rounded-xl" />
                                 ) : isAuthenticated && user ? (
                                     <div ref={userMenuRef} className="relative">
@@ -603,7 +605,7 @@ export default function Header() {
                                         <div className="px-3 pb-8 space-y-3">
                                             <div className="h-px bg-gray-100 my-2 mx-2" />
 
-                                            {authLoading ? (
+                                            {showSkeleton ? (
                                                 <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
                                             ) : isAuthenticated && user ? (
                                                 <div className="space-y-4">

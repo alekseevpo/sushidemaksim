@@ -18,7 +18,8 @@ export default function RegistrationPrompt() {
 
         // Wait 3 minutes (180000 ms)
         const timer = setTimeout(() => {
-            if (!user && !hasBeenShown) {
+            const token = localStorage.getItem('sushi_token');
+            if (!user && !token && !hasBeenShown) {
                 setIsVisible(true);
                 setHasBeenShown(true);
                 localStorage.setItem('registration_prompt_shown', 'true');

@@ -31,7 +31,7 @@ export default function CartEmptyView({
     addedItems,
 }: CartEmptyViewProps) {
     return (
-        <div className="min-h-screen mesh-bg px-4 py-8 flex items-center">
+        <div className="min-h-screen mesh-bg px-2 md:px-6 py-8 flex items-center">
             <div className="max-w-4xl mx-auto text-center py-12 md:py-16 w-full">
                 <div className="flex justify-center mb-8">
                     <div className="w-28 h-28 bg-white rounded-[40px] flex items-center justify-center animate-float shadow-2xl shadow-red-500/10 border border-white/50 relative">
@@ -90,7 +90,7 @@ export default function CartEmptyView({
                                 />
                             </h2>
                         </div>
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 text-left">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-8 text-left">
                             {isLoadingPopular
                                 ? [1, 2, 3, 4, 5, 6].map(i => (
                                       <div

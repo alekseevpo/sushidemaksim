@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, ChevronRight, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -14,7 +14,7 @@ import { getOptimizedImageUrl } from '../utils/images';
 import ReservationModal from '../components/reservations/ReservationModal';
 
 const Marquee = () => (
-    <div className="relative py-4 md:py-6 overflow-hidden bg-gray-950 border-y border-white/5 select-none">
+    <div className="relative py-4 md:py-6 overflow-hidden bg-black border-y border-white/5 select-none">
         <div className="flex whitespace-nowrap animate-marquee">
             {[1, 2].map(i => (
                 <div key={i} className="flex items-center gap-12 px-6">
@@ -36,55 +36,61 @@ const Marquee = () => (
     </div>
 );
 
-const CategoryCard = ({
-    id,
-    name,
-    image,
-    index,
-}: {
-    id: string;
-    name: string;
-    icon?: string;
-    image: string | null;
-    index: number;
-}) => {
-    const [imageFailed, setImageFailed] = useState(false);
+const CategoryCard = memo(
+    ({
+        id,
+        name,
+        image,
+        index,
+    }: {
+        id: string;
+        name: string;
+        icon?: string;
+        image: string | null;
+        index: number;
+    }) => {
+        const [imageFailed, setImageFailed] = useState(false);
 
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className="group relative h-40 md:h-56 rounded-[2rem] overflow-hidden cursor-pointer bg-gray-100"
-        >
-            <Link to={`/menu#section-${id}`} className="absolute inset-0 z-10" />
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group relative h-40 md:h-56 rounded-[2rem] overflow-hidden cursor-pointer bg-gray-100"
+            >
+                <Link to={`/menu#section-${id}`} className="absolute inset-0 z-10" />
 
-            {image && !imageFailed ? (
-                <img
-                    src={getOptimizedImageUrl(image, 400)}
-                    alt={name}
-                    onError={() => setImageFailed(true)}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                />
-            ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <span className="text-gray-300 font-bold text-[10px] uppercase">No Image</span>
+                {image && !imageFailed ? (
+                    <img
+                        src={getOptimizedImageUrl(image, 600)}
+                        alt={name}
+                        loading="lazy"
+                        decoding="async"
+                        onError={() => setImageFailed(true)}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                        <span className="text-gray-300 font-bold text-[10px] uppercase">
+                            No Image
+                        </span>
+                    </div>
+                )}
+
+                {/* Soft gradient overlay for text readability at top */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent"></div>
+
+                {/* Title at the TOP - uniform and compact */}
+                <div className="absolute top-5 left-5 right-5">
+                    <h3 className="text-white font-black text-[15px] md:text-[18px] leading-tight drop-shadow-sm tracking-tight">
+                        {name}
+                    </h3>
                 </div>
-            )}
-
-            {/* Soft gradient overlay for text readability at top */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent"></div>
-
-            {/* Title at the TOP - uniform and compact */}
-            <div className="absolute top-5 left-5 right-5">
-                <h3 className="text-white font-black text-[15px] md:text-[18px] leading-tight drop-shadow-sm tracking-tight">
-                    {name}
-                </h3>
-            </div>
-        </motion.div>
-    );
-};
+            </motion.div>
+        );
+    }
+);
 
 export default function HomePageSimple() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -110,11 +116,17 @@ export default function HomePageSimple() {
     // Use TanStack Query
     const { data: allItems = [], isLoading: itemsLoading } = useMenu('all', '');
     const { data: categoriesData = [], isLoading: catsLoading } = useCategories();
-
     const isLoading = itemsLoading || catsLoading;
 
-    // Derived state
-    const popularItems = allItems.filter((item: any) => item.isPopular).slice(0, 8);
+    // Memoize the filtering for better performance
+    const popularItems = useMemo(() => {
+        return allItems.filter((item: any) => item.isPopular).slice(0, 8);
+    }, [allItems]);
+
+    // Pre-calculate categories for rendering
+    const categoryList = useMemo(() => {
+        return categoriesData.slice(0, 8);
+    }, [categoriesData]);
 
     const categories = categoriesData.map((cat: any) => {
         // Use the image provided by the categories API if available,
@@ -217,128 +229,103 @@ export default function HomePageSimple() {
                     acceptsReservations: 'false',
                 }}
             />
-
-            {/* Hero Section */}
-            <section
-                className="relative min-h-[100dvh] flex items-center justify-center px-4 pt-20 md:pt-0 pb-10 bg-neutral-950 bg-cover bg-center overflow-hidden"
-                style={{
-                    backgroundImage: `url(${getOptimizedImageUrl('/sushi-hero.webp', 1920)})`,
-                }}
-            >
-                {/* Background Overlay (Filter) */}
-                <div className="absolute inset-0 z-0 pointer-events-none">
-                    <div className="absolute inset-0 bg-black/50"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-                    <div className="absolute inset-0 backdrop-blur-[2px] md:backdrop-blur-none"></div>
-                </div>
-
-                <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                        className="text-center lg:text-left"
-                    >
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                            className="inline-block px-4 py-1.5 bg-red-600/20 backdrop-blur-md border border-red-500/30 text-red-500 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full mb-6"
-                        >
-                            Artesanía Japonesa en tu Mesa
-                        </motion.span>
-
-                        <h1 className="text-[38px] leading-[1] md:text-7xl font-black text-white mb-6 tracking-tight">
-                            Sabor que <br className="hidden md:block" />
-                            <span className="text-red-500 italic">Despierta</span> Sentidos
-                        </h1>
-
-                        <p className="text-base md:text-xl text-gray-300 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
-                            Descubre la perfección en cada bocado. Sushi artesanal preparado con los
-                            ingredientes más frescos del mercado.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start">
-                            <Link
-                                to="/menu"
-                                className="w-full sm:w-auto group btn-premium bg-red-600 text-white px-10 py-5 rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-3 shadow-[0_20px_40px_-15px_rgba(220,38,38,0.5)] transition-all"
-                            >
-                                EXPLORAR MENÚ
-                                <motion.div
-                                    animate={{ x: 0 }}
-                                    whileHover={{ x: 5 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                                >
-                                    <ArrowRight size={18} strokeWidth={2} />
-                                </motion.div>
-                            </Link>
-                            <button
-                                onClick={() => setIsReservationModalOpen(true)}
-                                className="w-full sm:w-auto btn-premium glass-dark text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-3 hover:bg-white/10 transition-all uppercase"
-                            >
-                                RESERVAR MESA
-                            </button>
-                        </div>
-                    </motion.div>
-
-                    {/* Visual element for desktop */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        transition={{ duration: 1, delay: 0.3 }}
-                        className="hidden lg:block relative"
-                    >
-                        <div className="relative z-10 w-full aspect-square max-w-md mx-auto rounded-[3rem] overflow-hidden border-8 border-white/10 premium-shadow">
-                            <motion.img
-                                animate={{
-                                    y: [0, -20, 0],
-                                }}
-                                transition={{
-                                    duration: 6,
-                                    repeat: Infinity,
-                                    ease: 'easeInOut',
-                                }}
-                                src={getOptimizedImageUrl('/blog_post_chef_hands.png', 800)}
-                                alt="Experiencia Chef en Sushi de Maksim"
-                                {...({ fetchpriority: 'high' } as any)}
-                                decoding="async"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        {/* Decoration */}
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-red-600/30 blur-[80px] rounded-full"></div>
-                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-red-600/20 blur-[80px] rounded-full"></div>
-                    </motion.div>
-                </div>
-
-                {/* Scroll Down Indicator */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                        delay: 1.5,
-                        duration: 1,
-                        repeat: Infinity,
-                        repeatType: 'reverse',
-                    }}
-                    className="absolute bottom-6 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none"
-                    style={{ willChange: 'transform, opacity' }}
+            <div className="bg-black">
+                {/* Hero Section */}
+                <section
+                    className="relative min-h-screen w-full px-4 pt-20 md:pt-0 pb-10 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
+                    style={{ contentVisibility: 'auto' }}
                 >
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-center ml-[0.3em]">
-                        Scrollea
-                    </span>
-                    <ArrowRight className="rotate-90" size={16} />
-                </motion.div>
-            </section>
+                    {/* Visual context for SEO */}
+                    <h2 className="sr-only">Bienvenido a Sushi de Maksim</h2>
 
-            <Marquee />
+                    {/* Background Image with optimized loading */}
+                    <div className="absolute inset-0 z-0">
+                        <div className="absolute inset-0 bg-black/60 z-10" />
+                        <motion.img
+                            initial={{ scale: 1.1, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 0.4 }}
+                            transition={{ duration: 1.5, ease: 'easeOut' }}
+                            src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=2070&auto=format&fit=crop"
+                            alt="Premium Sushi Background"
+                            className="w-full h-full object-cover sm:object-center object-[65%_center]"
+                            loading="eager"
+                            fetchPriority="high"
+                        />
+                    </div>
+
+                    <div className="relative z-20 flex flex-col items-center max-w-4xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, ease: 'easeOut' }}
+                            className="space-y-6"
+                        >
+                            <span className="inline-block px-4 py-1.5 bg-red-600/10 border border-red-600/20 text-red-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] rounded-full backdrop-blur-sm">
+                                Artesanía japonesa en tu mesa
+                            </span>
+
+                            <h1 className="text-[42px] leading-[0.9] md:text-8xl font-black text-white tracking-tighter">
+                                Sabor que <br />
+                                <span className="text-red-600 italic">Despierta</span> Sentidos
+                            </h1>
+
+                            <p className="text-sm md:text-lg text-gray-300 max-w-md mx-auto leading-relaxed font-medium">
+                                Descubre la perfección en cada bocado. Sushi artesanal preparado con
+                                los ingredientes más frescos del mercado.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                                <Link
+                                    to="/menu"
+                                    className="group relative w-full sm:w-auto px-10 py-5 bg-red-600 text-white rounded-2xl font-black text-[13px] tracking-widest transition-all duration-300 hover:bg-red-700 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-2xl shadow-red-600/20 no-underline"
+                                >
+                                    EXPLORAR MENÚ
+                                    <ArrowRight
+                                        className="transition-transform group-hover:translate-x-1"
+                                        size={18}
+                                    />
+                                </Link>
+
+                                <button
+                                    onClick={() =>
+                                        window.dispatchEvent(new CustomEvent('open:reservation'))
+                                    }
+                                    className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-black text-[13px] tracking-widest transition-all duration-300 border border-white/10 hover:border-white/20 active:scale-95 flex items-center justify-center no-underline cursor-pointer backdrop-blur-sm"
+                                >
+                                    RESERVAR MESA
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    {/* Scroll Down Indicator */}
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                            delay: 1.5,
+                            duration: 1,
+                            repeat: Infinity,
+                            repeatType: 'reverse',
+                        }}
+                        className="absolute bottom-6 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none"
+                        style={{ willChange: 'transform, opacity' }}
+                    >
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-center ml-[0.3em]">
+                            Scrollea
+                        </span>
+                        <ArrowRight className="rotate-90" size={16} />
+                    </motion.div>
+                </section>
+
+                <Marquee />
+            </div>
 
             {/* Ratings Banner (Google + The Fork) */}
             <RatingsBanner />
 
             {/* Categories Section */}
-            <section className="py-12 md:py-16 px-4 bg-transparent overflow-hidden">
+            <section className="py-12 md:py-16 px-2 md:px-6 bg-transparent overflow-hidden">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div className="max-w-xl text-center md:text-left">
@@ -364,8 +351,8 @@ export default function HomePageSimple() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                        {categories.slice(0, 8).map((cat: any, idx: number) => (
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-8">
+                        {categoryList.map((cat: any, idx: number) => (
                             <CategoryCard
                                 key={cat.id}
                                 id={cat.id}
@@ -472,7 +459,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Chef's Recommendations / Popular Section */}
-            <section className="py-12 md:py-16 bg-gray-50/50 overflow-hidden">
+            <section className="py-12 md:py-24 px-2 md:px-6 bg-gray-50/50 overflow-hidden relative">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div className="max-w-xl text-center md:text-left">
@@ -522,10 +509,10 @@ export default function HomePageSimple() {
 
                             <div
                                 ref={scrollContainerRef}
-                                className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth scroll-px-4"
+                                className="relative -mx-2 px-2 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth scroll-px-2"
                             >
-                                <div className="flex gap-4 md:gap-8 flex-nowrap w-max min-w-full">
-                                    {popularItems.map((item, index) => (
+                                <div className="flex gap-2.5 md:gap-8 flex-nowrap w-max min-w-full">
+                                    {popularItems.map((item: any, index: number) => (
                                         <div
                                             key={item.id}
                                             className="w-[260px] md:w-[320px] snap-start shrink-0"
