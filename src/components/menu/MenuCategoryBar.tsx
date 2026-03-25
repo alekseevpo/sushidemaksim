@@ -72,13 +72,13 @@ export default function MenuCategoryBar({
     }
 
     return (
-        <aside className="hidden lg:block w-[220px] flex-shrink-0 bg-red-600 min-h-full z-30">
-            <div className="sticky top-[64px] h-[calc(100vh-64px)] pb-8 px-3 flex flex-col items-stretch overflow-y-auto no-scrollbar rounded-none">
+        <aside className="hidden lg:block w-[220px] flex-shrink-0 relative">
+            <div className="sticky top-[64px] h-[calc(100vh-64px)] bg-red-600 flex flex-col items-stretch overflow-y-auto no-scrollbar shadow-xl border-r border-red-700/10">
                 <LayoutGroup id="sidebar-katana">
-                    <nav className="flex flex-col py-4">
+                    <nav className="flex flex-col py-4 px-3">
                         <button
                             onClick={() => setSelectedCategory('all')}
-                            className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group ${
+                            className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
                                 selectedCategory === 'all'
                                     ? 'text-white'
                                     : 'text-white/40 hover:text-white'
@@ -103,7 +103,7 @@ export default function MenuCategoryBar({
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group ${
+                                className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
                                     selectedCategory === cat.id
                                         ? 'text-white'
                                         : 'text-white/40 hover:text-white'
