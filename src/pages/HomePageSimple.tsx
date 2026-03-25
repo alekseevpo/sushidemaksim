@@ -406,9 +406,10 @@ export default function HomePageSimple() {
                             [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                                 <div
                                     key={i}
-                                    className="h-40 md:h-56 bg-gray-100 rounded-[2rem] animate-pulse p-5"
+                                    className="h-40 md:h-56 bg-gray-100 rounded-[2rem] animate-pulse relative overflow-hidden"
                                 >
-                                    <div className="h-6 w-2/3 bg-gray-200/50 rounded-lg" />
+                                    <div className="absolute top-5 left-5 h-6 w-2/3 bg-gray-200/50 rounded-lg" />
+                                    <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent" />
                                 </div>
                             ))}
                     </div>
@@ -575,16 +576,19 @@ export default function HomePageSimple() {
                                 {[1, 2, 3, 4].map(i => (
                                     <div
                                         key={i}
-                                        className="min-w-[280px] md:min-w-[320px] bg-white rounded-[32px] p-4 shadow-sm border border-gray-100 flex flex-col h-full animate-pulse"
+                                        className="min-w-[260px] md:min-w-[320px] bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full animate-pulse"
                                     >
-                                        <div className="aspect-square mb-4 rounded-[24px] bg-gray-50" />
-                                        <div className="flex-1 px-2">
-                                            <div className="h-6 w-3/4 bg-gray-100 rounded-lg mb-2" />
-                                            <div className="h-4 w-1/2 bg-gray-50 rounded-md mb-4" />
-                                        </div>
-                                        <div className="px-2 pb-2 flex items-center justify-between mt-auto">
-                                            <div className="h-8 w-16 bg-gray-50 rounded-lg" />
-                                            <div className="h-12 w-12 bg-gray-100 rounded-2xl" />
+                                        <div className="aspect-[4/3] md:h-56 bg-gray-50" />
+                                        <div className="p-3 md:p-6 flex flex-col flex-1">
+                                            <div className="h-6 md:h-8 w-3/4 bg-gray-100 rounded-xl mb-4" />
+                                            <div className="space-y-2">
+                                                <div className="h-3 w-full bg-gray-50 rounded-md" />
+                                                <div className="h-3 w-5/6 bg-gray-50 rounded-md" />
+                                            </div>
+                                            <div className="mt-8 flex items-center justify-between">
+                                                <div className="h-8 w-1/3 bg-gray-100 rounded-lg" />
+                                                <div className="h-10 w-24 bg-gray-900/10 rounded-2xl" />
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
