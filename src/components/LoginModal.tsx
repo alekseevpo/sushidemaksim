@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
 import { api } from '../utils/api';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // ========== SUB-COMPONENTS (Memoized for performance) ==========
 
@@ -668,119 +669,137 @@ export default function LoginModal({
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-            <div
-                className="absolute inset-0 cursor-pointer"
-                onClick={() => !isLoading && onClose()}
-            />
-            <div className="relative max-w-sm w-full bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20 flex flex-col max-h-[92vh]">
-                {/* Close Button */}
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 p-2 rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all z-20"
-                >
-                    <X size={18} strokeWidth={1.5} />
-                </button>
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm cursor-pointer"
+                        onClick={() => !isLoading && onClose()}
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        transition={{
+                            type: 'spring',
+                            damping: 25,
+                            stiffness: 300,
+                        }}
+                        className="relative max-w-sm w-full bg-white rounded-[32px] shadow-2xl overflow-hidden border border-white/20 flex flex-col max-h-[92vh]"
+                    >
+                        {/* Close Button */}
+                        <button
+                            onClick={onClose}
+                            className="absolute top-4 right-4 p-2 rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all z-20 border-none cursor-pointer"
+                        >
+                            <X size={18} strokeWidth={1.5} />
+                        </button>
 
-                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
-                    <div className="text-center mb-4 pt-1">
-                        <img
-                            src="/logo.svg"
-                            alt="Sushi de Maksim"
-                            className="h-9 w-auto object-contain brightness-0 mx-auto mb-3"
-                        />
-                        <h2 className="text-xl font-black text-gray-900 tracking-tight leading-tight">
-                            {mode === 'login' && '¡Hola de nuevo!'}
-                            {mode === 'register' && 'Crea tu cuenta'}
-                            {mode === 'forgot' && 'Recuperar acceso'}
-                            {mode === 'verify-sent' && 'Verifica tu email'}
-                            {mode === 'reset-password' && 'Nueva contraseña'}
-                        </h2>
-                        <p className="text-[13px] text-gray-400 font-medium mt-1 leading-tight">
-                            {mode === 'login' && 'Entra и disfruta del mejor sushi.'}
-                            {mode === 'register' && 'Únete a la familia Maksim.'}
-                            {mode === 'forgot' && 'Te ayudamos a volver.'}
-                            {mode === 'verify-sent' && 'Hemos enviado un enlace.'}
-                            {mode === 'reset-password' && 'Casi has terminado.'}
-                        </p>
-                    </div>
-
-                    {mode === 'login' && (
-                        <LoginForm
-                            onLogin={handleLogin}
-                            onSwitchRegister={() => setMode('register')}
-                            onSwitchForgot={() => setMode('forgot')}
-                            isLoading={isLoading}
-                        />
-                    )}
-
-                    {mode === 'register' && (
-                        <RegisterForm
-                            onRegister={handleRegister}
-                            onSwitchLogin={() => setMode('login')}
-                            isLoading={isLoading}
-                        />
-                    )}
-
-                    {mode === 'forgot' && (
-                        <ForgotPasswordForm
-                            onForgot={handleForgot}
-                            onBack={() => setMode('login')}
-                            isLoading={isLoading}
-                        />
-                    )}
-
-                    {mode === 'verify-sent' && (
-                        <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="bg-green-50 text-green-700 p-6 rounded-3xl border border-green-100 font-medium text-sm leading-relaxed">
-                                <p>
-                                    Te hemos enviado un código de 6 dígitos. Por favor, revísalo en
-                                    tu correo e introdúcelo para restablecer tu contraseña.
-                                </p>
-                                <p className="mt-2 text-xs opacity-75 italic">
-                                    (No olvides revisar la carpeta de SPAM)
+                        <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                            <div className="text-center mb-4 pt-1">
+                                <img
+                                    src="/logo.svg"
+                                    alt="Sushi de Maksim"
+                                    className="h-9 w-auto object-contain brightness-0 mx-auto mb-3"
+                                />
+                                <h2 className="text-xl font-black text-gray-900 tracking-tight leading-tight">
+                                    {mode === 'login' && '¡Hola de nuevo!'}
+                                    {mode === 'register' && 'Crea tu cuenta'}
+                                    {mode === 'forgot' && 'Recuperar acceso'}
+                                    {mode === 'verify-sent' && 'Verifica tu email'}
+                                    {mode === 'reset-password' && 'Nueva contraseña'}
+                                </h2>
+                                <p className="text-[13px] text-gray-400 font-medium mt-1 leading-tight">
+                                    {mode === 'login' && 'Entra и disfruta del mejor sushi.'}
+                                    {mode === 'register' && 'Únete a la familia Maksim.'}
+                                    {mode === 'forgot' && 'Te ayudamos a volver.'}
+                                    {mode === 'verify-sent' && 'Hemos enviado un enlace.'}
+                                    {mode === 'reset-password' && 'Casi has terminado.'}
                                 </p>
                             </div>
-                            <div className="grid grid-cols-1 gap-3">
-                                <button
-                                    onClick={() => setMode('reset-password')}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 animate-in zoom-in-95 duration-500"
-                                >
-                                    <KeyRound size={18} strokeWidth={1.5} /> Introducir el código
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        onClose();
-                                        navigate('/menu');
-                                    }}
-                                    className="w-full py-4 bg-white border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-sm hover:border-red-600 hover:text-red-600 transition-all flex items-center justify-center gap-2"
-                                >
-                                    Explorar Menú
-                                </button>
-                                <button
-                                    onClick={() => setMode('login')}
-                                    className="w-full py-3 text-gray-400 font-bold hover:text-gray-600 transition-colors text-[10px] uppercase tracking-widest"
-                                >
-                                    Volver al login
-                                </button>
-                            </div>
-                        </div>
-                    )}
 
-                    {mode === 'reset-password' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <ResetPasswordForm
-                                onReset={handleReset}
-                                isLoading={isLoading}
-                                token={resetToken}
-                            />
+                            {mode === 'login' && (
+                                <LoginForm
+                                    onLogin={handleLogin}
+                                    onSwitchRegister={() => setMode('register')}
+                                    onSwitchForgot={() => setMode('forgot')}
+                                    isLoading={isLoading}
+                                />
+                            )}
+
+                            {mode === 'register' && (
+                                <RegisterForm
+                                    onRegister={handleRegister}
+                                    onSwitchLogin={() => setMode('login')}
+                                    isLoading={isLoading}
+                                />
+                            )}
+
+                            {mode === 'forgot' && (
+                                <ForgotPasswordForm
+                                    onForgot={handleForgot}
+                                    onBack={() => setMode('login')}
+                                    isLoading={isLoading}
+                                />
+                            )}
+
+                            {mode === 'verify-sent' && (
+                                <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    <div className="bg-green-50 text-green-700 p-6 rounded-3xl border border-green-100 font-medium text-sm leading-relaxed">
+                                        <p>
+                                            Te hemos enviado un código de 6 dígitos. Por favor,
+                                            revísalo en tu correo e introdúcelo para restablecer tu
+                                            contraseña.
+                                        </p>
+                                        <p className="mt-2 text-xs opacity-75 italic">
+                                            (No olvides revisar la carpeta de SPAM)
+                                        </p>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        <button
+                                            onClick={() => setMode('reset-password')}
+                                            className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
+                                        >
+                                            <KeyRound size={18} strokeWidth={1.5} /> Introducir el
+                                            código
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                onClose();
+                                                navigate('/menu');
+                                            }}
+                                            className="w-full py-4 bg-white border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-sm hover:border-red-600 hover:text-red-600 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            Explorar Menú
+                                        </button>
+                                        <button
+                                            onClick={() => setMode('login')}
+                                            className="w-full py-3 text-gray-400 font-bold hover:text-gray-600 transition-colors text-[10px] uppercase tracking-widest"
+                                        >
+                                            Volver al login
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {mode === 'reset-password' && (
+                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    <ResetPasswordForm
+                                        onReset={handleReset}
+                                        isLoading={isLoading}
+                                        token={resetToken}
+                                    />
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </motion.div>
                 </div>
-            </div>
-        </div>
+            )}
+        </AnimatePresence>
     );
 }
