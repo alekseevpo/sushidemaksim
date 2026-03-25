@@ -490,7 +490,7 @@ export default function AddressModal({
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
-                                                Piso / Puerta
+                                                Piso / Puerta *
                                             </label>
                                             <input
                                                 value={apartment}
@@ -622,6 +622,7 @@ export default function AddressModal({
                                         disabled={
                                             !address ||
                                             !house ||
+                                            !apartment ||
                                             !selectedZone ||
                                             isReverseGeocoding
                                         }

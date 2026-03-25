@@ -56,9 +56,10 @@ const CategoryCard = ({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
-            className="group relative h-48 md:h-64 rounded-[2rem] overflow-hidden cursor-pointer"
+            className="group relative h-40 md:h-56 rounded-[2rem] overflow-hidden cursor-pointer bg-gray-100"
         >
             <Link to={`/menu#section-${id}`} className="absolute inset-0 z-10" />
+
             {image && !imageFailed ? (
                 <img
                     src={getOptimizedImageUrl(image, 400)}
@@ -67,22 +68,19 @@ const CategoryCard = ({
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
             ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center"></div>
+                <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <span className="text-gray-300 font-bold text-[10px] uppercase">No Image</span>
+                </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60"></div>
 
-            {/* Title at the top */}
-            <div className="absolute top-6 left-6 right-6">
-                <h3 className="text-white font-black text-xl md:text-2xl uppercase tracking-tighter drop-shadow-lg">
+            {/* Soft gradient overlay for text readability at top */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent"></div>
+
+            {/* Title at the TOP - uniform and compact */}
+            <div className="absolute top-5 left-5 right-5">
+                <h3 className="text-white font-black text-[15px] md:text-[18px] leading-tight drop-shadow-sm tracking-tight">
                     {name}
                 </h3>
-            </div>
-
-            {/* Arrow at the bottom right */}
-            <div className="absolute bottom-6 right-6">
-                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white group-hover:bg-red-600 group-hover:border-red-600 transition-all shrink-0">
-                    <ArrowRight size={18} />
-                </div>
             </div>
         </motion.div>
     );
@@ -325,6 +323,7 @@ export default function HomePageSimple() {
                         repeatType: 'reverse',
                     }}
                     className="absolute bottom-6 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none"
+                    style={{ willChange: 'transform, opacity' }}
                 >
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-center ml-[0.3em]">
                         Scrollea
@@ -385,10 +384,9 @@ export default function HomePageSimple() {
                             [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                                 <div
                                     key={i}
-                                    className="h-44 md:h-64 bg-gray-100 rounded-[2rem] animate-pulse flex flex-col p-6"
+                                    className="h-40 md:h-56 bg-gray-100 rounded-[2rem] animate-pulse p-5"
                                 >
-                                    <div className="h-6 w-2/3 bg-gray-200/50 rounded-lg mb-auto" />
-                                    <div className="self-end h-10 w-10 rounded-full bg-gray-200/50" />
+                                    <div className="h-6 w-2/3 bg-gray-200/50 rounded-lg" />
                                 </div>
                             ))}
                     </div>

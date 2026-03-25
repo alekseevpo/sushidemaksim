@@ -93,10 +93,13 @@ export default function OrderSuccessModal({
                                     {isScheduled ? (
                                         <div className="flex flex-col items-center leading-tight">
                                             <span>
-                                                {new Date(scheduledDate).toLocaleDateString(
-                                                    'es-ES',
-                                                    { day: 'numeric', month: 'long' }
-                                                )}
+                                                {new Date(scheduledDate)
+                                                    .toLocaleDateString('es-ES', {
+                                                        day: 'numeric',
+                                                        month: 'long',
+                                                        year: 'numeric',
+                                                    })
+                                                    .replace(/\.$/, '')}
                                             </span>
                                             <span className="text-[13px] opacity-60 font-black">
                                                 a las {scheduledTime}

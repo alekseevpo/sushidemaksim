@@ -51,10 +51,15 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+
         if (name === 'date') {
-            setFormData(prev => ({ ...prev, time: '' }));
+            const today = new Date().toISOString().split('T')[0];
+            if (value < today) return;
+            setFormData(prev => ({ ...prev, date: value, time: '' }));
+            return;
         }
+
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const getTimeSlots = () => {
@@ -138,18 +143,18 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                         exit={{ y: '-100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         onClick={e => e.stopPropagation()}
-                        className="relative w-[95%] max-w-md bg-white rounded-b-[2rem] shadow-2xl flex flex-col overflow-hidden"
+                        className="relative w-full max-w-md bg-white md:rounded-b-[2rem] shadow-2xl flex flex-col overflow-hidden"
                     >
                         {/* Header Image/Pattern */}
-                        <div className="h-14 md:h-18 bg-red-600 relative overflow-hidden flex items-center justify-center shrink-0">
+                        <div className="h-16 md:h-18 bg-red-600 relative overflow-hidden flex items-center justify-center shrink-0">
                             <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-2 pointer-events-none">
                                 {[...Array(15)].map((_, i) => (
-                                    <div key={i} className="text-2xl font-serif">
+                                    <div key={i} className="text-2xl font-serif text-white">
                                         福
                                     </div>
                                 ))}
                             </div>
-                            <h2 className="text-lg md:text-xl font-black text-white tracking-tighter uppercase italic">
+                            <h2 className="relative z-10 text-base md:text-xl font-black text-white tracking-[0.2em] uppercase italic">
                                 Reservar Mesa
                             </h2>
                         </div>
@@ -169,9 +174,15 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     </h3>
                                     <p className="text-gray-500 font-medium mb-8">
                                         Hemos recibido tu solicitud para el{' '}
-                                        <strong>{formData.date}</strong> a las{' '}
-                                        <strong>{formData.time}</strong>. Te contactaremos pronto
-                                        para confirmar.
+                                        <strong className="text-gray-900">
+                                            {(() => {
+                                                const d = new Date(formData.date);
+                                                return `${d.getDate()} de ${d.toLocaleString('es-ES', { month: 'long' })} de ${d.getFullYear()}`;
+                                            })()}
+                                        </strong>{' '}
+                                        a las{' '}
+                                        <strong className="text-gray-900">{formData.time}</strong>.
+                                        Te contactaremos pronto para confirmar.
                                     </p>
                                     <button
                                         onClick={onClose}
@@ -189,14 +200,14 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                         </div>
                                     )}
 
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Fecha
                                             </label>
                                             <div className="relative">
                                                 <Calendar
-                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                                                     size={16}
                                                 />
                                                 <input
@@ -206,27 +217,27 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     min={today}
                                                     value={formData.date}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Hora
                                             </label>
                                             {!formData.date ? (
-                                                <div className="h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[8px] font-bold text-gray-400 uppercase text-center tracking-widest px-2">
+                                                <div className="h-11 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-bold text-gray-400 uppercase text-center tracking-widest px-2">
                                                     Fecha primero
                                                 </div>
                                             ) : isDayClosed ? (
-                                                <div className="h-10 flex items-center justify-center bg-red-50 border border-red-100 rounded-xl text-[8px] font-bold text-red-500 uppercase text-center tracking-widest px-2">
+                                                <div className="h-11 flex items-center justify-center bg-red-50 border border-red-100 rounded-xl text-[10px] font-bold text-red-500 uppercase text-center tracking-widest px-2">
                                                     Cerrado
                                                 </div>
                                             ) : (
                                                 <div className="relative">
                                                     <Clock
-                                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                                                         size={16}
                                                     />
                                                     <select
@@ -234,7 +245,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                         name="time"
                                                         value={formData.time}
                                                         onChange={handleChange}
-                                                        className="w-full pl-10 pr-8 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none appearance-none cursor-pointer"
+                                                        className="w-full pl-10 pr-8 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none appearance-none cursor-pointer"
                                                     >
                                                         <option value="" disabled>
                                                             Hora
@@ -246,7 +257,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                         ))}
                                                     </select>
                                                     <ChevronDown
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
                                                         size={14}
                                                     />
                                                 </div>
@@ -254,18 +265,18 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-3 pb-1">
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                    <div className="grid grid-cols-2 gap-4 pb-1">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Personas
                                             </label>
-                                            <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-10">
-                                                <div className="pl-2">
-                                                    <span className="text-[10px] font-black text-gray-900 leading-none">
+                                            <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-11">
+                                                <div className="pl-3">
+                                                    <span className="text-[12px] font-black text-gray-900 leading-none">
                                                         {formData.guests}
                                                     </span>
                                                 </div>
-                                                <div className="flex items-center gap-0.5 bg-white p-0.5 rounded-lg shadow-sm border border-gray-100">
+                                                <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg shadow-sm border border-gray-100">
                                                     <button
                                                         type="button"
                                                         onClick={() =>
@@ -277,7 +288,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                                 ),
                                                             }))
                                                         }
-                                                        className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
                                                     >
                                                         <Minus size={14} strokeWidth={3} />
                                                     </button>
@@ -289,7 +300,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                                 guests: prev.guests + 1,
                                                             }))
                                                         }
-                                                        className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
                                                     >
                                                         <Plus size={14} strokeWidth={3} />
                                                     </button>
@@ -297,36 +308,36 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                             </div>
                                         </div>
 
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Teléfono
                                             </label>
                                             <div className="relative">
-                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[10px]">
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[11px]">
                                                     +34
                                                 </div>
                                                 <input
                                                     required
                                                     type="tel"
                                                     name="phone"
-                                                    placeholder="000000000"
+                                                    placeholder="000 000 000"
                                                     minLength={9}
                                                     pattern="[0-9]{9,}"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-11 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                             Nombre Completo
                                         </label>
                                         <div className="relative">
                                             <User
-                                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                                                 size={16}
                                             />
                                             <input
@@ -336,29 +347,29 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                 placeholder="Tu nombre"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                className="w-full pl-9 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
                                             />
                                         </div>
                                     </div>
 
                                     {!isAuthenticated && (
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Email
                                             </label>
                                             <div className="relative">
                                                 <Mail
-                                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                                                     size={16}
                                                 />
                                                 <input
                                                     required
                                                     type="email"
                                                     name="email"
-                                                    placeholder="Email"
+                                                    placeholder="tucorreo@ejemplo.com"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-600/20 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -367,10 +378,19 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     <button
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-red-600/20 hover:bg-red-700 active:scale-[0.98] transition-all disabled:opacity-50 mt-2"
+                                        className="w-full py-4.5 bg-red-600 text-white rounded-[24px] font-black text-[13px] tracking-[0.2em] uppercase italic flex items-center justify-center gap-3 shadow-xl shadow-red-600/20 hover:bg-red-700 active:scale-[0.98] transition-all disabled:opacity-50 mt-4 group"
                                     >
-                                        {isSubmitting ? 'PROCESANDO...' : 'RESERVAR AHORA'}
-                                        <ChevronRight size={18} />
+                                        {isSubmitting ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <>
+                                                RESERVAR AHORA
+                                                <ChevronRight
+                                                    size={20}
+                                                    className="group-hover:translate-x-1 transition-transform"
+                                                />
+                                            </>
+                                        )}
                                     </button>
                                 </form>
                             )}

@@ -23,26 +23,26 @@ export default function CartItemList({
     setFailedImages,
 }: CartItemListProps) {
     return (
-        <div className="bg-transparent md:bg-white md:rounded-xl md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-0 md:p-6 mb-4 md:mb-6">
-            <div className="flex items-center justify-between mb-4 md:mb-6 px-4 md:px-0">
-                <h2 className="text-xl md:text-xl font-black m-0 uppercase tracking-tight">
+        <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 mb-6 overflow-hidden">
+            <div className="flex items-center justify-between p-4 pb-2 border-b border-gray-50 bg-gray-50/30">
+                <h2 className="text-sm font-black m-0 uppercase tracking-widest text-gray-400">
                     Productos ({items.length})
                 </h2>
                 <button
                     onClick={clearCart}
-                    className="text-sm font-bold text-gray-400 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1 w-fit"
+                    className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-red-500 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
                 >
-                    <Trash2 size={14} strokeWidth={1.5} /> Vaciar cesta
+                    <Trash2 size={12} strokeWidth={2.5} /> Vaciar
                 </button>
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
                 {items.map(item => (
                     <div
                         key={item.id}
-                        className="relative flex items-center gap-3 p-3 bg-white border-b border-gray-50 last:border-none animate-in slide-in-from-left duration-300"
+                        className="relative flex items-center gap-3 px-3 py-3 bg-white border-b border-gray-50 last:border-none animate-in slide-in-from-left duration-300"
                     >
-                        <div className="w-16 h-16 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img">
                             {!failedImages.has(item.id) ? (
                                 <img
                                     src={getOptimizedImageUrl(item.image, 256)}
@@ -66,10 +66,17 @@ export default function CartItemList({
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-gray-900 leading-tight mb-1 md:mb-2 text-sm md:text-sm truncate">
-                                {item.name}
-                            </h3>
-                            <div className="flex items-center justify-between">
+                            <div className="mb-2">
+                                <h3 className="font-bold text-gray-900 leading-tight text-[13px] md:text-sm truncate mb-0.5">
+                                    {item.name}
+                                </h3>
+                                {item.description && (
+                                    <p className="text-[10px] text-gray-400 font-medium leading-none truncate opacity-60">
+                                        {item.description}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="flex items-center justify-between gap-4">
                                 <div className="flex items-center bg-gray-50 rounded-lg p-0.5 border border-gray-100">
                                     <button
                                         onClick={() => {
@@ -78,11 +85,11 @@ export default function CartItemList({
                                                 ? updateQuantity(item.id, item.quantity - 1)
                                                 : removeItem(item.id);
                                         }}
-                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
+                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
                                     >
-                                        <Minus size={14} strokeWidth={1.5} />
+                                        <Minus size={12} strokeWidth={2.5} />
                                     </button>
-                                    <span className="w-8 md:w-8 text-center font-black text-gray-900 text-sm">
+                                    <span className="w-7 md:w-7 text-center font-black text-gray-900 text-xs">
                                         {item.quantity}
                                     </span>
                                     <button
@@ -90,13 +97,13 @@ export default function CartItemList({
                                             triggerHaptic();
                                             updateQuantity(item.id, item.quantity + 1);
                                         }}
-                                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
+                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
                                     >
-                                        <Plus size={14} strokeWidth={1.5} />
+                                        <Plus size={12} strokeWidth={2.5} />
                                     </button>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-base md:text-base font-black text-gray-900">
+                                    <span className="text-[15px] md:text-base font-black text-gray-900">
                                         {(item.price * item.quantity).toFixed(2).replace('.', ',')}{' '}
                                         €
                                     </span>
@@ -105,10 +112,10 @@ export default function CartItemList({
                                             triggerHaptic(40); // HEAVY
                                             removeItem(item.id);
                                         }}
-                                        className="text-gray-300 hover:text-red-500 cursor-pointer p-0 transition-colors flex items-center justify-center border-none bg-transparent"
+                                        className="text-gray-300 hover:text-red-400 cursor-pointer p-0 transition-colors flex items-center justify-center border-none bg-transparent"
                                         aria-label="Eliminar"
                                     >
-                                        <X size={18} strokeWidth={1.5} />
+                                        <X size={16} strokeWidth={2.5} />
                                     </button>
                                 </div>
                             </div>

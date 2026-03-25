@@ -503,36 +503,57 @@ export default function CartPageSimple() {
                     addedItems={addedItems}
                 />
             ) : (
-                <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
+                <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-4 sm:py-8">
                     {isStoreClosed && (
                         <div className="mb-6 animate-in slide-in-from-top duration-500">
-                            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 md:p-6">
-                                <div className="flex-1">
-                                    <h3 className="font-bold text-red-900 leading-tight mb-2">
-                                        Tienda Cerrada
-                                    </h3>
-                                    <p className="text-sm text-red-700 whitespace-pre-line leading-relaxed">
-                                        {isManualClosed
-                                            ? siteSettings?.closed_message ||
-                                              'Nuestra cocina está tomando un breve descanso, ¡encantados de atenderte pronto!'
-                                            : 'Actualmente nuestra cocina está fuera de servicio, ¡pero no te preocupes!'}
-                                        {'\n\n'}**Estaremos encantados de recibir tu pedido
-                                        programado.** Selecciona la opción "Entrega programada" más
-                                        abajo para que podamos entregártelo en nuestro próximo
-                                        horario de apertura.
-                                        {'\n\n'}
-                                        **Horario de Servicio:**
-                                        {'\n'}• Miércoles a Viernes: 20:00 – 23:00
-                                        {'\n'}• Sábado (Comida): 14:00 – 17:00
-                                        {'\n'}• Sábado (Cena): 20:00 – 23:00
-                                        {'\n'}• Domingo: 14:00 – 17:00
-                                    </p>
+                            <div className="bg-red-50/50 backdrop-blur-sm border border-red-100 rounded-2xl p-4 md:p-5">
+                                <div className="flex items-start gap-3">
+                                    <div className="mt-0.5 w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                        <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-black text-red-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
+                                            Tienda Cerrada
+                                        </h3>
+                                        <p className="text-[13px] text-red-800/80 whitespace-pre-line leading-snug">
+                                            {isManualClosed
+                                                ? siteSettings?.closed_message ||
+                                                  'Nuestra cocina está tomando un breve descanso.'
+                                                : 'Actualmente nuestra cocina está fuera de servicio.'}
+                                        </p>
+                                        <div className="mt-3 pt-3 border-t border-red-200/50">
+                                            <p className="text-[11px] font-bold text-red-900/40 uppercase tracking-widest mb-1.5">
+                                                Horario de Servicio:
+                                            </p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-red-800/80 font-medium">
+                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                                    <span>Miércoles – Viernes</span>
+                                                    <span className="font-bold">20:00 – 23:00</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                                    <span>Sábado (Comida)</span>
+                                                    <span className="font-bold">14:00 – 17:00</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                                    <span>Sábado (Cena)</span>
+                                                    <span className="font-bold">20:00 – 23:00</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                                    <span>Domingo</span>
+                                                    <span className="font-bold">14:00 – 17:00</span>
+                                                </div>
+                                            </div>
+                                            <p className="mt-3 text-[11px] bg-red-100/50 px-2 py-1.5 rounded-lg text-red-900 font-bold inline-block">
+                                                🚀 Aceptamos pedidos programados
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-8 tracking-tight px-4 md:px-0">
+                    <h1 className="text-lg font-black text-gray-900 mb-2 px-2 md:px-0 uppercase tracking-[0.2em] opacity-30">
                         Tu cesta
                     </h1>
 

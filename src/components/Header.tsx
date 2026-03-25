@@ -207,22 +207,14 @@ export default function Header() {
                                     }`;
 
                                 if (isAction) {
-                                    const isHighlight = link.label === 'Reserva';
                                     return (
                                         <button
                                             key={link.label || idx}
                                             onClick={link.onClick}
                                             type="button"
-                                            className={`${commonStyles} ${
-                                                isHighlight
-                                                    ? 'bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20 px-6 py-2.5 rounded-xl ml-2'
-                                                    : ''
-                                            }`}
+                                            className={commonStyles}
                                         >
-                                            <div className="flex items-center gap-2">
-                                                {isHighlight && <Calendar size={16} />}
-                                                {link.label}
-                                            </div>
+                                            {link.label}
                                         </button>
                                     );
                                 }

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     MapPin,
     Truck,
@@ -158,20 +158,27 @@ export default function DeliveryForm({
                 <MapPin size={18} strokeWidth={1.5} className="text-red-600" /> Datos de entrega
             </h2>
 
-            <div className="flex bg-gray-50 p-1.5 rounded-2xl mb-6 border border-gray-100">
+            <div className="flex bg-gray-100/50 p-1.5 rounded-[22px] mb-6 border border-gray-100 relative">
                 <button
                     type="button"
                     onClick={() => {
                         triggerHaptic();
                         setDeliveryType('delivery');
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all border-none cursor-pointer ${
+                    className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'delivery'
-                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                            : 'text-gray-400 hover:text-gray-500 bg-transparent'
+                            ? 'text-red-600'
+                            : 'text-gray-400 hover:text-gray-500'
                     }`}
                 >
-                    <Truck size={16} strokeWidth={2} />
+                    {deliveryType === 'delivery' && (
+                        <motion.div
+                            layoutId="activeTab"
+                            className="absolute inset-0 bg-white shadow-md shadow-red-100 border border-red-50 rounded-xl z-[-1]"
+                            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                        />
+                    )}
+                    <Truck size={16} strokeWidth={2.5} />
                     Domicilio
                 </button>
                 <button
@@ -180,13 +187,20 @@ export default function DeliveryForm({
                         triggerHaptic();
                         setDeliveryType('pickup');
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all border-none cursor-pointer ${
+                    className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'pickup'
-                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                            : 'text-gray-400 hover:text-gray-500 bg-transparent'
+                            ? 'text-red-600'
+                            : 'text-gray-400 hover:text-gray-500'
                     }`}
                 >
-                    <Store size={16} strokeWidth={2} />
+                    {deliveryType === 'pickup' && (
+                        <motion.div
+                            layoutId="activeTab"
+                            className="absolute inset-0 bg-white shadow-md shadow-red-100 border border-red-50 rounded-xl z-[-1]"
+                            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                        />
+                    )}
+                    <Store size={16} strokeWidth={2.5} />
                     Recogida
                 </button>
                 <button
@@ -194,284 +208,329 @@ export default function DeliveryForm({
                     onClick={() => {
                         triggerHaptic();
                         setDeliveryType('reservation');
-                        setIsScheduled(true); // Mandatory for reservation
+                        setIsScheduled(true);
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all border-none cursor-pointer ${
+                    className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'reservation'
-                            ? 'bg-white text-red-600 shadow-sm border border-gray-100'
-                            : 'text-gray-400 hover:text-gray-500 bg-transparent'
+                            ? 'text-red-600'
+                            : 'text-gray-400 hover:text-gray-500'
                     }`}
                 >
-                    <Users size={16} strokeWidth={2} />
+                    {deliveryType === 'reservation' && (
+                        <motion.div
+                            layoutId="activeTab"
+                            className="absolute inset-0 bg-white shadow-md shadow-red-100 border border-red-50 rounded-xl z-[-1]"
+                            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                        />
+                    )}
+                    <Users size={16} strokeWidth={2.5} />
                     Reserva
                 </button>
             </div>
 
-            {deliveryType === 'pickup' && (
-                <div className="mb-6 p-4 bg-amber-50 rounded-2xl border border-amber-100 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="flex items-start gap-3">
-                        <div className="p-2 bg-amber-100 rounded-xl text-amber-600">
-                            <Store size={20} strokeWidth={1.5} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-black text-amber-900 uppercase tracking-tight mb-1">
-                                Punto de Recogida
-                            </p>
-                            <p className="text-sm text-amber-800 font-medium">
-                                Calle Barrilero, 20, 28007 Madrid
-                            </p>
+            <AnimatePresence mode="wait">
+                {deliveryType === 'pickup' && (
+                    <motion.div
+                        key="pickup-info"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mb-6 overflow-hidden"
+                    >
+                        <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                            <div className="flex items-start gap-3">
+                                <div className="p-2 bg-amber-100 rounded-xl text-amber-600">
+                                    <Store size={20} strokeWidth={1.5} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black text-amber-900 uppercase tracking-tight mb-1">
+                                        Punto de Recogida
+                                    </p>
+                                    <p className="text-sm text-amber-800 font-medium">
+                                        Calle Barrilero, 20, 28007 Madrid
+                                    </p>
 
-                            <div className="mt-4 pt-4 border-t border-amber-200/50">
-                                <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
-                                    Horario de recogida
-                                </p>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px] font-medium text-amber-800">
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="opacity-50 uppercase text-[9px] tracking-tight">
-                                            Mié – Vie
-                                        </span>
-                                        <span className="font-bold">20:00 – 23:00</span>
-                                    </div>
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="opacity-50 uppercase text-[9px] tracking-tight">
-                                            Sábado
-                                        </span>
-                                        <span className="font-bold leading-tight">
-                                            14:00 – 17:00 / 20:00 – 23:00
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="opacity-50 uppercase text-[9px] tracking-tight">
-                                            Domingo
-                                        </span>
-                                        <span className="font-bold">14:00 – 17:00</span>
-                                    </div>
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="text-amber-900/40 uppercase text-[9px] tracking-tight font-black">
-                                            Lun – Mar
-                                        </span>
-                                        <span className="text-amber-900/40 font-black uppercase">
-                                            Cerrado
-                                        </span>
+                                    <div className="mt-4 pt-4 border-t border-amber-200/50">
+                                        <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
+                                            Horario de recogida
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px] font-medium text-amber-800">
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="opacity-50 uppercase text-[9px] tracking-tight">
+                                                    Mié – Vie
+                                                </span>
+                                                <span className="font-bold">20:00 – 23:00</span>
+                                            </div>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="opacity-50 uppercase text-[9px] tracking-tight">
+                                                    Sábado
+                                                </span>
+                                                <span className="font-bold leading-tight">
+                                                    14:00 – 17:00 / 20:00 – 23:00
+                                                </span>
+                                            </div>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="opacity-50 uppercase text-[9px] tracking-tight">
+                                                    Domingo
+                                                </span>
+                                                <span className="font-bold">14:00 – 17:00</span>
+                                            </div>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-amber-900/40 uppercase text-[9px] tracking-tight font-black">
+                                                    Lun – Mar
+                                                </span>
+                                                <span className="text-amber-900/40 font-black uppercase">
+                                                    Cerrado
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </motion.div>
+                )}
 
-            {deliveryType === 'reservation' && (
-                <div className="mb-6 p-4 bg-red-50 rounded-2xl border border-red-100 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="flex items-start gap-3">
-                        <div className="p-2 bg-red-100 rounded-xl text-red-600">
-                            <Users size={20} strokeWidth={1.5} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-black text-red-900 uppercase tracking-tight mb-1">
-                                Reserva de Mesa
-                            </p>
-                            <p className="text-sm text-red-800 font-medium">
-                                Prepararemos tu pedido para que esté listo cuando llegues a tu mesa.
-                            </p>
-                            <p className="text-[10px] text-red-600 font-black uppercase mt-2">
-                                * Se requiere reserva previa confirmada
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {deliveryType === 'delivery' && (
-                <div className="flex flex-col gap-3">
-                    {user?.addresses && user.addresses.length > 0 && (
-                        <div className="grid grid-cols-1 gap-2 mb-2">
-                            {user.addresses.map((addr: any) => (
-                                <button
-                                    key={addr.id}
-                                    onClick={() => {
-                                        let s = addr.street || '';
-                                        let h = addr.house || '';
-                                        let a = addr.apartment || '';
-                                        if (s.includes(',') && !h && !a) {
-                                            const pts = s.split(',').map((p: string) => p.trim());
-                                            if (pts.length >= 2) {
-                                                s = pts[0];
-                                                h = pts[1];
-                                                if (pts.length >= 3) a = pts.slice(2).join(', ');
-                                            }
-                                        }
-                                        setAddress(s);
-                                        setHouse(h);
-                                        setApartment(a);
-                                        setPhone(addr.phone || phone || '');
-                                    }}
-                                    type="button"
-                                    className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
-                                >
-                                    <MapPin size={16} strokeWidth={1.5} className="shrink-0" />
-                                    <span className="truncate">
-                                        Usar "{addr.label || 'Mi dirección'}": {addr.street}{' '}
-                                        {addr.house && `, ${addr.house}`}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Unified Address Component for Mobile & Desktop */}
-                    <div className="w-full">
-                        {!address ? (
-                            <button
-                                type="button"
-                                onClick={handleAddressClick}
-                                data-testid="address-input"
-                                className="w-full bg-white border-2 border-red-50 rounded-[24px] p-6 md:p-10 text-center hover:border-red-500 hover:bg-red-50/10 transition-all group mb-4 shadow-sm active:scale-95 duration-200 cursor-pointer flex flex-col items-center gap-3 md:gap-4"
-                            >
-                                <div className="w-14 h-14 md:w-20 md:h-20 bg-red-50 rounded-2xl md:rounded-[28px] flex items-center justify-center group-hover:scale-110 transition duration-500 shadow-inner group-hover:shadow-[0_10px_30px_-10px_rgba(220,38,38,0.3)]">
-                                    <MapPin className="text-red-500 w-8 h-8 md:w-12 md:h-12" />
+                {deliveryType === 'reservation' && (
+                    <motion.div
+                        key="reservation-info"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mb-6 overflow-hidden"
+                    >
+                        <div className="p-4 bg-red-50 rounded-2xl border border-red-100">
+                            <div className="flex items-start gap-3">
+                                <div className="p-2 bg-red-100 rounded-xl text-red-600">
+                                    <Users size={20} strokeWidth={1.5} />
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="font-black text-lg md:text-2xl text-gray-900 tracking-tight">
-                                        ¿Dónde entregamos el pedido?
+                                <div>
+                                    <p className="text-sm font-black text-red-900 uppercase tracking-tight mb-1">
+                                        Reserva de Mesa
                                     </p>
-                                    <p className="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2">
-                                        Indica tu dirección y descubre nuestras zonas
+                                    <p className="text-sm text-red-800 font-medium">
+                                        Prepararemos tu pedido para que esté listo cuando llegues a
+                                        tu mesa.
+                                    </p>
+                                    <p className="text-[10px] text-red-600 font-black uppercase mt-2">
+                                        * Se requiere reserva previa confirmada
                                     </p>
                                 </div>
-                            </button>
-                        ) : (
-                            <div className="flex flex-col gap-4">
-                                {/* Enhanced Address Card - Full block click */}
-                                <button
-                                    type="button"
-                                    onClick={handleAddressClick}
-                                    data-testid="address-display"
-                                    className="bg-gray-50/80 backdrop-blur-sm rounded-[24px] md:rounded-[32px] p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
-                                >
-                                    <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
-                                        <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl md:rounded-[24px] flex items-center justify-center shadow-md border border-gray-50 shrink-0 group-hover:scale-105 transition-all duration-500">
-                                            <MapPin className="text-red-500 w-5 h-5 md:w-8 md:h-8" />
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
+                {deliveryType === 'delivery' && (
+                    <motion.div
+                        key="delivery-form"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="flex flex-col gap-3">
+                            {user?.addresses && user.addresses.length > 0 && (
+                                <div className="grid grid-cols-1 gap-2 mb-2">
+                                    {user.addresses.map((addr: any) => (
+                                        <button
+                                            key={addr.id}
+                                            onClick={() => {
+                                                let s = addr.street || '';
+                                                let h = addr.house || '';
+                                                let a = addr.apartment || '';
+                                                if (s.includes(',') && !h && !a) {
+                                                    const pts = s
+                                                        .split(',')
+                                                        .map((p: string) => p.trim());
+                                                    if (pts.length >= 2) {
+                                                        s = pts[0];
+                                                        h = pts[1];
+                                                        if (pts.length >= 3)
+                                                            a = pts.slice(2).join(', ');
+                                                    }
+                                                }
+                                                setAddress(s);
+                                                setHouse(h);
+                                                setApartment(a);
+                                                setPhone(addr.phone || phone || '');
+                                            }}
+                                            type="button"
+                                            className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
+                                        >
+                                            <MapPin
+                                                size={16}
+                                                strokeWidth={1.5}
+                                                className="shrink-0"
+                                            />
+                                            <span className="truncate">
+                                                Usar "{addr.label || 'Mi dirección'}": {addr.street}{' '}
+                                                {addr.house && `, ${addr.house}`}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Unified Address Component for Mobile & Desktop */}
+                            <div className="w-full">
+                                {!address ? (
+                                    <button
+                                        type="button"
+                                        onClick={handleAddressClick}
+                                        data-testid="address-input"
+                                        className="w-full bg-white border-2 border-red-50 rounded-[24px] p-6 md:p-10 text-center hover:border-red-500 hover:bg-red-50/10 transition-all group mb-4 shadow-sm active:scale-95 duration-200 cursor-pointer flex flex-col items-center gap-3 md:gap-4"
+                                    >
+                                        <div className="w-14 h-14 md:w-20 md:h-20 bg-red-50 rounded-2xl md:rounded-[28px] flex items-center justify-center group-hover:scale-110 transition duration-500 shadow-inner group-hover:shadow-[0_10px_30px_-10px_rgba(220,38,38,0.3)]">
+                                            <MapPin className="text-red-500 w-8 h-8 md:w-12 md:h-12" />
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-black text-lg md:text-3xl text-gray-900 leading-tight tracking-tight mb-1">
-                                                {address}
+                                        <div className="space-y-1">
+                                            <p className="font-black text-lg md:text-2xl text-gray-900 tracking-tight">
+                                                ¿Dónde entregamos el pedido?
                                             </p>
-                                            {(house || apartment) && (
-                                                <p className="text-sm md:text-lg font-black text-red-600 uppercase tracking-tight -mt-0.5">
-                                                    {house && `Portal / Casa: ${house}`}
-                                                    {apartment && ` • Piso / Puerta: ${apartment}`}
-                                                </p>
-                                            )}
-                                            <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-1 md:mt-1.5">
-                                                <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 max-w-full">
-                                                    <div
-                                                        className="w-1.5 h-1.5 rounded-full shrink-0"
-                                                        style={{
-                                                            backgroundColor:
-                                                                selectedZone?.color || '#EF4444',
-                                                        }}
-                                                    />
-                                                    <span className="text-[9px] md:text-xs font-black text-gray-900 uppercase tracking-widest whitespace-nowrap">
-                                                        {selectedZone?.name || 'Zona no detectada'}
-                                                    </span>
-                                                    {selectedZone && (
-                                                        <span className="ml-1 text-[9px] md:text-xs font-black text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                                                            {deliveryCost > 0
-                                                                ? `+${deliveryCost.toFixed(2).replace('.', ',')}€ envío`
-                                                                : 'Envío GRATIS'}
-                                                        </span>
-                                                    )}
+                                            <p className="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2">
+                                                Indica tu dirección y descubre nuestras zonas
+                                            </p>
+                                        </div>
+                                    </button>
+                                ) : (
+                                    <div className="flex flex-col gap-4">
+                                        {/* Enhanced Address Card - Full block click */}
+                                        <button
+                                            type="button"
+                                            onClick={handleAddressClick}
+                                            data-testid="address-display"
+                                            className="bg-gray-50/80 backdrop-blur-sm rounded-[24px] md:rounded-[32px] p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
+                                        >
+                                            <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
+                                                <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl md:rounded-[24px] flex items-center justify-center shadow-md border border-gray-50 shrink-0 group-hover:scale-105 transition-all duration-500">
+                                                    <MapPin className="text-red-500 w-5 h-5 md:w-8 md:h-8" />
                                                 </div>
-                                                <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-2xl border border-gray-100">
-                                                    <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
-                                                        CP {postalCode}
-                                                    </span>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xl md:text-3xl font-black text-gray-900 tracking-tight leading-none mb-1">
+                                                        {address}
+                                                        {house ? ` ${house}` : ''}
+                                                        {apartment ? `, ${apartment}` : ''}
+                                                    </p>
+                                                    <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                                        {selectedZone?.name ||
+                                                            'Dirección de entrega'}
+                                                    </p>
+                                                    <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-1 md:mt-1.5">
+                                                        <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 max-w-full">
+                                                            <div
+                                                                className="w-1.5 h-1.5 rounded-full shrink-0"
+                                                                style={{
+                                                                    backgroundColor:
+                                                                        selectedZone?.color ||
+                                                                        '#EF4444',
+                                                                }}
+                                                            />
+                                                            <span className="text-[9px] md:text-xs font-black text-gray-900 uppercase tracking-widest whitespace-nowrap">
+                                                                {selectedZone?.name ||
+                                                                    'Zona no detectada'}
+                                                            </span>
+                                                            {selectedZone && (
+                                                                <span className="ml-1 text-[9px] md:text-xs font-black text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                                                                    {deliveryCost > 0
+                                                                        ? `+${deliveryCost.toFixed(2).replace('.', ',')}€ envío`
+                                                                        : 'Envío GRATIS'}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-2xl border border-gray-100">
+                                                            <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                                                                CP {postalCode}
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </button>
-                                {/* Form Fields below the card */}
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 -mt-1 px-1">
-                                    <div className="lg:col-span-1">
-                                        <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
-                                            Portal / Casa *
-                                        </label>
-                                        <input
-                                            value={house}
-                                            onChange={e => setHouse(e.target.value)}
-                                            placeholder="Ej: 20"
-                                            data-testid="house-input"
-                                            className={`w-full px-5 py-3 md:py-4 bg-gray-50 border rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition ${!house && address ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}
-                                        />
-                                        {!house && address && (
-                                            <p className="text-[9px] font-black text-amber-600 mt-1 ml-2 uppercase tracking-widest animate-pulse">
-                                                Falta número
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div className="lg:col-span-1">
-                                        <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
-                                            Piso / Puerta *
-                                        </label>
-                                        <input
-                                            value={apartment}
-                                            onChange={e => setApartment(e.target.value)}
-                                            placeholder="Ej: 1B"
-                                            data-testid="apartment-input"
-                                            className={`w-full px-5 py-3 md:py-4 bg-gray-50 border rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition ${!apartment && address ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}
-                                        />
-                                        {!apartment && address && (
-                                            <p className="text-[9px] font-black text-amber-600 mt-1 ml-2 uppercase tracking-widest animate-pulse">
-                                                Falta piso/puerta
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div className="col-span-2 lg:col-span-1">
-                                        <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
-                                            Código Postal
-                                        </label>
-                                        <input
-                                            value={postalCode}
-                                            onChange={e => setPostalCode(e.target.value)}
-                                            placeholder="Ej: 28001"
-                                            maxLength={5}
-                                            className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
-                                        />
-                                    </div>
-                                </div>
-
-                                {isAuthenticated && (
-                                    <div className="px-2">
-                                        <label className="flex items-center gap-3 p-3 bg-red-50/20 rounded-2xl border border-red-100/30 cursor-pointer group hover:bg-red-50/40 transition-all select-none">
-                                            <div className="relative flex items-center">
+                                        </button>
+                                        {/* Form Fields below the card */}
+                                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 -mt-1 px-1">
+                                            <div className="lg:col-span-1">
+                                                <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
+                                                    Portal / Casa *
+                                                </label>
                                                 <input
-                                                    type="checkbox"
-                                                    className="w-5 h-5 accent-red-600 rounded-md cursor-pointer border-2 border-red-200"
-                                                    checked={saveAddress}
-                                                    onChange={e => {
-                                                        triggerHaptic();
-                                                        setSaveAddress(e.target.checked);
-                                                    }}
+                                                    value={house}
+                                                    onChange={e => setHouse(e.target.value)}
+                                                    placeholder="Ej: 20"
+                                                    data-testid="house-input"
+                                                    className={`w-full px-5 py-3 md:py-4 bg-gray-50 border rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition ${!house && address ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}
+                                                />
+                                                {!house && address && (
+                                                    <p className="text-[9px] font-black text-amber-600 mt-1 ml-2 uppercase tracking-widest animate-pulse">
+                                                        Falta número
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div className="lg:col-span-1">
+                                                <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
+                                                    Piso / Puerta *
+                                                </label>
+                                                <input
+                                                    value={apartment}
+                                                    onChange={e => setApartment(e.target.value)}
+                                                    placeholder="Ej: 1B"
+                                                    data-testid="apartment-input"
+                                                    className={`w-full px-5 py-3 md:py-4 bg-gray-50 border rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition ${!apartment && address ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}
+                                                />
+                                                {!apartment && address && (
+                                                    <p className="text-[9px] font-black text-amber-600 mt-1 ml-2 uppercase tracking-widest animate-pulse">
+                                                        Falta piso/puerta
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div className="col-span-2 lg:col-span-1">
+                                                <label className="block text-[10px] md:text-xs font-black text-gray-400 uppercase mb-1.5 px-2 tracking-widest">
+                                                    Código Postal
+                                                </label>
+                                                <input
+                                                    value={postalCode}
+                                                    onChange={e => setPostalCode(e.target.value)}
+                                                    placeholder="Ej: 28001"
+                                                    maxLength={5}
+                                                    className="w-full px-5 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-3xl text-sm md:text-base font-bold outline-none focus:ring-4 ring-red-500/5 focus:bg-white transition"
                                                 />
                                             </div>
-                                            <div>
-                                                <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight leading-none mb-1">
-                                                    Guardar dirección
-                                                </p>
-                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                                                    Para tus futuros pedidos 🍣
-                                                </p>
+                                        </div>
+
+                                        {isAuthenticated && (
+                                            <div className="px-2">
+                                                <label className="flex items-center gap-3 p-3 bg-red-50/20 rounded-2xl border border-red-100/30 cursor-pointer group hover:bg-red-50/40 transition-all select-none">
+                                                    <div className="relative flex items-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="w-5 h-5 accent-red-600 rounded-md cursor-pointer border-2 border-red-200"
+                                                            checked={saveAddress}
+                                                            onChange={e => {
+                                                                triggerHaptic();
+                                                                setSaveAddress(e.target.checked);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight leading-none mb-1">
+                                                            Guardar dirección
+                                                        </p>
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
+                                                            Para tus futuros pedidos 🍣
+                                                        </p>
+                                                    </div>
+                                                </label>
                                             </div>
-                                        </label>
+                                        )}
                                     </div>
                                 )}
                             </div>
-                        )}
-                    </div>
-                </div>
-            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <div className="mt-8 pt-6 border-t border-gray-100">
                 <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
@@ -682,14 +741,13 @@ export default function DeliveryForm({
                                     <label className="block text-[10px] uppercase font-black text-gray-400 mb-1.5 ml-1 tracking-wider">
                                         Número de personas
                                     </label>
-                                    <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-[46px]">
+                                    <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-11">
                                         <div className="pl-3">
-                                            <span className="text-xs font-black text-gray-900 leading-none">
-                                                {guestsCount}{' '}
-                                                {guestsCount === 1 ? 'Persona' : 'Personas'}
+                                            <span className="text-[12px] font-black text-gray-900 leading-none">
+                                                {guestsCount}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-100">
+                                        <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg shadow-sm border border-gray-100">
                                             <button
                                                 type="button"
                                                 onClick={() => {
@@ -698,7 +756,7 @@ export default function DeliveryForm({
                                                 }}
                                                 className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
-                                                <Minus size={16} strokeWidth={3} />
+                                                <Minus size={14} strokeWidth={3} />
                                             </button>
                                             <button
                                                 type="button"
@@ -708,7 +766,7 @@ export default function DeliveryForm({
                                                 }}
                                                 className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
-                                                <Plus size={16} strokeWidth={3} />
+                                                <Plus size={14} strokeWidth={3} />
                                             </button>
                                         </div>
                                     </div>
