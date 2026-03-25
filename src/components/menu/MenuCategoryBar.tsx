@@ -51,7 +51,7 @@ export default function MenuCategoryBar({
                                 >
                                     {selectedCategory === 'all' && (
                                         <motion.div
-                                            layoutId="active-pill"
+                                            layoutId="mobile-active-pill"
                                             className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
                                             transition={{
                                                 type: 'spring',
@@ -77,7 +77,7 @@ export default function MenuCategoryBar({
                                     >
                                         {selectedCategory === cat.id && (
                                             <motion.div
-                                                layoutId="active-pill"
+                                                layoutId="mobile-active-pill"
                                                 className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
                                                 transition={{
                                                     type: 'spring',
