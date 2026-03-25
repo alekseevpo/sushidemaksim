@@ -329,11 +329,8 @@ export default function CartPageSimple() {
                   ? 'RESERVA'
                   : 'DOMICILIO';
         notesArray.push(`[TIPO: ${typeLabel}]`);
-        if (deliveryType === 'reservation' && guestsCount) {
-            notesArray.push(`[PERSONAS: ${guestsCount}]`);
-        }
         if (deliveryType === 'reservation') {
-            notesArray.push(`[PERSONAS: ${guestsCount}]`);
+            notesArray.push(`[PERSONAS: ${Number(guestsCount) || 2}]`);
         }
         notesArray.push(`[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
         if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');

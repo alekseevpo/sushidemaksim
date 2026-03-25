@@ -744,7 +744,7 @@ export default function DeliveryForm({
                                     <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-11">
                                         <div className="pl-3">
                                             <span className="text-[12px] font-black text-gray-900 leading-none">
-                                                {guestsCount}
+                                                {Number(guestsCount) || 2}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg shadow-sm border border-gray-100">
@@ -752,7 +752,8 @@ export default function DeliveryForm({
                                                 type="button"
                                                 onClick={() => {
                                                     triggerHaptic();
-                                                    setGuestsCount(Math.max(1, guestsCount - 1));
+                                                    const current = Number(guestsCount) || 2;
+                                                    setGuestsCount(Math.max(1, current - 1));
                                                 }}
                                                 className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
@@ -762,7 +763,8 @@ export default function DeliveryForm({
                                                 type="button"
                                                 onClick={() => {
                                                     triggerHaptic();
-                                                    setGuestsCount(guestsCount + 1);
+                                                    const current = Number(guestsCount) || 2;
+                                                    setGuestsCount(current + 1);
                                                 }}
                                                 className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
                                             >

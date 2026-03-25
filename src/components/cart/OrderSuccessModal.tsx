@@ -64,8 +64,8 @@ export default function OrderSuccessModal({
                             #{String(orderId).padStart(5, '0')}
                         </span>{' '}
                         ha sido recibido.
-                        {deliveryType === 'reservation' && guestsCount ? (
-                            <> Prepararemos tu mesa para {guestsCount} personas.</>
+                        {deliveryType === 'reservation' ? (
+                            <> Prepararemos tu mesa para {Number(guestsCount) || 2} personas.</>
                         ) : isScheduled ? (
                             <> Lo prepararemos para la fecha y hora seleccionada.</>
                         ) : (
