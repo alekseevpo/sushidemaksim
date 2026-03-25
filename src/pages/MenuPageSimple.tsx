@@ -285,24 +285,27 @@ export default function MenuPageSimple() {
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />
-            <div className="max-w-7xl mx-auto flex-1 lg:flex px-4 md:px-6 w-full">
+            <div className="max-w-7xl mx-auto flex-1 lg:flex w-full overflow-visible">
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
                 />
 
-                <div className="flex-1 min-w-0 md:pl-8 pt-4 md:pt-8 min-h-[70vh]" id="menu-content">
-                    {/* Spacer for fixed category bar on mobile */}
-                    <div className="h-16 lg:hidden" />
+                <div
+                    className="flex-1 min-w-0 px-4 md:px-6 lg:pl-12 pt-4 md:pt-8 min-h-[70vh]"
+                    id="menu-content"
+                >
                     {/* Header Section with Search */}
-                    <MenuSearch
-                        search={search}
-                        setSearch={setSearch}
-                        isSearchExpanded={isSearchExpanded}
-                        setIsSearchExpanded={setIsSearchExpanded}
-                        selectedCategory={selectedCategory}
-                    />
+                    <div className="mb-4">
+                        <MenuSearch
+                            search={search}
+                            setSearch={setSearch}
+                            isSearchExpanded={isSearchExpanded}
+                            setIsSearchExpanded={setIsSearchExpanded}
+                            selectedCategory={selectedCategory}
+                        />
+                    </div>
 
                     {/* Fixed category bar on mobile */}
                     <MenuCategoryBar

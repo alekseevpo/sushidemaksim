@@ -73,9 +73,12 @@ export default function MenuCategoryBar({
 
     return (
         <aside className="hidden lg:block w-[220px] flex-shrink-0 relative">
-            <div className="sticky top-[64px] h-[calc(100vh-64px)] bg-red-600 flex flex-col items-stretch overflow-y-auto no-scrollbar shadow-xl border-r border-red-700/10">
+            <div className="sticky top-[64px] h-[calc(100vh-64px)] bg-red-600 flex flex-col items-stretch overflow-y-auto no-scrollbar shadow-lg">
+                {/* Bleed background to the left edge of the screen */}
+                <div className="absolute top-0 right-full w-[100vw] h-full bg-red-600 pointer-events-none" />
+
                 <LayoutGroup id="sidebar-katana">
-                    <nav className="flex flex-col py-4 px-3">
+                    <nav className="flex flex-col py-4 px-3 relative z-10">
                         <button
                             onClick={() => setSelectedCategory('all')}
                             className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
@@ -127,7 +130,7 @@ export default function MenuCategoryBar({
                     </nav>
                 </LayoutGroup>
 
-                <div className="mt-auto py-10 flex items-center justify-center pointer-events-none select-none opacity-40">
+                <div className="mt-auto py-10 flex items-center justify-center pointer-events-none select-none opacity-40 relative z-10">
                     <span className="text-white text-7xl font-serif drop-shadow-[2px_5px_10px_rgba(0,0,0,0.3)]">
                         福
                     </span>

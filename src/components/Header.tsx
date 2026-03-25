@@ -170,16 +170,19 @@ export default function Header() {
                             >
                                 <div
                                     className={`
-                                        transition-all duration-500 shrink-0 flex items-center justify-center
-                                        md:bg-red-600 md:px-5 md:h-20 md:w-[220px] md:group-hover:rotate-6
+                                        transition-all duration-500 shrink-0 flex items-center justify-center relative
+                                        md:bg-red-600 md:h-20 md:w-[220px] md:group-hover:rotate-6 md:-ml-6
                                         bg-transparent h-16 w-auto px-1
                                     `}
                                 >
+                                    {/* Bleed background to the left edge of the screen on desktop */}
+                                    <div className="hidden md:block absolute top-0 right-full w-[100vw] h-full bg-red-600 pointer-events-none" />
+
                                     <img
                                         src="/logo.svg"
                                         alt="Sushi de Maksim"
                                         className={`
-                                            h-10 md:h-14 w-auto object-contain transition-all duration-500
+                                            h-10 md:h-14 w-auto object-contain transition-all duration-500 relative z-10
                                             ${
                                                 isScrolled || !isHome
                                                     ? 'brightness-0 md:invert'
