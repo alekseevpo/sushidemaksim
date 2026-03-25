@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
@@ -147,20 +147,20 @@ export default function CartPageSimple() {
         setIsLoadingSuggestions(true);
         try {
             const data = await api.get('/menu?category=extras');
-            const all = data.items || [];
-
-            // Filter out items already in cart
-            const filtered = all
-                .filter((item: any) => !items.find(cartItem => cartItem.id === String(item.id)))
-                .slice(0, 10);
-
-            setSuggestions(filtered);
+            setSuggestions(data.items || []);
         } catch (err) {
             console.error('Failed to load suggestions', err);
         } finally {
             setIsLoadingSuggestions(false);
         }
-    }, [items, suggestions.length]);
+    }, [suggestions.length]);
+
+    // Re-filter suggestions based on what's currently in the cart
+    const filteredSuggestions = useMemo(() => {
+        return suggestions.filter(
+            suggestion => !items.find(cartItem => String(cartItem.id) === String(suggestion.id))
+        );
+    }, [suggestions, items]);
 
     const loadPopularItems = useCallback(async () => {
         setIsLoadingPopular(true);
@@ -630,7 +630,7 @@ export default function CartPageSimple() {
 
                         <div className="flex flex-col gap-8">
                             <CartSuggestions
-                                suggestions={suggestions}
+                                suggestions={filteredSuggestions}
                                 isLoadingSuggestions={isLoadingSuggestions}
                                 handleAddToCart={handleAddToCart}
                                 getCategoryEmoji={getCategoryEmoji}
