@@ -63,7 +63,7 @@ const CategoryCard = memo(
 
                 {image && !imageFailed ? (
                     <img
-                        src={getOptimizedImageUrl(image, 600)}
+                        src={getOptimizedImageUrl(image, 640)}
                         alt={name}
                         loading="lazy"
                         decoding="async"
@@ -125,16 +125,31 @@ export default function HomePageSimple() {
 
     // 1. Calculate categories with their images
     const categoriesWithImages = useMemo(() => {
+        // Essential hardcoded mapping for homepage to ensure premium look if DB fallback fails
+        // These match the IDs in CATEGORIES constant and DB items
+        const TOP_CATEGORY_FALLBACKS: Record<string, string> = {
+            'postre': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.png',
+            'rollos-clasicos': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773679824487-765.webp',
+            'entrantes': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469716444-139.png',
+            'rollos-grandes': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773691339304-197.webp',
+            'rollos-fritos': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
+            'menus': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773689515418-937.webp'
+        };
+
         return categoriesData.map((cat: any) => {
-            // Use the image provided by the categories API if available,
-            // otherwise fallback to searching in allItems (for safety/backward compatibility)
+            const catId = String(cat.id).toLowerCase().trim();
+            
+            // Try to find a representative item from allItems (using case-insensitive match)
+            // This is a fallback if cat.image is empty from the API
             const representativeItem = !cat.image
-                ? allItems.find((item: any) => item.category === cat.id && item.image)
+                ? allItems.find((item: any) => 
+                    String(item.category).toLowerCase().trim() === catId && item.image
+                  )
                 : null;
 
             return {
                 ...cat,
-                image: cat.image || representativeItem?.image || null,
+                image: cat.image || representativeItem?.image || TOP_CATEGORY_FALLBACKS[catId] || null,
             };
         });
     }, [categoriesData, allItems]);
