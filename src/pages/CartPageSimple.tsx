@@ -139,6 +139,7 @@ export default function CartPageSimple() {
             }
         };
         loadInitialData();
+        window.scrollTo(0, 0);
     }, []);
 
     const loadSuggestions = useCallback(async () => {
