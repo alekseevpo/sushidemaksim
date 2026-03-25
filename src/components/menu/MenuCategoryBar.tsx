@@ -37,34 +37,65 @@ export default function MenuCategoryBar({
             >
                 <div className="max-w-7xl mx-auto">
                     <div className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain scroll-smooth scroll-px-4">
-                        <div className="flex gap-2 flex-nowrap px-4">
-                            <button
-                                id="cat-all"
-                                onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 ${
-                                    selectedCategory === 'all'
-                                        ? 'bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-900/10'
-                                        : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
-                                }`}
-                            >
-                                Todos
-                            </button>
-                            {CATEGORIES.map(cat => (
+                        <LayoutGroup id="mobile-categories">
+                            <div className="flex gap-2 flex-nowrap px-4">
+                                {/* TODOS Button */}
                                 <button
-                                    key={cat.id}
-                                    id={`cat-${cat.id}`}
-                                    onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 ${
-                                        selectedCategory === cat.id
-                                            ? 'bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-900/10'
+                                    id="cat-all"
+                                    onClick={() => setSelectedCategory('all')}
+                                    className={`relative whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors duration-300 ${
+                                        selectedCategory === 'all'
+                                            ? 'text-white border-transparent'
                                             : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
                                     }`}
                                 >
-                                    <cat.icon size={16} strokeWidth={2.5} />
-                                    {cat.name}
+                                    {selectedCategory === 'all' && (
+                                        <motion.div
+                                            layoutId="active-pill"
+                                            className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
+                                            transition={{
+                                                type: 'spring',
+                                                stiffness: 300,
+                                                damping: 30,
+                                            }}
+                                        />
+                                    )}
+                                    <span className="relative z-10">Todos</span>
                                 </button>
-                            ))}
-                        </div>
+
+                                {/* CATEGORY Buttons */}
+                                {CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        id={`cat-${cat.id}`}
+                                        onClick={() => setSelectedCategory(cat.id)}
+                                        className={`relative whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors duration-300 ${
+                                            selectedCategory === cat.id
+                                                ? 'text-white border-transparent'
+                                                : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        {selectedCategory === cat.id && (
+                                            <motion.div
+                                                layoutId="active-pill"
+                                                className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
+                                                transition={{
+                                                    type: 'spring',
+                                                    stiffness: 300,
+                                                    damping: 30,
+                                                }}
+                                            />
+                                        )}
+                                        <cat.icon
+                                            size={16}
+                                            strokeWidth={2.5}
+                                            className="relative z-10"
+                                        />
+                                        <span className="relative z-10">{cat.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </LayoutGroup>
                     </div>
                 </div>
             </div>
