@@ -105,7 +105,7 @@ function App() {
                 <AuthProvider>
                     <CartProvider>
                         <PageTracker />
-                        <div className="min-h-[100dvh] bg-[#FDFBF7] flex flex-col overflow-x-clip">
+                        <div className="min-h-[100dvh] bg-[#FDFBF7] flex flex-col">
                             <Analytics />
                             <SpeedInsights />
                             <SmoothScroll />
@@ -114,7 +114,7 @@ function App() {
                             <FloatingCart />
 
                             {!isAdminRoute && <Header />}
-                            <main className="flex-1 flex flex-col relative w-full overflow-x-clip">
+                            <main className="flex-1 flex flex-col relative w-full">
                                 <AnimatePresence mode="wait">
                                     <Routes location={location} key={location.pathname}>
                                         <Route
