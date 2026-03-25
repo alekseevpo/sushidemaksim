@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Phone, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { api } from '../utils/api';
 
 export default function Footer() {
-    const location = useLocation();
     const [settings, setSettings] = useState<any>(null);
 
     useEffect(() => {
@@ -55,16 +54,8 @@ export default function Footer() {
         return found?.url && found.url !== '#' ? found.url : defaultUrl;
     };
 
-    const isMenuPage = location.pathname === '/menu';
-
     return (
         <footer className="footer-premium bg-black text-gray-400 pt-10 pb-16 mt-auto border-t border-white/5 relative overflow-hidden">
-            {isMenuPage && (
-                <div className="hidden lg:block absolute inset-y-0 left-0 max-w-7xl mx-auto w-full pointer-events-none px-4 md:px-6">
-                    <div className="w-[220px] h-full bg-red-600" />
-                </div>
-            )}
-
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-12 relative z-10">
                 <div className="text-center md:text-left">
                     <Link
