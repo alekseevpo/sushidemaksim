@@ -1,5 +1,5 @@
 import { motion, LayoutGroup } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Calendar } from 'lucide-react';
 import { CATEGORIES } from '../../constants/menu';
 
 interface MenuCategoryBarProps {
@@ -48,6 +48,15 @@ export default function MenuCategoryBar({
                                 }`}
                             >
                                 Todos
+                            </button>
+                            <button
+                                onClick={() => {
+                                    window.dispatchEvent(new CustomEvent('open:reservation'));
+                                }}
+                                className="whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider bg-white text-red-600 border border-red-50 shadow-sm transition-all active:scale-95 shrink-0"
+                            >
+                                <Calendar size={15} strokeWidth={2.5} />
+                                Reservar
                             </button>
                             {CATEGORIES.map(cat => (
                                 <button

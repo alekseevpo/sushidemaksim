@@ -525,7 +525,7 @@ export default function Header() {
                                                         setShowMobileMenu(false);
                                                         setIsReservationModalOpen(true);
                                                     }}
-                                                    className="w-full py-5 bg-red-600 text-white rounded-[24px] font-black text-[16px] tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-red-600/20 active:scale-[0.98] transition-all border-none"
+                                                    className="w-full py-5 bg-white text-red-600 rounded-[28px] font-black text-[16px] tracking-[0.1em] flex items-center justify-center gap-3 shadow-xl shadow-red-600/5 active:scale-[0.98] transition-all border border-red-50"
                                                 >
                                                     <Calendar size={22} strokeWidth={2.5} />
                                                     RESERVAR MESA
