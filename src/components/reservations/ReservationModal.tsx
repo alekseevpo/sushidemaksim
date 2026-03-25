@@ -5,7 +5,6 @@ import {
     Mail,
     User,
     CheckCircle2,
-    ChevronRight,
     AlertCircle,
     Clock,
     ChevronDown,
@@ -380,7 +379,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     <button
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="relative w-full py-4.5 md:py-5 bg-gradient-to-r from-red-600 via-red-500 to-red-600 bg-[length:200%_auto] hover:bg-right text-white rounded-[1.5rem] font-black text-[14px] tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_-5px_rgba(220,38,38,0.3)] hover:shadow-[0_15px_40px_-5px_rgba(220,38,38,0.5)] active:scale-[0.98] transition-all duration-500 disabled:opacity-50 mt-4 group overflow-hidden border-none cursor-pointer"
+                                        className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 mt-4 active:scale-[0.98] border-none cursor-pointer"
                                     >
                                         {/* Shine & Anim Effects */}
                                         {/* No shine effect */}
@@ -391,10 +390,6 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                             <>
                                                 <span className="relative z-10 flex items-center gap-3">
                                                     RESERVAR AHORA
-                                                    <ChevronRight
-                                                        size={22}
-                                                        className="group-hover:translate-x-1.5 transition-transform duration-300"
-                                                    />
                                                 </span>
                                             </>
                                         )}
