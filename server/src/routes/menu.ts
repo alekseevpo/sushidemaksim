@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db/supabase.js';
+import { config } from '../config.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { formatMenuItem } from '../utils/helpers.js';
 
@@ -61,8 +62,7 @@ router.get(
         const counts: Record<string, number> = {};
         const images: Record<string, string | null> = {};
 
-        const SUPABASE_URL = process.env.SUPABASE_URL;
-        const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/images/menu`;
+        const STORAGE_BASE = `${config.supabase.url}/storage/v1/object/public/images/menu`;
 
         data?.forEach(item => {
             counts[item.category] = (counts[item.category] || 0) + 1;

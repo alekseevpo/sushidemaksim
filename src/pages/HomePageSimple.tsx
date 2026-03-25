@@ -123,7 +123,6 @@ export default function HomePageSimple() {
         return allItems.filter((item: any) => item.isPopular).slice(0, 8);
     }, [allItems]);
 
-    // 1. Calculate categories with their images
     const categoriesWithImages = useMemo(() => {
         // Hardcoded mapping for homepage to ensure premium look if DB fallback fails
         const TOP_CATEGORY_FALLBACKS: Record<string, string> = {
@@ -136,18 +135,22 @@ export default function HomePageSimple() {
                 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773691339304-197.webp',
             'rollos-fritos':
                 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
+            'rollos-fritos-horneados':
+                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
             menus: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773689515418-937.webp',
             extras: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773690670774-801.webp',
             sopas: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773688556688-515.webp',
         };
 
         return categoriesData.map((cat: any) => {
-            // Normalize ID: replace spaces with hyphens, remove special chars
+            // Normalize ID: replace spaces/slashes with hyphens, remove special chars
             const catId = String(cat.id || cat.name || '')
                 .toLowerCase()
                 .trim()
                 .replace(/\s+/g, '-')
-                .replace(/[^a-z0-9-]/g, '');
+                .replace(/\//g, '-')
+                .replace(/[^a-z0-9-]/g, '')
+                .replace(/-+/g, '-');
 
             // Try to find a representative item from allItems (using case-insensitive match)
             // This is a fallback if cat.image is empty from the API
