@@ -61,10 +61,18 @@ router.get(
         const counts: Record<string, number> = {};
         const images: Record<string, string | null> = {};
 
+        const SUPABASE_URL = process.env.SUPABASE_URL;
+        const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/images/menu`;
+
         data?.forEach(item => {
             counts[item.category] = (counts[item.category] || 0) + 1;
             if (!images[item.category] && item.image) {
-                images[item.category] = item.image;
+                // If it's just a filename, prepend the full Supabase storage URL
+                if (!item.image.startsWith('http')) {
+                    images[item.category] = `${STORAGE_BASE}/${item.image}`;
+                } else {
+                    images[item.category] = item.image;
+                }
             }
         });
 

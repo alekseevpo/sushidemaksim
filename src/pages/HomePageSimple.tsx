@@ -125,8 +125,7 @@ export default function HomePageSimple() {
 
     // 1. Calculate categories with their images
     const categoriesWithImages = useMemo(() => {
-        // Essential hardcoded mapping for homepage to ensure premium look if DB fallback fails
-        // These match the IDs in CATEGORIES constant and DB items
+        // Hardcoded mapping for homepage to ensure premium look if DB fallback fails
         const TOP_CATEGORY_FALLBACKS: Record<string, string> = {
             postre: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.png',
             'rollos-clasicos':
@@ -138,18 +137,25 @@ export default function HomePageSimple() {
             'rollos-fritos':
                 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
             menus: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773689515418-937.webp',
+            extras: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773690670774-801.webp',
+            sopas: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773688556688-515.webp',
         };
 
         return categoriesData.map((cat: any) => {
-            const catId = String(cat.id).toLowerCase().trim();
+            // Normalize ID: replace spaces with hyphens, remove special chars
+            const catId = String(cat.id || cat.name || '')
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
 
             // Try to find a representative item from allItems (using case-insensitive match)
             // This is a fallback if cat.image is empty from the API
             const representativeItem = !cat.image
-                ? allItems.find(
-                      (item: any) =>
-                          String(item.category).toLowerCase().trim() === catId && item.image
-                  )
+                ? allItems.find((item: any) => {
+                      const itemCat = String(item.category || '').toLowerCase();
+                      return itemCat.includes(catId) || catId.includes(itemCat);
+                  })
                 : null;
 
             return {
