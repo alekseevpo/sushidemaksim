@@ -30,10 +30,7 @@ const LoginForm = memo(
         };
 
         return (
-            <form
-                onSubmit={handleSubmit}
-                className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
-            >
+            <form onSubmit={handleSubmit} className="space-y-3">
                 <div className="space-y-1">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                         Email
@@ -134,11 +131,7 @@ const RegisterForm = memo(
         const [showPassword, setShowPassword] = useState(false);
 
         return (
-            <form
-                onSubmit={onRegister}
-                data-testid="register-form"
-                className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
-            >
+            <form onSubmit={onRegister} data-testid="register-form" className="space-y-3">
                 <div className="space-y-3">
                     <div className="space-y-1">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
@@ -264,10 +257,7 @@ const ForgotPasswordForm = memo(
         isLoading: boolean;
     }) => {
         return (
-            <form
-                onSubmit={onForgot}
-                className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
-            >
+            <form onSubmit={onForgot} className="space-y-4">
                 <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl mb-2">
                     <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
                         Introduce tu email и te enviaremos las instrucciones.
@@ -380,7 +370,7 @@ const PinInput = memo(({ value, onChange }: { value: string; onChange: (val: str
     };
 
     return (
-        <div className="space-y-3 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="space-y-3 mb-2">
             <div className="flex justify-between items-center px-1">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                     Código de recuperación
@@ -430,10 +420,7 @@ const ResetPasswordForm = memo(
         const [codeValue, setCodeValue] = useState(token || '');
 
         return (
-            <form
-                onSubmit={onReset}
-                className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
-            >
+            <form onSubmit={onReset} className="space-y-3">
                 {token ? (
                     <input type="hidden" name="code" value={token} />
                 ) : (
@@ -556,14 +543,17 @@ export default function LoginModal({
     useEffect(() => {
         if (isOpen) {
             setMode(initialMode);
-            document.body.classList.add('overflow-hidden');
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
         } else {
-            document.body.classList.remove('overflow-hidden');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
             setRecoveryEmail('');
         }
 
         return () => {
-            document.body.classList.remove('overflow-hidden');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
         };
     }, [isOpen, initialMode]);
 
@@ -672,7 +662,7 @@ export default function LoginModal({
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4 isolate">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -749,7 +739,7 @@ export default function LoginModal({
                             )}
 
                             {mode === 'verify-sent' && (
-                                <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="text-center space-y-6">
                                     <div className="bg-green-50 text-green-700 p-6 rounded-3xl border border-green-100 font-medium text-sm leading-relaxed">
                                         <p>
                                             Te hemos enviado un código de 6 dígitos. Por favor,
@@ -788,7 +778,7 @@ export default function LoginModal({
                             )}
 
                             {mode === 'reset-password' && (
-                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div>
                                     <ResetPasswordForm
                                         onReset={handleReset}
                                         isLoading={isLoading}
