@@ -11,7 +11,8 @@ async function listCategories() {
         return;
     }
 
-    const report: Record<string, { total: number; withImage: number; sampleImage: string | null }> = {};
+    const report: Record<string, { total: number; withImage: number; sampleImage: string | null }> =
+        {};
 
     items?.forEach(item => {
         if (!report[item.category]) {
