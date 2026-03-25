@@ -73,7 +73,7 @@ export default function MenuCategoryBar({
 
     return (
         <aside className="hidden lg:block w-[220px] flex-shrink-0 relative bg-red-600">
-            <div className="sticky top-[64px] h-[calc(100vh-64px)] flex flex-col items-stretch overflow-y-auto no-scrollbar pb-10">
+            <div className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col items-stretch pb-10 overflow-visible no-scrollbar">
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-3 relative z-10">
                         <button
