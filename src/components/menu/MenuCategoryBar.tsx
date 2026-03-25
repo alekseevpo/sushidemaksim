@@ -72,11 +72,8 @@ export default function MenuCategoryBar({
     }
 
     return (
-        <aside className="hidden lg:block w-[220px] flex-shrink-0 relative">
-            <div className="sticky top-[64px] h-[calc(100vh-64px)] bg-red-600 flex flex-col items-stretch overflow-y-auto no-scrollbar shadow-lg">
-                {/* Bleed background to the left edge of the screen */}
-                <div className="absolute top-0 right-full w-[100vw] h-full bg-red-600 pointer-events-none" />
-
+        <aside className="hidden lg:block w-[220px] flex-shrink-0 relative bg-red-600">
+            <div className="sticky top-[64px] h-[calc(100vh-64px)] flex flex-col items-stretch overflow-y-auto no-scrollbar pb-10">
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-3 relative z-10">
                         <button

@@ -59,11 +59,9 @@ export default function Footer() {
 
     return (
         <footer className="footer-premium bg-black text-gray-400 pt-10 pb-16 mt-auto border-t border-white/5 relative overflow-hidden">
-            {/* Bleed red strip to footer on desktop only on Menu page */}
             {isMenuPage && (
-                <div className="hidden lg:block absolute inset-y-0 left-0 max-w-7xl mx-auto w-full pointer-events-none">
-                    <div className="absolute top-0 right-full w-[100vw] h-full bg-red-600" />
-                    <div className="absolute top-0 left-0 w-[220px] h-full bg-red-600" />
+                <div className="hidden lg:block absolute inset-y-0 left-0 max-w-7xl mx-auto w-full pointer-events-none px-4 md:px-6">
+                    <div className="w-[220px] h-full bg-red-600" />
                 </div>
             )}
 
