@@ -126,6 +126,12 @@ export default function MenuCategoryBar({
                         ))}
                     </nav>
                 </LayoutGroup>
+
+                <div className="mt-auto py-10 flex items-center justify-center pointer-events-none select-none opacity-40">
+                    <span className="text-white text-7xl font-serif drop-shadow-[2px_5px_10px_rgba(0,0,0,0.3)]">
+                        福
+                    </span>
+                </div>
             </div>
         </aside>
     );
