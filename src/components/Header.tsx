@@ -432,15 +432,15 @@ export default function Header() {
                                 <Link
                                     id="cart-icon"
                                     to="/cart"
-                                    className={`relative p-3 no-underline rounded-xl transition-all flex items-center justify-center min-w-[44px] min-h-[44px] ${
+                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] ${
                                         isScrolled || !isHome
                                             ? 'text-gray-800 bg-gray-50 hover:bg-gray-100'
-                                            : 'text-white bg-white/15 hover:bg-white/25 border border-white/20'
+                                            : 'text-white bg-white/10 hover:bg-white/20 border border-white/10'
                                     }`}
                                 >
-                                    <ShoppingCart size={22} strokeWidth={1.5} />
+                                    <ShoppingCart size={20} strokeWidth={1.5} />
                                     {total > 0 && (
-                                        <span className="hidden md:block ml-2 text-sm font-black whitespace-nowrap">
+                                        <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap">
                                             {total.toFixed(2)} €
                                         </span>
                                     )}
