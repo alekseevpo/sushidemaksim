@@ -65,11 +65,11 @@ export default function OrderSuccessModal({
                         </span>{' '}
                         ha sido recibido.
                         {deliveryType === 'reservation' && guestsCount ? (
-                            <> Prepararemos tu mesa для {guestsCount} personas.</>
+                            <> Prepararemos tu mesa para {guestsCount} personas.</>
                         ) : isScheduled ? (
-                            <> Lo prepararemos для la fecha и hora seleccionada.</>
+                            <> Lo prepararemos para la fecha y hora seleccionada.</>
                         ) : (
-                            <> и ya estamos preparando tus sushis с amor.</>
+                            <> y ya estamos preparando tus sushis con amor.</>
                         )}
                     </p>
 
