@@ -123,23 +123,26 @@ export default function HomePageSimple() {
         return allItems.filter((item: any) => item.isPopular).slice(0, 8);
     }, [allItems]);
 
-    // Pre-calculate categories for rendering
+    // 1. Calculate categories with their images
+    const categoriesWithImages = useMemo(() => {
+        return categoriesData.map((cat: any) => {
+            // Use the image provided by the categories API if available,
+            // otherwise fallback to searching in allItems (for safety/backward compatibility)
+            const representativeItem = !cat.image
+                ? allItems.find((item: any) => item.category === cat.id && item.image)
+                : null;
+
+            return {
+                ...cat,
+                image: cat.image || representativeItem?.image || null,
+            };
+        });
+    }, [categoriesData, allItems]);
+
+    // 2. Pre-calculate the slice for rendering
     const categoryList = useMemo(() => {
-        return categoriesData.slice(0, 8);
-    }, [categoriesData]);
-
-    const categories = categoriesData.map((cat: any) => {
-        // Use the image provided by the categories API if available,
-        // otherwise fallback to searching in allItems (for safety/backward compatibility)
-        const representativeItem = !cat.image
-            ? allItems.find((item: any) => item.category === cat.id && item.image)
-            : null;
-
-        return {
-            ...cat,
-            image: cat.image || representativeItem?.image || null,
-        };
-    });
+        return categoriesWithImages.slice(0, 8);
+    }, [categoriesWithImages]);
 
     const handleShare = (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -362,7 +365,7 @@ export default function HomePageSimple() {
                                 index={idx}
                             />
                         ))}
-                        {categories.length === 0 && !isLoading && (
+                        {categoriesWithImages.length === 0 && !isLoading && (
                             <div className="col-span-full text-center text-gray-400 py-12">
                                 No se encontraron categorías.
                             </div>
