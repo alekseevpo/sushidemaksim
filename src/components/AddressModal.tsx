@@ -613,8 +613,8 @@ export default function AddressModal({
 
                                     <div className="grid grid-cols-2 gap-4">
                                         {/* Number - READ ONLY */}
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 px-3">
+                                        <div className="flex-1 min-w-0 flex flex-col">
+                                            <p className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
                                                 Número / Portal *
                                             </p>
                                             <input
@@ -625,7 +625,7 @@ export default function AddressModal({
                                                 placeholder="..."
                                             />
                                             {!house && address && (
-                                                <p className="text-[9px] font-bold text-red-500 mt-1.5 px-3 animate-pulse">
+                                                <p className="text-[9px] font-bold text-red-500 mt-1 px-1 animate-pulse leading-none h-2">
                                                     Busca tu calle con el número arriba
                                                 </p>
                                             )}

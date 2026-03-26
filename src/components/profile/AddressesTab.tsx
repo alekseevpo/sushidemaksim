@@ -355,19 +355,19 @@ export default function AddressesTab({
                             )}
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 flex flex-col">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
                                 Número *
                             </label>
                             <input
                                 value={newAddress.house}
                                 readOnly
-                                className="w-full bg-gray-100 border-transparent rounded-xl px-4 py-3 text-sm font-bold text-gray-500 cursor-not-allowed outline-none"
+                                className="w-full bg-gray-100 border border-transparent rounded-xl px-4 py-3 text-sm font-bold text-gray-500 cursor-not-allowed outline-none"
                                 placeholder="Busca arriba..."
                             />
                             {!newAddress.house && newAddress.street && (
-                                <p className="text-[9px] font-bold text-red-500 mt-1.5 px-1 animate-pulse">
-                                    Busca tu calle con el número arriba (ej: {newAddress.street} 10)
+                                <p className="text-[9px] font-bold text-red-500 mt-1.5 px-1 animate-pulse leading-none h-2">
+                                    Busca tu calle con el número arriba
                                 </p>
                             )}
                         </div>
