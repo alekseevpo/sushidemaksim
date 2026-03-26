@@ -214,7 +214,7 @@ export default function ContactsPage() {
                         icon={MapPin}
                         title="Visítanos"
                         content={fullAddress}
-                        subContent="Nuestra cocina central en el corazón de Tetuán."
+                        subContent="Nuestra cocina central en el corazón de Retiro."
                         link={mapsUrl}
                         linkText="Ver en Google Maps"
                         colorClass="bg-blue-100/50"

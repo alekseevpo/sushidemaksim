@@ -53,8 +53,7 @@ interface DeliveryZone {
     freeThreshold?: number | null;
 }
 
-const MADRID_CENTER: [number, number] = [40.4168, -3.7038];
-const RESTAURANT_LOCATION: [number, number] = [40.40794, -3.67341];
+const RESTAURANT_LOCATION: [number, number] = [40.397042, -3.672449];
 
 export default function AdminDeliveryZones() {
     const { success, error: toastError } = useToast();
@@ -198,8 +197,8 @@ export default function AdminDeliveryZones() {
                     style={{ minHeight: '600px' }}
                 >
                     <MapContainer
-                        center={MADRID_CENTER}
-                        zoom={13}
+                        center={RESTAURANT_LOCATION}
+                        zoom={14}
                         style={{ height: '600px', width: '100%', borderRadius: '12px' }}
                         attributionControl={false}
                     >

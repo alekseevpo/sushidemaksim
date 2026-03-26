@@ -107,11 +107,15 @@ export default function OrderTrackingPage() {
                                     Pedido #{String(order.id).padStart(5, '0')}
                                 </h1>
                             </div>
-                            <div className="bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
-                                <span className="block text-[10px] uppercase font-black tracking-widest opacity-80 mb-1">
-                                    Entrega Estimada
+                            <div className="bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20 min-w-[140px] text-center md:text-right transition-all">
+                                <span className="block text-[10px] uppercase font-black tracking-widest opacity-80 mb-1 whitespace-nowrap">
+                                    {(order.estimatedDeliveryTime?.includes(':') &&
+                                        !order.estimatedDeliveryTime?.includes('-')) ||
+                                    order.notes?.includes('[PROGRAMADO:')
+                                        ? 'Programado para'
+                                        : 'Entrega Estimada'}
                                 </span>
-                                <span className="text-2xl font-black">
+                                <span className="text-xl md:text-2xl font-black whitespace-nowrap">
                                     {order.estimatedDeliveryTime || '30-45 min'}
                                 </span>
                             </div>

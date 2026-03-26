@@ -25,7 +25,7 @@ import ReservationModal from './reservations/ReservationModal';
 import { getSharpAvatar } from '../utils/avatar';
 
 export default function Header() {
-    const { itemCount, total } = useCart();
+    const { itemCount, total, isLoading: cartLoading } = useCart();
     const { user, isAuthenticated, logout, isLoading: authLoading } = useAuth();
     const location = useLocation();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -439,13 +439,13 @@ export default function Header() {
                                     }`}
                                 >
                                     <ShoppingCart size={20} strokeWidth={1.5} />
-                                    {total > 0 && (
+                                    {!cartLoading && total > 0 && (
                                         <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap">
                                             {total.toFixed(2)} €
                                         </span>
                                     )}
                                     <AnimatePresence>
-                                        {!authLoading && itemCount > 0 && (
+                                        {!cartLoading && itemCount > 0 && (
                                             <motion.span
                                                 key={itemCount} // Re-trigger animation on every count change
                                                 initial={{ scale: 0.5, opacity: 0 }}

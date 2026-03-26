@@ -1,15 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, ArrowRight, Loader2, Search, CheckCircle, Info } from 'lucide-react';
-import {
-    MapContainer,
-    TileLayer,
-    Marker,
-    useMapEvents,
-    useMap,
-    Polygon,
-    Circle,
-} from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, Polygon, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { api } from '../utils/api';
@@ -33,7 +25,7 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const RESTAURANT_LOCATION: [number, number] = [40.40798, -3.67342];
+const RESTAURANT_LOCATION: [number, number] = [40.397042, -3.672449];
 
 interface AddressModalProps {
     isOpen: boolean;
@@ -43,39 +35,29 @@ interface AddressModalProps {
     currentAddress?: any;
 }
 
-function MapUpdater({ center }: { center: [number, number] }) {
+function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }) {
     const map = useMap();
     useEffect(() => {
-        map.setView(center, map.getZoom());
-    }, [center, map]);
+        map.setView(center, zoom);
+    }, [center, zoom, map]);
     return null;
 }
 
-function LocationMarker({
-    position,
-    setPosition,
-}: {
-    position: [number, number];
-    setPosition: (p: [number, number]) => void;
-}) {
+function LocationMarker({ position }: { position: [number, number] }) {
+    // Disable click-to-move as per user request for strict search-only usage
+    /*
     useMapEvents({
         click(e) {
             setPosition([e.latlng.lat, e.latlng.lng]);
         },
     });
+    */
 
     return position ? (
         <Marker
             position={position}
             icon={DefaultIcon}
-            draggable={true}
-            eventHandlers={{
-                dragend: e => {
-                    const marker = e.target;
-                    const pos = marker.getLatLng();
-                    setPosition([pos.lat, pos.lng]);
-                },
-            }}
+            draggable={false} // Prevent manipulation
         />
     ) : null;
 }
@@ -87,22 +69,36 @@ export default function AddressModal({
     deliveryZones,
     currentAddress,
 }: AddressModalProps) {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
-
-    const [markerPosition, setMarkerPosition] = useState<[number, number]>(RESTAURANT_LOCATION);
+    const [markerPosition, setMarkerPosition] = useState<[number, number]>(
+        currentAddress?.lat && currentAddress?.lon
+            ? [currentAddress.lat, currentAddress.lon]
+            : RESTAURANT_LOCATION
+    );
     const [address, setAddress] = useState(currentAddress?.street || '');
     const [house, setHouse] = useState(currentAddress?.house || '');
     const [apartment, setApartment] = useState(currentAddress?.apartment || '');
     const [postalCode, setPostalCode] = useState(currentAddress?.postalCode || '');
     const [selectedZone, setSelectedZone] = useState<any>(null);
+
+    // Search states
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+
     const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
-    const skipReverseGeocodeRef = useRef(false);
+    const [mapZoom, setMapZoom] = useState(15);
+    const skipNextReverseGeocodeRef = useRef(false);
+    const skipNextSearchRef = useRef(false);
 
     // Auto-detect zone on marker move
     useEffect(() => {
-        if (!markerPosition || deliveryZones.length === 0) return;
+        if (
+            !markerPosition ||
+            isNaN(markerPosition[0]) ||
+            isNaN(markerPosition[1]) ||
+            deliveryZones.length === 0
+        )
+            return;
 
         const userPoint = turf.point([markerPosition[1], markerPosition[0]]); // [lng, lat] for turf
         const restaurantPoint = turf.point([RESTAURANT_LOCATION[1], RESTAURANT_LOCATION[0]]);
@@ -155,90 +151,191 @@ export default function AddressModal({
         }
     }, [markerPosition, deliveryZones]);
 
+    const performReverseGeocode = useCallback(
+        async (lat?: number, lon?: number) => {
+            if (skipNextReverseGeocodeRef.current) {
+                skipNextReverseGeocodeRef.current = false;
+                return;
+            }
+
+            const targetLat = lat ?? markerPosition[0];
+            const targetLon = lon ?? markerPosition[1];
+
+            setIsReverseGeocoding(true);
+            try {
+                const data = await api.get(
+                    `/delivery-zones/reverse?lat=${targetLat}&lon=${targetLon}`
+                );
+                if (data && data.address) {
+                    const street =
+                        data.address.road ||
+                        data.address.pedestrian ||
+                        data.address.suburb ||
+                        data.address.neighbourhood ||
+                        data.address.city ||
+                        '';
+                    const houseNum = data.address.house_number || '';
+                    setAddress(street || data.display_name?.split(',')[0] || '');
+
+                    // Only overwrite house number if currently empty or during initial open
+                    if (!house || !currentAddress?.street) {
+                        setHouse(houseNum);
+                    }
+
+                    if (data.address.postcode) setPostalCode(data.address.postcode);
+                }
+            } catch (error) {
+                console.error('Reverse geocode error:', error);
+            } finally {
+                setIsReverseGeocoding(false);
+            }
+        },
+        [house, currentAddress?.street, markerPosition]
+    );
+
+    const selectResult = useCallback(
+        async (res: any, queryHint?: string) => {
+            const lat = parseFloat(res.lat);
+            const lon = parseFloat(res.lon);
+
+            if (isNaN(lat) || isNaN(lon)) return;
+
+            skipNextReverseGeocodeRef.current = true;
+            skipNextSearchRef.current = true;
+
+            setMarkerPosition([lat, lon]);
+
+            let street =
+                res.address?.road ||
+                res.address?.pedestrian ||
+                res.display_name?.split(',')[0] ||
+                '';
+            let houseNum = res.address?.house_number || '';
+
+            // Advanced Extraction: If house_number is missing in response object but present in display_name
+            if (!houseNum && res.display_name) {
+                const displayNameParts = res.display_name.split(',');
+                const firstPart = displayNameParts[0]?.trim() || '';
+
+                if (/^\d+[a-zA-Z]?$/.test(firstPart)) {
+                    houseNum = firstPart;
+                    street = displayNameParts[1]?.trim() || street;
+                } else {
+                    const match = firstPart.match(/(.+?)\s+(\d+[a-zA-Z]?)$/);
+                    if (match) {
+                        street = match[1].trim();
+                        houseNum = match[2];
+                    }
+                }
+            }
+
+            const pc = res.address?.postcode || res.display_name?.match(/\b\d{5}\b/)?.[0] || '';
+
+            const originalResultHouseNum = res.address?.house_number || '';
+            setAddress(street);
+
+            // If we have a query hint with a number, and the result's house number is missing or different,
+            // try to extract the number from the query hint.
+            if (queryHint) {
+                const numInQuery = queryHint.match(/\b\d+[a-zA-Z]?\b/)?.[0];
+                if (numInQuery && (!houseNum || houseNum !== numInQuery)) {
+                    houseNum = numInQuery;
+                }
+            }
+
+            setHouse(houseNum);
+            if (pc) setPostalCode(pc);
+            setMapZoom(18);
+
+            // REFINEMENT: If the house number we found/hinted is different from the original search result,
+            // we must re-geocode to move the marker to the EXACT house.
+            if (houseNum && (houseNum !== originalResultHouseNum || !originalResultHouseNum)) {
+                const fullQuery = `${street} ${houseNum}, ${pc || 'Madrid'}`.trim();
+                api.get(`/delivery-zones/search?q=${encodeURIComponent(fullQuery)}`)
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const best = data[0];
+                            const rLat = parseFloat(best.lat);
+                            const rLon = parseFloat(best.lon);
+                            if (!isNaN(rLat) && !isNaN(rLon)) {
+                                skipNextReverseGeocodeRef.current = true;
+                                setMarkerPosition([rLat, rLon]);
+                            }
+                        }
+                    })
+                    .catch(e => console.error('Refinement failed', e));
+            }
+
+            setSearchResults([]);
+            setIsSearching(false);
+
+            // Always sync searchQuery with the selected street to prevent re-triggering search
+            if (searchQuery !== street) {
+                setSearchQuery(street);
+            }
+        },
+        [searchQuery]
+    );
+
+    const performSearch = useCallback(
+        async (query: string, selectFirst = false) => {
+            if (query.trim().length < 3) {
+                setSearchResults([]);
+                return;
+            }
+
+            setSearchResults([]);
+            setIsSearching(true);
+            try {
+                const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
+                setSearchResults(data || []);
+
+                if (selectFirst && data && data.length > 0) {
+                    selectResult(data[0], query);
+                }
+            } catch (err) {
+                console.error('Search failed', err);
+            } finally {
+                setIsSearching(false);
+            }
+        },
+        [selectResult]
+    );
+
     useEffect(() => {
+        // Don't trigger search if query is exactly the selected street OR we just selected a result
+        if (searchQuery === address || skipNextSearchRef.current) {
+            skipNextSearchRef.current = false;
+            return;
+        }
+
         const timer = setTimeout(() => {
             if (searchQuery.trim().length >= 3) {
                 performSearch(searchQuery.trim());
-            } else {
+            } else if (searchQuery.trim().length === 0) {
                 setSearchResults([]);
             }
-        }, 1200);
+        }, 800);
         return () => clearTimeout(timer);
-    }, [searchQuery]);
+    }, [searchQuery, address, performSearch]);
 
-    const performSearch = async (query: string) => {
-        setIsSearching(true);
-        try {
-            const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
-            setSearchResults(Array.isArray(data) ? data : []);
-        } catch (err) {
-            console.error('Search failed', err);
-            setSearchResults([]);
-        } finally {
-            setIsSearching(false);
+    // Auto-locate on first open ONLY if no address is set
+    useEffect(() => {
+        if (isOpen && !currentAddress?.street) {
+            performReverseGeocode();
         }
-    };
-
-    const performReverseGeocode = async (lat: number, lon: number) => {
-        setIsReverseGeocoding(true);
-        try {
-            const data = await api.get(`/delivery-zones/reverse?lat=${lat}&lon=${lon}`);
-            if (data && data.address) {
-                const street =
-                    data.address.road ||
-                    data.address.pedestrian ||
-                    data.address.suburb ||
-                    data.address.neighbourhood ||
-                    data.address.city ||
-                    '';
-                const houseNum = data.address.house_number || '';
-                setAddress(street || data.display_name?.split(',')[0] || '');
-                setHouse(houseNum);
-                if (data.address.postcode) setPostalCode(data.address.postcode);
-            }
-        } catch (err) {
-            console.error('Reverse geocode failed', err);
-        } finally {
-            setIsReverseGeocoding(false);
-        }
-    };
-
-    const selectResult = (res: any) => {
-        skipReverseGeocodeRef.current = true;
-        const lat = parseFloat(res.lat);
-        const lon = parseFloat(res.lon);
-        setMarkerPosition([lat, lon]);
-
-        let street =
-            res.address?.road ||
-            res.address?.pedestrian ||
-            res.address?.suburb ||
-            res.address?.neighbourhood ||
-            res.display_name?.split(',')[0] ||
-            '';
-
-        const houseNum = res.address?.house_number || '';
-        if (houseNum && street.includes(houseNum)) {
-            street = street.replace(houseNum, '').replace(/,/g, '').trim();
-        }
-
-        setAddress(street);
-        setHouse(houseNum);
-
-        const pc = res.address?.postcode || res.display_name?.match(/\b\d{5}\b/)?.[0] || '';
-        if (pc) setPostalCode(pc);
-        setSearchResults([]);
-        setSearchQuery('');
-    };
+    }, [isOpen, currentAddress?.street, performReverseGeocode]);
 
     useEffect(() => {
+        if (isNaN(markerPosition[0]) || isNaN(markerPosition[1])) return;
+
         const isDefault =
             Math.abs(markerPosition[0] - RESTAURANT_LOCATION[0]) < 0.0001 &&
             Math.abs(markerPosition[1] - RESTAURANT_LOCATION[1]) < 0.0001;
 
         if (isDefault) return;
-        if (skipReverseGeocodeRef.current) {
-            skipReverseGeocodeRef.current = false;
+        if (skipNextReverseGeocodeRef.current) {
+            skipNextReverseGeocodeRef.current = false;
             return;
         }
 
@@ -247,42 +344,7 @@ export default function AddressModal({
         }, 1200);
 
         return () => clearTimeout(timer);
-    }, [markerPosition]);
-
-    // Sync manual address input to marker (Geocoding)
-    useEffect(() => {
-        const fullAddress = `${address} ${house} ${postalCode}`.trim();
-        if (fullAddress.length < 8) return;
-        if (isReverseGeocoding) return; // Don't loop back if we are currently reverse geocoding
-
-        const timer = setTimeout(async () => {
-            setIsSearching(true);
-            try {
-                const query = `${fullAddress}, Madrid, Spain`;
-                const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
-                if (data && data.length > 0) {
-                    const best = data[0];
-                    const lat = parseFloat(best.lat);
-                    const lon = parseFloat(best.lon);
-
-                    // Only update if difference is significant to avoid jitter
-                    const diffLat = Math.abs(lat - markerPosition[0]);
-                    const diffLon = Math.abs(lon - markerPosition[1]);
-
-                    if (diffLat > 0.001 || diffLon > 0.001) {
-                        skipReverseGeocodeRef.current = true;
-                        setMarkerPosition([lat, lon]);
-                    }
-                }
-            } catch (err) {
-                console.error('Auto-geocoding failed', err);
-            } finally {
-                setIsSearching(false);
-            }
-        }, 2000); // Longer debounce for manual typing
-
-        return () => clearTimeout(timer);
-    }, [address, house, postalCode, isReverseGeocoding, markerPosition]);
+    }, [markerPosition, performReverseGeocode]);
 
     const handleContinue = () => {
         onSelect({
@@ -294,6 +356,15 @@ export default function AddressModal({
             coordinates: markerPosition,
         });
         onClose();
+    };
+
+    const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (searchQuery.trim().length >= 3) {
+                performSearch(searchQuery.trim(), true);
+            }
+        }
     };
 
     useEffect(() => {
@@ -344,7 +415,7 @@ export default function AddressModal({
 
                         <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl">
                             {/* Map Side */}
-                            <div className="h-56 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none overflow-hidden">
+                            <div className="h-56 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none">
                                 {/* Floating Close Button (Mobile Only) */}
                                 <button
                                     onClick={onClose}
@@ -360,10 +431,20 @@ export default function AddressModal({
                                     attributionControl={false}
                                 >
                                     <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
-                                    <MapUpdater center={markerPosition} />
+                                    <MapUpdater
+                                        center={
+                                            !isNaN(markerPosition[0])
+                                                ? markerPosition
+                                                : RESTAURANT_LOCATION
+                                        }
+                                        zoom={mapZoom}
+                                    />
                                     <LocationMarker
-                                        position={markerPosition}
-                                        setPosition={setMarkerPosition}
+                                        position={
+                                            !isNaN(markerPosition[0])
+                                                ? markerPosition
+                                                : RESTAURANT_LOCATION
+                                        }
                                     />
                                     {deliveryZones.map(zone => {
                                         if (
@@ -425,36 +506,92 @@ export default function AddressModal({
                                             type="text"
                                             value={searchQuery}
                                             onChange={e => setSearchQuery(e.target.value)}
+                                            onKeyDown={handleSearchKeyDown}
                                             placeholder="Buscar mi calle en Madrid..."
+                                            autoComplete="off"
+                                            spellCheck={false}
                                             className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
                                         />
-
-                                        {searchResults.length > 0 && (
-                                            <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-hidden divide-y divide-gray-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                                                {searchResults.map((res, i) => (
-                                                    <button
-                                                        key={i}
-                                                        onClick={() => selectResult(res)}
-                                                        className="w-full px-5 py-4 text-left hover:bg-red-50 transition flex items-start gap-3"
-                                                    >
-                                                        <MapPin
-                                                            size={16}
-                                                            className="mt-1 text-gray-400 shrink-0"
-                                                        />
-                                                        <span className="text-sm font-bold text-gray-700">
-                                                            {res.display_name
+                                        <AnimatePresence>
+                                            {(searchResults.length > 0 ||
+                                                (searchQuery.trim().length >= 3 &&
+                                                    /\d/.test(searchQuery))) && (
+                                                <div
+                                                    data-lenis-prevent
+                                                    className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[320px] md:max-h-[440px] divide-y divide-gray-50 animate-in fade-in slide-in-from-top-2 duration-200 z-[1001] custom-scrollbar"
+                                                >
+                                                    {/* Virtual Result for exact typed address with a number */}
+                                                    {searchQuery.trim().length >= 3 &&
+                                                        /\d/.test(searchQuery) &&
+                                                        !searchResults.some(r =>
+                                                            r.display_name
                                                                 .toLowerCase()
-                                                                .startsWith('madrid')
-                                                                ? res.display_name
-                                                                      .split(',')
-                                                                      .slice(0, 3)
-                                                                      .join(',')
-                                                                : `Madrid, ${res.display_name.split(',').slice(0, 2).join(',')}`}
-                                                        </span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
+                                                                .includes(searchQuery.toLowerCase())
+                                                        ) && (
+                                                            <button
+                                                                onClick={() =>
+                                                                    performSearch(
+                                                                        searchQuery.trim(),
+                                                                        true
+                                                                    )
+                                                                }
+                                                                className="w-full px-5 py-4 text-left hover:bg-green-50 transition flex items-start gap-4 border-l-4 border-green-500"
+                                                            >
+                                                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                                                                    <Search
+                                                                        size={16}
+                                                                        className="text-green-600"
+                                                                    />
+                                                                </div>
+                                                                <div className="flex flex-col min-w-0">
+                                                                    <span className="text-sm font-black text-gray-900 truncate">
+                                                                        Localizar exactamente: "
+                                                                        {searchQuery}"
+                                                                    </span>
+                                                                    <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest truncate">
+                                                                        Buscar ubicación precisa en
+                                                                        el mapa
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        )}
+
+                                                    {searchResults.map((res, i) => (
+                                                        <button
+                                                            key={i}
+                                                            onClick={() =>
+                                                                selectResult(res, searchQuery)
+                                                            }
+                                                            className="w-full px-5 py-4 text-left hover:bg-red-50 transition flex items-start gap-3"
+                                                        >
+                                                            <MapPin
+                                                                size={16}
+                                                                className="mt-1 text-gray-400 shrink-0"
+                                                            />
+                                                            <div className="flex flex-col min-w-0">
+                                                                <span className="text-sm font-bold text-gray-900 truncate">
+                                                                    {res.address?.road ||
+                                                                        res.display_name.split(
+                                                                            ','
+                                                                        )[0]}
+                                                                    {res.address?.house_number &&
+                                                                        `, ${res.address.house_number}`}
+                                                                </span>
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                                                                    {res.address?.city ||
+                                                                        res.address?.town ||
+                                                                        res.address?.village ||
+                                                                        res.address?.suburb ||
+                                                                        'Comunidad de Madrid'}
+                                                                    {res.address?.postcode &&
+                                                                        ` • ${res.address.postcode}`}
+                                                                </span>
+                                                            </div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 </div>
                             </div>
@@ -468,25 +605,30 @@ export default function AddressModal({
                                         </label>
                                         <input
                                             value={address}
-                                            onChange={e => setAddress(e.target.value)}
-                                            data-testid="address-input"
-                                            className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
-                                            placeholder="Ej: Calle de Serrano"
+                                            readOnly
+                                            className="w-full bg-gray-100 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none outline-none cursor-not-allowed text-gray-500"
+                                            placeholder="Busca arriba tu calle..."
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
+                                        {/* Number - READ ONLY */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 px-3">
                                                 Número / Portal *
-                                            </label>
+                                            </p>
                                             <input
+                                                type="text"
                                                 value={house}
-                                                onChange={e => setHouse(e.target.value)}
-                                                data-testid="house-input"
-                                                className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
-                                                placeholder="Ej: 20"
+                                                readOnly
+                                                className="w-full bg-gray-100 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-600 outline-none cursor-not-allowed group-focus-within:ring-2 transition-all placeholder:text-gray-400"
+                                                placeholder="..."
                                             />
+                                            {!house && address && (
+                                                <p className="text-[9px] font-bold text-red-500 mt-1.5 px-3 animate-pulse">
+                                                    Busca tu calle con el número arriba
+                                                </p>
+                                            )}
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
@@ -495,7 +637,6 @@ export default function AddressModal({
                                             <input
                                                 value={apartment}
                                                 onChange={e => setApartment(e.target.value)}
-                                                data-testid="apartment-input"
                                                 className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
                                                 placeholder="Ej: 1B"
                                             />
@@ -508,10 +649,9 @@ export default function AddressModal({
                                         </label>
                                         <input
                                             value={postalCode}
-                                            onChange={e => setPostalCode(e.target.value)}
-                                            className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                            readOnly
+                                            className="w-full bg-gray-100 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none outline-none cursor-not-allowed text-gray-500"
                                             placeholder="28001"
-                                            maxLength={5}
                                         />
                                     </div>
 

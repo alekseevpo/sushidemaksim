@@ -39,6 +39,8 @@ interface DeliveryDetails {
     customNote: string;
     saveAddress: boolean;
     guestsCount: number;
+    lat?: number;
+    lon?: number;
 }
 
 interface CartContextType {
@@ -120,15 +122,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setDeliveryDetails(prev => ({ ...prev, ...details }));
     }, []);
 
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const queryClient = useQueryClient();
 
     // Use Query
-    const { data, isLoading } = useCartQuery(user);
+    const { data, isLoading: isCartLoading } = useCartQuery(user, isAuthLoading);
     const { mutateAsync: addToCart } = useAddToCartMutation(user);
     const { mutateAsync: updateQty } = useUpdateQuantityMutation(user);
     const { mutateAsync: removeCartItem } = useRemoveItemMutation(user);
     const { mutateAsync: clearCartQuery } = useClearCartMutation(user);
+
+    const isLoading = isAuthLoading || isCartLoading;
 
     const items = useMemo(() => data?.items || [], [data]);
     const total = useMemo(() => data?.total || 0, [data]);
@@ -154,6 +158,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
             console.error('Failed to sync guest cart', e);
         }
     }, [user, queryClient]);
+
+    useEffect(() => {
+        if (user) {
+            syncGuestItems();
+        }
+    }, [user, syncGuestItems]);
 
     const addItem = useCallback(
         async (item: SushiItem, quantity: number = 1) => {

@@ -25,6 +25,7 @@ interface CartSummaryProps {
     isApplyingPromo: boolean;
     promoError: string | null;
     handleRemovePromo: () => void;
+    minOrder?: number;
 }
 
 export default function CartSummary({
@@ -49,7 +50,9 @@ export default function CartSummary({
     isApplyingPromo,
     promoError,
     handleRemovePromo,
+    minOrder = 0,
 }: CartSummaryProps) {
+    const isMinOrderMet = total >= minOrder;
     return (
         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] border-b md:border-none border-gray-50 h-fit">
             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
@@ -216,13 +219,17 @@ export default function CartSummary({
                     isOrdering ||
                     isInviting ||
                     items.length === 0 ||
+                    !isMinOrderMet ||
                     (deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasApartment))
                 }
-                className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-xl shadow-red-200 flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide"
+                className={`px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base transition disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide
+                    ${isMinOrderMet ? 'bg-red-600 text-white hover:bg-red-700 shadow-red-200' : 'bg-gray-200 text-gray-400 shadow-none'}`}
                 data-testid="order-button"
             >
                 {isOrdering ? (
                     'Procesando...'
+                ) : !isMinOrderMet ? (
+                    `Mínimo ${minOrder.toFixed(2).replace('.', ',')}€`
                 ) : (
                     <>
                         <span>Realizar pedido</span>

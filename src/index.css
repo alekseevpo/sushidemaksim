@@ -194,6 +194,20 @@ html.lenis body {
     /* Firefox */
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+    height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+}
+
 /* Fix iOS Auto-Zoom on Inputs */
 @media screen and (max-width: 768px) {
     input[type='text'],

@@ -31,8 +31,8 @@ export default function CartEmptyView({
     addedItems,
 }: CartEmptyViewProps) {
     return (
-        <div className="min-h-screen mesh-bg px-2 md:px-6 py-8 flex items-center">
-            <div className="max-w-4xl mx-auto text-center py-12 md:py-16 w-full">
+        <div className="min-h-[85vh] mesh-bg px-2 md:px-6 py-8 flex flex-col">
+            <div className="max-w-4xl mx-auto text-center py-8 md:py-12 w-full flex-1 flex flex-col justify-center">
                 <div className="flex justify-center mb-8">
                     <div className="w-28 h-28 bg-white rounded-[40px] flex items-center justify-center animate-float shadow-2xl shadow-red-500/10 border border-white/50 relative">
                         <div className="absolute inset-0 bg-red-500/5 rounded-[40px] blur-xl"></div>

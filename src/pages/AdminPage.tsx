@@ -254,14 +254,8 @@ export default function AdminPage() {
                         <img
                             src="/logo.svg"
                             alt="Sushi de Maksim"
-                            className="h-10 w-auto object-contain"
+                            className="h-10 w-auto object-contain brightness-0"
                         />
-                        <div className="flex items-center gap-2">
-                            <div className="h-[1px] w-4 bg-red-200" />
-                            <span className="text-[10px] text-red-600 font-black uppercase tracking-widest">
-                                Admin Panel
-                            </span>
-                        </div>
                     </div>
                 </div>
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">

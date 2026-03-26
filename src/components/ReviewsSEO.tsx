@@ -116,9 +116,9 @@ export default function ReviewsSEO() {
             image: 'https://sushidemaksim.vercel.app/og-image.jpg',
             address: {
                 '@type': 'PostalAddress',
-                streetAddress: 'Calle de la Infanta Mercedes, 62',
+                streetAddress: 'Calle del Barrilero, 20',
                 addressLocality: 'Madrid',
-                postalCode: '28020',
+                postalCode: '28007',
                 addressCountry: 'ES',
             },
         },

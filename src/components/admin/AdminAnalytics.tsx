@@ -652,7 +652,7 @@ export default function AdminAnalytics({ stats, loading }: AdminAnalyticsProps) 
                                         </td>
                                         <td className="py-2.5 text-center">
                                             <span
-                                                className={`inline-block w-5 h-5 rounded flex items-center justify-center text-[10px] font-black ${
+                                                className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-black ${
                                                     item.category === 'A'
                                                         ? 'bg-emerald-100 text-emerald-700'
                                                         : item.category === 'B'

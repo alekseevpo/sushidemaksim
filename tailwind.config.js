@@ -17,9 +17,9 @@ export default {
                 backdrop: '1000',
                 modal: '1100',
                 popover: '1200',
-                toast: '2000',
-                loading: '3000',
-                max: '9999',
+                toast: '20000',
+                loading: '30000',
+                max: '99999',
             },
 
         },

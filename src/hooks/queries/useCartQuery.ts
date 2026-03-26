@@ -4,9 +4,10 @@ import { CartItem, SushiItem } from '../../types';
 
 export const CART_QUERY_KEY = ['cart'];
 
-export function useCartQuery(user: any) {
+export function useCartQuery(user: any, isAuthLoading: boolean = false) {
     return useQuery({
         queryKey: [...CART_QUERY_KEY, user?.id || 'guest'],
+        enabled: !isAuthLoading,
         queryFn: async () => {
             if (!user) {
                 const localCart = localStorage.getItem('guest_cart');

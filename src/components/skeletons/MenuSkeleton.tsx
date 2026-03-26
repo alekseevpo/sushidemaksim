@@ -33,46 +33,44 @@ export const MenuItemsSkeleton = () => (
 
 // Full page skeleton for Suspense fallback
 export const MenuSkeleton = () => (
-    <div className="min-h-screen bg-transparent px-2 md:px-4 pb-0 pt-0 flex flex-col">
-        <div className="max-w-7xl mx-auto flex-1 lg:flex px-4 w-full">
+    <div className="min-h-screen bg-transparent px-0 md:px-4 pb-0 pt-0 flex flex-col">
+        <div className="max-w-7xl mx-auto flex-1 lg:flex px-4 md:px-6 w-full">
             {/* Desktop Sidebar Skeleton */}
-            <aside className="hidden lg:block w-[218px] flex-shrink-0 bg-red-600 min-h-full z-30">
-                <div className="sticky top-[64px] h-[calc(100vh-64px)] pb-8 px-3 flex flex-col items-stretch space-y-0">
-                    <div className="h-4 w-16 bg-white/20 skeleton rounded-lg my-4 mx-8 opacity-30" />
+            <aside className="hidden lg:block w-[220px] flex-shrink-0 bg-red-600 min-h-full z-30">
+                <div className="sticky top-[72px] h-[calc(100vh-72px)] pb-8 px-3 flex flex-col items-stretch pt-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
                         <div
                             key={i}
-                            className="h-[52px] w-full bg-white/10 skeleton rounded-none opacity-60"
+                            className="h-[52px] w-full bg-white/10 skeleton rounded-xl opacity-60 mb-0"
                         />
                     ))}
+                    <div className="mt-auto py-10 flex items-center justify-center opacity-20">
+                        <div className="w-16 h-16 bg-white/20 skeleton rounded-full" />
+                    </div>
                 </div>
             </aside>
 
-            <div className="flex-1 min-w-0 md:pl-8 pt-4 md:pt-8">
-                {/* Header Skeleton - Matches MenuSearch layout precisely */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4 h-14">
-                    <div className="h-10 md:h-14 w-40 md:w-64 skeleton rounded-2xl" />
-                    <div className="h-10 md:h-12 w-10 md:w-80 skeleton rounded-2xl self-end md:self-auto" />
+            <div className="flex-1 min-w-0 md:pl-8 pt-20 md:pt-8">
+                {/* Categories Skeleton Header */}
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-10 gap-4">
+                    <div className="h-10 md:h-14 w-40 md:w-64 skeleton rounded-[24px] md:rounded-[32px] opacity-80" />
+                    <div className="h-11 md:h-12 w-full md:w-80 skeleton rounded-[20px] md:rounded-[24px]" />
                 </div>
 
                 {/* Mobile Categories Scroll Skeleton (Hidden on desktop) */}
-                <div className="mb-6 lg:hidden">
-                    <div className="flex gap-2 overflow-hidden py-3">
+                <div className="mb-8 lg:hidden">
+                    <div className="flex gap-3 overflow-hidden py-1">
                         {[1, 2, 3, 4, 5].map(i => (
                             <div
                                 key={i}
-                                className="h-10 w-24 bg-white skeleton rounded-2xl flex-shrink-0"
+                                className="h-10 w-28 bg-white skeleton rounded-2xl flex-shrink-0 opacity-40"
                             />
                         ))}
                     </div>
                 </div>
 
-                {/* Grid Skeleton */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 pb-8">
-                    {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="h-[400px] w-full bg-white skeleton rounded-3xl" />
-                    ))}
-                </div>
+                {/* Grid Skeleton - Using the detailed MenuItemsSkeleton for perfect matching */}
+                <MenuItemsSkeleton />
             </div>
         </div>
     </div>

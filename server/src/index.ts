@@ -1,7 +1,4 @@
 import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
@@ -25,6 +22,7 @@ import analyticsRoutes from './routes/analytics.js';
 import reservationsRoutes from './routes/reservations.js';
 
 const app = express();
+console.log('DEBUG: Express app initialized');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -33,66 +31,6 @@ app.set('trust proxy', 1);
 
 // ─── Static Files for Uploads ──────────────────────────────────────────────────
 app.use('/api/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
-
-// ─── Security ─────────────────────────────────────────────────────────────────
-app.use(
-    helmet({
-        contentSecurityPolicy: {
-            directives: {
-                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-                'img-src': [
-                    "'self'",
-                    'data:',
-                    'https://sushidemaksim.com',
-                    'https://*.vercel.app',
-                    'http://localhost:3000',
-                    'http://localhost:3001',
-                ],
-                'connect-src': [
-                    "'self'",
-                    'https://*.vercel.app',
-                    'http://localhost:3000',
-                    'http://localhost:3001',
-                    '*.supabase.co',
-                ],
-                'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-                'script-src': [
-                    "'self'",
-                    'https:',
-                    "'unsafe-inline'",
-                    "'unsafe-eval'",
-                    'https://www.google.com',
-                    'https://www.gstatic.com',
-                ],
-                'frame-src': ["'self'", 'https://www.google.com'],
-                'frame-ancestors': [
-                    "'self'",
-                    'https://t.me',
-                    'https://web.telegram.org',
-                    'https://*.vercel.app',
-                ],
-            },
-        },
-        crossOriginEmbedderPolicy: false,
-    })
-);
-
-app.use(
-    cors({
-        origin: config.corsOrigin,
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-    })
-);
-
-import { generalLimiter } from './middleware/rateLimiters.js';
-
-// Apply general limiter to all API routes
-app.use('/api', generalLimiter);
-
-// ─── Logging ───────────────────────────────────────────────────────────────────
-app.use(morgan(config.isDev ? 'dev' : 'combined'));
 
 // ─── Body Parsing ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '1mb' }));
@@ -187,6 +125,7 @@ app.get(['/invitacion/:id', '/api/orders/share/:id'], async (req, res) => {
 
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
+    console.log('DEBUG: /api/health requested');
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),

@@ -126,7 +126,7 @@ export default function OrderSuccessModal({
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-[10px] font-black uppercase text-white/40 tracking-widest leading-none mb-1">
-                                            {isScheduled ? 'Programado для' : 'Entrega prevista'}
+                                            {isScheduled ? 'Programado para' : 'Entrega prevista'}
                                         </p>
                                         <div className="text-[12px] font-bold text-white leading-tight">
                                             {isScheduled ? (

@@ -79,7 +79,7 @@ export default function CartPageSimple() {
 
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = new Date().toLocaleDateString('sv-SE'); // Local date in YYYY-MM-DD format
 
     const {
         address,
@@ -123,6 +123,25 @@ export default function CartPageSimple() {
 
     useScrollLock(isAddressModalOpen || !!orderSuccess);
 
+    const handleCloseAddressModal = useCallback(() => {
+        setIsAddressModalOpen(false);
+    }, []);
+
+    const handleAddressSelect = useCallback(
+        (res: any) => {
+            updateDeliveryDetails({
+                address: res.street || '',
+                house: res.house || '',
+                apartment: res.apartment || '',
+                postalCode: res.postalCode || '',
+                selectedZone: res.zone,
+                lat: res.coordinates?.[0],
+                lon: res.coordinates?.[1],
+            });
+        },
+        [updateDeliveryDetails]
+    );
+
     useEffect(() => {
         const loadInitialData = async () => {
             try {
@@ -141,6 +160,35 @@ export default function CartPageSimple() {
         loadInitialData();
         window.scrollTo(0, 0);
     }, []);
+
+    // Sync selectedZone with latest data from DB when zones are loaded
+    useEffect(() => {
+        if (deliveryZones.length > 0 && deliveryDetails.selectedZone) {
+            const freshZone = deliveryZones.find(
+                z =>
+                    z.id === deliveryDetails.selectedZone.id ||
+                    z.name === deliveryDetails.selectedZone.name
+            );
+            if (freshZone) {
+                // If metadata has changed (cost, threshold, etc.), update the state
+                const current = JSON.stringify(deliveryDetails.selectedZone);
+                const latest = JSON.stringify(freshZone);
+                if (current !== latest) {
+                    updateDeliveryDetails({ selectedZone: freshZone });
+                }
+            }
+        }
+    }, [deliveryZones, deliveryDetails.selectedZone, updateDeliveryDetails]);
+
+    // Schedule integrity sync (prevent past dates from remembered state)
+    useEffect(() => {
+        if (isScheduled && scheduledDate && scheduledDate < todayStr) {
+            updateDeliveryDetails({
+                scheduledDate: todayStr,
+                scheduledTime: '', // Reset time too as it might be past
+            });
+        }
+    }, [todayStr, isScheduled, scheduledDate, updateDeliveryDetails]);
 
     const loadSuggestions = useCallback(async () => {
         if (suggestions.length > 0) return;
@@ -175,14 +223,64 @@ export default function CartPageSimple() {
         }
     }, []);
 
+    // Popular items for empty cart
     useEffect(() => {
-        if (items.length === 0) {
+        if (items.length === 0 && popularItems.length === 0 && !isLoadingPopular) {
             loadPopularItems();
-        } else if (suggestions.length === 0) {
-            // Only load suggestions if we don't have any yet
+        } else if (items.length > 0 && suggestions.length === 0 && !isLoadingSuggestions) {
             loadSuggestions();
         }
-    }, [items.length, suggestions.length, loadSuggestions, loadPopularItems]);
+    }, [
+        items.length,
+        popularItems.length,
+        suggestions.length,
+        loadSuggestions,
+        loadPopularItems,
+        isLoadingPopular,
+        isLoadingSuggestions,
+    ]);
+
+    // Save current address to user profile if requested
+    const saveCurrentAddress = async () => {
+        if (!isAuthenticated || !saveAddress || deliveryType !== 'delivery') return;
+
+        try {
+            const streetVal = address.trim();
+            const houseVal = house.trim();
+            const aptVal = apartment.trim();
+            const deliveryPhone = phone || user?.phone || '';
+
+            if (!streetVal) return;
+
+            // Check for duplicates on frontend
+            const isDuplicate = (user?.addresses || []).some((addr: any) => {
+                const s = addr.street || '';
+                const h = addr.house || '';
+                const a = addr.apartment || '';
+                return (
+                    s.toLowerCase() === streetVal.toLowerCase() &&
+                    h.toLowerCase() === houseVal.toLowerCase() &&
+                    a.toLowerCase() === aptVal.toLowerCase()
+                );
+            });
+
+            if (isDuplicate) {
+                console.log('Skipping address save: already exists in profile');
+                return;
+            }
+
+            await api.post('/user/addresses', {
+                street: streetVal,
+                house: houseVal,
+                apartment: aptVal,
+                postalCode: postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
+                phone: deliveryPhone,
+                label: 'Dirección reciente',
+            });
+        } catch (saveErr) {
+            console.error('Failed to save address to profile', saveErr);
+        }
+    };
 
     // Analytics: Track cart view
     useEffect(() => {
@@ -300,6 +398,25 @@ export default function CartPageSimple() {
         }
 
         if (isScheduled && scheduledDate && scheduledTime) {
+            if (scheduledDate < todayStr) {
+                return showError('Por favor, selecciona una fecha a partir de hoy.');
+            }
+
+            // If it is today, ensure the time is not in the past
+            if (scheduledDate === todayStr) {
+                const now = new Date();
+                const nowMinutes = now.getHours() * 60 + now.getMinutes();
+                const [h, m] = scheduledTime.split(':').map(Number);
+                const scheduledMinutes = h * 60 + m;
+
+                if (scheduledMinutes < nowMinutes + 15) {
+                    // Small margin (15 min) for processing
+                    return showError(
+                        'La hora seleccionada ya ha pasado o es demasiado cercana. Elige una hora posterior.'
+                    );
+                }
+            }
+
             const date = new Date(scheduledDate);
             if (!isTimeWithinBusinessHours(date, scheduledTime)) {
                 return showError(
@@ -365,21 +482,7 @@ export default function CartPageSimple() {
             const data = await api.post('/orders', payload);
 
             // Save address if requested
-            if (isAuthenticated && saveAddress && deliveryType === 'delivery') {
-                try {
-                    await api.post('/user/addresses', {
-                        street: streetVal,
-                        house: houseVal,
-                        apartment: aptVal,
-                        postalCode:
-                            postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
-                        phone: deliveryPhone,
-                        label: 'Ultima dirección',
-                    });
-                } catch (saveErr) {
-                    console.error('Failed to save address to profile', saveErr);
-                }
-            }
+            await saveCurrentAddress();
 
             // Analytics: Track order placed
             tracker.track('order_placed', {
@@ -453,6 +556,9 @@ export default function CartPageSimple() {
                     quantity: i.quantity,
                 }));
             }
+            // Save address if requested
+            await saveCurrentAddress();
+
             const data = await api.post('/orders/invite', payload);
             if (navigator.share) {
                 await navigator.share({
@@ -475,12 +581,12 @@ export default function CartPageSimple() {
         deliveryType === 'delivery'
             ? cartSubtotal >=
               (selectedZone
-                  ? (selectedZone.free_threshold ?? siteSettings?.free_delivery_threshold ?? 60)
-                  : (siteSettings?.free_delivery_threshold ?? 60))
+                  ? (selectedZone.freeThreshold ?? siteSettings?.freeDeliveryThreshold ?? 60)
+                  : (siteSettings?.freeDeliveryThreshold ?? 60))
                 ? 0
                 : selectedZone
                   ? (selectedZone.cost ?? 0)
-                  : (siteSettings?.delivery_fee ?? 3.5)
+                  : (siteSettings?.deliveryFee ?? 3.5)
             : 0;
     const finalTotal = cartSubtotal - discountAmount + deliveryCost;
 
@@ -657,6 +763,7 @@ export default function CartPageSimple() {
                                 isApplyingPromo={isApplyingPromo}
                                 promoError={promoError}
                                 handleRemovePromo={handleRemovePromo}
+                                minOrder={MIN_ORDER}
                             />
                         </div>
                     </div>
@@ -665,17 +772,10 @@ export default function CartPageSimple() {
 
             <AddressModal
                 isOpen={isAddressModalOpen}
-                onClose={() => setIsAddressModalOpen(false)}
-                onSelect={res => {
-                    updateDeliveryDetails({
-                        address: res.street || '',
-                        house: res.house || '',
-                        apartment: res.apartment || '',
-                        postalCode: res.postalCode || '',
-                        selectedZone: res.zone,
-                    });
-                }}
+                onClose={handleCloseAddressModal}
+                onSelect={handleAddressSelect}
                 deliveryZones={deliveryZones}
+                currentAddress={deliveryDetails}
             />
 
             {orderSuccess && (

@@ -43,6 +43,7 @@ router.post(
         const isOpenNow = isStoreOpen();
         const isStoreClosed = manualClosed || !isOpenNow;
 
+        let serverEstimatedTime = '30-60 min';
         if (isStoreClosed) {
             const scheduledMatch = notes?.match(
                 /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\]/
@@ -58,6 +59,15 @@ router.post(
                 return res.status(400).json({
                     error: 'Esa hora está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!',
                 });
+            }
+            serverEstimatedTime = `${dateStr} ${timeStr}`;
+        } else {
+            // Also check if it's scheduled even if store is open
+            const scheduledMatch = notes?.match(
+                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\]/
+            );
+            if (scheduledMatch) {
+                serverEstimatedTime = `${scheduledMatch[1]} ${scheduledMatch[2]}`;
             }
         }
 
@@ -250,7 +260,7 @@ router.post(
                 delivery_address: deliveryAddress?.trim() || '',
                 phone_number: phoneNumber?.trim() || '',
                 status: 'pending',
-                estimated_delivery_time: '30-60 min',
+                estimated_delivery_time: serverEstimatedTime,
                 notes: notes?.trim() || '',
                 device_type: deviceType,
                 os_name: osName,
@@ -590,6 +600,14 @@ router.post(
         // Simple 10% for testing if needed
         if (promoCode === 'TEST10') finalTotal *= 0.9;
 
+        let serverEstimatedTime = '30-60 min';
+        const scheduledMatch = notes?.match(
+            /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\]/
+        );
+        if (scheduledMatch) {
+            serverEstimatedTime = `${scheduledMatch[1]} ${scheduledMatch[2]}`;
+        }
+
         // 3. Create Draft Order
         const { data: order, error: orderError } = await supabase
             .from('orders')
@@ -602,7 +620,7 @@ router.post(
                 notes: `${notes || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
                 device_type: deviceType,
                 os_name: osName,
-                estimated_delivery_time: '30-60 min',
+                estimated_delivery_time: serverEstimatedTime,
             })
             .select()
             .single();

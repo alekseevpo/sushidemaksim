@@ -45,13 +45,13 @@ export default function BlogPage() {
         <div className="min-h-screen bg-transparent pb-20">
             <SEO
                 title="Blog & Estilo de Vida Japonés"
-                description="Historias, recetas и secretos del mundo del sushi artesanal. Aprende más sobre la comida japonesa con Sushi de Maksim."
+                description="Historias, recetas y secretos del mundo del sushi artesanal. Aprende más sobre la comida japonesa con Sushi de Maksim."
                 keywords="blog sushi, recetas japonesas, cultura japonesa, maksim sushi, historia del sushi"
                 schema={{
                     '@context': 'https://schema.org',
                     '@type': 'Blog',
                     name: 'Blog de Sushi de Maksim',
-                    description: 'Historias, recetas и secretos del mundo del sushi artesanal.',
+                    description: 'Historias, recetas y secretos del mundo del sushi artesanal.',
                     url: 'https://sushidemaksim.vercel.app/blog',
                     publisher: {
                         '@type': 'Organization',

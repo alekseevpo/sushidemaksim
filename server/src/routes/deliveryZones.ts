@@ -24,7 +24,90 @@ router.get(
 
 // Simple in-memory cache to stay within Nominatim's 1 req/sec limit and avoid 429 errors
 const searchCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 1000 * 60 * 30; // 30 minutes
+const houseNumbersCache = new Map<string, { data: string[]; timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
+
+// Get REAL house numbers for a street using Overpass API
+router.get('/house-numbers', async (req, res) => {
+    const { street, city, lat, lon } = req.query;
+    if (!street || (!city && (!lat || !lon))) return res.json([]);
+
+    const cacheKey = `houses-${street}-${city}-${lat}-${lon}`.toLowerCase().trim();
+    const now = Date.now();
+
+    // Clear old sparse results for testing to ensure full list is fetched
+    houseNumbersCache.clear();
+
+    if (houseNumbersCache.has(cacheKey)) {
+        const cached = houseNumbersCache.get(cacheKey)!;
+        if (now - cached.timestamp < CACHE_TTL) return res.json(cached.data);
+    }
+
+    try {
+        // 1. Smart street cleaning (more aggressive)
+        const streetPattern = (street as string)
+            .replace(
+                /^(Calle|Avenida|Paseo|Plaza|Vía|Av\.|C\/|Travesía)\s+(de\s+|del\s+|la\s+)?/i,
+                ''
+            )
+            .trim();
+
+        // 2. High-precision Overpass query (Optimized for speed)
+        // Use coordinates if available for much higher precision and speed
+        let areaConstraint = `area["name"="${city}"]`;
+        if (lat && lon) {
+            areaConstraint = `around:2000, ${lat}, ${lon}`;
+        }
+
+        const overpassQuery = `
+            [out:json][timeout:30];
+            (
+              nwr["addr:street"~"${streetPattern}", i](${areaConstraint});
+              way["name"~"${streetPattern}", i](${areaConstraint})->.street;
+              nwr(around.street:100)["addr:housenumber"];
+            );
+            out center;
+        `;
+
+        console.log(`Fetching house numbers for: ${streetPattern} in ${city}...`);
+        const response = await axios.post(
+            'https://overpass-api.de/api/interpreter',
+            `data=${encodeURIComponent(overpassQuery)}`,
+            { timeout: 35000 }
+        );
+
+        let numbers: string[] = [];
+        if (response.data && response.data.elements) {
+            numbers = response.data.elements
+                .map((el: any) => el.tags?.['addr:housenumber'])
+                .filter((n: string | undefined): n is string => !!n);
+        }
+
+        console.log(`Found ${numbers.length} house numbers for ${streetPattern}.`);
+
+        // 3. Robust sorting and deduplication
+        const uniqueNumbers = Array.from(new Set(numbers)).sort((a, b) => {
+            const numA = parseInt(a);
+            const numB = parseInt(b);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                if (numA !== numB) return numA - numB;
+                return a.localeCompare(b, undefined, { numeric: true });
+            }
+            return a.localeCompare(b, undefined, { numeric: true });
+        });
+
+        // Save to cache (using Map methods)
+        houseNumbersCache.set(cacheKey, {
+            data: uniqueNumbers,
+            timestamp: Date.now(),
+        });
+
+        res.json(uniqueNumbers);
+    } catch (error) {
+        console.error('Overpass API error:', error);
+        res.json([]); // Prevent UI from hanging
+    }
+});
 
 // Proxy search because Nominatim blocks direct browser access (CORS/UA)
 router.get(
@@ -46,39 +129,79 @@ router.get(
 
         try {
             // Respect Nominatim's limit by spacing out requests if many users hit it
-            // Simple sleep to reduce chance of 429 on bursts
             await new Promise(r => setTimeout(r, 200));
 
             const response = await axios.get('https://nominatim.openstreetmap.org/search', {
                 params: {
                     format: 'json',
-                    q: `${query}, Madrid`,
-                    limit: 10,
+                    q: query,
+                    limit: 50,
                     addressdetails: 1,
+                    countrycodes: 'es', // Strictly Spain
                     // Madrid and surrounding Community of Madrid bounding box
                     // Format: left, top, right, bottom (lon, lat)
-                    viewbox: '-4.6, 41.2, -3.0, 39.8',
+                    viewbox: '-4.65, 41.2, -3.0, 39.85',
                     bounded: 1,
                 },
                 headers: {
                     'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                    'Accept-Language': 'es',
                 },
             });
 
-            // Filter results to ensure they are in Madrid region
+            // Filter results to ensure they are strictly in the Community of Madrid
+            // This prevents results from Guadalajara, Toledo, Segovia etc. from appearing
             const madridResults = response.data.filter((item: any) => {
-                const displayName = item.display_name.toLowerCase();
-                return (
-                    displayName.includes('madrid') ||
-                    (item.address &&
-                        (item.address.state === 'Comunidad de Madrid' ||
-                            item.address.province === 'Madrid' ||
-                            item.address.city === 'Madrid'))
-                );
+                const dn = item.display_name.toLowerCase();
+                const addr = item.address || {};
+                const postcode = addr.postcode || '';
+
+                // 1. Strict postal code check for Madrid province (28xxx)
+                if (postcode.startsWith('28')) return true;
+
+                // 2. Province or State check
+                if (
+                    addr.province === 'Madrid' ||
+                    addr.state === 'Comunidad de Madrid' ||
+                    addr.region === 'Comunidad de Madrid'
+                )
+                    return true;
+
+                // 3. Fallback check for missing address object tags but presence in display name
+                if (
+                    dn.includes('comunidad de madrid') ||
+                    (dn.includes(', madrid') && (dn.includes('españa') || dn.includes('spain')))
+                )
+                    return true;
+
+                return false;
             });
 
+            // Deduplicate visually identical results (same name and postal code)
+            const uniqueResults: any[] = [];
+            const seen = new Set<string>();
+
+            for (const item of madridResults) {
+                const addr = item.address || {};
+                const postcode = addr.postcode || '';
+
+                // Create a normalized identifier based on Name, Number, Street, and Postcode
+                // Nominatim display_name parts are usually: [Number], Street, [District], City, [State], Postcode, Country
+                const parts = item.display_name.split(',').map((p: string) => p.trim());
+                const normalizedBase = parts.slice(0, 4).join(',').toLowerCase();
+                const identifier = `${normalizedBase}|${postcode}`.toLowerCase();
+
+                if (!seen.has(identifier)) {
+                    seen.add(identifier);
+                    uniqueResults.push(item);
+                }
+            }
+
+            // Only return unique results that passed the Madrid filter.
+            const finalResults = uniqueResults.slice(0, 15);
+
             // Update cache
-            searchCache.set(query, { data: madridResults, timestamp: now });
+            searchCache.set(query, { data: finalResults, timestamp: now });
 
             // Periodically clean cache
             if (searchCache.size > 500) {
@@ -87,7 +210,7 @@ router.get(
                 }
             }
 
-            res.json(response.data);
+            res.json(finalResults);
         } catch (err: any) {
             console.error('Nominatim proxy error:', err.message);
 

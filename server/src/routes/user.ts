@@ -274,6 +274,37 @@ router.post(
                 .eq('user_id', req.userId);
         }
 
+        // Check for existing duplicate
+        const { data: existing } = await supabase
+            .from('user_addresses')
+            .select('id')
+            .eq('user_id', req.userId)
+            .ilike('street', street.trim())
+            .ilike('house', house?.trim() || '')
+            .ilike('apartment', apartment?.trim() || '')
+            .maybeSingle();
+
+        if (existing) {
+            // Update to set as default if requested, or just return existing
+            if (isDefault) {
+                await supabase
+                    .from('user_addresses')
+                    .update({ is_default: true })
+                    .eq('id', existing.id);
+            }
+            return res.json({
+                address: {
+                    id: existing.id,
+                    street: street.trim(),
+                    house: house?.trim() || '',
+                    apartment: apartment?.trim() || '',
+                    postalCode: postalCode?.trim() || '',
+                    isDefault: !!isDefault,
+                },
+                message: 'Address already exists',
+            });
+        }
+
         const { data: address, error } = await supabase
             .from('user_addresses')
             .insert({

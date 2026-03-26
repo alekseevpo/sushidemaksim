@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { MapPin, Plus, Star, Trash2, Pencil, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { UserAddress } from '../../types';
+import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import DeleteConfirmationModal from '../admin/DeleteConfirmationModal';
 
 interface AddressSuggestion {
     display_name: string;
@@ -14,6 +17,7 @@ interface AddressSuggestion {
         postcode?: string;
         suburb?: string;
         state?: string;
+        neighbourhood?: string;
     };
 }
 
@@ -46,6 +50,9 @@ export default function AddressesTab({
         isDefault: false,
     });
 
+    const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     // Autocomplete state
     const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -53,6 +60,10 @@ export default function AddressesTab({
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>();
     const ignoreNextSearchRef = useRef(false);
+
+    const [suggestedNumbers, setSuggestedNumbers] = useState<string[]>([]);
+    const [isLoadingNumbers, setIsLoadingNumbers] = useState(false);
+    const [isManualNumberMode, setIsManualNumberMode] = useState(false);
 
     // Debounced Nominatim search
     useEffect(() => {
@@ -71,15 +82,12 @@ export default function AddressesTab({
 
         debounceRef.current = setTimeout(async () => {
             try {
-                const res = await fetch(
-                    `https://nominatim.openstreetmap.org/search?` +
-                        `format=json&addressdetails=1&limit=5&countrycodes=es&accept-language=es` +
-                        `&viewbox=-4.58,41.16,-3.05,39.88&bounded=1` +
-                        `&q=${encodeURIComponent(searchQuery)}`
+                setSuggestedNumbers([]);
+                const data = await api.get(
+                    `/delivery-zones/search?q=${encodeURIComponent(searchQuery)}`
                 );
-                const data = await res.json();
-                setSuggestions(data);
-                setShowSuggestions(data.length > 0);
+                setSuggestions(data || []);
+                setShowSuggestions((data || []).length > 0);
             } catch {
                 setSuggestions([]);
             }
@@ -105,15 +113,53 @@ export default function AddressesTab({
         const addr = s.address;
         const street = addr.road || s.display_name.split(',')[0] || '';
         const house = addr.house_number || '';
-        const city = addr.city || addr.town || addr.village || '';
+        const city = addr.city || addr.town || addr.village || addr.suburb || 'Comunidad de Madrid';
         const postalCode = addr.postcode || '';
-        const apartment = addr.suburb || ''; // Some regions use suburb as extra info
 
-        setNewAddress(p => ({ ...p, street, house, city, postalCode, apartment }));
+        setNewAddress(p => ({ ...p, street, house, city, postalCode, apartment: '' }));
         ignoreNextSearchRef.current = true;
         setSearchQuery(street);
+        setIsManualNumberMode(false);
         setShowSuggestions(false);
         setSuggestions([]);
+
+        if (!house) {
+            setIsLoadingNumbers(true);
+            api.get(
+                `/delivery-zones/house-numbers?street=${encodeURIComponent(street)}&city=${encodeURIComponent(city)}`
+            )
+                .then(numbers => {
+                    setSuggestedNumbers(numbers || []);
+                })
+                .catch(err => {
+                    console.error('Failed to fetch house numbers', err);
+                    setSuggestedNumbers([]);
+                })
+                .finally(() => {
+                    setIsLoadingNumbers(false);
+                });
+        } else {
+            setSuggestedNumbers([]);
+        }
+    };
+
+    const pickNumber = async (num: string) => {
+        setNewAddress(p => ({ ...p, house: num }));
+        setSuggestedNumbers([]);
+
+        // Exact geocode to get postcode if missing
+        try {
+            const query = `${newAddress.street} ${num}, ${newAddress.city}`;
+            const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
+            if (data && data.length > 0) {
+                const best = data[0];
+                if (best.address?.postcode) {
+                    setNewAddress(p => ({ ...p, postalCode: best.address.postcode }));
+                }
+            }
+        } catch (err) {
+            console.error('Pick number geocode failed', err);
+        }
     };
 
     const formRef = useRef<HTMLDivElement>(null);
@@ -212,6 +258,20 @@ export default function AddressesTab({
         }
     };
 
+    const confirmDelete = async () => {
+        if (!addressToDelete) return;
+        setIsDeleting(true);
+        try {
+            await removeAddress(addressToDelete);
+            success('¡Dirección eliminada con éxito! 🗑️');
+            setAddressToDelete(null);
+        } catch (err: any) {
+            error(err.message || 'Error al eliminar la dirección');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 md:px-0">
             {/* Header */}
@@ -285,62 +345,159 @@ export default function AddressesTab({
 
                         <div className="md:col-span-2 space-y-2 relative" ref={suggestionsRef}>
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
-                                Calle / Avenida
+                                Calle / Avenida *
                             </label>
                             <div className="relative">
                                 <input
                                     value={searchQuery || newAddress.street}
                                     onChange={e => handleStreetChange(e.target.value)}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
+                                    className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all ${newAddress.street && 'border-green-100 bg-green-50/10'}`}
                                     placeholder="Ej: Calle Gran Vía..."
                                     autoComplete="off"
                                 />
                                 <MapPin
                                     size={16}
                                     strokeWidth={1.5}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none"
+                                    className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${newAddress.street ? 'text-green-500' : 'text-gray-300'}`}
                                 />
                             </div>
 
                             {showSuggestions && suggestions.length > 0 && (
-                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50">
                                     {suggestions.map((s, i) => (
                                         <button
                                             key={i}
                                             type="button"
                                             onClick={() => handleSelectSuggestion(s)}
-                                            className="flex items-start gap-3 w-full p-4 text-left hover:bg-red-50 transition-colors group border-b last:border-0 border-gray-50"
+                                            className="flex items-start gap-3 w-full p-4 text-left hover:bg-red-50 transition-colors group"
                                         >
                                             <MapPin
                                                 size={14}
                                                 strokeWidth={1.5}
                                                 className="mt-1 text-gray-300 group-hover:text-red-500 transition-colors shrink-0"
                                             />
-                                            <span className="text-xs font-bold text-gray-700 group-hover:text-red-600 line-clamp-2 leading-relaxed">
-                                                {s.display_name}
-                                            </span>
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-xs font-bold text-gray-900 group-hover:text-red-600 truncate">
+                                                    {s.address?.road ||
+                                                        s.display_name.split(',')[0]}
+                                                    {s.address?.house_number &&
+                                                        `, ${s.address.house_number}`}
+                                                </span>
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                                                    {s.address?.city ||
+                                                        s.address?.town ||
+                                                        s.address?.village ||
+                                                        s.address?.suburb ||
+                                                        'Comunidad de Madrid'}
+                                                    {s.address?.postcode &&
+                                                        ` • ${s.address.postcode}`}
+                                                </span>
+                                            </div>
                                         </button>
                                     ))}
                                 </div>
                             )}
+
+                            {/* REAL House Numbers (Scrollable Strip) */}
+                            <AnimatePresence>
+                                {(suggestedNumbers.length > 0 || isLoadingNumbers) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="mt-3 overflow-hidden"
+                                    >
+                                        <div className="bg-white border-2 border-red-50 rounded-2xl p-3 shadow-xl shadow-red-500/5 relative">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1 flex justify-between items-center">
+                                                <span>
+                                                    {isLoadingNumbers
+                                                        ? 'Buscando números reales...'
+                                                        : suggestedNumbers.length > 0
+                                                          ? 'Selecciona el número de casa:'
+                                                          : 'No se encontraron casas'}
+                                                </span>
+                                                {!isLoadingNumbers &&
+                                                    suggestedNumbers.length > 0 && (
+                                                        <span className="text-[9px] normal-case font-medium opacity-60 animate-pulse">
+                                                            Desliza →
+                                                        </span>
+                                                    )}
+                                            </p>
+                                            <div className="relative">
+                                                {isLoadingNumbers ? (
+                                                    <div className="flex gap-2.5 overflow-x-hidden py-1">
+                                                        {[1, 2, 3, 4, 5].map(i => (
+                                                            <div
+                                                                key={i}
+                                                                className="shrink-0 w-12 h-12 bg-gray-50 rounded-xl animate-pulse"
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex gap-2.5 overflow-x-auto pb-3 no-scrollbar snap-x scroll-pl-1 pr-12">
+                                                        {suggestedNumbers.map(num => (
+                                                            <button
+                                                                key={num}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    pickNumber(num);
+                                                                    setIsManualNumberMode(false);
+                                                                }}
+                                                                className="shrink-0 w-12 h-12 bg-white border-2 border-gray-100 rounded-xl flex items-center justify-center text-sm font-black text-gray-700 hover:border-red-600 hover:text-red-600 hover:bg-red-50 transition-all snap-start shadow-sm active:scale-95"
+                                                            >
+                                                                {num}
+                                                            </button>
+                                                        ))}
+
+                                                        {/* Fallback button for missing numbers in profile */}
+                                                        {!isLoadingNumbers && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setIsManualNumberMode(true);
+                                                                    setSuggestedNumbers([]);
+                                                                }}
+                                                                className="shrink-0 px-4 h-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center text-xs font-bold text-gray-500 hover:border-red-400 hover:text-red-500 transition-all snap-start"
+                                                            >
+                                                                + Otro número
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {!isLoadingNumbers &&
+                                                    suggestedNumbers.length > 0 && (
+                                                        <div className="absolute right-0 top-0 bottom-3 w-12 bg-gradient-to-l from-white via-white to-transparent pointer-events-none rounded-r-2xl" />
+                                                    )}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
-                                Número
+                                Número *
                             </label>
                             <input
                                 value={newAddress.house}
-                                onChange={e =>
-                                    setNewAddress(p => ({ ...p, house: e.target.value }))
-                                }
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
-                                placeholder="Ej: 12"
+                                onChange={e => {
+                                    if (isManualNumberMode) {
+                                        setNewAddress(p => ({ ...p, house: e.target.value }));
+                                    }
+                                }}
+                                readOnly={!isManualNumberMode}
+                                className={`w-full border rounded-xl px-4 py-3 text-sm font-bold transition-all outline-none ${
+                                    isManualNumberMode
+                                        ? 'bg-red-50 border-red-200 text-gray-900 focus:ring-2 focus:ring-red-600/20'
+                                        : 'bg-gray-100 border-transparent text-gray-500 cursor-not-allowed'
+                                }`}
+                                placeholder={isManualNumberMode ? 'Ej: 36' : 'Busca arriba...'}
                             />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
-                                Piso, Escalera, Puerta
+                                Piso, Escalera, Puerta *
                             </label>
                             <input
                                 value={newAddress.apartment}
@@ -358,8 +515,8 @@ export default function AddressesTab({
                             </label>
                             <input
                                 value={newAddress.city}
-                                onChange={e => setNewAddress(p => ({ ...p, city: e.target.value }))}
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
+                                readOnly
+                                className="w-full bg-gray-100 border border-transparent rounded-xl px-4 py-3 text-sm font-bold text-gray-500 cursor-not-allowed outline-none"
                             />
                         </div>
                         <div className="space-y-2">
@@ -368,10 +525,8 @@ export default function AddressesTab({
                             </label>
                             <input
                                 value={newAddress.postalCode}
-                                onChange={e =>
-                                    setNewAddress(p => ({ ...p, postalCode: e.target.value }))
-                                }
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
+                                readOnly
+                                className="w-full bg-gray-100 border border-transparent rounded-xl px-4 py-3 text-sm font-bold text-gray-500 cursor-not-allowed outline-none"
                                 placeholder="28001"
                             />
                         </div>
@@ -472,30 +627,45 @@ export default function AddressesTab({
                                 {!addr.isDefault && (
                                     <button
                                         onClick={() => setDefaultAddress(addr.id)}
-                                        className="h-8 w-8 md:h-10 md:px-4 bg-white border border-gray-200 text-gray-500 rounded-lg md:rounded-xl text-[10px] font-black hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-all flex items-center justify-center gap-2"
+                                        className="h-9 px-3 md:h-11 md:px-5 bg-white border border-gray-100 text-gray-400 rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-green-50 hover:text-green-600 hover:border-green-100 transition-all flex items-center justify-center gap-2 shadow-sm group/btn"
                                         title="Establecer como predeterminada"
                                     >
-                                        <Star size={16} strokeWidth={1.5} />
-                                        <span className="hidden md:inline">Principal</span>
+                                        <Star
+                                            size={14}
+                                            strokeWidth={2}
+                                            className="transition-transform group-hover/btn:scale-110"
+                                        />
+                                        <span>Principal</span>
                                     </button>
                                 )}
                                 <button
                                     onClick={() => startEditing(addr)}
-                                    className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center bg-white border border-gray-200 text-gray-400 rounded-lg md:rounded-xl hover:text-gray-900 hover:border-gray-900 transition-all"
+                                    className="h-9 w-9 md:h-11 md:w-11 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-2xl hover:text-gray-900 hover:border-gray-900 transition-all shadow-sm"
                                 >
-                                    <Pencil size={14} strokeWidth={1.5} />
+                                    <Pencil size={16} strokeWidth={1.5} />
                                 </button>
                                 <button
-                                    onClick={() => removeAddress(addr.id)}
-                                    className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center bg-red-50 text-red-400 border border-red-100 rounded-lg md:rounded-xl hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
+                                    onClick={() => setAddressToDelete(addr.id)}
+                                    className="h-9 w-9 md:h-11 md:w-11 flex items-center justify-center bg-red-50/50 text-red-400 border border-red-50 rounded-2xl hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-sm"
                                 >
-                                    <Trash2 size={14} strokeWidth={1.5} />
+                                    <Trash2 size={16} strokeWidth={1.5} />
                                 </button>
                             </div>
                         </div>
                     ))
                 )}
             </div>
+
+            <DeleteConfirmationModal
+                isOpen={!!addressToDelete}
+                onClose={() => setAddressToDelete(null)}
+                onConfirm={confirmDelete}
+                title="¿Eliminar dirección?"
+                description="¿Estás seguro de que deseas eliminar esta dirección?"
+                isLoading={isDeleting}
+                itemType="dirección"
+                itemName={addresses.find(a => a.id === addressToDelete)?.label}
+            />
         </div>
     );
 }

@@ -260,7 +260,7 @@ const ForgotPasswordForm = memo(
             <form onSubmit={onForgot} className="space-y-4">
                 <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl mb-2">
                     <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
-                        Introduce tu email и te enviaremos las instrucciones.
+                        Introduce tu email y te enviaremos las instrucciones.
                     </p>
                 </div>
                 <div className="space-y-1">
@@ -705,7 +705,7 @@ export default function LoginModal({
                                     {mode === 'reset-password' && 'Nueva contraseña'}
                                 </h2>
                                 <p className="text-[13px] text-gray-400 font-medium mt-1 leading-tight">
-                                    {mode === 'login' && 'Entra и disfruta del mejor sushi.'}
+                                    {mode === 'login' && 'Entra y disfruta del mejor sushi.'}
                                     {mode === 'register' && 'Únete a la familia Maksim.'}
                                     {mode === 'forgot' && 'Te ayudamos a volver.'}
                                     {mode === 'verify-sent' && 'Hemos enviado un enlace.'}

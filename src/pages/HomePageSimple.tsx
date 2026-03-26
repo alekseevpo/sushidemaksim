@@ -221,7 +221,7 @@ export default function HomePageSimple() {
         <div className="overflow-hidden">
             <SEO
                 title="Sushi a domicilio en Madrid — Sabor que Despierta Sentidos"
-                description="El mejor sushi artesanal de Madrid. Entreга rápida, atún Balfegó y salmón noruego. Pide online el mejor sushi a domicilio y disfruta de la experiencia Maksim en tu casa."
+                description="El mejor sushi artesanal de Madrid. Entrega rápida, atún Balfegó y salmón noruego. Pide online el mejor sushi a domicilio y disfruta de la experiencia Maksim en tu casa."
                 keywords="sushi, madrid, delivery, pedido a domicilio, rollo, maksim, atun balfego"
                 schema={{
                     '@context': 'https://schema.org',
@@ -234,15 +234,15 @@ export default function HomePageSimple() {
                     priceRange: '$$',
                     address: {
                         '@type': 'PostalAddress',
-                        streetAddress: 'Calle de la Infanta Mercedes, 62',
+                        streetAddress: 'Calle del Barrilero, 20',
                         addressLocality: 'Madrid',
-                        postalCode: '28020',
+                        postalCode: '28007',
                         addressCountry: 'ES',
                     },
                     geo: {
                         '@type': 'GeoCoordinates',
-                        latitude: 40.4571,
-                        longitude: -3.7037,
+                        latitude: 40.397042,
+                        longitude: -3.672449,
                     },
                     openingHoursSpecification: [
                         {
@@ -284,7 +284,7 @@ export default function HomePageSimple() {
                             alt="Premium Sushi Background"
                             className="w-full h-full object-cover sm:object-center object-[65%_center]"
                             loading="eager"
-                            fetchPriority="high"
+                            {...({ fetchpriority: 'high' } as any)}
                         />
                     </div>
 
@@ -495,7 +495,7 @@ export default function HomePageSimple() {
             </section>
 
             {/* Chef's Recommendations / Popular Section */}
-            <section className="py-12 md:py-24 px-2 md:px-6 bg-gray-50/50 overflow-hidden relative">
+            <section className="py-12 md:py-24 px-0 md:px-6 bg-gray-50/50 overflow-hidden relative">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div className="max-w-xl text-center md:text-left">
@@ -545,7 +545,7 @@ export default function HomePageSimple() {
 
                             <div
                                 ref={scrollContainerRef}
-                                className="relative -mx-2 px-2 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth scroll-px-2"
+                                className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-10 snap-x snap-mandatory md:snap-none scroll-smooth scroll-px-4"
                             >
                                 <div className="flex gap-2.5 md:gap-8 flex-nowrap w-max min-w-full">
                                     {popularItems.map((item: any, index: number) => (
