@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { MapPin, Plus, Star, Trash2, Pencil, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { UserAddress } from '../../types';
 import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
@@ -61,10 +61,6 @@ export default function AddressesTab({
     const debounceRef = useRef<ReturnType<typeof setTimeout>>();
     const ignoreNextSearchRef = useRef(false);
 
-    const [suggestedNumbers, setSuggestedNumbers] = useState<string[]>([]);
-    const [isLoadingNumbers, setIsLoadingNumbers] = useState(false);
-    const [isManualNumberMode, setIsManualNumberMode] = useState(false);
-
     // Debounced Nominatim search
     useEffect(() => {
         if (ignoreNextSearchRef.current) {
@@ -82,7 +78,6 @@ export default function AddressesTab({
 
         debounceRef.current = setTimeout(async () => {
             try {
-                setSuggestedNumbers([]);
                 const data = await api.get(
                     `/delivery-zones/search?q=${encodeURIComponent(searchQuery)}`
                 );
@@ -119,47 +114,8 @@ export default function AddressesTab({
         setNewAddress(p => ({ ...p, street, house, city, postalCode, apartment: '' }));
         ignoreNextSearchRef.current = true;
         setSearchQuery(street);
-        setIsManualNumberMode(false);
         setShowSuggestions(false);
         setSuggestions([]);
-
-        if (!house) {
-            setIsLoadingNumbers(true);
-            api.get(
-                `/delivery-zones/house-numbers?street=${encodeURIComponent(street)}&city=${encodeURIComponent(city)}`
-            )
-                .then(numbers => {
-                    setSuggestedNumbers(numbers || []);
-                })
-                .catch(err => {
-                    console.error('Failed to fetch house numbers', err);
-                    setSuggestedNumbers([]);
-                })
-                .finally(() => {
-                    setIsLoadingNumbers(false);
-                });
-        } else {
-            setSuggestedNumbers([]);
-        }
-    };
-
-    const pickNumber = async (num: string) => {
-        setNewAddress(p => ({ ...p, house: num }));
-        setSuggestedNumbers([]);
-
-        // Exact geocode to get postcode if missing
-        try {
-            const query = `${newAddress.street} ${num}, ${newAddress.city}`;
-            const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
-            if (data && data.length > 0) {
-                const best = data[0];
-                if (best.address?.postcode) {
-                    setNewAddress(p => ({ ...p, postalCode: best.address.postcode }));
-                }
-            }
-        } catch (err) {
-            console.error('Pick number geocode failed', err);
-        }
     };
 
     const formRef = useRef<HTMLDivElement>(null);
@@ -397,82 +353,6 @@ export default function AddressesTab({
                                     ))}
                                 </div>
                             )}
-
-                            {/* REAL House Numbers (Scrollable Strip) */}
-                            <AnimatePresence>
-                                {(suggestedNumbers.length > 0 || isLoadingNumbers) && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="mt-3 overflow-hidden"
-                                    >
-                                        <div className="bg-white border-2 border-red-50 rounded-2xl p-3 shadow-xl shadow-red-500/5 relative">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1 flex justify-between items-center">
-                                                <span>
-                                                    {isLoadingNumbers
-                                                        ? 'Buscando números reales...'
-                                                        : suggestedNumbers.length > 0
-                                                          ? 'Selecciona el número de casa:'
-                                                          : 'No se encontraron casas'}
-                                                </span>
-                                                {!isLoadingNumbers &&
-                                                    suggestedNumbers.length > 0 && (
-                                                        <span className="text-[9px] normal-case font-medium opacity-60 animate-pulse">
-                                                            Desliza →
-                                                        </span>
-                                                    )}
-                                            </p>
-                                            <div className="relative">
-                                                {isLoadingNumbers ? (
-                                                    <div className="flex gap-2.5 overflow-x-hidden py-1">
-                                                        {[1, 2, 3, 4, 5].map(i => (
-                                                            <div
-                                                                key={i}
-                                                                className="shrink-0 w-12 h-12 bg-gray-50 rounded-xl animate-pulse"
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex gap-2.5 overflow-x-auto pb-3 no-scrollbar snap-x scroll-pl-1 pr-12">
-                                                        {suggestedNumbers.map(num => (
-                                                            <button
-                                                                key={num}
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    pickNumber(num);
-                                                                    setIsManualNumberMode(false);
-                                                                }}
-                                                                className="shrink-0 w-12 h-12 bg-white border-2 border-gray-100 rounded-xl flex items-center justify-center text-sm font-black text-gray-700 hover:border-red-600 hover:text-red-600 hover:bg-red-50 transition-all snap-start shadow-sm active:scale-95"
-                                                            >
-                                                                {num}
-                                                            </button>
-                                                        ))}
-
-                                                        {/* Fallback button for missing numbers in profile */}
-                                                        {!isLoadingNumbers && (
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    setIsManualNumberMode(true);
-                                                                    setSuggestedNumbers([]);
-                                                                }}
-                                                                className="shrink-0 px-4 h-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center text-xs font-bold text-gray-500 hover:border-red-400 hover:text-red-500 transition-all snap-start"
-                                                            >
-                                                                + Otro número
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                )}
-                                                {!isLoadingNumbers &&
-                                                    suggestedNumbers.length > 0 && (
-                                                        <div className="absolute right-0 top-0 bottom-3 w-12 bg-gradient-to-l from-white via-white to-transparent pointer-events-none rounded-r-2xl" />
-                                                    )}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
                         </div>
 
                         <div className="space-y-2">
@@ -481,19 +361,15 @@ export default function AddressesTab({
                             </label>
                             <input
                                 value={newAddress.house}
-                                onChange={e => {
-                                    if (isManualNumberMode) {
-                                        setNewAddress(p => ({ ...p, house: e.target.value }));
-                                    }
-                                }}
-                                readOnly={!isManualNumberMode}
-                                className={`w-full border rounded-xl px-4 py-3 text-sm font-bold transition-all outline-none ${
-                                    isManualNumberMode
-                                        ? 'bg-red-50 border-red-200 text-gray-900 focus:ring-2 focus:ring-red-600/20'
-                                        : 'bg-gray-100 border-transparent text-gray-500 cursor-not-allowed'
-                                }`}
-                                placeholder={isManualNumberMode ? 'Ej: 36' : 'Busca arriba...'}
+                                readOnly
+                                className="w-full bg-gray-100 border-transparent rounded-xl px-4 py-3 text-sm font-bold text-gray-500 cursor-not-allowed outline-none"
+                                placeholder="Busca arriba..."
                             />
+                            {!newAddress.house && newAddress.street && (
+                                <p className="text-[9px] font-bold text-red-500 mt-1.5 px-1 animate-pulse">
+                                    Busca tu calle con el número arriba (ej: {newAddress.street} 10)
+                                </p>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">

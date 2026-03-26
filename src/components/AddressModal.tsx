@@ -746,7 +746,7 @@ export default function AddressModal({
                                                         Zona no cubierta
                                                     </p>
                                                     <p className="text-[10px] font-bold text-red-400 uppercase tracking-tighter">
-                                                        Mueve el marcador o prueba otra dirección
+                                                        Prueba con otra dirección o número
                                                     </p>
                                                 </div>
                                             </div>
