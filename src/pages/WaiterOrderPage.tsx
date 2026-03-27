@@ -59,6 +59,7 @@ export default function WaiterOrderPage() {
                         name: item?.name,
                         price: item?.price,
                         quantity: qty,
+                        image: item?.image || '', // Ensure image is passed for the admin view
                     };
                 }),
                 totalValue: totalPrice,
