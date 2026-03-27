@@ -5,26 +5,26 @@ export const HomeSkeleton = () => (
             <div className="relative z-20 flex flex-col items-center max-w-4xl mx-auto space-y-8">
                 {/* Badge */}
                 <div className="h-6 w-48 bg-white/10 rounded-full animate-pulse" />
-                
+
                 {/* Title */}
                 <div className="space-y-4 w-full flex flex-col items-center">
                     <div className="h-12 md:h-20 w-3/4 bg-white/10 rounded-2xl animate-pulse" />
                     <div className="h-12 md:h-20 w-1/2 bg-white/10 rounded-2xl animate-pulse" />
                 </div>
-                
+
                 {/* Description */}
                 <div className="space-y-2 w-full flex flex-col items-center">
                     <div className="h-4 w-2/3 bg-white/5 rounded-lg animate-pulse" />
                     <div className="h-4 w-1/2 bg-white/5 rounded-lg animate-pulse" />
                 </div>
-                
+
                 {/* Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto justify-center">
                     <div className="h-16 w-full sm:w-56 bg-white/20 rounded-2xl animate-pulse" />
                     <div className="h-16 w-full sm:w-56 bg-white/10 rounded-2xl animate-pulse" />
                 </div>
             </div>
-            
+
             {/* Scroll Indicator */}
             <div className="absolute bottom-10 flex flex-col items-center gap-2 opacity-20">
                 <div className="h-3 w-16 bg-white/20 rounded-full" />
