@@ -59,6 +59,7 @@ interface DeliveryFormProps {
     itemsCount?: number;
     guestsCount: number;
     setGuestsCount: (val: number) => void;
+    onSavedAddressSelect?: (addr: any) => void;
 }
 
 export default function DeliveryForm({
@@ -104,6 +105,7 @@ export default function DeliveryForm({
     itemsCount = 0,
     guestsCount,
     setGuestsCount,
+    onSavedAddressSelect,
 }: DeliveryFormProps) {
     const hasSentDeliveryStep = useRef(false);
 
@@ -337,24 +339,29 @@ export default function DeliveryForm({
                                         <button
                                             key={addr.id}
                                             onClick={() => {
-                                                let s = addr.street || '';
-                                                let h = addr.house || '';
-                                                let a = addr.apartment || '';
-                                                if (s.includes(',') && !h && !a) {
-                                                    const pts = s
-                                                        .split(',')
-                                                        .map((p: string) => p.trim());
-                                                    if (pts.length >= 2) {
-                                                        s = pts[0];
-                                                        h = pts[1];
-                                                        if (pts.length >= 3)
-                                                            a = pts.slice(2).join(', ');
+                                                if (onSavedAddressSelect) {
+                                                    onSavedAddressSelect(addr);
+                                                } else {
+                                                    // Fallback if prop not present
+                                                    let s = addr.street || '';
+                                                    let h = addr.house || '';
+                                                    let a = addr.apartment || '';
+                                                    if (s.includes(',') && !h && !a) {
+                                                        const pts = s
+                                                            .split(',')
+                                                            .map((p: string) => p.trim());
+                                                        if (pts.length >= 2) {
+                                                            s = pts[0];
+                                                            h = pts[1];
+                                                            if (pts.length >= 3)
+                                                                a = pts.slice(2).join(', ');
+                                                        }
                                                     }
+                                                    setAddress(s);
+                                                    setHouse(h);
+                                                    setApartment(a);
+                                                    setPhone(addr.phone || phone || '');
                                                 }
-                                                setAddress(s);
-                                                setHouse(h);
-                                                setApartment(a);
-                                                setPhone(addr.phone || phone || '');
                                             }}
                                             type="button"
                                             className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"

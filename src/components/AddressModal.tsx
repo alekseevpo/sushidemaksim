@@ -134,6 +134,28 @@ export default function AddressModal({
     const skipNextReverseGeocodeRef = useRef(false);
     const skipNextSearchRef = useRef(false);
     const wasSelectedViaSearchRef = useRef(false);
+    const prevOpenRef = useRef(isOpen);
+
+    // Sync internal state with props when modal OPENS
+    useEffect(() => {
+        if (isOpen && !prevOpenRef.current) {
+            // Modal is opening, sync states
+            setAddress(currentAddress?.street || '');
+            setHouse(currentAddress?.house || '');
+            setApartment(currentAddress?.apartment || '');
+            setPostalCode(currentAddress?.postalCode || '');
+
+            if (currentAddress?.lat && currentAddress?.lon) {
+                setMarkerPosition([currentAddress.lat, currentAddress.lon]);
+                setMapZoom(18);
+            } else {
+                setMarkerPosition(RESTAURANT_LOCATION);
+                setMapZoom(15);
+            }
+            wasSelectedViaSearchRef.current = false;
+        }
+        prevOpenRef.current = isOpen;
+    }, [isOpen, currentAddress]);
 
     // Auto-detect zone on marker move
     useEffect(() => {
@@ -220,10 +242,13 @@ export default function AddressModal({
                         data.address.city ||
                         '';
                     const houseNum = data.address.house_number || '';
-                    setAddress(street || data.display_name?.split(',')[0] || '');
 
-                    // Only overwrite house number if currently empty or during initial open
+                    // Only overwrite address/house if currently empty or during initial open
                     // AND NOT if we just selected something precisely via search
+                    if ((!address || !currentAddress?.street) && !wasSelectedViaSearchRef.current) {
+                        setAddress(street || data.display_name?.split(',')[0] || '');
+                    }
+
                     if ((!house || !currentAddress?.street) && !wasSelectedViaSearchRef.current) {
                         setHouse(houseNum);
                     }
@@ -236,7 +261,7 @@ export default function AddressModal({
                 setIsReverseGeocoding(false);
             }
         },
-        [house, currentAddress?.street, markerPosition]
+        [address, house, currentAddress?.street, markerPosition]
     );
 
     const selectResult = useCallback(

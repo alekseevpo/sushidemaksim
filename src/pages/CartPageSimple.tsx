@@ -730,6 +730,17 @@ export default function CartPageSimple() {
                                 todayStr={todayStr}
                                 isStoreClosed={isStoreClosed}
                                 saveAddress={saveAddress}
+                                onSavedAddressSelect={addr => {
+                                    updateDeliveryDetails({
+                                        address: addr.street || '',
+                                        house: addr.house || '',
+                                        apartment: addr.apartment || '',
+                                        phone: addr.phone || phone || '',
+                                        lat: addr.lat,
+                                        lon: addr.lon,
+                                        postalCode: addr.postalCode || '',
+                                    });
+                                }}
                                 setSaveAddress={val => updateDeliveryDetails({ saveAddress: val })}
                                 deliveryCost={deliveryCost}
                                 totalValue={cartSubtotal}
