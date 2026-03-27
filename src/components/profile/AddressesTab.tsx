@@ -355,7 +355,7 @@ export default function AddressesTab({
                             )}
                         </div>
 
-                        <div className="space-y-2 flex flex-col">
+                        <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
                                 Número *
                             </label>
@@ -366,7 +366,7 @@ export default function AddressesTab({
                                 placeholder="Busca arriba..."
                             />
                             {!newAddress.house && newAddress.street && (
-                                <p className="text-[9px] font-bold text-red-500 mt-1.5 px-1 animate-pulse leading-none h-2">
+                                <p className="text-[9px] font-bold text-red-500 mt-1 px-1 animate-pulse leading-none h-1">
                                     Busca tu calle con el número arriba
                                 </p>
                             )}
