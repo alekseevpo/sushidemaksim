@@ -155,14 +155,16 @@ export default function OrderSuccessModal({
                                     <span className="uppercase tracking-wider">Productos</span>
                                     <span>{total.toFixed(2).replace('.', ',')} €</span>
                                 </div>
-                                <div className="flex justify-between items-center text-[11px] font-bold text-white/50">
-                                    <span className="uppercase tracking-wider">Envío</span>
-                                    <span className={deliveryCost <= 0 ? 'text-green-400' : ''}>
-                                        {deliveryCost <= 0
-                                            ? 'GRATIS'
-                                            : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
-                                    </span>
-                                </div>
+                                {deliveryType === 'delivery' && (
+                                    <div className="flex justify-between items-center text-[11px] font-bold text-white/50">
+                                        <span className="uppercase tracking-wider">Envío</span>
+                                        <span className={deliveryCost <= 0 ? 'text-green-400' : ''}>
+                                            {deliveryCost <= 0
+                                                ? 'GRATIS'
+                                                : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="pt-2 flex justify-between items-end">
                                     <span className="text-[10px] uppercase font-black text-white/40 tracking-widest">
                                         Total Pagado
