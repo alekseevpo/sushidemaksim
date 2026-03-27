@@ -28,19 +28,19 @@ L.Marker.prototype.options.icon = DefaultIcon;
 // Custom Sushi Icon for the restaurant
 const SushiRestaurantIcon = L.divIcon({
     html: `
-        <div class="relative flex flex-col items-center group">
+        <div class="relative flex flex-col-reverse items-center group">
             <div class="w-12 h-12 bg-white rounded-full shadow-2xl border-[3px] border-red-600 flex items-center justify-center transform transition-transform group-hover:scale-110">
                 <span class="text-2xl">🍣</span>
             </div>
-            <div class="mt-2 px-3 py-1.5 bg-red-600 text-white text-[11px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
+            <div class="mb-2 px-3 py-1.5 bg-red-600 text-white text-[11px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
                 ¡Estamos aquí!
             </div>
-            <div class="w-3 h-3 bg-red-600 rotate-45 -mt-1.5 shadow-sm"></div>
+            <div class="w-3 h-3 bg-red-600 rotate-45 -mb-1.5 shadow-sm absolute bottom-12 z-10 hidden"></div>
         </div>
     `,
     className: '',
-    iconSize: [48, 70],
-    iconAnchor: [24, 70],
+    iconSize: [48, 80],
+    iconAnchor: [24, 75], // Changed anchor to match the bottom of the circle
 });
 
 // Custom Sushi Icon for the delivery point
@@ -573,24 +573,27 @@ export default function AddressModal({
                                                                         true
                                                                     )
                                                                 }
-                                                                className="w-full px-5 py-4 text-left hover:bg-green-50 transition flex items-start gap-4 border-l-4 border-green-500"
+                                                                className="w-full px-5 py-5 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600"
                                                             >
-                                                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                                                                    <Search
-                                                                        size={16}
-                                                                        className="text-green-600"
+                                                                <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-green-200">
+                                                                    <MapPin
+                                                                        size={20}
+                                                                        className="text-green-600 fill-green-50"
                                                                     />
                                                                 </div>
                                                                 <div className="flex flex-col min-w-0">
                                                                     <span className="text-sm font-black text-gray-900 truncate">
-                                                                        Localizar exactamente: "
-                                                                        {searchQuery}"
+                                                                        ¿Es esta tu ubicación
+                                                                        exacta?
                                                                     </span>
-                                                                    <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest truncate">
-                                                                        Buscar ubicación precisa en
-                                                                        el mapa
+                                                                    <span className="text-[11px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
+                                                                        Localizar: "{searchQuery}"
                                                                     </span>
                                                                 </div>
+                                                                <ArrowRight
+                                                                    size={16}
+                                                                    className="text-green-600 ml-auto shrink-0"
+                                                                />
                                                             </button>
                                                         )}
 
