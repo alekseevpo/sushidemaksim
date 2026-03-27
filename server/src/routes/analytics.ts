@@ -42,6 +42,51 @@ router.post('/track', async (req: Request, res: Response) => {
             });
         }
 
+        // Record an order taken by a waiter in the restaurant
+        router.post('/waiter-order', async (req: Request, res: Response) => {
+            try {
+                const { items, totalValue, itemsCount, waiterId, metadata = {} } = req.body;
+
+                if (!items || !totalValue) {
+                    return res.status(400).json({ error: 'Missing items or totalValue' });
+                }
+
+                // 1. Record in generic site_events table
+                const { error: siteError } = await supabase.from('site_events').insert({
+                    event_name: 'waiter_order_submitted',
+                    session_id: `waiter-${waiterId || 'anonymous'}-${Date.now()}`,
+                    user_id: waiterId || null,
+                    path: '/waiter',
+                    metadata: {
+                        ...metadata,
+                        total_value: totalValue,
+                        items_count: itemsCount,
+                        items, // Detailed list of what was ordered
+                        source: 'waiter_interface',
+                    },
+                });
+
+                if (siteError) {
+                    console.error('❌ Supabase Waiter Analytics Error:', siteError.message);
+                }
+
+                // 2. Also record in funnel_events as an'order_placed' for overall revenue analytics
+                await supabase.from('funnel_events').insert({
+                    session_id: `waiter-${waiterId || 'anonymous'}-${Date.now()}`,
+                    step: 'order_placed',
+                    total_value: Number(totalValue) || 0,
+                    items_count: Number(itemsCount) || 0,
+                    metadata: { ...metadata, source: 'waiter_interface' },
+                    user_id: waiterId || null,
+                });
+
+                res.status(201).json({ success: true });
+            } catch (err: any) {
+                console.error('❌ Waiter Analytics API Error:', err.message);
+                res.status(500).json({ error: err.message });
+            }
+        });
+
         res.status(201).json({ success: true });
     } catch (err: any) {
         console.error('❌ Analytics API Error:', err.message);

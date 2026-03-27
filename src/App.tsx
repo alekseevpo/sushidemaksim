@@ -56,6 +56,7 @@ const PayForFriendPage = lazyRetry(() => import('./pages/PayForFriendPage'));
 const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
+const WaiterOrderPage = lazyRetry(() => import('./pages/WaiterOrderPage'));
 
 // Page Wrapper for consistent transitions
 const PageWrapper = ({
@@ -98,6 +99,7 @@ function PageTracker() {
 function App() {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
+    const isWaiterRoute = location.pathname.startsWith('/waiter');
 
     return (
         <ErrorBoundary>
@@ -113,7 +115,7 @@ function App() {
                             <RegistrationPrompt />
                             <FloatingCart />
 
-                            {!isAdminRoute && <Header />}
+                            {!isAdminRoute && !isWaiterRoute && <Header />}
                             <main className="flex-1 flex flex-col relative w-full">
                                 <AnimatePresence mode="wait">
                                     <Routes location={location} key={location.pathname}>
@@ -224,10 +226,18 @@ function App() {
                                                 </PageWrapper>
                                             }
                                         />
+                                        <Route
+                                            path="/waiter"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <WaiterOrderPage />
+                                                </PageWrapper>
+                                            }
+                                        />
                                     </Routes>
                                 </AnimatePresence>
                             </main>
-                            {!isAdminRoute && <Footer />}
+                            {!isAdminRoute && !isWaiterRoute && <Footer />}
                         </div>
                     </CartProvider>
                 </AuthProvider>
