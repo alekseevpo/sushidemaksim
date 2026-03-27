@@ -3,6 +3,7 @@ import { api } from '../../utils/api';
 import { CartItem, SushiItem } from '../../types';
 
 export const CART_QUERY_KEY = ['cart'];
+const CART_EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 hours TTL for guest cart
 
 export function useCartQuery(user: any, isAuthLoading: boolean = false) {
     return useQuery({
@@ -13,7 +14,16 @@ export function useCartQuery(user: any, isAuthLoading: boolean = false) {
                 const localCart = localStorage.getItem('guest_cart');
                 if (!localCart) return { items: [], total: 0 };
                 try {
-                    const items = JSON.parse(localCart);
+                    const parsed = JSON.parse(localCart);
+                    const items = Array.isArray(parsed) ? parsed : parsed.items || [];
+                    const lastUpdated = parsed.updatedAt || 0;
+
+                    // If cart is older than 24 hours, clear it
+                    if (lastUpdated > 0 && Date.now() - lastUpdated > CART_EXPIRATION_MS) {
+                        localStorage.removeItem('guest_cart');
+                        return { items: [], total: 0 };
+                    }
+
                     const total = items.reduce(
                         (sum: number, item: any) => sum + item.price * item.quantity,
                         0
@@ -51,14 +61,22 @@ export function useAddToCartMutation(user: any) {
             if (!user) {
                 // Logic already handled in onMutate for guest, but we repeat for safety
                 const localCart = localStorage.getItem('guest_cart');
-                const items = localCart ? JSON.parse(localCart) : [];
+                const parsed = localCart ? JSON.parse(localCart) : null;
+                const items = (Array.isArray(parsed) ? parsed : parsed?.items) || [];
                 const existing = items.find((i: any) => i.id === item.id);
                 const newItems = existing
                     ? items.map((i: any) =>
                           i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
                       )
                     : [...items, { ...item, quantity }];
-                localStorage.setItem('guest_cart', JSON.stringify(newItems));
+
+                localStorage.setItem(
+                    'guest_cart',
+                    JSON.stringify({
+                        items: newItems,
+                        updatedAt: Date.now(),
+                    })
+                );
                 return { items: newItems };
             }
 
@@ -112,9 +130,17 @@ export function useUpdateQuantityMutation(user: any) {
         }) => {
             if (!user) {
                 const localCart = localStorage.getItem('guest_cart');
-                const items = localCart ? JSON.parse(localCart) : [];
+                const parsed = localCart ? JSON.parse(localCart) : null;
+                const items = (Array.isArray(parsed) ? parsed : parsed?.items) || [];
                 const newItems = items.map((i: any) => (i.id === id ? { ...i, quantity } : i));
-                localStorage.setItem('guest_cart', JSON.stringify(newItems));
+
+                localStorage.setItem(
+                    'guest_cart',
+                    JSON.stringify({
+                        items: newItems,
+                        updatedAt: Date.now(),
+                    })
+                );
                 return;
             }
 
@@ -161,9 +187,17 @@ export function useRemoveItemMutation(user: any) {
         mutationFn: async ({ id, cartItemId }: { id: string; cartItemId?: number }) => {
             if (!user) {
                 const localCart = localStorage.getItem('guest_cart');
-                const items = localCart ? JSON.parse(localCart) : [];
+                const parsed = localCart ? JSON.parse(localCart) : null;
+                const items = (Array.isArray(parsed) ? parsed : parsed?.items) || [];
                 const newItems = items.filter((i: any) => i.id !== id);
-                localStorage.setItem('guest_cart', JSON.stringify(newItems));
+
+                localStorage.setItem(
+                    'guest_cart',
+                    JSON.stringify({
+                        items: newItems,
+                        updatedAt: Date.now(),
+                    })
+                );
                 return;
             }
 

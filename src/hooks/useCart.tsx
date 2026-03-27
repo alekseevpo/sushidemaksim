@@ -85,14 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             };
 
         const saved = localStorage.getItem('delivery_details');
-        if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch (e) {
-                console.error('Failed to parse delivery details', e);
-            }
-        }
-        return {
+        const defaultDetails = {
             address: '',
             house: '',
             apartment: '',
@@ -101,7 +94,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             customerName: '',
             guestEmail: '',
             paymentMethod: null,
-            deliveryType: 'delivery',
+            deliveryType: 'delivery' as const,
             selectedZone: null,
             noCall: false,
             noBuzzer: false,
@@ -112,10 +105,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
             saveAddress: true,
             guestsCount: 2,
         };
+
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                const lastUpdated = parsed.updatedAt || 0;
+                const isTooOld = lastUpdated > 0 && Date.now() - lastUpdated > 12 * 60 * 60 * 1000;
+
+                if (isTooOld) {
+                    // Reset transient fields but keep permanent ones
+                    return {
+                        ...defaultDetails,
+                        address: parsed.address || '',
+                        house: parsed.house || '',
+                        apartment: parsed.apartment || '',
+                        phone: parsed.phone || '',
+                        postalCode: parsed.postalCode || '',
+                        customerName: parsed.customerName || '',
+                        saveAddress: parsed.saveAddress ?? true,
+                    };
+                }
+                return parsed;
+            } catch (e) {
+                console.error('Failed to parse delivery details', e);
+            }
+        }
+        return defaultDetails;
     });
 
     useEffect(() => {
-        localStorage.setItem('delivery_details', JSON.stringify(deliveryDetails));
+        localStorage.setItem(
+            'delivery_details',
+            JSON.stringify({
+                ...deliveryDetails,
+                updatedAt: Date.now(),
+            })
+        );
     }, [deliveryDetails]);
 
     const updateDeliveryDetails = useCallback((details: Partial<DeliveryDetails>) => {

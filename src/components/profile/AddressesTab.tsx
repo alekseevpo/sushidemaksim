@@ -308,7 +308,7 @@ export default function AddressesTab({
                                     value={searchQuery || newAddress.street}
                                     onChange={e => handleStreetChange(e.target.value)}
                                     className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all ${newAddress.street && 'border-green-100 bg-green-50/10'}`}
-                                    placeholder="Ej: Calle Gran Vía..."
+                                    placeholder="Introduce tu calle y número..."
                                     autoComplete="off"
                                 />
                                 <MapPin

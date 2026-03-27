@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import { Trash2, RefreshCw } from 'lucide-react';
 
 interface DeleteConfirmationModalProps {
@@ -22,10 +23,10 @@ export default function DeleteConfirmationModal({
     itemType = 'elemento',
     itemName,
 }: DeleteConfirmationModalProps) {
-    return (
+    const modal = (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-toast flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -86,4 +87,6 @@ export default function DeleteConfirmationModal({
             )}
         </AnimatePresence>
     );
+
+    return createPortal(modal, document.body);
 }

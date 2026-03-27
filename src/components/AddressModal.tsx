@@ -25,6 +25,42 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+// Custom Sushi Icon for the restaurant
+const SushiRestaurantIcon = L.divIcon({
+    html: `
+        <div class="relative flex flex-col items-center group">
+            <div class="w-12 h-12 bg-white rounded-full shadow-2xl border-[3px] border-red-600 flex items-center justify-center transform transition-transform group-hover:scale-110">
+                <span class="text-2xl">🍣</span>
+            </div>
+            <div class="mt-2 px-3 py-1.5 bg-red-600 text-white text-[11px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
+                ¡Estamos aquí!
+            </div>
+            <div class="w-3 h-3 bg-red-600 rotate-45 -mt-1.5 shadow-sm"></div>
+        </div>
+    `,
+    className: '',
+    iconSize: [48, 70],
+    iconAnchor: [24, 70],
+});
+
+// Custom Sushi Icon for the delivery point
+const SushiDeliveryIcon = L.divIcon({
+    html: `
+        <div class="relative flex flex-col items-center group">
+            <div class="w-10 h-10 bg-white rounded-full shadow-2xl border-[3px] border-gray-900 flex items-center justify-center transform transition-transform group-hover:scale-110">
+                <span class="text-xl">🍱</span>
+            </div>
+            <div class="mt-1.5 px-2 py-1 bg-gray-900 text-white text-[10px] font-black rounded-lg shadow-lg whitespace-nowrap">
+                ¡Aquí!
+            </div>
+            <div class="w-2.5 h-2.5 bg-gray-900 rotate-45 -mt-1.5"></div>
+        </div>
+    `,
+    className: '',
+    iconSize: [40, 60],
+    iconAnchor: [20, 60],
+});
+
 const RESTAURANT_LOCATION: [number, number] = [40.397042, -3.672449];
 
 interface AddressModalProps {
@@ -56,10 +92,14 @@ function LocationMarker({ position }: { position: [number, number] }) {
     return position ? (
         <Marker
             position={position}
-            icon={DefaultIcon}
+            icon={SushiDeliveryIcon}
             draggable={false} // Prevent manipulation
         />
     ) : null;
+}
+
+function RestaurantMarker() {
+    return <Marker position={RESTAURANT_LOCATION} icon={SushiRestaurantIcon} interactive={false} />;
 }
 
 export default function AddressModal({
@@ -439,13 +479,14 @@ export default function AddressModal({
                                         }
                                         zoom={mapZoom}
                                     />
-                                    <LocationMarker
-                                        position={
-                                            !isNaN(markerPosition[0])
-                                                ? markerPosition
-                                                : RESTAURANT_LOCATION
-                                        }
-                                    />
+
+                                    {/* Static Restaurant Marker */}
+                                    <RestaurantMarker />
+
+                                    {/* Dynamic User Location Marker */}
+                                    <LocationMarker position={markerPosition} />
+
+                                    {/* Delivery Zones */}
                                     {deliveryZones.map(zone => {
                                         if (
                                             zone.type === 'radius' ||
@@ -456,12 +497,12 @@ export default function AddressModal({
                                                 <Circle
                                                     key={zone.id}
                                                     center={RESTAURANT_LOCATION}
-                                                    radius={zone.maxRadius * 1000} // Leaflet uses meters
+                                                    radius={zone.maxRadius * 1000}
                                                     pathOptions={{
                                                         color: zone.color,
                                                         fillColor: zone.color,
                                                         fillOpacity: 0.05,
-                                                        weight: 1,
+                                                        weight: 1.5,
                                                         dashArray: '5, 10',
                                                     }}
                                                 />
@@ -487,9 +528,6 @@ export default function AddressModal({
                                         }
                                         return null;
                                     })}
-                                    <Marker position={RESTAURANT_LOCATION} opacity={0.6}>
-                                        {/* Optional: Add a label or different icon for restaurant */}
-                                    </Marker>
                                 </MapContainer>
 
                                 {/* Search Overlay */}
@@ -507,7 +545,7 @@ export default function AddressModal({
                                             value={searchQuery}
                                             onChange={e => setSearchQuery(e.target.value)}
                                             onKeyDown={handleSearchKeyDown}
-                                            placeholder="Buscar mi calle en Madrid..."
+                                            placeholder="Introduce tu calle y número..."
                                             autoComplete="off"
                                             spellCheck={false}
                                             className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
