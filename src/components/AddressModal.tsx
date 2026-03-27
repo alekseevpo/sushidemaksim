@@ -139,18 +139,30 @@ export default function AddressModal({
     // Sync internal state with props when modal OPENS
     useEffect(() => {
         if (isOpen && !prevOpenRef.current) {
-            // Modal is opening, sync states
-            setAddress(currentAddress?.street || '');
-            setHouse(currentAddress?.house || '');
+            // Modal is opening, sync internal form states with current selected address
+            const streetVal = currentAddress?.street || '';
+            const houseVal = currentAddress?.house || '';
+            setAddress(streetVal);
+            setHouse(houseVal);
             setApartment(currentAddress?.apartment || '');
             setPostalCode(currentAddress?.postalCode || '');
+
+            // NEW: If an address is ALREADY selected, protect it from being overwritten by reverse geocode
+            if (streetVal) {
+                wasSelectedViaSearchRef.current = true;
+                skipNextReverseGeocodeRef.current = true;
+            } else {
+                wasSelectedViaSearchRef.current = false;
+                skipNextReverseGeocodeRef.current = false;
+            }
 
             if (currentAddress?.lat && currentAddress?.lon) {
                 setMarkerPosition([currentAddress.lat, currentAddress.lon]);
                 setMapZoom(18);
-            } else if (currentAddress?.street) {
+            } else if (streetVal) {
                 // Address has no coordinates in profile? Auto-geocode it!
-                const q = `${currentAddress.street} ${currentAddress.house || ''}, Madrid`.trim();
+                const q = `${streetVal} ${houseVal}, Madrid`.trim();
+                skipNextReverseGeocodeRef.current = true;
                 api.get(`/delivery-zones/search?q=${encodeURIComponent(q)}`).then(data => {
                     if (data && data.length > 0) {
                         const best = data[0];
@@ -169,7 +181,6 @@ export default function AddressModal({
                 setMarkerPosition(RESTAURANT_LOCATION);
                 setMapZoom(15);
             }
-            wasSelectedViaSearchRef.current = false;
         }
         prevOpenRef.current = isOpen;
     }, [isOpen, currentAddress]);
@@ -260,13 +271,17 @@ export default function AddressModal({
                         '';
                     const houseNum = data.address.house_number || '';
 
-                    // Only overwrite address/house if currently empty or during initial open
-                    // AND NOT if we just selected something precisely via search
-                    if ((!address || !currentAddress?.street) && !wasSelectedViaSearchRef.current) {
+                    // Only overwrite address/house if currently empty
+                    // AND NOT if we just selected something precisely via search or opened from profile
+                    const isDefaultLoc =
+                        Math.abs(targetLat - RESTAURANT_LOCATION[0]) < 0.001 &&
+                        Math.abs(targetLon - RESTAURANT_LOCATION[1]) < 0.001;
+
+                    if (!address && !wasSelectedViaSearchRef.current && !isDefaultLoc) {
                         setAddress(street || data.display_name?.split(',')[0] || '');
                     }
 
-                    if ((!house || !currentAddress?.street) && !wasSelectedViaSearchRef.current) {
+                    if (!house && !wasSelectedViaSearchRef.current && !isDefaultLoc) {
                         setHouse(houseNum);
                     }
 
@@ -278,7 +293,7 @@ export default function AddressModal({
                 setIsReverseGeocoding(false);
             }
         },
-        [address, house, currentAddress?.street, markerPosition]
+        [address, house, markerPosition]
     );
 
     const selectResult = useCallback(
