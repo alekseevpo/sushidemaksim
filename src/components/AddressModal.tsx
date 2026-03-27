@@ -129,6 +129,7 @@ export default function AddressModal({
     const [mapZoom, setMapZoom] = useState(15);
     const skipNextReverseGeocodeRef = useRef(false);
     const skipNextSearchRef = useRef(false);
+    const wasSelectedViaSearchRef = useRef(false);
 
     // Auto-detect zone on marker move
     useEffect(() => {
@@ -218,7 +219,11 @@ export default function AddressModal({
                     setAddress(street || data.display_name?.split(',')[0] || '');
 
                     // Only overwrite house number if currently empty or during initial open
-                    if (!house || !currentAddress?.street) {
+                    // AND NOT if we just selected something precisely via search
+                    if (
+                        (!house || !currentAddress?.street) &&
+                        !wasSelectedViaSearchRef.current
+                    ) {
                         setHouse(houseNum);
                     }
 
@@ -244,6 +249,7 @@ export default function AddressModal({
             skipNextSearchRef.current = true;
 
             setMarkerPosition([lat, lon]);
+            wasSelectedViaSearchRef.current = true;
 
             let street =
                 res.address?.road ||
@@ -284,6 +290,7 @@ export default function AddressModal({
             }
 
             setHouse(houseNum);
+            setApartment(''); // Clear apartment when a NEW address is selected to avoid '3a' ghosting
             if (pc) setPostalCode(pc);
             setMapZoom(18);
 
@@ -343,10 +350,15 @@ export default function AddressModal({
     );
 
     useEffect(() => {
-        // Don't trigger search if query is exactly the selected street OR we just selected a result
-        if (searchQuery === address || skipNextSearchRef.current) {
+        // Don't trigger search if modal is closed, or query is exactly the selected street
+        if (!isOpen || searchQuery === address || skipNextSearchRef.current) {
             skipNextSearchRef.current = false;
             return;
+        }
+
+        // Reset the "selected via search" flag if user starts typing a new query
+        if (searchQuery.trim().length >= 1 && searchQuery !== address) {
+            wasSelectedViaSearchRef.current = false;
         }
 
         const timer = setTimeout(() => {
@@ -354,6 +366,7 @@ export default function AddressModal({
                 performSearch(searchQuery.trim());
             } else if (searchQuery.trim().length === 0) {
                 setSearchResults([]);
+                wasSelectedViaSearchRef.current = false;
             }
         }, 800);
         return () => clearTimeout(timer);
@@ -367,7 +380,7 @@ export default function AddressModal({
     }, [isOpen, currentAddress?.street, performReverseGeocode]);
 
     useEffect(() => {
-        if (isNaN(markerPosition[0]) || isNaN(markerPosition[1])) return;
+        if (!isOpen || isNaN(markerPosition[0]) || isNaN(markerPosition[1])) return;
 
         const isDefault =
             Math.abs(markerPosition[0] - RESTAURANT_LOCATION[0]) < 0.0001 &&
