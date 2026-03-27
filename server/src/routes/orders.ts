@@ -265,6 +265,8 @@ router.post(
                 device_type: deviceType,
                 os_name: osName,
                 browser_name: browserName,
+                lat: req.body.lat,
+                lon: req.body.lon,
             })
             .select()
             .single();

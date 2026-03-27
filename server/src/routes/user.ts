@@ -31,7 +31,9 @@ router.get(
 
         const { data: addresses } = await supabase
             .from('user_addresses')
-            .select('id, label, street, house, apartment, city, postal_code, phone, is_default')
+            .select(
+                'id, label, street, house, apartment, city, postal_code, phone, is_default, lat, lon'
+            )
             .eq('user_id', req.userId)
             .order('is_default', { ascending: false });
 
@@ -236,7 +238,9 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: addresses, error } = await supabase
             .from('user_addresses')
-            .select('id, label, street, house, apartment, city, postal_code, phone, is_default')
+            .select(
+                'id, label, street, house, apartment, city, postal_code, phone, is_default, lat, lon'
+            )
             .eq('user_id', req.userId)
             .order('is_default', { ascending: false });
 
@@ -263,9 +267,12 @@ router.post(
         city: { type: 'string', maxLength: 100 },
         postalCode: { type: 'string', maxLength: 20 },
         phone: { type: 'string', maxLength: 30 },
+        lat: { type: 'number' },
+        lon: { type: 'number' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { label, street, house, apartment, city, postalCode, phone, isDefault } = req.body;
+        const { label, street, house, apartment, city, postalCode, phone, isDefault, lat, lon } =
+            req.body;
 
         if (isDefault) {
             await supabase
@@ -277,7 +284,7 @@ router.post(
         // Check for existing duplicate
         const { data: existing } = await supabase
             .from('user_addresses')
-            .select('id')
+            .select('id, phone, lat, lon')
             .eq('user_id', req.userId)
             .ilike('street', street.trim())
             .ilike('house', house?.trim() || '')
@@ -285,13 +292,17 @@ router.post(
             .maybeSingle();
 
         if (existing) {
-            // Update to set as default if requested, or just return existing
-            if (isDefault) {
-                await supabase
-                    .from('user_addresses')
-                    .update({ is_default: true })
-                    .eq('id', existing.id);
+            // Update to set as default if requested, and FILL coordinates if they are now provided
+            const updateData: any = {};
+            if (isDefault) updateData.is_default = true;
+            if (lat !== undefined) updateData.lat = lat;
+            if (lon !== undefined) updateData.lon = lon;
+            if (phone && !existing.phone) updateData.phone = phone;
+
+            if (Object.keys(updateData).length > 0) {
+                await supabase.from('user_addresses').update(updateData).eq('id', existing.id);
             }
+
             return res.json({
                 address: {
                     id: existing.id,
@@ -300,8 +311,10 @@ router.post(
                     apartment: apartment?.trim() || '',
                     postalCode: postalCode?.trim() || '',
                     isDefault: !!isDefault,
+                    lat: lat ?? existing.lat,
+                    lon: lon ?? existing.lon,
                 },
-                message: 'Address already exists',
+                message: 'Address updated/exists',
             });
         }
 
@@ -317,6 +330,8 @@ router.post(
                 postal_code: postalCode?.trim() || '',
                 phone: phone?.trim() || '',
                 is_default: !!isDefault,
+                lat: lat,
+                lon: lon,
             })
             .select()
             .single();
@@ -344,10 +359,13 @@ router.put(
         city: { type: 'string', maxLength: 100 },
         postalCode: { type: 'string', maxLength: 20 },
         phone: { type: 'string', maxLength: 30 },
+        lat: { type: 'number' },
+        lon: { type: 'number' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = req.params.id;
-        const { label, street, house, apartment, city, postalCode, phone, isDefault } = req.body;
+        const { label, street, house, apartment, city, postalCode, phone, isDefault, lat, lon } =
+            req.body;
 
         if (isDefault) {
             await supabase
@@ -365,6 +383,8 @@ router.put(
         if (postalCode !== undefined) updateData.postal_code = postalCode?.trim() || '';
         if (phone !== undefined) updateData.phone = phone?.trim() || '';
         if (isDefault !== undefined) updateData.is_default = !!isDefault;
+        if (lat !== undefined) updateData.lat = lat;
+        if (lon !== undefined) updateData.lon = lon;
 
         const { data: address, error } = await supabase
             .from('user_addresses')
@@ -381,6 +401,8 @@ router.put(
                 ...address,
                 postalCode: address.postal_code,
                 isDefault: address.is_default,
+                lat: address.lat,
+                lon: address.lon,
             },
         });
     })

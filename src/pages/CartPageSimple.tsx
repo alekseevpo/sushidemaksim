@@ -274,6 +274,8 @@ export default function CartPageSimple() {
                 return;
             }
 
+            const { lat, lon } = deliveryDetails;
+
             await api.post('/user/addresses', {
                 street: streetVal,
                 house: houseVal,
@@ -281,6 +283,9 @@ export default function CartPageSimple() {
                 postalCode: postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
                 phone: deliveryPhone,
                 label: 'Dirección reciente',
+                lat,
+                lon,
+                isDefault: true,
             });
         } catch (saveErr) {
             console.error('Failed to save address to profile', saveErr);
@@ -463,6 +468,7 @@ export default function CartPageSimple() {
         if (customNote.trim()) notesArray.push(customNote.trim());
 
         try {
+            const { lat, lon } = deliveryDetails;
             const payload: any = {
                 deliveryAddress:
                     deliveryType === 'pickup'
@@ -475,6 +481,8 @@ export default function CartPageSimple() {
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
                 promoCode: promoDiscount ? promoCode : undefined,
+                lat,
+                lon,
             };
 
             if (!isAuthenticated) {
