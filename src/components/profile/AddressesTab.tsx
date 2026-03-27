@@ -479,7 +479,7 @@ export default function AddressesTab({
 
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center flex-wrap gap-1.5 md:gap-2 mb-0.5 md:mb-1">
-                                    <h4 className="text-sm md:text-base font-black text-gray-900 m-0 truncate">
+                                    <h4 className="text-sm md:text-base font-black text-gray-900 m-0">
                                         {addr.label}
                                     </h4>
                                     {addr.isDefault && (
@@ -488,12 +488,12 @@ export default function AddressesTab({
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-[11px] md:text-[13px] font-bold text-gray-800 m-0 leading-tight truncate">
+                                <p className="text-[11px] md:text-[13px] font-bold text-gray-800 m-0 leading-tight">
                                     {addr.street}
                                     {addr.house && `, ${addr.house}`}
                                     {addr.apartment && `, ${addr.apartment}`}
                                 </p>
-                                <p className="text-[10px] md:text-xs font-medium text-gray-500 m-0 truncate">
+                                <p className="text-[10px] md:text-xs font-medium text-gray-500 m-0">
                                     {addr.postalCode} • {addr.city} •{' '}
                                     <span className="opacity-70 font-bold">{addr.phone}</span>
                                 </p>
@@ -503,7 +503,7 @@ export default function AddressesTab({
                                 {!addr.isDefault && (
                                     <button
                                         onClick={() => setDefaultAddress(addr.id)}
-                                        className="h-9 px-3 md:h-11 md:px-5 bg-white border border-gray-100 text-gray-400 rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-green-50 hover:text-green-600 hover:border-green-100 transition-all flex items-center justify-center gap-2 shadow-sm group/btn"
+                                        className="h-9 w-9 md:h-11 md:w-auto md:px-5 bg-white border border-gray-100 text-gray-400 rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-green-50 hover:text-green-600 hover:border-green-100 transition-all flex items-center justify-center gap-2 shadow-sm group/btn shrink-0"
                                         title="Establecer como predeterminada"
                                     >
                                         <Star
@@ -511,7 +511,7 @@ export default function AddressesTab({
                                             strokeWidth={2}
                                             className="transition-transform group-hover/btn:scale-110"
                                         />
-                                        <span>Principal</span>
+                                        <span className="hidden md:inline">Principal</span>
                                     </button>
                                 )}
                                 <button
