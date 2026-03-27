@@ -220,10 +220,7 @@ export default function AddressModal({
 
                     // Only overwrite house number if currently empty or during initial open
                     // AND NOT if we just selected something precisely via search
-                    if (
-                        (!house || !currentAddress?.street) &&
-                        !wasSelectedViaSearchRef.current
-                    ) {
+                    if ((!house || !currentAddress?.street) && !wasSelectedViaSearchRef.current) {
                         setHouse(houseNum);
                     }
 
@@ -370,7 +367,7 @@ export default function AddressModal({
             }
         }, 800);
         return () => clearTimeout(timer);
-    }, [searchQuery, address, performSearch]);
+    }, [searchQuery, address, performSearch, isOpen]);
 
     // Auto-locate on first open ONLY if no address is set
     useEffect(() => {
@@ -397,7 +394,7 @@ export default function AddressModal({
         }, 1200);
 
         return () => clearTimeout(timer);
-    }, [markerPosition, performReverseGeocode]);
+    }, [markerPosition, performReverseGeocode, isOpen]);
 
     const handleContinue = () => {
         onSelect({
