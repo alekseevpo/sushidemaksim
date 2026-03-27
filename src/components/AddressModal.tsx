@@ -148,6 +148,23 @@ export default function AddressModal({
             if (currentAddress?.lat && currentAddress?.lon) {
                 setMarkerPosition([currentAddress.lat, currentAddress.lon]);
                 setMapZoom(18);
+            } else if (currentAddress?.street) {
+                // Address has no coordinates in profile? Auto-geocode it!
+                const q = `${currentAddress.street} ${currentAddress.house || ''}, Madrid`.trim();
+                api.get(`/delivery-zones/search?q=${encodeURIComponent(q)}`).then(data => {
+                    if (data && data.length > 0) {
+                        const best = data[0];
+                        const lat = parseFloat(best.lat);
+                        const lon = parseFloat(best.lon);
+                        if (!isNaN(lat) && !isNaN(lon)) {
+                            skipNextReverseGeocodeRef.current = true;
+                            setMarkerPosition([lat, lon]);
+                            setMapZoom(18);
+                        }
+                    }
+                });
+                setMarkerPosition(RESTAURANT_LOCATION); // Fallback until search returns
+                setMapZoom(15);
             } else {
                 setMarkerPosition(RESTAURANT_LOCATION);
                 setMapZoom(15);
