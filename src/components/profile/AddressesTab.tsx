@@ -319,7 +319,7 @@ export default function AddressesTab({
                             </div>
 
                             {showSuggestions && suggestions.length > 0 && (
-                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50">
+                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-y-auto max-h-[240px] animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50 scrollbar-thin scrollbar-thumb-gray-200">
                                     {suggestions.map((s, i) => (
                                         <button
                                             key={i}
@@ -426,13 +426,13 @@ export default function AddressesTab({
                         <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                             <button
                                 onClick={resetForm}
-                                className="flex-1 sm:flex-none px-8 py-3.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
+                                className="flex-1 sm:flex-none h-[52px] flex items-center justify-center px-8 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleSaveAddress}
-                                className="flex-1 sm:flex-none px-8 py-3.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 active:scale-95"
+                                className="flex-1 sm:flex-none h-[52px] flex items-center justify-center px-8 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 active:scale-95 text-center leading-tight"
                             >
                                 {editId ? 'Guardar Cambios' : 'Guardar Dirección'}
                             </button>
