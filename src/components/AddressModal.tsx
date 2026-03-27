@@ -25,40 +25,44 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Custom Sushi Icon for the restaurant
+// Premium Pin Icon for the restaurant (Red)
 const SushiRestaurantIcon = L.divIcon({
     html: `
         <div class="relative flex flex-col-reverse items-center group">
-            <div class="w-12 h-12 bg-white rounded-full shadow-2xl border-[3px] border-red-600 flex items-center justify-center transform transition-transform group-hover:scale-110">
-                <span class="text-2xl">🍣</span>
+            <div class="filter drop-shadow-lg transform transition-transform group-hover:scale-110">
+                <svg width="40" height="50" viewBox="0 0 40 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 0C8.954 0 0 8.954 0 20C0 35 20 50 20 50C20 50 40 35 40 20C40 8.954 31.046 0 20 0ZM20 28C15.582 28 12 24.418 12 20C12 15.582 15.582 12 20 12C24.418 12 28 15.582 28 20C28 24.418 24.418 28 20 28Z" fill="#DC2626"/>
+                    <circle cx="20" cy="20" r="6" fill="white" />
+                </svg>
             </div>
-            <div class="mb-2 px-3 py-1.5 bg-red-600 text-white text-[11px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
+            <div class="mb-1.5 px-3 py-1.5 bg-red-600 text-white text-[10px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
                 ¡Estamos aquí!
             </div>
-            <div class="w-3 h-3 bg-red-600 rotate-45 -mb-1.5 shadow-sm absolute bottom-12 z-10 hidden"></div>
         </div>
     `,
     className: '',
-    iconSize: [48, 80],
-    iconAnchor: [24, 75], // Changed anchor to match the bottom of the circle
+    iconSize: [40, 70],
+    iconAnchor: [20, 65],
 });
 
-// Custom Sushi Icon for the delivery point
+// Premium Pin Icon for the delivery point (Black)
 const SushiDeliveryIcon = L.divIcon({
     html: `
         <div class="relative flex flex-col items-center group">
-            <div class="w-10 h-10 bg-white rounded-full shadow-2xl border-[3px] border-gray-900 flex items-center justify-center transform transition-transform group-hover:scale-110">
-                <span class="text-xl">🍱</span>
+            <div class="filter drop-shadow-lg transform transition-transform group-hover:scale-110">
+                <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 0C7.163 0 0 7.163 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.163 24.837 0 16 0ZM16 22.4C12.465 22.4 9.6 19.535 9.6 16C9.6 12.465 12.465 9.6 16 9.6C19.535 9.6 22.4 12.465 22.4 16C22.4 19.535 19.535 22.4 16 22.4Z" fill="#111827"/>
+                    <circle cx="16" cy="16" r="4.8" fill="white" />
+                </svg>
             </div>
-            <div class="mt-1.5 px-2 py-1 bg-gray-900 text-white text-[10px] font-black rounded-lg shadow-lg whitespace-nowrap">
+            <div class="mt-1 px-2.5 py-1 bg-gray-900 text-white text-[10px] font-black rounded-lg shadow-lg whitespace-nowrap">
                 ¡Aquí!
             </div>
-            <div class="w-2.5 h-2.5 bg-gray-900 rotate-45 -mt-1.5"></div>
         </div>
     `,
     className: '',
-    iconSize: [40, 60],
-    iconAnchor: [20, 60],
+    iconSize: [32, 55],
+    iconAnchor: [16, 50],
 });
 
 const RESTAURANT_LOCATION: [number, number] = [40.397042, -3.672449];
