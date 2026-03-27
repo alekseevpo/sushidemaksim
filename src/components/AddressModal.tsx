@@ -135,6 +135,7 @@ export default function AddressModal({
     const skipNextSearchRef = useRef(false);
     const wasSelectedViaSearchRef = useRef(false);
     const prevOpenRef = useRef(isOpen);
+    const [isLocatingAddress, setIsLocatingAddress] = useState(false);
 
     // Sync internal state with props when modal OPENS
     useEffect(() => {
@@ -159,27 +160,34 @@ export default function AddressModal({
             if (currentAddress?.lat && currentAddress?.lon) {
                 setMarkerPosition([currentAddress.lat, currentAddress.lon]);
                 setMapZoom(18);
+                setIsLocatingAddress(false);
             } else if (streetVal) {
                 // Address has no coordinates in profile? Auto-geocode it!
+                setIsLocatingAddress(true);
                 const q = `${streetVal} ${houseVal}, Madrid`.trim();
                 skipNextReverseGeocodeRef.current = true;
-                api.get(`/delivery-zones/search?q=${encodeURIComponent(q)}`).then(data => {
-                    if (data && data.length > 0) {
-                        const best = data[0];
-                        const lat = parseFloat(best.lat);
-                        const lon = parseFloat(best.lon);
-                        if (!isNaN(lat) && !isNaN(lon)) {
-                            skipNextReverseGeocodeRef.current = true;
-                            setMarkerPosition([lat, lon]);
-                            setMapZoom(18);
+                api.get(`/delivery-zones/search?q=${encodeURIComponent(q)}`)
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const best = data[0];
+                            const lat = parseFloat(best.lat);
+                            const lon = parseFloat(best.lon);
+                            if (!isNaN(lat) && !isNaN(lon)) {
+                                skipNextReverseGeocodeRef.current = true;
+                                setMarkerPosition([lat, lon]);
+                                setMapZoom(18);
+                            }
                         }
-                    }
-                });
+                    })
+                    .finally(() => {
+                        setIsLocatingAddress(false);
+                    });
                 setMarkerPosition(RESTAURANT_LOCATION); // Fallback until search returns
                 setMapZoom(15);
             } else {
                 setMarkerPosition(RESTAURANT_LOCATION);
                 setMapZoom(15);
+                setIsLocatingAddress(false);
             }
         }
         prevOpenRef.current = isOpen;
@@ -600,6 +608,27 @@ export default function AddressModal({
                                         return null;
                                     })}
                                 </MapContainer>
+
+                                <AnimatePresence>
+                                    {isLocatingAddress && (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="absolute inset-0 z-[2000] bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
+                                        >
+                                            <div className="w-16 h-16 bg-red-600 rounded-2xl shadow-xl flex items-center justify-center mb-4 animate-bounce">
+                                                <MapPin size={24} className="text-white" />
+                                            </div>
+                                            <h4 className="text-sm font-black text-gray-900 mb-1">
+                                                Localizando dirección...
+                                            </h4>
+                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                                Calculando ruta de entrega
+                                            </p>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
                                 {/* Search Overlay */}
                                 <div className="absolute top-4 left-6 right-16 md:top-4 md:left-4 md:right-4 z-[1000] space-y-2">
