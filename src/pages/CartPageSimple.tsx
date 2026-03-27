@@ -99,7 +99,12 @@ export default function CartPageSimple() {
         saveAddress,
     } = deliveryDetails;
 
-    const MIN_ORDER = selectedZone ? (selectedZone.minOrder ?? 0) : (siteSettings?.minOrder ?? 15);
+    const MIN_ORDER =
+        deliveryType === 'delivery'
+            ? selectedZone
+                ? (selectedZone.minOrder ?? 0)
+                : (siteSettings?.minOrder ?? 15)
+            : 0;
     const isManualClosed = !!siteSettings?.is_store_closed;
     const isOpenNow = isStoreOpen();
     const isStoreClosed = isManualClosed || !isOpenNow;
