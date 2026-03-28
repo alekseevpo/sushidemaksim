@@ -8,10 +8,14 @@ import SEO from '../components/SEO';
 import { PromoSkeleton } from '../components/skeletons/PromoSkeleton';
 
 const PROMO_IMAGES: Record<string, string> = {
-    '10º Pedido': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773678886624-263.webp',
-    'Cumpleaños': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469942612-40.png',
-    'Cena familiar': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773678687933-236.webp',
-    'Primer pedido': 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773465830356-360.png',
+    '10º Pedido':
+        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773678886624-263.webp',
+    Cumpleaños:
+        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469942612-40.png',
+    'Cena familiar':
+        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773678687933-236.webp',
+    'Primer pedido':
+        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773465830356-360.png',
 };
 interface PromoItem {
     id: number;
@@ -123,7 +127,7 @@ export default function PromoPageSimple() {
                                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-                                
+
                                 <div className="relative z-10 text-center px-4 w-full flex flex-col items-center">
                                     <h3 className="text-xl md:text-2xl font-black text-white mb-2 drop-shadow-lg">
                                         {promo.title}
@@ -169,7 +173,11 @@ export default function PromoPageSimple() {
                             3 + 1 en Fritos
                         </h2>
                         <p className="text-lg md:text-2xl font-medium mb-10 opacity-95 text-orange-50 drop-shadow max-w-xl mx-auto lg:mx-0">
-                            Pide 3 rollos fritos y llévate el <strong className="text-white bg-orange-600/50 px-2 py-0.5 rounded-lg">4º de regalo</strong>. ¡Descubre el crujiente perfecto para compartir!
+                            Pide 3 rollos fritos y llévate el{' '}
+                            <strong className="text-white bg-orange-600/50 px-2 py-0.5 rounded-lg">
+                                4º de regalo
+                            </strong>
+                            . ¡Descubre el crujiente perfecto para compartir!
                         </p>
                         <Link
                             to="/menu"
@@ -183,26 +191,48 @@ export default function PromoPageSimple() {
                     <div className="w-full max-w-[320px] lg:max-w-[400px] shrink-0 grid grid-cols-2 gap-3 lg:gap-4 relative z-10 mx-auto">
                         {/* Image 1 */}
                         <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl border-4 border-white/30 relative group-hover:-translate-y-2 group-hover:-rotate-2 transition-all duration-500 bg-white">
-                            <img src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682529547-664.webp" alt="Rollo Frito 1" className="w-full h-full object-cover" />
-                            <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">1</div>
+                            <img
+                                src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682529547-664.webp"
+                                alt="Rollo Frito 1"
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">
+                                1
+                            </div>
                         </div>
                         {/* Image 2 */}
                         <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl border-4 border-white/30 relative group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500 delay-[50ms] bg-white">
-                            <img src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682745971-320.webp" alt="Rollo Frito 2" className="w-full h-full object-cover scale-110" />
-                            <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">2</div>
+                            <img
+                                src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682745971-320.webp"
+                                alt="Rollo Frito 2"
+                                className="w-full h-full object-cover scale-110"
+                            />
+                            <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">
+                                2
+                            </div>
                         </div>
                         {/* Image 3 */}
                         <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl border-4 border-white/30 relative group-hover:-translate-y-2 group-hover:-rotate-1 transition-all duration-500 delay-[100ms] bg-white">
-                            <img src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773686290480-300.webp" alt="Rollo Frito 3" className="w-full h-full object-cover scale-110" />
-                            <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">3</div>
+                            <img
+                                src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773686290480-300.webp"
+                                alt="Rollo Frito 3"
+                                className="w-full h-full object-cover scale-110"
+                            />
+                            <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">
+                                3
+                            </div>
                         </div>
                         {/* Gift (?) Image */}
                         <div className="aspect-square rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white bg-gradient-to-br from-red-500 to-rose-600 relative group-hover:-translate-y-3 group-hover:rotate-6 group-hover:scale-105 transition-all duration-500 delay-[150ms] flex flex-col items-center justify-center text-white">
-                            <span className="text-6xl lg:text-8xl font-black drop-shadow-2xl opacity-90 mt-2">?</span>
-                            <span className="text-sm lg:text-xl font-black uppercase tracking-widest mt-1 drop-shadow-lg scale-y-110">+ Regalo</span>
+                            <span className="text-6xl lg:text-8xl font-black drop-shadow-2xl opacity-90 mt-2">
+                                ?
+                            </span>
+                            <span className="text-sm lg:text-xl font-black uppercase tracking-widest mt-1 drop-shadow-lg scale-y-110">
+                                + Regalo
+                            </span>
                         </div>
                     </div>
-                    
+
                     {/* Background decorations */}
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10 pointer-events-none"></div>
                     <div className="absolute -top-32 -right-32 w-96 h-96 bg-white/20 blur-[100px] rounded-full pointer-events-none"></div>
@@ -225,10 +255,11 @@ export default function PromoPageSimple() {
                         </div>
                         <br />
                         <Link
-                            to={user ? "/menu" : "/profile"}
+                            to={user ? '/menu' : '/profile'}
                             className="inline-flex items-center gap-2 bg-white text-red-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-90 shadow-xl hover:shadow-2xl"
                         >
-                            {user ? 'HACER UN PEDIDO' : 'REGISTRARSE'} <ArrowRight size={20} strokeWidth={1.5} />
+                            {user ? 'HACER UN PEDIDO' : 'REGISTRARSE'}{' '}
+                            <ArrowRight size={20} strokeWidth={1.5} />
                         </Link>
                     </div>
                 </div>
