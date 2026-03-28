@@ -14,8 +14,13 @@ export function getOptimizedImageUrl(
     }
 
     // In development or if URL is local, return as is
-    if (import.meta.env.DEV || url.startsWith('/') || url.startsWith('http://localhost')) {
-        return url;
+    if (import.meta.env.DEV || url.startsWith('/') || url.startsWith('http')) {
+        let finalUrl = url;
+        // Ensure local paths have a leading slash
+        if (!finalUrl.startsWith('http') && !finalUrl.startsWith('/')) {
+            finalUrl = '/' + finalUrl;
+        }
+        return finalUrl;
     }
 
     // Apply Vercel Image Optimization for Supabase images
