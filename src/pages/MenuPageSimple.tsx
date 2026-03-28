@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -13,7 +14,9 @@ import ProductGrid from '../components/menu/ProductGrid';
 import FlyToCart, { FlyingItem } from '../components/menu/FlyToCart';
 
 export default function MenuPageSimple() {
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [searchParams] = useSearchParams();
+    const initialCategory = searchParams.get('category') || 'all';
+    const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState(search);
     const { addItem } = useCart();

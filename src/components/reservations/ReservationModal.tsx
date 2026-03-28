@@ -67,14 +67,29 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         const day = dateObj.getDay();
         const intervals = BUSINESS_HOURS[day] || [];
 
+        const now = new Date();
+        const isToday = formData.date === now.toISOString().split('T')[0];
+        const currentH = now.getHours();
+        const currentM = now.getMinutes();
+
         const slots: string[] = [];
         intervals.forEach(interval => {
             const [startH] = interval.start.split(':').map(Number);
             const [endH] = interval.end.split(':').map(Number);
 
             for (let h = startH; h < endH; h++) {
-                slots.push(`${h.toString().padStart(2, '0')}:00`);
-                slots.push(`${h.toString().padStart(2, '0')}:30`);
+                ['00', '30'].forEach(m => {
+                    const slotM = Number(m);
+
+                    // If today, filter out passed or too close slots
+                    if (isToday) {
+                        if (h < currentH || (h === currentH && slotM <= currentM + 15)) {
+                            return;
+                        }
+                    }
+
+                    slots.push(`${h.toString().padStart(2, '0')}:${m}`);
+                });
             }
         });
         return slots;
@@ -122,8 +137,15 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                 );
             }
 
-            // Open WhatsApp
-            window.open(whatsappUrl, '_blank');
+            // Redirect logic: on mobile, window.open often gets blocked after 'await'
+            // Using window.location.href is more reliable for mobile deep-links
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                window.location.href = whatsappUrl;
+            } else {
+                window.open(whatsappUrl, '_blank');
+            }
 
             setIsSuccess(true);
         } catch (err: any) {

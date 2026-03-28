@@ -171,13 +171,12 @@ export default function ContactsPage() {
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="/sushi-hero.webp"
+                        src="/images/promos/promo_hero_bg.png"
                         alt="Contacto Sushi de Maksim"
                         {...({ fetchpriority: 'high' } as any)}
                         decoding="async"
                         className="w-full h-full object-cover opacity-40 scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
                 </div>
 
                 <motion.div

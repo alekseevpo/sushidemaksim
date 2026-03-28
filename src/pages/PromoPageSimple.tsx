@@ -98,9 +98,8 @@ export default function PromoPageSimple() {
             />
 
             {/* Hero Header */}
-            <section className="relative bg-[url('/sushi-hero.webp')] bg-cover bg-center pt-24 pb-32 px-2 md:px-4">
+            <section className="relative bg-[url('/images/promos/promo_hero_bg.png')] bg-cover bg-center pt-24 pb-32 px-2 md:px-4">
                 <div className="absolute inset-0 bg-black/60"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF7] via-transparent to-transparent"></div>
                 <div className="max-w-4xl mx-auto text-center relative z-10">
                     <h1 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
                         Promociones y ofertas
@@ -180,7 +179,7 @@ export default function PromoPageSimple() {
                             . ¡Descubre el crujiente perfecto para compartir!
                         </p>
                         <Link
-                            to="/menu"
+                            to="/menu?category=rollos-fritos"
                             className="inline-flex items-center justify-center gap-2 bg-white text-orange-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-90 shadow-xl hover:shadow-2xl hover:bg-orange-50 w-full sm:w-auto"
                         >
                             PEDIR AHORA <ArrowRight size={20} strokeWidth={1.5} />
@@ -321,9 +320,14 @@ export default function PromoPageSimple() {
                                             {item.description}
                                         </p>
                                         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-0 mt-auto">
-                                            <span className="text-base md:text-3xl font-black text-red-600">
-                                                {item.price.toFixed(2).replace('.', ',')} €
-                                            </span>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] md:text-sm font-bold text-gray-400 line-through decoration-red-500/50 -mb-1">
+                                                    {Math.round(item.price * 1.11)} €
+                                                </span>
+                                                <span className="text-base md:text-3xl font-black text-red-600 leading-none">
+                                                    {item.price.toFixed(2).replace('.', ',')} €
+                                                </span>
+                                            </div>
                                             <button
                                                 onClick={() => handleAdd(item)}
                                                 className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-90 ${
