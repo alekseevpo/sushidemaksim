@@ -526,9 +526,10 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
         }));
     };
 
-    const confirmToggleRole = async () => {
-        if (!userToChangeRole) return;
-        roleMutation.mutate({ id: userToChangeRole.id, role: selectedNewRole });
+    const confirmRoleChange = () => {
+        if (userToChangeRole) {
+            roleMutation.mutate({ id: userToChangeRole.id, role: selectedNewRole });
+        }
         setUserToChangeRole(null);
     };
 
@@ -993,7 +994,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
 
                             <div className="flex flex-col gap-3">
                                 <button
-                                    onClick={confirmToggleRole}
+                                    onClick={confirmRoleChange}
                                     disabled={roleMutation.isPending}
                                     className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
                                 >

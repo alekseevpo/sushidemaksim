@@ -80,6 +80,7 @@ describe('AdminUsers (Integration)', () => {
         fireEvent.change(roleSelect, { target: { value: 'admin' } });
 
         const confirmBtn = await screen.findByText(/CONFIRMAR CAMBIO/i);
+        console.log('Confirm button found:', !!confirmBtn);
         fireEvent.click(confirmBtn);
 
         await waitFor(() => {
