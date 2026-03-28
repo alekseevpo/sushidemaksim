@@ -37,3 +37,8 @@ blob-report/
 playwright/.cache/
 .env
 nohup.out
+
+# Audits & Reports
+layout-shifts.json
+lighthouse-report.json
+DOMAIN_TRANSFER_STATUS.md
