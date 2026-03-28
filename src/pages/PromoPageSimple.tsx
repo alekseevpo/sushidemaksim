@@ -113,7 +113,10 @@ export default function PromoPageSimple() {
                             {/* Image Header wrapper */}
                             <div className="h-48 md:h-56 w-full relative overflow-hidden flex flex-col items-center justify-end pb-5">
                                 <img
-                                    src={getOptimizedImageUrl(PROMO_IMAGES[promo.title] || '/sushi-hero.webp', 800)}
+                                    src={getOptimizedImageUrl(
+                                        PROMO_IMAGES[promo.title] || '/sushi-hero.webp',
+                                        800
+                                    )}
                                     alt={promo.title}
                                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
