@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock, Tag, Plus, Check } from 'lucide-react';
 import { api } from '../utils/api';
@@ -6,6 +6,8 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import { PromoSkeleton } from '../components/skeletons/PromoSkeleton';
+import { useQuery } from '@tanstack/react-query';
+import { getOptimizedImageUrl } from '../utils/images';
 
 const PROMO_IMAGES: Record<string, string> = {
     '10º Pedido':
@@ -27,43 +29,27 @@ interface PromoItem {
 }
 
 export default function PromoPageSimple() {
-    const [promoItems, setPromoItems] = useState<PromoItem[]>([]);
-    const [staticPromos, setStaticPromos] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
     const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
     const { addItem } = useCart();
     const { user } = useAuth();
 
-    useEffect(() => {
-        const loadPageData = async () => {
-            setIsLoading(true);
-            try {
-                const [menuRes, promosRes] = await Promise.allSettled([
-                    api.get('/menu?is_promo=true'),
-                    api.get('/promos'),
-                ]);
+    // Use React Query for consolidated fetching and caching
+    const { data: menuData, isLoading: menuLoading } = useQuery({
+        queryKey: ['menu', 'promo'],
+        queryFn: () => api.get('/menu?is_promo=true'),
+        staleTime: 1000 * 60 * 5,
+    });
 
-                if (menuRes.status === 'fulfilled') {
-                    setPromoItems(menuRes.value.items ?? []);
-                } else {
-                    console.error('Failed to load promotional menu items:', menuRes.reason);
-                }
+    const { data: promosData, isLoading: promosLoading } = useQuery({
+        queryKey: ['promos'],
+        queryFn: () => api.get('/promos'),
+        staleTime: 1000 * 60 * 5,
+    });
 
-                if (promosRes.status === 'fulfilled') {
-                    setStaticPromos(promosRes.value.promos ?? []);
-                } else {
-                    console.error('Failed to load static promotions:', promosRes.reason);
-                }
-            } catch (err) {
-                console.error('Critical error loading promos page:', err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadPageData();
-    }, []);
+    const promoItems = (menuData?.items ?? []) as PromoItem[];
+    const staticPromos = (promosData?.promos ?? []) as any[];
+    const isLoading = menuLoading || promosLoading;
 
     if (isLoading) return <PromoSkeleton />;
 
@@ -98,14 +84,20 @@ export default function PromoPageSimple() {
             />
 
             {/* Hero Header */}
-            <section className="relative bg-[url('/images/promos/promo_hero_bg.png')] bg-cover bg-center pt-24 pb-32 px-2 md:px-4">
+            <section className="relative h-64 md:h-80 flex items-center justify-center overflow-hidden pt-12">
+                <img
+                    src="/images/promos/promo_hero_bg.png"
+                    alt="Ofertas y Promociones background"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    {...({ fetchpriority: 'high' } as any)}
+                />
                 <div className="absolute inset-0 bg-black/60"></div>
-                <div className="max-w-4xl mx-auto text-center relative z-10">
+                <div className="max-w-4xl mx-auto text-center relative z-10 px-4">
                     <h1 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
-                        Promociones y ofertas
+                        Promociones и предложения
                     </h1>
                     <p className="text-gray-200 text-base md:text-xl font-medium max-w-xl mx-auto">
-                        Ofertas especiales y descuentos exclusivos
+                        Ofertas especiales и эксклюзивные скидки
                     </p>
                 </div>
             </section>
@@ -121,7 +113,7 @@ export default function PromoPageSimple() {
                             {/* Image Header wrapper */}
                             <div className="h-48 md:h-56 w-full relative overflow-hidden flex flex-col items-center justify-end pb-5">
                                 <img
-                                    src={PROMO_IMAGES[promo.title] || '/sushi-hero.webp'}
+                                    src={getOptimizedImageUrl(PROMO_IMAGES[promo.title] || '/sushi-hero.webp', 800)}
                                     alt={promo.title}
                                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
@@ -289,7 +281,7 @@ export default function PromoPageSimple() {
                                     <div className="h-32 md:h-56 bg-gray-50 overflow-hidden relative flex items-center justify-center">
                                         {!failedImages.has(item.id) ? (
                                             <img
-                                                src={item.image}
+                                                src={getOptimizedImageUrl(item.image, 640)}
                                                 alt={`Oferta ${item.name}`}
                                                 loading="lazy"
                                                 decoding="async"
