@@ -1,16 +1,16 @@
 name: Hyper-Cron (Late Orders)
 
 on:
-  schedule:
-    - cron: '*/30 * * * *'
-  workflow_dispatch: # Allows manual triggering
+    schedule:
+        - cron: '*/30 * * * *'
+    workflow_dispatch: # Allows manual triggering
 
 jobs:
-  check-late-orders:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Late Orders Check
-        run: |
-          curl -X POST "https://sushidemaksim.vercel.app/api/cron/check-late-orders" \
-            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}"
-          echo "Status: OK"
+    check-late-orders:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Late Orders Check
+              run: |
+                  curl -X POST "https://sushidemaksim.vercel.app/api/cron/check-late-orders" \
+                    -H "x-cron-secret: ${{ secrets.CRON_SECRET }}"
+                  echo "Status: OK"
