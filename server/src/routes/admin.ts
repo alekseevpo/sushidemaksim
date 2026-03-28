@@ -607,7 +607,7 @@ router.get(
 router.patch(
     '/users/:id/role',
     validate({
-        role: { required: true, enum: ['user', 'admin'] },
+        role: { required: true, enum: ['user', 'admin', 'waiter'] },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = parseInt(req.params.id);
@@ -1017,7 +1017,7 @@ router.get(
             },
             ordersByStatus,
             recentOrders: formattedRecent,
-            topItems: abcAnalysis.slice(0, 5),
+            topItems: abcAnalysis.slice(0, 10),
             analytics,
             heatmap: {
                 hourly: hourlyDistribution,
@@ -1333,7 +1333,7 @@ router.get(
             .from('daily_reports')
             .select('*')
             .order('date', { ascending: false })
-            .limit(31);
+            .limit(100);
 
         if (error) {
             return res.json([]);

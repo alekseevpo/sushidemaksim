@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderWithProviders as render, screen, fireEvent, waitFor } from '../../test/test-utils';
+import { renderWithProviders as render, screen, fireEvent, waitFor, within } from '../../test/test-utils';
 import AdminMenu from './AdminMenu';
 import { api } from '../../utils/api';
 
@@ -106,7 +106,8 @@ describe('AdminMenu (Integration)', () => {
         await waitFor(() => expect(screen.getByText('Sake Sushi')).toBeInTheDocument());
 
         // Click delete button
-        const deleteBtn = await screen.findByLabelText('Eliminar plato');
+        const itemRow = screen.getByText('Sake Sushi').closest('tr')!;
+        const deleteBtn = within(itemRow).getByTitle(/Eliminar este plato/i);
         fireEvent.click(deleteBtn);
 
         // Modal should be visible

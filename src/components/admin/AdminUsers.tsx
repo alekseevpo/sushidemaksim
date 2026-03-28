@@ -21,6 +21,131 @@ import {
 import { api, ApiError } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
 
+interface AdminUsersProps {
+    language?: 'ru' | 'es';
+}
+
+const USERS_TRANSLATIONS = {
+    ru: {
+        searchPlaceholder: 'Поиск по ID, имени или email...',
+        filters: {
+            active: 'Только активные',
+            archived: 'Только в архиве',
+            all: 'Все',
+        },
+        refresh: 'Обновить',
+        loading: 'Загрузка пользователей...',
+        noUsers: 'Пользователи не найдены',
+        table: {
+            id: 'ID',
+            nameEmail: 'Имя / Email',
+            birthDate: 'ДР / Вер.',
+            orders: 'Заказы',
+            spent: 'Потрачено',
+            activity: 'Активность',
+            regDate: 'Рег.',
+            role: 'Роль',
+            actions: 'Действия',
+        },
+        roles: {
+            superadmin: 'Владелец',
+            admin: 'Админ',
+            waiter: 'Официант',
+            user: 'Клиент',
+        },
+        status: {
+            online: 'В сети',
+            offline: 'Был(а) в сети',
+            never: 'Никогда',
+            archived: 'В архиве',
+            verified: 'Email подтвержден',
+            pending: 'Email ожидает подтверждения',
+            verify: 'Подтвердить',
+            manualVerify: 'Подтвердить вручную',
+            noDate: 'Нет даты',
+            birthVerified: 'Подтверждено',
+            birthPending: 'Не подтверждено',
+        },
+        modals: {
+            deleteTitle: 'Удалить пользователя НАВСЕГДА?',
+            deleteConfirm: 'Вы собираетесь окончательно удалить {name} (ID: #{id}).',
+            deleteWarning:
+                'Внимание! Это действие необратимо. Будут удалены ВСЕ заказы, адреса и история этого пользователя.',
+            changeRoleTitle: 'Сменить роль',
+            changeRoleDesc: 'Выберите новую роль для:',
+            confirmRole: 'ПОДТВЕРДИТЬ СМЕНУ',
+            verifyEmailTitle: 'Подтвердить Email вручную?',
+            verifyEmailDesc: 'Вы подтверждаете адрес {email} без отправки письма?',
+            cancel: 'ОТМЕНА',
+            yesDelete: 'ДА, УДАЛИТЬ СЕЙЧАС',
+            confirm: 'ПОДТВЕРДИТЬ',
+            restore: 'Восстановить',
+        },
+        time: {
+            today: 'Сегодня',
+        },
+    },
+    es: {
+        searchPlaceholder: 'Buscar por ID, nombre o email...',
+        filters: {
+            active: 'Solo Activos',
+            archived: 'Solo Archivados',
+            all: 'Todos',
+        },
+        refresh: 'Actualizar',
+        loading: 'Cargando usuarios...',
+        noUsers: 'No se encontraron usuarios',
+        table: {
+            id: 'ID',
+            nameEmail: 'Nombre / Email',
+            birthDate: 'Cumple / Verif.',
+            orders: 'Pedidos',
+            spent: 'Gastado',
+            activity: 'Actividad',
+            regDate: 'Reg.',
+            role: 'Rol',
+            actions: 'Acciones',
+        },
+        roles: {
+            superadmin: 'Owner',
+            admin: 'Admin',
+            waiter: 'Camarero',
+            user: 'Cliente',
+        },
+        status: {
+            online: 'En línea',
+            offline: 'Visto por última vez',
+            never: 'Nunca',
+            archived: 'Archivado',
+            verified: 'Email verificado',
+            pending: 'Email pendiente de verificación',
+            verify: 'Verificar',
+            manualVerify: 'Verificar email manualmente',
+            noDate: 'Sin fecha',
+            birthVerified: 'Verificado',
+            birthPending: 'Sin Verificar',
+        },
+        modals: {
+            deleteTitle: '¿Eliminar usuario PARA SIEMPRE?',
+            deleteConfirm: 'Estás a punto de borrar definitivamente a {name} (ID: #{id}).',
+            deleteWarning:
+                '¡Atención! Esta acción es irreversible. Se ELIMINARÁN PARA SIEMPRE todos sus pedidos, direcciones, historial y cualquier dato asociado.',
+            changeRoleTitle: 'Cambiar Rol',
+            changeRoleDesc: 'Selecciona el nuevo rol para:',
+            confirmRole: 'CONFIRMAR CAMBIO',
+            verifyEmailTitle: '¿Verificar Email Manualmente?',
+            verifyEmailDesc: '¿Deseas verificar el email {email} de forma manual?',
+            cancel: 'CANCELAR',
+            yesDelete: 'SÍ, ELIMINAR AHORA',
+            confirm: 'CONFIRMAR',
+            restore: 'Restaurar',
+        },
+        time: {
+            today: 'Hoy',
+        },
+    },
+} as const;
+
 // --- UserRow Component ---
 const UserRow = memo(
     ({
@@ -31,6 +156,7 @@ const UserRow = memo(
         onRestore,
         onToggleBirthday,
         onVerifyEmail,
+        language,
     }: {
         user: any;
         currentUser: any;
@@ -39,7 +165,11 @@ const UserRow = memo(
         onRestore: (user: any) => void;
         onToggleBirthday: (id: number, verified: boolean) => void;
         onVerifyEmail: (user: any) => void;
+        language: 'ru' | 'es';
     }) => {
+        const t = USERS_TRANSLATIONS[language];
+        const dateLocale = language === 'ru' ? 'ru-RU' : 'es-ES';
+
         const isOnline = user.lastSeenAt
             ? new Date().getTime() - new Date(user.lastSeenAt).getTime() < 5 * 60 * 1000
             : false;
@@ -50,24 +180,27 @@ const UserRow = memo(
                   const today = new Date();
                   if (lastSeenDate.toLocaleDateString() === today.toLocaleDateString()) {
                       return (
-                          'Hoy ' +
+                          t.time.today +
+                          ' ' +
                           lastSeenDate.toLocaleTimeString([], {
                               hour: '2-digit',
                               minute: '2-digit',
                           })
                       );
                   }
-                  return lastSeenDate.toLocaleDateString([], {
+                  return lastSeenDate.toLocaleDateString(dateLocale, {
                       day: '2-digit',
                       month: 'short',
                       hour: '2-digit',
                       minute: '2-digit',
                   });
               })()
-            : 'Nunca';
+            : t.status.never;
 
-        const regDate = new Date(user.createdAt).toLocaleDateString();
-        const birthDate = user.birthDate ? new Date(user.birthDate).toLocaleDateString() : null;
+        const regDate = new Date(user.createdAt).toLocaleDateString(dateLocale);
+        const birthDate = user.birthDate
+            ? new Date(user.birthDate).toLocaleDateString(dateLocale)
+            : null;
 
         const initials =
             user.name
@@ -79,11 +212,13 @@ const UserRow = memo(
                 .slice(0, 2) || '??';
 
         return (
-            <tr className="hover:bg-gray-50 transition-colors">
-                <td className="px-4 py-2 font-semibold text-gray-900">#{user.id}</td>
-                <td className="px-4 py-2">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-sm transition-transform hover:scale-110">
+            <tr className="hover:bg-gray-50/50 transition-colors group">
+                <td className="px-5 py-4 font-black text-gray-400 text-xs tabular-nums">
+                    #{user.id}
+                </td>
+                <td className="px-5 py-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-gray-100 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-110">
                             {user.avatar ? (
                                 user.avatar.startsWith('http') ? (
                                     <img
@@ -97,89 +232,99 @@ const UserRow = memo(
                                         }}
                                     />
                                 ) : (
-                                    <div className="text-xl select-none">{user.avatar}</div>
+                                    <div className="text-2xl select-none">{user.avatar}</div>
                                 )
                             ) : (
-                                <div className="text-[10px] font-black text-gray-400 select-none">
+                                <div className="text-[10px] font-black text-gray-400 select-none uppercase tracking-tighter">
                                     {initials}
                                 </div>
                             )}
                         </div>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                                <div className="font-bold text-gray-900">{user.name}</div>
+                        <div className="flex flex-col min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="font-black text-gray-900 line-clamp-1">
+                                    {user.name}
+                                </div>
                                 {user.isVerified ? (
                                     <span
-                                        title="Email verificado"
-                                        className="text-green-500 bg-green-50 p-0.5 rounded-full border border-green-100"
+                                        title={t.status.verified}
+                                        className="text-green-500 bg-green-50 p-1 rounded-lg border border-green-100 shadow-sm"
                                     >
-                                        <CheckCircle size={12} strokeWidth={1.5} />
+                                        <CheckCircle size={10} strokeWidth={3} />
                                     </span>
                                 ) : (
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-1.5">
                                         <span
-                                            title="Email pendiente de verificación"
-                                            className="text-yellow-500 bg-yellow-50 p-0.5 rounded-full border border-yellow-100"
+                                            title={t.status.pending}
+                                            className="text-amber-500 bg-amber-50 p-1 rounded-lg border border-amber-100 shadow-sm animate-pulse"
                                         >
-                                            <Clock size={12} strokeWidth={1.5} />
+                                            <Clock size={10} strokeWidth={3} />
                                         </span>
                                         <button
                                             onClick={() => onVerifyEmail(user)}
-                                            className="px-1.5 py-0.5 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded text-[9px] font-bold uppercase transition-colors"
-                                            title="Verificar email manualmente"
+                                            className="px-2 py-0.5 bg-blue-600 text-white hover:bg-black rounded-lg text-[8px] font-black uppercase tracking-widest transition-all shadow-sm active:scale-95"
+                                            title={t.status.manualVerify}
                                         >
-                                            Verificar
+                                            {t.status.verify}
                                         </button>
                                     </div>
                                 )}
                             </div>
-                            <div className="text-gray-500 text-xs">{user.email}</div>
+                            <div className="text-gray-400 text-[11px] font-bold line-clamp-1">
+                                {user.email}
+                            </div>
                             {user.phone && (
-                                <div className="text-gray-400 text-[10px]">{user.phone}</div>
+                                <div className="text-gray-400 text-[10px] font-bold mt-0.5 tracking-tight tabular-nums">
+                                    {user.phone}
+                                </div>
                             )}
                         </div>
                     </div>
                 </td>
-                <td className="px-4 py-2">
-                    <div className="flex flex-col gap-1.5">
+                <td className="px-5 py-4">
+                    <div className="flex flex-col gap-2">
                         {birthDate ? (
-                            <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                                <Calendar size={12} strokeWidth={1.5} className="text-gray-400" />
-                                {birthDate}
+                            <div className="flex items-center gap-2 text-[11px] font-black text-gray-700 bg-gray-100/50 px-2 py-1 rounded-xl w-fit border border-gray-100">
+                                <Calendar size={12} strokeWidth={2} className="text-red-400" />
+                                <span className="tabular-nums">{birthDate}</span>
                             </div>
                         ) : (
-                            <span className="text-xs text-gray-400">Sin fecha</span>
+                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                                {t.status.noDate}
+                            </span>
                         )}
 
                         {birthDate && (
                             <button
                                 onClick={() => onToggleBirthday(user.id, user.isBirthDateVerified)}
-                                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold w-fit transition-all ${
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-tighter w-fit transition-all border shadow-sm active:scale-95 ${
                                     user.isBirthDateVerified
-                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                        ? 'bg-green-50 text-green-700 border-green-100 hover:bg-green-600 hover:text-white'
+                                        : 'bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-600 hover:text-white'
                                 }`}
                             >
                                 {user.isBirthDateVerified ? (
                                     <>
-                                        <CheckCircle size={10} strokeWidth={1.5} /> Verificado
+                                        <CheckCircle size={10} strokeWidth={3} />{' '}
+                                        {t.status.birthVerified}
                                     </>
                                 ) : (
                                     <>
-                                        <AlertCircle size={10} strokeWidth={1.5} /> Sin Verificar
+                                        <AlertCircle size={10} strokeWidth={3} />{' '}
+                                        {t.status.birthPending}
                                     </>
                                 )}
                             </button>
                         )}
                     </div>
                 </td>
-                <td className="px-4 py-2 text-center">
-                    <div className="inline-flex items-center justify-center bg-gray-100 text-gray-700 w-8 h-8 rounded-full font-bold">
+                <td className="px-5 py-4 text-center">
+                    <div className="inline-flex items-center justify-center bg-gray-50 text-gray-900 w-10 h-10 rounded-2xl font-black text-sm border border-gray-100 shadow-inner tabular-nums">
                         {user.orderCount}
                     </div>
                 </td>
-                <td className="px-4 py-2 text-center">
-                    <div className="font-bold text-gray-900">
+                <td className="px-5 py-4 text-center">
+                    <div className="font-black text-red-600 text-base tabular-nums">
                         {Number(user.totalSpent || 0)
                             .toFixed(2)
                             .replace('.', ',')}{' '}
@@ -187,84 +332,88 @@ const UserRow = memo(
                     </div>
                 </td>
 
-                <td className="px-4 py-2">
+                <td className="px-5 py-4">
                     <div className="flex flex-col gap-1">
                         {user.lastSeenAt ? (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100 w-fit">
                                 {isOnline ? (
-                                    <div className="relative flex h-2 w-2">
+                                    <div className="relative flex h-2.5 w-2.5">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border-2 border-white shadow-sm"></span>
                                     </div>
                                 ) : (
-                                    <div className="h-2 w-2 rounded-full bg-gray-300"></div>
+                                    <div className="h-2.5 w-2.5 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
                                 )}
-                                <span className="text-gray-900 font-bold text-xs">
+                                <span className="text-gray-700 font-black text-[11px] tabular-nums tracking-tight">
                                     {lastSeenStr}
                                 </span>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2 text-gray-400">
-                                <Clock size={12} strokeWidth={1.5} />
-                                <span className="text-xs italic">Nunca</span>
+                            <div className="flex items-center gap-2 text-gray-300 bg-gray-50/30 px-3 py-1.5 rounded-xl border border-dashed border-gray-100 w-fit">
+                                <Clock size={12} strokeWidth={2} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">
+                                    {t.status.never}
+                                </span>
                             </div>
                         )}
                     </div>
                 </td>
-                <td className="px-4 py-2">{regDate}</td>
-                <td className="px-4 py-2 text-center">
-                    {user.isSuperadmin ? (
-                        <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold text-xs">
-                            <Crown size={12} strokeWidth={1.5} /> Owner
-                        </span>
-                    ) : user.role === 'admin' ? (
-                        <span className="inline-flex items-center gap-1 bg-red-100 text-red-800 px-3 py-1 rounded-full font-bold text-xs">
-                            <Shield size={12} strokeWidth={1.5} /> Admin
-                        </span>
-                    ) : (
-                        <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-bold text-xs">
-                            <UsersIcon size={12} strokeWidth={1.5} /> Cliente
-                        </span>
-                    )}
-                    {user.deletedAt && (
-                        <div className="mt-1">
-                            <span className="inline-flex items-center gap-1 bg-gray-900 text-white px-2 py-0.5 rounded-full font-black text-[9px] uppercase tracking-tighter">
-                                Archivivado
-                            </span>
-                        </div>
-                    )}
+                <td className="px-5 py-4 text-[11px] font-black text-gray-400 uppercase tracking-widest tabular-nums">
+                    {regDate}
                 </td>
-                <td className="px-4 py-2 text-center flex items-center justify-center gap-1.5 min-w-[140px]">
+                <td className="px-5 py-4 text-center">
+                    <div className="flex flex-col items-center gap-1.5">
+                        {user.isSuperadmin ? (
+                            <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-amber-100 shadow-sm">
+                                <Crown size={12} strokeWidth={2.5} /> {t.roles.superadmin}
+                            </span>
+                        ) : user.role === 'admin' ? (
+                            <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-red-100 shadow-sm">
+                                <Shield size={12} strokeWidth={2.5} /> {t.roles.admin}
+                            </span>
+                        ) : user.role === 'waiter' ? (
+                            <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-orange-100 shadow-sm">
+                                <Clock size={12} strokeWidth={2.5} /> {t.roles.waiter}
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center gap-1.5 bg-gray-50 text-gray-500 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-gray-200">
+                                <UsersIcon size={12} strokeWidth={2.5} /> {t.roles.user}
+                            </span>
+                        )}
+                        {user.deletedAt && (
+                            <span className="inline-flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-lg">
+                                {t.status.archived}
+                            </span>
+                        )}
+                    </div>
+                </td>
+                <td className="px-5 py-4 text-center">
                     {!user.isSuperadmin && (
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center justify-center gap-2">
                             {user.deletedAt ? (
                                 <button
                                     onClick={() => onRestore(user)}
-                                    className="p-1 px-2 flex items-center gap-1 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg font-black text-[10px] uppercase tracking-wider transition border border-green-100"
-                                    title="Restaurar usuario"
+                                    className="p-2 px-3 flex items-center gap-2 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-green-100 shadow-sm active:scale-95"
+                                    title={t.modals.restore}
                                 >
-                                    <RotateCcw size={14} strokeWidth={2} /> Restaurar
+                                    <RotateCcw size={14} strokeWidth={3} /> {t.modals.restore}
                                 </button>
                             ) : (
                                 <>
                                     {currentUser?.isSuperadmin && (
                                         <button
                                             onClick={() => onToggleRole(user)}
-                                            className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider transition ${
-                                                user.role === 'admin'
-                                                    ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                                            }`}
+                                            className="px-4 py-2 bg-white text-gray-600 hover:bg-black hover:text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-gray-200 shadow-sm active:scale-95"
                                         >
-                                            {user.role === 'admin' ? 'Revocar' : 'Hacer Admin'}
+                                            {language === 'ru' ? 'Роль' : 'Rol'}
                                         </button>
                                     )}
                                     <button
                                         onClick={() => onDelete(user)}
-                                        className="p-1 text-gray-400 hover:text-red-600 transition"
-                                        title="Archivar usuario"
+                                        className="p-2 text-gray-300 hover:text-red-600 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 transition-all shadow-sm active:scale-95"
+                                        title={t.modals.deleteTitle}
                                     >
-                                        <Trash2 size={16} strokeWidth={1.5} />
+                                        <Trash2 size={18} strokeWidth={2} />
                                     </button>
                                 </>
                             )}
@@ -276,9 +425,11 @@ const UserRow = memo(
     }
 );
 
-export default function AdminUsers() {
+export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
     const { user: currentUser } = useAuth();
     const queryClient = useQueryClient();
+
+    const t = USERS_TRANSLATIONS[language];
 
     // UI state
     const [page, setPage] = useState(1);
@@ -291,8 +442,16 @@ export default function AdminUsers() {
     const [userToDelete, setUserToDelete] = useState<any>(null);
     const [userToChangeRole, setUserToChangeRole] = useState<any>(null);
     const [userToVerify, setUserToVerify] = useState<any>(null);
+    const [selectedNewRole, setSelectedNewRole] = useState<'user' | 'admin' | 'waiter'>('user');
 
     const LIMIT = 20;
+
+    // Set initial role when modal opens
+    useEffect(() => {
+        if (userToChangeRole) {
+            setSelectedNewRole(userToChangeRole.role || 'user');
+        }
+    }, [userToChangeRole]);
 
     // Debounce search
     useEffect(() => {
@@ -369,9 +528,7 @@ export default function AdminUsers() {
 
     const confirmToggleRole = async () => {
         if (!userToChangeRole) return;
-        const { id, role: currentRole } = userToChangeRole;
-        const newRole = currentRole === 'admin' ? 'user' : 'admin';
-        roleMutation.mutate({ id, role: newRole });
+        roleMutation.mutate({ id: userToChangeRole.id, role: selectedNewRole });
         setUserToChangeRole(null);
     };
 
@@ -390,9 +547,11 @@ export default function AdminUsers() {
 
     if (isLoading && users.length === 0) {
         return (
-            <div className="text-center py-12 text-gray-400">
-                <RefreshCw size={32} strokeWidth={1.5} className="mx-auto mb-4 animate-spin" />
-                <p>Cargando usuarios...</p>
+            <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
+                    {t.loading}
+                </p>
             </div>
         );
     }
@@ -400,58 +559,57 @@ export default function AdminUsers() {
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Search Bar */}
-            <div className="mb-6 flex justify-between items-center">
+            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
                 <div className="relative w-full max-w-md">
                     <Search
                         size={18}
-                        strokeWidth={1.5}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        strokeWidth={2}
+                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                     />
                     <input
                         type="text"
-                        placeholder="Buscar por ID, nombre o email..."
+                        placeholder={t.searchPlaceholder}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-10 py-2 border border-gray-100 rounded-xl bg-white shadow-sm outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                        className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 transition-all placeholder:text-gray-400 shadow-inner"
                     />
                     {search && (
                         <button
                             onClick={() => setSearch('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer"
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 border-none bg-transparent cursor-pointer p-1"
                         >
-                            <X size={16} strokeWidth={1.5} />
+                            <X size={16} strokeWidth={2.5} />
                         </button>
                     )}
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <select
-                        value={filter}
-                        onChange={e => {
-                            setFilter(e.target.value);
-                            setPage(1);
-                        }}
-                        className="pl-4 pr-10 py-2 border border-gray-100 rounded-xl bg-white shadow-sm outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all text-sm font-bold text-gray-700 appearance-none cursor-pointer"
-                        style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 0.75rem center',
-                            backgroundSize: '1rem',
-                        }}
-                    >
-                        <option value="active">Solo Activos</option>
-                        <option value="archived">Solo Archivados</option>
-                        <option value="all">Todos</option>
-                    </select>
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    <div className="relative flex-1 md:w-48">
+                        <select
+                            value={filter}
+                            onChange={e => {
+                                setFilter(e.target.value);
+                                setPage(1);
+                            }}
+                            className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-[11px] font-black uppercase tracking-widest text-gray-700 appearance-none cursor-pointer focus:bg-white focus:border-red-400 transition-all shadow-sm"
+                        >
+                            <option value="active">{t.filters.active}</option>
+                            <option value="archived">{t.filters.archived}</option>
+                            <option value="all">{t.filters.all}</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <ChevronDown size={14} strokeWidth={3} />
+                        </div>
+                    </div>
 
                     <button
                         onClick={() => refetch()}
-                        className="p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-100 rounded-xl shadow-sm transition"
-                        title="Actualizar"
+                        className="p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 rounded-xl shadow-sm transition-all active:scale-95"
+                        title={t.refresh}
                     >
                         <RefreshCw
-                            size={18}
-                            strokeWidth={1.5}
+                            size={20}
+                            strokeWidth={2}
                             className={isFetching ? 'animate-spin' : ''}
                         />
                     </button>
@@ -459,156 +617,208 @@ export default function AdminUsers() {
             </div>
 
             {fetchError && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100 flex items-center gap-3">
-                    <AlertCircle size={18} strokeWidth={1.5} />
-                    <p className="font-medium">
-                        {fetchError instanceof ApiError
-                            ? fetchError.message
-                            : 'Error al cargar los usuarios'}
+                <div className="bg-red-50 text-red-600 p-5 rounded-2xl mb-6 border-2 border-red-100 flex items-center gap-4 animate-in shake duration-500 shadow-xl shadow-red-50">
+                    <div className="bg-red-600 p-2 rounded-lg">
+                        <AlertCircle className="text-white" size={20} strokeWidth={2} />
+                    </div>
+                    <p className="font-black uppercase tracking-tight text-sm">
+                        {fetchError instanceof ApiError ? fetchError.message : 'Error'}
                     </p>
                 </div>
             )}
 
-            <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm text-gray-600">
-                        <thead className="bg-gray-50 text-gray-700 font-bold border-b border-gray-100">
+                        <thead className="bg-gray-50/50 text-gray-400 border-b border-gray-100">
                             <tr>
                                 <th
-                                    className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('id')}
                                 >
-                                    <div className="flex items-center gap-1">
-                                        ID{' '}
+                                    <div className="flex items-center gap-2">
+                                        {t.table.id}
                                         {sort.field === 'id' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} strokeWidth={1.5} />
+                                                <ChevronDown
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             ) : (
-                                                <ChevronUp size={14} strokeWidth={1.5} />
+                                                <ChevronUp
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             )
                                         ) : (
                                             <ArrowUpDown
                                                 size={12}
-                                                strokeWidth={1.5}
+                                                strokeWidth={2}
                                                 className="opacity-30"
                                             />
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-4 py-3 whitespace-nowrap">Nombre / Email</th>
-                                <th className="px-4 py-3 whitespace-nowrap">Cumple / Verif.</th>
+                                <th className="px-5 py-5 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                                    {t.table.nameEmail}
+                                </th>
+                                <th className="px-5 py-5 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                                    {t.table.birthDate}
+                                </th>
                                 <th
-                                    className="px-4 py-3 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('orderCount')}
                                 >
-                                    <div className="flex items-center justify-center gap-1">
-                                        Pedidos{' '}
+                                    <div className="flex items-center justify-center gap-2">
+                                        {t.table.orders}
                                         {sort.field === 'orderCount' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} strokeWidth={1.5} />
+                                                <ChevronDown
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             ) : (
-                                                <ChevronUp size={14} strokeWidth={1.5} />
+                                                <ChevronUp
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             )
                                         ) : (
                                             <ArrowUpDown
                                                 size={12}
-                                                strokeWidth={1.5}
+                                                strokeWidth={2}
                                                 className="opacity-30"
                                             />
                                         )}
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('totalSpent')}
                                 >
-                                    <div className="flex items-center justify-center gap-1">
-                                        Gastado{' '}
+                                    <div className="flex items-center justify-center gap-2">
+                                        {t.table.spent}
                                         {sort.field === 'totalSpent' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} strokeWidth={1.5} />
+                                                <ChevronDown
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             ) : (
-                                                <ChevronUp size={14} strokeWidth={1.5} />
+                                                <ChevronUp
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             )
                                         ) : (
                                             <ArrowUpDown
                                                 size={12}
-                                                strokeWidth={1.5}
+                                                strokeWidth={2}
                                                 className="opacity-30"
                                             />
                                         )}
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('lastSeenAt')}
                                 >
-                                    <div className="flex items-center gap-1">
-                                        Actividad{' '}
+                                    <div className="flex items-center gap-2">
+                                        {t.table.activity}
                                         {sort.field === 'lastSeenAt' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} strokeWidth={1.5} />
+                                                <ChevronDown
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             ) : (
-                                                <ChevronUp size={14} strokeWidth={1.5} />
+                                                <ChevronUp
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             )
                                         ) : (
                                             <ArrowUpDown
                                                 size={12}
-                                                strokeWidth={1.5}
+                                                strokeWidth={2}
                                                 className="opacity-30"
                                             />
                                         )}
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('createdAt')}
                                 >
-                                    <div className="flex items-center gap-1">
-                                        Reg.{' '}
+                                    <div className="flex items-center gap-2">
+                                        {t.table.regDate}
                                         {sort.field === 'createdAt' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} strokeWidth={1.5} />
+                                                <ChevronDown
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             ) : (
-                                                <ChevronUp size={14} strokeWidth={1.5} />
+                                                <ChevronUp
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             )
                                         ) : (
                                             <ArrowUpDown
                                                 size={12}
-                                                strokeWidth={1.5}
+                                                strokeWidth={2}
                                                 className="opacity-30"
                                             />
                                         )}
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 text-center cursor-pointer hover:bg-gray-100 transition"
+                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('role')}
                                 >
-                                    <div className="flex items-center justify-center gap-1">
-                                        Rol{' '}
+                                    <div className="flex items-center justify-center gap-2">
+                                        {t.table.role}
                                         {sort.field === 'role' ? (
                                             sort.order === 'desc' ? (
-                                                <ChevronDown size={14} strokeWidth={1.5} />
+                                                <ChevronDown
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             ) : (
-                                                <ChevronUp size={14} strokeWidth={1.5} />
+                                                <ChevronUp
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-red-500"
+                                                />
                                             )
                                         ) : (
                                             <ArrowUpDown
                                                 size={12}
-                                                strokeWidth={1.5}
+                                                strokeWidth={2}
                                                 className="opacity-30"
                                             />
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-4 py-3 text-center whitespace-nowrap">
-                                    Acciones
+                                <th className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">
+                                    {t.table.actions}
                                 </th>
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y divide-gray-100 text-pretty">
+                        <tbody className="divide-y divide-gray-100">
                             {users.map((user: any) => (
                                 <UserRow
                                     key={user.id}
@@ -619,15 +829,20 @@ export default function AdminUsers() {
                                     onRestore={u => restoreMutation.mutate(u.id)}
                                     onToggleBirthday={toggleBirthdayVerified}
                                     onVerifyEmail={setUserToVerify}
+                                    language={language}
                                 />
                             ))}
                             {!isLoading && users.length === 0 && (
                                 <tr>
-                                    <td
-                                        colSpan={9}
-                                        className="px-4 py-12 text-center text-gray-400"
-                                    >
-                                        No se encontraron usuarios
+                                    <td colSpan={9} className="px-5 py-24 text-center">
+                                        <div className="flex flex-col items-center gap-4">
+                                            <div className="w-16 h-16 bg-gray-50 text-gray-200 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+                                                <Search size={32} />
+                                            </div>
+                                            <p className="text-gray-400 font-black uppercase tracking-widest text-xs">
+                                                {t.noUsers}
+                                            </p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -636,15 +851,15 @@ export default function AdminUsers() {
                 </div>
 
                 {pagination.pages > 1 && (
-                    <div className="p-4 border-t border-gray-100 flex justify-center gap-2 bg-gray-50">
+                    <div className="p-6 border-t border-gray-100 flex justify-center gap-3 bg-gray-50/50">
                         {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
                             <button
                                 key={pageNum}
                                 onClick={() => setPage(pageNum)}
-                                className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                                className={`w-10 h-10 flex items-center justify-center rounded-xl font-black text-sm transition-all shadow-sm active:scale-90 border ${
                                     pageNum === page
-                                        ? 'bg-red-600 text-white shadow-md'
-                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                        ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-200 scale-110'
+                                        : 'bg-white text-gray-400 border-gray-100 hover:border-red-400 hover:text-red-500'
                                 }`}
                             >
                                 {pageNum}
@@ -658,32 +873,28 @@ export default function AdminUsers() {
             {userToDelete && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={() => setUserToDelete(null)}
                     />
-                    <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
+                    <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} strokeWidth={1.5} />
+                            <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+                                <Trash2 size={40} strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-xl font-black text-gray-900 mb-2">
-                                ¿Eliminar usuario PARA SIEMPRE?
+                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                {t.modals.deleteTitle}
                             </h3>
-                            <p className="text-sm text-gray-500 font-medium mb-6">
-                                Estás a punto de borrar definitivamente a{' '}
-                                <span className="text-red-600 font-black">
-                                    {userToDelete.name} (ID: #{userToDelete.id}, Email:{' '}
-                                    {userToDelete.email})
-                                </span>
-                                .
-                                <br />
-                                <br />
-                                <span className="p-3 bg-red-50 border border-red-100 rounded-xl block text-red-700 font-bold text-xs uppercase tracking-tight">
-                                    ¡Atención! Esta acción es irreversible. Se ELIMINARÁN PARA
-                                    SIEMPRE todos sus pedidos, direcciones, historial y cualquier
-                                    dato asociado.
+                            <p className="text-[12px] text-gray-400 font-bold mb-8 leading-relaxed uppercase tracking-widest">
+                                {t.modals.deleteConfirm.replace('{name}', '').replace('{id}', '')}
+                                <span className="text-red-600 font-black block mt-2 text-base">
+                                    {userToDelete.name} (ID: #{userToDelete.id})
                                 </span>
                             </p>
+                            <div className="p-4 bg-red-50 border-2 border-red-100 rounded-2xl mb-10">
+                                <p className="text-red-700 font-black text-[10px] uppercase tracking-widest leading-relaxed">
+                                    {t.modals.deleteWarning}
+                                </p>
+                            </div>
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={() => {
@@ -691,18 +902,18 @@ export default function AdminUsers() {
                                         setUserToDelete(null);
                                     }}
                                     disabled={deleteMutation.isPending}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {deleteMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />
                                     )}
-                                    SÍ, ELIMINAR AHORA
+                                    {t.modals.yesDelete}
                                 </button>
                                 <button
                                     onClick={() => setUserToDelete(null)}
-                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200"
+                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
                                 >
-                                    CANCELAR
+                                    {t.modals.cancel}
                                 </button>
                             </div>
                         </div>
@@ -714,49 +925,88 @@ export default function AdminUsers() {
             {userToChangeRole && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={() => setUserToChangeRole(null)}
                     />
-                    <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
+                    <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Shield size={32} strokeWidth={1.5} />
+                            <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-amber-100">
+                                <Shield size={40} strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-xl font-black text-gray-900 mb-2">
-                                {userToChangeRole.role === 'admin'
-                                    ? '¿Revocar permisos de Admin?'
-                                    : '¿Asignar como Administrador?'}
+                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                {t.modals.changeRoleTitle}
                             </h3>
-                            <p className="text-sm text-gray-500 font-medium mb-6 text-pretty">
-                                ¿Deseas realmente{' '}
-                                <span className="font-black text-red-600">
-                                    {userToChangeRole.role === 'admin' ? 'QUITAR' : 'OTORGAR'}
-                                </span>{' '}
-                                permisos de administración a:
+                            <p className="text-[11px] text-gray-400 font-bold mb-8 uppercase tracking-widest leading-relaxed">
+                                {t.modals.changeRoleDesc}
                                 <br />
-                                <span className="block mt-2 font-black text-gray-900 text-base">
+                                <span className="block mt-2 font-black text-gray-900 text-lg tracking-tight">
                                     {userToChangeRole.name}
                                 </span>
-                                <span className="block text-gray-400 text-xs">
-                                    {userToChangeRole.email}
-                                </span>
                             </p>
+
+                            <div className="grid grid-cols-1 gap-3 mb-10">
+                                {[
+                                    {
+                                        id: 'user',
+                                        label: t.roles.user,
+                                        icon: UsersIcon,
+                                        color: 'gray',
+                                    },
+                                    {
+                                        id: 'waiter',
+                                        label: t.roles.waiter,
+                                        icon: Clock,
+                                        color: 'orange',
+                                    },
+                                    {
+                                        id: 'admin',
+                                        label: t.roles.admin,
+                                        icon: Shield,
+                                        color: 'red',
+                                    },
+                                ].map(r => (
+                                    <button
+                                        key={r.id}
+                                        onClick={() => setSelectedNewRole(r.id as any)}
+                                        className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 transition-all text-left group/role ${
+                                            selectedNewRole === r.id
+                                                ? `bg-${r.color}-50 border-${r.color === 'gray' ? 'gray-400' : r.color + '-500'} text-${r.color === 'gray' ? 'gray-900' : r.color + '-900'} shadow-sm scale-[1.02]`
+                                                : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        <div
+                                            className={`p-2 rounded-xl transition-colors ${selectedNewRole === r.id ? `bg-${r.color === 'gray' ? 'gray-200' : r.color + '-100'}` : 'bg-gray-50'}`}
+                                        >
+                                            <r.icon size={20} strokeWidth={2.5} />
+                                        </div>
+                                        <span className="font-black text-xs uppercase tracking-widest">
+                                            {r.label}
+                                        </span>
+                                        {selectedNewRole === r.id && (
+                                            <div className="ml-auto bg-white rounded-full p-1 shadow-sm border border-current/20">
+                                                <CheckCircle size={16} strokeWidth={3} />
+                                            </div>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={confirmToggleRole}
                                     disabled={roleMutation.isPending}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {roleMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />
                                     )}
-                                    SÍ, CAMBIAR PERMISOS
+                                    {t.modals.confirmRole}
                                 </button>
                                 <button
                                     onClick={() => setUserToChangeRole(null)}
-                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200"
+                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
                                 >
-                                    CANCELAR
+                                    {t.modals.cancel}
                                 </button>
                             </div>
                         </div>
@@ -768,24 +1018,21 @@ export default function AdminUsers() {
             {userToVerify && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={() => setUserToVerify(null)}
                     />
-                    <div className="relative bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl">
+                    <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <CheckCircle size={32} strokeWidth={1.5} />
+                            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-blue-100">
+                                <CheckCircle size={40} strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-xl font-black text-gray-900 mb-2">
-                                ¿Verificar Email Manualmente?
+                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                {t.modals.verifyEmailTitle}
                             </h3>
-                            <p className="text-sm text-gray-500 font-medium mb-6 text-pretty">
-                                Estás a punto de verificar manualmente la cuenta de:
+                            <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
+                                {t.modals.verifyEmailDesc.replace('{email}', '')}
                                 <br />
-                                <span className="block mt-2 font-black text-gray-900 text-base">
-                                    {userToVerify.name}
-                                </span>
-                                <span className="block text-gray-400 text-xs">
+                                <span className="text-blue-600 font-black block mt-2 text-base italic">
                                     {userToVerify.email}
                                 </span>
                             </p>
@@ -793,18 +1040,18 @@ export default function AdminUsers() {
                                 <button
                                     onClick={confirmVerifyEmail}
                                     disabled={verifyEmailMutation.isPending}
-                                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-blue-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {verifyEmailMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />
                                     )}
-                                    SÍ, VERIFICAR AHORA
+                                    {t.modals.confirm}
                                 </button>
                                 <button
                                     onClick={() => setUserToVerify(null)}
-                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200"
+                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
                                 >
-                                    CANCELAR
+                                    {t.modals.cancel}
                                 </button>
                             </div>
                         </div>

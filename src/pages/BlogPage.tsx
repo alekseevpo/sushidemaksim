@@ -200,7 +200,7 @@ export default function BlogPage() {
                         to="/menu"
                         className="inline-flex items-center gap-2 text-gray-500 hover:text-red-600 font-bold text-sm transition-colors"
                     >
-                        <ArrowLeft size={16} strokeWidth={1.5} /> Volver a la tienda
+                        <ArrowLeft size={16} strokeWidth={1.5} /> Volver al restaurante
                     </Link>
                 </div>
             </div>

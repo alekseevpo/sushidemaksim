@@ -7,7 +7,6 @@ import {
     Smartphone,
     Monitor,
     Globe,
-    CheckCircle2,
     Volume2,
     VolumeX,
     Calendar,
@@ -20,8 +19,8 @@ import {
     MessageSquare,
     Store,
     Truck,
+    Activity,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { api, ApiError } from '../../utils/api';
 import { Order, OrderItem } from '../../types';
 
@@ -29,23 +28,138 @@ interface AdminOrdersProps {
     isGlobalSoundEnabled: boolean;
     setIsGlobalSoundEnabled: (enabled: boolean) => void;
     globalPendingCount: number;
+    language?: 'ru' | 'es';
 }
+
+const ORDERS_TRANSLATIONS = {
+    ru: {
+        searchPlaceholder: 'Поиск ID, Тел, Промо...',
+        soundOn: 'Выключить звук',
+        soundOff: 'Включить звук',
+        refresh: 'Обновить',
+        filters: {
+            active: 'К ВЫПОЛНЕНИЮ',
+            unpaid: 'Ожидание оплаты',
+            preparing: 'Готовятся',
+            on_the_way: 'В пути',
+            delivered: 'Доставлены',
+            cancelled: 'Отменены',
+            all: 'Все',
+        },
+        errorLoading: 'Ошибка при загрузке заказов',
+        noOrders: 'Заказы не найдены.',
+        loadingOrders: 'Загрузка заказов...',
+        orderId: 'Заказ #',
+        total: 'Итого',
+        clientContact: 'Клиент и контакт',
+        regDate: 'РЕГ.',
+        guest: 'Гость',
+        whatsapp: 'WHATSAPP',
+        userStats: {
+            orders: 'Заказов',
+            invested: 'Вложено',
+            avgTicket: 'Ср. чек',
+            frequency: 'Частота',
+            favorite: 'Любимое блюдо',
+            firstOrder: 'Первый заказ',
+        },
+        deliveryAddress: 'Адрес доставки',
+        types: {
+            recogida: 'САМОВЫВОЗ',
+            domicilio: 'ДОСТАВКА',
+            scheduled: 'ЗАКАЗ КО ВРЕМЕНИ',
+            noCall: 'БЕЗ ЗВОНКА',
+            noBuzzer: 'В ТЕЛЕФОН (НЕ ЗВОНОК)',
+        },
+        clientMessage: 'Сообщение от клиента',
+        products: 'Товары',
+        deliveryFee: 'Доставка',
+        orderStatus: 'Статус заказа',
+        origin: 'Источник',
+        webDirect: 'Веб-сайт',
+        statusNames: {
+            waiting_payment: 'Ожидание оплаты',
+            pending: 'Принят',
+            received: 'Получен',
+            confirmed: 'Подтвержден',
+            preparing: 'Готовится',
+            on_the_way: 'В пути',
+            delivered: 'Доставлен',
+            cancelled: 'Отменен',
+        },
+    },
+    es: {
+        searchPlaceholder: 'Buscar ID, Teléfono, Promo...',
+        soundOn: 'Desactivar sonido',
+        soundOff: 'Activar sonido',
+        refresh: 'Actualizar',
+        filters: {
+            active: 'POR HACER (TODO)',
+            unpaid: 'Por Pagar',
+            preparing: 'Cocinando',
+            on_the_way: 'En Camino',
+            delivered: 'Entregados',
+            cancelled: 'Cancelados',
+            all: 'Todos',
+        },
+        errorLoading: 'Error al cargar los pedidos',
+        noOrders: 'No se encontraron pedidos.',
+        loadingOrders: 'Cargando pedidos...',
+        orderId: 'Pedido #',
+        total: 'Total',
+        clientContact: 'Cliente y Contacto',
+        regDate: 'REG.',
+        guest: 'Invitado',
+        whatsapp: 'WHATSAPP',
+        userStats: {
+            orders: 'Pedidos',
+            invested: 'Invertido',
+            avgTicket: 'Ticket Medio',
+            frequency: 'Frecuencia',
+            favorite: 'Plato Favorito',
+            firstOrder: 'Primer pedido',
+        },
+        deliveryAddress: 'Dirección de Entrega',
+        types: {
+            recogida: 'RECOGIDA',
+            domicilio: 'DOMICILIO',
+            scheduled: 'ENTREGA PROGRAMADA',
+            noCall: 'SIN LLAMADA',
+            noBuzzer: 'MÓVIL (NO TIMBRE)',
+        },
+        clientMessage: 'Mensaje del Cliente',
+        products: 'Productos',
+        deliveryFee: 'Gastos de Envío',
+        orderStatus: 'Estado del Pedido',
+        origin: 'Origen',
+        webDirect: 'Web Directa',
+        statusNames: {
+            waiting_payment: 'Esperando Pago',
+            pending: 'Enviado',
+            received: 'Recibido',
+            confirmed: 'Aceptado',
+            preparing: 'Preparando',
+            on_the_way: 'En camino',
+            delivered: 'Entregado',
+            cancelled: 'Cancelado',
+        },
+    },
+} as const;
 
 export default function AdminOrders({
     isGlobalSoundEnabled,
     setIsGlobalSoundEnabled,
     globalPendingCount,
+    language = 'es',
 }: AdminOrdersProps) {
     const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<string>('active');
     const [page, setPage] = useState(1);
     const [debouncedSearch, setDebouncedSearch] = useState('');
-    const [notification, setNotification] = useState<{
-        id: number;
-        oldStatus: string;
-        newStatus: string;
-    } | null>(null);
+
+    const t = ORDERS_TRANSLATIONS[language];
+    const dateLocale = language === 'ru' ? 'ru-RU' : 'es-ES';
 
     const LIMIT = 10;
 
@@ -99,7 +213,7 @@ export default function AdminOrders({
     const statusMutation = useMutation({
         mutationFn: ({ id, newStatus }: { id: number; newStatus: string }) =>
             api.patch(`/admin/orders/${id}/status`, { status: newStatus }),
-        onMutate: async ({ id, newStatus }) => {
+        onMutate: async () => {
             // Optimistic update
             await queryClient.cancelQueries({
                 queryKey: ['admin-orders', page, filter, debouncedSearch],
@@ -110,11 +224,6 @@ export default function AdminOrders({
                 filter,
                 debouncedSearch,
             ]);
-
-            // Show notification
-            const order = (previousData as any)?.orders?.find((o: any) => o.id === id);
-            setNotification({ id, oldStatus: order?.status || '?', newStatus });
-            setTimeout(() => setNotification(null), 4000);
 
             return { previousData };
         },
@@ -130,43 +239,43 @@ export default function AdminOrders({
     const statusOptions = [
         {
             value: 'waiting_payment',
-            label: 'Esperando Pago',
-            color: 'bg-gray-100 text-gray-500 border-gray-200',
+            label: t.statusNames.waiting_payment,
+            color: 'bg-gray-50 text-gray-500 border-gray-200',
         },
         {
             value: 'pending',
-            label: 'Enviado',
-            color: 'bg-amber-100 text-amber-700 border-amber-200',
+            label: t.statusNames.pending,
+            color: 'bg-amber-50 text-amber-700 border-amber-200',
         },
         {
             value: 'received',
-            label: 'Recibido',
-            color: 'bg-blue-100 text-blue-700 border-blue-200',
+            label: t.statusNames.received,
+            color: 'bg-blue-50 text-blue-700 border-blue-200',
         },
         {
             value: 'confirmed',
-            label: 'Aceptado',
-            color: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+            label: t.statusNames.confirmed,
+            color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
         },
         {
             value: 'preparing',
-            label: 'Preparando',
-            color: 'bg-purple-100 text-purple-700 border-purple-200',
+            label: t.statusNames.preparing,
+            color: 'bg-purple-50 text-purple-700 border-purple-200',
         },
         {
             value: 'on_the_way',
-            label: 'En camino',
-            color: 'bg-pink-100 text-pink-700 border-pink-200',
+            label: t.statusNames.on_the_way,
+            color: 'bg-pink-50 text-pink-700 border-pink-200',
         },
         {
             value: 'delivered',
-            label: 'Entregado',
-            color: 'bg-green-100 text-green-700 border-green-200',
+            label: t.statusNames.delivered,
+            color: 'bg-green-50 text-green-700 border-green-200',
         },
         {
             value: 'cancelled',
-            label: 'Cancelado',
-            color: 'bg-red-100 text-red-700 border-red-200',
+            label: t.statusNames.cancelled,
+            color: 'bg-red-50 text-red-700 border-red-200',
         },
     ];
 
@@ -177,75 +286,75 @@ export default function AdminOrders({
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Top Controls */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 space-y-4">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6 space-y-4">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
                     <div className="flex items-center gap-3 w-full sm:w-auto">
                         <div className="relative flex-1 sm:w-96">
                             <Search
                                 size={18}
-                                strokeWidth={1.5}
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                strokeWidth={2}
+                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                             />
                             <input
                                 type="text"
-                                placeholder="Buscar ID, Teléfono, Promo..."
+                                placeholder={t.searchPlaceholder}
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
-                                className="w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:border-red-400 focus:outline-none transition"
+                                className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 focus:outline-none transition-all placeholder:text-gray-400"
                             />
                             {search && (
                                 <button
                                     onClick={() => setSearch('')}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors p-1"
                                 >
-                                    <X size={16} strokeWidth={1.5} />
+                                    <X size={16} strokeWidth={2} />
                                 </button>
                             )}
                         </div>
                         <button
                             onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
-                            className={`p-2 rounded-lg transition border ${
+                            className={`p-3 rounded-xl transition-all border shadow-sm active:scale-95 ${
                                 isGlobalSoundEnabled
-                                    ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'
-                                    : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
+                                    ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-600 hover:text-white'
+                                    : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-200 hover:text-gray-900'
                             }`}
-                            title={isGlobalSoundEnabled ? 'Desactivar sonido' : 'Activar sonido'}
+                            title={isGlobalSoundEnabled ? t.soundOn : t.soundOff}
                         >
                             {isGlobalSoundEnabled ? (
-                                <Volume2 size={18} strokeWidth={1.5} />
+                                <Volume2 size={20} strokeWidth={2} />
                             ) : (
-                                <VolumeX size={18} strokeWidth={1.5} />
+                                <VolumeX size={20} strokeWidth={2} />
                             )}
                         </button>
                     </div>
                     <button
                         onClick={() => refetch()}
-                        className="w-full sm:w-auto p-2 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
-                        title="Actualizar"
+                        className="w-full sm:w-auto p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 rounded-xl transition-all shadow-sm active:scale-95"
+                        title={t.refresh}
                     >
                         <RefreshCw
-                            size={18}
-                            strokeWidth={1.5}
+                            size={20}
+                            strokeWidth={2}
                             className={isFetching ? 'animate-spin' : ''}
                         />
                     </button>
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="flex bg-gray-50 p-1 rounded-xl w-full overflow-x-auto no-scrollbar">
+                <div className="flex bg-gray-50/50 p-1.5 rounded-2xl w-full overflow-x-auto no-scrollbar border border-gray-50 shadow-inner">
                     <div className="flex gap-1 min-w-max">
                         {[
                             {
                                 id: 'active',
-                                label: 'POR HACER (TODO)',
+                                label: t.filters.active,
                                 badge: globalPendingCount > 0,
                             },
-                            { id: 'unpaid', label: 'Por Pagar' },
-                            { id: 'preparing', label: 'Cocinando' },
-                            { id: 'on_the_way', label: 'En Camino' },
-                            { id: 'delivered', label: 'Entregados' },
-                            { id: 'cancelled', label: 'Cancelados' },
-                            { id: 'all', label: 'Todos' },
+                            { id: 'unpaid', label: t.filters.unpaid },
+                            { id: 'preparing', label: t.filters.preparing },
+                            { id: 'on_the_way', label: t.filters.on_the_way },
+                            { id: 'delivered', label: t.filters.delivered },
+                            { id: 'cancelled', label: t.filters.cancelled },
+                            { id: 'all', label: t.filters.all },
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -253,17 +362,17 @@ export default function AdminOrders({
                                     setFilter(tab.id);
                                     setPage(1);
                                 }}
-                                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap relative ${
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap relative active:scale-95 ${
                                     filter === tab.id
-                                        ? 'bg-white text-red-600 shadow-sm border border-gray-100'
+                                        ? 'bg-white text-red-600 shadow-sm border border-red-100 font-black'
                                         : 'text-gray-400 hover:text-gray-600'
                                 }`}
                             >
                                 {tab.label}
                                 {tab.badge && (
-                                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                    <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border border-white"></span>
+                                        <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 border-2 border-white shadow-sm"></span>
                                     </span>
                                 )}
                             </button>
@@ -273,59 +382,62 @@ export default function AdminOrders({
             </div>
 
             {fetchError && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100 flex items-center gap-3">
-                    <RefreshCw className="animate-spin" size={18} strokeWidth={1.5} />
-                    <p className="font-medium">
-                        {fetchError instanceof ApiError
-                            ? fetchError.message
-                            : 'Error al cargar los pedidos'}
+                <div className="bg-red-50 text-red-600 p-5 rounded-2xl mb-6 border-2 border-red-100 flex items-center gap-4 animate-in shake duration-500 shadow-xl shadow-red-50">
+                    <div className="bg-red-600 p-2 rounded-lg">
+                        <RefreshCw className="animate-spin text-white" size={20} strokeWidth={2} />
+                    </div>
+                    <p className="font-black uppercase tracking-tight text-sm">
+                        {fetchError instanceof ApiError ? fetchError.message : t.errorLoading}
                     </p>
                 </div>
             )}
 
             {!isLoading && orders.length === 0 ? (
-                <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center">
-                    <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <Package size={32} strokeWidth={1.5} />
+                <div className="bg-white rounded-3xl border-2 border-dashed border-gray-100 p-20 text-center shadow-inner">
+                    <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+                        <Package size={40} strokeWidth={1} />
                     </div>
-                    <h3 className="text-gray-500 font-medium tracking-tight">
-                        No se encontraron pedidos.
+                    <h3 className="text-gray-400 font-black uppercase tracking-widest text-xs">
+                        {t.noOrders}
                     </h3>
                 </div>
             ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-6">
                     {isLoading && orders.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                        <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
                             <RefreshCw
-                                className="animate-spin text-red-600 mb-4"
-                                size={32}
-                                strokeWidth={1.5}
+                                className="animate-spin text-red-600 mb-6"
+                                size={48}
+                                strokeWidth={2}
                             />
-                            <p className="text-gray-500 font-medium">Cargando pedidos...</p>
+                            <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
+                                {t.loadingOrders}
+                            </p>
                         </div>
                     ) : (
                         orders.map((order: Order) => (
                             <div
                                 key={order.id}
-                                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
+                                className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group border-b-4 border-b-gray-100"
                             >
                                 {/* Header del pedido */}
-                                <div className="p-4 sm:p-5 border-b border-gray-50 bg-gray-50/30 flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                <div className="p-5 sm:p-6 border-b border-gray-50 bg-gray-50/20 flex flex-wrap items-center justify-between gap-6 transition-colors">
+                                    <div className="flex items-center gap-4">
+                                        <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
                                             <Package
                                                 className="text-red-500"
-                                                size={20}
-                                                strokeWidth={1.5}
+                                                size={24}
+                                                strokeWidth={2}
                                             />
                                         </div>
                                         <div>
-                                            <div className="flex items-center gap-2 mb-0.5">
-                                                <h4 className="font-bold text-gray-900">
-                                                    Pedido #{String(order.id).padStart(5, '0')}
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h4 className="font-black text-gray-900 text-lg tracking-tight">
+                                                    {t.orderId}
+                                                    {String(order.id).padStart(5, '0')}
                                                 </h4>
                                                 <span
-                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                    className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm ${
                                                         statusOptions.find(
                                                             s => s.value === order.status
                                                         )?.color || ''
@@ -337,33 +449,36 @@ export default function AdminOrders({
                                                 </span>
                                                 {order.notes && (
                                                     <div
-                                                        className="bg-amber-100 text-amber-600 p-1.5 rounded-lg border border-amber-200"
-                                                        title="Tiene notas o comentarios"
+                                                        className="bg-amber-50 text-amber-600 p-1.5 rounded-xl border border-amber-100 shadow-sm"
+                                                        title="Содержит примечания"
                                                     >
                                                         <MessageSquare
-                                                            size={14}
+                                                            size={16}
                                                             strokeWidth={2.5}
                                                         />
                                                     </div>
                                                 )}
                                             </div>
-                                            <p className="text-xs text-gray-500 font-medium">
-                                                {new Date(order.createdAt).toLocaleString('es-ES', {
-                                                    day: '2-digit',
-                                                    month: 'short',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                })}
+                                            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+                                                {new Date(order.createdAt).toLocaleString(
+                                                    dateLocale,
+                                                    {
+                                                        day: '2-digit',
+                                                        month: 'short',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    }
+                                                )}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-4 ml-auto sm:ml-0">
+                                    <div className="flex items-center gap-6 ml-auto sm:ml-0">
                                         <div className="text-right">
-                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">
-                                                Total
+                                            <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1.5 leading-none">
+                                                {t.total}
                                             </p>
-                                            <p className="text-lg font-black text-gray-900">
+                                            <p className="text-2xl font-black text-gray-900 leading-none">
                                                 {formatCurrency(order.total)}
                                             </p>
                                         </div>
@@ -371,20 +486,20 @@ export default function AdminOrders({
                                 </div>
 
                                 {/* Cuerpo del pedido */}
-                                <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 overflow-hidden">
+                                <div className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-hidden">
                                     {/* Info Cliente & Stats */}
-                                    <div className="space-y-6">
+                                    <div className="space-y-8">
                                         <div>
-                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
-                                                <Smartphone size={14} strokeWidth={1.5} />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-pretty">
-                                                    Cliente y Contacto
+                                            <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-red-100 pl-3">
+                                                <Smartphone size={16} strokeWidth={2} />
+                                                <span className="text-[11px] font-black uppercase tracking-widest leading-none">
+                                                    {t.clientContact}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-4 mb-4">
                                                 <div
-                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border border-white
-                                                        ${order.users?.avatar?.startsWith('http') ? 'bg-gray-100' : order.users?.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                    className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border-2 border-white
+                                                        ${order.users?.avatar?.startsWith('http') ? 'bg-white' : order.users?.avatar ? 'bg-gray-100 text-[24px]' : 'bg-red-600'}`}
                                                 >
                                                     {order.users?.avatar ? (
                                                         order.users.avatar.startsWith('http') ? (
@@ -407,13 +522,13 @@ export default function AdminOrders({
                                                                 }}
                                                             />
                                                         ) : (
-                                                            <span className="select-none">
+                                                            <span className="select-none text-2xl">
                                                                 {order.users.avatar}
                                                             </span>
                                                         )
                                                     ) : (
-                                                        <span className="select-none">
-                                                            {(order.users?.name || 'Invitado')
+                                                        <span className="select-none text-xl">
+                                                            {(order.users?.name || t.guest)
                                                                 .split(' ')
                                                                 .filter(Boolean)
                                                                 .map(n => n[0])
@@ -424,118 +539,118 @@ export default function AdminOrders({
                                                     )}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-bold text-gray-900 text-sm truncate">
-                                                        {order.users?.name || 'Invitado'}
+                                                    <p className="font-black text-gray-900 text-[16px] truncate leading-tight mb-1">
+                                                        {order.users?.name || t.guest}
                                                     </p>
                                                     {order.userStats && (
-                                                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] font-bold border border-blue-100 w-fit">
-                                                            <Calendar size={10} strokeWidth={2} />
-                                                            REG.{' '}
+                                                        <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black border border-blue-100 w-fit uppercase tracking-tighter">
+                                                            <Calendar size={12} strokeWidth={2.5} />
+                                                            {t.regDate}{' '}
                                                             {new Date(
                                                                 order.userStats.registrationDate
-                                                            ).toLocaleDateString()}
+                                                            ).toLocaleDateString(dateLocale)}
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-xs text-gray-600 font-bold">
+                                            <div className="flex items-center gap-3">
+                                                <p className="text-sm text-gray-900 font-black tabular-nums">
                                                     {order.phoneNumber}
                                                 </p>
                                                 <a
                                                     href={`https://wa.me/${order.phoneNumber.replace(/\D/g, '')}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="p-1 px-2 bg-green-50 text-green-600 rounded-lg text-[10px] font-black border border-green-100 hover:bg-green-100 transition-colors flex items-center gap-1"
+                                                    className="p-1 px-3 bg-green-50 text-green-700 rounded-xl text-[10px] font-black border border-green-200 hover:bg-green-600 hover:text-white transition-all flex items-center gap-2 shadow-sm active:scale-95 uppercase tracking-widest"
                                                 >
-                                                    <MessageSquare size={10} strokeWidth={2.5} />
-                                                    WHATSAPP
+                                                    <MessageSquare size={12} strokeWidth={2.5} />
+                                                    {t.whatsapp}
                                                 </a>
                                             </div>
                                             {order.users?.email && (
-                                                <p className="text-[10px] text-gray-400 mt-1">
+                                                <p className="text-[11px] font-bold text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-lg w-fit border border-gray-100">
                                                     {order.users.email}
                                                 </p>
                                             )}
                                         </div>
 
                                         {order.userStats && (
-                                            <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
-                                                <div className="space-y-0.5">
-                                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                                        <ShoppingCart size={11} strokeWidth={1.5} />
-                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">
-                                                            Pedidos
+                                            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50/50 rounded-3xl border border-gray-100 shadow-inner">
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 text-gray-400">
+                                                        <ShoppingCart size={12} strokeWidth={2} />
+                                                        <span className="text-[9px] font-black uppercase tracking-widest">
+                                                            {t.userStats.orders}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs font-black text-gray-900">
+                                                    <p className="text-[13px] font-black text-gray-900">
                                                         {order.userStats.orderCount || 0}
                                                     </p>
                                                 </div>
-                                                <div className="space-y-0.5">
-                                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                                        <Wallet size={11} strokeWidth={1.5} />
-                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">
-                                                            Invertido
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 text-gray-400">
+                                                        <Wallet size={12} strokeWidth={2} />
+                                                        <span className="text-[9px] font-black uppercase tracking-widest">
+                                                            {t.userStats.invested}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs font-black text-gray-900">
+                                                    <p className="text-[13px] font-black text-gray-900">
                                                         {formatCurrency(
                                                             order.userStats.totalSpent || 0
                                                         )}
                                                     </p>
                                                 </div>
-                                                <div className="space-y-0.5">
-                                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                                        <TrendingUp size={11} strokeWidth={1.5} />
-                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">
-                                                            Ticket Medio
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 text-gray-400">
+                                                        <TrendingUp size={12} strokeWidth={2} />
+                                                        <span className="text-[9px] font-black uppercase tracking-widest">
+                                                            {t.userStats.avgTicket}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs font-black text-gray-900">
+                                                    <p className="text-[13px] font-black text-gray-900">
                                                         {formatCurrency(
                                                             order.userStats.avgCheck || 0
                                                         )}
                                                     </p>
                                                 </div>
-                                                <div className="space-y-0.5">
-                                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                                        <Clock size={11} strokeWidth={1.5} />
-                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">
-                                                            Frecuencia
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 text-gray-400">
+                                                        <Clock size={12} strokeWidth={2} />
+                                                        <span className="text-[9px] font-black uppercase tracking-widest">
+                                                            {t.userStats.frequency}
                                                         </span>
                                                     </div>
-                                                    <p className="text-[10px] font-black text-gray-900 leading-none">
+                                                    <p className="text-[10px] font-black text-gray-900 leading-none uppercase tracking-tight">
                                                         {order.userStats.frequency ||
-                                                            'Primer pedido'}
+                                                            t.userStats.firstOrder}
                                                     </p>
                                                 </div>
-                                                <div className="col-span-2 pt-2 border-t border-gray-200/50 mt-1 space-y-0.5">
-                                                    <div className="flex items-center gap-1.5 text-red-400">
+                                                <div className="col-span-2 pt-3 border-t border-gray-200 mt-1 space-y-1.5">
+                                                    <div className="flex items-center gap-2 text-red-500">
                                                         <Heart
-                                                            size={11}
-                                                            strokeWidth={1.5}
+                                                            size={12}
+                                                            strokeWidth={3}
                                                             fill="currentColor"
                                                         />
-                                                        <span className="text-[9px] font-bold uppercase tracking-tighter">
-                                                            Plato Favorito
+                                                        <span className="text-[9px] font-black uppercase tracking-widest">
+                                                            {t.userStats.favorite}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs font-black text-gray-900 line-clamp-1">
+                                                    <p className="text-[11px] font-black text-gray-900 line-clamp-1 uppercase tracking-tight">
                                                         {order.userStats.favoriteDish || 'N/A'}
                                                     </p>
                                                 </div>
                                             </div>
                                         )}
 
-                                        <div className="max-w-[280px]">
-                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
-                                                <Monitor size={14} strokeWidth={1.5} />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">
-                                                    Dirección de Entrega
+                                        <div className="max-w-[300px]">
+                                            <div className="flex items-center gap-3 text-gray-400 mb-3 border-l-4 border-blue-100 pl-3">
+                                                <Monitor size={16} strokeWidth={2} />
+                                                <span className="text-[11px] font-black uppercase tracking-widest">
+                                                    {t.deliveryAddress}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-700 leading-relaxed font-medium break-words">
+                                            <p className="text-[14px] text-gray-700 leading-relaxed font-black break-words bg-gray-50/30 p-3 rounded-2xl border border-dashed border-gray-100">
                                                 {order.deliveryAddress}
                                             </p>
                                         </div>
@@ -598,80 +713,80 @@ export default function AdminOrders({
                                                 });
 
                                                 return (
-                                                    <div className="space-y-3">
-                                                        <div className="flex flex-wrap gap-2 mb-2">
+                                                    <div className="space-y-4">
+                                                        <div className="flex flex-wrap gap-2.5 mb-2">
                                                             {deliveryType && (
                                                                 <div
-                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${deliveryType === 'RECOGIDA EN LOCAL' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}
+                                                                    className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${deliveryType === 'RECOGIDA EN LOCAL' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-700 border-gray-200'}`}
                                                                 >
                                                                     {deliveryType ===
                                                                     'RECOGIDA EN LOCAL' ? (
-                                                                        <Store size={12} />
+                                                                        <Store size={14} />
                                                                     ) : (
-                                                                        <Truck size={12} />
+                                                                        <Truck size={14} />
                                                                     )}
                                                                     {deliveryType ===
                                                                     'RECOGIDA EN LOCAL'
-                                                                        ? 'RECOGIDA'
-                                                                        : 'DOMICILIO'}
+                                                                        ? t.types.recogida
+                                                                        : t.types.domicilio}
                                                                 </div>
                                                             )}
                                                             {paymentMethod && (
                                                                 <div
-                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${paymentMethod.includes('TARJETA') ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}
+                                                                    className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${paymentMethod.includes('TARJETA') ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
                                                                 >
-                                                                    <Wallet size={12} />
+                                                                    <Wallet size={14} />
                                                                     {paymentMethod.includes(
                                                                         'TARJETA'
                                                                     )
                                                                         ? '💳 '
                                                                         : '💵 '}
-                                                                    {paymentMethod}
+                                                                    {paymentMethod.toUpperCase()}
                                                                 </div>
                                                             )}
                                                             {scheduled && (
-                                                                <div className="px-3 py-2 rounded-xl bg-red-600 text-white border border-red-700 text-[11px] font-black uppercase tracking-wider flex items-center gap-2 animate-pulse shadow-lg shadow-red-200">
+                                                                <div className="px-4 py-3 rounded-2xl bg-red-600 text-white border-2 border-red-700/50 text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-md">
                                                                     <Clock
-                                                                        size={14}
+                                                                        size={18}
                                                                         strokeWidth={3}
                                                                     />
                                                                     <div className="flex flex-col leading-none">
-                                                                        <span>
-                                                                            ENTREGA PROGRAMADA
+                                                                        <span className="mb-1">
+                                                                            {t.types.scheduled}
                                                                         </span>
-                                                                        <span className="text-[9px] opacity-90 mt-0.5">
+                                                                        <span className="text-[10px] opacity-90 font-mono tracking-tight">
                                                                             {scheduled}
                                                                         </span>
                                                                     </div>
                                                                 </div>
                                                             )}
                                                             {noCall && (
-                                                                <div className="px-2 py-1 rounded-lg bg-gray-100 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
-                                                                    <VolumeX size={12} />
-                                                                    SIN LLAMADA
+                                                                <div className="px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                                                    <VolumeX size={14} />
+                                                                    {t.types.noCall}
                                                                 </div>
                                                             )}
                                                             {noBuzzer && (
-                                                                <div className="px-2 py-1 rounded-lg bg-gray-100 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
-                                                                    <MessageSquare size={12} />
-                                                                    MÓVIL (NO TIMBRE)
+                                                                <div className="px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                                                    <Smartphone size={14} />
+                                                                    {t.types.noBuzzer}
                                                                 </div>
                                                             )}
                                                         </div>
 
                                                         {actualNote && (
-                                                            <div className="bg-amber-50 border border-amber-200/50 rounded-2xl p-4 animate-in slide-in-from-top-2 duration-300">
-                                                                <div className="flex items-center gap-2 text-amber-600 mb-2">
+                                                            <div className="bg-amber-50 border-2 border-amber-200/40 rounded-3xl p-5 shadow-inner">
+                                                                <div className="flex items-center gap-3 text-amber-600 mb-3">
                                                                     <MessageSquare
-                                                                        size={14}
-                                                                        strokeWidth={2}
+                                                                        size={16}
+                                                                        strokeWidth={3}
                                                                     />
-                                                                    <span className="text-[10px] font-black uppercase tracking-widest">
-                                                                        Mensaje del Cliente
+                                                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">
+                                                                        {t.clientMessage}
                                                                     </span>
                                                                 </div>
-                                                                <p className="text-xs text-amber-900 font-bold leading-relaxed italic">
-                                                                    "{actualNote}"
+                                                                <p className="text-[15px] text-amber-900 font-black leading-relaxed relative z-10">
+                                                                    {actualNote}
                                                                 </p>
                                                             </div>
                                                         )}
@@ -681,25 +796,28 @@ export default function AdminOrders({
                                     </div>
 
                                     {/* Items del pedido (Receipt Style) */}
-                                    <div className="space-y-2">
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                            Productos ({order.items?.length || 0})
-                                        </p>
-                                        <div className="space-y-0.5 px-1">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-purple-100 pl-3">
+                                            <ShoppingCart size={16} strokeWidth={2} />
+                                            <span className="text-[11px] font-black uppercase tracking-widest">
+                                                {t.products} ({order.items?.length || 0})
+                                            </span>
+                                        </div>
+                                        <div className="space-y-1 bg-gray-50/50 p-4 rounded-3xl border border-gray-100 shadow-inner">
                                             {order.items?.map((item: OrderItem, idx: number) => (
                                                 <div
                                                     key={idx}
-                                                    className="flex items-center justify-between gap-2 py-1.5 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 px-1 rounded transition-colors"
+                                                    className="flex items-center justify-between gap-3 py-2.5 border-b border-gray-100 last:border-0 hover:bg-white px-3 rounded-xl transition-all group/item"
                                                 >
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[11px] font-black text-red-600 min-w-[18px]">
-                                                            {item.quantity}x
+                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                        <span className="text-[13px] font-black text-red-600 bg-red-50 w-7 h-7 flex items-center justify-center rounded-lg shadow-inner group-hover/item:bg-red-600 group-hover/item:text-white transition-colors">
+                                                            {item.quantity}
                                                         </span>
-                                                        <span className="text-[11px] font-bold text-gray-700 line-clamp-1">
+                                                        <span className="text-[13px] font-black text-gray-800 uppercase tracking-tight line-clamp-1">
                                                             {item.name}
                                                         </span>
                                                     </div>
-                                                    <span className="text-[10px] font-bold text-gray-400 tabular-nums">
+                                                    <span className="text-[12px] font-black text-gray-400 tabular-nums">
                                                         {formatCurrency(
                                                             item.priceAtTime * item.quantity
                                                         )}
@@ -708,13 +826,13 @@ export default function AdminOrders({
                                             ))}
 
                                             {order.deliveryFee && order.deliveryFee > 0 ? (
-                                                <div className="flex items-center justify-between gap-2 py-1.5 border-t border-gray-100 mt-1 px-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                                            Gastos de Envío
+                                                <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">
+                                                            {t.deliveryFee}
                                                         </span>
                                                     </div>
-                                                    <span className="text-[10px] font-bold text-gray-900 tabular-nums">
+                                                    <span className="text-[12px] font-black text-gray-900 tabular-nums">
                                                         {formatCurrency(order.deliveryFee)}
                                                     </span>
                                                 </div>
@@ -723,11 +841,14 @@ export default function AdminOrders({
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="lg:border-l border-gray-100 lg:pl-8 flex flex-col justify-start">
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
-                                            Estado del Pedido
-                                        </p>
-                                        <div className="relative">
+                                    <div className="lg:border-l-2 border-dashed border-gray-100 lg:pl-10 flex flex-col justify-start">
+                                        <div className="flex items-center gap-3 text-gray-400 mb-5 border-l-4 border-green-100 pl-3">
+                                            <Activity size={16} strokeWidth={2} />
+                                            <span className="text-[11px] font-black uppercase tracking-widest">
+                                                {t.orderStatus}
+                                            </span>
+                                        </div>
+                                        <div className="relative group/status">
                                             <select
                                                 value={order.status}
                                                 onChange={e =>
@@ -737,7 +858,7 @@ export default function AdminOrders({
                                                     )
                                                 }
                                                 disabled={statusMutation.isPending}
-                                                className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-100 ${
+                                                className={`w-full px-5 py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-8 focus:ring-gray-100 shadow-md ${
                                                     statusOptions.find(
                                                         s => s.value === order.status
                                                     )?.color ||
@@ -748,36 +869,40 @@ export default function AdminOrders({
                                                     <option
                                                         key={opt.value}
                                                         value={opt.value}
-                                                        className="bg-white text-gray-900 font-medium"
+                                                        className="bg-white text-gray-900 font-black uppercase tracking-widest"
                                                     >
                                                         {opt.label}
                                                     </option>
                                                 ))}
                                             </select>
-                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
                                                 <RefreshCw
-                                                    size={14}
-                                                    strokeWidth={1.5}
+                                                    size={18}
+                                                    strokeWidth={3}
                                                     className={
                                                         statusMutation.isPending
                                                             ? 'animate-spin'
-                                                            : ''
+                                                            : 'text-current opacity-40'
                                                     }
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="mt-4 pt-4 border-t border-gray-50">
-                                            <div className="flex items-center gap-2 text-gray-400 mb-2">
-                                                <Globe size={14} strokeWidth={1.5} />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">
-                                                    Origen
+                                        <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <Globe
+                                                    size={18}
+                                                    strokeWidth={2}
+                                                    className="text-gray-300"
+                                                />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                                    {t.origin}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                                                <p className="text-[11px] font-bold text-gray-500">
-                                                    Web Directa
+                                            <div className="flex items-center gap-2.5 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm">
+                                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ring-4 ring-green-100"></span>
+                                                <p className="text-[10px] font-black text-green-700 uppercase tracking-widest">
+                                                    {t.webDirect}
                                                 </p>
                                             </div>
                                         </div>
@@ -790,15 +915,18 @@ export default function AdminOrders({
             )}
 
             {!isLoading && orders.length > 0 && pagination.pages > 1 && (
-                <div className="mt-6 flex justify-center gap-2">
+                <div className="mt-10 flex flex-wrap justify-center gap-2 pb-10">
                     {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(pageNum => (
                         <button
                             key={pageNum}
-                            onClick={() => setPage(pageNum)}
-                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition ${
+                            onClick={() => {
+                                setPage(pageNum);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className={`w-12 h-12 flex items-center justify-center rounded-2xl font-black text-sm transition-all shadow-sm active:scale-90 border ${
                                 pageNum === pagination.page
-                                    ? 'bg-red-600 text-white shadow-md'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    ? 'bg-red-600 text-white border-red-600 shadow-md font-black italic'
+                                    : 'bg-white text-gray-400 border-gray-100 hover:border-red-400 hover:text-red-500'
                             }`}
                         >
                             {pageNum}
@@ -806,35 +934,6 @@ export default function AdminOrders({
                     ))}
                 </div>
             )}
-
-            <AnimatePresence>
-                {notification && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="fixed bottom-6 right-6 z-50 pointer-events-none"
-                    >
-                        <div className="bg-gray-900/95 backdrop-blur-md text-white rounded-2xl shadow-2xl p-5 border border-white/10 flex items-center gap-4 min-w-[320px]">
-                            <div className="bg-green-500/20 text-green-400 p-2.5 rounded-xl border border-green-500/20">
-                                <CheckCircle2 size={24} strokeWidth={1.5} />
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
-                                    Pedido #{String(notification.id).padStart(5, '0')}
-                                </p>
-                                <p className="text-sm font-bold leading-tight">
-                                    Estado actualizado a{' '}
-                                    <span className="text-green-400">
-                                        {statusOptions.find(s => s.value === notification.newStatus)
-                                            ?.label || notification.newStatus}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 }

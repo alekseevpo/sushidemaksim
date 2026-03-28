@@ -83,21 +83,25 @@ function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }
     return null;
 }
 
-function LocationMarker({ position }: { position: [number, number] }) {
-    // Disable click-to-move as per user request for strict search-only usage
-    /*
-    useMapEvents({
-        click(e) {
-            setPosition([e.latlng.lat, e.latlng.lng]);
-        },
-    });
-    */
-
+function LocationMarker({
+    position,
+    onDragEnd,
+}: {
+    position: [number, number];
+    onDragEnd?: (lat: number, lon: number) => void;
+}) {
     return position ? (
         <Marker
             position={position}
             icon={SushiDeliveryIcon}
-            draggable={false} // Prevent manipulation
+            draggable={true}
+            eventHandlers={{
+                dragend: e => {
+                    const marker = e.target;
+                    const { lat, lng } = marker.getLatLng();
+                    onDragEnd?.(lat, lng);
+                },
+            }}
         />
     ) : null;
 }
@@ -434,7 +438,7 @@ export default function AddressModal({
                 setSearchResults([]);
                 wasSelectedViaSearchRef.current = false;
             }
-        }, 800);
+        }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery, address, performSearch, isOpen]);
 
@@ -562,8 +566,19 @@ export default function AddressModal({
                                     {/* Static Restaurant Marker */}
                                     <RestaurantMarker />
 
-                                    {/* Dynamic User Location Marker */}
-                                    <LocationMarker position={markerPosition} />
+                                    {/* Dynamic User Location Marker (draggable) */}
+                                    <LocationMarker
+                                        position={markerPosition}
+                                        onDragEnd={(lat, lon) => {
+                                            wasSelectedViaSearchRef.current = false;
+                                            skipNextReverseGeocodeRef.current = false;
+                                            setMarkerPosition([lat, lon]);
+                                            setMapZoom(18);
+                                            // Clear street/house so reverse geocode fills them
+                                            setAddress('');
+                                            setHouse('');
+                                        }}
+                                    />
 
                                     {/* Delivery Zones */}
                                     {deliveryZones.map(zone => {
@@ -697,39 +712,56 @@ export default function AddressModal({
                                                             </button>
                                                         )}
 
-                                                    {searchResults.map((res, i) => (
-                                                        <button
-                                                            key={i}
-                                                            onClick={() =>
-                                                                selectResult(res, searchQuery)
-                                                            }
-                                                            className="w-full px-5 py-4 text-left hover:bg-red-50 transition flex items-start gap-3"
-                                                        >
-                                                            <MapPin
-                                                                size={16}
-                                                                className="mt-1 text-gray-400 shrink-0"
-                                                            />
-                                                            <div className="flex flex-col min-w-0">
-                                                                <span className="text-sm font-bold text-gray-900 truncate">
-                                                                    {res.address?.road ||
-                                                                        res.display_name.split(
-                                                                            ','
-                                                                        )[0]}
-                                                                    {res.address?.house_number &&
-                                                                        `, ${res.address.house_number}`}
-                                                                </span>
-                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
-                                                                    {res.address?.city ||
-                                                                        res.address?.town ||
-                                                                        res.address?.village ||
-                                                                        res.address?.suburb ||
-                                                                        'Comunidad de Madrid'}
-                                                                    {res.address?.postcode &&
-                                                                        ` • ${res.address.postcode}`}
-                                                                </span>
-                                                            </div>
-                                                        </button>
-                                                    ))}
+                                                    {searchResults.map((res, i) => {
+                                                        // Extract house number from query to show alongside street results that lack one
+                                                        const queryNum =
+                                                            searchQuery.match(
+                                                                /\b(\d+[a-zA-Z]?)\s*$/
+                                                            )?.[1] ||
+                                                            searchQuery.match(
+                                                                /^(\d+[a-zA-Z]?)\s/
+                                                            )?.[1] ||
+                                                            '';
+                                                        const hasOwnHouse =
+                                                            !!res.address?.house_number;
+                                                        const displayHouse = hasOwnHouse
+                                                            ? res.address.house_number
+                                                            : queryNum;
+
+                                                        return (
+                                                            <button
+                                                                key={i}
+                                                                onClick={() =>
+                                                                    selectResult(res, searchQuery)
+                                                                }
+                                                                className="w-full px-5 py-4 text-left hover:bg-red-50 transition flex items-start gap-3"
+                                                            >
+                                                                <MapPin
+                                                                    size={16}
+                                                                    className="mt-1 text-gray-400 shrink-0"
+                                                                />
+                                                                <div className="flex flex-col min-w-0">
+                                                                    <span className="text-sm font-bold text-gray-900 truncate">
+                                                                        {res.address?.road ||
+                                                                            res.display_name.split(
+                                                                                ','
+                                                                            )[0]}
+                                                                        {displayHouse &&
+                                                                            `, ${displayHouse}`}
+                                                                    </span>
+                                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                                                                        {res.address?.city ||
+                                                                            res.address?.town ||
+                                                                            res.address?.village ||
+                                                                            res.address?.suburb ||
+                                                                            'Comunidad de Madrid'}
+                                                                        {res.address?.postcode &&
+                                                                            ` • ${res.address.postcode}`}
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
                                             )}
                                         </AnimatePresence>
@@ -753,7 +785,7 @@ export default function AddressModal({
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        {/* Number - READ ONLY */}
+                                        {/* Number - EDITABLE */}
                                         <div className="flex-1 min-w-0 flex flex-col">
                                             <p className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
                                                 Número / Portal *
@@ -761,13 +793,13 @@ export default function AddressModal({
                                             <input
                                                 type="text"
                                                 value={house}
-                                                readOnly
-                                                className="w-full bg-gray-100 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-600 outline-none cursor-not-allowed group-focus-within:ring-2 transition-all placeholder:text-gray-400"
-                                                placeholder="..."
+                                                onChange={e => setHouse(e.target.value)}
+                                                className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-red-500/10 transition-all placeholder:text-gray-400"
+                                                placeholder="Ej: 20"
                                             />
                                             {!house && address && (
-                                                <p className="text-[9px] font-bold text-red-500 mt-1 px-1 animate-pulse leading-none h-2">
-                                                    Busca tu calle con el número arriba
+                                                <p className="text-[9px] font-bold text-amber-600 mt-1 px-1 leading-none h-2">
+                                                    Escribe tu número manualmente
                                                 </p>
                                             )}
                                         </div>

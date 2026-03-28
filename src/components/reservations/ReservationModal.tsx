@@ -89,14 +89,45 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         setError(null);
 
         try {
-            const submissionData = {
-                ...formData,
-                phone: `+34${formData.phone.replace(/\s/g, '')}`,
-            };
-            await api.post('/reservations', submissionData);
+            const phoneNumber = '34641518390';
+            const formattedDate = new Date(formData.date).toLocaleDateString('es-ES', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            });
+
+            const message =
+                `Nueva Reserva de Mesa\n\n` +
+                `Nombre: ${formData.name}\n` +
+                `Teléfono: +34 ${formData.phone.replace(/\s/g, '')}\n` +
+                `Fecha: ${formattedDate}\n` +
+                `Hora: ${formData.time}\n` +
+                `Personas: ${formData.guests}`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+            // We still try to save to DB for record-keeping
+            try {
+                await api.post('/reservations', {
+                    ...formData,
+                    phone: `+34${formData.phone.replace(/\s/g, '')}`,
+                    user_id: user?.id,
+                });
+            } catch (dbErr) {
+                console.warn(
+                    'Could not save reservation to DB, but proceeding with WhatsApp:',
+                    dbErr
+                );
+            }
+
+            // Open WhatsApp
+            window.open(whatsappUrl, '_blank');
+
             setIsSuccess(true);
         } catch (err: any) {
-            console.error('Error creating reservation:', err);
+            console.error('Error initiating reservation:', err);
             setError(
                 err.message || 'Hubo un error al procesar tu reserva. Por favor intenta de nuevo.'
             );

@@ -346,10 +346,15 @@ export default function Header() {
                                                         </div>
                                                     </div>
 
-                                                    {user.role === 'admin' && (
+                                                    {(user.role === 'admin' ||
+                                                        user.role === 'waiter') && (
                                                         <>
                                                             <Link
-                                                                to="/admin"
+                                                                to={
+                                                                    user.role === 'admin'
+                                                                        ? '/admin'
+                                                                        : '/waiter'
+                                                                }
                                                                 onClick={() =>
                                                                     setShowUserMenu(false)
                                                                 }
@@ -359,7 +364,9 @@ export default function Header() {
                                                                     size={16}
                                                                     strokeWidth={1.5}
                                                                 />{' '}
-                                                                PANEL ADMIN
+                                                                {user.role === 'admin'
+                                                                    ? 'PANEL ADMIN'
+                                                                    : 'TERMINAL CAMARERO'}
                                                             </Link>
                                                             <div className="h-px bg-gray-50 my-1.5" />
                                                         </>
@@ -652,11 +659,16 @@ export default function Header() {
                                                         </div>
                                                     </div>
                                                     <div
-                                                        className={`grid gap-2 ${user.role === 'admin' ? 'grid-cols-2' : 'grid-cols-1'}`}
+                                                        className={`grid gap-2 ${user.role === 'admin' || user.role === 'waiter' ? 'grid-cols-2' : 'grid-cols-1'}`}
                                                     >
-                                                        {user.role === 'admin' && (
+                                                        {(user.role === 'admin' ||
+                                                            user.role === 'waiter') && (
                                                             <Link
-                                                                to="/admin"
+                                                                to={
+                                                                    user.role === 'admin'
+                                                                        ? '/admin'
+                                                                        : '/waiter'
+                                                                }
                                                                 onClick={() =>
                                                                     setShowMobileMenu(false)
                                                                 }
@@ -666,7 +678,9 @@ export default function Header() {
                                                                     size={18}
                                                                     strokeWidth={1.5}
                                                                 />
-                                                                PANEL
+                                                                {user.role === 'admin'
+                                                                    ? 'PANEL'
+                                                                    : 'CAMARERO'}
                                                             </Link>
                                                         )}
                                                         <Link

@@ -35,8 +35,7 @@ router.get('/house-numbers', async (req, res) => {
     const cacheKey = `houses-${street}-${city}-${lat}-${lon}`.toLowerCase().trim();
     const now = Date.now();
 
-    // Clear old sparse results for testing to ensure full list is fetched
-    houseNumbersCache.clear();
+    // Check cache for existing results
 
     if (houseNumbersCache.has(cacheKey)) {
         const cached = houseNumbersCache.get(cacheKey)!;
@@ -131,23 +130,119 @@ router.get(
             // Respect Nominatim's limit by spacing out requests if many users hit it
             await new Promise(r => setTimeout(r, 200));
 
-            const response = await axios.get('https://nominatim.openstreetmap.org/search', {
-                params: {
-                    format: 'json',
-                    q: query,
-                    limit: 50,
-                    addressdetails: 1,
-                    countrycodes: 'es', // Strictly Spain
-                    // Madrid and surrounding Community of Madrid bounding box
-                    // Format: left, top, right, bottom (lon, lat)
-                    viewbox: '-4.65, 41.2, -3.0, 39.85',
-                    bounded: 1,
-                },
-                headers: {
-                    'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
-                    'Accept-Language': 'es',
-                },
-            });
+            // Parse query for house number to improve search strategy
+            const hasNumber = /\d/.test(query);
+            let response;
+            let mergedResults: any[] = [];
+
+            // Extract street name and house number from query
+            let streetOnly = query;
+            if (hasNumber) {
+                // Match patterns like "calle escano 36", "gran via 12b", "36 calle escano"
+                const matchEnd = query.match(/^(.+?)\s+(\d+[a-zA-Z]?\s*)$/);
+                const matchStart = query.match(/^(\d+[a-zA-Z]?)\s+(.+)$/);
+                if (matchEnd) {
+                    streetOnly = matchEnd[1].trim();
+                } else if (matchStart) {
+                    streetOnly = matchStart[2].trim();
+                }
+            }
+
+            if (hasNumber) {
+                // 1. Structured search with house number (best precision)
+                response = await axios.get('https://nominatim.openstreetmap.org/search', {
+                    params: {
+                        format: 'json',
+                        street: query,
+                        city: 'Madrid',
+                        country: 'Spain',
+                        limit: 15,
+                        addressdetails: 1,
+                        countrycodes: 'es',
+                        viewbox: '-4.65, 41.2, -3.0, 39.85',
+                        bounded: 1,
+                    },
+                    headers: {
+                        'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                        'Accept-Language': 'es',
+                    },
+                });
+
+                mergedResults = [...(response.data || [])];
+
+                // 2. If structured search found nothing, try free-text with full query
+                if (mergedResults.length === 0) {
+                    await new Promise(r => setTimeout(r, 300));
+                    response = await axios.get('https://nominatim.openstreetmap.org/search', {
+                        params: {
+                            format: 'json',
+                            q: query + ', Madrid',
+                            limit: 15,
+                            addressdetails: 1,
+                            countrycodes: 'es',
+                            viewbox: '-4.65, 41.2, -3.0, 39.85',
+                            bounded: 1,
+                        },
+                        headers: {
+                            'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                            'Accept-Language': 'es',
+                        },
+                    });
+                    mergedResults = [...(response.data || [])];
+                }
+
+                // 3. ALWAYS also search for the street name WITHOUT the number
+                // This ensures the street itself appears even if the specific house number isn't in OSM
+                if (streetOnly !== query && streetOnly.length >= 3) {
+                    await new Promise(r => setTimeout(r, 300));
+                    const streetResponse = await axios.get(
+                        'https://nominatim.openstreetmap.org/search',
+                        {
+                            params: {
+                                format: 'json',
+                                q: streetOnly + ', Madrid',
+                                limit: 10,
+                                addressdetails: 1,
+                                countrycodes: 'es',
+                                viewbox: '-4.65, 41.2, -3.0, 39.85',
+                                bounded: 1,
+                            },
+                            headers: {
+                                'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                                'Accept-Language': 'es',
+                            },
+                        }
+                    );
+
+                    // Merge street-only results, avoiding OSM ID duplicates
+                    const existingIds = new Set(mergedResults.map((r: any) => r.osm_id));
+                    for (const item of streetResponse.data || []) {
+                        if (!existingIds.has(item.osm_id)) {
+                            mergedResults.push(item);
+                            existingIds.add(item.osm_id);
+                        }
+                    }
+                }
+
+                response = { data: mergedResults };
+            } else {
+                // No number in query: use free-text search
+                response = await axios.get('https://nominatim.openstreetmap.org/search', {
+                    params: {
+                        format: 'json',
+                        q: query,
+                        limit: 50,
+                        addressdetails: 1,
+                        countrycodes: 'es',
+                        viewbox: '-4.65, 41.2, -3.0, 39.85',
+                        bounded: 1,
+                    },
+                    headers: {
+                        'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                        'Accept-Language': 'es',
+                    },
+                });
+            }
 
             // Filter results to ensure they are strictly in the Community of Madrid
             // This prevents results from Guadalajara, Toledo, Segovia etc. from appearing

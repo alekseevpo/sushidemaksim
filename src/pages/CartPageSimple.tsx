@@ -630,7 +630,7 @@ export default function CartPageSimple() {
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-black text-red-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
-                                            Tienda Cerrada
+                                            Restaurante Cerrado
                                         </h3>
                                         <p className="text-[13px] text-red-800/80 whitespace-pre-line leading-snug">
                                             {isManualClosed

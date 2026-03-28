@@ -111,7 +111,7 @@ export default function ProductCard({
             {/* Info Container */}
             <div className="p-3 md:p-6 flex flex-col flex-1">
                 <div className="mb-1 md:mb-2 text-left">
-                    <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto font-bold">
+                    <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto">
                         {item.name}
                     </h3>
                     {item.pieces && (
@@ -157,7 +157,7 @@ export default function ProductCard({
                         data-testid="add-to-cart-button"
                         disabled={isAdded}
                         onClick={e => onAddToCart(item, e, quantity)}
-                        className={`h-8 w-8 md:h-11 md:w-auto md:min-w-[120px] md:px-6 rounded-lg md:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
+                        className={`h-8 w-8 md:h-11 md:w-[140px] md:px-6 rounded-lg md:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
                             isAdded
                                 ? 'bg-green-500 text-white cursor-default'
                                 : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-200 active:scale-95'
@@ -171,7 +171,7 @@ export default function ProductCard({
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -15 }}
                                     transition={{ duration: 0.3, ease: 'easeOut' }}
-                                    className="flex items-center gap-2"
+                                    className="flex items-center justify-center gap-2 w-full"
                                 >
                                     <Check size={16} strokeWidth={3} />
                                     <span className="hidden md:inline">Añadido</span>
@@ -183,7 +183,7 @@ export default function ProductCard({
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -15 }}
                                     transition={{ duration: 0.3, ease: 'easeOut' }}
-                                    className="flex items-center gap-2"
+                                    className="flex items-center justify-center gap-2 w-full"
                                 >
                                     <Plus size={16} strokeWidth={3} />
                                     <span className="hidden md:inline">Añadir</span>

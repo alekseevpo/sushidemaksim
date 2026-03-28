@@ -106,7 +106,7 @@ export interface User {
     addresses: UserAddress[];
     orders: Order[];
     createdAt: string;
-    role?: 'user' | 'admin';
+    role?: 'user' | 'admin' | 'waiter';
     isSuperadmin?: boolean;
     orderCount: number;
     totalSpent?: number;

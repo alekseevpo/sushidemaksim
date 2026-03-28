@@ -7,6 +7,7 @@ import {
     Clock,
     Heart,
     Share2,
+    RefreshCw,
 } from 'lucide-react';
 import {
     BarChart,
@@ -27,325 +28,544 @@ import {
 interface AdminAnalyticsProps {
     stats: any;
     loading: boolean;
+    language?: 'ru' | 'es';
 }
 
-export default function AdminAnalytics({ stats, loading }: AdminAnalyticsProps) {
+const ANALYTICS_TRANSLATIONS = {
+    ru: {
+        title: 'Продвинутая аналитика',
+        period: 'Последние 90 дней',
+        loading: 'Загрузка аналитики...',
+        ltv: {
+            label: 'Средний LTV',
+            desc: 'Пожизненная ценность клиента',
+        },
+        avgTicket: {
+            label: 'Средний чек',
+            desc: 'В среднем за заказ',
+        },
+        retention: {
+            label: 'Удержание',
+            desc: 'Повторные клиенты (30д)',
+        },
+        margin: {
+            label: 'Оц. Маржа',
+            desc: 'Средняя наценка на ингредиенты',
+        },
+        devices: {
+            title: 'Основные устройства (30д)',
+            mobile: 'Мобильные',
+            desktop: 'Компьютеры',
+            tablet: 'Планшеты',
+            insight:
+                'Показывает, как клиенты делают заказы. Если 90% заказов с мобильных, сайт должен быть идеально удобен для телефона.',
+        },
+        newVsRecurring: {
+            title: 'Новые vs Повторные',
+            new: 'Новые',
+            recur: 'Повторные',
+            insight:
+                'Отражает лояльность. Если много повторных заказов — кухня отличная. Если почти все новые — нужно работать над возвращаемостью.',
+        },
+        categoryPerformance: {
+            title: 'Эффективность категорий (30д)',
+            sales: 'Продажи',
+            ticket: 'Чек',
+            insight:
+                'Помогает понять, какие разделы меню приносят основную прибыль, а какие — высокий средний чек.',
+        },
+        browsers: {
+            title: 'Браузеры (30д)',
+            insight:
+                'Техническая статистика. Помогает убедиться, что сайт работает быстро во всех популярных браузерах.',
+        },
+        salesGrowth: {
+            title: 'Рост продаж (30д)',
+            insight:
+                'Визуальный тренд вашего бизнеса. Позволяет увидеть влияние праздников или акций на реальную выручку в динамике.',
+        },
+        activityPeaks: {
+            title: 'Пики активности (по часам)',
+            orders: 'заказов',
+            insight:
+                'Определяет часы пиковой нагрузки на кухню. Помогает планировать заготовки и количество поваров.',
+        },
+        promoEffectiveness: {
+            title: 'Эффективность акций (90д)',
+            discountOrders: 'Заказы со скидкой',
+            totalSavings: 'Общая экономия клиентов',
+            avgDiscount: 'Средняя скидка',
+            insight:
+                'Оценивает, сколько выручки приносят акции. Помогает понять, не слишком ли много вы раздаёте скидок.',
+        },
+        deliveryZones: {
+            title: 'Популярные районы доставки',
+            insight:
+                'Показывает основные районы. Помогает оптимизировать логистику и таргет рекламы.',
+        },
+        topFavorited: {
+            title: 'Самые желанные (Избранное)',
+            noData: 'Данных об избранном пока нет',
+            label: 'Что это значит:',
+            text: 'Это товары со скрытым спросом. Люди добавляют их в избранное, чтобы купить позже.',
+            tip: 'Совет:',
+            tipText: 'Запустите акцию на эти позиции, чтобы превратить ожидания в реальные заказы.',
+        },
+        topShared: {
+            title: 'Виральные товары (Репосты)',
+            noData: 'Данных о репостах пока нет',
+            label: 'Что это значит:',
+            text: 'Эти товары чаще всего пересылают друзьям. Они визуально привлекательны для соцсетей.',
+            tip: 'Совет:',
+            tipText: 'Используйте фото именно этих блюд в рекламе Facebook/Instagram.',
+        },
+        abcAnalysis: {
+            title: 'ABC-анализ меню (Прибыльность 90д)',
+            catA: 'Кат A (80%)',
+            catB: 'Кат B (15%)',
+            catC: 'Кат C (5%)',
+            product: 'Товар',
+            units: 'Шт',
+            income: 'Доход',
+            revShare: '% Выручки',
+            abc: 'ABC',
+            insight:
+                'Золотой стандарт управления меню. А — хиты (не трогать), B — стабильные, C — кандидаты на замену.',
+        },
+        heatmap: {
+            title: 'Тепловая карта недели (День vs Час)',
+            low: 'Низкая',
+            high: 'Пик',
+            days: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            insight:
+                'Самый мощный инструмент планирования. Показывает точные окна перегрузок для графика курьеров.',
+        },
+    },
+    es: {
+        title: 'Analítica Avanzada',
+        period: 'Últimos 90 días',
+        loading: 'Cargando analítica...',
+        ltv: {
+            label: 'LTV Promedio',
+            desc: 'Valor de vida del cliente',
+        },
+        avgTicket: {
+            label: 'Ticket Medio',
+            desc: 'Promedio por pedido',
+        },
+        retention: {
+            label: 'Tasa de Retención',
+            desc: 'Clientes recurrentes (30d)',
+        },
+        margin: {
+            label: 'Margen Estimado',
+            desc: 'Promedio sobre coste ingredientes',
+        },
+        devices: {
+            title: 'Dispositivo Principal (30d)',
+            mobile: 'Móvil',
+            desktop: 'Escritorio',
+            tablet: 'Tablet',
+            insight:
+                'Muestra cómo hacen pedidos tus clientes. Si el 90% viene de móviles, el sitio debe ser perfecto para teléfonos.',
+        },
+        newVsRecurring: {
+            title: 'Nuevos vs Recur.',
+            new: 'Nuevos',
+            recur: 'Recur.',
+            insight:
+                'Refleja la fidelidad. Si hay muchos pedidos recurrentes, la cocina es excelente. Si casi todos son nuevos, hay que trabajar en retención.',
+        },
+        categoryPerformance: {
+            title: 'Performance por Categoría (30d)',
+            sales: 'Ventas',
+            ticket: 'Ticket',
+            insight:
+                'Ayuda a entender qué secciones del menú generan más ingresos y cuáles tienen el ticket medio más alto.',
+        },
+        browsers: {
+            title: 'Navegadores (30d)',
+            insight:
+                'Estadística técnica. Ayuda a asegurar que el sitio funcione rápido en todos los navegadores populares.',
+        },
+        salesGrowth: {
+            title: 'Crecimiento de Ventas (30d)',
+            insight:
+                'Tendencia visual de tu negocio. Permite ver el impacto de festivos, fines de semana o promociones en los ingresos.',
+        },
+        activityPeaks: {
+            title: 'Picos de Actividad (Horario)',
+            orders: 'pedidos',
+            insight:
+                'Identifica las horas pico de la cocina. Si a las 19:00 siempre hay pico, los cocineros deben estar preparados.',
+        },
+        promoEffectiveness: {
+            title: 'Efectividad de Promociones (90d)',
+            discountOrders: 'Pedidos con Descuento',
+            totalSavings: 'Ahorro Total Cliente',
+            avgDiscount: 'Descuento Promedio',
+            insight:
+                'Evalúa cuántos ingresos generan las promociones. Ayuda a entender si estás dando demasiados descuentos.',
+        },
+        deliveryZones: {
+            title: 'Zonas de Entrega Populares',
+            insight:
+                'Muestra las zonas principales de entrega. Ayuda a optimizar la logística y enfocar la publicidad.',
+        },
+        topFavorited: {
+            title: 'Productos deseados (Favoritos)',
+            noData: 'No hay datos de favoritos aún',
+            label: 'Qué significa:',
+            text: 'Productos con alta demanda "oculta". Los clientes los guardan para recordarlos.',
+            tip: 'Consejo:',
+            tipText:
+                'Inicia una promo temporal en estos platos para convertirlos en pedidos reales.',
+        },
+        topShared: {
+            title: 'Productos virales (Compartidos)',
+            noData: 'No hay datos de compartidos aún',
+            label: 'Qué significa:',
+            text: 'Platos que más se envían a amigos. Son visualmente atractivos o virales.',
+            tip: 'Consejo:',
+            tipText: 'Usa fotos de estos platos en tus anuncios de Instagram o Facebook.',
+        },
+        abcAnalysis: {
+            title: 'Análisis ABC del Menú (Rentabilidad 90d)',
+            catA: 'Cat A (80%)',
+            catB: 'Cat B (15%)',
+            catC: 'Cat C (5%)',
+            product: 'Producto',
+            units: 'Uds',
+            income: 'Ingresos',
+            revShare: '% Rev',
+            abc: 'ABC',
+            insight:
+                'El estándar de oro en gestión de menú. A — éxitos (no tocar), B — estables, C — candidatos a reemplazo.',
+        },
+        heatmap: {
+            title: 'Mapa de Calor Semanal (Día vs Hora)',
+            low: 'Bajo',
+            high: 'Pico',
+            days: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+            insight:
+                'La herramienta más potente de planificación. Muestra las ventanas exactas de sobrecarga para repartidores.',
+        },
+    },
+} as const;
+
+export default function AdminAnalytics({ stats, loading, language = 'es' }: AdminAnalyticsProps) {
+    const t = ANALYTICS_TRANSLATIONS[language];
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
+                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
+                    {t.loading}
+                </p>
+            </div>
+        );
+    }
+
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
-            <div className="flex justify-between items-center">
-                <h2 className="text-lg font-bold text-gray-900">Analítica Avanzada</h2>
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-3xl border border-gray-100 shadow-sm gap-4">
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                    {t.title}
+                </h2>
                 <div className="flex gap-2">
-                    <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold border border-blue-100 uppercase tracking-wider">
-                        Últimos 90 días
+                    <span className="px-5 py-2.5 bg-red-50 text-red-600 rounded-full text-[10px] font-black border border-red-100 uppercase tracking-widest shadow-sm">
+                        {t.period}
                     </span>
                 </div>
             </div>
 
             {/* Top Insight Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                        LTV Promedio
-                    </p>
-                    <div className="flex items-end gap-2">
-                        <span className="text-xl font-black text-gray-900">
-                            {loading ? '...' : `${stats?.ltv || 0}€`}
-                        </span>
-                        <TrendingUp size={14} className="text-green-500 mb-1" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {[
+                    {
+                        label: t.ltv.label,
+                        value: `${stats?.ltv || 0}€`,
+                        desc: t.ltv.desc,
+                        color: 'text-gray-900',
+                        trend: true,
+                    },
+                    {
+                        label: t.avgTicket.label,
+                        value: `${Math.round((stats?.stats?.revenue / stats?.stats?.totalOrders || 0) * 100) / 100}€`,
+                        desc: t.avgTicket.desc,
+                        color: 'text-gray-900',
+                    },
+                    {
+                        label: t.retention.label,
+                        value: `${Math.round((stats?.retention?.returning / (stats?.retention?.new + stats?.retention?.returning || 1)) * 100)}%`,
+                        desc: t.retention.desc,
+                        color: 'text-gray-900',
+                    },
+                    {
+                        label: t.margin.label,
+                        value: '65%',
+                        desc: t.margin.desc,
+                        color: 'text-emerald-600',
+                    },
+                ].map((stat, i) => (
+                    <div
+                        key={i}
+                        className="bg-white p-6 rounded-[28px] border border-gray-100 shadow-sm hover:shadow-md transition-all group"
+                    >
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 group-hover:text-red-500 transition-colors">
+                            {stat.label}
+                        </p>
+                        <div className="flex items-end gap-2 mb-1">
+                            <span className={`text-2xl font-black ${stat.color} tracking-tight`}>
+                                {stat.value}
+                            </span>
+                            {stat.trend && (
+                                <TrendingUp
+                                    size={16}
+                                    className="text-emerald-500 mb-1.5"
+                                    strokeWidth={3}
+                                />
+                            )}
+                        </div>
+                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">
+                            {stat.desc}
+                        </p>
                     </div>
-                    <p className="text-[9px] text-gray-400 mt-1">Valor de vida del cliente</p>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                        Ticket Medio
-                    </p>
-                    <div className="flex items-end gap-2">
-                        <span className="text-xl font-black text-gray-900">
-                            {loading
-                                ? '...'
-                                : `${Math.round((stats?.stats?.revenue / stats?.stats?.totalOrders || 0) * 100) / 100}€`}
-                        </span>
-                    </div>
-                    <p className="text-[9px] text-gray-400 mt-1">Promedio por pedido</p>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                        Tasa de Retención
-                    </p>
-                    <div className="flex items-end gap-2">
-                        <span className="text-xl font-black text-gray-900">
-                            {loading
-                                ? '...'
-                                : `${Math.round((stats?.retention?.returning / (stats?.retention?.new + stats?.retention?.returning || 1)) * 100)}%`}
-                        </span>
-                    </div>
-                    <p className="text-[9px] text-gray-400 mt-1">Clientes recurrentes (30d)</p>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                        Margen Estimado
-                    </p>
-                    <div className="flex items-end gap-2">
-                        <span className="text-xl font-black text-green-600">65%</span>
-                    </div>
-                    <p className="text-[9px] text-gray-400 mt-1">
-                        Promedio sobre coste ingredientes
-                    </p>
-                </div>
+                ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {/* Device Distribution */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                        <Monitor size={16} strokeWidth={1.5} className="text-blue-500" />
-                        Dispositivo Principal (30d)
-                    </h3>
-                    {loading ? (
-                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
-                    ) : (
-                        <div className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={[
-                                            {
-                                                name: 'Móvil',
-                                                value:
-                                                    stats?.analytics?.devices?.mobile ||
-                                                    stats?.analytics?.devices?.Mobile ||
-                                                    0,
-                                            },
-                                            {
-                                                name: 'Escritorio',
-                                                value:
-                                                    stats?.analytics?.devices?.desktop ||
-                                                    stats?.analytics?.devices?.Desktop ||
-                                                    stats?.analytics?.devices?.Unknown ||
-                                                    0,
-                                            },
-                                            {
-                                                name: 'Tablet',
-                                                value:
-                                                    stats?.analytics?.devices?.tablet ||
-                                                    stats?.analytics?.devices?.Tablet ||
-                                                    0,
-                                            },
-                                        ]}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={45}
-                                        outerRadius={65}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        <Cell fill="#3B82F6" />
-                                        <Cell fill="#10B981" />
-                                        <Cell fill="#F59E0B" />
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend wrapperStyle={{ fontSize: '9px' }} />
-                                </PieChart>
-                            </ResponsiveContainer>
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 flex flex-col">
+                    <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest text-pretty">
+                        <div className="p-2 bg-blue-50 text-blue-500 rounded-xl">
+                            <Monitor size={18} strokeWidth={2.5} />
                         </div>
-                    )}
-                    <p className="text-[10px] text-gray-400 mt-4 leading-relaxed border-t border-gray-50 pt-3">
-                        **Зачем это нужно:** Показывает, как клиенты делают заказы. Если 90% заказов
-                        с мобильных, сайт должен быть идеально удобен для телефона. Если высок %
-                        компьютеров, значит люди часто заказывают из офисов или дома на ужин.
-                    </p>
+                        {t.devices.title}
+                    </h3>
+                    <div className="h-56">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={[
+                                        {
+                                            name: t.devices.mobile,
+                                            value:
+                                                stats?.analytics?.devices?.mobile ||
+                                                stats?.analytics?.devices?.Mobile ||
+                                                0,
+                                        },
+                                        {
+                                            name: t.devices.desktop,
+                                            value:
+                                                stats?.analytics?.devices?.desktop ||
+                                                stats?.analytics?.devices?.Desktop ||
+                                                stats?.analytics?.devices?.Unknown ||
+                                                0,
+                                        },
+                                        {
+                                            name: t.devices.tablet,
+                                            value:
+                                                stats?.analytics?.devices?.tablet ||
+                                                stats?.analytics?.devices?.Tablet ||
+                                                0,
+                                        },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={55}
+                                    outerRadius={80}
+                                    paddingAngle={8}
+                                    dataKey="value"
+                                >
+                                    <Cell fill="#3B82F6" stroke="none" />
+                                    <Cell fill="#10B981" stroke="none" />
+                                    <Cell fill="#F59E0B" stroke="none" />
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{
+                                        borderRadius: '16px',
+                                        border: 'none',
+                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                                <Legend
+                                    wrapperStyle={{
+                                        fontSize: '9px',
+                                        fontWeight: 'black',
+                                        textTransform: 'uppercase',
+                                        paddingTop: '10px',
+                                    }}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
+                        <span className="text-sm mt-px">💡</span>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            {t.devices.insight}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Customer Retention */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                        <Users size={16} strokeWidth={1.5} className="text-purple-500" />
-                        Nuevos vs Recur.
-                    </h3>
-                    {loading ? (
-                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
-                    ) : (
-                        <div className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={[
-                                            {
-                                                name: 'Nuevos',
-                                                value: stats?.retention?.new || 0,
-                                            },
-                                            {
-                                                name: 'Recur.',
-                                                value: stats?.retention?.returning || 0,
-                                            },
-                                        ]}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={45}
-                                        outerRadius={65}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        <Cell fill="#3B82F6" />
-                                        <Cell fill="#8B5CF6" />
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend wrapperStyle={{ fontSize: '9px' }} />
-                                </PieChart>
-                            </ResponsiveContainer>
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 flex flex-col">
+                    <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
+                            <Users size={18} strokeWidth={2.5} />
                         </div>
-                    )}
-                    <p className="text-[10px] text-gray-400 mt-4 leading-relaxed border-t border-gray-50 pt-3">
-                        **Зачем это нужно:** Отражает лояльность. Если много повторных заказов —
-                        кухня отличная. Если почти все новые — вам нужно работать над тем, чтобы
-                        клиенты возвращались (бонусы, рассылки).
-                    </p>
+                        {t.newVsRecurring.title}
+                    </h3>
+                    <div className="h-56">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={[
+                                        {
+                                            name: t.newVsRecurring.new,
+                                            value: stats?.retention?.new || 0,
+                                        },
+                                        {
+                                            name: t.newVsRecurring.recur,
+                                            value: stats?.retention?.returning || 0,
+                                        },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={55}
+                                    outerRadius={80}
+                                    paddingAngle={8}
+                                    dataKey="value"
+                                >
+                                    <Cell fill="#3B82F6" stroke="none" />
+                                    <Cell fill="#8B5CF6" stroke="none" />
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{
+                                        borderRadius: '16px',
+                                        border: 'none',
+                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                                <Legend
+                                    wrapperStyle={{
+                                        fontSize: '9px',
+                                        fontWeight: 'black',
+                                        textTransform: 'uppercase',
+                                        paddingTop: '10px',
+                                    }}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
+                        <span className="text-sm mt-px">💡</span>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            {t.newVsRecurring.insight}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Category Performance */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                        <Activity size={16} strokeWidth={1.5} className="text-red-500" />
-                        Performance por Categoría (30d)
-                    </h3>
-                    {loading ? (
-                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
-                    ) : (
-                        <div className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={stats?.categoryStats}>
-                                    <CartesianGrid
-                                        strokeDasharray="3 3"
-                                        vertical={false}
-                                        stroke="#f0f0f0"
-                                    />
-                                    <XAxis
-                                        dataKey="name"
-                                        fontSize={9}
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tickFormatter={str =>
-                                            str.length > 10 ? str.substring(0, 8) + '..' : str
-                                        }
-                                    />
-                                    <YAxis
-                                        yAxisId="left"
-                                        fontSize={9}
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tickFormatter={val => `${val}€`}
-                                    />
-                                    <YAxis
-                                        yAxisId="right"
-                                        orientation="right"
-                                        fontSize={9}
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tickFormatter={val => `${val}€`}
-                                    />
-                                    <Tooltip />
-                                    <Legend wrapperStyle={{ fontSize: '9px' }} />
-                                    <Bar
-                                        yAxisId="left"
-                                        name="Ventas"
-                                        dataKey="revenue"
-                                        fill="#3B82F6"
-                                        radius={[4, 4, 0, 0]}
-                                        barSize={20}
-                                    />
-                                    <Bar
-                                        yAxisId="right"
-                                        name="Ticket"
-                                        dataKey="avgPrice"
-                                        fill="#F59E0B"
-                                        radius={[4, 4, 0, 0]}
-                                        barSize={20}
-                                    />
-                                </BarChart>
-                            </ResponsiveContainer>
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 flex flex-col">
+                    <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-red-50 text-red-600 rounded-xl">
+                            <Activity size={18} strokeWidth={2.5} />
                         </div>
-                    )}
-                    <p className="text-[10px] text-gray-400 mt-4 leading-relaxed border-t border-gray-50 pt-3">
-                        **Зачем это нужно:** Помогает понять, какие разделы меню приносят основную
-                        прибыль, а какие — высокий средний чек. Используйте это для изменения цен
-                        или поиска более дешевых поставщиков для популярных групп.
-                    </p>
-                </div>
-
-                {/* Browser Distribution */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                        <ExternalLink size={16} strokeWidth={1.5} className="text-gray-500" />
-                        Navegadores (30d)
+                        {t.categoryPerformance.title}
                     </h3>
-                    {loading ? (
-                        <div className="h-48 bg-gray-50 rounded animate-pulse"></div>
-                    ) : (
-                        <div className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={Object.entries(stats?.analytics?.browsers || {}).map(
-                                            ([name, value]) => ({
-                                                name,
-                                                value,
-                                            })
-                                        )}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={45}
-                                        outerRadius={65}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        {[
-                                            '#EF4444',
-                                            '#3B82F6',
-                                            '#10B981',
-                                            '#F59E0B',
-                                            '#8B5CF6',
-                                        ].map((color, index) => (
-                                            <Cell key={index} fill={color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend wrapperStyle={{ fontSize: '9px' }} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    )}
-                    <p className="text-[10px] text-gray-400 mt-4 leading-relaxed border-t border-gray-50 pt-3">
-                        **Зачем это нужно:** Техническая статистика. Помогает разработчикам
-                        убедиться, что сайт работает быстро во всех популярных браузерах, которыми
-                        пользуются ваши клиенты.
-                    </p>
+                    <div className="h-56">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={stats?.categoryStats}>
+                                <CartesianGrid
+                                    strokeDasharray="3 3"
+                                    vertical={false}
+                                    stroke="#f5f5f5"
+                                />
+                                <XAxis
+                                    dataKey="name"
+                                    fontSize={8}
+                                    fontWeight="bold"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tickFormatter={str =>
+                                        str.length > 10 ? str.substring(0, 8) + '..' : str
+                                    }
+                                />
+                                <YAxis
+                                    yAxisId="left"
+                                    fontSize={8}
+                                    fontWeight="bold"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tickFormatter={val => `${val}€`}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        borderRadius: '16px',
+                                        border: 'none',
+                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                                <Bar
+                                    yAxisId="left"
+                                    name={t.categoryPerformance.sales}
+                                    dataKey="revenue"
+                                    fill="#3B82F6"
+                                    radius={[6, 6, 0, 0]}
+                                    barSize={16}
+                                />
+                                <Bar
+                                    yAxisId="left"
+                                    name={t.categoryPerformance.ticket}
+                                    dataKey="avgPrice"
+                                    fill="#F59E0B"
+                                    radius={[6, 6, 0, 0]}
+                                    barSize={16}
+                                />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
+                        <span className="text-sm mt-px">💡</span>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            {t.categoryPerformance.insight}
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Sales Growth Area Chart */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <TrendingUp size={18} strokeWidth={1.5} className="text-green-500" />
-                        Crecimiento de Ventas (30d)
+                <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 flex flex-col">
+                    <h3 className="font-black text-gray-900 mb-10 flex items-center gap-4 text-sm uppercase tracking-widest">
+                        <div className="w-10 h-10 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-2xl shadow-inner">
+                            <TrendingUp size={24} strokeWidth={2.5} />
+                        </div>
+                        {t.salesGrowth.title}
                     </h3>
-                    <div className="h-72">
+                    <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={stats?.growth}>
                                 <defs>
                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
+                                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
                                         <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid
                                     strokeDasharray="3 3"
                                     vertical={false}
-                                    stroke="#f0f0f0"
+                                    stroke="#f5f5f5"
                                 />
                                 <XAxis
                                     dataKey="date"
                                     fontSize={10}
+                                    fontWeight="black"
                                     axisLine={false}
                                     tickLine={false}
                                     tickFormatter={str =>
@@ -354,130 +574,166 @@ export default function AdminAnalytics({ stats, loading }: AdminAnalyticsProps) 
                                 />
                                 <YAxis
                                     fontSize={10}
+                                    fontWeight="black"
                                     axisLine={false}
                                     tickLine={false}
                                     tickFormatter={val => `${val}€`}
                                 />
-                                <Tooltip />
+                                <Tooltip
+                                    contentStyle={{
+                                        borderRadius: '24px',
+                                        border: 'none',
+                                        boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
+                                        fontWeight: 'black',
+                                        padding: '16px',
+                                    }}
+                                />
                                 <Area
                                     type="monotone"
                                     dataKey="revenue"
                                     stroke="#ef4444"
-                                    strokeWidth={3}
+                                    strokeWidth={5}
                                     fillOpacity={1}
                                     fill="url(#colorRevenue)"
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
-                    <p className="text-xs text-gray-400 mt-6 leading-relaxed bg-gray-50 p-3 rounded-lg border border-dashed border-gray-200">
-                        **Зачем это нужно:** Визуальный тренд вашего бизнеса. Позволяет увидеть
-                        влияние праздников, выходных или рекламных акций на реальную выручку в
-                        динамике. Идеально для оценки "здоровья" ресторана за месяц.
-                    </p>
+                    <div className="mt-6 bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-200 flex items-start gap-2.5">
+                        <span className="text-sm mt-px">💡</span>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            {t.salesGrowth.insight}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Activity Heatmap (Hourly) */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <Clock size={18} strokeWidth={1.5} className="text-blue-500" />
-                        Picos de Actividad (Horario)
+                <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 flex flex-col">
+                    <h3 className="font-black text-gray-900 mb-10 flex items-center gap-4 text-sm uppercase tracking-widest">
+                        <div className="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 rounded-2xl shadow-inner">
+                            <Clock size={24} strokeWidth={2.5} />
+                        </div>
+                        {t.activityPeaks.title}
                     </h3>
-                    <div className="h-72">
+                    <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
-                                data={
-                                    (stats?.heatmap?.hourly || []).map((v: number, i: number) => ({
-                                        hour: `${i}h`,
-                                        pedidos: v,
-                                    })) || []
-                                }
+                                data={(stats?.heatmap?.hourly || []).map(
+                                    (v: number, i: number) => ({ hour: `${i}h`, pedidos: v })
+                                )}
                             >
                                 <CartesianGrid
                                     strokeDasharray="3 3"
                                     vertical={false}
-                                    stroke="#f0f0f0"
+                                    stroke="#f5f5f5"
                                 />
                                 <XAxis
                                     dataKey="hour"
                                     fontSize={10}
+                                    fontWeight="black"
                                     axisLine={false}
                                     tickLine={false}
                                 />
-                                <YAxis fontSize={10} axisLine={false} tickLine={false} />
-                                <Tooltip />
-                                <Bar dataKey="pedidos" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                                <YAxis
+                                    fontSize={10}
+                                    fontWeight="black"
+                                    axisLine={false}
+                                    tickLine={false}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
+                                    contentStyle={{
+                                        borderRadius: '24px',
+                                        border: 'none',
+                                        boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
+                                        fontWeight: 'black',
+                                        padding: '16px',
+                                    }}
+                                />
+                                <Bar
+                                    dataKey="pedidos"
+                                    name={t.activityPeaks.orders}
+                                    fill="#3B82F6"
+                                    radius={[8, 8, 0, 0]}
+                                    barSize={20}
+                                />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <p className="text-xs text-gray-400 mt-6 leading-relaxed bg-gray-50 p-3 rounded-lg border border-dashed border-gray-200">
-                        **Зачем это нужно:** Определяет часы пиковой нагрузки на кухню. Если в 19:00
-                        всегда всплеск, повара должны быть полностью готовы к этому времени и иметь
-                        все заготовки.
-                    </p>
+                    <div className="mt-6 bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-200 flex items-start gap-2.5">
+                        <span className="text-sm mt-px">💡</span>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            {t.activityPeaks.insight}
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Promo Performance */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <TrendingUp size={18} strokeWidth={1.5} className="text-purple-500" />
-                        Efectividad de Promociones (90d)
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-10">
+                    <h3 className="font-black text-gray-900 mb-10 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
+                            <TrendingUp size={18} strokeWidth={2.5} />
+                        </div>
+                        {t.promoEffectiveness.title}
                     </h3>
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-100">
-                            <span className="text-sm font-medium text-purple-900">
-                                Pedidos con Descuento
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center p-6 bg-purple-50 rounded-[28px] border border-purple-100 shadow-inner">
+                            <span className="text-[11px] font-black text-purple-900 uppercase tracking-widest">
+                                {t.promoEffectiveness.discountOrders}
                             </span>
-                            <span className="text-lg font-black text-purple-700">
+                            <span className="text-3xl font-black text-purple-700 tabular-nums">
                                 {stats?.promoStats?.count || 0}
                             </span>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">
-                                    Ahorro Total Cliente
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-red-500 transition-colors tracking-widest">
+                                    {t.promoEffectiveness.totalSavings}
                                 </p>
-                                <p className="text-lg font-bold text-gray-900">
+                                <p className="text-xl font-black text-gray-900 tabular-nums">
                                     {stats?.promoStats?.totalDiscount || 0}€
                                 </p>
                             </div>
-                            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">
-                                    Descuento Promedio
+                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-red-500 transition-colors tracking-widest">
+                                    {t.promoEffectiveness.avgDiscount}
                                 </p>
-                                <p className="text-lg font-bold text-gray-900">
+                                <p className="text-xl font-black text-gray-900 tabular-nums">
                                     {stats?.promoStats?.avgDiscount || 0}€
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <p className="text-xs text-gray-400 mt-6 leading-relaxed border-t border-gray-50 pt-4">
-                        **Зачем это нужно:** Оценивает, сколько выручки приносят акции и насколько
-                        велик средний дисконт. Помогает понять, не слишком ли много вы раздаете
-                        скидок и стоит ли игра свеч.
-                    </p>
+                    <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
+                        <span className="text-sm mt-px">💡</span>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            {t.promoEffectiveness.insight}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Area Distribution */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <ExternalLink size={18} strokeWidth={1.5} className="text-indigo-500" />
-                        Zonas de Entrega Populares
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-10">
+                    <h3 className="font-black text-gray-900 mb-10 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                            <ExternalLink size={18} strokeWidth={2.5} />
+                        </div>
+                        {t.deliveryZones.title}
                     </h3>
-                    <div className="space-y-2">
+                    <div className="space-y-6">
                         {(stats?.areaStats || []).slice(0, 5).map((area: any, idx: number) => (
-                            <div key={idx} className="flex flex-col gap-1">
-                                <div className="flex justify-between text-xs font-bold">
-                                    <span className="text-gray-700">{area.name}</span>
-                                    <span className="text-gray-400">
+                            <div key={idx} className="flex flex-col gap-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                                    <span className="text-gray-800">{area.name}</span>
+                                    <span className="text-red-600">
                                         {area.count} ped. / {area.revenue}€
                                     </span>
                                 </div>
-                                <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                                <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden shadow-inner p-0.5">
                                     <div
-                                        className="bg-indigo-500 h-full rounded-full transition-all duration-1000"
+                                        className="bg-red-600 h-full rounded-full transition-all duration-[1500ms] shadow-lg"
                                         style={{
                                             width: `${Math.min(100, (area.revenue / (stats?.areaStats?.[0]?.revenue || 1)) * 100)}%`,
                                         }}
@@ -486,273 +742,295 @@ export default function AdminAnalytics({ stats, loading }: AdminAnalyticsProps) 
                             </div>
                         ))}
                     </div>
-                    <p className="text-xs text-gray-400 mt-6 leading-relaxed border-t border-gray-50 pt-4">
-                        **Зачем это нужно:** Показывает основные районы доставки. Помогает
-                        оптимизировать логистику и понять, где живет ваша основная аудитория для
-                        точечной рекламы.
-                    </p>
+                    <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
+                        <span className="text-sm mt-px">💡</span>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            {t.deliveryZones.insight}
+                        </p>
+                    </div>
                 </div>
             </div>
 
             {/* Engagement Analytics (Favorites & Shares) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Top Favorited */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                        <Heart size={16} strokeWidth={1.5} className="text-red-500 fill-red-50" />
-                        Productos más deseados (Favoritos)
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                    <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-red-50 text-red-600 rounded-xl">
+                            <Heart size={18} strokeWidth={2.5} className="fill-red-600" />
+                        </div>
+                        {t.topFavorited.title}
                     </h3>
                     <div className="space-y-4">
-                        {loading ? (
-                            Array(5)
-                                .fill(0)
-                                .map((_, i) => <div key={i} className="h-8 skeleton rounded-lg" />)
-                        ) : (stats?.topFavorited || []).length > 0 ? (
+                        {(stats?.topFavorited || []).length > 0 ? (
                             stats.topFavorited.map((item: any, idx: number) => (
-                                <div key={idx} className="flex items-center justify-between group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-5 h-5 rounded bg-red-50 flex items-center justify-center text-[10px] font-black text-red-600">
+                                <div
+                                    key={idx}
+                                    className="flex items-center justify-between group p-3 hover:bg-red-50 rounded-2xl transition-all"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center text-[10px] font-black shadow-md shadow-red-100">
                                             {idx + 1}
                                         </div>
-                                        <span className="text-xs font-bold text-gray-700 group-hover:text-red-600 transition-colors truncate max-w-[150px]">
+                                        <span className="text-xs font-black text-gray-900 uppercase tracking-tight truncate max-w-[200px]">
                                             {item.name}
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="text-xs font-black text-gray-900">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-black text-gray-900 tabular-nums">
                                             {item.count}
                                         </span>
-                                        <Heart size={10} className="text-red-400 fill-red-400" />
+                                        <Heart size={12} className="text-red-400 fill-red-400" />
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-[10px] text-gray-400 text-center py-4 italic font-medium">
-                                No hay datos de favoritos aún
+                            <p className="text-[10px] text-gray-400 text-center py-6 font-black uppercase tracking-[0.2em]">
+                                {t.topFavorited.noData}
                             </p>
                         )}
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-6 leading-relaxed bg-red-50/50 p-3 rounded-lg border border-red-100/50">
-                        <span className="font-bold text-red-700">Что это значит:</span> Это товары с
-                        высоким "скрытым" спросом. Люди добавляют их в избранное, чтобы купить позже
-                        или не забыть.
-                        <br />
-                        <br />
-                        <span className="font-bold text-red-700">Совет:</span> Запустите временную
-                        акцию на эти позиции, чтобы превратить "хотелки" в реальные заказы.
-                    </p>
+                    <div className="mt-8 p-6 bg-red-50/50 rounded-[28px] border border-red-100/50">
+                        <p className="text-[10px] font-black text-red-800 uppercase tracking-widest mb-2">
+                            {t.topFavorited.label}
+                        </p>
+                        <p className="text-[11px] font-bold text-red-600/80 leading-relaxed mb-4 uppercase tracking-tight">
+                            {t.topFavorited.text}
+                        </p>
+                        <p className="text-[10px] font-black text-red-900 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />{' '}
+                            {t.topFavorited.tip}
+                        </p>
+                        <p className="text-[11px] font-bold text-red-900/80 leading-relaxed uppercase tracking-tight mt-1">
+                            {t.topFavorited.tipText}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Top Shared */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm">
-                        <Share2 size={16} strokeWidth={1.5} className="text-blue-500" />
-                        Productos virales (Compartidos)
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                    <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                            <Share2 size={18} strokeWidth={2.5} />
+                        </div>
+                        {t.topShared.title}
                     </h3>
                     <div className="space-y-4">
-                        {loading ? (
-                            Array(5)
-                                .fill(0)
-                                .map((_, i) => <div key={i} className="h-8 skeleton rounded-lg" />)
-                        ) : (stats?.topShared || []).length > 0 ? (
+                        {(stats?.topShared || []).length > 0 ? (
                             stats.topShared.map((item: any, idx: number) => (
-                                <div key={idx} className="flex items-center justify-between group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-5 h-5 rounded bg-blue-50 flex items-center justify-center text-[10px] font-black text-blue-600">
+                                <div
+                                    key={idx}
+                                    className="flex items-center justify-between group p-3 hover:bg-blue-50 rounded-2xl transition-all"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shadow-md shadow-blue-100">
                                             {idx + 1}
                                         </div>
-                                        <span className="text-xs font-bold text-gray-700 group-hover:text-blue-600 transition-colors truncate max-w-[150px]">
+                                        <span className="text-xs font-black text-gray-900 uppercase tracking-tight truncate max-w-[200px]">
                                             {item.name}
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="text-xs font-black text-gray-900">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-black text-gray-900 tabular-nums">
                                             {item.count}
                                         </span>
-                                        <Share2 size={10} className="text-blue-400" />
+                                        <Share2 size={12} className="text-blue-400" />
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-[10px] text-gray-400 text-center py-4 italic font-medium">
-                                No hay datos de compartidos aún
+                            <p className="text-[10px] text-gray-400 text-center py-6 font-black uppercase tracking-[0.2em]">
+                                {t.topShared.noData}
                             </p>
                         )}
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-6 leading-relaxed bg-blue-50/50 p-3 rounded-lg border border-blue-100/50">
-                        <span className="font-bold text-blue-700">Что это значит:</span> Эти товары
-                        чаще всего пересылают друзьям в мессенджерах. Они визуально привлекательны
-                        или имеют "виральный" потенциал.
-                        <br />
-                        <br />
-                        <span className="font-bold text-blue-700">Совет:</span> Используйте фото
-                        именно этих блюд в своей рекламе в Instagram и Facebook — они лучше всего
-                        привлекают новых клиентов.
-                    </p>
+                    <div className="mt-8 p-6 bg-blue-50/50 rounded-[28px] border border-blue-100/50">
+                        <p className="text-[10px] font-black text-blue-800 uppercase tracking-widest mb-2">
+                            {t.topShared.label}
+                        </p>
+                        <p className="text-[11px] font-bold text-blue-600/80 leading-relaxed mb-4 uppercase tracking-tight">
+                            {t.topShared.text}
+                        </p>
+                        <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />{' '}
+                            {t.topShared.tip}
+                        </p>
+                        <p className="text-[11px] font-bold text-blue-900/80 leading-relaxed uppercase tracking-tight mt-1">
+                            {t.topShared.tipText}
+                        </p>
+                    </div>
                 </div>
             </div>
 
             {/* ABC Analysis Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                        <Activity size={18} strokeWidth={1.5} className="text-emerald-500" />
-                        Análisis ABC del Menú (Rentabilidad 90d)
+            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
+                    <h3 className="font-black text-gray-900 flex items-center gap-3 text-sm uppercase tracking-widest">
+                        <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                            <Activity size={20} strokeWidth={2.5} />
+                        </div>
+                        {t.abcAnalysis.title}
                     </h3>
                     <div className="flex gap-2">
-                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded uppercase">
-                            Cat A (80%)
+                        <span className="px-4 py-2 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded-xl uppercase tracking-widest shadow-sm">
+                            {t.abcAnalysis.catA}
                         </span>
-                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] font-black rounded uppercase">
-                            Cat B (15%)
+                        <span className="px-4 py-2 bg-blue-100 text-blue-700 text-[9px] font-black rounded-xl uppercase tracking-widest shadow-sm">
+                            {t.abcAnalysis.catB}
                         </span>
-                        <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-[9px] font-black rounded uppercase">
-                            Cat C (5%)
+                        <span className="px-4 py-2 bg-gray-100 text-gray-500 text-[9px] font-black rounded-xl uppercase tracking-widest shadow-sm">
+                            {t.abcAnalysis.catC}
                         </span>
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="border-b border-gray-50">
-                                <th className="pb-3 text-[10px] font-bold text-gray-400 uppercase">
-                                    Producto
+                            <tr className="border-b-2 border-gray-50">
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    {t.abcAnalysis.product}
                                 </th>
-                                <th className="pb-3 text-[10px] font-bold text-gray-400 uppercase text-right">
-                                    Uds
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                    {t.abcAnalysis.units}
                                 </th>
-                                <th className="pb-3 text-[10px] font-bold text-gray-400 uppercase text-right">
-                                    Ingresos
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                    {t.abcAnalysis.income}
                                 </th>
-                                <th className="pb-3 text-[10px] font-bold text-gray-400 uppercase text-right">
-                                    % Rev
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                    {t.abcAnalysis.revShare}
                                 </th>
-                                <th className="pb-3 text-[10px] font-bold text-gray-400 uppercase text-center">
-                                    ABC
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-4">
+                                    {t.abcAnalysis.abc}
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-gray-50/50">
                             {(stats?.abcAnalysis || [])
                                 .slice(0, 15)
                                 .map((item: any, idx: number) => (
-                                    <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="py-2.5 text-xs font-bold text-gray-800">
+                                    <tr
+                                        key={idx}
+                                        className="hover:bg-gray-50/50 transition-colors group"
+                                    >
+                                        <td className="py-4 text-xs font-black text-gray-900 uppercase tracking-tight">
                                             {item.name}
                                         </td>
-                                        <td className="py-2.5 text-xs text-gray-500 text-right font-medium">
+                                        <td className="py-4 text-xs font-bold text-gray-400 text-right tabular-nums px-4">
                                             {item.sold}
                                         </td>
-                                        <td className="py-2.5 text-xs font-bold text-gray-900 text-right">
+                                        <td className="py-4 text-xs font-black text-gray-900 text-right tabular-nums px-4">
                                             {item.revenue}€
                                         </td>
-                                        <td className="py-2.5 text-xs text-gray-400 text-right">
+                                        <td className="py-4 text-xs font-bold text-gray-400 text-right tabular-nums px-4">
                                             {Math.round(item.revenueShare * 10) / 10}%
                                         </td>
-                                        <td className="py-2.5 text-center">
-                                            <span
-                                                className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-black ${
-                                                    item.category === 'A'
-                                                        ? 'bg-emerald-100 text-emerald-700'
-                                                        : item.category === 'B'
-                                                          ? 'bg-blue-100 text-blue-700'
-                                                          : 'bg-gray-100 text-gray-500'
-                                                }`}
-                                            >
-                                                {item.category}
-                                            </span>
+                                        <td className="py-4 px-4">
+                                            <div className="flex justify-center">
+                                                <span
+                                                    className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black shadow-sm group-hover:scale-110 transition-transform ${
+                                                        item.category === 'A'
+                                                            ? 'bg-emerald-600 text-white'
+                                                            : item.category === 'B'
+                                                              ? 'bg-blue-600 text-white'
+                                                              : 'bg-gray-400 text-white'
+                                                    }`}
+                                                >
+                                                    {item.category}
+                                                </span>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
                         </tbody>
                     </table>
                 </div>
-                <p className="text-xs text-gray-400 mt-6 leading-relaxed bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50">
-                    **Зачем это нужно:** Золотой стандарт управления меню. Позволяет мгновенно
-                    увидеть хиты (**Группа A**), которые приносят 80% выручки — их нельзя трогать.
-                    **Группа B** — стабильные блюда. **Группа C** — кандидаты на замену, так как они
-                    нагружают склад и кухню, но почти не приносят денег.
-                </p>
+                <div className="mt-6 bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100/50 flex items-start gap-2.5">
+                    <span className="text-sm mt-px">💡</span>
+                    <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                        {t.abcAnalysis.insight}
+                    </p>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 pb-20">
-                {/* Weekly Heatmap Matrix */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 overflow-hidden">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                            <Activity size={18} strokeWidth={1.5} className="text-orange-500" />
-                            Mapa de Calor Semanal (Día vs Hora)
-                        </h3>
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 rounded-full bg-orange-50"></span>
-                                <span className="text-[9px] text-gray-400 font-bold uppercase">
-                                    Bajo
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 rounded-full bg-orange-600"></span>
-                                <span className="text-[9px] text-gray-400 font-bold uppercase">
-                                    Pico
-                                </span>
-                            </div>
+            {/* Weekly Heatmap Matrix */}
+            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 overflow-hidden">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
+                    <h3 className="font-black text-gray-900 flex items-center gap-3 text-sm uppercase tracking-widest">
+                        <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
+                            <Activity size={20} strokeWidth={2.5} />
+                        </div>
+                        {t.heatmap.title}
+                    </h3>
+                    <div className="flex items-center gap-4 bg-gray-50 px-6 py-2.5 rounded-full border border-gray-100">
+                        <div className="flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-md bg-orange-100 shadow-sm border border-orange-200"></span>
+                            <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
+                                {t.heatmap.low}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-md bg-orange-600 shadow-lg border border-orange-700"></span>
+                            <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
+                                {t.heatmap.high}
+                            </span>
                         </div>
                     </div>
+                </div>
 
-                    <div className="overflow-x-auto">
-                        <div className="min-w-[800px]">
-                            {/* Matrix Header (Hours) */}
-                            <div className="flex mb-2 ml-16">
-                                {Array.from({ length: 24 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex-1 text-[9px] text-gray-400 font-bold text-center"
-                                    >
-                                        {i === 0 || i === 12 || i === 23 ? `${i}h` : ''}
-                                        {i !== 0 && i !== 12 && i !== 23 && i % 3 === 0
-                                            ? `${i}`
-                                            : ''}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Matrix Rows */}
-                            {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(
-                                (day, dayIdx) => (
-                                    <div key={day} className="flex items-center mb-1 group">
-                                        <div className="w-16 text-[10px] font-bold text-gray-500 pr-4 text-right">
-                                            {day}
-                                        </div>
-                                        <div className="flex-1 flex gap-0.5 h-8">
-                                            {Array.from({ length: 24 }).map((_, hourIdx) => {
-                                                const value =
-                                                    stats?.heatmap?.matrix?.[dayIdx]?.[hourIdx] ||
-                                                    0;
-                                                // Scale intensity (Max assumption 8 for coloring)
-                                                const intensity = Math.min(1, value / 8);
-                                                return (
-                                                    <div
-                                                        key={hourIdx}
-                                                        title={`${day} ${hourIdx}h: ${value} pedidos`}
-                                                        className="flex-1 rounded-sm transition-all hover:ring-2 hover:ring-orange-400 cursor-help"
-                                                        style={{
-                                                            backgroundColor: `rgba(234, 88, 12, ${Math.max(0.05, intensity)})`,
-                                                        }}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                )
-                            )}
+                <div className="overflow-x-auto custom-scrollbar">
+                    <div className="min-w-[800px] pb-4">
+                        {/* Matrix Header (Hours) */}
+                        <div className="flex mb-4 ml-20">
+                            {Array.from({ length: 24 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="flex-1 text-[9px] text-gray-400 font-black text-center uppercase tracking-tighter"
+                                >
+                                    {i === 0 || i === 12 || i === 23 ? (
+                                        <span className="text-gray-900 bg-gray-100 px-2 py-1 rounded-md">
+                                            {i}h
+                                        </span>
+                                    ) : i % 3 === 0 ? (
+                                        i
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                            ))}
                         </div>
+
+                        {/* Matrix Rows */}
+                        {t.heatmap.days.map((day, dayIdx) => (
+                            <div key={day} className="flex items-center mb-2 group">
+                                <div className="w-20 text-[10px] font-black text-gray-400 pr-6 text-right uppercase tracking-widest group-hover:text-red-600 transition-colors">
+                                    {day}
+                                </div>
+                                <div className="flex-1 flex gap-1 h-10">
+                                    {Array.from({ length: 24 }).map((_, hourIdx) => {
+                                        const value =
+                                            stats?.heatmap?.matrix?.[dayIdx]?.[hourIdx] || 0;
+                                        const intensity = Math.min(1, value / 8);
+                                        return (
+                                            <div
+                                                key={hourIdx}
+                                                title={`${day} ${hourIdx}h: ${value} ${t.activityPeaks.orders}`}
+                                                className="flex-1 rounded-lg transition-all hover:ring-4 hover:ring-orange-400/20 cursor-help shadow-sm"
+                                                style={{
+                                                    backgroundColor: `rgba(234, 88, 12, ${Math.max(0.04, intensity)})`,
+                                                }}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-6 bg-orange-50/50 p-3 rounded-lg border border-orange-100 leading-relaxed italic">
-                        **Зачем это нужно:** Самый мощный инструмент планирования. Показывает точные
-                        окна перегрузок и простоев по дням недели. Используйте его для гибкого
-                        графика курьеров и персонала — выводите больше людей в темные зоны и
-                        отпускайте раньше в светлые.
+                </div>
+                <div className="mt-6 bg-orange-50/50 p-5 rounded-2xl border border-orange-100 flex items-start gap-2.5">
+                    <span className="text-sm mt-px">💡</span>
+                    <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                        {t.heatmap.insight}
                     </p>
                 </div>
             </div>

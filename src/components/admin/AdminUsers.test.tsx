@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderWithProviders as render, screen, fireEvent, waitFor } from '../../test/test-utils';
+import { renderWithProviders as render, screen, fireEvent, waitFor, within } from '../../test/test-utils';
 import AdminUsers from './AdminUsers';
 import { api } from '../../utils/api';
 
@@ -50,25 +50,30 @@ describe('AdminUsers (Integration)', () => {
     });
 
     it('renders the users list', async () => {
-        render(<AdminUsers />);
+        render(<AdminUsers language="es" />);
 
-        await waitFor(() => {
+        await waitFor(async () => {
             expect(screen.getByText('Customer A')).toBeInTheDocument();
             expect(screen.getByText('#10')).toBeInTheDocument();
-            expect(screen.getByText('Hacer Admin')).toBeInTheDocument();
+            const userRow = screen.getByText('Customer A').closest('tr')!;
+            expect(within(userRow).getByText('Rol')).toBeInTheDocument();
         });
     });
 
     it('toggles admin role', async () => {
-        render(<AdminUsers />);
+        render(<AdminUsers language="es" />);
 
         await waitFor(() => expect(screen.getByText('Customer A')).toBeInTheDocument());
 
-        const toggleBtn = screen.getByText('Hacer Admin');
+        const userRow = screen.getByText('Customer A').closest('tr')!;
+        const toggleBtn = within(userRow).getByText('Rol');
         fireEvent.click(toggleBtn);
 
-        // Modal should be visible now
-        const confirmBtn = await screen.findByText('SÍ, CAMBIAR PERMISOS');
+        // Select 'admin' role in the modal
+        const roleSelect = await screen.findByRole('combobox');
+        fireEvent.change(roleSelect, { target: { value: 'admin' } });
+ 
+        const confirmBtn = await screen.findByText(/CONFIRMAR CAMBIO/i);
         fireEvent.click(confirmBtn);
 
         await waitFor(() => {
@@ -77,7 +82,7 @@ describe('AdminUsers (Integration)', () => {
     });
 
     it('sorts users by clicking header', async () => {
-        render(<AdminUsers />);
+        render(<AdminUsers language="es" />);
 
         await waitFor(() => expect(screen.getByText('Customer A')).toBeInTheDocument());
 

@@ -1,14 +1,103 @@
 import { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, CheckCircle2, AlertTriangle, X } from 'lucide-react';
+import { Save, Plus, Trash2, CheckCircle2, AlertTriangle, X, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 
-export default function AdminSettings() {
+interface AdminSettingsProps {
+    language?: 'ru' | 'es';
+}
+
+const SETTINGS_TRANSLATIONS = {
+    ru: {
+        title: 'Настройки контактов',
+        saveBtn: 'Сохранить изменения',
+        savingBtn: 'Сохранение...',
+        loading: 'Загрузка настроек...',
+        generalInfo: 'Общая информация',
+        phone: 'Телефон',
+        email: 'Email',
+        physicalAddress: 'Физический адрес',
+        addressLine1: 'Адрес (Строка 1)',
+        addressLine2: 'Адрес (Строка 2)',
+        addressPlaceholder1: 'Улица Баррилеро, 20,',
+        addressPlaceholder2: '28007 Мадрид',
+        googleMapsLabel: 'URL Google Maps (при клике на "Карту")',
+        generateFromAddress: 'Сгенерировать по адресу',
+        socialNetworks: 'Социальные сети',
+        addSocial: 'Добавить соцсеть',
+        platform: 'Платформа',
+        icon: 'Иконка',
+        urlLink: 'Ссылка / URL',
+        noSocials: 'Социальные сети не настроены.',
+        scheduleTitle: 'Расписание (JSON)',
+        scheduleDesc:
+            'Продвинутый режим. Изменение этого JSON обновит отображаемое расписание (свойства: "days", "hours", "closed").',
+        success: {
+            title: 'Изменения сохранены!',
+            desc: 'Настройки успешно обновлены.',
+        },
+        error: {
+            title: 'Ошибка',
+            desc: 'Проблема при сохранении изменений.',
+        },
+        removeSocial: {
+            title: 'Удалить соцсеть?',
+            desc: 'Вы собираетесь удалить "{name}" из списка.',
+            yes: 'ДА, УДАЛИТЬ',
+            no: 'ОТМЕНА',
+        },
+        newSocialName: 'Новая сеть',
+    },
+    es: {
+        title: 'Configuración de Contactos',
+        saveBtn: 'Guardar Cambios',
+        savingBtn: 'Guardando...',
+        loading: 'Cargando ajustes...',
+        generalInfo: 'Información General',
+        phone: 'Teléfono',
+        email: 'Email',
+        physicalAddress: 'Dirección Físicia',
+        addressLine1: 'Dirección (Línea 1)',
+        addressLine2: 'Dirección (Línea 2)',
+        addressPlaceholder1: 'Calle Barrilero, 20,',
+        addressPlaceholder2: '28007 Madrid',
+        googleMapsLabel: "URL Google Maps (al hacer clic en 'Ver Mapa')",
+        generateFromAddress: 'Generar desde dirección',
+        socialNetworks: 'Redes Sociales',
+        addSocial: 'Añadir red social',
+        platform: 'Plataforma',
+        icon: 'Icono Lucide/SVG',
+        urlLink: 'Enlace / URL',
+        noSocials: 'No hay redes sociales configuradas.',
+        scheduleTitle: 'Horarios (JSON)',
+        scheduleDesc:
+            'Modo avanzado. Modificar este JSON actualiza los horarios mostrados (propiedades: "days", "hours", "closed")',
+        success: {
+            title: '¡Cambios guardados!',
+            desc: 'La configuración se actualizó correctamente.',
+        },
+        error: {
+            title: 'Error',
+            desc: 'Hubo un problema al guardar los cambios.',
+        },
+        removeSocial: {
+            title: '¿Quitar red social?',
+            desc: 'Estás a punto de quitar "{name}" de la lista.',
+            yes: 'SÍ, QUITAR',
+            no: 'CANCELAR',
+        },
+        newSocialName: 'Nueva Red',
+    },
+} as const;
+
+export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
     const queryClient = useQueryClient();
     const [localSettings, setLocalSettings] = useState<any>(null);
     const [saveStatus, setSaveStatus] = useState<null | 'success' | 'error'>(null);
     const [socialToRemove, setSocialToRemove] = useState<number | null>(null);
+
+    const t = SETTINGS_TRANSLATIONS[language];
 
     // Settings Query
     const { data: remoteSettings, isLoading } = useQuery({
@@ -64,7 +153,7 @@ export default function AdminSettings() {
             ...localSettings,
             socialLinks: [
                 ...localSettings.socialLinks,
-                { platform: 'Nueva Red', url: '#', icon: 'facebook' },
+                { platform: t.newSocialName, url: '#', icon: 'facebook' },
             ],
         });
     };
@@ -84,29 +173,50 @@ export default function AdminSettings() {
         setLocalSettings({ ...localSettings, socialLinks: newLinks });
     };
 
-    if (isLoading || !localSettings)
-        return <div className="p-8 text-center text-gray-500">Cargando ajustes...</div>;
+    if (isLoading || !localSettings) {
+        return (
+            <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
+                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
+                    {t.loading}
+                </p>
+            </div>
+        );
+    }
 
     return (
-        <form onSubmit={handleSave} className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Configuración de Contactos</h2>
+        <form
+            onSubmit={handleSave}
+            className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20"
+        >
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-3xl border border-gray-100 shadow-sm gap-4">
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                    {t.title}
+                </h2>
                 <button
                     type="submit"
                     disabled={updateMutation.isPending}
-                    className="flex items-center gap-2 bg-red-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition disabled:opacity-50"
+                    className="w-full sm:w-auto flex items-center justify-center gap-3 bg-red-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 disabled:opacity-50 active:scale-95"
                 >
-                    <Save size={18} strokeWidth={1.5} />{' '}
-                    {updateMutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+                    {updateMutation.isPending ? (
+                        <RefreshCw size={18} strokeWidth={3} className="animate-spin" />
+                    ) : (
+                        <Save size={18} strokeWidth={2.5} />
+                    )}
+                    {updateMutation.isPending ? t.savingBtn : t.saveBtn}
                 </button>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">Información General</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">
-                            Teléfono
+            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4 mb-8">
+                    <h3 className="font-black text-xs uppercase tracking-[0.15em]">
+                        {t.generalInfo}
+                    </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-pretty">
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                            {t.phone}
                         </label>
                         <input
                             value={localSettings.contactPhone}
@@ -116,11 +226,13 @@ export default function AdminSettings() {
                                     contactPhone: e.target.value,
                                 })
                             }
-                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all tabular-nums"
                         />
                     </div>
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">Email</label>
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                            {t.email}
+                        </label>
                         <input
                             value={localSettings.contactEmail}
                             onChange={e =>
@@ -129,16 +241,20 @@ export default function AdminSettings() {
                                     contactEmail: e.target.value,
                                 })
                             }
-                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
                         />
                     </div>
                 </div>
 
-                <h3 className="font-bold text-lg mb-4 text-gray-800 mt-8">Dirección Físicia</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">
-                            Dirección (Línea 1)
+                <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4 mb-8 mt-12">
+                    <h3 className="font-black text-xs uppercase tracking-[0.15em]">
+                        {t.physicalAddress}
+                    </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                            {t.addressLine1}
                         </label>
                         <input
                             value={localSettings.contactAddressLine1}
@@ -148,13 +264,13 @@ export default function AdminSettings() {
                                     contactAddressLine1: e.target.value,
                                 })
                             }
-                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                            placeholder="Calle Barrilero, 20,"
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            placeholder={t.addressPlaceholder1}
                         />
                     </div>
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">
-                            Dirección (Línea 2)
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                            {t.addressLine2}
                         </label>
                         <input
                             value={localSettings.contactAddressLine2}
@@ -164,14 +280,14 @@ export default function AdminSettings() {
                                     contactAddressLine2: e.target.value,
                                 })
                             }
-                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                            placeholder="28007 Madrid"
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            placeholder={t.addressPlaceholder2}
                         />
                     </div>
-                    <div className="md:col-span-2">
-                        <div className="flex justify-between items-center mb-1">
-                            <label className="block text-xs font-bold text-gray-500">
-                                URL Google Maps (al hacer clic en 'Ver Mapa')
+                    <div className="md:col-span-2 space-y-2">
+                        <div className="flex justify-between items-center mb-1 pl-1">
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                {t.googleMapsLabel}
                             </label>
                             {(localSettings.contactAddressLine1 ||
                                 localSettings.contactAddressLine2) && (
@@ -186,9 +302,9 @@ export default function AdminSettings() {
                                             contactGoogleMapsUrl: url,
                                         });
                                     }}
-                                    className="text-[10px] font-bold text-blue-600 hover:underline"
+                                    className="text-[9px] font-black text-red-600 uppercase tracking-widest hover:text-black transition-colors"
                                 >
-                                    Generar desde dirección
+                                    {t.generateFromAddress}
                                 </button>
                             )}
                         </div>
@@ -200,99 +316,109 @@ export default function AdminSettings() {
                                     contactGoogleMapsUrl: e.target.value,
                                 })
                             }
-                            className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
+                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
                             placeholder="https://www.google.com/maps/..."
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-lg text-gray-800">Redes Sociales</h3>
+            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4">
+                        <h3 className="font-black text-xs uppercase tracking-[0.15em]">
+                            {t.socialNetworks}
+                        </h3>
+                    </div>
                     <button
                         type="button"
                         onClick={handleAddSocial}
-                        className="text-sm flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700"
+                        className="text-[10px] flex items-center gap-2 font-black text-red-600 uppercase tracking-widest hover:text-black transition-all bg-red-50 px-4 py-2 rounded-xl"
                     >
-                        <Plus size={16} strokeWidth={1.5} /> Añadir red social
+                        <Plus size={16} strokeWidth={3} /> {t.addSocial}
                     </button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {localSettings.socialLinks.map((link: any, idx: number) => (
                         <div
                             key={idx}
-                            className="flex flex-col md:flex-row gap-3 items-end bg-gray-50 p-4 rounded-xl border border-gray-100 relative group"
+                            className="flex flex-col gap-4 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 relative group animate-in zoom-in-95 duration-200"
                         >
-                            <div className="w-full md:w-1/4">
-                                <label className="block text-xs font-bold text-gray-500 mb-1">
-                                    Plataforma
-                                </label>
-                                <input
-                                    value={link.platform}
-                                    onChange={e =>
-                                        handleUpdateSocial(idx, 'platform', e.target.value)
-                                    }
-                                    className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500 bg-white"
-                                />
-                            </div>
-                            <div className="w-full justify-center md:w-1/4">
-                                <label className="block text-xs font-bold text-gray-500 mb-1">
-                                    Icono Lucide/SVG
-                                </label>
-                                <select
-                                    value={link.icon}
-                                    onChange={e => handleUpdateSocial(idx, 'icon', e.target.value)}
-                                    className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500 bg-white"
-                                >
-                                    <option value="whatsapp">WhatsApp</option>
-                                    <option value="instagram">Instagram</option>
-                                    <option value="facebook">Facebook</option>
-                                    <option value="tiktok">TikTok</option>
-                                    <option value="twitter">Twitter</option>
-                                    <option value="thefork">The Fork</option>
-                                    <option value="threads">Threads</option>
-                                </select>
-                            </div>
-                            <div className="w-full md:w-2/4 flex items-center gap-3">
-                                <div className="flex-1">
-                                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                                        Enlace / URL
+                            <button
+                                type="button"
+                                onClick={() => setSocialToRemove(idx)}
+                                className="absolute top-4 right-4 text-gray-300 hover:text-red-600 p-2 transition-colors bg-white rounded-xl shadow-sm opacity-0 group-hover:opacity-100"
+                                title="Eliminar"
+                            >
+                                <Trash2 size={16} strokeWidth={2} />
+                            </button>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                        {t.platform}
                                     </label>
                                     <input
-                                        value={link.url}
+                                        value={link.platform}
                                         onChange={e =>
-                                            handleUpdateSocial(idx, 'url', e.target.value)
+                                            handleUpdateSocial(idx, 'platform', e.target.value)
                                         }
-                                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500 bg-white"
-                                        placeholder="https://"
+                                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-red-400 bg-white transition-all shadow-sm"
                                     />
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setSocialToRemove(idx)}
-                                    className="text-red-500 hover:text-red-700 p-2 mb-0.5"
-                                    title="Eliminar"
-                                >
-                                    <Trash2 size={16} strokeWidth={1.5} />
-                                </button>
+                                <div className="space-y-1">
+                                    <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                        {t.icon}
+                                    </label>
+                                    <select
+                                        value={link.icon}
+                                        onChange={e =>
+                                            handleUpdateSocial(idx, 'icon', e.target.value)
+                                        }
+                                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-red-400 bg-white transition-all shadow-sm appearance-none cursor-pointer"
+                                    >
+                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="instagram">Instagram</option>
+                                        <option value="facebook">Facebook</option>
+                                        <option value="tiktok">TikTok</option>
+                                        <option value="twitter">Twitter</option>
+                                        <option value="thefork">The Fork</option>
+                                        <option value="threads">Threads</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                    {t.urlLink}
+                                </label>
+                                <input
+                                    value={link.url}
+                                    onChange={e => handleUpdateSocial(idx, 'url', e.target.value)}
+                                    className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-red-400 bg-white transition-all shadow-sm"
+                                    placeholder="https://"
+                                />
                             </div>
                         </div>
                     ))}
                     {localSettings.socialLinks.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                            No hay redes sociales configuradas.
-                        </p>
+                        <div className="md:col-span-2 py-10 text-center bg-gray-50 rounded-[32px] border border-dashed border-gray-200">
+                            <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                                {t.noSocials}
+                            </p>
+                        </div>
                     )}
                 </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 text-gray-800">Horarios (JSON)</h3>
-                <p className="text-xs text-gray-500 mb-2">
-                    Modo avanzado. Modificar este JSON actualiza los horarios mostrados
-                    (propiedades: "days", "hours", "closed")
+            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 text-gray-400 border-l-4 border-gray-100 pl-4 mb-6">
+                    <h3 className="font-black text-xs uppercase tracking-[0.15em]">
+                        {t.scheduleTitle}
+                    </h3>
+                </div>
+                <p className="text-[11px] font-bold text-gray-400 mb-6 uppercase tracking-widest leading-relaxed">
+                    {t.scheduleDesc}
                 </p>
                 <textarea
                     value={JSON.stringify(localSettings.contactSchedule, null, 2)}
@@ -304,7 +430,7 @@ export default function AdminSettings() {
                             // ignore parsing errors while typing
                         }
                     }}
-                    className="w-full h-48 border rounded-lg px-3 py-2 text-sm font-mono outline-none focus:border-red-500 bg-gray-50"
+                    className="w-full h-64 border border-gray-100 rounded-[24px] px-6 py-6 text-xs font-mono font-bold outline-none focus:border-red-400 focus:bg-white bg-gray-50/50 shadow-inner custom-scrollbar"
                 />
             </div>
 
@@ -315,39 +441,39 @@ export default function AdminSettings() {
                         initial={{ opacity: 0, y: 50, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-                        className="fixed bottom-8 right-8 z-50"
+                        className="fixed bottom-8 right-8 z-50 pointer-events-auto"
                     >
                         <div
-                            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${
+                            className={`flex items-center gap-4 px-8 py-5 rounded-[24px] shadow-2xl border-2 ${
                                 saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
                                     : 'bg-red-600 border-red-500 text-white'
                             }`}
                         >
-                            {saveStatus === 'success' ? (
-                                <CheckCircle2
-                                    size={24}
-                                    strokeWidth={1.5}
-                                    className="animate-bounce"
-                                />
-                            ) : (
-                                <AlertTriangle size={24} strokeWidth={1.5} />
-                            )}
-                            <div>
-                                <p className="font-bold text-sm">
-                                    {saveStatus === 'success' ? '¡Cambios guardados!' : 'Error'}
+                            <div className="bg-white/20 p-2 rounded-xl">
+                                {saveStatus === 'success' ? (
+                                    <CheckCircle2
+                                        size={28}
+                                        strokeWidth={2.5}
+                                        className="animate-pulse"
+                                    />
+                                ) : (
+                                    <AlertTriangle size={28} strokeWidth={2.5} />
+                                )}
+                            </div>
+                            <div className="min-w-[200px]">
+                                <p className="font-black text-sm uppercase tracking-widest">
+                                    {saveStatus === 'success' ? t.success.title : t.error.title}
                                 </p>
-                                <p className="text-xs opacity-90">
-                                    {saveStatus === 'success'
-                                        ? 'La configuración se actualizó correctamente.'
-                                        : 'Hubo un problema al guardar los cambios.'}
+                                <p className="text-[10px] font-bold opacity-90 uppercase tracking-tight mt-0.5">
+                                    {saveStatus === 'success' ? t.success.desc : t.error.desc}
                                 </p>
                             </div>
                             <button
                                 onClick={() => setSaveStatus(null)}
-                                className="ml-4 p-1 hover:bg-white/10 rounded-lg transition"
+                                className="ml-4 p-2 hover:bg-white/20 rounded-xl transition-all active:scale-90"
                             >
-                                <X size={18} strokeWidth={1.5} />
+                                <X size={20} strokeWidth={3} />
                             </button>
                         </div>
                     </motion.div>
@@ -358,36 +484,35 @@ export default function AdminSettings() {
             {socialToRemove !== null && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={() => setSocialToRemove(null)}
                     />
-                    <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} strokeWidth={1.5} />
+                            <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-red-50">
+                                <Trash2 size={36} strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-xl font-black text-gray-900 mb-2">
-                                ¿Quitar red social?
+                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                {t.removeSocial.title}
                             </h3>
-                            <p className="text-sm text-gray-500 font-medium mb-8">
-                                Estás a punto de quitar{' '}
-                                <span className="text-red-600 font-bold uppercase">
+                            <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
+                                {t.removeSocial.desc.replace('{name}', '')}
+                                <span className="text-red-600 font-black block mt-2 text-base">
                                     "{localSettings.socialLinks[socialToRemove]?.platform}"
-                                </span>{' '}
-                                de la lista.
+                                </span>
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={confirmRemoveSocial}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all"
+                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95"
                                 >
-                                    SÍ, QUITAR
+                                    {t.removeSocial.yes}
                                 </button>
                                 <button
                                     onClick={() => setSocialToRemove(null)}
-                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
                                 >
-                                    CANCELAR
+                                    {t.removeSocial.no}
                                 </button>
                             </div>
                         </div>

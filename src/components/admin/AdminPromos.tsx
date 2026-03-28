@@ -1,10 +1,103 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, CheckCircle, XCircle, RefreshCw, Clock } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '../../utils/api';
 
-export default function AdminPromos() {
+interface AdminPromosProps {
+    language?: 'ru' | 'es';
+}
+
+const PROMOS_TRANSLATIONS = {
+    ru: {
+        title: 'Статические акции',
+        newPromo: 'Новая акция',
+        editPromo: 'Редактировать акцию',
+        addPromo: 'Добавить акцию',
+        loading: 'Загрузка акций...',
+        noPromos: 'Акций нет.',
+        fields: {
+            title: 'Заголовок',
+            discount: 'Скидка (напр: -20%, Подарок)',
+            description: 'Описание',
+            validUntil: 'Действительно до (текст)',
+            icon: 'Иконка (Emoji)',
+            color: 'Основной цвет (HEX)',
+            gradient: 'Градиент Tailwind (bg-gradient-to-br ...)',
+            active: 'Активна (видна пользователям)',
+            save: 'Сохранить',
+        },
+        table: {
+            promo: 'Акция',
+            status: 'Статус',
+            actions: 'Действия',
+        },
+        status: {
+            active: 'Активна',
+            inactive: 'Неактивна',
+        },
+        modals: {
+            deleteTitle: 'Удалить акцию?',
+            deleteDesc: 'Вы собираетесь удалить "{name}". Это действие нельзя отменить.',
+            yesDelete: 'ДА, УДАЛИТЬ',
+            cancel: 'ОТМЕНА',
+        },
+        alerts: {
+            updated: 'Акция обновлена',
+            created: 'Акция создана',
+            deleted: 'Акция удалена',
+            errorSaving: 'Ошибка при сохранении: ',
+            errorDeleting: 'Ошибка при удалении',
+        },
+        refresh: 'Обновить',
+    },
+    es: {
+        title: 'Promociones Estáticas',
+        newPromo: 'Nueva Promoción',
+        editPromo: 'Editar Promoción',
+        addPromo: 'Añadir Promoción',
+        loading: 'Cargando promociones...',
+        noPromos: 'No hay promociones.',
+        fields: {
+            title: 'Título',
+            discount: 'Descuento (ej: -20%, Regalo)',
+            description: 'Descripción',
+            validUntil: 'Válido hasta (texto)',
+            icon: 'Icono (Emoji)',
+            color: 'Color Principal (HEX)',
+            gradient: 'Gradiente Tailwind (bg-gradient-to-br ...)',
+            active: 'Activa (visible al público)',
+            save: 'Guardar',
+        },
+        table: {
+            promo: 'Promo',
+            status: 'Estado',
+            actions: 'Acciones',
+        },
+        status: {
+            active: 'Activa',
+            inactive: 'Inactiva',
+        },
+        modals: {
+            deleteTitle: '¿Eliminar promoción?',
+            deleteDesc: 'Estás a punto de borrar "{name}". Esta acción no se puede deshacer.',
+            yesDelete: 'SÍ, ELIMINAR',
+            cancel: 'CANCELAR',
+        },
+        alerts: {
+            updated: 'Promoción actualizada',
+            created: 'Promoción creada',
+            deleted: 'Promoción eliminada',
+            errorSaving: 'Error al guardar: ',
+            errorDeleting: 'Error al eliminar',
+        },
+        refresh: 'Actualizar',
+    },
+} as const;
+
+export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
     const queryClient = useQueryClient();
+    const t = PROMOS_TRANSLATIONS[language];
+
     const [isEditing, setIsEditing] = useState<any>(null);
     const [form, setForm] = useState({
         title: '',
@@ -48,12 +141,12 @@ export default function AdminPromos() {
                 bg: 'from-amber-500 to-amber-400',
                 is_active: true,
             });
-            alert(isEditing ? 'Promoción actualizada' : 'Promoción creada');
+            // Using a simple alert for now as consistent with previous feedback
+            // but in a more premium UI we might use a toast
+            console.log(isEditing ? t.alerts.updated : t.alerts.created);
         },
         onError: (err: any) => {
-            alert(
-                'Error al guardar: ' + (err instanceof ApiError ? err.message : 'Error desconocido')
-            );
+            alert(t.alerts.errorSaving + (err instanceof ApiError ? err.message : 'Error'));
         },
     });
 
@@ -62,10 +155,10 @@ export default function AdminPromos() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-promos'] });
             setPromoToDelete(null);
-            alert('Promoción eliminada');
+            console.log(t.alerts.deleted);
         },
         onError: () => {
-            alert('Error al eliminar');
+            alert(t.alerts.errorDeleting);
         },
     });
 
@@ -74,22 +167,32 @@ export default function AdminPromos() {
         upsertMutation.mutate(form);
     };
 
-    if (isLoading)
-        return <div className="p-8 text-center text-gray-500">Cargando promociones...</div>;
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
+                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
+                    {t.loading}
+                </p>
+            </div>
+        );
+    }
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Promociones Estáticas</h2>
-                <div className="flex items-center gap-3">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-3xl border border-gray-100 shadow-sm gap-4 mb-8">
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                    {t.title}
+                </h2>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
                     <button
                         onClick={() => refetch()}
-                        className="p-2 text-gray-400 hover:text-gray-600 transition"
-                        title="Actualizar"
+                        className="p-3 text-gray-400 hover:text-gray-900 bg-gray-50 border border-gray-100 rounded-xl transition-all shadow-sm active:scale-95"
+                        title={t.refresh}
                     >
                         <RefreshCw
-                            size={18}
-                            strokeWidth={1.5}
+                            size={20}
+                            strokeWidth={2}
                             className={isFetching ? 'animate-spin' : ''}
                         />
                     </button>
@@ -107,242 +210,310 @@ export default function AdminPromos() {
                                 is_active: true,
                             });
                         }}
-                        className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95"
                     >
-                        <Plus size={16} strokeWidth={1.5} /> Nueva Promoción
+                        <Plus size={16} strokeWidth={3} /> {t.newPromo}
                     </button>
                 </div>
             </div>
 
-            <form
-                onSubmit={handleSave}
-                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4"
-            >
-                <div className="col-span-full mb-2">
-                    <h3 className="font-bold text-gray-800">
-                        {isEditing ? 'Editar Promoción' : 'Añadir Promoción'}
-                    </h3>
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Título</label>
-                    <input
-                        required
-                        value={form.title}
-                        onChange={e => setForm({ ...form, title: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Descuento (ej: -20%, Regalo)
-                    </label>
-                    <input
-                        required
-                        value={form.discount}
-                        onChange={e => setForm({ ...form, discount: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Descripción
-                    </label>
-                    <input
-                        required
-                        value={form.description}
-                        onChange={e => setForm({ ...form, description: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Válido hasta (texto)
-                    </label>
-                    <input
-                        value={form.valid_until}
-                        onChange={e => setForm({ ...form, valid_until: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Icono (Emoji)
-                    </label>
-                    <input
-                        required
-                        value={form.icon}
-                        onChange={e => setForm({ ...form, icon: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Color Principal (HEX)
-                    </label>
-                    <input
-                        required
-                        value={form.color}
-                        onChange={e => setForm({ ...form, color: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Gradiente Tailwind (bg-gradient-to-br ...)
-                    </label>
-                    <input
-                        required
-                        value={form.bg}
-                        onChange={e => setForm({ ...form, bg: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                        placeholder="from-red-600 to-red-500"
-                    />
-                </div>
-                <div className="md:col-span-2 flex items-center justify-between mt-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={form.is_active}
-                            onChange={e => setForm({ ...form, is_active: e.target.checked })}
-                            className="accent-red-600"
-                        />
-                        <span className="text-sm font-bold text-gray-700">
-                            Activa (visible al público)
-                        </span>
-                    </label>
-                    <button
-                        type="submit"
-                        disabled={upsertMutation.isPending}
-                        className="bg-gray-900 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-black transition disabled:opacity-50 flex items-center gap-2"
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Form Column */}
+                <div className="lg:col-span-1">
+                    <form
+                        onSubmit={handleSave}
+                        className="sticky top-8 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 space-y-6"
                     >
-                        {upsertMutation.isPending && (
-                            <RefreshCw size={16} className="animate-spin" />
-                        )}
-                        Guardar
-                    </button>
-                </div>
-            </form>
+                        <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4 mb-2">
+                            <h3 className="font-black text-xs uppercase tracking-widest">
+                                {isEditing ? t.editPromo : t.addPromo}
+                            </h3>
+                        </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-gray-50 border-b border-gray-100 text-xs text-gray-500 uppercase">
-                            <th className="p-4 font-bold">Promo</th>
-                            <th className="p-4 font-bold">Estado</th>
-                            <th className="p-4 font-bold">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {promos.map((p: any) => (
-                            <tr
-                                key={p.id}
-                                className="border-b border-gray-50 hover:bg-gray-50 transition"
-                            >
-                                <td className="p-4">
-                                    <div className="flex items-center gap-3">
+                        <div className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                    {t.fields.title}
+                                </label>
+                                <input
+                                    required
+                                    value={form.title}
+                                    onChange={e => setForm({ ...form, title: e.target.value })}
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                    {t.fields.discount}
+                                </label>
+                                <input
+                                    required
+                                    value={form.discount}
+                                    onChange={e => setForm({ ...form, discount: e.target.value })}
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                    {t.fields.description}
+                                </label>
+                                <textarea
+                                    required
+                                    rows={3}
+                                    value={form.description}
+                                    onChange={e =>
+                                        setForm({ ...form, description: e.target.value })
+                                    }
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner resize-none"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                        {t.fields.validUntil}
+                                    </label>
+                                    <input
+                                        value={form.valid_until}
+                                        onChange={e =>
+                                            setForm({ ...form, valid_until: e.target.value })
+                                        }
+                                        className="w-full bg-gray-50 border border-gray-100 rounded-1xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                        {t.fields.icon}
+                                    </label>
+                                    <input
+                                        required
+                                        value={form.icon}
+                                        onChange={e => setForm({ ...form, icon: e.target.value })}
+                                        className="w-full bg-gray-50 border border-gray-100 rounded-1xl px-4 py-3 text-sm font-black text-gray-900 text-center outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                        {t.fields.color}
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            required
+                                            value={form.color}
+                                            onChange={e =>
+                                                setForm({ ...form, color: e.target.value })
+                                            }
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-1xl pl-10 pr-4 py-3 text-xs font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner lowercase"
+                                        />
                                         <div
-                                            className="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
-                                            style={{ backgroundColor: p.color }}
-                                        >
-                                            {p.icon}
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-gray-900">
-                                                {p.title}{' '}
-                                                <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full ml-1">
-                                                    {p.discount}
-                                                </span>
-                                            </div>
-                                            <div className="text-xs text-gray-500 truncate max-w-[250px]">
-                                                {p.description}
-                                            </div>
-                                        </div>
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-md border border-gray-200 shadow-sm"
+                                            style={{ backgroundColor: form.color }}
+                                        />
                                     </div>
-                                </td>
-                                <td className="p-4">
-                                    {p.is_active ? (
-                                        <span className="flex items-center gap-1 text-green-600 text-xs font-bold">
-                                            <CheckCircle size={14} strokeWidth={1.5} /> Activa
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center gap-1 text-gray-400 text-xs font-bold">
-                                            <XCircle size={14} strokeWidth={1.5} /> Inactiva
-                                        </span>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => {
-                                                setIsEditing(p);
-                                                setForm(p);
-                                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                                            }}
-                                            className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition"
-                                        >
-                                            <Edit2 size={16} strokeWidth={1.5} />
-                                        </button>
-                                        <button
-                                            onClick={() => setPromoToDelete(p)}
-                                            className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
-                                            title="Eliminar promoción"
-                                        >
-                                            <Trash2 size={16} strokeWidth={1.5} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {promos.length === 0 && (
-                            <tr>
-                                <td colSpan={3} className="p-8 text-center text-gray-500">
-                                    No hay promociones.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                        {t.fields.gradient}
+                                    </label>
+                                    <input
+                                        required
+                                        value={form.bg}
+                                        onChange={e => setForm({ ...form, bg: e.target.value })}
+                                        className="w-full bg-gray-50 border border-gray-100 rounded-1xl px-4 py-3 text-xs font-black text-gray-400 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-4 gap-4">
+                            <label className="flex items-center gap-3 cursor-pointer group/check">
+                                <div
+                                    className={`w-10 h-6 rounded-full transition-all relative ${form.is_active ? 'bg-green-500' : 'bg-gray-200'}`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={form.is_active}
+                                        onChange={e =>
+                                            setForm({ ...form, is_active: e.target.checked })
+                                        }
+                                        className="hidden"
+                                    />
+                                    <div
+                                        className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all shadow-sm ${form.is_active ? 'left-5' : 'left-1'}`}
+                                    />
+                                </div>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest group-hover/check:text-gray-900 transition-colors">
+                                    {t.fields.active}
+                                </span>
+                            </label>
+
+                            <button
+                                type="submit"
+                                disabled={upsertMutation.isPending}
+                                className="flex-1 bg-gray-900 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95 shadow-lg"
+                            >
+                                {upsertMutation.isPending ? (
+                                    <RefreshCw size={16} className="animate-spin" />
+                                ) : (
+                                    <CheckCircle size={16} />
+                                )}
+                                {t.fields.save}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {/* Table Column */}
+                <div className="lg:col-span-2">
+                    <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50/50 border-b border-gray-100">
+                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                        {t.table.promo}
+                                    </th>
+                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">
+                                        {t.table.status}
+                                    </th>
+                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">
+                                        {t.table.actions}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {promos.map((p: any) => (
+                                    <tr
+                                        key={p.id}
+                                        className="hover:bg-gray-50/50 transition-colors group"
+                                    >
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-5">
+                                                <div
+                                                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform duration-300"
+                                                    style={{ backgroundColor: p.color }}
+                                                >
+                                                    {p.icon}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center gap-3 mb-1">
+                                                        <h4 className="font-black text-gray-900 text-lg tracking-tight truncate max-w-[200px]">
+                                                            {p.title}
+                                                        </h4>
+                                                        <span className="text-[10px] font-black bg-gray-900 text-white px-3 py-1 rounded-xl shadow-sm uppercase tracking-tighter">
+                                                            {p.discount}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-400 font-bold line-clamp-2 max-w-[300px]">
+                                                        {p.description}
+                                                    </p>
+                                                    {p.valid_until && (
+                                                        <div className="mt-2 text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                                                            <Clock size={10} strokeWidth={3} />{' '}
+                                                            {p.valid_until}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex justify-center">
+                                                {p.is_active ? (
+                                                    <span className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-green-100 shadow-sm">
+                                                        <CheckCircle size={14} strokeWidth={3} />{' '}
+                                                        {t.status.active}
+                                                    </span>
+                                                ) : (
+                                                    <span className="flex items-center gap-2 text-gray-400 bg-gray-50 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-gray-100">
+                                                        <XCircle size={14} strokeWidth={3} />{' '}
+                                                        {t.status.inactive}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center justify-end gap-3">
+                                                <button
+                                                    onClick={() => {
+                                                        setIsEditing(p);
+                                                        setForm(p);
+                                                        window.scrollTo({
+                                                            top: 0,
+                                                            behavior: 'smooth',
+                                                        });
+                                                    }}
+                                                    className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-black hover:text-white transition-all border border-gray-100 shadow-sm active:scale-95"
+                                                >
+                                                    <Edit2 size={18} strokeWidth={2} />
+                                                </button>
+                                                <button
+                                                    onClick={() => setPromoToDelete(p)}
+                                                    className="p-3 bg-red-50 text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition-all border border-red-100 shadow-sm active:scale-95"
+                                                    title={t.alerts.deleted}
+                                                >
+                                                    <Trash2 size={18} strokeWidth={2} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {promos.length === 0 && (
+                                    <tr>
+                                        <td colSpan={3} className="px-8 py-20 text-center">
+                                            <div className="flex flex-col items-center gap-4">
+                                                <div className="w-16 h-16 bg-gray-50 text-gray-200 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+                                                    <Plus size={32} />
+                                                </div>
+                                                <p className="text-gray-400 font-black uppercase tracking-widest text-xs">
+                                                    {t.noPromos}
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             {/* Delete Confirmation Modal */}
             {promoToDelete && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={() => setPromoToDelete(null)}
                     />
-                    <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} strokeWidth={1.5} />
+                            <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-red-50">
+                                <Trash2 size={36} strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-xl font-black text-gray-900 mb-2">
-                                ¿Eliminar promoción?
+                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                {t.modals.deleteTitle}
                             </h3>
-                            <p className="text-sm text-gray-500 font-medium mb-8">
-                                Estás a punto de borrar{' '}
-                                <span className="text-red-600 font-bold uppercase">
+                            <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
+                                {t.modals.deleteDesc.replace('{name}', '')}
+                                <span className="text-red-600 font-black block mt-2 text-base">
                                     "{promoToDelete.title}"
                                 </span>
-                                . <br />
-                                Esta acción no se puede deshacer.
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={() => deleteMutation.mutate(promoToDelete.id)}
                                     disabled={deleteMutation.isPending}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {deleteMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />
                                     )}
-                                    SÍ, ELIMINAR
+                                    {t.modals.yesDelete}
                                 </button>
                                 <button
                                     onClick={() => setPromoToDelete(null)}
-                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
                                 >
-                                    CANCELAR
+                                    {t.modals.cancel}
                                 </button>
                             </div>
                         </div>

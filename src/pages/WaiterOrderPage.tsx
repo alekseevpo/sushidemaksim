@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useMenu } from '../hooks/queries/useMenu';
 import { CATEGORIES, EMOJI } from '../constants/menu';
-import { Search, Plus, Minus, Check, ShoppingBag, Loader2 } from 'lucide-react';
+import { Search, Plus, Minus, Check, ShoppingBag, Loader2, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 
 export default function WaiterOrderPage() {
@@ -13,8 +15,16 @@ export default function WaiterOrderPage() {
     const [selectedItems, setSelectedItems] = useState<Record<number, number>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const toast = useToast();
+    const { user, isLoading: authLoading, logout } = useAuth();
+    const navigate = useNavigate();
 
-    const { data: menuItems = [], isLoading } = useMenu('all', '');
+    useEffect(() => {
+        if (!authLoading && (!user || (user.role !== 'waiter' && user.role !== 'admin'))) {
+            navigate('/');
+        }
+    }, [user, authLoading, navigate]);
+
+    const { data: menuItems = [], isLoading: menuLoading } = useMenu('all', '');
 
     const filteredItems = useMemo(() => {
         return menuItems.filter(item => {
@@ -26,6 +36,14 @@ export default function WaiterOrderPage() {
             return matchesCategory && matchesSearch;
         });
     }, [menuItems, selectedCategory, search]);
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
+                <Loader2 className="animate-spin text-red-600" size={32} />
+            </div>
+        );
+    }
 
     const handleQuantityChange = (itemId: number, delta: number) => {
         setSelectedItems(prev => {
@@ -104,10 +122,18 @@ export default function WaiterOrderPage() {
                                 Nueva Comanda
                             </h1>
                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                                Mesa
+                                {user?.name || 'Mesa'}
                             </span>
                         </div>
                     </div>
+
+                    <button
+                        onClick={logout}
+                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                        title="Cerrar Sesión"
+                    >
+                        <LogOut size={18} />
+                    </button>
                 </div>
 
                 <div className="relative">
@@ -157,7 +183,7 @@ export default function WaiterOrderPage() {
 
             {/* Product List */}
             <div className="px-3 space-y-1.5 mt-2">
-                {isLoading ? (
+                {menuLoading ? (
                     <div className="flex flex-col items-center justify-center py-20">
                         <Loader2 className="animate-spin text-red-600 mb-4" size={32} />
                         <p className="text-xs font-bold text-gray-500">Cargando menú...</p>
