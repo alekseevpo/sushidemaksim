@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, ApiError } from '../../utils/api';
+import { api } from '../../utils/api';
 
-export default function AdminBlog() {
+interface Props {
+    language?: 'ru' | 'es';
+}
+
+const BLOG_TRANSLATIONS = {
+    ru: { title: 'Блог / Новости', subtitle: 'Управление статьями и объявлениями' },
+    es: { title: 'Blog / Noticias', subtitle: 'Gestión de artículos y anuncios' },
+};
+
+export default function AdminBlog({ language = 'es' }: Props) {
+    const t = BLOG_TRANSLATIONS[language] || BLOG_TRANSLATIONS.es;
     const queryClient = useQueryClient();
     const [isEditing, setIsEditing] = useState<any>(null);
     const [form, setForm] = useState({
@@ -13,28 +23,20 @@ export default function AdminBlog() {
         content: '',
         imageUrl: '',
         author: '',
-        readTime: '',
-        category: '',
-        published: true,
+        published_at: null as string | null,
     });
-    const [postToDelete, setPostToDelete] = useState<any>(null);
 
-    const {
-        data: posts = [],
-        isLoading,
-        refetch,
-        isFetching,
-    } = useQuery({
+    const { data: posts = [], isLoading } = useQuery({
         queryKey: ['admin-blog'],
-        queryFn: () => api.get('/admin/blog_posts'),
+        queryFn: () => api.get('/admin/blog'),
     });
 
-    const upsertMutation = useMutation({
-        mutationFn: (payload: any) => {
+    const mutation = useMutation({
+        mutationFn: (data: any) => {
             if (isEditing) {
-                return api.put(`/admin/blog_posts/${isEditing.id}`, payload);
+                return api.put(`/admin/blog/${isEditing.id}`, data);
             }
-            return api.post('/admin/blog_posts', payload);
+            return api.post('/admin/blog', data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
@@ -46,365 +48,273 @@ export default function AdminBlog() {
                 content: '',
                 imageUrl: '',
                 author: '',
-                readTime: '',
-                category: '',
-                published: true,
+                published_at: null,
             });
-            alert(isEditing ? 'Artículo actualizado' : 'Artículo creado');
-        },
-        onError: (err: any) => {
-            alert(
-                'Error al guardar: ' + (err instanceof ApiError ? err.message : 'Error desconocido')
-            );
         },
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: number) => api.delete(`/admin/blog_posts/${id}`),
+        mutationFn: (id: string) => api.delete(`/admin/blog/${id}`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
-            setPostToDelete(null);
-            alert('Artículo eliminado');
-        },
-        onError: () => {
-            alert('Error al eliminar');
         },
     });
 
-    const handleSave = (e: React.FormEvent) => {
-        e.preventDefault();
-        upsertMutation.mutate(form);
-    };
+    const togglePublishMutation = useMutation({
+        mutationFn: ({ id, published }: { id: string; published: boolean }) =>
+            api.patch(`/admin/blog/${id}/publish`, { published }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
+        },
+    });
 
-    if (isLoading) return <div className="p-8 text-center text-gray-500">Cargando blog...</div>;
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <RefreshCw className="animate-spin text-gray-400" />
+            </div>
+        );
+    }
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Entradas del Blog</h2>
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => refetch()}
-                        className="p-2 text-gray-400 hover:text-gray-600 transition"
-                        title="Actualizar"
-                    >
-                        <RefreshCw
-                            size={18}
-                            strokeWidth={1.5}
-                            className={isFetching ? 'animate-spin' : ''}
-                        />
-                    </button>
-                    <button
-                        onClick={() => {
-                            setIsEditing(null);
-                            setForm({
-                                title: '',
-                                slug: '',
-                                excerpt: '',
-                                content: '',
-                                imageUrl: '',
-                                author: '',
-                                readTime: '',
-                                category: '',
-                                published: true,
-                            });
-                        }}
-                        className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition"
-                    >
-                        <Plus size={16} strokeWidth={1.5} /> Nuevo Artículo
-                    </button>
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-3xl font-black tracking-tight mb-1">{t.title}</h2>
+                    <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest px-1">
+                        {t.subtitle}
+                    </p>
                 </div>
+                {!isEditing && (
+                    <button
+                        onClick={() => setIsEditing({})}
+                        className="flex items-center gap-2 px-6 py-4 bg-black text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all"
+                    >
+                        <Plus size={20} />
+                        Создать пост
+                    </button>
+                )}
             </div>
 
-            <form
-                onSubmit={handleSave}
-                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4"
-            >
-                <div className="col-span-full mb-2">
-                    <h3 className="font-bold text-gray-800">
-                        {isEditing ? 'Editar Artículo' : 'Añadir Artículo'}
-                    </h3>
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Título</label>
-                    <input
-                        required
-                        value={form.title}
-                        onChange={e => {
-                            const newTitle = e.target.value;
-                            const newSlug = newTitle
-                                .toLowerCase()
-                                .normalize('NFD')
-                                .replace(/[\u0300-\u036f]/g, '')
-                                .replace(/[^a-z0-0\s-]/g, '')
-                                .trim()
-                                .replace(/\s+/g, '-');
-                            setForm({ ...form, title: newTitle, slug: newSlug });
+            {isEditing ? (
+                <div className="bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm">
+                    <div className="flex justify-between items-center mb-10">
+                        <h3 className="text-xl font-black uppercase tracking-tight">
+                            {isEditing.id ? 'Редактировать пост' : 'Новый пост'}
+                        </h3>
+                        <button
+                            onClick={() => {
+                                setIsEditing(null);
+                                setForm({
+                                    title: '',
+                                    slug: '',
+                                    excerpt: '',
+                                    content: '',
+                                    imageUrl: '',
+                                    author: '',
+                                    published_at: null,
+                                });
+                            }}
+                            className="p-3 bg-gray-50 text-gray-400 hover:text-red-500 rounded-2xl transition"
+                        >
+                            <XCircle size={24} />
+                        </button>
+                    </div>
+
+                    <form
+                        onSubmit={e => {
+                            e.preventDefault();
+                            mutation.mutate(form);
                         }}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        Slug (URL amigable ej: mi-articulo)
-                    </label>
-                    <input
-                        required
-                        value={form.slug}
-                        onChange={e => setForm({ ...form, slug: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                    />
-                </div>
-                <div className="md:col-span-2">
-                    <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-bold text-gray-500">Extracto corto</label>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                const excerpt =
-                                    form.content.slice(0, 150).replace(/[#*`]/g, '').trim() + '...';
-                                setForm({ ...form, excerpt });
-                            }}
-                            className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-800 transition"
-                        >
-                            Auto-generar
-                        </button>
-                    </div>
-                    <textarea
-                        required
-                        value={form.excerpt}
-                        onChange={e => setForm({ ...form, excerpt: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500 h-16 resize-none"
-                    />
-                </div>
-                <div className="md:col-span-2">
-                    <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-bold text-gray-500">
-                            Contenido HTML / Texto
-                        </label>
-                        <button
-                            type="button"
-                            className="text-[10px] font-black uppercase text-red-600 opacity-50 cursor-not-allowed"
-                            title="AI Generator (Próximamente)"
-                        >
-                            AI Generate ✨
-                        </button>
-                    </div>
-                    <textarea
-                        required
-                        value={form.content}
-                        onChange={e => setForm({ ...form, content: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500 h-32 resize-none cursor-text font-mono"
-                    />
-                </div>
-                <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 mb-1">
-                        URL Imagen Portada
-                    </label>
-                    <input
-                        required
-                        value={form.imageUrl}
-                        onChange={e => setForm({ ...form, imageUrl: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                        placeholder="https://..."
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Autor</label>
-                    <input
-                        required
-                        value={form.author}
-                        onChange={e => setForm({ ...form, author: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                        placeholder="Chef Maksim"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Categoría</label>
-                    <input
-                        required
-                        value={form.category}
-                        onChange={e => setForm({ ...form, category: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                        placeholder="Gastronomía"
-                    />
-                </div>
-                <div>
-                    <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-bold text-gray-500">
-                            Tiempo de lectura (ej: 5)
-                        </label>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                const words = form.content.trim().split(/\s+/).length;
-                                const time = Math.ceil(words / 200);
-                                setForm({ ...form, readTime: String(time) });
-                            }}
-                            className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-800 transition"
-                        >
-                            Calcular
-                        </button>
-                    </div>
-                    <input
-                        required
-                        value={form.readTime}
-                        onChange={e => setForm({ ...form, readTime: e.target.value })}
-                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:border-red-500"
-                        placeholder="5"
-                    />
-                </div>
-
-                <div className="md:col-span-2 flex items-center justify-between mt-2 pt-4 border-t border-gray-100">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={form.published}
-                            onChange={e => setForm({ ...form, published: e.target.checked })}
-                            className="accent-red-600"
-                        />
-                        <span className="text-sm font-bold text-gray-700">Publicado</span>
-                    </label>
-                    <button
-                        type="submit"
-                        disabled={upsertMutation.isPending}
-                        className="bg-gray-900 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-black transition disabled:opacity-50 flex items-center gap-2"
+                        className="space-y-8"
                     >
-                        {upsertMutation.isPending && (
-                            <RefreshCw size={16} className="animate-spin" />
-                        )}
-                        Guardar Entrada
-                    </button>
-                </div>
-            </form>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                    Заголовок
+                                </label>
+                                <input
+                                    type="text"
+                                    value={form.title}
+                                    onChange={e => setForm({ ...form, title: e.target.value })}
+                                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black/5 font-bold transition"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                    URL-адрес (Slug)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={form.slug}
+                                    onChange={e => setForm({ ...form, slug: e.target.value })}
+                                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black/5 font-bold transition"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                    Автор
+                                </label>
+                                <input
+                                    type="text"
+                                    value={form.author}
+                                    onChange={e => setForm({ ...form, author: e.target.value })}
+                                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black/5 font-bold transition"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                    Картинка (URL)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={form.imageUrl}
+                                    onChange={e => setForm({ ...form, imageUrl: e.target.value })}
+                                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black/5 font-bold transition"
+                                    required
+                                />
+                            </div>
+                        </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-gray-50 border-b border-gray-100 text-xs text-gray-500 uppercase">
-                            <th className="p-4 font-bold">Artículo</th>
-                            <th className="p-4 font-bold hidden md:table-cell">Autor / Cat</th>
-                            <th className="p-4 font-bold">Estado</th>
-                            <th className="p-4 font-bold">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {posts.map((p: any) => (
-                            <tr
-                                key={p.id}
-                                className="border-b border-gray-50 hover:bg-gray-50 transition"
-                            >
-                                <td className="p-4">
-                                    <div className="flex items-center gap-3">
-                                        <img
-                                            src={p.imageUrl}
-                                            alt=""
-                                            className="w-12 h-12 rounded-lg object-cover bg-gray-100"
-                                        />
-                                        <div>
-                                            <div className="font-bold text-gray-900 line-clamp-1">
-                                                {p.title}
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                {new Date(p.createdAt).toLocaleDateString()}
-                                            </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Краткий анонс
+                            </label>
+                            <textarea
+                                value={form.excerpt}
+                                onChange={e => setForm({ ...form, excerpt: e.target.value })}
+                                className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black/5 font-bold transition resize-none h-24"
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                Содержание (Markdown или Текст)
+                            </label>
+                            <textarea
+                                value={form.content}
+                                onChange={e => setForm({ ...form, content: e.target.value })}
+                                className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black/5 font-bold transition resize-none min-h-[300px]"
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={mutation.isPending}
+                            className="w-full py-6 bg-black text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-gray-900 transition flex items-center justify-center gap-2"
+                        >
+                            {mutation.isPending && <RefreshCw size={20} className="animate-spin" />}
+                            {isEditing.id ? 'Сохранить изменения' : 'Опубликовать'}
+                        </button>
+                    </form>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {posts.map((post: any) => (
+                        <div
+                            key={post.id}
+                            className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm flex flex-col group transition-all hover:shadow-xl hover:shadow-black/5"
+                        >
+                            <div className="flex gap-6 mb-8">
+                                <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gray-50 flex-shrink-0">
+                                    <img
+                                        src={post.imageUrl}
+                                        alt={post.title}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                    />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <h4 className="font-black text-lg line-clamp-2 leading-tight">
+                                            {post.title}
+                                        </h4>
+                                        <div
+                                            className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter ${
+                                                post.published_at
+                                                    ? 'bg-green-50 text-green-600'
+                                                    : 'bg-gray-50 text-gray-400'
+                                            }`}
+                                        >
+                                            {post.published_at ? 'Опубликован' : 'Черновик'}
                                         </div>
                                     </div>
-                                </td>
-                                <td className="p-4 hidden md:table-cell">
-                                    <div className="text-sm text-gray-700">{p.author}</div>
-                                    <div className="text-xs text-gray-500 bg-gray-100 inline-block px-1.5 py-0.5 rounded">
-                                        {p.category}
-                                    </div>
-                                </td>
-                                <td className="p-4">
-                                    {p.published ? (
-                                        <span className="flex items-center gap-1 text-green-600 text-xs font-bold">
-                                            <CheckCircle size={14} strokeWidth={1.5} /> Publicado
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center gap-1 text-gray-400 text-xs font-bold">
-                                            <XCircle size={14} strokeWidth={1.5} /> Oculto
-                                        </span>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => {
-                                                setIsEditing(p);
-                                                setForm(p);
-                                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                                            }}
-                                            className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition"
-                                        >
-                                            <Edit2 size={16} strokeWidth={1.5} />
-                                        </button>
-                                        <button
-                                            onClick={() => setPostToDelete(p)}
-                                            className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
-                                            title="Eliminar artículo"
-                                        >
-                                            <Trash2 size={16} strokeWidth={1.5} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {posts.length === 0 && (
-                            <tr>
-                                <td colSpan={4} className="p-8 text-center text-gray-500">
-                                    No hay artículos en el blog.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Delete Confirmation Modal */}
-            {postToDelete && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-                        onClick={() => setPostToDelete(null)}
-                    />
-                    <div className="relative bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Trash2 size={32} strokeWidth={1.5} />
+                                    <p className="text-gray-400 text-[10px] font-bold uppercase mb-4 tracking-widest">
+                                        Автор: {post.author}
+                                    </p>
+                                    <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
+                                        {post.excerpt}
+                                    </p>
+                                </div>
                             </div>
-                            <h3 className="text-xl font-black text-gray-900 mb-2">
-                                ¿Eliminar artículo?
-                            </h3>
-                            <p className="text-sm text-gray-500 font-medium mb-8 text-pretty">
-                                Estás a punto de borrar{' '}
-                                <span className="text-red-600 font-bold uppercase">
-                                    "{postToDelete.title}"
-                                </span>
-                                . <br />
-                                Esta acción no se puede deshacer.
-                            </p>
-                            <div className="flex flex-col gap-3">
+
+                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-gray-50">
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setIsEditing(post);
+                                            setForm({
+                                                title: post.title,
+                                                slug: post.slug,
+                                                excerpt: post.excerpt,
+                                                content: post.content,
+                                                imageUrl: post.imageUrl,
+                                                author: post.author,
+                                                published_at: post.published_at,
+                                            });
+                                        }}
+                                        className="p-3 bg-gray-50 text-gray-400 hover:text-black hover:bg-gray-100 rounded-2xl transition-all"
+                                    >
+                                        <Edit2 size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            togglePublishMutation.mutate({
+                                                id: post.id,
+                                                published: !post.published_at,
+                                            })
+                                        }
+                                        disabled={togglePublishMutation.isPending}
+                                        className={`p-3 rounded-2xl transition-all ${
+                                            post.published_at
+                                                ? 'bg-red-50 text-red-400 hover:bg-red-100'
+                                                : 'bg-green-50 text-green-400 hover:bg-green-100'
+                                        }`}
+                                    >
+                                        {post.published_at ? (
+                                            <XCircle size={18} />
+                                        ) : (
+                                            <CheckCircle size={18} />
+                                        )}
+                                    </button>
+                                </div>
                                 <button
-                                    onClick={() => deleteMutation.mutate(postToDelete.id)}
-                                    disabled={deleteMutation.isPending}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-black transition-all flex items-center justify-center gap-2"
+                                    onClick={() => {
+                                        if (confirm('Удалить этот пост?')) {
+                                            deleteMutation.mutate(post.id);
+                                        }
+                                    }}
+                                    className="p-3 bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
                                 >
-                                    {deleteMutation.isPending && (
-                                        <RefreshCw size={16} className="animate-spin" />
-                                    )}
-                                    SÍ, ELIMINAR
-                                </button>
-                                <button
-                                    onClick={() => setPostToDelete(null)}
-                                    className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
-                                >
-                                    CANCELAR
+                                    <Trash2 size={18} />
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    ))}
+                    {posts.length === 0 && (
+                        <div className="col-span-full py-32 text-center bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-100">
+                            <div className="inline-flex p-8 bg-white rounded-full shadow-sm mb-6">
+                                <Plus size={48} className="text-gray-200" />
+                            </div>
+                            <h4 className="text-xl font-black text-gray-400 uppercase tracking-widest">
+                                Статей пока нет
+                            </h4>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

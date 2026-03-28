@@ -55,7 +55,17 @@ interface DeliveryZone {
 
 const RESTAURANT_LOCATION: [number, number] = [40.397042, -3.672449];
 
-export default function AdminDeliveryZones() {
+interface Props {
+    language?: 'ru' | 'es';
+}
+
+const ZONES_TRANSLATIONS = {
+    ru: { title: 'Зоны доставки', subtitle: 'Нарисуйте полигоны для определения зон.' },
+    es: { title: 'Zonas de Entrega', subtitle: 'Dibuja polígonos para definir las áreas.' },
+};
+
+export default function AdminDeliveryZones({ language = 'es' }: Props) {
+    const t = ZONES_TRANSLATIONS[language] || ZONES_TRANSLATIONS.es;
     const { success, error: toastError } = useToast();
     const queryClient = useQueryClient();
     const [editingZone, setEditingZone] = useState<Partial<DeliveryZone> | null>(null);
@@ -164,10 +174,8 @@ export default function AdminDeliveryZones() {
         <div className="space-y-6 animate-in fade-in duration-500">
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h3 className="font-bold text-gray-900">Zonas de Entrega Activas</h3>
-                    <p className="text-sm text-gray-500">
-                        Dibuja polígonos en el mapa para definir las áreas de entrega.
-                    </p>
+                    <h3 className="font-bold text-gray-900">{t.title}</h3>
+                    <p className="text-sm text-gray-500">{t.subtitle}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
