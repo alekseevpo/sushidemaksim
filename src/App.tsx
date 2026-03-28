@@ -179,6 +179,14 @@ function App() {
                                             }
                                         />
                                         <Route
+                                            path="/contacto"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <ContactsPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
                                             path="/blog"
                                             element={
                                                 <PageWrapper skeleton={<BlogSkeleton />}>

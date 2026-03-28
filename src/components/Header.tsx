@@ -54,7 +54,13 @@ export default function Header() {
         const updateHeight = () => {
             if (headerRef.current) {
                 const height = headerRef.current.offsetHeight;
-                document.documentElement.style.setProperty('--header-height', `${height}px`);
+                const currentHeight = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--header-height')
+                    .replace('px', '');
+
+                if (Math.abs(parseFloat(currentHeight) - height) > 1) {
+                    document.documentElement.style.setProperty('--header-height', `${height}px`);
+                }
             }
         };
 

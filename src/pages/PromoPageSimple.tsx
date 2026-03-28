@@ -108,7 +108,7 @@ export default function PromoPageSimple() {
                     {staticPromos.map(promo => (
                         <div
                             key={promo.id}
-                            className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col group [transform:translateZ(0)]"
+                            className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden hover:-translate-y-1 transition-transform duration-300 flex flex-col group"
                         >
                             {/* Image Header wrapper */}
                             <div className="h-48 md:h-56 w-full relative overflow-hidden flex flex-col items-center justify-end pb-5">
@@ -126,7 +126,7 @@ export default function PromoPageSimple() {
                                     <h3 className="text-xl md:text-2xl font-black text-white mb-2 drop-shadow-lg">
                                         {promo.title}
                                     </h3>
-                                    <span className="inline-block bg-white/20 backdrop-blur-md text-white text-[10px] md:text-sm font-black px-4 py-1.5 rounded-full border border-white/20 shadow-xl">
+                                    <span className="inline-block bg-white/40 text-white text-[10px] md:text-sm font-black px-4 py-1.5 rounded-full border border-white/30 shadow-xl">
                                         {promo.discount}
                                     </span>
                                 </div>
@@ -137,7 +137,7 @@ export default function PromoPageSimple() {
                                 <p className="text-gray-600 font-medium text-xs md:text-sm leading-relaxed mb-6 flex-1">
                                     {promo.description}
                                 </p>
-                                <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-400 mb-6 font-bold bg-gray-50 p-3 rounded-xl">
+                                <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-400 mb-6 font-bold bg-gray-50 p-3 rounded-xl transition-colors group-hover:bg-gray-100 border border-gray-50">
                                     <Clock size={14} strokeWidth={1.5} className="text-gray-500" />
                                     <span>
                                         Válido hasta:{' '}
@@ -279,7 +279,7 @@ export default function PromoPageSimple() {
                             {promoItems.map(item => (
                                 <div
                                     key={item.id}
-                                    className="bg-white rounded-3xl shadow-xl shadow-gray-200/40 overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col group border border-gray-50 [transform:translateZ(0)]"
+                                    className="bg-white rounded-3xl shadow-xl shadow-gray-200/40 overflow-hidden hover:-translate-y-1 transition-transform duration-300 flex flex-col group border border-gray-50"
                                 >
                                     <div className="h-32 md:h-56 bg-gray-50 overflow-hidden relative flex items-center justify-center">
                                         {!failedImages.has(item.id) ? (
