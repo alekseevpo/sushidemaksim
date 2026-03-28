@@ -72,7 +72,7 @@ export default function MenuPageSimple() {
             const isMobile = window.innerWidth < 1024;
             const offset = headerHeight + (isMobile ? 80 : 32);
             const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
-            window.scrollTo({ top, behavior: 'smooth' });
+            window.scrollTo({ top, behavior: 'auto' });
         }
     }, [selectedCategory, user?.id]);
 
@@ -81,7 +81,7 @@ export default function MenuPageSimple() {
         const activeCat = document.getElementById(`cat-${selectedCategory}`);
         if (activeCat && activeCat.scrollIntoView) {
             activeCat.scrollIntoView({
-                behavior: 'smooth',
+                behavior: 'auto',
                 inline: selectedCategory === 'all' ? 'start' : 'center',
                 block: 'nearest',
             });
@@ -105,7 +105,7 @@ export default function MenuPageSimple() {
                 const isMobile = window.innerWidth < 1024;
                 const offset = headerHeight + (isMobile ? 80 : 32);
                 const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top, behavior: 'smooth' });
+                window.scrollTo({ top, behavior: 'auto' });
             }
         }
     }, [debouncedSearch, isLoading, items.length]);
