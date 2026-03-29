@@ -531,7 +531,10 @@ export default function Header() {
                                     </div>
 
                                     {/* Scrollable Content Area */}
-                                    <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar" data-lenis-prevent>
+                                    <div
+                                        className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar"
+                                        data-lenis-prevent
+                                    >
                                         <div className="px-3 pt-4 pb-2 space-y-1">
                                             {/* Primary Reservation CTA in Mobile Menu */}
                                             <div className="px-1 pb-4">
