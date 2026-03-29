@@ -75,18 +75,6 @@ export default function MenuPageSimple() {
         }
     }, [selectedCategory, user?.id]);
 
-    // Scroll active category into view on mobile
-    useEffect(() => {
-        const activeCat = document.getElementById(`cat-${selectedCategory}`);
-        if (activeCat && activeCat.scrollIntoView) {
-            activeCat.scrollIntoView({
-                behavior: 'smooth',
-                inline: selectedCategory === 'all' ? 'start' : 'center',
-                block: 'nearest',
-            });
-        }
-    }, [selectedCategory]);
-
     useEffect(() => {
         if (debouncedSearch && !isLoading && items.length > 0) {
             if (initialSearchMount.current) {
