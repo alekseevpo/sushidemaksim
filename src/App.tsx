@@ -70,10 +70,13 @@ const PageWrapper = ({
     isHome?: boolean;
     isAdmin?: boolean;
 }) => {
+    const location = useLocation();
+    const isProfile = location.pathname === '/profile';
+
     useEffect(() => {
         window.scrollTo(0, 0);
         (window as any).lenis?.scrollTo(0, { immediate: true });
-    }, []);
+    }, [location.pathname]);
 
     return (
         <motion.div
@@ -83,7 +86,7 @@ const PageWrapper = ({
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="flex-1 flex flex-col"
             style={{
-                paddingTop: !isAdmin && !isHome ? 'var(--header-height, 4rem)' : '0',
+                paddingTop: !isAdmin && !isHome && !isProfile ? 'var(--header-height, 4rem)' : '0',
             }}
         >
             <Suspense fallback={skeleton}>{children}</Suspense>

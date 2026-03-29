@@ -308,7 +308,7 @@ export default function MenuPageSimple() {
                     {/* Items Section */}
                     {isLoading ? (
                         <div className="space-y-12">
-                            <MenuItemsSkeleton />
+                            <MenuItemsSkeleton showHeader={selectedCategory === 'all' && !search} />
                         </div>
                     ) : (
                         <ProductGrid

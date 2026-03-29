@@ -62,12 +62,9 @@ export default function ProfilePage() {
 
     const isFirstMount = useRef(true);
 
-    useEffect(() => {
-        isFirstMount.current = false;
-    }, []);
-
     // Scroll active tab into view on mobile
     useEffect(() => {
+        if (isFirstMount.current) return;
         const activeElement = document.getElementById(`tab-${activeTab}`);
         if (activeElement && typeof activeElement.scrollIntoView === 'function') {
             activeElement.scrollIntoView({
@@ -96,6 +93,10 @@ export default function ProfilePage() {
             }
         }
     }, [activeTab]);
+
+    useEffect(() => {
+        isFirstMount.current = false;
+    }, []);
 
     // Update URL when tab changes manually
     const handleTabChange = (tab: TabId) => {
@@ -165,8 +166,8 @@ export default function ProfilePage() {
                 description="Gestiona tu cuenta, direcciones y pedidos en Sushi de Maksim."
             />
 
-            {/* Header Section - More Compact */}
-            <div className="bg-red-600 pt-8 pb-28 px-2 md:px-4 relative overflow-hidden">
+            {/* Header Section - Increased pt for mobile to account for transparent header */}
+            <div className="bg-red-600 pt-20 md:pt-8 pb-28 px-2 md:px-4 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                         <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white p-1 shadow-xl relative">
