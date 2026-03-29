@@ -59,7 +59,8 @@ export default function MenuCategoryBar({
                             <button
                                 id="cat-all"
                                 onClick={e => handleCategoryClick('all', e)}
-                                className={`relative whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
+                                style={{ WebkitFontSmoothing: 'antialiased' }}
+                                className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
                                     selectedCategory === 'all'
                                         ? 'text-white border-transparent'
                                         : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
@@ -86,7 +87,8 @@ export default function MenuCategoryBar({
                                     key={cat.id}
                                     id={`cat-${cat.id}`}
                                     onClick={e => handleCategoryClick(cat.id, e)}
-                                    className={`relative whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
+                                    style={{ WebkitFontSmoothing: 'antialiased' }}
+                                    className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
                                         selectedCategory === cat.id
                                             ? 'text-white border-transparent'
                                             : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
