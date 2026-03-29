@@ -52,7 +52,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         const { name, value } = e.target;
 
         if (name === 'date') {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
             if (value < today) return;
             setFormData(prev => ({ ...prev, date: value, time: '' }));
             return;
@@ -68,7 +68,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         const intervals = BUSINESS_HOURS[day] || [];
 
         const now = new Date();
-        const isToday = formData.date === now.toISOString().split('T')[0];
+        const isToday = formData.date === now.toLocaleDateString('en-CA');
         const currentH = now.getHours();
         const currentM = now.getMinutes();
 
@@ -169,7 +169,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         };
     }, [isOpen]);
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
 
     return (
         <AnimatePresence>
