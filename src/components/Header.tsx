@@ -508,6 +508,7 @@ export default function Header() {
                                     exit={{ opacity: 0 }}
                                     onClick={() => setShowMobileMenu(false)}
                                     className="fixed inset-0 bg-black/50 z-[9998] md:hidden"
+                                    data-lenis-prevent
                                 />
 
                                 {/* Bottom Sheet */}
@@ -522,6 +523,7 @@ export default function Header() {
                                         mass: 0.8,
                                     }}
                                     className="fixed inset-x-0 bottom-0 bg-white rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-gray-100 will-change-transform flex flex-col max-h-[92dvh]"
+                                    data-lenis-prevent
                                 >
                                     {/* Drag Handle Container */}
                                     <div className="flex justify-center pt-5 pb-2 shrink-0">
@@ -529,7 +531,7 @@ export default function Header() {
                                     </div>
 
                                     {/* Scrollable Content Area */}
-                                    <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+                                    <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar" data-lenis-prevent>
                                         <div className="px-3 pt-4 pb-2 space-y-1">
                                             {/* Primary Reservation CTA in Mobile Menu */}
                                             <div className="px-1 pb-4">

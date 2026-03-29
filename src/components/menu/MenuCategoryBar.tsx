@@ -36,7 +36,7 @@ export default function MenuCategoryBar({
                 style={{ top: 'var(--header-height, 64px)' }}
             >
                 <div className="max-w-7xl mx-auto">
-                    <div className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain">
+                    <div className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain touch-pan-x" data-lenis-prevent data-lenis-prevent-touch>
                         <div className="flex gap-2 flex-nowrap px-4">
                             {/* TODOS Button */}
                             <button
@@ -104,7 +104,7 @@ export default function MenuCategoryBar({
 
     return (
         <aside className="hidden lg:block w-[220px] flex-shrink-0 relative bg-red-600">
-            <div className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col items-stretch pb-10 overflow-visible no-scrollbar">
+            <div className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col items-stretch pb-10 overflow-visible no-scrollbar" data-lenis-prevent>
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-3 relative z-10">
                         <button

@@ -58,21 +58,20 @@ export default function MenuPageSimple() {
             return;
         }
 
-        tracker.track('category_click', {
-            metadata: { category: selectedCategory },
-            userId: user?.id,
-        });
-
         const menuTop = document.getElementById('menu-content');
         if (menuTop) {
-            const headerHeight =
-                parseInt(
-                    getComputedStyle(document.documentElement).getPropertyValue('--header-height')
-                ) || 80;
             const isMobile = window.innerWidth < 1024;
-            const offset = headerHeight + (isMobile ? 80 : 32);
-            const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
-            window.scrollTo({ top, behavior: 'smooth' });
+            // Use stable predictive offset (compact header 64px + bar 80px/32px)
+            const offset = isMobile ? 144 : 96;
+            const targetTop = menuTop.getBoundingClientRect().top + window.scrollY - offset;
+
+            requestAnimationFrame(() => {
+                if ((window as any).lenis) {
+                    (window as any).lenis.scrollTo(targetTop, { duration: 1.2 });
+                } else {
+                    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+                }
+            });
         }
     }, [selectedCategory, user?.id]);
 
@@ -96,16 +95,17 @@ export default function MenuPageSimple() {
             }
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
-                const headerHeight =
-                    parseInt(
-                        getComputedStyle(document.documentElement).getPropertyValue(
-                            '--header-height'
-                        )
-                    ) || 80;
                 const isMobile = window.innerWidth < 1024;
-                const offset = headerHeight + (isMobile ? 80 : 32);
-                const top = menuTop.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top, behavior: 'smooth' });
+                const offset = isMobile ? 144 : 96;
+                const targetTop = menuTop.getBoundingClientRect().top + window.scrollY - offset;
+
+                requestAnimationFrame(() => {
+                    if ((window as any).lenis) {
+                        (window as any).lenis.scrollTo(targetTop, { duration: 1.2 });
+                    } else {
+                        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+                    }
+                });
             }
         }
     }, [debouncedSearch, isLoading, items.length]);
