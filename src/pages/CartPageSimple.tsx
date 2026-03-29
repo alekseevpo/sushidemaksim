@@ -465,6 +465,8 @@ export default function CartPageSimple() {
             notesArray.push(`[PROGRAMADO: ${scheduledDate} ${scheduledTime}]`);
         if (noCall) notesArray.push('[SIN CONFIRMACIÓN LLAMADA]');
         if (noBuzzer) notesArray.push('[NO LLAMAR TIMBRE]');
+        if (deliveryDetails.chopsticksCount > 0)
+            notesArray.push(`[PALILLOS: ${deliveryDetails.chopsticksCount}]`);
         if (customNote.trim()) notesArray.push(customNote.trim());
 
         try {
@@ -684,6 +686,10 @@ export default function CartPageSimple() {
                                 getCategoryEmoji={getCategoryEmoji}
                                 failedImages={failedImages}
                                 setFailedImages={setFailedImages}
+                                chopsticksCount={deliveryDetails.chopsticksCount}
+                                updateChopsticks={val =>
+                                    updateDeliveryDetails({ chopsticksCount: val })
+                                }
                             />
 
                             <DeliveryForm

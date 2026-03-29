@@ -39,6 +39,7 @@ interface DeliveryDetails {
     customNote: string;
     saveAddress: boolean;
     guestsCount: number;
+    chopsticksCount: number;
     lat?: number;
     lon?: number;
 }
@@ -82,6 +83,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 customNote: '',
                 saveAddress: true,
                 guestsCount: 2,
+                chopsticksCount: 0,
             };
 
         const saved = localStorage.getItem('delivery_details');
@@ -104,6 +106,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             customNote: '',
             saveAddress: true,
             guestsCount: 2,
+            chopsticksCount: 0,
         };
 
         if (saved) {
@@ -125,7 +128,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         saveAddress: parsed.saveAddress ?? true,
                     };
                 }
-                return parsed;
+                // Merge with defaults to ensure new fields are present
+                return { ...defaultDetails, ...parsed };
             } catch (e) {
                 console.error('Failed to parse delivery details', e);
             }

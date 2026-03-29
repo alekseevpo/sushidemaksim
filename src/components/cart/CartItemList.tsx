@@ -11,6 +11,8 @@ interface CartItemListProps {
     getCategoryEmoji: (category: string) => string;
     failedImages: Set<string | number>;
     setFailedImages: React.Dispatch<React.SetStateAction<Set<string | number>>>;
+    chopsticksCount: number;
+    updateChopsticks: (count: number) => void;
 }
 
 export default function CartItemList({
@@ -21,6 +23,8 @@ export default function CartItemList({
     getCategoryEmoji,
     failedImages,
     setFailedImages,
+    chopsticksCount,
+    updateChopsticks,
 }: CartItemListProps) {
     return (
         <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 mb-6 overflow-hidden">
@@ -122,6 +126,59 @@ export default function CartItemList({
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Footer with Info and Chopsticks */}
+            <div className="p-4 bg-gray-50/50 border-t border-gray-100">
+                <div className="flex flex-col gap-4">
+                    {/* Notice */}
+                    <div className="flex items-start gap-3 bg-red-50/30 p-3 rounded-xl border border-red-100/50">
+                        <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                            <span className="text-[10px]">✨</span>
+                        </div>
+                        <p className="text-[11px] font-bold text-red-900/80 leading-snug m-0">
+                            Salsa de soja, wasabi y jengibre están incluidos en su pedido.
+                        </p>
+                    </div>
+
+                    {/* Chopsticks Question */}
+                    <div className="flex items-center justify-between gap-4 py-1">
+                        <div className="flex flex-col">
+                            <p className="text-[13px] font-black text-gray-900 m-0 uppercase tracking-widest">
+                                ¿Cuántos juegos de palillos añadir?
+                            </p>
+                            <p className="text-[10px] text-gray-400 font-medium m-0 opacity-60">
+                                Un juego por persona (Máximo 10)
+                            </p>
+                        </div>
+
+                        <div className="flex items-center bg-white rounded-lg p-0.5 border border-gray-200 shadow-sm">
+                            <button
+                                onClick={() => {
+                                    triggerHaptic();
+                                    updateChopsticks(Math.max(0, chopsticksCount - 1));
+                                }}
+                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                disabled={chopsticksCount <= 0}
+                            >
+                                <Minus size={14} strokeWidth={2.5} />
+                            </button>
+                            <span className="w-8 text-center font-black text-gray-900 text-[14px]">
+                                {chopsticksCount}
+                            </span>
+                            <button
+                                onClick={() => {
+                                    triggerHaptic();
+                                    updateChopsticks(Math.min(10, chopsticksCount + 1));
+                                }}
+                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                disabled={chopsticksCount >= 10}
+                            >
+                                <Plus size={14} strokeWidth={2.5} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
