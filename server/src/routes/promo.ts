@@ -16,29 +16,41 @@ router.post(
         subtotal: { type: 'number', required: false },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { code, subtotal } = req.body;
+        const { code: rawCode, subtotal } = req.body;
+        const code = String(rawCode).trim().toUpperCase();
 
-        // ─── Hardcoded Test Promo ───
+        // ─── Hardcoded Test Promos ───
         if (code === 'TEST10') {
             return res.json({ percentage: 10 });
         }
 
         // ─── DB Lookup for Promo Codes ───
+        console.log(`[PROMO] Validating "${code}" for user ${req.userId}...`);
         const { data: promo, error } = await supabase
             .from('promo_codes')
             .select('*')
             .eq('code', code)
-            .eq('is_used', false)
-            // Allow global promos (where user_id is null) or specific to the user
+            // Allow checking existing codes even if used, so we can give better errors
             .or(`user_id.is.null,user_id.eq.${req.userId}`)
             .maybeSingle();
 
-        if (error || !promo) {
-            return res.status(400).json({ error: 'Código inválido o ya utilizado' });
+        if (error) {
+            console.error('[PROMO] DB Error:', error);
+            return res.status(500).json({ error: 'Error del servidor al validar el código' });
         }
 
-        // ─── Requirements Check for Welcome Promos ───
-        if (promo.code.startsWith('NUEVO')) {
+        if (!promo) {
+            console.warn(`[PROMO] Code "${code}" not found for user ${req.userId}`);
+            return res.status(400).json({ error: 'Código inválido' });
+        }
+
+        if (promo.is_used) {
+            return res.status(400).json({ error: 'Este código ya ha sido utilizado' });
+        }
+
+        // ─── Requirements Check for Registration Promos ───
+        // Support both "NUEVO" (default) and "NEW" (old/fallback or from newsletter)
+        if (promo.code.startsWith('NUEVO') || promo.code.startsWith('NEW')) {
             // 1. Expiry Check (24h)
             const createdAt = new Date(promo.created_at);
             const expiredAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);

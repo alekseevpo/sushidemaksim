@@ -40,7 +40,7 @@ export function formatUser(
         phone: u.phone,
         avatar: u.avatar,
         role: u.role,
-        isSuperadmin: u.role === 'admin' || !!u.is_superadmin,
+        isSuperadmin: !!u.is_superadmin,
         isVerified: !!u.is_verified,
         birthDate: u.birth_date,
         isBirthDateVerified: !!u.birth_date_verified,

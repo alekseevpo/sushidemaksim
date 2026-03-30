@@ -57,6 +57,7 @@ interface CartContextType {
     // Delivery Persistance
     deliveryDetails: DeliveryDetails;
     updateDeliveryDetails: (details: Partial<DeliveryDetails>) => void;
+    resetDeliveryDetails: () => void;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -151,6 +152,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setDeliveryDetails(prev => ({ ...prev, ...details }));
     }, []);
 
+    const resetDeliveryDetails = useCallback(() => {
+        setDeliveryDetails({
+            address: '',
+            house: '',
+            apartment: '',
+            phone: '',
+            postalCode: '',
+            customerName: '',
+            guestEmail: '',
+            paymentMethod: null,
+            deliveryType: 'delivery',
+            selectedZone: null,
+            noCall: false,
+            noBuzzer: false,
+            isScheduled: false,
+            scheduledDate: new Date().toISOString().split('T')[0],
+            scheduledTime: '',
+            customNote: '',
+            saveAddress: true,
+            guestsCount: 2,
+            chopsticksCount: 0,
+        });
+    }, []);
+
     const { user, isLoading: isAuthLoading } = useAuth();
     const queryClient = useQueryClient();
 
@@ -239,6 +264,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 itemCount,
                 deliveryDetails,
                 updateDeliveryDetails,
+                resetDeliveryDetails,
             }}
         >
             {children}

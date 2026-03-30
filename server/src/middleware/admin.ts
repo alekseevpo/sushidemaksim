@@ -13,11 +13,11 @@ export async function adminMiddleware(req: AuthRequest, res: Response, next: Nex
 
     const { data: user, error } = await supabase
         .from('users')
-        .select('role')
+        .select('role, is_superadmin')
         .eq('id', req.userId)
         .single();
 
-    if (error || !user || user.role !== 'admin') {
+    if (error || !user || (user.role !== 'admin' && !user.is_superadmin)) {
         return res
             .status(403)
             .json({ error: 'Acceso denegado: se requieren privilegios de administrador' });

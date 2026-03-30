@@ -197,4 +197,27 @@ describe('useCart Hook (Integration)', () => {
         expect(saved.address).toBe('Test Street');
         expect(saved.chopsticksCount).toBe(5);
     });
+
+    it('should reset all delivery details', async () => {
+        const { result } = renderHook(() => useCart(), { wrapper });
+
+        act(() => {
+            result.current.updateDeliveryDetails({
+                address: 'Test Street',
+                customNote: 'No comments',
+                isScheduled: true,
+            });
+        });
+
+        expect(result.current.deliveryDetails.address).toBe('Test Street');
+        expect(result.current.deliveryDetails.customNote).toBe('No comments');
+
+        act(() => {
+            result.current.resetDeliveryDetails();
+        });
+
+        expect(result.current.deliveryDetails.address).toBe('');
+        expect(result.current.deliveryDetails.customNote).toBe('');
+        expect(result.current.deliveryDetails.isScheduled).toBe(false);
+    });
 });

@@ -185,4 +185,13 @@ describe('DeliveryForm', () => {
         fireEvent.change(noteArea, { target: { value: 'Extra ginger please' } });
         expect(defaultProps.setCustomNote).toHaveBeenCalledWith('Extra ginger please');
     });
+
+    it('hides delivery-specific options in reservation mode', () => {
+        render(<DeliveryForm {...defaultProps} deliveryType="reservation" />);
+        expect(screen.queryByLabelText(/Sin llamada de confirmación/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/No llamar al timbre/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/Entrega programada/i)).not.toBeInTheDocument();
+        // But scheduling UI should be visible
+        expect(screen.getAllByText(/Fecha/i).length).toBeGreaterThan(0);
+    });
 });

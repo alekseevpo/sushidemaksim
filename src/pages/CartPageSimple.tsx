@@ -8,6 +8,7 @@ import SEO from '../components/SEO';
 import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
+import { detectZone } from '../utils/delivery';
 
 // Modular Components
 import CartItemList from '../components/cart/CartItemList';
@@ -39,6 +40,7 @@ export default function CartPageSimple() {
         addItem,
         deliveryDetails,
         updateDeliveryDetails,
+        resetDeliveryDetails,
     } = useCart();
 
     const { isAuthenticated, user } = useAuth();
@@ -373,7 +375,8 @@ export default function CartPageSimple() {
 
     useEffect(() => {
         // If welcome promo is applied and subtotal drops below 70, invalidate it
-        if (promoDiscount && promoCode.startsWith('NUEVO') && cartSubtotal < 70) {
+        const isWelcomePromo = promoCode.startsWith('NUEVO') || promoCode.startsWith('NEW');
+        if (promoDiscount && isWelcomePromo && cartSubtotal < 70) {
             handleRemovePromo();
             setPromoError('El código de bienvenida requiere un pedido mínimo de 70,00€');
         }
@@ -519,6 +522,8 @@ export default function CartPageSimple() {
             setOrderSuccess(data.order.id);
             setOrderWhatsappUrl(data.whatsappUrl || null);
             clearCart();
+            resetDeliveryDetails();
+            handleRemovePromo();
 
             // Reset for next order session
             tracker.resetSession();
@@ -750,6 +755,7 @@ export default function CartPageSimple() {
                                 isStoreClosed={isStoreClosed}
                                 saveAddress={saveAddress}
                                 onSavedAddressSelect={addr => {
+                                    const zone = detectZone(addr.lat, addr.lon, deliveryZones);
                                     updateDeliveryDetails({
                                         address: addr.street || '',
                                         house: addr.house || '',
@@ -758,6 +764,7 @@ export default function CartPageSimple() {
                                         lat: addr.lat,
                                         lon: addr.lon,
                                         postalCode: addr.postalCode || '',
+                                        selectedZone: zone,
                                     });
                                 }}
                                 setSaveAddress={val => updateDeliveryDetails({ saveAddress: val })}

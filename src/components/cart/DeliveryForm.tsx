@@ -592,44 +592,53 @@ export default function DeliveryForm({
                 </div>
 
                 <div className="flex flex-col gap-2 mt-4">
-                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
-                        <input
-                            type="checkbox"
-                            className="w-4 h-4 accent-red-600 rounded cursor-pointer"
-                            checked={noCall}
-                            onChange={e => {
-                                triggerHaptic();
-                                setNoCall(e.target.checked);
-                            }}
-                        />
-                        Sin llamada de confirmación de pedido
-                    </label>
-                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
-                        <input
-                            type="checkbox"
-                            className="w-4 h-4 accent-red-600 rounded cursor-pointer"
-                            checked={noBuzzer}
-                            onChange={e => {
-                                triggerHaptic();
-                                setNoBuzzer(e.target.checked);
-                            }}
-                        />
-                        No llamar al timbre / El repartidor llama al móvil
-                    </label>
-                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
-                        <input
-                            type="checkbox"
-                            className="w-4 h-4 accent-red-600 rounded cursor-pointer"
-                            checked={isScheduled}
-                            onChange={e => {
-                                triggerHaptic();
-                                setIsScheduled(e.target.checked);
-                            }}
-                        />
-                        🔥 Entrega programada (Opcional)
-                    </label>
+                    {/* Delivery specific toggles */}
+                    {deliveryType === 'delivery' && (
+                        <>
+                            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                    checked={noCall}
+                                    onChange={e => {
+                                        triggerHaptic();
+                                        setNoCall(e.target.checked);
+                                    }}
+                                />
+                                Sin llamada de confirmación de pedido
+                            </label>
+                            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                    checked={noBuzzer}
+                                    onChange={e => {
+                                        triggerHaptic();
+                                        setNoBuzzer(e.target.checked);
+                                    }}
+                                />
+                                No llamar al timbre / El repartidor llama al móvil
+                            </label>
+                        </>
+                    )}
 
-                    {isStoreClosed && !isScheduled && (
+                    {/* Scheduled toggle: only for delivery or pickup (reservation is always scheduled) */}
+                    {deliveryType !== 'reservation' && (
+                        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                checked={isScheduled}
+                                onChange={e => {
+                                    triggerHaptic();
+                                    setIsScheduled(e.target.checked);
+                                }}
+                            />
+                            🔥 Entrega programada (Opcional)
+                        </label>
+                    )}
+
+                    {isStoreClosed && deliveryType !== 'reservation' && !isScheduled && (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -643,7 +652,7 @@ export default function DeliveryForm({
                         </motion.div>
                     )}
 
-                    {isScheduled && (
+                    {(isScheduled || deliveryType === 'reservation') && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}

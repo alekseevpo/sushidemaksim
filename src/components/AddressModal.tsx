@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, useMap, Polygon, Circle } from 'react-
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { api } from '../utils/api';
-import * as turf from '@turf/turf';
+import { RESTAURANT_LOCATION, detectZone } from '../utils/delivery';
 
 // Fix Leaflet marker icons
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -64,8 +64,6 @@ const SushiDeliveryIcon = L.divIcon({
     iconSize: [32, 55],
     iconAnchor: [16, 50],
 });
-
-const RESTAURANT_LOCATION: [number, number] = [40.397042, -3.672449];
 
 interface AddressModalProps {
     isOpen: boolean;
@@ -197,65 +195,9 @@ export default function AddressModal({
         prevOpenRef.current = isOpen;
     }, [isOpen, currentAddress]);
 
-    // Auto-detect zone on marker move
     useEffect(() => {
-        if (
-            !markerPosition ||
-            isNaN(markerPosition[0]) ||
-            isNaN(markerPosition[1]) ||
-            deliveryZones.length === 0
-        )
-            return;
-
-        const userPoint = turf.point([markerPosition[1], markerPosition[0]]); // [lng, lat] for turf
-        const restaurantPoint = turf.point([RESTAURANT_LOCATION[1], RESTAURANT_LOCATION[0]]);
-        const distanceKm = turf.distance(restaurantPoint, userPoint);
-
-        const matchingZones: any[] = [];
-
-        for (const zone of deliveryZones) {
-            if (
-                zone.type === 'radius' ||
-                (zone.maxRadius > 0 && (!zone.coordinates || zone.coordinates.length < 3))
-            ) {
-                // Radius-based detection
-                if (distanceKm >= (zone.minRadius || 0) && distanceKm < zone.maxRadius) {
-                    matchingZones.push({ ...zone, area: zone.maxRadius - (zone.minRadius || 0) });
-                }
-            } else if (
-                (zone.type === 'polygon' || !zone.type) &&
-                zone.coordinates &&
-                Array.isArray(zone.coordinates) &&
-                zone.coordinates.length >= 3
-            ) {
-                // Legacy Polygon-based detection
-                const turfCoords = zone.coordinates.map((c: number[]) => [c[1], c[0]]);
-                if (
-                    turfCoords[0][0] !== turfCoords[turfCoords.length - 1][0] ||
-                    turfCoords[0][1] !== turfCoords[turfCoords.length - 1][1]
-                ) {
-                    turfCoords.push(turfCoords[0]);
-                }
-
-                try {
-                    const poly = turf.polygon([turfCoords]);
-                    if (turf.booleanPointInPolygon(userPoint, poly)) {
-                        const area = turf.area(poly);
-                        matchingZones.push({ ...zone, area: area / 1000000 }); // Area in km2 for comparison
-                    }
-                } catch (err) {
-                    console.warn('Invalid polygon for zone:', zone.name);
-                }
-            }
-        }
-
-        if (matchingZones.length > 0) {
-            // Sort by area/diff ascending so the most specific zone wins
-            matchingZones.sort((a, b) => a.area - b.area);
-            setSelectedZone(matchingZones[0]);
-        } else {
-            setSelectedZone(null);
-        }
+        const detected = detectZone(markerPosition[0], markerPosition[1], deliveryZones);
+        setSelectedZone(detected);
     }, [markerPosition, deliveryZones]);
 
     const performReverseGeocode = useCallback(
