@@ -127,18 +127,18 @@ export default function CustomDatePicker({
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 5, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute left-0 right-0 md:left-auto md:w-[320px] top-full z-[1100] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4"
+                        className="absolute left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 top-full mt-2 z-[1100] w-[280px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 p-4"
                     >
                         {/* Calendar Header */}
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-between mb-4 px-1">
                             <button
                                 type="button"
                                 onClick={handlePrevMonth}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"
                             >
                                 <ChevronLeft size={18} className="text-gray-600" />
                             </button>
-                            <div className="text-sm font-black uppercase text-gray-900 tracking-tight">
+                            <div className="text-[12px] font-black uppercase text-gray-900 tracking-tight">
                                 {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
                             </div>
                             <button

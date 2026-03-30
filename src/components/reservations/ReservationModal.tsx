@@ -187,7 +187,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                         exit={{ y: '-100%', opacity: 0 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
                         onClick={e => e.stopPropagation()}
-                        className="relative w-full max-w-md bg-white md:rounded-b-[2rem] shadow-2xl flex flex-col overflow-hidden"
+                        className="relative w-full max-w-md bg-white md:rounded-b-[2rem] shadow-2xl flex flex-col"
                     >
                         {/* Header Image/Pattern */}
                         <div className="h-16 md:h-18 bg-red-600 relative overflow-hidden flex items-center justify-center shrink-0">
@@ -246,7 +246,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                         </div>
                                     )}
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Fecha
@@ -314,7 +314,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 pb-1">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-1">
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Personas
