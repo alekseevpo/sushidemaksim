@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Calendar,
     Mail,
     User,
     CheckCircle2,
@@ -14,6 +13,7 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
+import CustomDatePicker from '../ui/CustomDatePicker';
 
 interface ReservationModalProps {
     isOpen: boolean;
@@ -260,18 +260,15 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                 Fecha
                                             </label>
                                             <div className="relative">
-                                                <Calendar
-                                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                                                    size={16}
-                                                />
-                                                <input
-                                                    required
-                                                    type="date"
-                                                    name="date"
-                                                    min={today}
+                                                <CustomDatePicker
                                                     value={formData.date}
-                                                    onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
+                                                    onChange={date => {
+                                                        const today = new Date().toLocaleDateString('en-CA');
+                                                        if (date < today && date !== '') return;
+                                                        setFormData(prev => ({ ...prev, date, time: '' }));
+                                                    }}
+                                                    min={today}
+                                                    placeholder="dd/mm/aaaa"
                                                 />
                                             </div>
                                         </div>

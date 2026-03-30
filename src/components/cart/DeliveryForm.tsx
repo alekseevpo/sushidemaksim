@@ -14,6 +14,7 @@ import { triggerHaptic } from '../../utils/haptics';
 import { useEffect, useRef } from 'react';
 import { tracker } from '../../analytics/tracker';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
+import CustomDatePicker from '../ui/CustomDatePicker';
 
 interface DeliveryFormProps {
     deliveryType: 'delivery' | 'pickup' | 'reservation';
@@ -653,12 +654,11 @@ export default function DeliveryForm({
                                     <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
                                         Fecha
                                     </label>
-                                    <input
-                                        type="date"
-                                        min={todayStr}
+                                    <CustomDatePicker
                                         value={scheduledDate}
-                                        onChange={e => setScheduledDate(e.target.value)}
-                                        className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
+                                        onChange={setScheduledDate}
+                                        min={todayStr}
+                                        placeholder="dd/mm/aaaa"
                                     />
                                 </div>
                                 <div>
