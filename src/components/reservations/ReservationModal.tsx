@@ -255,9 +255,15 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                 <CustomDatePicker
                                                     value={formData.date}
                                                     onChange={date => {
-                                                        const today = new Date().toLocaleDateString('en-CA');
+                                                        const today = new Date().toLocaleDateString(
+                                                            'en-CA'
+                                                        );
                                                         if (date < today && date !== '') return;
-                                                        setFormData(prev => ({ ...prev, date, time: '' }));
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            date,
+                                                            time: '',
+                                                        }));
                                                     }}
                                                     min={today}
                                                     placeholder="dd/mm/aaaa"

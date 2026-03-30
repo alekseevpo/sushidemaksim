@@ -13,6 +13,9 @@ vi.mock('lucide-react', () => ({
     Users: () => <div data-testid="users" />,
     Minus: () => <div data-testid="minus">minus</div>,
     Plus: () => <div data-testid="plus">plus</div>,
+    Calendar: () => <div data-testid="calendar" />,
+    ChevronLeft: () => <div data-testid="chevron-left" />,
+    ChevronRight: () => <div data-testid="chevron-right" />,
 }));
 
 // Mock triggerHaptic

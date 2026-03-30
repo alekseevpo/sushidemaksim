@@ -10,16 +10,31 @@ interface CustomDatePickerProps {
 }
 
 const MONTHS = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
 ];
 
 const DAYS_SHORT = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'];
 
-export default function CustomDatePicker({ value, onChange, min, placeholder }: CustomDatePickerProps) {
+export default function CustomDatePicker({
+    value,
+    onChange,
+    min,
+    placeholder,
+}: CustomDatePickerProps) {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    
+
     // View state for the calendar (current month/year being looked at)
     const [viewDate, setViewDate] = useState(() => {
         return value ? new Date(value) : new Date();
@@ -53,7 +68,7 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
     const generateDays = () => {
         const year = viewDate.getFullYear();
         const month = viewDate.getMonth();
-        
+
         // Month starts at...
         const firstDayOfMonth = new Date(year, month, 1);
         // JS getDay(): 0=Sun, 1=Mon, ..., 6=Sat
@@ -62,20 +77,20 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
         if (startDay === -1) startDay = 6; // Sunday becomes 6
 
         const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-        
+
         const days = [];
         // Padding for previous month
         for (let i = 0; i < startDay; i++) {
             days.push({ day: null, type: 'padding' });
         }
-        
+
         // Days of current month
         for (let d = 1; d <= lastDayOfMonth; d++) {
             const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
             const isToday = new Date().toISOString().split('T')[0] === dateStr;
             const isSelected = value === dateStr;
             const isMin = min ? dateStr < min : false;
-            
+
             days.push({
                 day: d,
                 dateStr,
@@ -84,23 +99,24 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
                 isDisabled: isMin,
             });
         }
-        
+
         return days;
     };
 
     return (
         <div className="relative w-full" ref={containerRef}>
-            <div 
-                onClick={() => setIsOpen(!isOpen)}
-                className="relative cursor-pointer"
-            >
-                <CalendarIcon 
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-red-500 transition-colors" 
-                    size={18} 
+            <div onClick={() => setIsOpen(!isOpen)} className="relative cursor-pointer">
+                <CalendarIcon
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-red-500 transition-colors"
+                    size={18}
                 />
                 <div className="w-full pl-11 pr-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold flex items-center text-gray-900 focus-within:ring-4 focus-within:ring-red-600/5 focus-within:border-red-600 transition-all select-none">
-                    {value ? formatDateForDisplay(value) : (
-                        <span className="text-gray-400 font-medium">{placeholder || 'dd/mm/aaaa'}</span>
+                    {value ? (
+                        formatDateForDisplay(value)
+                    ) : (
+                        <span className="text-gray-400 font-medium">
+                            {placeholder || 'dd/mm/aaaa'}
+                        </span>
                     )}
                 </div>
             </div>
@@ -115,7 +131,7 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
                     >
                         {/* Calendar Header */}
                         <div className="flex items-center justify-between mb-4">
-                            <button 
+                            <button
                                 type="button"
                                 onClick={handlePrevMonth}
                                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
@@ -125,7 +141,7 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
                             <div className="text-sm font-black uppercase text-gray-900 tracking-tight">
                                 {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
                             </div>
-                            <button 
+                            <button
                                 type="button"
                                 onClick={handleNextMonth}
                                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
@@ -137,7 +153,10 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
                         {/* Days Header */}
                         <div className="grid grid-cols-7 mb-2">
                             {DAYS_SHORT.map(d => (
-                                <div key={d} className="text-[10px] font-black text-gray-400 text-center uppercase tracking-widest">
+                                <div
+                                    key={d}
+                                    className="text-[10px] font-black text-gray-400 text-center uppercase tracking-widest"
+                                >
                                     {d}
                                 </div>
                             ))}
@@ -171,7 +190,7 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
 
                         {/* Shortcuts */}
                         <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between">
-                            <button 
+                            <button
                                 type="button"
                                 onClick={() => {
                                     onChange(new Date().toISOString().split('T')[0]);
@@ -181,7 +200,7 @@ export default function CustomDatePicker({ value, onChange, min, placeholder }: 
                             >
                                 Hoy
                             </button>
-                            <button 
+                            <button
                                 type="button"
                                 onClick={() => {
                                     onChange('');
