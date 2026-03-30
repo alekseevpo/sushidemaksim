@@ -5,7 +5,9 @@ test.describe('Guest Checkout - Address Selection', () => {
         // saturday night
         await context.addInitScript(() => {
             const mockDate = new Date('2026-03-21T21:00:00').getTime();
-            Date.now = () => mockDate;
+            const realDateNow = Date.now;
+            const initTime = realDateNow();
+            Date.now = () => mockDate + (realDateNow() - initTime);
 
             if (!window.sessionStorage.getItem('guest_checkout_cleared')) {
                 window.localStorage.clear();
@@ -110,7 +112,11 @@ test.describe('Guest Checkout - Address Selection', () => {
         await expect(page.getByPlaceholder(/calle.*número/i)).toBeVisible();
 
         // Search address
+        const searchPromise = page.waitForResponse(
+            r => r.url().includes('/api/delivery-zones/search') && r.status() === 200
+        );
         await page.getByPlaceholder(/calle.*número/i).fill('Gran Via 1');
+        await searchPromise;
 
         // Wait for results - check the list
         const result = page.getByText(/Calle Gran Vía, 1/i);
