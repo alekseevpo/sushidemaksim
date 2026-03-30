@@ -114,7 +114,8 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                     time: formData.time,
                     guests: formData.guests,
                     notes: formData.notes,
-                    user_id: user?.id && user.id.length > 5 && !user.id.includes('!') ? user.id : null,
+                    user_id:
+                        user?.id && user.id.length > 5 && !user.id.includes('!') ? user.id : null,
                 });
             } catch (dbErr) {
                 console.error(
