@@ -44,10 +44,10 @@ export default function MenuCategoryBar({
     if (isMobile) {
         return (
             <div
-                className="fixed left-0 right-0 z-[40] bg-[#FBF7F0] border-b border-gray-200 lg:hidden shadow-sm select-none"
+                className="fixed left-0 right-0 z-[40] bg-[#FBF7F0] border-b border-gray-200 md:hidden shadow-sm select-none"
                 style={{ top: 'var(--header-height, 64px)' }}
             >
-                <div className="max-w-7xl mx-auto">
+                <div className="max-w-7xl mx-auto flex-1 md:flex px-4 md:px-6 w-full">
                     <LayoutGroup id="mobile-categories">
                         <div
                             className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain touch-pan-x"
@@ -123,13 +123,18 @@ export default function MenuCategoryBar({
     }
 
     return (
-        <aside className="hidden lg:block w-[220px] flex-shrink-0 relative bg-orange-600">
+        <aside className="hidden md:block w-[200px] flex-shrink-0 relative bg-orange-600">
             <div
-                className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col items-stretch pb-10 overflow-visible no-scrollbar"
+                className="sticky flex flex-col items-stretch pb-10 overflow-visible no-scrollbar"
+                style={{
+                    top: 'var(--header-height, 80px)',
+                    height: 'calc(100dvh - var(--header-height, 80px))',
+                    willChange: 'transform',
+                }}
                 data-lenis-prevent
             >
                 <LayoutGroup id="sidebar-katana">
-                    <nav className="flex flex-col py-4 px-3 relative z-10">
+                    <nav className="flex flex-col py-4 px-2 relative z-10">
                         <button
                             onClick={() => setSelectedCategory('all')}
                             className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${

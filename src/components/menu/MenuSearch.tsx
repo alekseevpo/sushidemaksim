@@ -28,7 +28,7 @@ export default function MenuSearch({
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="md:hidden flex items-center justify-between w-full h-16 pt-2"
+                        className="lg:hidden flex items-center justify-between w-full h-16 pt-2"
                     >
                         <div className="flex items-baseline gap-2">
                             <h1 className="text-2xl text-gray-900 font-black tracking-tighter mb-0">
@@ -51,7 +51,7 @@ export default function MenuSearch({
                         initial={{ opacity: 0, width: '48px', x: 20 }}
                         animate={{ opacity: 1, width: '100%', x: 0 }}
                         exit={{ opacity: 0, width: '48px', x: 20 }}
-                        className="md:hidden relative w-full flex items-center gap-2 h-16 pt-2"
+                        className="lg:hidden relative w-full flex items-center gap-2 h-16 pt-2"
                     >
                         <div className="relative flex-1">
                             <Search
@@ -90,7 +90,7 @@ export default function MenuSearch({
             </AnimatePresence>
 
             {/* Desktop Header */}
-            <div className="hidden md:flex items-center justify-between w-full pt-8">
+            <div className="hidden lg:flex items-center justify-between w-full">
                 <div className="flex items-baseline gap-4">
                     <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0 whitespace-nowrap">
                         Nuestro Menú

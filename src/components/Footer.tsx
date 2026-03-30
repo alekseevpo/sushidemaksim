@@ -11,7 +11,7 @@ export default function Footer() {
         api.get('/settings').then(setSettings).catch(console.error);
     }, []);
 
-    const phoneNumber = settings?.contact_phone || '+34 641 518 390';
+    const phoneNumber = settings?.contact_phone || '+34 631 920 312';
     const cleanPhone = phoneNumber.replace(/\s/g, '');
 
     // Social Platforms Configuration

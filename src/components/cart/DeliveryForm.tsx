@@ -578,17 +578,25 @@ export default function DeliveryForm({
                     </div>
                 )}
                 <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-600 mb-1">
-                        Teléfono de contacto *
-                    </label>
-                    <input
-                        type="tel"
-                        value={phone}
-                        onChange={e => setPhone(e.target.value)}
-                        placeholder="+34 600 000 000"
-                        data-testid="phone-input"
-                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
-                    />
+                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg focus-within:border-orange-400 focus-within:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition-all overflow-hidden">
+                        <div className="pl-3 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-100/50 h-full flex items-center bg-gray-50/50">
+                            +34
+                        </div>
+                        <input
+                            type="tel"
+                            value={phone}
+                            onChange={e => {
+                                const val = e.target.value.replace(/\D/g, '');
+                                if (val.length <= 9) setPhone(val);
+                            }}
+                            placeholder="600 000 000"
+                            maxLength={9}
+                            pattern="[0-9]{9}"
+                            required
+                            data-testid="phone-input"
+                            className="flex-1 px-3 py-2.5 bg-transparent border-none text-sm outline-none font-bold placeholder:font-normal placeholder:text-gray-400"
+                        />
+                    </div>
                 </div>
 
                 <div className="flex flex-col gap-2 mt-4">

@@ -93,7 +93,7 @@ export default function ContactsPage() {
     });
 
     const [settings, setSettings] = useState<any>({
-        contact_phone: '+34 641 518 390',
+        contact_phone: '+34 631 920 312',
         contact_email: 'info@sushidemaksim.com',
         contact_address_line1: 'Calle Barrilero, 20,',
         contact_address_line2: '28007 Madrid',
@@ -108,7 +108,7 @@ export default function ContactsPage() {
             { days: 'domingo', hours: '14:00–17:00' },
         ],
         social_links: [
-            { platform: 'WhatsApp', url: 'https://wa.me/34641518390', icon: 'whatsapp' },
+            { platform: 'WhatsApp', url: 'https://wa.me/34631920312', icon: 'whatsapp' },
             { platform: 'Instagram', url: '#', icon: 'instagram' },
         ],
     });
@@ -400,7 +400,7 @@ export default function ContactsPage() {
                                                         {holiday.name} ({holiday.date})
                                                     </span>
                                                     <a
-                                                        href={`https://wa.me/34641518390?text=${encodeURIComponent(`Hola, me gustaría confirmar el horario para el festivo ${holiday.name} (${holiday.date})`)}`}
+                                                        href={`https://wa.me/34631920312?text=${encodeURIComponent(`Hola, me gustaría confirmar el horario para el festivo ${holiday.name} (${holiday.date})`)}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-tight hover:bg-emerald-100 transition-colors border border-emerald-100/50"

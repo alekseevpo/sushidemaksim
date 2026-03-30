@@ -54,29 +54,32 @@ export default function Header() {
         const updateHeight = () => {
             if (headerRef.current) {
                 const height = headerRef.current.offsetHeight;
-                const currentHeight = getComputedStyle(document.documentElement)
-                    .getPropertyValue('--header-height')
-                    .replace('px', '');
-
-                if (Math.abs(parseFloat(currentHeight) - height) > 1) {
-                    document.documentElement.style.setProperty('--header-height', `${height}px`);
-                }
+                document.documentElement.style.setProperty('--header-height', `${height}px`);
             }
         };
 
+        // Use ResizeObserver for real-time height updates (e.g. when banner closes)
+        const resizeObserver = new ResizeObserver(() => {
+            updateHeight();
+        });
+
+        if (headerRef.current) {
+            resizeObserver.observe(headerRef.current);
+        }
+
         window.addEventListener('scroll', handleScroll, { passive: true });
-        window.addEventListener('resize', updateHeight);
 
         // Initial check and after a small delay for banner animations
         handleScroll();
         updateHeight();
-        setTimeout(updateHeight, 500);
+        const timeoutId = setTimeout(updateHeight, 500);
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', updateHeight);
+            resizeObserver.disconnect();
+            clearTimeout(timeoutId);
         };
-    }, [location.pathname]);
+    }, []);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -167,9 +170,9 @@ export default function Header() {
             `}
             >
                 <StoreStatusBanner />
-                <div className="max-w-7xl mx-auto px-4 md:px-6">
-                    <div className="flex md:grid md:grid-cols-3 items-center justify-between h-16 md:h-20">
-                        {/* Logo Container */}
+                <div className="max-w-[1440px] mx-auto px-3 md:px-6">
+                    <div className="flex items-center justify-between h-16 md:h-20 gap-4">
+                        {/* Logo Area: Fixed 200px to match sidebar below, wrapped in flex-1 for centering balance */}
                         <div className="flex-1 flex justify-start items-center h-full">
                             <Link
                                 to="/"
@@ -186,7 +189,7 @@ export default function Header() {
                                 <div
                                     className={`
                                         transition-all duration-500 shrink-0 flex items-center justify-center
-                                        md:bg-orange-600 md:h-full md:w-[220px] md:group-hover:rotate-6
+                                        md:bg-orange-600 md:h-full md:w-[200px]
                                         bg-transparent h-16 w-auto px-1
                                     `}
                                 >
@@ -206,13 +209,13 @@ export default function Header() {
                             </Link>
                         </div>
 
-                        {/* Desktop Navigation */}
-                        <nav className="hidden md:flex items-center gap-1 flex-none justify-self-center">
+                        {/* Desktop Navigation - Hidden on mobile, centered on md+ */}
+                        <nav className="hidden md:flex items-center justify-center gap-2 lg:gap-4 xl:gap-8 mx-auto">
                             {navLinks.map((link, idx) => {
                                 const isActive = link.to ? location.pathname === link.to : false;
                                 const isAction = !!link.onClick;
 
-                                const commonStyles = `relative no-underline font-bold px-4 py-2 transition-all duration-300 rounded-xl text-sm border-none bg-transparent cursor-pointer
+                                const commonStyles = `relative no-underline font-bold px-3 lg:px-4 py-2 transition-all duration-300 rounded-xl text-[13px] lg:text-sm border-none bg-transparent cursor-pointer whitespace-nowrap
                                     ${
                                         isActive
                                             ? 'text-white shadow-inner'
@@ -261,8 +264,8 @@ export default function Header() {
                             })}
                         </nav>
 
-                        {/* Right side Container */}
-                        <div className="flex-1 flex items-center justify-end gap-3 h-full">
+                        {/* Right side Area: Symmetry with logo area (200px) to ensure nav block is centered */}
+                        <div className="flex-1 flex items-center justify-end gap-3 h-full md:min-w-[200px]">
                             {/* Desktop: User button or login */}
                             <div className="hidden md:block">
                                 {showSkeleton ? (

@@ -104,12 +104,21 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         setError(null);
 
         try {
-            // 1. First save to DB (Required now for success state)
-            await api.post('/reservations', {
-                ...formData,
-                phone: `+34${formData.phone.replace(/\s/g, '')}`,
-                user_id: user?.id,
-            });
+            // 1. Try to save to DB (Log the attempt, but don't let it block WhatsApp)
+            try {
+                await api.post('/reservations', {
+                    name: formData.name,
+                    email: formData.email,
+                    phone: `+34${formData.phone.replace(/\D/g, '')}`,
+                    date: formData.date,
+                    time: formData.time,
+                    guests: formData.guests,
+                    notes: formData.notes,
+                    user_id: user?.id && user.id !== '!' ? user.id : undefined,
+                });
+            } catch (dbErr) {
+                console.error('Warning: Could not save reservation to DB, proceeding to WhatsApp:', dbErr);
+            }
 
             // 2. Prepare WhatsApp redirect
             const formattedDate = new Date(formData.date).toLocaleDateString('es-ES', {
@@ -128,7 +137,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                 `Personas: ${formData.guests}`;
 
             const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/34641518390?text=${encodedMessage}`;
+            const whatsappUrl = `https://wa.me/34631920312?text=${encodedMessage}`;
 
             // 3. Trigger redirect
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -138,10 +147,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                 window.open(whatsappUrl, '_blank');
             }
 
-            // 4. Only now set success
+            // 4. Set success state
             setIsSuccess(true);
         } catch (err: any) {
-            console.error('Error initiating reservation:', err);
+            console.error('Error initiating reservation redirect:', err);
             setError(
                 err.message || 'Hubo un error al procesar tu reserva. Por favor intenta de nuevo.'
             );
@@ -346,7 +355,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                         onClick={() =>
                                                             setFormData(prev => ({
                                                                 ...prev,
-                                                                guests: prev.guests + 1,
+                                                                guests: Math.min(
+                                                                    30,
+                                                                    prev.guests + 1
+                                                                ),
                                                             }))
                                                         }
                                                         className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
@@ -361,20 +373,32 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
                                                 Teléfono
                                             </label>
-                                            <div className="relative">
-                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">
+                                            <div className="flex items-center bg-gray-50 border border-gray-100 rounded-xl focus-within:ring-4 focus-within:ring-orange-600/5 focus-within:border-orange-600 transition-all overflow-hidden h-11">
+                                                <div className="pl-3 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-200/50 h-full flex items-center">
                                                     +34
                                                 </div>
                                                 <input
                                                     required
                                                     type="tel"
                                                     name="phone"
-                                                    placeholder="Ej: 600 000 000"
-                                                    minLength={9}
-                                                    pattern="[0-9]{9,}"
+                                                    placeholder="600 000 000"
+                                                    pattern="[0-9]{9}"
+                                                    maxLength={9}
                                                     value={formData.phone}
-                                                    onChange={handleChange}
-                                                    className="w-full pl-11 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none"
+                                                    onChange={e => {
+                                                        const val = e.target.value.replace(/\D/g, '');
+                                                        if (val.length <= 9) {
+                                                            handleChange({
+                                                                ...e,
+                                                                target: {
+                                                                    ...e.target,
+                                                                    value: val,
+                                                                    name: 'phone',
+                                                                },
+                                                            } as any);
+                                                        }
+                                                    }}
+                                                    className="flex-1 bg-transparent border-none text-sm font-bold outline-none px-3 h-full"
                                                 />
                                             </div>
                                         </div>

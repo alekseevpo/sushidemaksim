@@ -265,7 +265,7 @@ export default function MenuPageSimple() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent px-0 md:px-4 pb-0 pt-0 flex flex-col">
+        <div className="min-h-screen bg-transparent pb-0 pt-0 flex flex-col">
             <SEO
                 title={
                     selectedCategory === 'all'
@@ -276,7 +276,7 @@ export default function MenuPageSimple() {
                 keywords="menu sushi, carta sushi, pedir sushi madrid, nigiri, sashimi, rolls"
                 schema={menuSchema}
             />
-            <div className="max-w-7xl mx-auto flex-1 lg:flex px-4 md:px-6 w-full">
+            <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
                     selectedCategory={selectedCategory}

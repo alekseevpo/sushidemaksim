@@ -109,9 +109,9 @@ export default function ProductCard({
             </div>
 
             {/* Info Container */}
-            <div className="p-3 md:p-6 flex flex-col flex-1">
-                <div className="mb-1 md:mb-2 text-left">
-                    <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-1 h-8 md:h-auto">
+            <div className="p-3 md:p-4 flex flex-col flex-1">
+                <div className="mb-1 md:mb-2 text-left min-h-[56px] md:min-h-0">
+                    <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-none h-8 md:h-auto md:min-h-[60px]">
                         {item.name}
                     </h3>
                     {item.pieces && (
@@ -121,20 +121,19 @@ export default function ProductCard({
                     )}
                 </div>
 
-                <p className="text-gray-500 text-[11px] md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 min-h-[2.5rem] md:min-h-0 font-medium overflow-hidden">
+                <p className="text-gray-500 text-[11px] md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 md:line-clamp-3 min-h-[2.5rem] md:min-h-[3.5rem] font-medium overflow-hidden">
                     {item.description}
                 </p>
-
                 <div className="mt-auto flex items-center justify-between gap-1">
                     <div className="flex flex-col">
-                        <span className="text-base md:text-2xl font-black text-gray-900 whitespace-nowrap">
+                        <span className="text-base md:text-xl font-black text-gray-900 whitespace-nowrap">
                             {item.price.toFixed(2).replace('.', ',')} €
                         </span>
                         {isExtra && !isAdded && (
-                            <div className="flex items-center bg-gray-100 rounded-lg md:rounded-xl px-1 py-0.5 mt-1 md:w-fit">
+                            <div className="flex items-center bg-gray-100 rounded-lg md:rounded-xl px-0.5 py-0.5 mt-1 md:w-fit">
                                 <button
                                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                    className="w-5 h-5 md:w-7 md:h-7 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer"
+                                    className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer"
                                     aria-label="Disminuir cantidad"
                                 >
                                     <Minus size={12} strokeWidth={3} />
@@ -157,7 +156,7 @@ export default function ProductCard({
                         data-testid="add-to-cart-button"
                         disabled={isAdded}
                         onClick={e => onAddToCart(item, e, quantity)}
-                        className={`h-8 w-8 md:h-11 md:w-[140px] md:px-6 rounded-lg md:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
+                        className={`h-8 w-8 md:h-10 md:w-10 xl:h-11 xl:w-[140px] xl:px-6 rounded-lg md:rounded-xl xl:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
                             isAdded
                                 ? 'bg-green-500 text-white cursor-default'
                                 : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95'
@@ -174,7 +173,7 @@ export default function ProductCard({
                                     className="flex items-center justify-center gap-2 w-full"
                                 >
                                     <Check size={16} strokeWidth={3} />
-                                    <span className="hidden md:inline">Añadido</span>
+                                    <span className="hidden xl:inline">Añadido</span>
                                 </motion.div>
                             ) : (
                                 <motion.div
@@ -186,7 +185,7 @@ export default function ProductCard({
                                     className="flex items-center justify-center gap-2 w-full"
                                 >
                                     <Plus size={16} strokeWidth={3} />
-                                    <span className="hidden md:inline">Añadir</span>
+                                    <span className="hidden xl:inline">Añadir</span>
                                 </motion.div>
                             )}
                         </AnimatePresence>
