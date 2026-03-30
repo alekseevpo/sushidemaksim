@@ -124,14 +124,10 @@ export default function CustomDatePicker({
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95, x: '-50%' }}
-                        animate={{ opacity: 1, y: 5, scale: 1, x: '-50%' }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95, x: '-50%' }}
-                        className="absolute left-1/2 top-full mt-2 z-[1100] w-[280px] md:w-[280px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 p-4 transform-none"
-                        style={{
-                            x: window.innerWidth < 768 ? '-50%' : '0%',
-                            left: window.innerWidth < 768 ? '50%' : '0',
-                        }}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 5, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute left-0 top-full mt-2 z-[1100] w-[280px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 p-4"
                     >
                         {/* Calendar Header */}
                         <div className="flex items-center justify-between mb-4 px-1">

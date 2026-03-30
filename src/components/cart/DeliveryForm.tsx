@@ -662,9 +662,9 @@ export default function DeliveryForm({
 
                     {(isScheduled || deliveryType === 'reservation') && (
                         <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            className="flex flex-col gap-3 mt-2 overflow-hidden"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="flex flex-col gap-3 mt-2"
                         >
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
