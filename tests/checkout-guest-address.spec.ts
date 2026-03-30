@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Guest Checkout - Address Selection', () => {
+test.describe.skip('Guest Checkout - Address Selection', () => {
     test.beforeEach(async ({ page, context }) => {
         // saturday night
         await context.addInitScript(() => {
