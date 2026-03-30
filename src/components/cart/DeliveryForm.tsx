@@ -686,7 +686,7 @@ export default function DeliveryForm({
                                         <select
                                             value={scheduledTime}
                                             onChange={e => setScheduledTime(e.target.value)}
-                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 bg-white"
+                                            className="w-full px-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold outline-none focus:border-orange-400"
                                         >
                                             <option value="">Selecciona hora</option>
                                             {availableSlots.map(slot => (
@@ -700,7 +700,7 @@ export default function DeliveryForm({
                                             type="time"
                                             value={scheduledTime}
                                             onChange={e => setScheduledTime(e.target.value)}
-                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                                            className="w-full px-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold outline-none focus:border-orange-400 disabled:bg-gray-100 disabled:text-gray-400"
                                             disabled={isDayClosedSelect}
                                         />
                                     )}
