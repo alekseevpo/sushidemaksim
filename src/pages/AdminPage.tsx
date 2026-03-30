@@ -69,12 +69,12 @@ export const ADMIN_TRANSLATIONS = {
             hideHelp: 'Скрыть подсказки',
             showHelp: 'Показать подсказки',
             welcome: 'Добро пожаловать в панель администратора!',
-            restricted: 'Доступ ограничен',
+            restricted: 'Acceso restringido',
             restrictedDesc:
-                'Извините, но для просмотра этой страницы требуются права администратора.',
-            backToHome: 'Вернуться на главную',
-            developedBy: 'Разработано с',
-            by: 'от',
+                'Lo sentimos, pero se requieren privilegios de administrador para ver esta página.',
+            backToHome: 'Volver al inicio',
+            developedBy: 'Desarrollado con',
+            by: 'por',
             rights: 'Все права защищены.',
         },
         help: {
