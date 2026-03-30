@@ -117,7 +117,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                     user_id: user?.id && user.id !== '!' ? user.id : undefined,
                 });
             } catch (dbErr) {
-                console.error('Warning: Could not save reservation to DB, proceeding to WhatsApp:', dbErr);
+                console.error(
+                    'Warning: Could not save reservation to DB, proceeding to WhatsApp:',
+                    dbErr
+                );
             }
 
             // 2. Prepare WhatsApp redirect
@@ -386,7 +389,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     maxLength={9}
                                                     value={formData.phone}
                                                     onChange={e => {
-                                                        const val = e.target.value.replace(/\D/g, '');
+                                                        const val = e.target.value.replace(
+                                                            /\D/g,
+                                                            ''
+                                                        );
                                                         if (val.length <= 9) {
                                                             handleChange({
                                                                 ...e,

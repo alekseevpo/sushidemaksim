@@ -128,7 +128,7 @@ describe('DeliveryForm', () => {
         fireEvent.change(nameInput, { target: { value: 'John Doe' } });
         expect(defaultProps.setCustomerNameState).toHaveBeenCalledWith('John Doe');
 
-        const phoneInput = screen.getByPlaceholderText(/\+34 600 000 000/i);
+        const phoneInput = screen.getByTestId('phone-input');
         fireEvent.change(phoneInput, { target: { value: '600111222' } });
         expect(defaultProps.setPhone).toHaveBeenCalledWith('600111222');
     });
