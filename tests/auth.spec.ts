@@ -142,7 +142,7 @@ test.describe('Authentication Flow', () => {
             .getByRole('button', { name: /ACCEDER/i })
             .first()
             .click();
-        await page.getByRole('button', { name: /olvidaste/i }).click();
+        await page.getByRole('button', { name: /Olvidé/i }).click();
         await page.getByPlaceholder(/tu@email.com/i).fill('recovery@test.com');
         await page.getByRole('button', { name: /Enviar instrucciones/i }).click();
 

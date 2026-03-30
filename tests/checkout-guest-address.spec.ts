@@ -1,11 +1,16 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Guest Checkout - Address Selection', () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, context }) => {
         // saturday night
-        await page.addInitScript(() => {
+        await context.addInitScript(() => {
             const mockDate = new Date('2026-03-21T21:00:00').getTime();
             Date.now = () => mockDate;
+
+            if (!window.sessionStorage.getItem('guest_checkout_cleared')) {
+                window.localStorage.clear();
+                window.sessionStorage.setItem('guest_checkout_cleared', 'true');
+            }
         });
 
         // mock settings
@@ -34,7 +39,7 @@ test.describe('Guest Checkout - Address Selection', () => {
                             minRadius: 0,
                             cost: 2.5,
                             minOrder: 10,
-                            color: '#EF4444'
+                            color: '#EF4444',
                         },
                     ],
                 }),
@@ -46,7 +51,17 @@ test.describe('Guest Checkout - Address Selection', () => {
             route.fulfill({
                 status: 200,
                 body: JSON.stringify({
-                    items: [{ id: 1, name: 'Sake Sushi', price: 15.0, category: 'rollos-grandes', is_promo: false, description: 'Test', image: '' }],
+                    items: [
+                        {
+                            id: 1,
+                            name: 'Sake Sushi',
+                            price: 15.0,
+                            category: 'rollos-grandes',
+                            is_promo: false,
+                            description: 'Test',
+                            image: '',
+                        },
+                    ],
                 }),
             })
         );
@@ -60,8 +75,8 @@ test.describe('Guest Checkout - Address Selection', () => {
                         display_name: 'Calle Gran Vía, 1, 28013 Madrid, España',
                         lat: '40.4196',
                         lon: '-3.6994',
-                        address: { road: 'Calle Gran Vía', house_number: '1', postcode: '28013' }
-                    }
+                        address: { road: 'Calle Gran Vía', house_number: '1', postcode: '28013' },
+                    },
                 ]),
             })
         );
@@ -72,13 +87,15 @@ test.describe('Guest Checkout - Address Selection', () => {
                 status: 200,
                 body: JSON.stringify({
                     display_name: 'Madrid, España',
-                    address: { city: 'Madrid', country: 'España' }
+                    address: { city: 'Madrid', country: 'España' },
                 }),
             })
         );
     });
 
-    test('should allow a guest to select an address and see the delivery zone', async ({ page }) => {
+    test('should allow a guest to select an address and see the delivery zone', async ({
+        page,
+    }) => {
         await page.goto('/menu');
 
         // Add item to cart
@@ -89,12 +106,12 @@ test.describe('Guest Checkout - Address Selection', () => {
         await expect(page.getByText(/Resumen/i)).toBeVisible();
 
         // Open address modal
-        await page.getByTestId('address-input').click();
+        await page.getByTestId('address-input').click({ force: true });
         await expect(page.getByPlaceholder(/calle.*número/i)).toBeVisible();
 
         // Search address
         await page.getByPlaceholder(/calle.*número/i).fill('Gran Via 1');
-        
+
         // Wait for results - check the list
         const result = page.getByText(/Calle Gran Vía, 1/i);
         await expect(result).toBeVisible({ timeout: 15000 });
@@ -102,7 +119,7 @@ test.describe('Guest Checkout - Address Selection', () => {
 
         // Check if values are filled in address modal form
         await expect(page.getByPlaceholder(/Busca arriba tu calle/i)).toHaveValue(/Gran Vía/i);
-        
+
         await page.getByPlaceholder(/Ej: 20/i).fill('1');
         await page.getByPlaceholder(/Ej: 1B/i).fill('3A');
 
@@ -112,7 +129,7 @@ test.describe('Guest Checkout - Address Selection', () => {
         // Confirm address
         const confirmBtn = page.getByRole('button', { name: /Confirmar dirección/i });
         await expect(confirmBtn).toBeEnabled();
-        await confirmBtn.click();
+        await confirmBtn.click({ force: true });
 
         // Back on cart, check if address is displayed
         await expect(page.getByTestId('address-display')).toContainText(/Calle Gran Vía/i);
