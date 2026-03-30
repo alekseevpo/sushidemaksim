@@ -372,7 +372,9 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                 />
                                 <input
                                     value={form.valid_until}
-                                    onChange={e => setForm({ ...form, valid_until: e.target.value })}
+                                    onChange={e =>
+                                        setForm({ ...form, valid_until: e.target.value })
+                                    }
                                     className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
                                 />
                                 <input

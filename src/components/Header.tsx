@@ -171,7 +171,7 @@ export default function Header() {
                     <div className="flex md:grid md:grid-cols-3 items-center justify-between h-16 md:h-18">
                         {/* Logo Container */}
                         <div className="flex-1 flex justify-start items-center h-full">
-                             <Link
+                            <Link
                                 to="/"
                                 onClick={() => {
                                     setShowMobileMenu(false);

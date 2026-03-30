@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-    renderWithProviders as render,
-    screen,
-    fireEvent,
-    waitFor,
-} from '../../test/test-utils';
+import { renderWithProviders as render, screen, fireEvent, waitFor } from '../../test/test-utils';
 import AdminMenu from './AdminMenu';
 import { api } from '../../utils/api';
 
@@ -39,13 +34,13 @@ vi.mock('../../utils/api', () => ({
 global.fetch = vi.fn();
 
 const mockItems = [
-    { 
-        id: 1, 
-        name: 'Sake Sushi', 
-        category: 'entrantes', 
-        price: 5.5, 
-        description: 'Test', 
-        image: 'https://example.com/image.jpg' 
+    {
+        id: 1,
+        name: 'Sake Sushi',
+        category: 'entrantes',
+        price: 5.5,
+        description: 'Test',
+        image: 'https://example.com/image.jpg',
     },
 ];
 
@@ -100,34 +95,40 @@ describe('AdminMenu (Integration)', () => {
 
         await waitFor(() => {
             expect(api.post).toHaveBeenCalled();
-            expect(api.post).toHaveBeenCalledWith('/admin/menu', expect.objectContaining({
-                name: 'New Roll',
-                price: 10,
-                category: 'menus'
-            }));
+            expect(api.post).toHaveBeenCalledWith(
+                '/admin/menu',
+                expect.objectContaining({
+                    name: 'New Roll',
+                    price: 10,
+                    category: 'menus',
+                })
+            );
         });
     });
 
     it('opens modal and updates existing item', async () => {
         render(<AdminMenu />);
-        
+
         await waitFor(() => expect(screen.getByText('Sake Sushi')).toBeInTheDocument());
-        
+
         const editBtn = screen.getByTitle(/Editar Plato/i);
         fireEvent.click(editBtn);
-        
+
         const nameInput = screen.getByLabelText(/Nombre \*/i);
         expect(nameInput).toHaveValue('Sake Sushi');
-        
+
         fireEvent.change(nameInput, { target: { value: 'Updated Sake' } });
-        
+
         const saveBtn = screen.getByRole('button', { name: /Guardar Cambios/i });
         fireEvent.click(saveBtn);
-        
+
         await waitFor(() => {
-            expect(api.put).toHaveBeenCalledWith('/admin/menu/1', expect.objectContaining({
-                name: 'Updated Sake'
-            }));
+            expect(api.put).toHaveBeenCalledWith(
+                '/admin/menu/1',
+                expect.objectContaining({
+                    name: 'Updated Sake',
+                })
+            );
         });
     });
 
@@ -152,27 +153,27 @@ describe('AdminMenu (Integration)', () => {
     it('handles image URL input manually', async () => {
         render(<AdminMenu />);
         fireEvent.click(await screen.findByText(/Nuevo Plato/i));
-        
+
         const urlInput = screen.getByPlaceholderText(/https:\/\/.../i);
         fireEvent.change(urlInput, { target: { value: 'https://foo.com/bar.png' } });
-        
+
         const previewImg = screen.getByAltText('Preview');
         expect(previewImg).toHaveAttribute('src', 'https://foo.com/bar.png');
     });
 
     it('shows general error message if API fails during save', async () => {
         vi.mocked(api.post).mockRejectedValue(new Error('Generic failure'));
-        
+
         render(<AdminMenu />);
         fireEvent.click(await screen.findByText(/Nuevo Plato/i));
-        
+
         // Fill minimum required fields
         fireEvent.change(screen.getByLabelText(/Nombre \*/i), { target: { value: 'X' } });
         fireEvent.change(screen.getByLabelText(/Descripción \*/i), { target: { value: 'X' } });
-        
+
         const saveBtn = screen.getByRole('button', { name: /Crear Plato/i });
         fireEvent.click(saveBtn);
-        
+
         await waitFor(() => {
             // Should show the default error message from translations
             expect(screen.getByText(/Error al guardar/i)).toBeInTheDocument();

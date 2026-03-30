@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-    Plus,
-    Edit2,
-    Trash2,
-    CheckCircle,
-    XCircle,
-    RefreshCw,
-    HelpCircle,
-} from 'lucide-react';
+import { Plus, Edit2, Trash2, CheckCircle, XCircle, RefreshCw, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
@@ -89,7 +81,9 @@ const FieldLabel = ({ title, hint, language, align = 'left', className = '' }: a
                     onMouseLeave={() => setShowHint(false)}
                     onClick={() => setShowHint(!showHint)}
                     className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
-                        showHint ? 'bg-red-500 text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500'
+                        showHint
+                            ? 'bg-red-500 text-white shadow-lg'
+                            : 'bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500'
                     }`}
                 >
                     <HelpCircle size={10} strokeWidth={3} />

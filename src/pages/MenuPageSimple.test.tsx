@@ -70,7 +70,7 @@ describe('MenuPageSimple (Integration)', () => {
 
         // Use findByAll to get both sidebar and main content buttons
         const categoryBtns = await screen.findAllByText('Rollos Grandes');
-        fireEvent.click(categoryBtns[0]); 
+        fireEvent.click(categoryBtns[0]);
 
         await waitFor(() => {
             expect(api.get).toHaveBeenCalledWith(
@@ -111,8 +111,8 @@ describe('MenuPageSimple (Integration)', () => {
         renderMenu();
 
         await waitFor(() => {
-             // It should show a message if initial load fails
-             expect(screen.getByText(/Algo salió mal/i)).toBeInTheDocument();
+            // It should show a message if initial load fails
+            expect(screen.getByText(/Algo salió mal/i)).toBeInTheDocument();
         });
     });
 

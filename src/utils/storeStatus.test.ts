@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { isStoreOpen, isTimeWithinBusinessHours, getNextOpeningTime, formatTimeLeft } from './storeStatus';
+import {
+    isStoreOpen,
+    isTimeWithinBusinessHours,
+    getNextOpeningTime,
+    formatTimeLeft,
+} from './storeStatus';
 
 describe('storeStatus Utility', () => {
     describe('isStoreOpen', () => {

@@ -153,9 +153,16 @@ describe('DeliveryForm', () => {
     });
 
     it('handles guests count in reservation mode', () => {
-        render(<DeliveryForm {...defaultProps} deliveryType="reservation" isScheduled={true} guestsCount={4} />);
+        render(
+            <DeliveryForm
+                {...defaultProps}
+                deliveryType="reservation"
+                isScheduled={true}
+                guestsCount={4}
+            />
+        );
         expect(screen.getByText('4')).toBeInTheDocument();
-        
+
         const plusButton = screen.getByTestId('plus').parentElement;
         if (plusButton) {
             fireEvent.click(plusButton);

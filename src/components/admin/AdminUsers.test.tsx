@@ -92,7 +92,9 @@ describe('AdminUsers (Integration)', () => {
 
         const idHeader = screen.getAllByText(/ID/i).find(el => el.closest('th'))!;
         fireEvent.click(idHeader);
-        await waitFor(() => expect(api.get).toHaveBeenCalledWith(expect.stringContaining('sortBy=id')));
+        await waitFor(() =>
+            expect(api.get).toHaveBeenCalledWith(expect.stringContaining('sortBy=id'))
+        );
     });
 
     it('toggles admin role', async () => {
@@ -101,17 +103,20 @@ describe('AdminUsers (Integration)', () => {
 
         const userRow = screen.getByText('Customer A').closest('tr')!;
         // Click role button in row
-        const toggleBtn = within(userRow).getAllByRole('button').find(btn => btn.textContent?.includes('Rol'))!;
+        const toggleBtn = within(userRow)
+            .getAllByRole('button')
+            .find(btn => btn.textContent?.includes('Rol'))!;
         fireEvent.click(toggleBtn);
 
         // Wait for modal components
         const confirmBtn = await screen.findByText(/CONFIRMAR CAMBIO/i);
-        
+
         // Find Shield icon which represents Admin role button in modal
         const shieldIcons = await screen.findAllByTestId('shield-icon');
-        const adminRoleBtn = shieldIcons.find(icon => icon.closest('button'))?.closest('button')!;
+        const adminRoleBtn = shieldIcons.find(icon => icon.closest('button'))?.closest('button');
+        if (!adminRoleBtn) throw new Error('Admin role button not found');
         fireEvent.click(adminRoleBtn);
-        
+
         fireEvent.click(confirmBtn);
 
         await waitFor(() => {
@@ -133,7 +138,9 @@ describe('AdminUsers (Integration)', () => {
         fireEvent.click(confirmBtn);
 
         await waitFor(() => {
-            expect(api.patch).toHaveBeenCalledWith('/admin/users/10/verify-email', { isVerified: true });
+            expect(api.patch).toHaveBeenCalledWith('/admin/users/10/verify-email', {
+                isVerified: true,
+            });
         });
     });
 

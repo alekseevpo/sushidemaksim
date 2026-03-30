@@ -10,7 +10,10 @@ export default function NotFoundPage() {
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 relative overflow-hidden bg-[#FBF7F0]">
             <Helmet>
                 <title>404 - Página no encontrada | Sushi de Maksim</title>
-                <meta name="description" content="La página que buscas no existe. Vuelve al menú de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa." />
+                <meta
+                    name="description"
+                    content="La página que buscas no existe. Vuelve al menú de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
+                />
             </Helmet>
 
             {/* Background elements */}
@@ -30,15 +33,19 @@ export default function NotFoundPage() {
                     </h1>
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-[40px] shadow-2xl flex items-center justify-center rotate-12 relative overflow-hidden border border-gray-100">
-                             <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent opacity-50" />
-                             <Search size={48} className="text-red-600 animate-pulse relative z-10" strokeWidth={1.5} />
+                            <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent opacity-50" />
+                            <Search
+                                size={48}
+                                className="text-red-600 animate-pulse relative z-10"
+                                strokeWidth={1.5}
+                            />
                         </div>
                     </div>
                 </motion.div>
 
                 {/* Text Content */}
                 <div className="space-y-4">
-                    <motion.h2 
+                    <motion.h2
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.3 }}
@@ -46,19 +53,19 @@ export default function NotFoundPage() {
                     >
                         ¡Ups! Parece que te has perdido
                     </motion.h2>
-                    <motion.p 
+                    <motion.p
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.4 }}
                         className="text-gray-500 font-medium text-lg max-w-sm mx-auto leading-relaxed"
                     >
-                        La página que buscas ha sido devorada o nunca existió. 
-                        ¿Qué tal si volvemos a lo importante?
+                        La página que buscas ha sido devorada o nunca existió. ¿Qué tal si volvemos
+                        a lo importante?
                     </motion.p>
                 </div>
 
                 {/* Navigation Buttons */}
-                <motion.div 
+                <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5 }}
@@ -91,14 +98,14 @@ export default function NotFoundPage() {
 
             {/* Floating Sushi Decoration (Decorative) */}
             <motion.div
-                animate={{ 
+                animate={{
                     y: [0, -10, 0],
-                    rotate: [0, 5, 0]
+                    rotate: [0, 5, 0],
                 }}
-                transition={{ 
+                transition={{
                     duration: 4,
                     repeat: Infinity,
-                    ease: "easeInOut"
+                    ease: 'easeInOut',
                 }}
                 className="absolute top-20 right-10 opacity-10 hidden lg:block"
             >

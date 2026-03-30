@@ -50,10 +50,10 @@ describe('CartItemList', () => {
 
     it('calls updateChopsticks when clicking buttons', () => {
         render(<CartItemList {...defaultProps} />);
-        
+
         // Let's use getByTestId or labels if they exist.
         // Actually, I can find by svg minus/plus icons if I label them or just search for the buttons near the text.
-        
+
         const buttons = screen.getAllByRole('button');
         // Let's check the button content or order.
         // 0: Vaciar
@@ -62,7 +62,7 @@ describe('CartItemList', () => {
         // 3: Remove (item 1)
         // 4: Minus (chopsticks)
         // 5: Plus (chopsticks)
-        
+
         const minusChopsticks = buttons[4];
         const plusChopsticks = buttons[5];
 

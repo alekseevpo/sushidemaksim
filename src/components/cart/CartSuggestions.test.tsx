@@ -84,17 +84,13 @@ describe('CartSuggestions', () => {
         fireEvent.click(plusButton); // quantity set to 2
         fireEvent.click(addButton);
 
-        expect(defaultProps.handleAddToCart).toHaveBeenCalledWith(
-            mockSuggestions[0],
-            2,
-            true
-        );
+        expect(defaultProps.handleAddToCart).toHaveBeenCalledWith(mockSuggestions[0], 2, true);
     });
 
     it('displays fallback emoji if image fails', () => {
         const failedImages = new Set([1]);
         render(<CartSuggestions {...defaultProps} failedImages={failedImages} />);
-        
+
         // Item 1 should have emoji 🍣 (from mock getCategoryEmoji)
         expect(screen.getByText('🍣')).toBeInTheDocument();
         // Item 2 should have image

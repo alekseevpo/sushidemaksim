@@ -317,9 +317,10 @@ export default function MenuPageSimple() {
                                 Algo salió mal
                             </h3>
                             <p className="text-gray-500 font-medium text-center max-w-sm px-6">
-                                No pudimos cargar el menú en este momento. Por favor, revisa tu conexión e inténtalo de nuevo.
+                                No pudimos cargar el menú en este momento. Por favor, revisa tu
+                                conexión e inténtalo de nuevo.
                             </p>
-                            <button 
+                            <button
                                 onClick={() => window.location.reload()}
                                 className="mt-8 px-8 py-3.5 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all active:scale-95 shadow-xl shadow-gray-200"
                             >

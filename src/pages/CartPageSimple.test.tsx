@@ -66,7 +66,7 @@ describe('CartPageSimple (Mocked Hooks)', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        
+
         vi.mocked(useAuth).mockReturnValue({
             user: null,
             isAuthenticated: false,
@@ -113,7 +113,7 @@ describe('CartPageSimple (Mocked Hooks)', () => {
         } as any);
 
         renderPage();
-        
+
         const toggle = await screen.findByText(/Entrega programada/i);
         fireEvent.click(toggle);
 

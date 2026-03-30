@@ -629,7 +629,11 @@ export default function CartPageSimple() {
                             <div className="bg-red-50 border border-red-100 rounded-2xl p-4 md:p-5 shadow-sm">
                                 <div className="flex items-start gap-3">
                                     <div className="mt-0.5 w-10 h-10 rounded-2xl bg-red-100 flex items-center justify-center shrink-0 border border-red-200 shadow-inner">
-                                        <AlertCircle size={22} className="text-red-600" strokeWidth={2.5} />
+                                        <AlertCircle
+                                            size={22}
+                                            className="text-red-600"
+                                            strokeWidth={2.5}
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-black text-red-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
