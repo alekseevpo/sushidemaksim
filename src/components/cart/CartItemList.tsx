@@ -34,7 +34,7 @@ export default function CartItemList({
                 </h2>
                 <button
                     onClick={clearCart}
-                    className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-orange-500 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
+                    className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
                 >
                     <Trash2 size={12} strokeWidth={2.5} /> Vaciar
                 </button>
