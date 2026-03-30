@@ -120,7 +120,7 @@ export default function AddressModal({
             ? [currentAddress.lat, currentAddress.lon]
             : RESTAURANT_LOCATION
     );
-    const [address, setAddress] = useState(currentAddress?.street || '');
+    const [address, setAddress] = useState(currentAddress?.address || '');
     const [house, setHouse] = useState(currentAddress?.house || '');
     const [apartment, setApartment] = useState(currentAddress?.apartment || '');
     const [postalCode, setPostalCode] = useState(currentAddress?.postalCode || '');
@@ -143,7 +143,7 @@ export default function AddressModal({
     useEffect(() => {
         if (isOpen && !prevOpenRef.current) {
             // Modal is opening, sync internal form states with current selected address
-            const streetVal = currentAddress?.street || '';
+            const streetVal = currentAddress?.address || '';
             const houseVal = currentAddress?.house || '';
             setAddress(streetVal);
             setHouse(houseVal);
@@ -384,12 +384,11 @@ export default function AddressModal({
         return () => clearTimeout(timer);
     }, [searchQuery, address, performSearch, isOpen]);
 
-    // Auto-locate on first open ONLY if no address is set
     useEffect(() => {
-        if (isOpen && !currentAddress?.street) {
+        if (isOpen && !currentAddress?.address) {
             performReverseGeocode();
         }
-    }, [isOpen, currentAddress?.street, performReverseGeocode]);
+    }, [isOpen, currentAddress?.address, performReverseGeocode]);
 
     useEffect(() => {
         if (!isOpen || isNaN(markerPosition[0]) || isNaN(markerPosition[1])) return;
@@ -413,7 +412,7 @@ export default function AddressModal({
 
     const handleContinue = () => {
         onSelect({
-            street: address,
+            address: address,
             house,
             apartment,
             postalCode,

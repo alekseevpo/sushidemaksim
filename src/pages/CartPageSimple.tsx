@@ -138,7 +138,7 @@ export default function CartPageSimple() {
     const handleAddressSelect = useCallback(
         (res: any) => {
             updateDeliveryDetails({
-                address: res.street || '',
+                address: res.address || '',
                 house: res.house || '',
                 apartment: res.apartment || '',
                 postalCode: res.postalCode || '',
