@@ -104,7 +104,14 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         setError(null);
 
         try {
-            const phoneNumber = '34641518390';
+            // 1. First save to DB (Required now for success state)
+            await api.post('/reservations', {
+                ...formData,
+                phone: `+34${formData.phone.replace(/\s/g, '')}`,
+                user_id: user?.id,
+            });
+
+            // 2. Prepare WhatsApp redirect
             const formattedDate = new Date(formData.date).toLocaleDateString('es-ES', {
                 weekday: 'long',
                 day: 'numeric',
@@ -121,32 +128,17 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                 `Personas: ${formData.guests}`;
 
             const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            const whatsappUrl = `https://wa.me/34641518390?text=${encodedMessage}`;
 
-            // We still try to save to DB for record-keeping
-            try {
-                await api.post('/reservations', {
-                    ...formData,
-                    phone: `+34${formData.phone.replace(/\s/g, '')}`,
-                    user_id: user?.id,
-                });
-            } catch (dbErr) {
-                console.warn(
-                    'Could not save reservation to DB, but proceeding with WhatsApp:',
-                    dbErr
-                );
-            }
-
-            // Redirect logic: on mobile, window.open often gets blocked after 'await'
-            // Using window.location.href is more reliable for mobile deep-links
+            // 3. Trigger redirect
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
             if (isMobile) {
                 window.location.href = whatsappUrl;
             } else {
                 window.open(whatsappUrl, '_blank');
             }
 
+            // 4. Only now set success
             setIsSuccess(true);
         } catch (err: any) {
             console.error('Error initiating reservation:', err);

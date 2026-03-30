@@ -26,36 +26,58 @@ router.post('/', async (req, res) => {
                 .json({ error: 'El restaurante está cerrado en el horario seleccionado' });
         }
 
-        const { data, error } = await supabase
+        const { data: insertedData, error: insertError } = await supabase
             .from('reservations')
             .insert({
                 name,
-                email,
+                email: email || 'guest@sushidemaksim.es',
                 phone,
                 reservation_date: date,
                 reservation_time: time,
-                guests: parseInt(guests),
-                notes,
+                guests: parseInt(guests.toString()),
+                notes: notes || '',
                 user_id: user_id || null,
                 status: 'pending',
             })
-            .select()
-            .single();
+            .select();
 
-        if (error) throw error;
+        if (insertError) {
+            console.error('Supabase error inserting reservation:', insertError);
+            throw insertError;
+        }
+
+        const data = insertedData && insertedData.length > 0 ? insertedData[0] : null;
+
+        const dataForEmails = data || {
+            name,
+            email: email || 'guest@sushidemaksim.es',
+            phone,
+            reservation_date: date,
+            reservation_time: time,
+            guests: parseInt(guests.toString()),
+            notes: notes || '',
+        };
 
         // Send confirmation emails (don't wait for them)
-        sendReservationEmail(data).catch(err =>
-            console.error('Error sending customer reservation email:', err)
-        );
-        sendReservationEmail(data, true).catch(err =>
-            console.error('Error sending admin reservation email:', err)
-        );
+        try {
+            sendReservationEmail(dataForEmails).catch(err =>
+                console.error('Error sending customer reservation email:', err)
+            );
+            sendReservationEmail(dataForEmails, true).catch(err =>
+                console.error('Error sending admin reservation email:', err)
+            );
+        } catch (emailErr) {
+            console.error('Email error (swallowed):', emailErr);
+        }
 
-        res.status(201).json(data);
+        res.status(201).json(dataForEmails);
     } catch (error: any) {
-        console.error('Error creating reservation:', error);
-        res.status(500).json({ error: error.message });
+        console.error('DETAILED RESERVATION ERROR:', {
+            message: error.message,
+            stack: error.stack,
+            body: req.body,
+        });
+        res.status(500).json({ error: error.message || 'Internal Server Error' });
     }
 });
 
