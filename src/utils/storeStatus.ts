@@ -3,16 +3,16 @@
  * 0 = Sunday, 1 = Monday, ..., 6 = Saturday
  */
 export const BUSINESS_HOURS: Record<number, { start: string; end: string }[]> = {
-    1: [], // понедельник: Закрыто
-    2: [], // вторник: Закрыто
-    3: [{ start: '20:00', end: '23:00' }], // среда
-    4: [{ start: '20:00', end: '23:00' }], // четверг
-    5: [{ start: '20:00', end: '23:00' }], // пятница
+    1: [], // Lunes: Cerrado
+    2: [], // Martes: Cerrado
+    3: [{ start: '20:00', end: '23:00' }], // Miércoles
+    4: [{ start: '20:00', end: '23:00' }], // Jueves
+    5: [{ start: '20:00', end: '23:00' }], // Viernes
     6: [
         { start: '14:00', end: '17:00' },
         { start: '20:00', end: '23:00' },
-    ], // суббота
-    0: [{ start: '14:00', end: '17:00' }], // воскресенье
+    ], // Sábado
+    0: [{ start: '14:00', end: '17:00' }], // Domingo
 };
 
 export function isStoreOpen(date: Date = new Date()): boolean {

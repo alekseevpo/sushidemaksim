@@ -80,7 +80,7 @@ export default function PayForFriendPage() {
 
     if (error || !order) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-6 bg-[#FDFBF7]">
+            <div className="min-h-screen flex items-center justify-center p-6 bg-[#FBF7F0]">
                 <div className="max-w-md w-full bg-white rounded-[32px] p-8 shadow-xl text-center border border-gray-100">
                     <XCircle size={64} strokeWidth={1.5} className="text-red-500 mx-auto mb-6" />
                     <h2 className="text-2xl font-black mb-4 text-gray-900">
@@ -105,7 +105,7 @@ export default function PayForFriendPage() {
     const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
 
     return (
-        <div className="min-h-screen bg-[#FDFBF7] py-8 md:py-16 px-2 md:px-4">
+        <div className="min-h-screen bg-[#FBF7F0] py-8 md:py-16 px-2 md:px-4">
             <SEO
                 title={`¡Invita a ${senderName}! 🎁`}
                 description={`Te ha enviado esta propuesta de Sushi de Maksim. ¡Sorpréndele con su pedido favorito! 🍣✨`}

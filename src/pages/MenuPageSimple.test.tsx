@@ -68,8 +68,9 @@ describe('MenuPageSimple (Integration)', () => {
     it('filters by category', async () => {
         renderMenu();
 
+        // Use findByAll to get both sidebar and main content buttons
         const categoryBtns = await screen.findAllByText('Rollos Grandes');
-        fireEvent.click(categoryBtns[0]); // First one is in the sidebar
+        fireEvent.click(categoryBtns[0]); 
 
         await waitFor(() => {
             expect(api.get).toHaveBeenCalledWith(
@@ -78,7 +79,7 @@ describe('MenuPageSimple (Integration)', () => {
         });
     });
 
-    it('searches for a dish', async () => {
+    it('searches for a dish with debounce', async () => {
         renderMenu();
 
         const searchInput = screen.getByPlaceholderText(/hoy/i);
@@ -93,7 +94,29 @@ describe('MenuPageSimple (Integration)', () => {
         );
     });
 
-    it('adds an item to cart when clicking the button', async () => {
+    it('displays empty state when no matches found', async () => {
+        (api.get as any).mockResolvedValueOnce({ items: [] });
+        renderMenu();
+
+        const searchInput = screen.getByPlaceholderText(/hoy/i);
+        fireEvent.change(searchInput, { target: { value: 'Nonexistent' } });
+
+        await waitFor(() => {
+            expect(screen.getByText(/No hay resultados para/i)).toBeInTheDocument();
+        });
+    });
+
+    it('handles api failure gracefully', async () => {
+        (api.get as any).mockRejectedValueOnce(new Error('Network Error'));
+        renderMenu();
+
+        await waitFor(() => {
+             // It should show a message if initial load fails
+             expect(screen.getByText(/Algo salió mal/i)).toBeInTheDocument();
+        });
+    });
+
+    it('adds an item to cart when clicking the add button', async () => {
         renderMenu();
 
         const addBtn = await screen.findAllByText(/Añadir/i);

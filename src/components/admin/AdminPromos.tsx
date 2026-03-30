@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, CheckCircle, XCircle, RefreshCw, Clock } from 'lucide-react';
+import {
+    Plus,
+    Edit2,
+    Trash2,
+    CheckCircle,
+    XCircle,
+    RefreshCw,
+    Clock,
+    HelpCircle,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '../../utils/api';
 
@@ -22,7 +32,7 @@ const PROMOS_TRANSLATIONS = {
             validUntil: 'Действительно до (текст)',
             icon: 'Иконка (Emoji)',
             color: 'Основной цвет (HEX)',
-            gradient: 'Градиент Tailwind (bg-gradient-to-br ...)',
+            gradient: 'Градиент Tailwind',
             active: 'Активна (видна пользователям)',
             save: 'Сохранить',
         },
@@ -49,6 +59,16 @@ const PROMOS_TRANSLATIONS = {
             errorDeleting: 'Ошибка при удалении',
         },
         refresh: 'Обновить',
+        hints: {
+            title: 'Название акции (например, "Комбо Дня")',
+            discount: 'Текст выгоды: процент ( -20% ) или просто "Подарок"',
+            description: 'Кратко опишите условия или состав предложения',
+            validUntil: 'Текст о сроке действия (например, "До конца марта")',
+            icon: 'Emoji-символ, который будет виден на карточке',
+            color: 'Основной цвет в формате HEX (например, #F2BC00)',
+            gradient: 'Настройка градиента Tailwind (from-color to-color)',
+            info: 'Подсказка',
+        },
     },
     es: {
         title: 'Promociones Estáticas',
@@ -64,7 +84,7 @@ const PROMOS_TRANSLATIONS = {
             validUntil: 'Válido hasta (texto)',
             icon: 'Icono (Emoji)',
             color: 'Color Principal (HEX)',
-            gradient: 'Gradiente Tailwind (bg-gradient-to-br ...)',
+            gradient: 'Gradiente Tailwind',
             active: 'Activa (visible al público)',
             save: 'Guardar',
         },
@@ -74,7 +94,7 @@ const PROMOS_TRANSLATIONS = {
             actions: 'Acciones',
         },
         status: {
-            active: 'Activa',
+            active: 'Acitiva',
             inactive: 'Inactiva',
         },
         modals: {
@@ -91,8 +111,73 @@ const PROMOS_TRANSLATIONS = {
             errorDeleting: 'Error al eliminar',
         },
         refresh: 'Actualizar',
+        hints: {
+            title: 'Nombre de la promo (ej: "Combo del Día")',
+            discount: 'Texto del beneficio: porcentaje ( -20% ) o "Regalo"',
+            description: 'Breve descripción de los términos o contenido',
+            validUntil: 'Texto sobre la validez (ej: "Hasta final de marzo")',
+            icon: 'Símbolo Emoji que aparecerá en la tarjeta',
+            color: 'Color principal en formato HEX (ej: #F2BC00)',
+            gradient: 'Estilo de gradiente Tailwind (from-color to-color)',
+            info: 'Ayuda',
+        },
     },
-} as const;
+};
+
+const FieldLabel = ({ title, hint, language, align = 'left', className = '' }: any) => {
+    const [showHint, setShowHint] = useState(false);
+    const infoLabel = language === 'ru' ? 'Подсказка' : 'Ayuda';
+
+    return (
+        <div className={`w-full relative flex items-center justify-between mb-1 pl-1 ${className}`}>
+            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none pointer-events-none">
+                {title}
+            </label>
+            <div className="relative">
+                <button
+                    type="button"
+                    onMouseEnter={() => setShowHint(true)}
+                    onMouseLeave={() => setShowHint(false)}
+                    onClick={() => setShowHint(!showHint)}
+                    className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
+                        showHint
+                            ? 'bg-red-500 text-white shadow-lg'
+                            : 'bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500'
+                    }`}
+                >
+                    <HelpCircle size={10} strokeWidth={3} />
+                </button>
+
+                <AnimatePresence>
+                    {showHint && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 5 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 5 }}
+                            className={`absolute ${
+                                align === 'right' ? 'right-0' : 'left-0 sm:left-auto sm:right-0'
+                            } bottom-full mb-3 w-64 bg-white/95 rounded-2xl shadow-2xl border border-gray-100 z-[100] overflow-hidden backdrop-blur-md pointer-events-none`}
+                        >
+                            <div className="bg-gray-900 px-4 py-2 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                    <span className="text-[9px] font-black text-white uppercase tracking-widest">
+                                        {infoLabel}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="p-4">
+                                <p className="text-[11px] font-bold text-gray-600 leading-relaxed uppercase tracking-tight">
+                                    {hint}
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </div>
+    );
+};
 
 export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
     const queryClient = useQueryClient();
@@ -232,31 +317,37 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
 
                         <div className="space-y-4">
                             <div className="space-y-1">
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                    {t.fields.title}
-                                </label>
+                                <FieldLabel
+                                    title={t.fields.title}
+                                    hint={t.hints.title}
+                                    language={language}
+                                />
                                 <input
                                     required
                                     value={form.title}
                                     onChange={e => setForm({ ...form, title: e.target.value })}
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                    {t.fields.discount}
-                                </label>
+                                <FieldLabel
+                                    title={t.fields.discount}
+                                    hint={t.hints.discount}
+                                    language={language}
+                                />
                                 <input
                                     required
                                     value={form.discount}
                                     onChange={e => setForm({ ...form, discount: e.target.value })}
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                    {t.fields.description}
-                                </label>
+                                <FieldLabel
+                                    title={t.fields.description}
+                                    hint={t.hints.description}
+                                    language={language}
+                                />
                                 <textarea
                                     required
                                     rows={3}
@@ -264,65 +355,64 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     onChange={e =>
                                         setForm({ ...form, description: e.target.value })
                                     }
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner resize-none"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner resize-none"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                        {t.fields.validUntil}
-                                    </label>
-                                    <input
-                                        value={form.valid_until}
-                                        onChange={e =>
-                                            setForm({ ...form, valid_until: e.target.value })
-                                        }
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-1xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                        {t.fields.icon}
-                                    </label>
-                                    <input
-                                        required
-                                        value={form.icon}
-                                        onChange={e => setForm({ ...form, icon: e.target.value })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-1xl px-4 py-3 text-sm font-black text-gray-900 text-center outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
-                                    />
-                                </div>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                                <FieldLabel
+                                    title={t.fields.validUntil}
+                                    hint={t.hints.validUntil}
+                                    language={language}
+                                />
+                                <FieldLabel
+                                    title={t.fields.icon}
+                                    hint={t.hints.icon}
+                                    language={language}
+                                    align="right"
+                                />
+                                <input
+                                    value={form.valid_until}
+                                    onChange={e => setForm({ ...form, valid_until: e.target.value })}
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                />
+                                <input
+                                    required
+                                    value={form.icon}
+                                    onChange={e => setForm({ ...form, icon: e.target.value })}
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 text-center outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                        {t.fields.color}
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            required
-                                            value={form.color}
-                                            onChange={e =>
-                                                setForm({ ...form, color: e.target.value })
-                                            }
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-1xl pl-10 pr-4 py-3 text-xs font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner lowercase"
-                                        />
-                                        <div
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-md border border-gray-200 shadow-sm"
-                                            style={{ backgroundColor: form.color }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                        {t.fields.gradient}
-                                    </label>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                                <FieldLabel
+                                    title={t.fields.color}
+                                    hint={t.hints.color}
+                                    language={language}
+                                />
+                                <FieldLabel
+                                    title={t.fields.gradient}
+                                    hint={t.hints.gradient}
+                                    language={language}
+                                    align="right"
+                                />
+                                <div className="relative">
                                     <input
                                         required
-                                        value={form.bg}
-                                        onChange={e => setForm({ ...form, bg: e.target.value })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-1xl px-4 py-3 text-xs font-black text-gray-400 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                        value={form.color}
+                                        onChange={e => setForm({ ...form, color: e.target.value })}
+                                        className="w-full bg-white border border-gray-100 rounded-2xl pl-12 pr-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner lowercase"
+                                    />
+                                    <div
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-md border border-gray-200 shadow-sm"
+                                        style={{ backgroundColor: form.color }}
                                     />
                                 </div>
+                                <input
+                                    required
+                                    value={form.bg}
+                                    onChange={e => setForm({ ...form, bg: e.target.value })}
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    placeholder="from-amber-500 to-amber-400"
+                                />
                             </div>
                         </div>
 

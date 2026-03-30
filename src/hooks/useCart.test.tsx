@@ -178,4 +178,23 @@ describe('useCart Hook (Integration)', () => {
             expect(result.current.itemCount).toBe(0);
         });
     });
+
+    it('should update delivery details correctly', async () => {
+        const { result } = renderHook(() => useCart(), { wrapper });
+
+        act(() => {
+            result.current.updateDeliveryDetails({
+                address: 'Test Street',
+                chopsticksCount: 5,
+            });
+        });
+
+        expect(result.current.deliveryDetails.address).toBe('Test Street');
+        expect(result.current.deliveryDetails.chopsticksCount).toBe(5);
+
+        // Verify persistence in localStorage
+        const saved = JSON.parse(localStorage.getItem('delivery_details') || '{}');
+        expect(saved.address).toBe('Test Street');
+        expect(saved.chopsticksCount).toBe(5);
+    });
 });

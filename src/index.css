@@ -6,6 +6,12 @@ html {
     scrollbar-gutter: stable;
 }
 
+/* Global backdrop-filter removal — as requested by the user */
+* {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
 html.lenis,
 html.lenis body {
     height: auto;
@@ -33,7 +39,8 @@ html.lenis body {
 
 @layer base {
     body {
-        @apply antialiased text-gray-900 bg-gray-50;
+        @apply antialiased text-gray-900;
+        background-color: #FBF7F0;
         overflow-x: clip;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     }
@@ -278,7 +285,7 @@ img {
 
 /* Premium Mesh Background */
 .mesh-bg {
-    background-color: #fdfbf7;
+    background-color: #FBF7F0;
     background-image:
         radial-gradient(at 0% 0%, hsla(0, 72%, 51%, 0.05) 0px, transparent 50%),
         radial-gradient(at 50% 0%, hsla(38, 100%, 50%, 0.03) 0px, transparent 50%),

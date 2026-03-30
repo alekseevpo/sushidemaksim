@@ -43,7 +43,7 @@ export default function OrderTrackingPage() {
 
     if (error || !order) {
         return (
-            <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center p-6">
                 <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
                     <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
                         🔍
@@ -67,7 +67,7 @@ export default function OrderTrackingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FDFBF7] pb-20">
+        <div className="min-h-screen bg-[#FBF7F0] pb-20">
             <SEO
                 title={`Seguimiento Pedido #${id}`}
                 description="Sigue el estado de tu pedido de Sushi de Maksim en tiempo real."

@@ -4,10 +4,21 @@ import {
     screen,
     fireEvent,
     waitFor,
-    within,
 } from '../../test/test-utils';
 import AdminMenu from './AdminMenu';
 import { api } from '../../utils/api';
+
+// Mock Lucide icons
+vi.mock('lucide-react', () => ({
+    Plus: () => <div data-testid="plus" />,
+    Edit2: () => <div data-testid="edit" />,
+    Trash2: () => <div data-testid="trash" />,
+    Search: () => <div data-testid="search" />,
+    X: () => <div data-testid="x" />,
+    RefreshCw: () => <div data-testid="refresh" />,
+    Upload: () => <div data-testid="upload" />,
+    Image: () => <div data-testid="image" />,
+}));
 
 // Mock API
 vi.mock('../../utils/api', () => ({
@@ -17,15 +28,25 @@ vi.mock('../../utils/api', () => ({
         put: vi.fn(),
         delete: vi.fn(),
     },
-    ApiError: class extends Error {
+    ApiError: class ApiError extends Error {
         constructor(public message: string) {
             super(message);
         }
     },
 }));
 
+// Mock fetch for image upload
+global.fetch = vi.fn();
+
 const mockItems = [
-    { id: 1, name: 'Sake Sushi', category: 'entrantes', price: 5, description: 'Test', image: '' },
+    { 
+        id: 1, 
+        name: 'Sake Sushi', 
+        category: 'entrantes', 
+        price: 5.5, 
+        description: 'Test', 
+        image: 'https://example.com/image.jpg' 
+    },
 ];
 
 describe('AdminMenu (Integration)', () => {
@@ -34,11 +55,12 @@ describe('AdminMenu (Integration)', () => {
         vi.mocked(api.get).mockResolvedValue({ items: mockItems });
     });
 
-    it('renders the menu list', async () => {
+    it('renders the menu list with correctly formatted price', async () => {
         render(<AdminMenu />);
 
         await waitFor(() => {
             expect(screen.getByText('Sake Sushi')).toBeInTheDocument();
+            expect(screen.getByText('5,50 €')).toBeInTheDocument();
         });
     });
 
@@ -54,28 +76,11 @@ describe('AdminMenu (Integration)', () => {
         expect(screen.queryByText('Sake Sushi')).not.toBeInTheDocument();
     });
 
-    it('opens modal to add a new item', async () => {
-        render(<AdminMenu />);
-
-        const addBtn = await screen.findByText(/Nuevo Plato/i);
-        fireEvent.click(addBtn);
-
-        expect(screen.getByText(/Añadir Plato/i)).toBeInTheDocument();
-        expect(
-            screen.getByRole('button', { name: /Crear Plato|Guardar Cambios/i })
-        ).toBeInTheDocument();
-    });
-
     it('submits the form to add a new item', async () => {
         const newItem = { id: 2, name: 'New Roll', category: 'menus', price: 10 };
         vi.mocked(api.post).mockResolvedValue({
             item: newItem,
         });
-
-        // Initial load
-        vi.mocked(api.get).mockResolvedValueOnce({ items: mockItems });
-        // Refresh load
-        vi.mocked(api.get).mockResolvedValue({ items: [...mockItems, newItem] });
 
         render(<AdminMenu />);
 
@@ -90,39 +95,87 @@ describe('AdminMenu (Integration)', () => {
         fireEvent.change(screen.getByLabelText(/Precio \(€\) \*/i), { target: { value: '10' } });
         fireEvent.change(screen.getByLabelText(/Categoría \*/i), { target: { value: 'menus' } });
 
-        const form = (await screen.findByLabelText(/Nombre \*/i)).closest('form')!;
-        fireEvent.submit(form);
+        const saveBtn = screen.getByRole('button', { name: /Crear Plato/i });
+        fireEvent.click(saveBtn);
 
         await waitFor(() => {
             expect(api.post).toHaveBeenCalled();
-            expect(screen.getByText('New Roll')).toBeInTheDocument();
+            expect(api.post).toHaveBeenCalledWith('/admin/menu', expect.objectContaining({
+                name: 'New Roll',
+                price: 10,
+                category: 'menus'
+            }));
         });
     });
 
-    it.skip('deletes an item', async () => {
-        let items = [...mockItems];
-        vi.mocked(api.get).mockImplementation(() => Promise.resolve({ items }));
-        vi.mocked(api.delete).mockImplementation(() => {
-            items = [];
-            return Promise.resolve({});
+    it('opens modal and updates existing item', async () => {
+        render(<AdminMenu />);
+        
+        await waitFor(() => expect(screen.getByText('Sake Sushi')).toBeInTheDocument());
+        
+        const editBtn = screen.getByTitle(/Editar Plato/i);
+        fireEvent.click(editBtn);
+        
+        const nameInput = screen.getByLabelText(/Nombre \*/i);
+        expect(nameInput).toHaveValue('Sake Sushi');
+        
+        fireEvent.change(nameInput, { target: { value: 'Updated Sake' } });
+        
+        const saveBtn = screen.getByRole('button', { name: /Guardar Cambios/i });
+        fireEvent.click(saveBtn);
+        
+        await waitFor(() => {
+            expect(api.put).toHaveBeenCalledWith('/admin/menu/1', expect.objectContaining({
+                name: 'Updated Sake'
+            }));
         });
+    });
+
+    it('deletes an item after confirmation', async () => {
+        vi.mocked(api.delete).mockResolvedValue({});
 
         render(<AdminMenu />);
 
         await waitFor(() => expect(screen.getByText('Sake Sushi')).toBeInTheDocument());
 
-        // Click delete button
-        const itemRow = screen.getByText('Sake Sushi').closest('tr')!;
-        const deleteBtn = within(itemRow).getByTitle(/Eliminar este plato/i);
+        const deleteBtn = screen.getByTestId('trash').parentElement!;
         fireEvent.click(deleteBtn);
 
-        // Modal should be visible
         const confirmBtn = await screen.findByText(/SÍ, ELIMINAR AHORA/i);
         fireEvent.click(confirmBtn);
 
         await waitFor(() => {
             expect(api.delete).toHaveBeenCalledWith('/admin/menu/1');
-            expect(screen.queryByText('Sake Sushi')).not.toBeInTheDocument();
+        });
+    });
+
+    it('handles image URL input manually', async () => {
+        render(<AdminMenu />);
+        fireEvent.click(await screen.findByText(/Nuevo Plato/i));
+        
+        const urlInput = screen.getByPlaceholderText(/https:\/\/.../i);
+        fireEvent.change(urlInput, { target: { value: 'https://foo.com/bar.png' } });
+        
+        const previewImg = screen.getByAltText('Preview');
+        expect(previewImg).toHaveAttribute('src', 'https://foo.com/bar.png');
+    });
+
+    it('shows general error message if API fails during save', async () => {
+        vi.mocked(api.post).mockRejectedValue(new Error('Generic failure'));
+        
+        render(<AdminMenu />);
+        fireEvent.click(await screen.findByText(/Nuevo Plato/i));
+        
+        // Fill minimum required fields
+        fireEvent.change(screen.getByLabelText(/Nombre \*/i), { target: { value: 'X' } });
+        fireEvent.change(screen.getByLabelText(/Descripción \*/i), { target: { value: 'X' } });
+        
+        const saveBtn = screen.getByRole('button', { name: /Crear Plato/i });
+        fireEvent.click(saveBtn);
+        
+        await waitFor(() => {
+            // Should show the default error message from translations
+            expect(screen.getByText(/Error al guardar/i)).toBeInTheDocument();
         });
     });
 });

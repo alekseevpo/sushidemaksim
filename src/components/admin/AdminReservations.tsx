@@ -216,7 +216,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                         placeholder={t.searchPlaceholder}
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-black text-gray-900 focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 outline-none transition-all shadow-inner"
+                        className="w-full pl-14 pr-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 outline-none transition-all shadow-inner"
                     />
                 </div>
                 <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">

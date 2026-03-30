@@ -405,7 +405,7 @@ const UserRow = memo(
                                             onClick={() => onToggleRole(user)}
                                             className="px-4 py-2 bg-white text-gray-600 hover:bg-black hover:text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-gray-200 shadow-sm active:scale-95"
                                         >
-                                            {language === 'ru' ? 'Роль' : 'Rol'}
+                                            {t.table.role}
                                         </button>
                                     )}
                                     <button

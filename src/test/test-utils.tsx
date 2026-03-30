@@ -4,11 +4,16 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
+import { ToastProvider } from '../context/ToastContext';
+import { AuthProvider } from '../hooks/useAuth';
+import { CartProvider } from '../hooks/useCart';
+
 const createTestQueryClient = () =>
     new QueryClient({
         defaultOptions: {
             queries: {
                 retry: false,
+                staleTime: 0,
             },
         },
     });
@@ -23,7 +28,13 @@ export function renderWithProviders(
         return (
             <QueryClientProvider client={queryClient}>
                 <HelmetProvider>
-                    <BrowserRouter>{children}</BrowserRouter>
+                    <ToastProvider>
+                        <AuthProvider>
+                            <CartProvider>
+                                <BrowserRouter>{children}</BrowserRouter>
+                            </CartProvider>
+                        </AuthProvider>
+                    </ToastProvider>
                 </HelmetProvider>
             </QueryClientProvider>
         );

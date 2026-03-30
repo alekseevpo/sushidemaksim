@@ -156,13 +156,13 @@ export default function Header() {
         <>
             <header
                 ref={headerRef}
-                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color,backdrop-filter] duration-500
+                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
                 ${
                     isScrolled
-                        ? 'bg-[#FDFBF7]/85 backdrop-blur-xl shadow-sm border-b border-gray-200'
+                        ? 'bg-[#FBF7F0] shadow-sm border-b border-gray-200'
                         : isTransparentHeaderPage
                           ? 'bg-transparent border-b border-transparent'
-                          : 'bg-[#FDFBF7]/85 backdrop-blur-xl border-b border-gray-100'
+                          : 'bg-[#FBF7F0] border-b border-gray-100'
                 }
             `}
             >
@@ -171,9 +171,16 @@ export default function Header() {
                     <div className="flex md:grid md:grid-cols-3 items-center justify-between h-16 md:h-18">
                         {/* Logo Container */}
                         <div className="flex-1 flex justify-start items-center h-full">
-                            <Link
+                             <Link
                                 to="/"
-                                onClick={() => setShowMobileMenu(false)}
+                                onClick={() => {
+                                    setShowMobileMenu(false);
+                                    if ((window as any).lenis) {
+                                        (window as any).lenis.scrollTo(0);
+                                    } else {
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }
+                                }}
                                 className="flex items-center no-underline gap-0 group"
                             >
                                 <div

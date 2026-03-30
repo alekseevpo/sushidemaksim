@@ -60,7 +60,13 @@ export default function Footer() {
                 <div className="text-center md:text-left">
                     <Link
                         to="/"
-                        onClick={() => (window as any).lenis?.scrollTo(0)}
+                        onClick={() => {
+                            if ((window as any).lenis) {
+                                (window as any).lenis.scrollTo(0);
+                            } else {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                        }}
                         className="flex items-center justify-center md:justify-start gap-0 mb-4 no-underline group cursor-pointer"
                     >
                         <div className="transform group-hover:rotate-12 transition-transform duration-500 shrink-0">
@@ -73,7 +79,7 @@ export default function Footer() {
                             />
                         </div>
                     </Link>
-                    <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed font-medium text-gray-400/80">
+                    <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed text-red-600">
                         Auténtica experiencia japonesa en el corazón de Madrid. Frescura, tradición
                         y calidad en cada pieza.
                     </p>

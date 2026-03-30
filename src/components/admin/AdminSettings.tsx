@@ -226,7 +226,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactPhone: e.target.value,
                                 })
                             }
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all tabular-nums"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all tabular-nums"
                         />
                     </div>
                     <div className="space-y-2">
@@ -241,7 +241,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactEmail: e.target.value,
                                 })
                             }
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
                         />
                     </div>
                 </div>
@@ -264,7 +264,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactAddressLine1: e.target.value,
                                 })
                             }
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
                             placeholder={t.addressPlaceholder1}
                         />
                     </div>
@@ -280,7 +280,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactAddressLine2: e.target.value,
                                 })
                             }
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
                             placeholder={t.addressPlaceholder2}
                         />
                     </div>
@@ -316,7 +316,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactGoogleMapsUrl: e.target.value,
                                 })
                             }
-                            className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
                             placeholder="https://www.google.com/maps/..."
                         />
                     </div>

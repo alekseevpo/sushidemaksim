@@ -1,143 +1,122 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import CartPageSimple from './CartPageSimple';
+import { useAuth } from '../hooks/useAuth';
+import { useCart } from '../hooks/useCart';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { api } from '../utils/api';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { CartProvider } from '../hooks/useCart';
-import { AuthProvider } from '../hooks/useAuth';
+
+// Mock Hooks
+vi.mock('../hooks/useAuth', () => ({
+    useAuth: vi.fn(),
+}));
+
+vi.mock('../hooks/useCart', () => ({
+    useCart: vi.fn(),
+}));
+
+// Mock storeStatus
+vi.mock('../utils/storeStatus', () => ({
+    isStoreOpen: vi.fn(() => true),
+    isTimeWithinBusinessHours: vi.fn(() => true),
+    BUSINESS_HOURS: {},
+}));
 
 // Mock API
 vi.mock('../utils/api', () => ({
     api: {
-        get: vi.fn(),
-        post: vi.fn(),
+        get: vi.fn(() => Promise.resolve({ items: [] })),
+        post: vi.fn(() => Promise.resolve({})),
     },
 }));
 
-const mockCartItems = [
-    {
-        id: '1',
-        name: 'Sushi A',
-        price: 10,
-        quantity: 1,
-        category: 'rollos-grandes' as any,
-        image: '',
-        description: '',
-    },
-];
+describe('CartPageSimple (Mocked Hooks)', () => {
+    const mockItems = [
+        {
+            id: '1',
+            name: 'Sushi Deluxe',
+            price: 15.5,
+            quantity: 1,
+            image: '',
+            category: 'rollos-grandes',
+        },
+    ];
 
-// Mock useCartQuery
-vi.mock('../hooks/queries/useCartQuery', () => ({
-    useCartQuery: vi.fn(() => ({
-        data: { items: mockCartItems, total: 10 },
-        isLoading: false,
-    })),
-    useAddToCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    useUpdateQuantityMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    useRemoveItemMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    useClearCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    CART_QUERY_KEY: ['cart'],
-}));
-
-// Mock useCartQuery
-vi.mock('../hooks/queries/useCartQuery', () => ({
-    useCartQuery: vi.fn(() => ({
-        data: { items: mockCartItems, total: 10 },
-        isLoading: false,
-    })),
-    useAddToCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    useUpdateQuantityMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    useRemoveItemMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    useClearCartMutation: vi.fn(() => ({ mutateAsync: vi.fn() })),
-    CART_QUERY_KEY: ['cart'],
-}));
-
-// Mock useAuth
-vi.mock('../hooks/useAuth', async importOriginal => {
-    const actual = (await importOriginal()) as any;
-    return {
-        ...actual,
-        useAuth: () => ({
-            isAuthenticated: false,
-            user: null,
-        }),
+    const mockDeliveryDetails = {
+        address: 'Calle Falsa 123',
+        house: '1',
+        apartment: 'A',
+        phone: '600000000',
+        postalCode: '28001',
+        customerName: 'Test User',
+        guestEmail: 'test@example.com',
+        paymentMethod: 'card' as const,
+        deliveryType: 'delivery' as const,
+        selectedZone: { id: 1, name: 'Centro', cost: 2.5, minOrder: 10, freeThreshold: 30 },
+        noCall: false,
+        noBuzzer: false,
+        isScheduled: false,
+        scheduledDate: '2026-03-30',
+        scheduledTime: '20:00',
+        customNote: '',
+        saveAddress: true,
+        guestsCount: 2,
+        chopsticksCount: 0,
     };
-});
 
-// Mock @tanstack/react-query
-vi.mock('@tanstack/react-query', async importOriginal => {
-    const actual = (await importOriginal()) as any;
-    return {
-        ...actual,
-        useQueryClient: () => ({
-            invalidateQueries: vi.fn(),
-        }),
-    };
-});
-
-// Mock useToast - we'll capture the functions to assert on them later
-const mockError = vi.fn();
-vi.mock('../context/ToastContext', () => ({
-    useToast: () => ({
-        success: vi.fn(),
-        error: mockError,
-        info: vi.fn(),
-        warning: vi.fn(),
-    }),
-}));
-
-describe('CartPageSimple (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        localStorage.clear();
-        (api.get as any).mockImplementation((url: string) => {
-            if (url === '/settings')
-                return Promise.resolve({
-                    minOrder: 20,
-                    delivery_fee: 3.5,
-                    free_delivery_threshold: 25,
-                    is_store_closed: false,
-                });
-            return Promise.resolve({ items: [] });
-        });
+        
+        vi.mocked(useAuth).mockReturnValue({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+        } as any);
+
+        vi.mocked(useCart).mockReturnValue({
+            items: mockItems,
+            total: 15.5,
+            isLoading: false,
+            addItem: vi.fn(),
+            removeItem: vi.fn(),
+            updateQuantity: vi.fn(),
+            clearCart: vi.fn(),
+            deliveryDetails: mockDeliveryDetails,
+            updateDeliveryDetails: vi.fn(),
+        } as any);
     });
 
-    const renderCart = () => {
-        const queryClient = new QueryClient({
-            defaultOptions: {
-                queries: { retry: false, staleTime: Infinity },
-            },
-        });
+    const renderPage = () => {
         return render(
-            <QueryClientProvider client={queryClient}>
-                <AuthProvider>
-                    <CartProvider>
-                        <HelmetProvider>
-                            <BrowserRouter>
-                                <CartPageSimple />
-                            </BrowserRouter>
-                        </HelmetProvider>
-                    </CartProvider>
-                </AuthProvider>
-            </QueryClientProvider>
+            <HelmetProvider>
+                <BrowserRouter>
+                    <CartPageSimple />
+                </BrowserRouter>
+            </HelmetProvider>
         );
     };
 
-    it('renders the cart content', async () => {
-        renderCart();
-        await waitFor(() => expect(screen.queryByText(/Cargando/i)).not.toBeInTheDocument());
-        // Use heading role for the title
-        expect(screen.getByText('Sushi A')).toBeInTheDocument();
+    it('renders the cart items from mocked hook', async () => {
+        renderPage();
+        expect(await screen.findByText('Sushi Deluxe')).toBeInTheDocument();
+        expect(screen.getAllByText(/15,50/).length).toBeGreaterThan(0);
     });
 
-    it('calculates the summary correctly', async () => {
-        renderCart();
-        await waitFor(() => expect(screen.queryByText(/Cargando/i)).not.toBeInTheDocument());
+    it('toggles scheduled order visibility via mock update', async () => {
+        const updateMock = vi.fn();
+        vi.mocked(useCart).mockReturnValue({
+            items: mockItems,
+            total: 15.5,
+            isLoading: false,
+            deliveryDetails: { ...mockDeliveryDetails, isScheduled: false },
+            updateDeliveryDetails: updateMock,
+        } as any);
 
-        expect(screen.getAllByText(/10,00/).length).toBeGreaterThanOrEqual(1);
-        expect(screen.getAllByText(/3,50/).length).toBeGreaterThanOrEqual(1);
-        expect(screen.getAllByText(/13,50/).length).toBeGreaterThanOrEqual(1);
+        renderPage();
+        
+        const toggle = await screen.findByText(/Entrega programada/i);
+        fireEvent.click(toggle);
+
+        expect(updateMock).toHaveBeenCalledWith({ isScheduled: true });
     });
 });

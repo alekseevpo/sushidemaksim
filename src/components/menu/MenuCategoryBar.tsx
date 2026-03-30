@@ -11,7 +11,6 @@ interface MenuCategoryBarProps {
 const KatanaUnderline = () => (
     <motion.div
         layoutId="katana-active"
-        initial={false}
         className="absolute -bottom-10 left-4 right-0 flex items-center justify-start pointer-events-none z-0"
         transition={{
             type: 'spring',
@@ -45,56 +44,29 @@ export default function MenuCategoryBar({
     if (isMobile) {
         return (
             <div
-                className="fixed left-0 right-0 z-[40] bg-[#FDFBF7]/95 backdrop-blur-md border-b border-gray-200 lg:hidden shadow-sm select-none"
+                className="fixed left-0 right-0 z-[40] bg-[#FBF7F0] border-b border-gray-200 lg:hidden shadow-sm select-none"
                 style={{ top: 'var(--header-height, 64px)' }}
             >
                 <div className="max-w-7xl mx-auto">
-                    <div
-                        className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain touch-pan-x"
-                        data-lenis-prevent
-                        data-lenis-prevent-touch
-                    >
-                        <div className="flex gap-2 flex-nowrap px-4">
-                            {/* TODOS Button */}
-                            <button
-                                id="cat-all"
-                                onClick={e => handleCategoryClick('all', e)}
-                                style={{ WebkitFontSmoothing: 'antialiased' }}
-                                className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
-                                    selectedCategory === 'all'
-                                        ? 'text-white border-transparent'
-                                        : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
-                                }`}
-                            >
-                                {selectedCategory === 'all' && (
-                                    <motion.div
-                                        layoutId="mobile-active-pill"
-                                        className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
-                                        transition={{
-                                            type: 'spring',
-                                            stiffness: 300,
-                                            damping: 30,
-                                            mass: 0.8,
-                                        }}
-                                    />
-                                )}
-                                <span className="relative z-10">Todos</span>
-                            </button>
-
-                            {/* CATEGORY Buttons */}
-                            {CATEGORIES.map(cat => (
+                    <LayoutGroup id="mobile-categories">
+                        <div
+                            className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain touch-pan-x"
+                            data-lenis-prevent
+                            data-lenis-prevent-touch
+                        >
+                            <div className="flex gap-2 flex-nowrap px-4">
+                                {/* TODOS Button */}
                                 <button
-                                    key={cat.id}
-                                    id={`cat-${cat.id}`}
-                                    onClick={e => handleCategoryClick(cat.id, e)}
+                                    id="cat-all"
+                                    onClick={e => handleCategoryClick('all', e)}
                                     style={{ WebkitFontSmoothing: 'antialiased' }}
-                                    className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
-                                        selectedCategory === cat.id
+                                    className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
+                                        selectedCategory === 'all'
                                             ? 'text-white border-transparent'
                                             : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
                                     }`}
                                 >
-                                    {selectedCategory === cat.id && (
+                                    {selectedCategory === 'all' && (
                                         <motion.div
                                             layoutId="mobile-active-pill"
                                             className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
@@ -106,16 +78,45 @@ export default function MenuCategoryBar({
                                             }}
                                         />
                                     )}
-                                    <cat.icon
-                                        size={16}
-                                        strokeWidth={2.5}
-                                        className="relative z-10"
-                                    />
-                                    <span className="relative z-10">{cat.name}</span>
+                                    <span className="relative z-10">Todos</span>
                                 </button>
-                            ))}
+
+                                {/* CATEGORY Buttons */}
+                                {CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        id={`cat-${cat.id}`}
+                                        onClick={e => handleCategoryClick(cat.id, e)}
+                                        style={{ WebkitFontSmoothing: 'antialiased' }}
+                                        className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
+                                            selectedCategory === cat.id
+                                                ? 'text-white border-transparent'
+                                                : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        {selectedCategory === cat.id && (
+                                            <motion.div
+                                                layoutId="mobile-active-pill"
+                                                className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
+                                                transition={{
+                                                    type: 'spring',
+                                                    stiffness: 300,
+                                                    damping: 30,
+                                                    mass: 0.8,
+                                                }}
+                                            />
+                                        )}
+                                        <cat.icon
+                                            size={16}
+                                            strokeWidth={2.5}
+                                            className="relative z-10"
+                                        />
+                                        <span className="relative z-10">{cat.name}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    </LayoutGroup>
                 </div>
             </div>
         );

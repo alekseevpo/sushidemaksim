@@ -29,7 +29,7 @@ export default function MenuPageSimple() {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
     // Queries
-    const { data: items = [], isLoading } = useMenu(selectedCategory, debouncedSearch);
+    const { data: items = [], isLoading, isError } = useMenu(selectedCategory, debouncedSearch);
     const { data: favorites } = useFavorites(user);
     const { mutate: toggleFavorite } = useToggleFavorite();
     const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
@@ -309,6 +309,22 @@ export default function MenuPageSimple() {
                     {isLoading ? (
                         <div className="space-y-12">
                             <MenuItemsSkeleton showHeader={selectedCategory === 'all' && !search} />
+                        </div>
+                    ) : isError ? (
+                        <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[32px] border-2 border-dashed border-gray-100 animate-in fade-in zoom-in-95 duration-500">
+                            <span className="text-5xl mb-6 drop-shadow-lg">🍱</span>
+                            <h3 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">
+                                Algo salió mal
+                            </h3>
+                            <p className="text-gray-500 font-medium text-center max-w-sm px-6">
+                                No pudimos cargar el menú en este momento. Por favor, revisa tu conexión e inténtalo de nuevo.
+                            </p>
+                            <button 
+                                onClick={() => window.location.reload()}
+                                className="mt-8 px-8 py-3.5 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all active:scale-95 shadow-xl shadow-gray-200"
+                            >
+                                REINTENTAR
+                            </button>
                         </div>
                     ) : (
                         <ProductGrid

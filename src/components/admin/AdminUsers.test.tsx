@@ -14,6 +14,7 @@ vi.mock('../../utils/api', () => ({
     api: {
         get: vi.fn(),
         patch: vi.fn(),
+        delete: vi.fn(),
     },
     ApiError: class extends Error {
         constructor(public message: string) {
@@ -27,6 +28,37 @@ vi.mock('../../hooks/useAuth', () => ({
     useAuth: () => ({
         user: { id: 1, name: 'SuperAdmin', isSuperadmin: true },
     }),
+    AuthProvider: ({ children }: any) => <>{children}</>,
+}));
+
+// Mock useCart
+vi.mock('../../hooks/useCart', () => ({
+    useCart: () => ({
+        items: [],
+        total: 0,
+    }),
+    CartProvider: ({ children }: any) => <>{children}</>,
+}));
+
+// Mock Lucide icons for stable targeting
+vi.mock('lucide-react', () => ({
+    Shield: () => <div data-testid="shield-icon" />,
+    Users: () => <div data-testid="users-icon" />,
+    RefreshCw: () => <div data-testid="refresh-icon" />,
+    Crown: () => <div data-testid="crown-icon" />,
+    Calendar: () => <div data-testid="calendar-icon" />,
+    CheckCircle: () => <div data-testid="check-circle-icon" />,
+    AlertCircle: () => <div data-testid="alert-circle-icon" />,
+    Clock: () => <div data-testid="clock-icon" />,
+    ArrowUpDown: () => <div data-testid="arrow-up-down-icon" />,
+    ChevronUp: () => <div data-testid="chevron-up-icon" />,
+    ChevronDown: () => <div data-testid="chevron-down-icon" />,
+    Trash2: () => <div data-testid="trash-icon" />,
+    Search: () => <div data-testid="search-icon" />,
+    X: () => <div data-testid="x-icon" />,
+    RotateCcw: () => <div data-testid="rotate-ccw-icon" />,
+    Clock3: () => <div data-testid="clock-3-icon" />,
+    Users2: () => <div data-testid="users-2-icon" />,
 }));
 
 const mockUsers = [
@@ -38,68 +70,94 @@ const mockUsers = [
         orderCount: 5,
         totalSpent: 100,
         createdAt: '2023-01-01',
+        isVerified: false,
     },
 ];
 
 describe('AdminUsers (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(api.get).mockImplementation((url: string) => {
-            if (url.includes('/admin/users')) {
-                return Promise.resolve({
-                    users: mockUsers,
-                    pagination: { page: 1, limit: 20, total: 1, pages: 1 },
-                });
-            }
-            return Promise.resolve({});
+        vi.mocked(api.get).mockResolvedValue({
+            users: mockUsers,
+            pagination: { page: 1, limit: 20, total: 1, pages: 1 },
         });
+        vi.mocked(api.patch).mockResolvedValue({});
     });
 
-    it('renders the users list', async () => {
+    it('renders the users list and handles sorting', async () => {
         render(<AdminUsers language="es" />);
-
-        await waitFor(async () => {
+        await waitFor(() => {
             expect(screen.getByText('Customer A')).toBeInTheDocument();
-            expect(screen.getByText('#10')).toBeInTheDocument();
-            const userRow = screen.getByText('Customer A').closest('tr')!;
-            expect(within(userRow).getByText('Rol')).toBeInTheDocument();
         });
+
+        const idHeader = screen.getAllByText(/ID/i).find(el => el.closest('th'))!;
+        fireEvent.click(idHeader);
+        await waitFor(() => expect(api.get).toHaveBeenCalledWith(expect.stringContaining('sortBy=id')));
     });
 
-    it.skip('toggles admin role', async () => {
+    it('toggles admin role', async () => {
         render(<AdminUsers language="es" />);
-
         await waitFor(() => expect(screen.getByText('Customer A')).toBeInTheDocument());
 
-        const userRow = (await screen.findByText('Customer A')).closest('tr')!;
-        const toggleBtn = within(userRow).getByText('Rol');
+        const userRow = screen.getByText('Customer A').closest('tr')!;
+        // Click role button in row
+        const toggleBtn = within(userRow).getAllByRole('button').find(btn => btn.textContent?.includes('Rol'))!;
         fireEvent.click(toggleBtn);
 
-        // Wait for modal and select role
-        const roleSelect = await screen.findByRole('combobox');
-        fireEvent.change(roleSelect, { target: { value: 'admin' } });
-
+        // Wait for modal components
         const confirmBtn = await screen.findByText(/CONFIRMAR CAMBIO/i);
-        console.log('Confirm button found:', !!confirmBtn);
+        
+        // Find Shield icon which represents Admin role button in modal
+        const shieldIcons = await screen.findAllByTestId('shield-icon');
+        const adminRoleBtn = shieldIcons.find(icon => icon.closest('button'))?.closest('button')!;
+        fireEvent.click(adminRoleBtn);
+        
         fireEvent.click(confirmBtn);
 
         await waitFor(() => {
-            expect(api.patch).toHaveBeenCalledWith('/admin/users/10/role', { role: 'admin' });
+            expect(api.patch).toHaveBeenCalledWith(
+                expect.stringContaining('/role'),
+                expect.objectContaining({ role: 'admin' })
+            );
         });
     });
 
-    it('sorts users by clicking header', async () => {
+    it('manually verifies email', async () => {
         render(<AdminUsers language="es" />);
-
         await waitFor(() => expect(screen.getByText('Customer A')).toBeInTheDocument());
 
-        // Find the ID header by text "ID" which should be unique enough in the header
-        const idHeaders = screen.getAllByText(/ID/);
-        // Usually the first one is the column header
-        fireEvent.click(idHeaders[0]);
+        const verifyBtn = screen.getByTitle(/Verificar email manualmente/i);
+        fireEvent.click(verifyBtn);
+
+        const confirmBtn = await screen.findByText(/CONFIRMAR/i);
+        fireEvent.click(confirmBtn);
 
         await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith(expect.stringContaining('sortBy=id'));
+            expect(api.patch).toHaveBeenCalledWith('/admin/users/10/verify-email', { isVerified: true });
         });
+    });
+
+    it('deletes and restores users', async () => {
+        // Mock archived user for restoration check
+        const archivedUser = { ...mockUsers[0], id: 11, name: 'Old User', deletedAt: '2023-01-01' };
+        vi.mocked(api.get).mockResolvedValue({
+            users: [mockUsers[0], archivedUser],
+            pagination: { page: 1, limit: 20, total: 2, pages: 1 },
+        });
+
+        render(<AdminUsers language="es" />);
+        await waitFor(() => expect(screen.getByText('Old User')).toBeInTheDocument());
+
+        // Test Delete
+        const deleteBtn = screen.getAllByTestId('trash-icon')[0].closest('button')!;
+        fireEvent.click(deleteBtn);
+        const confirmDelete = await screen.findByText(/SÍ, ELIMINAR AHORA/i);
+        fireEvent.click(confirmDelete);
+        await waitFor(() => expect(api.delete).toHaveBeenCalledWith('/admin/users/10'));
+
+        // Test Restore
+        const restoreBtn = screen.getByText(/Restaurar/i);
+        fireEvent.click(restoreBtn);
+        await waitFor(() => expect(api.patch).toHaveBeenCalledWith('/admin/users/11/restore'));
     });
 });

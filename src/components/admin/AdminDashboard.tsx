@@ -81,6 +81,10 @@ const DASHBOARD_TRANSLATIONS = {
             details: 'Детали',
             ordersLabel: 'зак.',
         },
+        hints: {
+            howCalculated: 'Как считается',
+            hint: 'Подсказка',
+        },
     },
     es: {
         summary: 'Resumen hoy',
@@ -135,14 +139,17 @@ const DASHBOARD_TRANSLATIONS = {
             details: 'Detalles',
             ordersLabel: 'ped.',
         },
+        hints: {
+            howCalculated: 'Cómo se calcula',
+            hint: 'Sugerencia',
+        },
     },
 } as const;
 
-const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint }: any) => {
+const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: any) => {
     const [showHint, setShowHint] = useState(false);
     const hintRef = useRef<HTMLDivElement>(null);
 
-    // Close on click outside
     useEffect(() => {
         if (!showHint) return;
         const handler = (e: MouseEvent) => {
@@ -170,7 +177,7 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint }: any) => 
                                         ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-110'
                                         : 'bg-gray-100 text-gray-400 hover:bg-blue-50 hover:text-blue-500'
                                 }`}
-                                aria-label="Подсказка"
+                                aria-label={t.hints.hint}
                             >
                                 <HelpCircle size={12} strokeWidth={2.5} />
                             </button>
@@ -178,7 +185,6 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint }: any) => 
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 leading-none">{value}</h3>
 
-                    {/* Tooltip Panel */}
                     <AnimatePresence>
                         {showHint && hint && (
                             <motion.div
@@ -194,7 +200,7 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint }: any) => 
                                             <Info size={11} className="text-white" />
                                         </div>
                                         <span className="text-[10px] font-black text-blue-800 uppercase tracking-widest">
-                                            Как считается
+                                            {t.hints.howCalculated}
                                         </span>
                                     </div>
                                     <button
@@ -258,9 +264,7 @@ export default function AdminDashboard({
         },
         onError: () => {
             setIsUpdatingStatus(false);
-            alert(
-                language === 'ru' ? 'Ошибка при обновлении статуса' : 'Error updating store status'
-            );
+            alert('Error al actualizar el estado del restaurante');
         },
     });
 
@@ -452,6 +456,7 @@ export default function AdminDashboard({
                         colorClass="bg-green-50 text-green-600"
                         desc={t.stats.revenueDesc}
                         hint={t.stats.revenueHint}
+                        t={t}
                     />
                     <StatCard
                         title={t.stats.missed}
@@ -462,6 +467,7 @@ export default function AdminDashboard({
                         colorClass="bg-red-50 text-red-600"
                         desc={t.stats.missedDesc}
                         hint={t.stats.missedHint}
+                        t={t}
                     />
                     <StatCard
                         title={t.stats.newOrders}
@@ -470,6 +476,7 @@ export default function AdminDashboard({
                         colorClass="bg-blue-50 text-blue-600"
                         desc={t.stats.ordersDesc}
                         hint={t.stats.ordersHint}
+                        t={t}
                     />
                     <StatCard
                         title={t.stats.pending}
@@ -478,6 +485,7 @@ export default function AdminDashboard({
                         colorClass="bg-amber-50 text-amber-600"
                         desc={t.stats.pendingDesc}
                         hint={t.stats.pendingHint}
+                        t={t}
                     />
                     <StatCard
                         title={t.stats.newUsers}
@@ -486,6 +494,7 @@ export default function AdminDashboard({
                         colorClass="bg-purple-50 text-purple-600"
                         desc={t.stats.usersDesc}
                         hint={t.stats.usersHint}
+                        t={t}
                     />
                 </div>
             )}

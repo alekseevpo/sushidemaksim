@@ -450,7 +450,7 @@ export default function AdminOrders({
                                                 {order.notes && (
                                                     <div
                                                         className="bg-amber-50 text-amber-600 p-1.5 rounded-xl border border-amber-100 shadow-sm"
-                                                        title="Содержит примечания"
+                                                        title="Contiene notas"
                                                     >
                                                         <MessageSquare
                                                             size={16}

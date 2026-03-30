@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'; // Heartbeat update
+import { AlertCircle } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
@@ -200,7 +201,7 @@ export default function CartPageSimple() {
 
         setIsLoadingSuggestions(true);
         try {
-            const data = await api.get('/menu?category=extras');
+            const data = await api.get('/menu?category=postre');
             setSuggestions(data.items || []);
         } catch (err) {
             console.error('Failed to load suggestions', err);
@@ -624,11 +625,11 @@ export default function CartPageSimple() {
             ) : (
                 <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-4 sm:py-8">
                     {isStoreClosed && (
-                        <div className="mb-6 animate-in slide-in-from-top duration-500">
-                            <div className="bg-red-50/50 backdrop-blur-sm border border-red-100 rounded-2xl p-4 md:p-5">
+                        <div className="mb-6">
+                            <div className="bg-red-50 border border-red-100 rounded-2xl p-4 md:p-5 shadow-sm">
                                 <div className="flex items-start gap-3">
-                                    <div className="mt-0.5 w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                                        <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                                    <div className="mt-0.5 w-10 h-10 rounded-2xl bg-red-100 flex items-center justify-center shrink-0 border border-red-200 shadow-inner">
+                                        <AlertCircle size={22} className="text-red-600" strokeWidth={2.5} />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-black text-red-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">

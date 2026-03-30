@@ -155,7 +155,7 @@ export default function AdminPage() {
     // Language State
     const [language, setLanguage] = useState<AdminLanguage>(() => {
         const saved = localStorage.getItem('admin_language');
-        return (saved as AdminLanguage) || 'ru';
+        return (saved as AdminLanguage) || 'es';
     });
 
     useEffect(() => {
@@ -462,7 +462,7 @@ export default function AdminPage() {
                                             : 'text-gray-400 hover:text-gray-600'
                                     }`}
                                 >
-                                    ES
+                                    ESP
                                 </button>
                             </div>
 

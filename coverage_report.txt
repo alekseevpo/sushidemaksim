@@ -1,0 +1,125 @@
+
+> sushi-bar-online@1.0.0 test:coverage
+> vitest run --coverage
+
+12:55:07 AM [vite] warning: `esbuild` option was specified by "vite:react-babel" plugin. This option is deprecated, please use `oxc` instead.
+12:55:07 AM [vite] warning: `optimizeDeps.esbuildOptions` option was specified by "vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+
+[1m[46m RUN [49m[22m [36mv4.1.2 [39m[90m/Users/ppmtrue/Documents/GitHub/sushidemaksim[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32m✓[39m src/hooks/useCart.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 106[2mms[22m[39m
+[90mstderr[2m | src/components/admin/AdminMenu.test.tsx[2m > [22m[2mAdminMenu (Integration)[2m > [22m[2mrenders the menu list
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/components/admin/AdminOrders.test.tsx[2m > [22m[2mAdminOrders (Integration)[2m > [22m[2mrenders the orders list
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/pages/PayForFriendPage.test.tsx[2m > [22m[2mPayForFriendPage (Integration)[2m > [22m[2mloads and displays order details
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/components/LoginModal.test.tsx[2m > [22m[2mLoginModal - General & Events[2m > [22m[2mopens on custom events
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32m✓[39m src/pages/PayForFriendPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 139[2mms[22m[39m
+[90mstderr[2m | src/pages/ContactsPage.test.tsx[2m > [22m[2mContactsPage (Security)[2m > [22m[2msubmits contact form
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32m✓[39m src/components/LoginModal.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[32m 278[2mms[22m[39m
+ [32m✓[39m src/pages/ContactsPage.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 298[2mms[22m[39m
+[90mstderr[2m | src/pages/MenuPageSimple.test.tsx[2m > [22m[2mMenuPageSimple (Integration)[2m > [22m[2mrenders the menu items
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32m✓[39m src/components/cart/CartItemList.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 602[2mms[22m[39m
+ [32m✓[39m src/components/admin/AdminMenu.test.tsx [2m([22m[2m5 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 601[2mms[22m[39m
+     [33m[2m✓[22m[39m opens modal to add a new item [33m 423[2mms[22m[39m
+[90mstderr[2m | src/pages/CartPageInvite.test.tsx[2m > [22m[2mCartPageSimple - Invitations (Integration)[2m > [22m[2mshows invitation button even for guests
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32m✓[39m src/pages/CartPageInvite.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 200[2mms[22m[39m
+ [32m✓[39m src/utils/formatters.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/hooks/useAuth.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+[90mstderr[2m | src/pages/CartPageSimple.test.tsx[2m > [22m[2mCartPageSimple (Integration)[2m > [22m[2mrenders the cart content
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstderr[2m | src/components/admin/AdminUsers.test.tsx[2m > [22m[2mAdminUsers (Integration)[2m > [22m[2mrenders the users list
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32m✓[39m src/pages/MenuPageSimple.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 643[2mms[22m[39m
+     [33m[2m✓[22m[39m searches for a dish [33m 376[2mms[22m[39m
+ [32m✓[39m src/components/admin/AdminUsers.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 67[2mms[22m[39m
+ [32m✓[39m src/pages/CartPageSimple.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+ [32m✓[39m src/components/admin/AdminOrders.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1411[2mms[22m[39m
+     [33m[2m✓[22m[39m filters by search ID [33m 1066[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+[2m      Tests [22m [1m[32m60 passed[39m[22m[2m | [22m[33m2 skipped[39m[90m (62)[39m
+[2m   Start at [22m 00:55:07
+[2m   Duration [22m 2.76s[2m (transform 1.43s, setup 2.39s, import 3.40s, tests 4.51s, environment 6.54s)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   48.91 |    38.16 |   46.83 |   49.83 |                   
+ analytics         |      72 |       75 |      60 |      72 |                   
+  tracker.ts       |      72 |       75 |      60 |      72 | 45,83-104         
+ components        |   40.93 |    28.06 |   49.35 |   41.58 |                   
+  AddressModal.tsx |   19.83 |     9.32 |   21.62 |   19.91 | ...88,495,573-812 
+  LoginModal.tsx   |   67.56 |    66.95 |   73.68 |   68.13 | ...60,676,740-759 
+  SEO.tsx          |     100 |    88.88 |     100 |     100 | 49                
+ components/admin  |   45.96 |    39.58 |   36.84 |      46 |                   
+  AdminMenu.tsx    |   37.31 |    47.41 |    37.5 |   37.98 | ...83,824,866-948 
+  AdminOrders.tsx  |   59.25 |    35.76 |   64.51 |   58.75 | ...60-715,919-924 
+  AdminUsers.tsx   |   46.72 |    36.76 |   20.37 |   46.15 | ...3-789,830-1052 
+ components/cart   |   38.68 |     35.8 |   29.03 |   39.23 |                   
+  ...EmptyView.tsx |       0 |        0 |       0 |       0 | 33-156            
+  CartItemList.tsx |   92.85 |    83.33 |   88.88 |     100 | 50                
+  ...ggestions.tsx |   33.33 |       20 |    9.09 |   35.71 | 36,43-48,63-123   
+  CartSummary.tsx  |   35.29 |    64.15 |   42.85 |   35.29 | 130-216,247       
+  DeliveryForm.tsx |      35 |    37.96 |   22.22 |   34.61 | ...10-466,521-794 
+  ...cessModal.tsx |       0 |        0 |       0 |       0 | 39-205            
+ components/menu   |   45.94 |    64.15 |   45.23 |   47.69 |                   
+  FlyToCart.tsx    |      75 |       50 |     100 |     100 | 19-66             
+  ...tegoryBar.tsx |   52.94 |     93.1 |      50 |   56.25 | 33-41,61,89,133   
+  MenuSearch.tsx   |      40 |     62.5 |    37.5 |   33.33 | 42-82,117         
+  ProductCard.tsx  |   28.57 |    44.82 |      20 |   36.36 | 50-146            
+  ProductGrid.tsx  |   66.66 |     82.6 |      75 |   69.23 | 40-52,65          
+  ShareModal.tsx   |   28.57 |    15.38 |      25 |   23.07 | 16-24,74-92       
+ ...ents/skeletons |      80 |      100 |      70 |      80 |                   
+  CartSkeleton.tsx |     100 |      100 |     100 |     100 |                   
+  ...cSkeleton.tsx |     100 |      100 |     100 |     100 |                   
+  MenuSkeleton.tsx |   66.66 |      100 |      50 |   66.66 | 54-82             
+ constants         |     100 |      100 |     100 |     100 |                   
+  menu.ts          |     100 |      100 |     100 |     100 |                   
+ hooks             |   66.22 |    35.21 |   69.23 |   66.66 |                   
+  useAuth.tsx      |   62.68 |    31.81 |    42.1 |   64.06 | ...71,176-178,227 
+  useCart.tsx      |   70.14 |    36.58 |   94.11 |      70 | ...34,173-187,252 
+  useScrollLock.ts |    64.7 |     37.5 |     100 |    64.7 | 13-18,26,35       
+ hooks/queries     |   61.78 |    55.44 |   56.92 |   62.64 |                   
+  useCartQuery.ts  |   73.33 |    57.64 |      80 |   75.47 | ...10,227-228,247 
+  useMenu.ts       |   40.54 |    42.85 |   30.76 |   42.85 | 43-45,57-82,87-91 
+  useUser.ts       |   44.11 |       50 |   29.41 |   42.42 | ...68,73-75,85-90 
+ pages             |   51.34 |    37.85 |      50 |    53.7 |                   
+  ...ageSimple.tsx |    37.5 |    26.35 |    30.9 |   40.39 | ...01-716,723-758 
+  ContactsPage.tsx |   86.11 |    70.37 |   93.33 |    87.5 | 120,137-138,151   
+  ...ageSimple.tsx |   59.83 |    57.35 |   55.55 |   60.86 | ...99,235-238,337 
+  ...riendPage.tsx |   86.66 |    58.33 |   72.72 |   88.37 | 71,152-159,232    
+ test              |     100 |      100 |     100 |     100 |                   
+  test-utils.tsx   |     100 |      100 |     100 |     100 |                   
+ utils             |   20.68 |     18.6 |   44.44 |   20.75 |                   
+  formatters.ts    |     100 |      100 |     100 |     100 |                   
+  haptics.ts       |      40 |       80 |     100 |      40 | 17-21             
+  images.ts        |   16.66 |    11.11 |     100 |    9.09 | 9-33              
+  storeStatus.ts   |    17.5 |       10 |   16.66 |   19.44 | 32-80             
+-------------------|---------|----------|---------|---------|-------------------

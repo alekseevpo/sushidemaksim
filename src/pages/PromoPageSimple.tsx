@@ -94,10 +94,10 @@ export default function PromoPageSimple() {
                 <div className="absolute inset-0 bg-black/60"></div>
                 <div className="max-w-4xl mx-auto text-center relative z-10 px-4">
                     <h1 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
-                        Promociones и предложения
+                        Promociones y Ofertas
                     </h1>
                     <p className="text-gray-200 text-base md:text-xl font-medium max-w-xl mx-auto">
-                        Ofertas especiales и эксклюзивные скидки
+                        Ofertas especiales y Descuentos exclusivos
                     </p>
                 </div>
             </section>

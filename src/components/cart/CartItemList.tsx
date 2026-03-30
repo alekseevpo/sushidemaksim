@@ -132,11 +132,8 @@ export default function CartItemList({
             <div className="p-4 bg-gray-50/50 border-t border-gray-100">
                 <div className="flex flex-col gap-4">
                     {/* Notice */}
-                    <div className="flex items-start gap-3 bg-red-50/30 p-3 rounded-xl border border-red-100/50">
-                        <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                            <span className="text-[10px]">✨</span>
-                        </div>
-                        <p className="text-[11px] font-bold text-red-900/80 leading-snug m-0">
+                    <div className="bg-red-50 p-4 rounded-xl border border-red-100 text-center">
+                        <p className="text-[12px] font-black text-red-600 leading-tight m-0 uppercase tracking-widest">
                             Salsa de soja, wasabi y jengibre están incluidos en su pedido.
                         </p>
                     </div>
@@ -144,11 +141,8 @@ export default function CartItemList({
                     {/* Chopsticks Question */}
                     <div className="flex items-center justify-between gap-4 py-1">
                         <div className="flex flex-col">
-                            <p className="text-[13px] font-black text-gray-900 m-0 uppercase tracking-widest">
-                                ¿Cuántos juegos de palillos añadir?
-                            </p>
-                            <p className="text-[10px] text-gray-400 font-medium m-0 opacity-60">
-                                Un juego por persona (Máximo 10)
+                            <p className="text-[10px] sm:text-[13px] font-black text-gray-900 m-0 uppercase tracking-wide sm:tracking-widest whitespace-nowrap">
+                                ¿Cuántos palillos le pongo?
                             </p>
                         </div>
 

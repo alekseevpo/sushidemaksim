@@ -1,5 +1,5 @@
 export const TrackSkeleton = () => (
-    <div className="min-h-screen bg-[#FDFBF7] pb-20">
+    <div className="min-h-screen bg-[#FBF7F0] pb-20">
         <div className="max-w-4xl mx-auto px-4 pt-10">
             {/* Back button skeleton */}
             <div className="h-4 w-20 skeleton rounded-lg mb-8" />

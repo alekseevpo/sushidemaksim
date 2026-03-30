@@ -69,7 +69,7 @@ export default function StoreStatusBanner() {
                     <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="w-8 h-8 rounded-xl bg-red-600/10 flex items-center justify-center shrink-0 border border-red-500/20 shadow-inner">
-                                <Clock size={16} className="text-red-500 animate-pulse" />
+                                <Clock size={16} className="text-red-500" />
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export default function StoreStatusBanner() {
                                 </div>
                             )}
 
-                            <div className="flex-1 md:flex-none flex items-center gap-2.5 bg-white/5 backdrop-blur-md rounded-xl px-3 py-1.5 border border-white/10">
+                            <div className="flex-1 md:flex-none flex items-center gap-2.5 bg-white/10 rounded-xl px-3 py-1.5 border border-white/10">
                                 <Info size={12} className="text-amber-400 shrink-0" />
                                 <div className="flex flex-col justify-center">
                                     <p className="text-[9px] md:text-[11px] text-gray-200 font-medium leading-tight">

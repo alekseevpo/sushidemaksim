@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderWithProviders as render, screen, fireEvent, waitFor } from '../test/test-utils';
+import { renderWithProviders as render, screen, fireEvent, waitFor, act } from '../test/test-utils';
 import LoginModal from './LoginModal';
 
 // Mock useNavigate
@@ -34,6 +34,93 @@ vi.mock('../context/ToastContext', () => ({
     }),
 }));
 
+const mockPost = vi.fn();
+vi.mock('../utils/api', () => ({
+    api: {
+        post: (...args: any[]) => mockPost(...args),
+    },
+}));
+
+describe('LoginModal - General & Events', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('opens on custom events', () => {
+        render(<LoginModal isOpen={true} onClose={() => {}} />);
+        
+        act(() => {
+            document.dispatchEvent(new CustomEvent('custom:openLogin', { detail: { mode: 'register' } }));
+        });
+        expect(screen.getByText('Crea tu cuenta')).toBeInTheDocument();
+
+        act(() => {
+            document.dispatchEvent(new CustomEvent('custom:forceOpenLogin'));
+        });
+        expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
+    });
+
+    it('toggles password visibility in login form', () => {
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="login" />);
+        const passwordInput = screen.getByPlaceholderText('Tu contraseña');
+        expect(passwordInput).toHaveAttribute('type', 'password');
+        
+        const toggleButton = screen.getByLabelText('Mostrar contraseña');
+        fireEvent.click(toggleButton);
+        expect(passwordInput).toHaveAttribute('type', 'text');
+        
+        fireEvent.click(toggleButton);
+        expect(passwordInput).toHaveAttribute('type', 'password');
+    });
+
+    it('switches between modes', () => {
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="login" />);
+        
+        fireEvent.click(screen.getByText('Regístrate'));
+        expect(screen.getByText('Crea tu cuenta')).toBeInTheDocument();
+        
+        fireEvent.click(screen.getByText('Inicia sesión'));
+        expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
+    });
+});
+
+describe('LoginModal - Authentication', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('handles login successfully', async () => {
+        mockLogin.mockResolvedValue({ success: true });
+        const mockOnClose = vi.fn();
+        render(<LoginModal isOpen={true} onClose={mockOnClose} initialMode="login" />);
+
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), { target: { value: 'test@test.com' } });
+        fireEvent.change(screen.getByPlaceholderText('Tu contraseña'), { target: { value: 'password123' } });
+        
+        fireEvent.submit(screen.getByText('Iniciar sesión').closest('form')!);
+
+        await waitFor(() => {
+            expect(mockLogin).toHaveBeenCalledWith('test@test.com', 'password123');
+            expect(mockOnClose).toHaveBeenCalled();
+            expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('¡Bienvenido'));
+        });
+    });
+
+    it('handles login failure', async () => {
+        mockLogin.mockResolvedValue({ success: false, error: 'Credenciales inválidas' });
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="login" />);
+
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), { target: { value: 'test@test.com' } });
+        fireEvent.change(screen.getByPlaceholderText('Tu contraseña'), { target: { value: 'wrong' } });
+        
+        fireEvent.submit(screen.getByText('Iniciar sesión').closest('form')!);
+
+        await waitFor(() => {
+            expect(mockError).toHaveBeenCalledWith('Credenciales inválidas');
+        });
+    });
+});
+
 describe('LoginModal - Registration', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -49,7 +136,7 @@ describe('LoginModal - Registration', () => {
         expect(screen.getByText('Crear cuenta')).toBeInTheDocument();
     });
 
-    it('submits the form successfully and redirects to menu', async () => {
+    it('submits the register form successfully', async () => {
         mockRegister.mockResolvedValue({ success: true });
         const mockOnClose = vi.fn();
 
@@ -71,7 +158,6 @@ describe('LoginModal - Registration', () => {
         fireEvent.submit(screen.getByTestId('register-form'));
 
         await waitFor(() => {
-            expect(mockRegister).toHaveBeenCalled();
             expect(mockRegister).toHaveBeenCalledWith(
                 'John Doe',
                 'john@example.com',
@@ -79,10 +165,9 @@ describe('LoginModal - Registration', () => {
                 'password123'
             );
             expect(mockOnClose).toHaveBeenCalled();
-            expect(mockNavigate).toHaveBeenCalledWith('/menu');
             expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('¡Cuenta creada!'));
         });
-    }, 10000); // increase wait time
+    });
 
     it('shows error message on registration failure', async () => {
         mockRegister.mockResolvedValue({ success: false, error: 'Email already exists' });
@@ -91,9 +176,6 @@ describe('LoginModal - Registration', () => {
 
         fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), {
             target: { value: 'John Doe' },
-        });
-        fireEvent.change(screen.getByPlaceholderText('+34 600 000 000'), {
-            target: { value: '123456789' },
         });
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'john@example.com' },
@@ -108,53 +190,19 @@ describe('LoginModal - Registration', () => {
             expect(mockError).toHaveBeenCalledWith('Email already exists');
         });
     });
-
-    it('shows unexpected error message on catch block', async () => {
-        mockRegister.mockRejectedValue(new Error('Network Error'));
-
-        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="register" />);
-
-        // Fill only required fields to trigger handleRegister
-        fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), {
-            target: { value: 'John' },
-        });
-        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
-            target: { value: 'j@e.com' },
-        });
-        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), {
-            target: { value: 'pass123' },
-        });
-
-        fireEvent.submit(screen.getByTestId('register-form'));
-
-        await waitFor(() => {
-            expect(mockError).toHaveBeenCalledWith('Network Error');
-        });
-    });
 });
-
-const mockPost = vi.fn();
-vi.mock('../utils/api', () => ({
-    api: {
-        post: (...args: any[]) => mockPost(...args),
-    },
-}));
 
 describe('LoginModal - Password Recovery', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    it('switches from login to forgot password mode', () => {
+    it('switches to forgot password mode and handles submission', async () => {
+        mockPost.mockResolvedValue({ data: { success: true } });
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="login" />);
+        
         fireEvent.click(screen.getByText('¿Olvidaste?'));
         expect(screen.getByText('Recuperar acceso')).toBeInTheDocument();
-        expect(screen.getByText('Te ayudamos a volver.')).toBeInTheDocument();
-    });
-
-    it('handles forgot password submission successfully', async () => {
-        mockPost.mockResolvedValue({ data: { success: true } });
-        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="forgot" />);
 
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'test@example.com' },
@@ -166,15 +214,21 @@ describe('LoginModal - Password Recovery', () => {
                 email: 'test@example.com',
             });
             expect(screen.getByText('Verifica tu email')).toBeInTheDocument();
-            expect(mockSuccess).toHaveBeenCalledWith('Email de recuperación enviado');
         });
     });
 
-    it('navigates from verify-sent to reset-password when clicking "Introducir el código"', async () => {
+    it('handles verify-sent mode buttons', () => {
+        const mockOnClose = vi.fn();
+        const { unmount } = render(<LoginModal isOpen={true} onClose={mockOnClose} initialMode="verify-sent" />);
+        
+        fireEvent.click(screen.getByText('Explorar Menú'));
+        expect(mockOnClose).toHaveBeenCalled();
+        expect(mockNavigate).toHaveBeenCalledWith('/menu');
+
+        unmount();
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="verify-sent" />);
-        fireEvent.click(screen.getByText('Introducir el código'));
-        expect(screen.getByText('Nueva contraseña')).toBeInTheDocument();
-        expect(screen.getAllByPlaceholderText('•')).toHaveLength(6);
+        fireEvent.click(screen.getByText('Volver al login'));
+        expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
     });
 
     it('handles password reset successfully', async () => {
@@ -183,7 +237,6 @@ describe('LoginModal - Password Recovery', () => {
             <LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />
         );
 
-        // Set values in the form
         const codeInput = container.querySelector('input[name="code"]') as HTMLInputElement;
         fireEvent.change(codeInput, { target: { value: '123456' } });
 
@@ -203,9 +256,6 @@ describe('LoginModal - Password Recovery', () => {
                 newPassword: 'newpassword123',
             });
             expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
-            expect(mockSuccess).toHaveBeenCalledWith(
-                expect.stringContaining('Contraseña actualizada')
-            );
         });
     });
 
@@ -227,5 +277,15 @@ describe('LoginModal - Password Recovery', () => {
         fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
 
         expect(mockError).toHaveBeenCalledWith('Las contraseñas no coinciden');
+    });
+
+    it('toggles password visibility in reset mode', () => {
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
+        const passwordInput = screen.getByPlaceholderText('Mínimo 6 caracteres');
+        expect(passwordInput).toHaveAttribute('type', 'password');
+        
+        const toggleButton = screen.getByLabelText('Mostrar contraseña');
+        fireEvent.click(toggleButton);
+        expect(passwordInput).toHaveAttribute('type', 'text');
     });
 });

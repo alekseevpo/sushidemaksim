@@ -61,6 +61,7 @@ const LoginForm = memo(
                             type="button"
                             onClick={onSwitchForgot}
                             className="text-[10px] font-bold text-red-600 hover:text-red-700 transition"
+                            aria-label="Olvidé mi contraseña"
                         >
                             ¿Olvidaste?
                         </button>
@@ -83,6 +84,7 @@ const LoginForm = memo(
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition bg-transparent border-none p-0"
+                            aria-label="Mostrar contraseña"
                         >
                             {showPassword ? (
                                 <EyeOff size={16} strokeWidth={1.5} />
@@ -211,6 +213,7 @@ const RegisterForm = memo(
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition bg-transparent border-none p-0"
+                            aria-label="Mostrar contraseña"
                         >
                             {showPassword ? (
                                 <EyeOff size={16} strokeWidth={1.5} />
@@ -455,6 +458,7 @@ const ResetPasswordForm = memo(
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition bg-transparent border-none p-0"
+                            aria-label="Mostrar contraseña"
                         >
                             {showPassword ? (
                                 <EyeOff size={16} strokeWidth={1.5} />

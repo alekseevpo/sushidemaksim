@@ -39,7 +39,7 @@ export const CartSkeleton = () => (
                 {/* Summary Skeleton */}
                 <div className="flex flex-col gap-8">
                     {/* Suggestions placeholder */}
-                    <div className="bg-white rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-6 hidden md:block border border-gray-100">
+                    <div className="bg-white/60 backdrop-blur-md rounded-[24px] shadow-xl shadow-gray-900/5 p-4 md:p-6 border border-white/50">
                         <div className="h-6 w-32 skeleton rounded-lg mb-4" />
                         <div className="space-y-4">
                             {[1, 2].map(i => (

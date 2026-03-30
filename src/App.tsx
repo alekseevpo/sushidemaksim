@@ -57,6 +57,7 @@ const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 const WaiterOrderPage = lazyRetry(() => import('./pages/WaiterOrderPage'));
+const NotFoundPage = lazyRetry(() => import('./pages/NotFoundPage'));
 
 // Page Wrapper for consistent transitions
 const PageWrapper = ({
@@ -110,7 +111,7 @@ function App() {
                 <AuthProvider>
                     <CartProvider>
                         <PageTracker />
-                        <div className="min-h-[100dvh] bg-[#FDFBF7] flex flex-col">
+                        <div className="min-h-[100dvh] bg-[#FBF7F0] flex flex-col">
                             <Analytics />
                             <SpeedInsights />
                             <SmoothScroll />
@@ -242,6 +243,14 @@ function App() {
                                             element={
                                                 <PageWrapper skeleton={<GenericSkeleton />}>
                                                     <WaiterOrderPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path="*"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <NotFoundPage />
                                                 </PageWrapper>
                                             }
                                         />

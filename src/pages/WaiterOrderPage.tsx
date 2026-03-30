@@ -39,7 +39,7 @@ export default function WaiterOrderPage() {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
+            <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center">
                 <Loader2 className="animate-spin text-red-600" size={32} />
             </div>
         );
@@ -107,7 +107,7 @@ export default function WaiterOrderPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FDFBF7] pb-24">
+        <div className="min-h-screen bg-[#FBF7F0] pb-24">
             <SEO title="Panel de Camarero" description="Gestión rápida de pedidos en sala" />
 
             {/* Minimal Sticky Header */}
