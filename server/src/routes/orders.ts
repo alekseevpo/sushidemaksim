@@ -287,7 +287,7 @@ router.post(
         if (deliveryFee > 0) {
             orderItemsToInsert.push({
                 order_id: order.id,
-                menu_item_id: null, // Virtual ID for delivery
+                menu_item_id: -1, // Virtual ID for delivery
                 name: 'Gastos de Envío',
                 quantity: 1,
                 price_at_time: deliveryFee,
@@ -309,7 +309,7 @@ router.post(
         // Return order with items
         const { data: fullOrder } = await supabase
             .from('orders')
-            .select('*, order_items(*)')
+            .select('*, users(email, name), order_items(*)')
             .eq('id', order.id)
             .single();
 
@@ -642,7 +642,7 @@ router.post(
         if (deliveryFee > 0) {
             itemsToInsert.push({
                 order_id: order.id,
-                menu_item_id: null,
+                menu_item_id: -1,
                 name: 'Gastos de Envío',
                 quantity: 1,
                 price_at_time: deliveryFee,

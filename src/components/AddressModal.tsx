@@ -31,11 +31,11 @@ const SushiRestaurantIcon = L.divIcon({
         <div class="relative flex flex-col-reverse items-center group">
             <div class="filter drop-shadow-lg transform transition-transform group-hover:scale-110">
                 <svg width="40" height="50" viewBox="0 0 40 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 0C8.954 0 0 8.954 0 20C0 35 20 50 20 50C20 50 40 35 40 20C40 8.954 31.046 0 20 0ZM20 28C15.582 28 12 24.418 12 20C12 15.582 15.582 12 20 12C24.418 12 28 15.582 28 20C28 24.418 24.418 28 20 28Z" fill="#DC2626"/>
+                    <path d="M20 0C8.954 0 0 8.954 0 20C0 35 20 50 20 50C20 50 40 35 40 20C40 8.954 31.046 0 20 0ZM20 28C15.582 28 12 24.418 12 20C12 15.582 15.582 12 20 12C24.418 12 28 15.582 28 20C28 24.418 24.418 28 20 28Z" fill="#F26522"/>
                     <circle cx="20" cy="20" r="6" fill="white" />
                 </svg>
             </div>
-            <div class="mb-1.5 px-3 py-1.5 bg-red-600 text-white text-[10px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
+            <div class="mb-1.5 px-3 py-1.5 bg-orange-600 text-white text-[10px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
                 ¡Estamos aquí!
             </div>
         </div>
@@ -463,7 +463,7 @@ export default function AddressModal({
                         <div className="hidden md:flex px-6 py-4 justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
                             <div>
                                 <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
-                                    <MapPin size={18} className="text-red-500" />
+                                    <MapPin size={18} className="text-orange-500" />
                                     ¿Dónde entregamos?
                                 </h2>
                                 <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-1">
@@ -574,7 +574,7 @@ export default function AddressModal({
                                             exit={{ opacity: 0 }}
                                             className="absolute inset-0 z-[2000] bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
                                         >
-                                            <div className="w-16 h-16 bg-red-600 rounded-2xl shadow-xl flex items-center justify-center mb-4 animate-bounce">
+                                            <div className="w-16 h-16 bg-orange-600 rounded-2xl shadow-xl flex items-center justify-center mb-4 animate-bounce">
                                                 <MapPin size={24} className="text-white" />
                                             </div>
                                             <h4 className="text-sm font-black text-gray-900 mb-1">
@@ -590,7 +590,7 @@ export default function AddressModal({
                                 {/* Search Overlay */}
                                 <div className="absolute top-4 left-6 right-16 md:top-4 md:left-4 md:right-4 z-[1000] space-y-2">
                                     <div className="relative group">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500 transition">
                                             {isSearching ? (
                                                 <Loader2 size={18} className="animate-spin" />
                                             ) : (
@@ -605,7 +605,7 @@ export default function AddressModal({
                                             placeholder="Introduce tu calle y número..."
                                             autoComplete="off"
                                             spellCheck={false}
-                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-red-500/20 transition-all placeholder:text-gray-400"
+                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
                                         />
                                         <AnimatePresence>
                                             {(searchResults.length > 0 ||
@@ -676,7 +676,7 @@ export default function AddressModal({
                                                                 onClick={() =>
                                                                     selectResult(res, searchQuery)
                                                                 }
-                                                                className="w-full px-5 py-4 text-left hover:bg-red-50 transition flex items-start gap-3"
+                                                                className="w-full px-5 py-4 text-left hover:bg-orange-50 transition flex items-start gap-3"
                                                             >
                                                                 <MapPin
                                                                     size={16}
@@ -736,7 +736,7 @@ export default function AddressModal({
                                                 type="text"
                                                 value={house}
                                                 onChange={e => setHouse(e.target.value)}
-                                                className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-red-500/10 transition-all placeholder:text-gray-400"
+                                                className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
                                                 placeholder="Ej: 20"
                                             />
                                             {!house && address && (
@@ -747,12 +747,12 @@ export default function AddressModal({
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
-                                                Piso / Puerta *
+                                                Piso / Puerta
                                             </label>
                                             <input
                                                 value={apartment}
                                                 onChange={e => setApartment(e.target.value)}
-                                                className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-red-500/10 transition outline-none"
+                                                className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-orange-500/10 transition outline-none"
                                                 placeholder="Ej: 1B"
                                             />
                                         </div>
@@ -853,14 +853,14 @@ export default function AddressModal({
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-3 py-2 px-1 animate-in shake duration-500">
-                                                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0">
-                                                    <Info className="text-red-500" size={18} />
+                                                <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
+                                                    <Info className="text-orange-500" size={18} />
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-black text-red-900 tracking-tight">
+                                                    <p className="text-sm font-black text-orange-900 tracking-tight">
                                                         Zona no cubierta
                                                     </p>
-                                                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-tighter">
+                                                    <p className="text-[10px] font-bold text-orange-400 uppercase tracking-tighter">
                                                         Prueba con otra dirección o número
                                                     </p>
                                                 </div>
@@ -877,11 +877,10 @@ export default function AddressModal({
                                         disabled={
                                             !address ||
                                             !house ||
-                                            !apartment ||
                                             !selectedZone ||
                                             isReverseGeocoding
                                         }
-                                        className="w-full py-3.5 bg-red-600 text-white rounded-[20px] font-black text-base flex items-center justify-center gap-3 hover:bg-red-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-[0_15px_30px_-10px_rgba(220,38,38,0.3)]"
+                                        className="w-full py-3.5 bg-orange-600 text-white rounded-[20px] font-black text-base flex items-center justify-center gap-3 hover:bg-orange-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-[0_15px_30px_-10px_rgba(242,101,34,0.3)]"
                                     >
                                         {isReverseGeocoding ? (
                                             <span className="flex items-center gap-2">

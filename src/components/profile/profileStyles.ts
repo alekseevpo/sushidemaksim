@@ -21,7 +21,7 @@ export const inputStyle: React.CSSProperties = {
 };
 
 export function handleInputFocus(e: React.FocusEvent<HTMLInputElement>) {
-    e.target.style.borderColor = '#DC2626';
+    e.target.style.borderColor = '#F26522';
     e.target.style.backgroundColor = 'white';
 }
 

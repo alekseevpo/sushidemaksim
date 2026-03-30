@@ -48,7 +48,7 @@ export default function RegistrationPrompt() {
                     className="relative bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl"
                 >
                     {/* Top Accent */}
-                    <div className="h-2 bg-gradient-to-r from-red-500 via-red-600 to-red-700" />
+                    <div className="h-2 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700" />
 
                     <button
                         onClick={() => setIsVisible(false)}
@@ -58,13 +58,13 @@ export default function RegistrationPrompt() {
                     </button>
 
                     <div className="p-8 text-center">
-                        <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
-                            <Gift size={40} className="text-red-600" />
+                        <div className="w-20 h-20 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
+                            <Gift size={40} className="text-orange-600" />
                         </div>
 
                         <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
                             ¡Regístrate y recibe un{' '}
-                            <span className="text-red-600">10% de descuento</span>!
+                            <span className="text-orange-600">10% de descuento</span>!
                         </h3>
 
                         <p className="text-gray-500 mb-8 font-medium">
@@ -83,7 +83,7 @@ export default function RegistrationPrompt() {
                                         })
                                     );
                                 }}
-                                className="w-full flex items-center justify-center gap-3 bg-red-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-red-200 border-none cursor-pointer hover:bg-red-700 transition-all no-underline"
+                                className="w-full flex items-center justify-center gap-3 bg-orange-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-orange-200 border-none cursor-pointer hover:bg-orange-700 transition-all no-underline"
                             >
                                 <Mail size={20} />
                                 REGISTRARME AHORA
@@ -98,7 +98,7 @@ export default function RegistrationPrompt() {
                         </div>
 
                         <div className="mt-8 pt-8 border-t border-gray-50 flex items-center justify-center gap-2 text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                            <ArrowRight size={12} className="text-red-500" />
+                            <ArrowRight size={12} className="text-orange-500" />
                             Válido por 24 horas tras el registro
                         </div>
                     </div>

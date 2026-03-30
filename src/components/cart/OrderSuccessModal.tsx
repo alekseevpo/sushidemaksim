@@ -46,7 +46,7 @@ export default function OrderSuccessModal({
                     className="bg-white rounded-[32px] md:rounded-[40px] shadow-2xl p-4 md:p-10 max-w-md w-full text-center relative overflow-hidden border border-white my-auto pb-6"
                 >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
 
                     <div className="w-16 h-16 bg-green-50 rounded-[20px] flex items-center justify-center mx-auto mb-2 relative shadow-inner border-2 border-white">
                         <CheckCircle size={32} strokeWidth={1.5} className="text-green-600" />
@@ -77,7 +77,7 @@ export default function OrderSuccessModal({
                         {/* THE RED BUTTON FIRST AT TOP */}
                         <Link
                             to={`/track/${orderId}?phone=${encodeURIComponent(phone || user?.phone || '')}`}
-                            className="bg-red-600 text-white px-8 py-3.5 rounded-2xl font-black text-[14px] no-underline text-center hover:bg-red-700 transition-all shadow-lg shadow-red-100 transform active:scale-95 flex items-center justify-center gap-2"
+                            className="bg-orange-600 text-white px-8 py-3.5 rounded-2xl font-black text-[14px] no-underline text-center hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 transform active:scale-95 flex items-center justify-center gap-2"
                         >
                             Seguir mi pedido 🛵
                         </Link>
@@ -93,7 +93,7 @@ export default function OrderSuccessModal({
                             <div className="space-y-3.5 mb-6">
                                 {/* Address Row */}
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white/10 rounded-xl text-red-500 shrink-0">
+                                    <div className="p-2 bg-white/10 rounded-xl text-orange-500 shrink-0">
                                         {deliveryType === 'pickup' ? (
                                             <Store size={16} />
                                         ) : deliveryType === 'reservation' ? (
@@ -173,7 +173,7 @@ export default function OrderSuccessModal({
                                         {(total + (deliveryCost > 0 ? deliveryCost : 0))
                                             .toFixed(2)
                                             .replace('.', ',')}
-                                        <span className="text-xs text-red-500 ml-1">€</span>
+                                        <span className="text-xs text-orange-500 ml-1">€</span>
                                     </div>
                                 </div>
                             </div>

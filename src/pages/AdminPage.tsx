@@ -336,7 +336,7 @@ export default function AdminPage() {
                     <button
                         onClick={() => navigate('/')}
                         style={{
-                            backgroundColor: '#DC2626',
+                            backgroundColor: '#F26522',
                             color: 'white',
                             padding: '12px 32px',
                             borderRadius: '10px',
@@ -387,14 +387,14 @@ export default function AdminPage() {
                                 className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold text-sm transition-all relative group
                                     ${
                                         isActive
-                                            ? 'text-red-700 bg-red-50/50'
+                                            ? 'text-orange-700 bg-orange-50/50'
                                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 {isActive && (
                                     <motion.div
                                         layoutId="admin-nav-active"
-                                        className="absolute inset-0 bg-red-50 rounded-xl"
+                                        className="absolute inset-0 bg-orange-50 rounded-xl"
                                         transition={{
                                             type: 'spring',
                                             bounce: 0.2,
@@ -406,13 +406,13 @@ export default function AdminPage() {
                                     <Icon
                                         size={20}
                                         strokeWidth={isActive ? 2.5 : 2}
-                                        className={`shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-red-600' : 'text-gray-400'}`}
+                                        className={`shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-orange-600' : 'text-gray-400'}`}
                                     />
                                     <span className="flex-1 text-left leading-[1.2] py-0.5">
                                         {tab.label}
                                     </span>
                                     {(tab as any).badge && (
-                                        <span className="ml-auto bg-red-600 text-white text-[10px] h-5 w-5 flex items-center justify-center rounded-full font-bold animate-pulse shadow-sm border border-white">
+                                        <span className="ml-auto bg-orange-600 text-white text-[10px] h-5 w-5 flex items-center justify-center rounded-full font-bold animate-pulse shadow-sm border border-white">
                                             {(tab as any).badge}
                                         </span>
                                     )}
@@ -438,7 +438,7 @@ export default function AdminPage() {
                     {/* Top Bar */}
                     <div className="flex justify-between items-center mb-10 pb-4 border-b border-gray-100">
                         <h1 className="text-2xl font-black text-gray-900 flex items-center gap-3 group">
-                            <div className="w-2 h-8 bg-red-600 rounded-full group-hover:h-10 transition-all duration-300" />
+                            <div className="w-2 h-8 bg-orange-600 rounded-full group-hover:h-10 transition-all duration-300" />
                             {navLinks.find(t_link => t_link.id === activeTab)?.label}
                         </h1>
                         <div className="flex items-center gap-2 md:gap-4">
@@ -448,7 +448,7 @@ export default function AdminPage() {
                                     onClick={() => setLanguage('ru')}
                                     className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
                                         language === 'ru'
-                                            ? 'bg-white text-red-600 shadow-md transform scale-105'
+                                            ? 'bg-white text-orange-600 shadow-md transform scale-105'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }`}
                                 >
@@ -458,7 +458,7 @@ export default function AdminPage() {
                                     onClick={() => setLanguage('es')}
                                     className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
                                         language === 'es'
-                                            ? 'bg-white text-red-600 shadow-md transform scale-105'
+                                            ? 'bg-white text-orange-600 shadow-md transform scale-105'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }`}
                                 >
@@ -556,7 +556,10 @@ export default function AdminPage() {
                     <footer className="mt-auto py-10 border-t border-gray-100">
                         <p className="text-gray-400 text-[10px] md:text-[11px] font-bold flex items-center justify-center gap-2 flex-wrap text-center uppercase tracking-widest">
                             {t.ui.developedBy}{' '}
-                            <Heart size={14} className="text-red-500 fill-current animate-pulse" />{' '}
+                            <Heart
+                                size={14}
+                                className="text-orange-500 fill-current animate-pulse"
+                            />{' '}
                             {t.ui.by}{' '}
                             <span className="text-gray-700 font-black">
                                 SelenIT / alekseevpo@gmail.com

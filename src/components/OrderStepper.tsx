@@ -59,7 +59,7 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
             {/* Connection Lines */}
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -translate-y-1/2 z-0 hidden md:block" />
             <div
-                className="absolute top-1/2 left-0 h-1 bg-red-600 -translate-y-1/2 z-0 transition-all duration-1000 hidden md:block"
+                className="absolute top-1/2 left-0 h-1 bg-orange-600 -translate-y-1/2 z-0 transition-all duration-1000 hidden md:block"
                 style={{ width: `${(normalizedIdx / (STEPS.length - 1)) * 100}%` }}
             />
 
@@ -73,7 +73,7 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                         <div
                             key={idx}
                             className={`flex flex-row md:flex-col items-center gap-3 md:gap-3 flex-1 p-2 rounded-2xl transition-all duration-500 ${
-                                isCurrent ? 'bg-red-50/50 border border-red-100/50' : ''
+                                isCurrent ? 'bg-orange-50/50 border border-orange-100/50' : ''
                             }`}
                         >
                             <motion.div
@@ -81,9 +81,9 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                                 transition={isCurrent ? { repeat: Infinity, duration: 2 } : {}}
                                 className={`w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm transition-colors border ${
                                     isCurrent
-                                        ? 'bg-red-600 text-white border-red-400'
+                                        ? 'bg-orange-600 text-white border-orange-400'
                                         : isActive
-                                          ? 'bg-red-50 text-red-600 border-red-100'
+                                          ? 'bg-orange-50 text-orange-600 border-orange-100'
                                           : 'bg-white text-gray-200 border-gray-100'
                                 }`}
                             >
@@ -106,7 +106,7 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                                     {step.label}
                                 </span>
                                 {isCurrent && (
-                                    <span className="text-[9px] font-black text-red-600 animate-pulse bg-red-100 px-2 py-0.5 rounded-full md:mt-1">
+                                    <span className="text-[9px] font-black text-orange-600 animate-pulse bg-orange-100 px-2 py-0.5 rounded-full md:mt-1">
                                         Ahora
                                     </span>
                                 )}

@@ -259,7 +259,11 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
-                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <RefreshCw
+                    className="animate-spin text-orange-600 mb-6"
+                    size={48}
+                    strokeWidth={2}
+                />
                 <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
                     {t.loading}
                 </p>
@@ -274,7 +278,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     {t.title}
                 </h2>
                 <div className="flex gap-2">
-                    <span className="px-5 py-2.5 bg-red-50 text-red-600 rounded-full text-[10px] font-black border border-red-100 uppercase tracking-widest shadow-sm">
+                    <span className="px-5 py-2.5 bg-orange-50 text-orange-600 rounded-full text-[10px] font-black border border-orange-100 uppercase tracking-widest shadow-sm">
                         {t.period}
                     </span>
                 </div>
@@ -313,7 +317,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         key={i}
                         className="bg-white p-6 rounded-[28px] border border-gray-100 shadow-sm hover:shadow-md transition-all group"
                     >
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 group-hover:text-red-500 transition-colors">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 group-hover:text-orange-500 transition-colors">
                             {stat.label}
                         </p>
                         <div className="flex items-end gap-2 mb-1">
@@ -472,7 +476,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 {/* Category Performance */}
                 <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 flex flex-col">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
-                        <div className="p-2 bg-red-50 text-red-600 rounded-xl">
+                        <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
                             <Activity size={18} strokeWidth={2.5} />
                         </div>
                         {t.categoryPerformance.title}
@@ -689,7 +693,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
-                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-red-500 transition-colors tracking-widest">
+                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
                                     {t.promoEffectiveness.totalSavings}
                                 </p>
                                 <p className="text-xl font-black text-gray-900 tabular-nums">
@@ -697,7 +701,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                 </p>
                             </div>
                             <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
-                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-red-500 transition-colors tracking-widest">
+                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
                                     {t.promoEffectiveness.avgDiscount}
                                 </p>
                                 <p className="text-xl font-black text-gray-900 tabular-nums">
@@ -727,13 +731,13 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                             <div key={idx} className="flex flex-col gap-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
                                     <span className="text-gray-800">{area.name}</span>
-                                    <span className="text-red-600">
+                                    <span className="text-orange-600">
                                         {area.count} ped. / {area.revenue}€
                                     </span>
                                 </div>
                                 <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden shadow-inner p-0.5">
                                     <div
-                                        className="bg-red-600 h-full rounded-full transition-all duration-[1500ms] shadow-lg"
+                                        className="bg-orange-600 h-full rounded-full transition-all duration-[1500ms] shadow-lg"
                                         style={{
                                             width: `${Math.min(100, (area.revenue / (stats?.areaStats?.[0]?.revenue || 1)) * 100)}%`,
                                         }}
@@ -756,8 +760,8 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 {/* Top Favorited */}
                 <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
-                        <div className="p-2 bg-red-50 text-red-600 rounded-xl">
-                            <Heart size={18} strokeWidth={2.5} className="fill-red-600" />
+                        <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
+                            <Heart size={18} strokeWidth={2.5} className="fill-orange-600" />
                         </div>
                         {t.topFavorited.title}
                     </h3>
@@ -766,10 +770,10 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                             stats.topFavorited.map((item: any, idx: number) => (
                                 <div
                                     key={idx}
-                                    className="flex items-center justify-between group p-3 hover:bg-red-50 rounded-2xl transition-all"
+                                    className="flex items-center justify-between group p-3 hover:bg-orange-50 rounded-2xl transition-all"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center text-[10px] font-black shadow-md shadow-red-100">
+                                        <div className="w-6 h-6 rounded-lg bg-orange-600 text-white flex items-center justify-center text-[10px] font-black shadow-md shadow-orange-100">
                                             {idx + 1}
                                         </div>
                                         <span className="text-xs font-black text-gray-900 uppercase tracking-tight truncate max-w-[200px]">
@@ -780,7 +784,10 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                         <span className="text-sm font-black text-gray-900 tabular-nums">
                                             {item.count}
                                         </span>
-                                        <Heart size={12} className="text-red-400 fill-red-400" />
+                                        <Heart
+                                            size={12}
+                                            className="text-orange-400 fill-orange-400"
+                                        />
                                     </div>
                                 </div>
                             ))
@@ -790,18 +797,18 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                             </p>
                         )}
                     </div>
-                    <div className="mt-8 p-6 bg-red-50/50 rounded-[28px] border border-red-100/50">
-                        <p className="text-[10px] font-black text-red-800 uppercase tracking-widest mb-2">
+                    <div className="mt-8 p-6 bg-orange-50/50 rounded-[28px] border border-orange-100/50">
+                        <p className="text-[10px] font-black text-orange-800 uppercase tracking-widest mb-2">
                             {t.topFavorited.label}
                         </p>
-                        <p className="text-[11px] font-bold text-red-600/80 leading-relaxed mb-4 uppercase tracking-tight">
+                        <p className="text-[11px] font-bold text-orange-600/80 leading-relaxed mb-4 uppercase tracking-tight">
                             {t.topFavorited.text}
                         </p>
-                        <p className="text-[10px] font-black text-red-900 uppercase tracking-widest flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />{' '}
+                        <p className="text-[10px] font-black text-orange-900 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse" />{' '}
                             {t.topFavorited.tip}
                         </p>
-                        <p className="text-[11px] font-bold text-red-900/80 leading-relaxed uppercase tracking-tight mt-1">
+                        <p className="text-[11px] font-bold text-orange-900/80 leading-relaxed uppercase tracking-tight mt-1">
                             {t.topFavorited.tipText}
                         </p>
                     </div>
@@ -1003,7 +1010,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {/* Matrix Rows */}
                         {t.heatmap.days.map((day, dayIdx) => (
                             <div key={day} className="flex items-center mb-2 group">
-                                <div className="w-20 text-[10px] font-black text-gray-400 pr-6 text-right uppercase tracking-widest group-hover:text-red-600 transition-colors">
+                                <div className="w-20 text-[10px] font-black text-gray-400 pr-6 text-right uppercase tracking-widest group-hover:text-orange-600 transition-colors">
                                     {day}
                                 </div>
                                 <div className="flex-1 flex gap-1 h-10">

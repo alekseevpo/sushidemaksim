@@ -168,7 +168,7 @@ export default function Header() {
             >
                 <StoreStatusBanner />
                 <div className="max-w-7xl mx-auto px-4 md:px-6">
-                    <div className="flex md:grid md:grid-cols-3 items-center justify-between h-16 md:h-18">
+                    <div className="flex md:grid md:grid-cols-3 items-center justify-between h-16 md:h-20">
                         {/* Logo Container */}
                         <div className="flex-1 flex justify-start items-center h-full">
                             <Link
@@ -181,12 +181,12 @@ export default function Header() {
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                     }
                                 }}
-                                className="flex items-center no-underline gap-0 group"
+                                className="flex items-center no-underline gap-0 group h-full"
                             >
                                 <div
                                     className={`
                                         transition-all duration-500 shrink-0 flex items-center justify-center
-                                        md:bg-red-600 md:h-20 md:w-[220px] md:group-hover:rotate-6
+                                        md:bg-orange-600 md:h-full md:w-[220px] md:group-hover:rotate-6
                                         bg-transparent h-16 w-auto px-1
                                     `}
                                 >
@@ -215,10 +215,12 @@ export default function Header() {
                                 const commonStyles = `relative no-underline font-bold px-4 py-2 transition-all duration-300 rounded-xl text-sm border-none bg-transparent cursor-pointer
                                     ${
                                         isActive
-                                            ? 'text-white'
+                                            ? 'text-white shadow-inner'
                                             : link.highlight
-                                              ? 'text-red-600 hover:text-red-700'
-                                              : isScrolled || !isHome
+                                              ? isTransparentHeaderPage && !isScrolled
+                                                  ? 'text-white bg-white/10 hover:bg-white/20 active:scale-95'
+                                                  : 'text-orange-600 hover:text-orange-700'
+                                              : isScrolled || !isTransparentHeaderPage
                                                 ? 'text-gray-600 hover:text-gray-900'
                                                 : 'text-white/80 hover:text-white'
                                     }`;
@@ -246,7 +248,7 @@ export default function Header() {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="active-nav"
-                                                className="absolute inset-0 bg-red-600 rounded-xl shadow-lg shadow-red-600/20"
+                                                className="absolute inset-0 bg-orange-600 rounded-xl shadow-lg shadow-orange-600/20"
                                                 transition={{
                                                     type: 'spring',
                                                     stiffness: 380,
@@ -260,7 +262,7 @@ export default function Header() {
                         </nav>
 
                         {/* Right side Container */}
-                        <div className="flex-1 flex items-center justify-end gap-3">
+                        <div className="flex-1 flex items-center justify-end gap-3 h-full">
                             {/* Desktop: User button or login */}
                             <div className="hidden md:block">
                                 {showSkeleton ? (
@@ -270,11 +272,11 @@ export default function Header() {
                                         <button
                                             onClick={() => setShowUserMenu(!showUserMenu)}
                                             className={`flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 pl-1 pr-3 py-1 rounded-2xl cursor-pointer transition-all duration-200
-                        ${showUserMenu ? 'ring-2 ring-red-600/20 bg-white' : ''}`}
+                        ${showUserMenu ? 'ring-2 ring-orange-600/20 bg-white' : ''}`}
                                         >
                                             <div
                                                 className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden shrink-0 border border-black/5
-                                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-orange-600'}`}
                                             >
                                                 {user.avatar ? (
                                                     user.avatar.startsWith('http') ? (
@@ -321,7 +323,7 @@ export default function Header() {
                                                     <div className="px-4 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
                                                         <div
                                                             className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0 border border-black/10
-                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-red-600'}`}
+                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-orange-600'}`}
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
@@ -373,7 +375,7 @@ export default function Header() {
                                                                 onClick={() =>
                                                                     setShowUserMenu(false)
                                                                 }
-                                                                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl no-underline text-red-600 text-[13px] font-black bg-red-50 hover:bg-red-100 transition-colors duration-150"
+                                                                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 hover:bg-orange-100 transition-colors duration-150"
                                                             >
                                                                 <ShieldCheck
                                                                     size={16}
@@ -407,7 +409,7 @@ export default function Header() {
                                                             setShowUserMenu(false);
                                                             logout();
                                                         }}
-                                                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl w-full border-none cursor-pointer text-red-600 text-[13px] font-bold bg-transparent hover:bg-red-50 transition-colors duration-150 text-left"
+                                                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl w-full border-none cursor-pointer text-orange-600 text-[13px] font-bold bg-transparent hover:bg-orange-50 transition-colors duration-150 text-left"
                                                     >
                                                         <LogOut size={16} strokeWidth={1.5} />{' '}
                                                         Cerrar sesión
@@ -478,7 +480,7 @@ export default function Header() {
                                                     stiffness: 500,
                                                     damping: 15,
                                                 }}
-                                                className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
+                                                className="absolute -top-1.5 -right-1.5 bg-orange-600 text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
                                             >
                                                 {itemCount}
                                             </motion.span>
@@ -552,7 +554,7 @@ export default function Header() {
                                                         setShowMobileMenu(false);
                                                         setIsReservationModalOpen(true);
                                                     }}
-                                                    className="w-full py-5 bg-white text-red-600 rounded-[28px] font-black text-[16px] tracking-[0.1em] flex items-center justify-center gap-3 shadow-xl shadow-red-600/5 active:scale-[0.98] transition-all border border-red-50"
+                                                    className="w-full py-5 bg-white text-orange-600 rounded-[28px] font-black text-[16px] tracking-[0.1em] flex items-center justify-center gap-3 shadow-xl shadow-orange-600/5 active:scale-[0.98] transition-all border border-orange-50"
                                                 >
                                                     <Calendar size={22} strokeWidth={2.5} />
                                                     RESERVAR MESA
@@ -571,14 +573,14 @@ export default function Header() {
                                                     const commonStyles = `group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left w-full
                                                         ${
                                                             isActive
-                                                                ? 'text-red-600 bg-red-50/50'
+                                                                ? 'text-orange-600 bg-orange-50/50'
                                                                 : 'text-gray-600 hover:text-gray-900'
                                                         }`;
 
                                                     const content = (
                                                         <>
                                                             <div
-                                                                className={`transition-colors ${isActive ? 'text-red-600' : 'text-gray-500'}`}
+                                                                className={`transition-colors ${isActive ? 'text-orange-600' : 'text-gray-500'}`}
                                                             >
                                                                 <Icon
                                                                     size={22}
@@ -588,7 +590,7 @@ export default function Header() {
                                                                 />
                                                             </div>
                                                             <span
-                                                                className={`flex-1 tracking-tight ${isActive ? 'text-red-600' : 'text-gray-900'}`}
+                                                                className={`flex-1 tracking-tight ${isActive ? 'text-orange-600' : 'text-gray-900'}`}
                                                             >
                                                                 {link.label}
                                                             </span>
@@ -639,7 +641,7 @@ export default function Header() {
                                                     <div className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3">
                                                         <div
                                                             className={`w-12 h-12 rounded-[20px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner border border-black/10
-                                                        ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[20px]' : 'bg-red-600'}`}
+                                                        ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[20px]' : 'bg-orange-600'}`}
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
@@ -692,7 +694,7 @@ export default function Header() {
                                                                 onClick={() =>
                                                                     setShowMobileMenu(false)
                                                                 }
-                                                                className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-red-600 text-[13px] font-black bg-red-50 border border-red-100"
+                                                                className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 border border-orange-100"
                                                             >
                                                                 <ShieldCheck
                                                                     size={18}
@@ -717,7 +719,7 @@ export default function Header() {
                                                             logout();
                                                             setShowMobileMenu(false);
                                                         }}
-                                                        className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-red-600 text-[14px] font-black bg-white border border-red-50 hover:bg-red-50 transition-colors mb-4"
+                                                        className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-orange-600 text-[14px] font-black bg-white border border-orange-50 hover:bg-orange-50 transition-colors mb-4"
                                                     >
                                                         <LogOut size={18} strokeWidth={1.5} />{' '}
                                                         Cerrar sesión

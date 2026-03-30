@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
         <div className="flex-1 bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
-                    <div className="bg-red-600 px-6 py-4 rounded-3xl shadow-2xl shadow-red-900/20 group hover:rotate-3 transition-all duration-500">
+                    <div className="bg-orange-600 px-6 py-4 rounded-3xl shadow-2xl shadow-orange-900/20 group hover:rotate-3 transition-all duration-500">
                         <img
                             src="/logo.svg"
                             alt="Sushi de Maksim"
@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
                     </div>
                 </div>
                 <h2 className="mt-8 text-center text-3xl font-black text-gray-900 tracking-tighter uppercase">
-                    Admin <span className="text-red-600">Access</span>
+                    Admin <span className="text-orange-600">Access</span>
                 </h2>
                 <p className="mt-2 text-center text-sm text-gray-400 font-medium">
                     Panel de Gestión | Sushi de Maksim
@@ -61,13 +61,15 @@ export default function AdminLoginPage() {
                 <div className="bg-white py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-100">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {error && (
-                            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+                            <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-md">
                                 <div className="flex">
                                     <div className="flex-shrink-0">
-                                        <span className="text-red-500">⚠️</span>
+                                        <span className="text-orange-500">⚠️</span>
                                     </div>
                                     <div className="ml-3">
-                                        <p className="text-sm text-red-700 font-medium">{error}</p>
+                                        <p className="text-sm text-orange-700 font-medium">
+                                            {error}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -86,7 +88,7 @@ export default function AdminLoginPage() {
                                     required
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className="focus:ring-red-500 focus:border-red-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
+                                    className="focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
                                     placeholder="admin@sushidemaksim.es"
                                 />
                             </div>
@@ -105,7 +107,7 @@ export default function AdminLoginPage() {
                                     required
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
-                                    className="focus:ring-red-500 focus:border-red-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
+                                    className="focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -121,7 +123,7 @@ export default function AdminLoginPage() {
                                             'Por favor, contacta con el administrador principal (DBA) para restablecer la contraseña.'
                                         );
                                     }}
-                                    className="font-medium text-red-600 hover:text-red-500 transition"
+                                    className="font-medium text-orange-600 hover:text-orange-500 transition"
                                 >
                                     ¿Olvidaste la contraseña?
                                 </a>
@@ -132,7 +134,7 @@ export default function AdminLoginPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition disabled:opacity-50 disabled:cursor-not-allowed items-center gap-2"
+                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition disabled:opacity-50 disabled:cursor-not-allowed items-center gap-2"
                             >
                                 {isLoading ? (
                                     <span>Autenticando...</span>

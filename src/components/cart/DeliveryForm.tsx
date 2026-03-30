@@ -157,7 +157,7 @@ export default function DeliveryForm({
     return (
         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px]">
             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                <MapPin size={18} strokeWidth={1.5} className="text-red-600" /> Datos de entrega
+                <MapPin size={18} strokeWidth={1.5} className="text-orange-600" /> Datos de entrega
             </h2>
 
             <div className="flex bg-gray-100/50 p-1.5 rounded-[22px] mb-6 border border-gray-100 relative">
@@ -169,14 +169,14 @@ export default function DeliveryForm({
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'delivery'
-                            ? 'text-red-600'
+                            ? 'text-orange-600'
                             : 'text-gray-400 hover:text-gray-500'
                     }`}
                 >
                     {deliveryType === 'delivery' && (
                         <motion.div
                             layoutId="activeTab"
-                            className="absolute inset-0 bg-white shadow-md shadow-red-100 border border-red-50 rounded-xl z-[-1]"
+                            className="absolute inset-0 bg-white shadow-md shadow-orange-100 border border-orange-50 rounded-xl z-[-1]"
                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                     )}
@@ -191,14 +191,14 @@ export default function DeliveryForm({
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'pickup'
-                            ? 'text-red-600'
+                            ? 'text-orange-600'
                             : 'text-gray-400 hover:text-gray-500'
                     }`}
                 >
                     {deliveryType === 'pickup' && (
                         <motion.div
                             layoutId="activeTab"
-                            className="absolute inset-0 bg-white shadow-md shadow-red-100 border border-red-50 rounded-xl z-[-1]"
+                            className="absolute inset-0 bg-white shadow-md shadow-orange-100 border border-orange-50 rounded-xl z-[-1]"
                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                     )}
@@ -214,14 +214,14 @@ export default function DeliveryForm({
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'reservation'
-                            ? 'text-red-600'
+                            ? 'text-orange-600'
                             : 'text-gray-400 hover:text-gray-500'
                     }`}
                 >
                     {deliveryType === 'reservation' && (
                         <motion.div
                             layoutId="activeTab"
-                            className="absolute inset-0 bg-white shadow-md shadow-red-100 border border-red-50 rounded-xl z-[-1]"
+                            className="absolute inset-0 bg-white shadow-md shadow-orange-100 border border-orange-50 rounded-xl z-[-1]"
                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                     )}
@@ -303,20 +303,20 @@ export default function DeliveryForm({
                         transition={{ duration: 0.3 }}
                         className="mb-6 overflow-hidden"
                     >
-                        <div className="p-4 bg-red-50 rounded-2xl border border-red-100">
+                        <div className="p-4 bg-orange-50 rounded-2xl border border-orange-100">
                             <div className="flex items-start gap-3">
-                                <div className="p-2 bg-red-100 rounded-xl text-red-600">
+                                <div className="p-2 bg-orange-100 rounded-xl text-orange-600">
                                     <Users size={20} strokeWidth={1.5} />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-red-900 uppercase tracking-tight mb-1">
+                                    <p className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
                                         Reserva de Mesa
                                     </p>
-                                    <p className="text-sm text-red-800 font-medium">
+                                    <p className="text-sm text-orange-800 font-medium">
                                         Prepararemos tu pedido para que esté listo cuando llegues a
                                         tu mesa.
                                     </p>
-                                    <p className="text-[10px] text-red-600 font-black uppercase mt-2">
+                                    <p className="text-[10px] text-orange-600 font-black uppercase mt-2">
                                         * Se requiere reserva previa confirmada
                                     </p>
                                 </div>
@@ -365,7 +365,7 @@ export default function DeliveryForm({
                                                 }
                                             }}
                                             type="button"
-                                            className="flex items-center gap-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-red-100 transition font-medium text-left w-full truncate"
+                                            className="flex items-center gap-2 text-sm bg-orange-50 text-orange-700 border border-orange-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-orange-100 transition font-medium text-left w-full truncate"
                                         >
                                             <MapPin
                                                 size={16}
@@ -388,10 +388,10 @@ export default function DeliveryForm({
                                         type="button"
                                         onClick={handleAddressClick}
                                         data-testid="address-input"
-                                        className="w-full bg-white border-2 border-red-50 rounded-[24px] p-6 md:p-10 text-center hover:border-red-500 hover:bg-red-50/10 transition-all group mb-4 shadow-sm active:scale-95 duration-200 cursor-pointer flex flex-col items-center gap-3 md:gap-4"
+                                        className="w-full bg-white border-2 border-orange-50 rounded-[24px] p-6 md:p-10 text-center hover:border-orange-500 hover:bg-orange-50/10 transition-all group mb-4 shadow-sm active:scale-95 duration-200 cursor-pointer flex flex-col items-center gap-3 md:gap-4"
                                     >
-                                        <div className="w-14 h-14 md:w-20 md:h-20 bg-red-50 rounded-2xl md:rounded-[28px] flex items-center justify-center group-hover:scale-110 transition duration-500 shadow-inner group-hover:shadow-[0_10px_30px_-10px_rgba(220,38,38,0.3)]">
-                                            <MapPin className="text-red-500 w-8 h-8 md:w-12 md:h-12" />
+                                        <div className="w-14 h-14 md:w-20 md:h-20 bg-orange-50 rounded-2xl md:rounded-[28px] flex items-center justify-center group-hover:scale-110 transition duration-500 shadow-inner group-hover:shadow-[0_10px_30px_-10px_rgba(242,101,34,0.3)]">
+                                            <MapPin className="text-orange-500 w-8 h-8 md:w-12 md:h-12" />
                                         </div>
                                         <div className="space-y-1">
                                             <p className="font-black text-lg md:text-2xl text-gray-900 tracking-tight">
@@ -413,7 +413,7 @@ export default function DeliveryForm({
                                         >
                                             <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
                                                 <div className="shrink-0 group-hover:scale-110 transition-all duration-500">
-                                                    <MapPin className="text-red-500 w-6 h-6 md:w-10 md:h-10" />
+                                                    <MapPin className="text-orange-500 w-6 h-6 md:w-10 md:h-10" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-xl md:text-3xl font-black text-gray-900 tracking-tight leading-none mb-1">
@@ -436,7 +436,7 @@ export default function DeliveryForm({
                                                                     'Zona no detectada'}
                                                             </span>
                                                             {selectedZone && (
-                                                                <span className="ml-1 text-[9px] md:text-xs font-black text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                                                                <span className="ml-1 text-[9px] md:text-xs font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
                                                                     {deliveryCost > 0
                                                                         ? `+${deliveryCost.toFixed(2).replace('.', ',')}€ envío`
                                                                         : 'Envío GRATIS'}
@@ -456,11 +456,11 @@ export default function DeliveryForm({
 
                                         {isAuthenticated && (
                                             <div className="px-2">
-                                                <label className="flex items-center gap-3 p-3 bg-red-50/20 rounded-2xl border border-red-100/30 cursor-pointer group hover:bg-red-50/40 transition-all select-none">
+                                                <label className="flex items-center gap-3 p-3 bg-orange-50/20 rounded-2xl border border-orange-100/30 cursor-pointer group hover:bg-orange-50/40 transition-all select-none">
                                                     <div className="relative flex items-center">
                                                         <input
                                                             type="checkbox"
-                                                            className="w-5 h-5 accent-red-600 rounded-md cursor-pointer border-2 border-red-200"
+                                                            className="w-5 h-5 accent-orange-600 rounded-md cursor-pointer border-2 border-orange-200"
                                                             checked={saveAddress}
                                                             onChange={e => {
                                                                 triggerHaptic();
@@ -489,7 +489,7 @@ export default function DeliveryForm({
 
             <div className="mt-8 pt-6 border-t border-gray-100">
                 <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                    <CreditCard size={18} strokeWidth={1.5} className="text-red-600" /> Método de
+                    <CreditCard size={18} strokeWidth={1.5} className="text-orange-600" /> Método de
                     Pago
                 </h2>
                 <div className="grid grid-cols-2 gap-3">
@@ -505,12 +505,12 @@ export default function DeliveryForm({
                         data-testid="payment-method-card"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                             paymentMethod === 'card'
-                                ? 'border-red-600 bg-red-50/50 text-red-600 shadow-sm'
+                                ? 'border-orange-600 bg-orange-50/50 text-orange-600 shadow-sm'
                                 : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
                         }`}
                     >
                         <div
-                            className={`p-2 rounded-lg transition-all ${paymentMethod === 'card' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400'}`}
+                            className={`p-2 rounded-lg transition-all ${paymentMethod === 'card' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-400'}`}
                         >
                             <CreditCard size={18} strokeWidth={2} />
                         </div>
@@ -528,12 +528,12 @@ export default function DeliveryForm({
                         data-testid="payment-method-cash"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                             paymentMethod === 'cash'
-                                ? 'border-red-600 bg-red-50/50 text-red-600 shadow-sm'
+                                ? 'border-orange-600 bg-orange-50/50 text-orange-600 shadow-sm'
                                 : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
                         }`}
                     >
                         <div
-                            className={`p-2 rounded-lg transition-all ${paymentMethod === 'cash' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400'}`}
+                            className={`p-2 rounded-lg transition-all ${paymentMethod === 'cash' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-400'}`}
                         >
                             <Wallet size={18} strokeWidth={2} />
                         </div>
@@ -546,7 +546,7 @@ export default function DeliveryForm({
 
             <div className="mt-8 pt-6 border-t border-gray-100">
                 <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                    <Smartphone size={18} strokeWidth={1.5} className="text-red-600" /> Datos de
+                    <Smartphone size={18} strokeWidth={1.5} className="text-orange-600" /> Datos de
                     contacto
                 </h2>
                 {!isAuthenticated && (
@@ -560,7 +560,7 @@ export default function DeliveryForm({
                                 value={customerNameState}
                                 onChange={e => setCustomerNameState(e.target.value)}
                                 placeholder="Ej: Juan Pérez"
-                                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />
                         </div>
                         <div>
@@ -572,7 +572,7 @@ export default function DeliveryForm({
                                 value={guestEmailState}
                                 onChange={e => setGuestEmailState(e.target.value)}
                                 placeholder="tu@email.com"
-                                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />
                         </div>
                     </div>
@@ -587,7 +587,7 @@ export default function DeliveryForm({
                         onChange={e => setPhone(e.target.value)}
                         placeholder="+34 600 000 000"
                         data-testid="phone-input"
-                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white"
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                     />
                 </div>
 
@@ -598,7 +598,7 @@ export default function DeliveryForm({
                             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
                                 <input
                                     type="checkbox"
-                                    className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                    className="w-4 h-4 accent-orange-600 rounded cursor-pointer"
                                     checked={noCall}
                                     onChange={e => {
                                         triggerHaptic();
@@ -610,7 +610,7 @@ export default function DeliveryForm({
                             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
                                 <input
                                     type="checkbox"
-                                    className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                    className="w-4 h-4 accent-orange-600 rounded cursor-pointer"
                                     checked={noBuzzer}
                                     onChange={e => {
                                         triggerHaptic();
@@ -627,7 +627,7 @@ export default function DeliveryForm({
                         <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
                             <input
                                 type="checkbox"
-                                className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                                className="w-4 h-4 accent-orange-600 rounded cursor-pointer"
                                 checked={isScheduled}
                                 onChange={e => {
                                     triggerHaptic();
@@ -642,9 +642,9 @@ export default function DeliveryForm({
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="p-3 bg-red-50 border border-red-100 rounded-xl mt-2"
+                            className="p-3 bg-orange-50 border border-orange-100 rounded-xl mt-2"
                         >
-                            <p className="text-[11px] font-bold text-red-600 m-0">
+                            <p className="text-[11px] font-bold text-orange-600 m-0">
                                 🏪 El restaurante está cerrado. Por favor, selecciona la opción
                                 "Entrega programada" para recibir tu pedido en el próximo horario de
                                 apertura.
@@ -678,7 +678,7 @@ export default function DeliveryForm({
                                         <select
                                             value={scheduledTime}
                                             onChange={e => setScheduledTime(e.target.value)}
-                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white"
+                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 bg-white"
                                         >
                                             <option value="">Selecciona hora</option>
                                             {availableSlots.map(slot => (
@@ -692,7 +692,7 @@ export default function DeliveryForm({
                                             type="time"
                                             value={scheduledTime}
                                             onChange={e => setScheduledTime(e.target.value)}
-                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                                            className="w-full px-4 h-[46px] border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 bg-white disabled:bg-gray-100 disabled:text-gray-400"
                                             disabled={isDayClosedSelect}
                                         />
                                     )}
@@ -718,7 +718,7 @@ export default function DeliveryForm({
                                                     const current = Number(guestsCount) || 2;
                                                     setGuestsCount(Math.max(1, current - 1));
                                                 }}
-                                                className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
                                                 <Minus size={14} strokeWidth={3} />
                                             </button>
@@ -729,7 +729,7 @@ export default function DeliveryForm({
                                                     const current = Number(guestsCount) || 2;
                                                     setGuestsCount(current + 1);
                                                 }}
-                                                className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
                                                 <Plus size={14} strokeWidth={3} />
                                             </button>
@@ -746,9 +746,9 @@ export default function DeliveryForm({
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="p-3 bg-red-50 border border-red-100 rounded-xl"
+                                    className="p-3 bg-orange-50 border border-orange-100 rounded-xl"
                                 >
-                                    <p className="text-[10px] font-bold text-red-600 m-0 text-center">
+                                    <p className="text-[10px] font-bold text-orange-600 m-0 text-center">
                                         ⚠️ El restaurante está cerrado este día. Por favor elige
                                         otra fecha.
                                     </p>
@@ -781,10 +781,10 @@ export default function DeliveryForm({
                                         <span>14:00 – 17:00</span>
                                     </div>
                                     <div className="flex flex-col gap-0.5">
-                                        <span className="text-red-400/60 uppercase text-[8px] tracking-tight font-black">
+                                        <span className="text-orange-400/60 uppercase text-[8px] tracking-tight font-black">
                                             Lun – Mar
                                         </span>
-                                        <span className="text-red-400/80 font-black uppercase">
+                                        <span className="text-orange-400/80 font-black uppercase">
                                             Cerrado
                                         </span>
                                     </div>
@@ -803,7 +803,7 @@ export default function DeliveryForm({
                         onChange={e => setCustomNote(e.target.value)}
                         placeholder="Ej. Quitar pepino del rollo California..."
                         rows={2}
-                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition bg-gray-50 focus:bg-white resize-none"
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white resize-none"
                     />
                 </div>
             </div>

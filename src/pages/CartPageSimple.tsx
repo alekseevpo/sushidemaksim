@@ -396,7 +396,6 @@ export default function CartPageSimple() {
         if (deliveryType === 'delivery') {
             if (!streetVal || streetVal.length < 3) return showError('Indica tu calle / dirección');
             if (!houseVal) return showError('Indica tu portal/casa');
-            if (!aptVal) return showError('Indica tu piso / puerta');
         }
 
         if (!paymentMethod) return showError('Selecciona un método de pago');
@@ -631,48 +630,48 @@ export default function CartPageSimple() {
                 <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-4 sm:py-8">
                     {isStoreClosed && (
                         <div className="mb-6">
-                            <div className="bg-red-50 border border-red-100 rounded-2xl p-4 md:p-5 shadow-sm">
+                            <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 md:p-5 shadow-sm">
                                 <div className="flex items-start gap-3">
-                                    <div className="mt-0.5 w-10 h-10 rounded-2xl bg-red-100 flex items-center justify-center shrink-0 border border-red-200 shadow-inner">
+                                    <div className="mt-0.5 w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0 border border-orange-200 shadow-inner">
                                         <AlertCircle
                                             size={22}
-                                            className="text-red-600"
+                                            className="text-orange-600"
                                             strokeWidth={2.5}
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-black text-red-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
+                                        <h3 className="font-black text-orange-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
                                             Restaurante Cerrado
                                         </h3>
-                                        <p className="text-[13px] text-red-800/80 whitespace-pre-line leading-snug">
+                                        <p className="text-[13px] text-orange-800/80 whitespace-pre-line leading-snug">
                                             {isManualClosed
                                                 ? siteSettings?.closed_message ||
                                                   'Nuestra cocina está tomando un breve descanso.'
                                                 : 'Actualmente nuestra cocina está fuera de servicio.'}
                                         </p>
-                                        <div className="mt-3 pt-3 border-t border-red-200/50">
-                                            <p className="text-[11px] font-bold text-red-900/40 uppercase tracking-widest mb-1.5">
+                                        <div className="mt-3 pt-3 border-t border-orange-200/50">
+                                            <p className="text-[11px] font-bold text-orange-900/40 uppercase tracking-widest mb-1.5">
                                                 Horario de Servicio:
                                             </p>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-red-800/80 font-medium">
-                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-orange-800/80 font-medium">
+                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
                                                     <span>Miércoles – Viernes</span>
                                                     <span className="font-bold">20:00 – 23:00</span>
                                                 </div>
-                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
                                                     <span>Sábado (Comida)</span>
                                                     <span className="font-bold">14:00 – 17:00</span>
                                                 </div>
-                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
                                                     <span>Sábado (Cena)</span>
                                                     <span className="font-bold">20:00 – 23:00</span>
                                                 </div>
-                                                <div className="flex justify-between border-b border-red-100/30 pb-0.5">
+                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
                                                     <span>Domingo</span>
                                                     <span className="font-bold">14:00 – 17:00</span>
                                                 </div>
                                             </div>
-                                            <p className="mt-3 text-[11px] bg-red-100/50 px-2 py-1.5 rounded-lg text-red-900 font-bold inline-block">
+                                            <p className="mt-3 text-[11px] bg-orange-100/50 px-2 py-1.5 rounded-lg text-orange-900 font-bold inline-block">
                                                 🚀 Aceptamos pedidos programados
                                             </p>
                                         </div>

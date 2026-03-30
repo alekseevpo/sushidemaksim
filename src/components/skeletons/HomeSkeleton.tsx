@@ -26,7 +26,7 @@ export const HomeSkeleton = () => (
 
                     {/* Buttons */}
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto">
-                        <div className="h-[55px] md:h-[60px] w-full sm:w-[200px] bg-red-600/50 rounded-2xl animate-pulse" />
+                        <div className="h-[55px] md:h-[60px] w-full sm:w-[200px] bg-orange-600/50 rounded-2xl animate-pulse" />
                         <div className="h-[55px] md:h-[60px] w-full sm:w-[200px] bg-white/10 rounded-2xl animate-pulse border border-white/10" />
                     </div>
                 </div>

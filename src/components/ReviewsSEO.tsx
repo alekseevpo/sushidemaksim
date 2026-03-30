@@ -149,10 +149,10 @@ export default function ReviewsSEO() {
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex flex-col items-center text-center mb-16">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.2em]">
+                        <span className="text-orange-600 font-black text-[10px] uppercase tracking-[0.2em]">
                             Reseñas Reales
                         </span>
-                        <div className="h-px w-8 bg-red-100 hidden md:block" />
+                        <div className="h-px w-8 bg-orange-100 hidden md:block" />
                         <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-50 rounded-full border border-gray-100">
                             <svg className="w-3 h-3" viewBox="0 0 24 24">
                                 <path
@@ -176,7 +176,7 @@ export default function ReviewsSEO() {
                         </div>
                     </div>
                     <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
-                        Lo que dicen <span className="text-red-600">de nosotros</span>
+                        Lo que dicen <span className="text-orange-600">de nosotros</span>
                     </h2>
                 </div>
 
@@ -213,7 +213,7 @@ export default function ReviewsSEO() {
                                 </blockquote>
 
                                 <div className="flex flex-col items-center gap-4">
-                                    <div className="w-14 h-14 bg-red-600 rounded-3xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-red-200 transform rotate-3">
+                                    <div className="w-14 h-14 bg-orange-600 rounded-3xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-orange-200 transform rotate-3">
                                         {REVIEWS[currentIndex].name.charAt(0)}
                                     </div>
                                     <div className="flex flex-col items-center">
@@ -221,12 +221,12 @@ export default function ReviewsSEO() {
                                             {REVIEWS[currentIndex].name}
                                         </div>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <div className="text-[10px] text-red-500 font-black tracking-[0.2em] uppercase">
+                                            <div className="text-[10px] text-orange-500 font-black tracking-[0.2em] uppercase">
                                                 Cliente Verificado
                                             </div>
                                             <div className="w-1 h-1 bg-gray-300 rounded-full" />
                                             <div className="flex items-center gap-1 text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                                                <MapPin size={10} className="text-red-400" />
+                                                <MapPin size={10} className="text-orange-400" />
                                                 {REVIEWS[currentIndex].location}
                                             </div>
                                         </div>
@@ -243,7 +243,7 @@ export default function ReviewsSEO() {
                             setIsAutoPlaying(false);
                             prevReview();
                         }}
-                        className="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-gray-100 shadow-sm"
+                        className="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all border border-gray-100 shadow-sm"
                         aria-label="Previous review"
                     >
                         <ChevronLeft size={18} strokeWidth={2.5} />
@@ -259,7 +259,7 @@ export default function ReviewsSEO() {
                                     setCurrentIndex(idx);
                                 }}
                                 className={`h-1.5 transition-all duration-500 rounded-full ${
-                                    idx === currentIndex ? 'w-8 bg-red-600' : 'w-2 bg-gray-200'
+                                    idx === currentIndex ? 'w-8 bg-orange-600' : 'w-2 bg-gray-200'
                                 }`}
                                 aria-label={`Go to review ${idx + 1}`}
                             />
@@ -271,7 +271,7 @@ export default function ReviewsSEO() {
                             setIsAutoPlaying(false);
                             nextReview();
                         }}
-                        className="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-gray-100 shadow-sm"
+                        className="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all border border-gray-100 shadow-sm"
                         aria-label="Next review"
                     >
                         <ChevronRight size={18} strokeWidth={2.5} />

@@ -60,7 +60,7 @@ export default function FlyToCart({ items }: FlyToCartProps) {
                             duration: 0.7,
                         },
                     }}
-                    className="fixed top-0 left-0 z-[1000] pointer-events-none rounded-full overflow-hidden shadow-lg flex items-center justify-center bg-white border-2 border-red-500"
+                    className="fixed top-0 left-0 z-[1000] pointer-events-none rounded-full overflow-hidden shadow-lg flex items-center justify-center bg-white border-2 border-orange-500"
                     style={{ width: '40px', height: '40px' }}
                 >
                     {fly.image ? (

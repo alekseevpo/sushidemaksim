@@ -36,7 +36,7 @@ const LoginForm = memo(
                         Email
                     </label>
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
@@ -46,7 +46,7 @@ const LoginForm = memo(
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
-                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
@@ -60,14 +60,14 @@ const LoginForm = memo(
                         <button
                             type="button"
                             onClick={onSwitchForgot}
-                            className="text-[10px] font-bold text-red-600 hover:text-red-700 transition"
+                            className="text-[10px] font-bold text-orange-600 hover:text-orange-700 transition"
                             aria-label="Olvidé mi contraseña"
                         >
                             ¿Olvidaste?
                         </button>
                     </div>
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
@@ -77,7 +77,7 @@ const LoginForm = memo(
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="current-password"
-                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Tu contraseña"
                         />
                         <button
@@ -98,7 +98,7 @@ const LoginForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-red-600 text-white rounded-2xl font-black text-xs hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
+                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
                 >
                     {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
                 </button>
@@ -109,7 +109,7 @@ const LoginForm = memo(
                         <button
                             type="button"
                             onClick={onSwitchRegister}
-                            className="text-red-600 font-black hover:underline bg-transparent border-none p-0 cursor-pointer"
+                            className="text-orange-600 font-black hover:underline bg-transparent border-none p-0 cursor-pointer"
                         >
                             Regístrate
                         </button>
@@ -140,7 +140,7 @@ const RegisterForm = memo(
                             Nombre completo
                         </label>
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                                 <User size={16} strokeWidth={1.5} />
                             </div>
                             <input
@@ -148,7 +148,7 @@ const RegisterForm = memo(
                                 name="name"
                                 required
                                 autoComplete="name"
-                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="Tu nombre completo"
                             />
                         </div>
@@ -159,7 +159,7 @@ const RegisterForm = memo(
                             Teléfono
                         </label>
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                                 <Phone size={16} strokeWidth={1.5} />
                             </div>
                             <input
@@ -167,7 +167,7 @@ const RegisterForm = memo(
                                 name="phone"
                                 required
                                 autoComplete="tel"
-                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="+34 600 000 000"
                             />
                         </div>
@@ -179,7 +179,7 @@ const RegisterForm = memo(
                         Email
                     </label>
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
@@ -187,7 +187,7 @@ const RegisterForm = memo(
                             name="email"
                             required
                             autoComplete="email"
-                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
@@ -198,7 +198,7 @@ const RegisterForm = memo(
                         Contraseña
                     </label>
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
@@ -206,7 +206,7 @@ const RegisterForm = memo(
                             name="password"
                             required
                             autoComplete="new-password"
-                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Mínimo 6 caracteres"
                         />
                         <button
@@ -227,7 +227,7 @@ const RegisterForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-red-600 text-white rounded-2xl font-black text-xs hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
+                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
                 >
                     {isLoading ? 'Creando...' : 'Crear cuenta'}
                 </button>
@@ -238,7 +238,7 @@ const RegisterForm = memo(
                         <button
                             type="button"
                             onClick={onSwitchLogin}
-                            className="text-red-600 font-black hover:underline bg-transparent border-none p-0 cursor-pointer"
+                            className="text-orange-600 font-black hover:underline bg-transparent border-none p-0 cursor-pointer"
                         >
                             Inicia sesión
                         </button>
@@ -271,7 +271,7 @@ const ForgotPasswordForm = memo(
                         Email
                     </label>
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
@@ -279,7 +279,7 @@ const ForgotPasswordForm = memo(
                             name="email"
                             required
                             autoComplete="email"
-                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
@@ -381,7 +381,7 @@ const PinInput = memo(({ value, onChange }: { value: string; onChange: (val: str
                 <button
                     type="button"
                     onClick={handlePasteButtonClick}
-                    className="text-[10px] font-bold text-red-600 hover:text-red-700 transition flex items-center gap-1 bg-transparent border-none p-0 cursor-pointer"
+                    className="text-[10px] font-bold text-orange-600 hover:text-orange-700 transition flex items-center gap-1 bg-transparent border-none p-0 cursor-pointer"
                 >
                     <KeyRound size={12} strokeWidth={2} /> Pegar código
                 </button>
@@ -398,7 +398,7 @@ const PinInput = memo(({ value, onChange }: { value: string; onChange: (val: str
                         value={value[i] || ''}
                         onChange={e => handleChange(i, e.target.value)}
                         onKeyDown={e => handleKeyDown(i, e)}
-                        className="w-full h-12 text-center text-lg font-black bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-red-600 outline-none transition-all text-gray-900 shadow-sm"
+                        className="w-full h-12 text-center text-lg font-black bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-orange-600 outline-none transition-all text-gray-900 shadow-sm"
                         placeholder="•"
                     />
                 ))}
@@ -443,7 +443,7 @@ const ResetPasswordForm = memo(
                         Nueva Contraseña
                     </label>
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
@@ -451,7 +451,7 @@ const ResetPasswordForm = memo(
                             name="password"
                             required
                             autoComplete="new-password"
-                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Mínimo 6 caracteres"
                         />
                         <button
@@ -474,7 +474,7 @@ const ResetPasswordForm = memo(
                         Confirmar
                     </label>
                     <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-red-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
@@ -482,7 +482,7 @@ const ResetPasswordForm = memo(
                             name="confirmPassword"
                             required
                             autoComplete="new-password"
-                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-red-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Repite la contraseña"
                         />
                     </div>
@@ -491,7 +491,7 @@ const ResetPasswordForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading || (!token && codeValue.length < 6)}
-                    className="w-full py-3.5 bg-red-600 text-white rounded-2xl font-black text-xs hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 mt-2 h-12"
+                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 mt-2 h-12"
                 >
                     {isLoading ? 'Cambiando...' : 'Cambiar contraseña'}
                 </button>
@@ -757,7 +757,7 @@ export default function LoginModal({
                                     <div className="grid grid-cols-1 gap-3">
                                         <button
                                             onClick={() => setMode('reset-password')}
-                                            className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
+                                            className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2"
                                         >
                                             <KeyRound size={18} strokeWidth={1.5} /> Introducir el
                                             código
@@ -767,7 +767,7 @@ export default function LoginModal({
                                                 onClose();
                                                 navigate('/menu');
                                             }}
-                                            className="w-full py-4 bg-white border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-sm hover:border-red-600 hover:text-red-600 transition-all flex items-center justify-center gap-2"
+                                            className="w-full py-4 bg-white border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-sm hover:border-orange-600 hover:text-orange-600 transition-all flex items-center justify-center gap-2"
                                         >
                                             Explorar Menú
                                         </button>

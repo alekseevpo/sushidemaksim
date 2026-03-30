@@ -20,11 +20,11 @@ export default function FloatingCart() {
             >
                 <Link
                     to="/cart"
-                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-3 rounded-2xl shadow-[0_15px_30px_-5px_rgba(220,38,38,0.4)] no-underline active:scale-95 transition-all border-none"
+                    className="flex items-center gap-2 bg-orange-600 text-white px-4 py-3 rounded-2xl shadow-[0_15px_30px_-5px_rgba(242,101,34,0.4)] no-underline active:scale-95 transition-all border-none"
                 >
                     <div className="relative">
                         <ShoppingCart size={20} strokeWidth={1.5} />
-                        <span className="absolute -top-1.5 -right-1.5 bg-white text-red-600 text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="absolute -top-1.5 -right-1.5 bg-white text-orange-600 text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-sm">
                             {itemCount}
                         </span>
                     </div>

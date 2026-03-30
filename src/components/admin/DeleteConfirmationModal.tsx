@@ -41,10 +41,10 @@ export default function DeleteConfirmationModal({
                         className="relative bg-white rounded-[32px] p-8 max-sm:p-6 max-w-sm w-full shadow-2xl overflow-hidden"
                     >
                         {/* Decorative background element */}
-                        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-32 h-32 bg-red-50 rounded-full blur-3xl opacity-50" />
+                        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-32 h-32 bg-orange-50 rounded-full blur-3xl opacity-50" />
 
                         <div className="text-center relative z-10">
-                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform duration-500">
+                            <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform duration-500">
                                 <Trash2 size={32} strokeWidth={1.5} />
                             </div>
 
@@ -55,7 +55,7 @@ export default function DeleteConfirmationModal({
                             <p className="text-sm text-gray-500 font-medium mb-8 leading-relaxed px-2">
                                 {description}
                                 {itemName && (
-                                    <span className="block mt-2 font-black text-red-600 uppercase tracking-wider text-[11px] bg-red-50 py-1.5 rounded-lg border border-red-100/50">
+                                    <span className="block mt-2 font-black text-orange-600 uppercase tracking-wider text-[11px] bg-orange-50 py-1.5 rounded-lg border border-orange-100/50">
                                         "{itemName}"
                                     </span>
                                 )}
@@ -65,7 +65,7 @@ export default function DeleteConfirmationModal({
                                 <button
                                     onClick={onConfirm}
                                     disabled={isLoading}
-                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all shadow-lg shadow-red-600/20 active:scale-95 flex items-center justify-center gap-2 group"
+                                    className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-xs md:text-sm hover:bg-black transition-all shadow-lg shadow-orange-600/20 active:scale-95 flex items-center justify-center gap-2 group"
                                 >
                                     {isLoading ? (
                                         <RefreshCw size={18} className="animate-spin" />

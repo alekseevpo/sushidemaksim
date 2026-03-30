@@ -64,7 +64,7 @@ export default function VerifyEmailChangePage() {
                         <div className="grid grid-cols-1 gap-4 w-full">
                             <Link
                                 to="/profile"
-                                className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2"
+                                className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2"
                             >
                                 <User size={18} strokeWidth={1.5} /> Ver mi perfil
                             </Link>
@@ -80,13 +80,15 @@ export default function VerifyEmailChangePage() {
 
                 {status === 'error' && (
                     <div className="flex flex-col items-center">
-                        <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mb-6 text-red-500 shadow-inner border-2 border-white">
+                        <div className="w-20 h-20 bg-orange-50 rounded-3xl flex items-center justify-center mb-6 text-orange-500 shadow-inner border-2 border-white">
                             <XCircle size={40} strokeWidth={1.5} />
                         </div>
                         <h1 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">
                             Error de Verificación
                         </h1>
-                        <p className="text-red-600 font-medium mb-10 leading-relaxed">{message}</p>
+                        <p className="text-orange-600 font-medium mb-10 leading-relaxed">
+                            {message}
+                        </p>
                         <button
                             onClick={() => navigate('/')}
                             className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-2"

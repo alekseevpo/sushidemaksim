@@ -138,7 +138,7 @@ export default function FavoritesTab() {
                     </p>
                     <button
                         onClick={() => (window.location.href = '/menu')}
-                        className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100"
                     >
                         Explorar Menú
                     </button>
@@ -154,7 +154,7 @@ export default function FavoritesTab() {
                 <div>
                     <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0 flex items-center gap-2">
                         Mis Favoritos
-                        <span className="w-5 h-5 md:w-6 md:h-6 bg-red-600 text-white text-[10px] md:text-xs font-black rounded-full shadow-md shadow-red-100 flex items-center justify-center shrink-0 not-italic">
+                        <span className="w-5 h-5 md:w-6 md:h-6 bg-orange-600 text-white text-[10px] md:text-xs font-black rounded-full shadow-md shadow-orange-100 flex items-center justify-center shrink-0 not-italic">
                             {favorites.length}
                         </span>
                     </h2>
@@ -190,7 +190,7 @@ export default function FavoritesTab() {
                             {/* Tags Overlay */}
                             <div className="absolute top-2 left-0 flex flex-col gap-1 z-10">
                                 {item.spicy && (
-                                    <span className="px-2 py-0.5 bg-red-600/90 backdrop-blur-sm text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
+                                    <span className="px-2 py-0.5 bg-orange-600/90 backdrop-blur-sm text-white text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-r-lg shadow-lg">
                                         🌶️ Picante
                                     </span>
                                 )}
@@ -205,7 +205,7 @@ export default function FavoritesTab() {
                             <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
                                 <button
                                     onClick={() => toggleFavorite(item.id)}
-                                    className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/95 backdrop-blur-sm text-red-600 shadow-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 border-none cursor-pointer group/fav"
+                                    className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/95 backdrop-blur-sm text-orange-600 shadow-xl flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all transform hover:scale-110 border-none cursor-pointer group/fav"
                                 >
                                     <Heart
                                         size={16}
@@ -222,7 +222,7 @@ export default function FavoritesTab() {
                         <div className="p-4 md:p-6 flex flex-col flex-1">
                             <div className="mb-2 md:mb-3">
                                 <div className="flex justify-between items-start gap-2 mb-1">
-                                    <h3 className="text-[13px] md:text-base font-black text-gray-900 m-0 leading-tight line-clamp-2 group-hover:text-red-600 transition-colors">
+                                    <h3 className="text-[13px] md:text-base font-black text-gray-900 m-0 leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
                                         {item.name}
                                     </h3>
                                     <div className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded-full shrink-0">
@@ -248,7 +248,7 @@ export default function FavoritesTab() {
                                         ${
                                             addedItems.has(item.id)
                                                 ? 'bg-green-600 text-white pointer-events-none'
-                                                : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-red-100 hover:-translate-y-0.5 active:scale-95'
+                                                : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-orange-100 hover:-translate-y-0.5 active:scale-95'
                                         }`}
                                 >
                                     {addedItems.has(item.id) ? (

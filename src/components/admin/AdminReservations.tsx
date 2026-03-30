@@ -152,7 +152,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
             case 'confirmed':
                 return 'text-green-600 bg-green-50 border-green-100';
             case 'cancelled':
-                return 'text-red-500 bg-red-50 border-red-100';
+                return 'text-orange-500 bg-orange-50 border-orange-100';
             default:
                 return 'text-amber-600 bg-amber-50 border-amber-100';
         }
@@ -167,7 +167,11 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
-                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <RefreshCw
+                    className="animate-spin text-orange-600 mb-6"
+                    size={48}
+                    strokeWidth={2}
+                />
                 <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
                     {t.loading}
                 </p>
@@ -180,7 +184,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
             {/* Stats Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm group hover:shadow-md transition-all">
-                    <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 group-hover:text-red-600 transition-colors">
+                    <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 group-hover:text-orange-600 transition-colors">
                         {t.totalReservas}
                     </p>
                     <p className="text-4xl font-black text-gray-900 tabular-nums">{stats.total}</p>
@@ -207,7 +211,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
             <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 items-center">
                 <div className="flex-1 w-full relative">
                     <Search
-                        className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-600 transition-colors"
+                        className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-600 transition-colors"
                         size={20}
                         strokeWidth={2.5}
                     />
@@ -216,7 +220,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                         placeholder={t.searchPlaceholder}
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="w-full pl-14 pr-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 outline-none transition-all shadow-inner"
+                        className="w-full pl-14 pr-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all shadow-inner"
                     />
                 </div>
                 <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
@@ -256,7 +260,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 key={res.id}
-                                className="bg-white p-8 rounded-[36px] border border-gray-100 shadow-sm flex flex-col lg:flex-row gap-8 items-start lg:items-center hover:shadow-md hover:border-red-100 transition-all group"
+                                className="bg-white p-8 rounded-[36px] border border-gray-100 shadow-sm flex flex-col lg:flex-row gap-8 items-start lg:items-center hover:shadow-md hover:border-orange-100 transition-all group"
                             >
                                 <div className="flex-1 space-y-6">
                                     <div className="flex flex-wrap items-center gap-4">
@@ -268,7 +272,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                         <div className="w-1 h-1 bg-gray-200 rounded-full" />
                                         <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-3">
                                             {res.name}
-                                            <span className="text-red-600 bg-red-50 px-3 py-1 rounded-lg text-xs font-black tracking-tighter shadow-sm border border-red-100">
+                                            <span className="text-orange-600 bg-orange-50 px-3 py-1 rounded-lg text-xs font-black tracking-tighter shadow-sm border border-orange-100">
                                                 {res.guests}{' '}
                                                 <span className="text-[10px] opacity-70 ml-0.5">
                                                     {t.pers}
@@ -279,7 +283,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                         <div className="flex items-center gap-4 text-xs font-black text-gray-900 uppercase tracking-tighter">
-                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-red-500 transition-colors">
+                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-orange-500 transition-colors">
                                                 <Calendar size={18} strokeWidth={2.5} />
                                             </div>
                                             {format(
@@ -291,19 +295,19 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                             )}
                                         </div>
                                         <div className="flex items-center gap-4 text-xs font-black text-gray-900 uppercase tracking-tighter">
-                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-red-500 transition-colors">
+                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-orange-500 transition-colors">
                                                 <Clock size={18} strokeWidth={2.5} />
                                             </div>
                                             {res.reservation_time}
                                         </div>
                                         <div className="flex items-center gap-4 text-xs font-black text-gray-900 uppercase tracking-tighter tabular-nums">
-                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-red-500 transition-colors">
+                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-orange-500 transition-colors">
                                                 <Phone size={18} strokeWidth={2.5} />
                                             </div>
                                             {res.phone}
                                         </div>
                                         <div className="flex items-center gap-4 text-xs font-black text-gray-400 lowercase italic group-hover:text-gray-900 transition-colors">
-                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-red-500 transition-colors">
+                                            <div className="p-2 bg-gray-50 rounded-xl text-gray-400 group-hover:text-orange-500 transition-colors">
                                                 <Mail size={18} strokeWidth={2.5} />
                                             </div>
                                             {res.email}
@@ -311,10 +315,10 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                     </div>
 
                                     {res.notes && (
-                                        <div className="p-5 bg-gray-50/50 rounded-[28px] flex gap-4 items-start border border-gray-100 shadow-inner group-hover:bg-red-50/30 transition-colors">
+                                        <div className="p-5 bg-gray-50/50 rounded-[28px] flex gap-4 items-start border border-gray-100 shadow-inner group-hover:bg-orange-50/30 transition-colors">
                                             <MessageSquare
                                                 size={18}
-                                                className="text-red-300 mt-0.5"
+                                                className="text-orange-300 mt-0.5"
                                                 strokeWidth={2.5}
                                             />
                                             <p className="text-xs font-bold text-gray-500 italic leading-relaxed">
@@ -346,7 +350,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                                         status: 'cancelled',
                                                     })
                                                 }
-                                                className="h-14 w-14 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-all border border-red-200 active:scale-90"
+                                                className="h-14 w-14 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center hover:bg-orange-200 transition-all border border-orange-200 active:scale-90"
                                                 title={t.actions.cancel}
                                             >
                                                 <XCircle size={24} strokeWidth={2.5} />
@@ -361,14 +365,14 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                                     status: 'pending',
                                                 })
                                             }
-                                            className="px-6 h-14 rounded-2xl bg-gray-900 text-white font-black text-[10px] tracking-widest hover:bg-red-600 transition-all shadow-xl shadow-gray-200 active:scale-95 flex items-center gap-2"
+                                            className="px-6 h-14 rounded-2xl bg-gray-900 text-white font-black text-[10px] tracking-widest hover:bg-orange-600 transition-all shadow-xl shadow-gray-200 active:scale-95 flex items-center gap-2"
                                         >
                                             <RotateCcw size={16} strokeWidth={3} /> {t.revert}
                                         </button>
                                     )}
                                     <button
                                         onClick={() => setReservationToDelete(res)}
-                                        className="h-14 w-14 rounded-2xl bg-gray-50 text-gray-300 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-gray-100 shadow-sm active:scale-90"
+                                        className="h-14 w-14 rounded-2xl bg-gray-50 text-gray-300 flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all border border-gray-100 shadow-sm active:scale-90"
                                         title={t.actions.delete}
                                     >
                                         <Trash2 size={24} strokeWidth={2.5} />
@@ -389,7 +393,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                     />
                     <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-red-50">
+                            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
                                 <Trash2 size={36} strokeWidth={2.5} />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
@@ -397,7 +401,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                             </h3>
                             <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
                                 {t.modals.deleteDesc.replace('{name}', '')}
-                                <span className="text-red-600 font-black block mt-2 text-base">
+                                <span className="text-orange-600 font-black block mt-2 text-base">
                                     "{reservationToDelete?.name}"
                                 </span>
                             </p>
@@ -405,7 +409,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                 <button
                                     onClick={() => deleteMutation.mutate(reservationToDelete.id)}
                                     disabled={deleteMutation.isPending}
-                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
+                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {deleteMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />

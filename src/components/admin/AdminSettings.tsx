@@ -176,7 +176,11 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
     if (isLoading || !localSettings) {
         return (
             <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
-                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <RefreshCw
+                    className="animate-spin text-orange-600 mb-6"
+                    size={48}
+                    strokeWidth={2}
+                />
                 <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
                     {t.loading}
                 </p>
@@ -196,7 +200,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 <button
                     type="submit"
                     disabled={updateMutation.isPending}
-                    className="w-full sm:w-auto flex items-center justify-center gap-3 bg-red-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 disabled:opacity-50 active:scale-95"
+                    className="w-full sm:w-auto flex items-center justify-center gap-3 bg-orange-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 disabled:opacity-50 active:scale-95"
                 >
                     {updateMutation.isPending ? (
                         <RefreshCw size={18} strokeWidth={3} className="animate-spin" />
@@ -208,7 +212,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
             </div>
 
             <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4 mb-8">
+                <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4 mb-8">
                     <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                         {t.generalInfo}
                     </h3>
@@ -226,7 +230,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactPhone: e.target.value,
                                 })
                             }
-                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all tabular-nums"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all tabular-nums"
                         />
                     </div>
                     <div className="space-y-2">
@@ -241,12 +245,12 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactEmail: e.target.value,
                                 })
                             }
-                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all"
                         />
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4 mb-8 mt-12">
+                <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4 mb-8 mt-12">
                     <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                         {t.physicalAddress}
                     </h3>
@@ -264,7 +268,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactAddressLine1: e.target.value,
                                 })
                             }
-                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all"
                             placeholder={t.addressPlaceholder1}
                         />
                     </div>
@@ -280,7 +284,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactAddressLine2: e.target.value,
                                 })
                             }
-                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all"
                             placeholder={t.addressPlaceholder2}
                         />
                     </div>
@@ -302,7 +306,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                             contactGoogleMapsUrl: url,
                                         });
                                     }}
-                                    className="text-[9px] font-black text-red-600 uppercase tracking-widest hover:text-black transition-colors"
+                                    className="text-[9px] font-black text-orange-600 uppercase tracking-widest hover:text-black transition-colors"
                                 >
                                     {t.generateFromAddress}
                                 </button>
@@ -316,7 +320,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     contactGoogleMapsUrl: e.target.value,
                                 })
                             }
-                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all"
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all"
                             placeholder="https://www.google.com/maps/..."
                         />
                     </div>
@@ -325,7 +329,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
 
             <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-8">
-                    <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4">
+                    <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4">
                         <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                             {t.socialNetworks}
                         </h3>
@@ -333,7 +337,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     <button
                         type="button"
                         onClick={handleAddSocial}
-                        className="text-[10px] flex items-center gap-2 font-black text-red-600 uppercase tracking-widest hover:text-black transition-all bg-red-50 px-4 py-2 rounded-xl"
+                        className="text-[10px] flex items-center gap-2 font-black text-orange-600 uppercase tracking-widest hover:text-black transition-all bg-orange-50 px-4 py-2 rounded-xl"
                     >
                         <Plus size={16} strokeWidth={3} /> {t.addSocial}
                     </button>
@@ -348,7 +352,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             <button
                                 type="button"
                                 onClick={() => setSocialToRemove(idx)}
-                                className="absolute top-4 right-4 text-gray-300 hover:text-red-600 p-2 transition-colors bg-white rounded-xl shadow-sm opacity-0 group-hover:opacity-100"
+                                className="absolute top-4 right-4 text-gray-300 hover:text-orange-600 p-2 transition-colors bg-white rounded-xl shadow-sm opacity-0 group-hover:opacity-100"
                                 title="Eliminar"
                             >
                                 <Trash2 size={16} strokeWidth={2} />
@@ -364,7 +368,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                         onChange={e =>
                                             handleUpdateSocial(idx, 'platform', e.target.value)
                                         }
-                                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-red-400 bg-white transition-all shadow-sm"
+                                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm"
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -376,7 +380,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                         onChange={e =>
                                             handleUpdateSocial(idx, 'icon', e.target.value)
                                         }
-                                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-red-400 bg-white transition-all shadow-sm appearance-none cursor-pointer"
+                                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm appearance-none cursor-pointer"
                                     >
                                         <option value="whatsapp">WhatsApp</option>
                                         <option value="instagram">Instagram</option>
@@ -395,7 +399,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                 <input
                                     value={link.url}
                                     onChange={e => handleUpdateSocial(idx, 'url', e.target.value)}
-                                    className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-red-400 bg-white transition-all shadow-sm"
+                                    className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm"
                                     placeholder="https://"
                                 />
                             </div>
@@ -430,7 +434,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             // ignore parsing errors while typing
                         }
                     }}
-                    className="w-full h-64 border border-gray-100 rounded-[24px] px-6 py-6 text-xs font-mono font-bold outline-none focus:border-red-400 focus:bg-white bg-gray-50/50 shadow-inner custom-scrollbar"
+                    className="w-full h-64 border border-gray-100 rounded-[24px] px-6 py-6 text-xs font-mono font-bold outline-none focus:border-orange-400 focus:bg-white bg-gray-50/50 shadow-inner custom-scrollbar"
                 />
             </div>
 
@@ -447,7 +451,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             className={`flex items-center gap-4 px-8 py-5 rounded-[24px] shadow-2xl border-2 ${
                                 saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
-                                    : 'bg-red-600 border-red-500 text-white'
+                                    : 'bg-orange-600 border-orange-500 text-white'
                             }`}
                         >
                             <div className="bg-white/20 p-2 rounded-xl">
@@ -489,7 +493,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     />
                     <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-red-50">
+                            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
                                 <Trash2 size={36} strokeWidth={2.5} />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
@@ -497,14 +501,14 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             </h3>
                             <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
                                 {t.removeSocial.desc.replace('{name}', '')}
-                                <span className="text-red-600 font-black block mt-2 text-base">
+                                <span className="text-orange-600 font-black block mt-2 text-base">
                                     "{localSettings.socialLinks[socialToRemove]?.platform}"
                                 </span>
                             </p>
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={confirmRemoveSocial}
-                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95"
+                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95"
                                 >
                                     {t.removeSocial.yes}
                                 </button>

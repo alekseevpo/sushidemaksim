@@ -34,11 +34,11 @@ export default function CartEmptyView({
         <div className="min-h-[85vh] mesh-bg px-2 md:px-6 py-8 flex flex-col">
             <div className="max-w-4xl mx-auto text-center py-8 md:py-12 w-full flex-1 flex flex-col justify-center">
                 <div className="flex justify-center mb-8">
-                    <div className="w-28 h-28 bg-white rounded-[40px] flex items-center justify-center animate-float shadow-2xl shadow-red-500/10 border border-white/50 relative">
-                        <div className="absolute inset-0 bg-red-500/5 rounded-[40px] blur-xl"></div>
+                    <div className="w-28 h-28 bg-white rounded-[40px] flex items-center justify-center animate-float shadow-2xl shadow-orange-500/10 border border-white/50 relative">
+                        <div className="absolute inset-0 bg-orange-500/5 rounded-[40px] blur-xl"></div>
                         <ShoppingCart
                             size={48}
-                            className="text-red-500 relative z-10"
+                            className="text-orange-500 relative z-10"
                             strokeWidth={1.2}
                         />
                     </div>
@@ -64,7 +64,7 @@ export default function CartEmptyView({
                     <motion.div
                         animate={{ y: [0, 8, 0] }}
                         transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
-                        className="text-red-400/50 mt-10"
+                        className="text-orange-400/50 mt-10"
                     >
                         <ArrowDown size={24} strokeWidth={2.5} />
                     </motion.div>
@@ -73,20 +73,20 @@ export default function CartEmptyView({
                 {(popularItems.length > 0 || isLoadingPopular) && (
                     <div className="mt-4">
                         <div className="flex flex-col items-center justify-center gap-2 mb-10">
-                            <span className="inline-block px-4 py-1.5 bg-red-600/10 text-red-600 text-[10px] font-black uppercase tracking-widest rounded-full mb-2">
+                            <span className="inline-block px-4 py-1.5 bg-orange-600/10 text-orange-600 text-[10px] font-black uppercase tracking-widest rounded-full mb-2">
                                 RECOMENDACIONES DEL CHEF
                             </span>
                             <h2 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tighter m-0 flex items-center gap-3 w-full justify-center">
                                 <Flame
                                     size={32}
                                     strokeWidth={2}
-                                    className="text-red-600 shrink-0"
+                                    className="text-orange-600 shrink-0"
                                 />
                                 <span>Los Favoritos</span>
                                 <Flame
                                     size={32}
                                     strokeWidth={2}
-                                    className="text-red-600 shrink-0"
+                                    className="text-orange-600 shrink-0"
                                 />
                             </h2>
                         </div>
@@ -128,14 +128,14 @@ export default function CartEmptyView({
                                               ) : (
                                                   <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
                                                       <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-                                                      <div className="absolute w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
+                                                      <div className="absolute w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
                                                       <span className="text-4xl relative z-10 drop-shadow-2xl translate-y-2">
                                                           {getCategoryEmoji(item.category)}
                                                       </span>
                                                       <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
                                                   </div>
                                               )}
-                                              <div className="absolute top-3 right-3 bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded-lg shadow-lg uppercase tracking-widest">
+                                              <div className="absolute top-3 right-3 bg-orange-600 text-white text-[8px] font-black px-2 py-1 rounded-lg shadow-lg uppercase tracking-widest">
                                                   Best Seller
                                               </div>
                                           </div>
@@ -157,7 +157,7 @@ export default function CartEmptyView({
                                                       className={`h-9 w-9 md:h-12 md:w-auto md:px-6 rounded-xl md:rounded-2xl font-black text-sm transition-all duration-300 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 ${
                                                           addedItems.has(item.id)
                                                               ? 'bg-green-500 text-white scale-105'
-                                                              : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-500/20 active:scale-90 shadow-lg'
+                                                              : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-500/20 active:scale-90 shadow-lg'
                                                       }`}
                                                   >
                                                       {addedItems.has(item.id) ? (

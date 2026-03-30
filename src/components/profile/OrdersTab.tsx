@@ -121,7 +121,7 @@ export default function OrdersTab() {
                 </p>
                 <button
                     onClick={() => navigate('/menu')}
-                    className="bg-red-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100"
+                    className="bg-orange-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-orange-100"
                 >
                     Comenzar
                 </button>
@@ -182,7 +182,7 @@ export default function OrdersTab() {
                                     <div className="flex items-center gap-2">
                                         <Link
                                             to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
-                                            className="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl border border-red-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-red-100 transition-colors no-underline"
+                                            className="bg-orange-50 text-orange-600 px-3 py-1.5 rounded-xl border border-orange-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-orange-100 transition-colors no-underline"
                                         >
                                             <span>🛵</span>
                                             Seguir
@@ -196,7 +196,7 @@ export default function OrdersTab() {
                             <div>
                                 <div className="text-xl md:text-2xl font-black text-gray-900 flex items-baseline gap-0.5 tracking-tighter">
                                     {order.total.toFixed(2).replace('.', ',')}
-                                    <span className="text-xs text-red-600 font-black">€</span>
+                                    <span className="text-xs text-orange-600 font-black">€</span>
                                 </div>
                                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">
                                     {order.items?.reduce(
@@ -265,7 +265,7 @@ export default function OrdersTab() {
                                     ${
                                         isRepeating === order.id
                                             ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
-                                            : 'bg-gray-900 text-white hover:bg-red-600 shadow-xl shadow-gray-100 hover:shadow-red-200 active:scale-[0.98]'
+                                            : 'bg-gray-900 text-white hover:bg-orange-600 shadow-xl shadow-gray-100 hover:shadow-orange-200 active:scale-[0.98]'
                                     }`}
                             >
                                 <RefreshCcw
@@ -289,7 +289,7 @@ export default function OrdersTab() {
                             className={`w-9 h-9 rounded-xl font-black text-[11px] transition-all
                                 ${
                                     p === pagination.page
-                                        ? 'bg-red-600 text-white shadow-lg shadow-red-100'
+                                        ? 'bg-orange-600 text-white shadow-lg shadow-orange-100'
                                         : 'bg-white border border-gray-100 text-gray-400'
                                 }`}
                         >

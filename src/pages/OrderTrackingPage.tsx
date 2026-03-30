@@ -45,7 +45,7 @@ export default function OrderTrackingPage() {
         return (
             <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center p-6">
                 <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
-                    <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
+                    <div className="w-24 h-24 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
                         🔍
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">
@@ -57,7 +57,7 @@ export default function OrderTrackingPage() {
                     </p>
                     <button
                         onClick={() => navigate('/menu')}
-                        className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100"
+                        className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100"
                     >
                         Volver al menú
                     </button>
@@ -76,7 +76,7 @@ export default function OrderTrackingPage() {
             <div className="max-w-4xl mx-auto px-2 md:px-4 pt-10">
                 <button
                     onClick={() => navigate(-1)}
-                    className="group flex items-center gap-2 text-gray-400 hover:text-red-600 transition-colors mb-8 font-black text-xs uppercase tracking-widest"
+                    className="group flex items-center gap-2 text-gray-400 hover:text-orange-600 transition-colors mb-8 font-black text-xs uppercase tracking-widest"
                 >
                     <ChevronLeft
                         size={18}
@@ -86,9 +86,9 @@ export default function OrderTrackingPage() {
                     Volver
                 </button>
 
-                <div className="bg-white rounded-[40px] overflow-hidden shadow-2xl shadow-red-100/30 border border-gray-100">
+                <div className="bg-white rounded-[40px] overflow-hidden shadow-2xl shadow-orange-100/30 border border-gray-100">
                     {/* Header with gradient */}
-                    <div className="relative overflow-hidden bg-gradient-to-br from-red-600 to-red-800 p-8 md:p-12 text-white">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-orange-600 to-orange-800 p-8 md:p-12 text-white">
                         {/* Abstract Background pattern */}
                         <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
                             <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -129,7 +129,7 @@ export default function OrderTrackingPage() {
                                 Estado del pedido
                             </h2>
                             <p className="text-xs text-gray-500 font-medium flex items-center justify-center md:justify-start gap-1.5 opacity-80">
-                                <Info size={14} className="text-red-500" />
+                                <Info size={14} className="text-orange-500" />
                                 Consulta aquí el progreso de tu sushi en tiempo real.
                             </p>
                         </div>
@@ -146,7 +146,7 @@ export default function OrderTrackingPage() {
                                     <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-6">
                                         <div
                                             className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg overflow-hidden shrink-0 shadow-sm border-2 border-white
-                                                        ${order.users.avatar?.startsWith('http') ? 'bg-gray-100' : order.users.avatar ? 'bg-gray-100' : 'bg-red-600'}`}
+                                                        ${order.users.avatar?.startsWith('http') ? 'bg-gray-100' : order.users.avatar ? 'bg-gray-100' : 'bg-orange-600'}`}
                                         >
                                             {order.users.avatar ? (
                                                 order.users.avatar.startsWith('http') ? (
@@ -196,7 +196,7 @@ export default function OrderTrackingPage() {
                                         <MapPin
                                             size={18}
                                             strokeWidth={1.5}
-                                            className="text-red-600"
+                                            className="text-orange-600"
                                         />
                                         Dirección de entrega
                                     </h3>
@@ -240,7 +240,7 @@ export default function OrderTrackingPage() {
                                             className="flex justify-between items-center text-sm"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <span className="w-5 h-5 bg-white rounded-md flex items-center justify-center font-black text-[10px] text-red-600 shadow-sm shrink-0">
+                                                <span className="w-5 h-5 bg-white rounded-md flex items-center justify-center font-black text-[10px] text-orange-600 shadow-sm shrink-0">
                                                     {item.quantity}
                                                 </span>
                                                 <span className="font-bold text-gray-700 text-xs md:text-sm">
@@ -274,7 +274,7 @@ export default function OrderTrackingPage() {
                                     </span>
                                     <div className="text-3xl font-black text-gray-900 tracking-tighter">
                                         {Number(order.total).toFixed(2).replace('.', ',')}
-                                        <span className="text-sm text-red-600 ml-1">€</span>
+                                        <span className="text-sm text-orange-600 ml-1">€</span>
                                     </div>
                                 </div>
                             </div>

@@ -83,11 +83,11 @@ export default function BlogPage() {
                     transition={{ duration: 0.8 }}
                     className="relative z-10 text-center px-4"
                 >
-                    <span className="inline-block px-3 py-1 bg-red-600 text-white text-[11px] font-bold rounded-full mb-4 tracking-widest uppercase">
+                    <span className="inline-block px-3 py-1 bg-orange-600 text-white text-[11px] font-bold rounded-full mb-4 tracking-widest uppercase">
                         Nuestra bitácora
                     </span>
                     <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg">
-                        Blog & <span className="text-red-500 italic">Estilo</span>
+                        Blog & <span className="text-orange-500 italic">Estilo</span>
                     </h1>
                     <p className="text-gray-300 max-w-xl mx-auto text-sm md:text-base font-medium">
                         Historias, recetas y secretos del mundo del sushi artesanal.
@@ -149,7 +149,7 @@ export default function BlogPage() {
                                             <Calendar
                                                 size={12}
                                                 strokeWidth={1.5}
-                                                className="text-red-500"
+                                                className="text-orange-500"
                                             />{' '}
                                             {new Date(post.createdAt).toLocaleDateString()}
                                         </span>
@@ -157,13 +157,13 @@ export default function BlogPage() {
                                             <Clock
                                                 size={12}
                                                 strokeWidth={1.5}
-                                                className="text-red-500"
+                                                className="text-orange-500"
                                             />{' '}
                                             {post.readTime || '5'} min
                                         </span>
                                     </div>
 
-                                    <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors line-clamp-2 leading-snug">
+                                    <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
                                         {post.title}
                                     </h2>
 
@@ -173,7 +173,7 @@ export default function BlogPage() {
 
                                     <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between z-20">
                                         <div className="flex items-center gap-2.5">
-                                            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-[10px] font-bold text-red-600">
+                                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-[10px] font-bold text-orange-600">
                                                 {post.author ? post.author.charAt(0) : 'E'}
                                             </div>
                                             <span className="text-xs font-bold text-gray-700">
@@ -181,7 +181,7 @@ export default function BlogPage() {
                                             </span>
                                         </div>
 
-                                        <button className="text-[12px] font-black uppercase tracking-tighter text-red-600 flex items-center gap-1 hover:gap-2 transition-all">
+                                        <button className="text-[12px] font-black uppercase tracking-tighter text-orange-600 flex items-center gap-1 hover:gap-2 transition-all">
                                             Leer más <ChevronRight size={14} strokeWidth={1.5} />
                                         </button>
                                     </div>
@@ -198,7 +198,7 @@ export default function BlogPage() {
                 <div className="mt-12 text-center">
                     <Link
                         to="/menu"
-                        className="inline-flex items-center gap-2 text-gray-500 hover:text-red-600 font-bold text-sm transition-colors"
+                        className="inline-flex items-center gap-2 text-gray-500 hover:text-orange-600 font-bold text-sm transition-colors"
                     >
                         <ArrowLeft size={16} strokeWidth={1.5} /> Volver al restaurante
                     </Link>

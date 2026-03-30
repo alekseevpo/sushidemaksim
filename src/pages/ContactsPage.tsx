@@ -71,7 +71,7 @@ const ContactInfoCard = ({
                 href={link}
                 target={link.startsWith('http') ? '_blank' : undefined}
                 rel={link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className="text-sm font-black text-red-600 hover:text-black inline-flex items-center gap-2 transition-colors group/link"
+                className="text-sm font-black text-orange-600 hover:text-black inline-flex items-center gap-2 transition-colors group/link"
             >
                 {linkText}
                 <ArrowRight
@@ -185,11 +185,11 @@ export default function ContactsPage() {
                     transition={{ duration: 0.8 }}
                     className="relative z-10 text-center px-4"
                 >
-                    <span className="inline-block px-3 py-1 bg-red-600 text-white text-[11px] font-bold rounded-full mb-4 tracking-widest uppercase">
+                    <span className="inline-block px-3 py-1 bg-orange-600 text-white text-[11px] font-bold rounded-full mb-4 tracking-widest uppercase">
                         Estamos a tu disposición
                     </span>
                     <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg">
-                        Contacto & <span className="text-red-500 italic">Soporte</span>
+                        Contacto & <span className="text-orange-500 italic">Soporte</span>
                     </h1>
                     <p className="text-gray-300 max-w-xl mx-auto text-sm md:text-base font-medium">
                         ¿Tienes dudas o quieres hacer un pedido especial? ¡Hablemos!
@@ -226,7 +226,7 @@ export default function ContactsPage() {
                         subContent="Para eventos especiales, colaboraciones o prensa."
                         link={`mailto:${settings.contact_email}`}
                         linkText="Enviar email"
-                        colorClass="bg-red-100/50"
+                        colorClass="bg-orange-100/50"
                         delay={0.3}
                     />
                 </div>
@@ -264,7 +264,7 @@ export default function ContactsPage() {
                                             required
                                             disabled={submitting}
                                             placeholder="Nombre completo"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 transition-all font-medium text-base disabled:opacity-50"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 transition-all font-medium text-base disabled:opacity-50"
                                         />
                                     </div>
                                     <div className="space-y-1">
@@ -283,7 +283,7 @@ export default function ContactsPage() {
                                             required
                                             disabled={submitting}
                                             placeholder="tu@email.com"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 transition-all font-medium text-base disabled:opacity-50"
+                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 transition-all font-medium text-base disabled:opacity-50"
                                         />
                                     </div>
                                 </div>
@@ -303,7 +303,7 @@ export default function ContactsPage() {
                                         required
                                         disabled={submitting}
                                         placeholder="¿En qué podemos ayudarte?"
-                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-red-500 transition-all font-medium resize-none text-base disabled:opacity-50"
+                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 transition-all font-medium resize-none text-base disabled:opacity-50"
                                     ></textarea>
                                 </div>
                                 <button
@@ -370,7 +370,7 @@ export default function ContactsPage() {
                                                 {item.days}
                                             </span>
                                             <span
-                                                className={`text-sm font-black text-right ${item.closed ? 'text-red-500' : 'text-gray-900'}`}
+                                                className={`text-sm font-black text-right ${item.closed ? 'text-orange-500' : 'text-gray-900'}`}
                                             >
                                                 {item.hours}
                                             </span>
@@ -378,7 +378,7 @@ export default function ContactsPage() {
                                     ))}
 
                                     <div className="pt-6 mt-6 border-t border-gray-100">
-                                        <div className="flex items-center gap-2 mb-4 text-red-600">
+                                        <div className="flex items-center gap-2 mb-4 text-orange-600">
                                             <Calendar size={14} strokeWidth={2.5} />
                                             <span className="text-[10px] font-black uppercase tracking-widest">
                                                 Próximos Festivos
@@ -435,20 +435,20 @@ export default function ContactsPage() {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="max-w-7xl mx-auto bg-red-600 rounded-[2rem] md:rounded-[3rem] px-5 py-10 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-red-200"
+                    className="max-w-7xl mx-auto bg-orange-600 rounded-[2rem] md:rounded-[3rem] px-5 py-10 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-orange-200"
                 >
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                     <div className="relative z-10 max-w-3xl mx-auto">
                         <h2 className="text-2xl md:text-6xl font-black mb-6 md:mb-8 leading-tight tracking-tighter">
                             ¿Listo para la experiencia?
                         </h2>
-                        <p className="text-red-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
+                        <p className="text-orange-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
                             Pide ahora y descubre por qué somos el sushi favorito del centro de
                             Madrid.
                         </p>
                         <Link
                             to="/menu"
-                            className="inline-block w-full sm:w-auto bg-white text-red-600 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
+                            className="inline-block w-full sm:w-auto bg-white text-orange-600 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
                         >
                             HACER MI PEDIDO
                         </Link>

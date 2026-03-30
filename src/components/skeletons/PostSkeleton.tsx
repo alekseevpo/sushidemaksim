@@ -24,7 +24,7 @@ export const PostSkeleton = () => (
             <div className="absolute -top-10 right-6 md:right-10 h-16 w-48 skeleton rounded-2xl shadow-xl border border-gray-100" />
 
             {/* Excerpt Skeleton */}
-            <div className="h-20 w-full skeleton rounded-2xl border-l-4 border-red-500 opacity-80" />
+            <div className="h-20 w-full skeleton rounded-2xl border-l-4 border-orange-500 opacity-80" />
 
             {/* Content Body Skeletons */}
             <div className="space-y-6">

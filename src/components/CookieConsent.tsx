@@ -35,8 +35,8 @@ export default function CookieConsent() {
                     className="fixed bottom-6 left-6 right-6 z-[9999] max-w-4xl mx-auto"
                 >
                     <div className="bg-white/90 backdrop-blur-xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-                        <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center shrink-0">
-                            <ShieldCheck size={32} strokeWidth={1.5} className="text-red-600" />
+                        <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0">
+                            <ShieldCheck size={32} strokeWidth={1.5} className="text-orange-600" />
                         </div>
 
                         <div className="flex-1 text-center md:text-left">
@@ -46,7 +46,7 @@ export default function CookieConsent() {
                             <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
                                 Utilizamos cookies propias y de terceros para mejorar tu
                                 experiencia, analizar el tráfico y personalizar el contenido de{' '}
-                                <span className="font-bold text-gray-900 underline decoration-red-500/30">
+                                <span className="font-bold text-gray-900 underline decoration-orange-500/30">
                                     Sushi de Maksim
                                 </span>
                                 . Al hacer clic en "Aceptar", consientes su uso.
@@ -62,7 +62,7 @@ export default function CookieConsent() {
                             </button>
                             <button
                                 onClick={handleAccept}
-                                className="w-full sm:w-auto px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-red-200 transition-all active:scale-95 flex items-center justify-center gap-2 group"
+                                className="w-full sm:w-auto px-8 py-3 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-2 group"
                             >
                                 Aceptar todas
                                 <ChevronRight

@@ -62,7 +62,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                         </p>
                         <button
                             onClick={() => (window.location.href = '/')}
-                            className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100"
+                            className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100"
                         >
                             Volver al inicio
                         </button>

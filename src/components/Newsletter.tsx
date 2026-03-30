@@ -35,8 +35,8 @@ export default function Newsletter() {
                 className="max-w-7xl mx-auto bg-black rounded-[2.5rem] md:rounded-[3.5rem] px-5 py-10 md:p-16 text-center relative overflow-hidden shadow-2xl"
             >
                 {/* Background Decorations */}
-                <div className="absolute top-0 right-0 w-80 h-80 bg-red-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px]" />
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-red-600/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-[100px]" />
+                <div className="absolute top-0 right-0 w-80 h-80 bg-orange-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px]" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-600/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-[100px]" />
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-5" />
 
                 <div className="relative z-10 max-w-2xl mx-auto">
@@ -47,12 +47,14 @@ export default function Newsletter() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
                             >
-                                <span className="inline-block px-4 py-1.5 bg-red-600/20 backdrop-blur-md border border-red-500/30 text-red-500 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full mb-6">
+                                <span className="inline-block px-4 py-1.5 bg-orange-600/20 backdrop-blur-md border border-orange-500/30 text-orange-500 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full mb-6">
                                     Sushi Club
                                 </span>
                                 <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight tracking-tighter">
                                     Únete al Club y recibe <br />
-                                    <span className="text-red-500 italic">Ofertas Exclusivas</span>
+                                    <span className="text-orange-500 italic">
+                                        Ofertas Exclusivas
+                                    </span>
                                 </h2>
                                 <p className="text-gray-400 mb-10 text-sm md:text-lg leading-relaxed font-medium">
                                     No te pierdas nuestras promociones secretas, nuevos lanzamientos
@@ -71,12 +73,12 @@ export default function Newsletter() {
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     placeholder="Tu mejor email..."
-                                    className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder:text-gray-600 disabled:opacity-50"
+                                    className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-base focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent transition-all placeholder:text-gray-600 disabled:opacity-50"
                                 />
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-2xl text-xs tracking-widest transition-all shadow-lg shadow-red-600/20 active:scale-95 flex items-center justify-center gap-2 uppercase disabled:opacity-50 min-w-[160px]"
+                                    className="bg-orange-600 hover:bg-orange-700 text-white font-black px-10 py-4 rounded-2xl text-xs tracking-widest transition-all shadow-lg shadow-orange-600/20 active:scale-95 flex items-center justify-center gap-2 uppercase disabled:opacity-50 min-w-[160px]"
                                 >
                                     {isLoading ? (
                                         <Loader2 size={16} className="animate-spin" />
@@ -89,7 +91,7 @@ export default function Newsletter() {
                                 </button>
                             </form>
                             {error && (
-                                <p className="text-red-500 text-xs mt-4 font-bold animate-pulse">
+                                <p className="text-orange-500 text-xs mt-4 font-bold animate-pulse">
                                     {error}
                                 </p>
                             )}

@@ -90,14 +90,14 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
 const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onClose }) => {
     const icons = {
         success: <CheckCircle className="text-emerald-500" size={20} strokeWidth={1.5} />,
-        error: <AlertCircle className="text-red-500" size={20} strokeWidth={1.5} />,
+        error: <AlertCircle className="text-orange-500" size={20} strokeWidth={1.5} />,
         info: <Info className="text-blue-500" size={20} strokeWidth={1.5} />,
         warning: <AlertTriangle className="text-amber-500" size={20} strokeWidth={1.5} />,
     };
 
     const bgColors = {
         success: 'bg-emerald-50 border-emerald-100',
-        error: 'bg-red-50 border-red-100',
+        error: 'bg-orange-50 border-orange-100',
         info: 'bg-blue-50 border-blue-100',
         warning: 'bg-amber-50 border-amber-100',
     };
@@ -132,7 +132,7 @@ const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onC
                         toast.type === 'success'
                             ? 'bg-emerald-500'
                             : toast.type === 'error'
-                              ? 'bg-red-500'
+                              ? 'bg-orange-500'
                               : toast.type === 'info'
                                 ? 'bg-blue-500'
                                 : 'bg-amber-500'

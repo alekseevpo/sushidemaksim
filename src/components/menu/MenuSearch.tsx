@@ -34,13 +34,13 @@ export default function MenuSearch({
                             <h1 className="text-2xl text-gray-900 font-black tracking-tighter mb-0">
                                 Nuestro Menú
                             </h1>
-                            <span className="text-red-600 font-bold text-base italic whitespace-nowrap">
+                            <span className="text-orange-600 font-bold text-base italic whitespace-nowrap">
                                 {categoryName}
                             </span>
                         </div>
                         <button
                             onClick={() => setIsSearchExpanded(true)}
-                            className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                            className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors cursor-pointer"
                         >
                             <Search size={22} strokeWidth={2} />
                         </button>
@@ -65,7 +65,7 @@ export default function MenuSearch({
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                                 placeholder="¿Qué te apetece hoy?"
-                                className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4px_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                                className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-orange-400 focus:shadow-[0_0_0_4px_rgba(242,101,34,0.05)] transition-all shadow-sm"
                             />
                             {search && (
                                 <button
@@ -81,7 +81,7 @@ export default function MenuSearch({
                                 setIsSearchExpanded(false);
                                 setSearch('');
                             }}
-                            className="px-2 font-bold text-sm text-red-600 border-none bg-transparent cursor-pointer"
+                            className="px-2 font-bold text-sm text-orange-600 border-none bg-transparent cursor-pointer"
                         >
                             Cancelar
                         </button>
@@ -95,7 +95,7 @@ export default function MenuSearch({
                     <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0 whitespace-nowrap">
                         Nuestro Menú
                     </h1>
-                    <span className="text-red-600 font-bold text-2xl italic whitespace-nowrap">
+                    <span className="text-orange-600 font-bold text-2xl italic whitespace-nowrap">
                         {categoryName}
                     </span>
                 </div>
@@ -110,7 +110,7 @@ export default function MenuSearch({
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         placeholder="¿Qué te apetece hoy?"
-                        className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-red-400 focus:shadow-[0_0_0_4_rgba(220,38,38,0.05)] transition-all shadow-sm"
+                        className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-orange-400 focus:shadow-[0_0_0_4_rgba(242,101,34,0.05)] transition-all shadow-sm"
                     />
                     {search && (
                         <button

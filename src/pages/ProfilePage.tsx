@@ -116,7 +116,7 @@ export default function ProfilePage() {
         return (
             <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
                 <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
-                    <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
+                    <div className="w-24 h-24 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
                         🔒
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">
@@ -128,7 +128,7 @@ export default function ProfilePage() {
                     </p>
                     <button
                         onClick={() => navigate('/')}
-                        className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 transform hover:scale-[1.02]"
+                        className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 transform hover:scale-[1.02]"
                     >
                         Volver al inicio
                     </button>
@@ -156,7 +156,7 @@ export default function ProfilePage() {
         { id: 'profile', label: 'Mi Perfil', icon: User, color: 'bg-blue-500' },
         { id: 'addresses', label: 'Direcciones', icon: MapPin, color: 'bg-green-500' },
         { id: 'orders', label: 'Pedidos', icon: Package, color: 'bg-amber-500' },
-        { id: 'favorites', label: 'Favoritos', icon: Heart, color: 'bg-red-50' },
+        { id: 'favorites', label: 'Favoritos', icon: Heart, color: 'bg-orange-50' },
     ];
 
     return (
@@ -167,11 +167,14 @@ export default function ProfilePage() {
             />
 
             {/* Header Section - Increased pt for mobile to account for transparent header */}
-            <div className="bg-red-600 pt-20 md:pt-8 pb-28 px-2 md:px-4 relative overflow-hidden">
+            <div
+                className="bg-orange-600 pb-28 px-2 md:px-4 relative overflow-hidden"
+                style={{ paddingTop: 'calc(var(--header-height, 64px) + 40px)' }}
+            >
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                         <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white p-1 shadow-xl relative">
-                            <div className="w-full h-full rounded-[22px] bg-red-50 flex items-center justify-center text-2xl md:text-4xl border-2 border-white overflow-hidden shadow-inner">
+                            <div className="w-full h-full rounded-[22px] bg-orange-50 flex items-center justify-center text-2xl md:text-4xl border-2 border-white overflow-hidden shadow-inner">
                                 {user.avatar ? (
                                     user.avatar.startsWith('http') ? (
                                         <img
@@ -213,7 +216,7 @@ export default function ProfilePage() {
                                             : 'Nuevo Miembro 🌱'}
                                 </div>
                             </div>
-                            <p className="text-red-100 font-medium opacity-80 m-0 text-sm mb-3">
+                            <p className="text-orange-100 font-medium opacity-80 m-0 text-sm mb-3">
                                 {user.email}
                             </p>
                             <div className="flex flex-wrap gap-2">
@@ -233,7 +236,7 @@ export default function ProfilePage() {
                                 <div className="text-white font-black text-2xl leading-none">
                                     {user.orderCount || 0}
                                 </div>
-                                <div className="text-red-100 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70">
+                                <div className="text-orange-100 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70">
                                     Pedidos
                                 </div>
                             </div>
@@ -258,9 +261,9 @@ export default function ProfilePage() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="bg-white rounded-[32px] p-5 shadow-xl border border-white relative overflow-hidden group"
                     >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-red-500/10 transition-colors" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-orange-500/10 transition-colors" />
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 shadow-inner">
+                            <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 shadow-inner">
                                 <Percent size={24} strokeWidth={2.5} />
                             </div>
                             <div>
@@ -272,7 +275,7 @@ export default function ProfilePage() {
                                 </p>
                             </div>
                             <div className="ml-auto text-right">
-                                <span className="block text-lg font-black text-red-600 leading-none">
+                                <span className="block text-lg font-black text-orange-600 leading-none">
                                     {5 - ((user.orderCount || 0) % 5)}
                                 </span>
                                 <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
@@ -284,7 +287,7 @@ export default function ProfilePage() {
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${((user.orderCount || 0) % 5) * 20}%` }}
-                                className="h-full bg-red-600 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.3)]"
+                                className="h-full bg-orange-600 rounded-full shadow-[0_0_8px_rgba(242,101,34,0.3)]"
                             />
                         </div>
                         <div className="flex justify-between mt-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
@@ -362,7 +365,7 @@ export default function ProfilePage() {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="profile-tab-active"
-                                                className="absolute inset-0 bg-red-600 shadow-lg shadow-red-200 ring-4 ring-red-600/5 rounded-2xl"
+                                                className="absolute inset-0 bg-orange-600 shadow-lg shadow-orange-200 ring-4 ring-orange-600/5 rounded-2xl"
                                                 transition={{
                                                     type: 'spring',
                                                     bounce: 0.2,

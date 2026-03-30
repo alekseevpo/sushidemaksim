@@ -107,10 +107,10 @@ export default function CustomDatePicker({
         <div className="relative w-full" ref={containerRef}>
             <div onClick={() => setIsOpen(!isOpen)} className="relative cursor-pointer">
                 <CalendarIcon
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-red-500 transition-colors"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-orange-500 transition-colors"
                     size={18}
                 />
-                <div className="w-full pl-11 pr-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold flex items-center text-gray-900 focus-within:ring-4 focus-within:ring-red-600/5 focus-within:border-red-600 transition-all select-none">
+                <div className="w-full pl-11 pr-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold flex items-center text-gray-900 focus-within:ring-4 focus-within:ring-orange-600/5 focus-within:border-orange-600 transition-all select-none">
                     {value ? (
                         formatDateForDisplay(value)
                     ) : (
@@ -175,11 +175,9 @@ export default function CustomDatePicker({
                                             setIsOpen(false);
                                         }
                                     }}
-                                    className={`
-                                        h-9 w-full flex items-center justify-center rounded-lg text-xs font-bold transition-all border-none bg-transparent cursor-pointer
+                                    className={`h-9 w-full flex items-center justify-center rounded-lg text-xs font-bold transition-all border-none cursor-pointer
                                         ${d.day === null ? 'pointer-events-none' : ''}
-                                        ${d.isSelected ? 'bg-red-600 text-white shadow-lg shadow-red-100' : 'text-gray-700 hover:bg-red-50 hover:text-red-600'}
-                                        ${d.isToday && !d.isSelected ? 'text-red-600 font-black ring-1 ring-red-100' : ''}
+                                        ${d.isSelected ? 'bg-orange-600 text-white shadow-xl shadow-orange-600/40' : d.isToday ? 'text-orange-600 ring-2 ring-orange-100 font-black' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}
                                         ${d.isDisabled ? 'opacity-20 cursor-not-allowed grayscale' : ''}
                                     `}
                                 >
@@ -196,7 +194,7 @@ export default function CustomDatePicker({
                                     onChange(new Date().toISOString().split('T')[0]);
                                     setIsOpen(false);
                                 }}
-                                className="text-[10px] font-black text-red-600 uppercase tracking-widest border-none bg-transparent cursor-pointer hover:underline"
+                                className="text-[10px] font-black text-orange-600 uppercase tracking-widest border-none bg-transparent cursor-pointer hover:underline"
                             >
                                 Hoy
                             </button>

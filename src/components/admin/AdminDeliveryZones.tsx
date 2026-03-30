@@ -380,7 +380,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                     deleteMutation.mutate(zone.id);
                                                 }
                                             }}
-                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
                                         >
                                             <Trash2 size={14} />
                                         </button>
@@ -419,7 +419,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 type: e.target.value as any,
                                             })
                                         }
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
                                     >
                                         <option value="polygon">Polígono (Personalizado)</option>
                                         <option value="radius">Radio (Círculo)</option>
@@ -436,7 +436,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                             setEditingZone({ ...editingZone, name: e.target.value })
                                         }
                                         placeholder="Ej: Retiro Norte"
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
                                     />
                                 </div>
                             </div>
@@ -493,7 +493,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 cost: parseFloat(e.target.value),
                                             })
                                         }
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -509,7 +509,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 minOrder: parseFloat(e.target.value),
                                             })
                                         }
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-400 transition"
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
                                     />
                                 </div>
                             </div>
@@ -582,7 +582,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                             <button
                                 onClick={() => upsertMutation.mutate(editingZone)}
                                 disabled={upsertMutation.isPending || !editingZone.name}
-                                className="px-6 py-2 text-sm font-bold bg-red-600 text-white hover:bg-red-700 rounded-lg transition disabled:bg-gray-300"
+                                className="px-6 py-2 text-sm font-bold bg-orange-600 text-white hover:bg-orange-700 rounded-lg transition disabled:bg-gray-300"
                             >
                                 {upsertMutation.isPending ? 'Guardando...' : 'Guardar Zona'}
                             </button>

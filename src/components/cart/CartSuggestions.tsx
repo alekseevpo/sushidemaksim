@@ -94,7 +94,7 @@ export default function CartSuggestions({
                             <p className="text-[11px] md:text-[13px] font-black text-gray-900 line-clamp-2 m-0 leading-none uppercase tracking-tight">
                                 {item.name}
                             </p>
-                            <p className="text-[10px] md:text-[12px] text-red-600 font-bold mt-0.5 leading-none">
+                            <p className="text-[10px] md:text-[12px] text-orange-600 font-bold mt-0.5 leading-none">
                                 {item.price.toFixed(2).replace('.', ',')}€
                             </p>
                         </div>
@@ -103,7 +103,7 @@ export default function CartSuggestions({
                         <div className="flex items-center bg-gray-50 rounded-full p-0.5 md:p-1 border border-gray-100">
                             <button
                                 onClick={() => updateQuantity(item.id, -1)}
-                                className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-gray-400 hover:text-red-600 transition-colors"
+                                className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-gray-400 hover:text-orange-600 transition-colors"
                             >
                                 <Minus size={14} strokeWidth={3} />
                             </button>
@@ -112,7 +112,7 @@ export default function CartSuggestions({
                             </span>
                             <button
                                 onClick={() => updateQuantity(item.id, 1)}
-                                className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-gray-400 hover:text-red-600 transition-colors"
+                                className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-gray-400 hover:text-orange-600 transition-colors"
                             >
                                 <Plus size={14} strokeWidth={3} />
                             </button>
@@ -120,7 +120,7 @@ export default function CartSuggestions({
 
                         <button
                             onClick={() => handleAddToCart(item, getQuantity(item.id), true)}
-                            className="bg-gray-900 text-white rounded-[14px] w-9 h-9 md:w-10 md:h-10 hover:bg-red-600 active:scale-90 transition-all duration-300 shadow-md flex items-center justify-center border-none cursor-pointer"
+                            className="bg-gray-900 text-white rounded-[14px] w-9 h-9 md:w-10 md:h-10 hover:bg-orange-600 active:scale-90 transition-all duration-300 shadow-md flex items-center justify-center border-none cursor-pointer"
                             title="Añadir al pedido"
                         >
                             <Plus size={18} strokeWidth={2.5} />

@@ -4,7 +4,32 @@ export default {
     theme: {
         extend: {
             colors: {
-                'sushi-red': '#DC2626',
+                red: {
+                    50: '#FFF8F5',
+                    100: '#FFEBE0',
+                    200: '#FFD1B8',
+                    300: '#FFA97A',
+                    400: '#FF884D',
+                    500: '#FF702E',
+                    600: '#F26522',
+                    700: '#D9521A',
+                    800: '#B34115',
+                    900: '#8E3411',
+                },
+                orange: {
+                    50: '#FFF8F5',
+                    100: '#FFEBE0',
+                    200: '#FFD1B8',
+                    300: '#FFA97A',
+                    400: '#FF884D',
+                    500: '#FF702E',
+                    600: '#F26522',
+                    700: '#D9521A',
+                    800: '#B34115',
+                    900: '#8E3411',
+                },
+                'sushi-red': '#F26522',
+                'sushi-orange': '#F26522',
                 'sushi-pink': '#EC4899',
                 wasabi: '#84CC16',
                 soy: '#78716C',

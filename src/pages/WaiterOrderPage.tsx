@@ -40,7 +40,7 @@ export default function WaiterOrderPage() {
     if (authLoading) {
         return (
             <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center">
-                <Loader2 className="animate-spin text-red-600" size={32} />
+                <Loader2 className="animate-spin text-orange-600" size={32} />
             </div>
         );
     }
@@ -114,7 +114,7 @@ export default function WaiterOrderPage() {
             <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-3 py-2">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-red-100">
+                        <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-100">
                             <ShoppingBag size={16} className="text-white" />
                         </div>
                         <div>
@@ -129,7 +129,7 @@ export default function WaiterOrderPage() {
 
                     <button
                         onClick={logout}
-                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-2 text-gray-400 hover:text-orange-600 transition-colors"
                         title="Cerrar Sesión"
                     >
                         <LogOut size={18} />
@@ -146,7 +146,7 @@ export default function WaiterOrderPage() {
                         placeholder="Buscar sushi... "
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:ring-2 ring-red-500/20 transition-all outline-none"
+                        className="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:ring-2 ring-orange-500/20 transition-all outline-none"
                     />
                 </div>
             </div>
@@ -185,7 +185,7 @@ export default function WaiterOrderPage() {
             <div className="px-3 space-y-1.5 mt-2">
                 {menuLoading ? (
                     <div className="flex flex-col items-center justify-center py-20">
-                        <Loader2 className="animate-spin text-red-600 mb-4" size={32} />
+                        <Loader2 className="animate-spin text-orange-600 mb-4" size={32} />
                         <p className="text-xs font-bold text-gray-500">Cargando menú...</p>
                     </div>
                 ) : filteredItems.length > 0 ? (
@@ -195,7 +195,7 @@ export default function WaiterOrderPage() {
                             key={item.id}
                             className={`bg-white p-2 rounded-2xl border transition-all flex items-center gap-3 ${
                                 selectedItems[item.id]
-                                    ? 'border-red-100 bg-red-50/10'
+                                    ? 'border-orange-100 bg-orange-50/10'
                                     : 'border-gray-50'
                             }`}
                         >
@@ -215,7 +215,7 @@ export default function WaiterOrderPage() {
                                 <h3 className="text-xs font-black text-gray-900 leading-tight mb-0.5 truncate">
                                     {item.name}
                                 </h3>
-                                <p className="text-[10px] font-bold text-red-600 leading-none">
+                                <p className="text-[10px] font-bold text-orange-600 leading-none">
                                     {item.price.toFixed(2)} €
                                 </p>
                             </div>
@@ -238,7 +238,7 @@ export default function WaiterOrderPage() {
                                     onClick={() => handleQuantityChange(item.id, 1)}
                                     className={`w-7 h-7 rounded-lg flex items-center justify-center transition active:scale-95 ${
                                         selectedItems[item.id]
-                                            ? 'bg-red-600 text-white shadow-lg shadow-red-100'
+                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-100'
                                             : 'bg-white border border-gray-200 text-gray-900'
                                     }`}
                                 >
@@ -269,7 +269,7 @@ export default function WaiterOrderPage() {
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center relative">
                                     <ShoppingBag size={18} className="text-white" />
-                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 border border-gray-900 text-[8px] font-black rounded-full flex items-center justify-center text-white">
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-600 border border-gray-900 text-[8px] font-black rounded-full flex items-center justify-center text-white">
                                         {totalCount}
                                     </span>
                                 </div>
@@ -279,7 +279,7 @@ export default function WaiterOrderPage() {
                                     </p>
                                     <p className="text-lg font-black text-white leading-none">
                                         {totalPrice.toFixed(2)}
-                                        <span className="text-xs text-red-500 ml-0.5">€</span>
+                                        <span className="text-xs text-orange-500 ml-0.5">€</span>
                                     </p>
                                 </div>
                             </div>
@@ -290,7 +290,7 @@ export default function WaiterOrderPage() {
                                 className={`h-10 px-4 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 ${
                                     isSubmitting
                                         ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                                        : 'bg-red-600 text-white hover:bg-red-700 active:scale-95 shadow-lg shadow-red-500/20'
+                                        : 'bg-orange-600 text-white hover:bg-orange-700 active:scale-95 shadow-lg shadow-orange-500/20'
                                 }`}
                             >
                                 {isSubmitting ? (

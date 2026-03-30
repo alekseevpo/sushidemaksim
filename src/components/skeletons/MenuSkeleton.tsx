@@ -54,7 +54,7 @@ export const MenuSkeleton = () => (
     <div className="min-h-screen bg-transparent px-0 md:px-4 pb-0 pt-0 flex flex-col">
         <div className="max-w-7xl mx-auto flex-1 lg:flex px-4 md:px-6 w-full">
             {/* Desktop Sidebar Skeleton */}
-            <aside className="hidden lg:block w-[220px] flex-shrink-0 bg-red-600 min-h-full z-30">
+            <aside className="hidden lg:block w-[220px] flex-shrink-0 bg-orange-600 min-h-full z-30">
                 <div className="sticky top-[72px] h-[calc(100vh-72px)] pb-8 px-3 flex flex-col items-stretch pt-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
                         <div

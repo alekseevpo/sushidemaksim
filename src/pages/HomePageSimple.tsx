@@ -21,15 +21,15 @@ const Marquee = () => (
                     <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
                         FRESH SEAFOOD DAILY
                     </span>
-                    <span className="text-red-600/30 text-3xl md:text-5xl font-black">●</span>
+                    <span className="text-orange-600/30 text-3xl md:text-5xl font-black">●</span>
                     <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
                         PREMIUM QUALITY
                     </span>
-                    <span className="text-red-600/30 text-3xl md:text-5xl font-black">●</span>
+                    <span className="text-orange-600/30 text-3xl md:text-5xl font-black">●</span>
                     <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
                         FASTEST DELIVERY
                     </span>
-                    <span className="text-red-600/30 text-3xl md:text-5xl font-black">●</span>
+                    <span className="text-orange-600/30 text-3xl md:text-5xl font-black">●</span>
                 </div>
             ))}
         </div>
@@ -295,13 +295,13 @@ export default function HomePageSimple() {
                             transition={{ duration: 0.8, ease: 'easeOut' }}
                             className="space-y-6"
                         >
-                            <span className="inline-block px-4 py-1.5 bg-red-600/10 border border-red-600/20 text-red-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] rounded-full backdrop-blur-sm">
+                            <span className="inline-block px-4 py-1.5 bg-orange-600/10 border border-orange-600/20 text-orange-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] rounded-full backdrop-blur-sm">
                                 Artesanía japonesa en tu mesa
                             </span>
 
                             <h1 className="text-[42px] leading-[0.9] md:text-8xl font-black text-white tracking-tighter">
                                 Sabor que <br />
-                                <span className="text-red-600 italic">Despierta</span> Sentidos
+                                <span className="text-orange-600 italic">Despierta</span> Sentidos
                             </h1>
 
                             <p className="text-sm md:text-lg text-gray-300 max-w-md mx-auto leading-relaxed font-medium">
@@ -312,7 +312,7 @@ export default function HomePageSimple() {
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                                 <Link
                                     to="/menu"
-                                    className="group relative w-full sm:w-auto px-10 py-5 bg-red-600 text-white rounded-2xl font-black text-[13px] tracking-widest transition-all duration-300 hover:bg-red-700 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-2xl shadow-red-600/20 no-underline"
+                                    className="group relative w-full sm:w-auto px-10 py-5 bg-orange-600 text-white rounded-2xl font-black text-[13px] tracking-widest transition-all duration-300 hover:bg-orange-700 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-2xl shadow-orange-600/20 no-underline"
                                 >
                                     EXPLORAR MENÚ
                                     <ArrowRight
@@ -367,20 +367,20 @@ export default function HomePageSimple() {
                             <motion.span
                                 initial={{ opacity: 0 }}
                                 whileInView={{ opacity: 1 }}
-                                className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 block"
+                                className="text-orange-600 font-black text-xs uppercase tracking-widest mb-4 block"
                             >
                                 ¿Qué te apetece hoy?
                             </motion.span>
                             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
-                                Explora Nuestra <span className="text-red-600">Carta</span>
+                                Explora Nuestra <span className="text-orange-600">Carta</span>
                             </h2>
                         </div>
                         <Link
                             to="/menu"
-                            className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-red-600 transition-colors no-underline"
+                            className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-orange-600 transition-colors no-underline"
                         >
                             VER TODAS LAS CATEGORÍAS
-                            <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                            <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-orange-50 transition-colors">
                                 <ArrowRight size={18} strokeWidth={2} />
                             </div>
                         </Link>
@@ -425,14 +425,14 @@ export default function HomePageSimple() {
                         viewport={{ once: true }}
                         className="relative overflow-hidden rounded-[2.5rem] bg-gray-900 p-8 md:p-12"
                     >
-                        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-600/20 to-transparent pointer-events-none"></div>
+                        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-600/20 to-transparent pointer-events-none"></div>
                         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="text-center md:text-left">
-                                <span className="inline-block px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase rounded-full mb-4">
+                                <span className="inline-block px-3 py-1 bg-orange-600 text-white text-[10px] font-black uppercase rounded-full mb-4">
                                     Oferta de Bienvenida
                                 </span>
                                 <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
-                                    <span className="text-red-500">10%</span> de Descuento
+                                    <span className="text-orange-500">10%</span> de Descuento
                                 </h2>
                                 <p className="text-gray-400 font-medium max-w-md">
                                     Válido para todos los nuevos usuarios registrados que realicen
@@ -441,7 +441,7 @@ export default function HomePageSimple() {
                             </div>
                             <Link
                                 to="/menu"
-                                className="px-10 py-5 bg-white text-gray-900 rounded-2xl font-black text-xs tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-xl"
+                                className="px-10 py-5 bg-white text-gray-900 rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 hover:text-white transition-all shadow-xl"
                             >
                                 ORDENAR AHORA
                             </Link>
@@ -467,17 +467,17 @@ export default function HomePageSimple() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                         <div className="absolute bottom-10 left-10">
                             <p className="text-white font-black text-2xl uppercase tracking-tighter">
-                                Ambiente <span className="text-red-500">Exclusivo</span>
+                                Ambiente <span className="text-orange-500">Exclusivo</span>
                             </p>
                         </div>
                     </motion.div>
 
                     <div className="text-center lg:text-left">
-                        <span className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 block">
+                        <span className="text-orange-600 font-black text-xs uppercase tracking-widest mb-4 block">
                             Vive la experiencia completa
                         </span>
                         <h2 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tighter leading-tight mb-6">
-                            Reserva tu <span className="text-red-600">Mesa</span>
+                            Reserva tu <span className="text-orange-600">Mesa</span>
                         </h2>
                         <p className="text-gray-500 text-lg mb-10 max-w-lg mx-auto lg:mx-0 font-medium">
                             Disfruta de nuestro sushi recién preparado en un ambiente diseñado para
@@ -486,7 +486,7 @@ export default function HomePageSimple() {
                         </p>
                         <button
                             onClick={() => setIsReservationModalOpen(true)}
-                            className="w-full sm:w-auto px-12 py-6 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-red-600 transition-all shadow-xl active:scale-95"
+                            className="w-full sm:w-auto px-12 py-6 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl active:scale-95"
                         >
                             SOLICITAR RESERVA
                         </button>
@@ -502,21 +502,22 @@ export default function HomePageSimple() {
                             <motion.span
                                 initial={{ opacity: 0 }}
                                 whileInView={{ opacity: 1 }}
-                                className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 block"
+                                className="text-orange-600 font-black text-xs uppercase tracking-widest mb-4 block"
                             >
                                 Seleccionados por el Chef
                             </motion.span>
                             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
-                                Nuestros <span className="text-red-600">Favoritos</span> Ineludibles
+                                Nuestros <span className="text-orange-600">Favoritos</span>{' '}
+                                Ineludibles
                             </h2>
                         </div>
                         <div className="flex items-center">
                             <Link
                                 to="/menu"
-                                className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-red-600 transition-colors no-underline"
+                                className="group flex items-center justify-center md:justify-start gap-3 text-gray-900 font-black text-sm hover:text-orange-600 transition-colors no-underline"
                             >
                                 VER CARTA COMPLETA
-                                <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                                <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-orange-50 transition-colors">
                                     <ArrowRight size={18} strokeWidth={2} />
                                 </div>
                             </Link>
@@ -528,7 +529,7 @@ export default function HomePageSimple() {
                             {/* Desktop Arrows - Left */}
                             <button
                                 onClick={() => scroll('left')}
-                                className="hidden md:flex absolute -left-4 lg:-left-16 top-[40%] -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/90 backdrop-blur-md shadow-2xl items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-gray-100/50 group-hover/slider:translate-x-[-4px]"
+                                className="hidden md:flex absolute -left-4 lg:-left-16 top-[40%] -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/90 backdrop-blur-md shadow-2xl items-center justify-center hover:bg-orange-600 hover:text-white transition-all border border-gray-100/50 group-hover/slider:translate-x-[-4px]"
                                 aria-label="Scroll left"
                             >
                                 <ChevronLeft size={28} strokeWidth={2.5} />
@@ -537,7 +538,7 @@ export default function HomePageSimple() {
                             {/* Desktop Arrows - Right */}
                             <button
                                 onClick={() => scroll('right')}
-                                className="hidden md:flex absolute -right-4 lg:-right-16 top-[40%] -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/90 backdrop-blur-md shadow-2xl items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-gray-100/50 group-hover/slider:translate-x-[4px]"
+                                className="hidden md:flex absolute -right-4 lg:-right-16 top-[40%] -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/90 backdrop-blur-md shadow-2xl items-center justify-center hover:bg-orange-600 hover:text-white transition-all border border-gray-100/50 group-hover/slider:translate-x-[4px]"
                                 aria-label="Scroll right"
                             >
                                 <ChevronRight size={28} strokeWidth={2.5} />
@@ -654,13 +655,13 @@ export default function HomePageSimple() {
                         style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                         className="text-center lg:text-left pt-10 lg:pt-0"
                     >
-                        <span className="text-red-600 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] mb-4 block">
+                        <span className="text-orange-600 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] mb-4 block">
                             Nuestra Historia
                         </span>
                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tighter">
                             Más que una Cocina, <br className="hidden md:block" />
                             Una{' '}
-                            <span className="italic underline decoration-red-600 decoration-4 underline-offset-8">
+                            <span className="italic underline decoration-orange-600 decoration-4 underline-offset-8">
                                 Pasión
                             </span>
                         </h2>
@@ -676,7 +677,7 @@ export default function HomePageSimple() {
                                 'Recetas Originales del Chef',
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-3">
-                                    <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center">
+                                    <div className="w-5 h-5 rounded-full bg-orange-600 flex items-center justify-center">
                                         <ChevronRight
                                             size={12}
                                             strokeWidth={1.5}
@@ -689,7 +690,7 @@ export default function HomePageSimple() {
                         </div>
                         <Link
                             to="/blog"
-                            className="text-gray-900 font-black text-sm group flex items-center gap-2 hover:text-red-600 transition-colors"
+                            className="text-gray-900 font-black text-sm group flex items-center gap-2 hover:text-orange-600 transition-colors"
                         >
                             LEER MÁS EN NUESTRO BLOG
                             <ArrowRight

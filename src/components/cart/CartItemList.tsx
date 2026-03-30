@@ -34,7 +34,7 @@ export default function CartItemList({
                 </h2>
                 <button
                     onClick={clearCart}
-                    className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-red-500 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
+                    className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-orange-500 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
                 >
                     <Trash2 size={12} strokeWidth={2.5} /> Vaciar
                 </button>
@@ -60,7 +60,7 @@ export default function CartItemList({
                             ) : (
                                 <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover/img:scale-110 transition-transform duration-500">
                                     <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-                                    <div className="absolute w-12 h-12 bg-red-500/5 rounded-full blur-xl"></div>
+                                    <div className="absolute w-12 h-12 bg-orange-500/5 rounded-full blur-xl"></div>
                                     <span className="text-2xl relative z-10 drop-shadow-md">
                                         {getCategoryEmoji(item.category)}
                                     </span>
@@ -89,7 +89,7 @@ export default function CartItemList({
                                                 ? updateQuantity(item.id, item.quantity - 1)
                                                 : removeItem(item.id);
                                         }}
-                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
+                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold"
                                     >
                                         <Minus size={12} strokeWidth={2.5} />
                                     </button>
@@ -101,7 +101,7 @@ export default function CartItemList({
                                             triggerHaptic();
                                             updateQuantity(item.id, item.quantity + 1);
                                         }}
-                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold"
+                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold"
                                     >
                                         <Plus size={12} strokeWidth={2.5} />
                                     </button>
@@ -116,7 +116,7 @@ export default function CartItemList({
                                             triggerHaptic(40); // HEAVY
                                             removeItem(item.id);
                                         }}
-                                        className="text-gray-300 hover:text-red-400 cursor-pointer p-0 transition-colors flex items-center justify-center border-none bg-transparent"
+                                        className="text-gray-300 hover:text-orange-400 cursor-pointer p-0 transition-colors flex items-center justify-center border-none bg-transparent"
                                         aria-label="Eliminar"
                                     >
                                         <X size={16} strokeWidth={2.5} />
@@ -132,8 +132,8 @@ export default function CartItemList({
             <div className="p-4 bg-gray-50/50 border-t border-gray-100">
                 <div className="flex flex-col gap-4">
                     {/* Notice */}
-                    <div className="bg-red-50 p-4 rounded-xl border border-red-100 text-center">
-                        <p className="text-[12px] font-black text-red-600 leading-tight m-0 uppercase tracking-widest">
+                    <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 text-center">
+                        <p className="text-[12px] font-black text-orange-600 leading-tight m-0 uppercase tracking-widest">
                             Salsa de soja, wasabi y jengibre están incluidos en su pedido.
                         </p>
                     </div>
@@ -152,7 +152,7 @@ export default function CartItemList({
                                     triggerHaptic();
                                     updateChopsticks(Math.max(0, chopsticksCount - 1));
                                 }}
-                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
                                 disabled={chopsticksCount <= 0}
                             >
                                 <Minus size={14} strokeWidth={2.5} />
@@ -165,7 +165,7 @@ export default function CartItemList({
                                     triggerHaptic();
                                     updateChopsticks(Math.min(10, chopsticksCount + 1));
                                 }}
-                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-red-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
                                 disabled={chopsticksCount >= 10}
                             >
                                 <Plus size={14} strokeWidth={2.5} />

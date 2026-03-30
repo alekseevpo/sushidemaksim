@@ -34,14 +34,14 @@ export default function Footer() {
             id: 'instagram',
             name: 'Instagram',
             icon: '/instagram.png',
-            url: 'https://instagram.com/sushidemaksim',
+            url: 'https://www.instagram.com/sushi_de_maksim/',
             hover: 'hover:bg-pink-500/20 hover:border-pink-500/30',
         },
         {
             id: 'thefork',
             name: 'The Fork',
             icon: '/fork.png',
-            url: 'https://www.thefork.es/restaurante/sushi-de-maksim-r753228',
+            url: 'https://www.thefork.es/restaurante/red-de-maksim-r753228',
             hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30',
         },
     ];
@@ -79,7 +79,7 @@ export default function Footer() {
                             />
                         </div>
                     </Link>
-                    <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed text-red-600">
+                    <p className="text-sm max-w-xs mx-auto md:mx-0 leading-relaxed text-orange-600">
                         Auténtica experiencia japonesa en el corazón de Madrid. Frescura, tradición
                         y calidad en cada pieza.
                     </p>
@@ -111,7 +111,7 @@ export default function Footer() {
                                     href={url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-10 h-10 md:w-11 md:h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-red-500/20 overflow-hidden group`}
+                                    className={`w-10 h-10 md:w-11 md:h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-orange-500/20 overflow-hidden group`}
                                     title={social.name}
                                 >
                                     <img
@@ -126,7 +126,7 @@ export default function Footer() {
                         {/* Phone Button */}
                         <a
                             href={`tel:${cleanPhone}`}
-                            className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-red-600 text-white flex items-center justify-center transition-all duration-300 hover:bg-red-700 hover:scale-110 active:scale-95 shadow-xl shadow-red-600/40 ml-2"
+                            className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-orange-600 text-white flex items-center justify-center transition-all duration-300 hover:bg-orange-700 hover:scale-110 active:scale-95 shadow-xl shadow-orange-600/40 ml-2"
                             title={`Llamar: ${phoneNumber}`}
                         >
                             <Phone size={24} strokeWidth={2} />
@@ -151,7 +151,7 @@ export default function Footer() {
                                 ease: 'easeInOut',
                             }}
                         >
-                            <Heart size={10} className="text-red-600 fill-red-600" />
+                            <Heart size={10} className="text-orange-600 fill-orange-600" />
                         </motion.div>
                     </div>
 

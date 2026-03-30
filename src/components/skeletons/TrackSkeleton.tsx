@@ -6,7 +6,7 @@ export const TrackSkeleton = () => (
 
             <div className="bg-white rounded-[40px] shadow-lg border border-gray-100 overflow-hidden">
                 {/* Header Skeleton */}
-                <div className="bg-red-600/10 p-8 md:p-12 border-b border-gray-100">
+                <div className="bg-orange-600/10 p-8 md:p-12 border-b border-gray-100">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div className="space-y-4">
                             <div className="h-4 w-32 skeleton rounded opacity-40" />

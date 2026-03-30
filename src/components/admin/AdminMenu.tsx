@@ -389,7 +389,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                         placeholder={t.searchPlaceholder}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 focus:outline-none transition-all placeholder:text-gray-400"
+                        className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 focus:outline-none transition-all placeholder:text-gray-400"
                     />
                     {search && (
                         <button
@@ -414,7 +414,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                     </button>
                     <button
                         onClick={openAddModal}
-                        className="flex-1 sm:flex-none uppercase tracking-widest bg-red-600 text-white px-6 py-3 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:bg-black transition-all shadow-lg shadow-red-100 active:scale-95"
+                        className="flex-1 sm:flex-none uppercase tracking-widest bg-orange-600 text-white px-6 py-3 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:bg-black transition-all shadow-lg shadow-orange-100 active:scale-95"
                     >
                         <Plus size={16} strokeWidth={3} /> {t.newDish}
                     </button>
@@ -425,7 +425,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
             {isLoading && items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
                     <RefreshCw
-                        className="animate-spin text-red-600 mb-6"
+                        className="animate-spin text-orange-600 mb-6"
                         size={48}
                         strokeWidth={2}
                     />
@@ -493,14 +493,14 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                             </span>
                                         </td>
                                         <td className="px-8 py-4 text-right">
-                                            <p className="font-black text-red-600 text-lg tabular-nums whitespace-nowrap">
+                                            <p className="font-black text-orange-600 text-lg tabular-nums whitespace-nowrap">
                                                 {Number(item.price).toFixed(2).replace('.', ',')} €
                                             </p>
                                         </td>
                                         <td className="px-8 py-4">
                                             <div className="flex items-center justify-center gap-1.5 flex-wrap">
                                                 {item.spicy && (
-                                                    <span className="text-[9px] bg-red-50 text-red-600 font-black uppercase tracking-tighter px-2 py-1 rounded-lg border border-red-100">
+                                                    <span className="text-[9px] bg-orange-50 text-orange-600 font-black uppercase tracking-tighter px-2 py-1 rounded-lg border border-orange-100">
                                                         {t.tags.spicy}
                                                     </span>
                                                 )}
@@ -542,7 +542,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                 </button>
                                                 <button
                                                     onClick={() => setItemToDelete(item)}
-                                                    className="p-3 text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 transition-all shadow-sm active:scale-95"
+                                                    className="p-3 text-gray-400 hover:text-orange-600 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 transition-all shadow-sm active:scale-95"
                                                     title={t.table.actions}
                                                 >
                                                     <Trash2 size={18} strokeWidth={2} />
@@ -586,11 +586,11 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                         <div className="p-8 overflow-y-auto custom-scrollbar">
                             <form id="menu-form" onSubmit={handleSave} className="space-y-6">
                                 {formError && (
-                                    <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-xs font-black uppercase tracking-widest border border-red-100 flex items-center gap-3 animate-in shake">
+                                    <div className="bg-orange-50 text-orange-600 p-4 rounded-2xl text-xs font-black uppercase tracking-widest border border-orange-100 flex items-center gap-3 animate-in shake">
                                         <X
                                             size={16}
                                             strokeWidth={3}
-                                            className="bg-red-600 text-white rounded-full p-0.5"
+                                            className="bg-orange-600 text-white rounded-full p-0.5"
                                         />
                                         {formError}
                                     </div>
@@ -612,7 +612,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                             onChange={e =>
                                                 setFormData({ ...formData, name: e.target.value })
                                             }
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 transition-all"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -632,7 +632,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     category: e.target.value,
                                                 })
                                             }
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 transition-all appearance-none"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all appearance-none"
                                         >
                                             {Object.entries(t.categories).map(([key, label]) => (
                                                 <option key={key} value={key}>
@@ -661,7 +661,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     price: parseFloat(e.target.value) || 0,
                                                 })
                                             }
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 transition-all tabular-nums"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all tabular-nums"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -678,7 +678,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     pieces: e.target.value as any,
                                                 })
                                             }
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 transition-all"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all"
                                         />
                                     </div>
                                 </div>
@@ -701,7 +701,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                 description: e.target.value,
                                             })
                                         }
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 transition-all resize-none"
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all resize-none"
                                     ></textarea>
                                 </div>
 
@@ -724,7 +724,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                         onClick={() =>
                                                             setFormData({ ...formData, image: '' })
                                                         }
-                                                        className="absolute inset-0 bg-red-600/90 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                                                        className="absolute inset-0 bg-orange-600/90 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                                                     >
                                                         <Trash2 size={24} strokeWidth={2.5} />
                                                         <span className="text-[10px] font-black mt-1 uppercase tracking-widest">
@@ -786,7 +786,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                             })
                                                         }
                                                         placeholder={t.modal.urlPlaceholder}
-                                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-xl text-xs font-bold focus:border-red-400 transition-all placeholder:text-gray-300 shadow-sm"
+                                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-xl text-xs font-bold focus:border-orange-400 transition-all placeholder:text-gray-300 shadow-sm"
                                                     />
                                                 </div>
                                             </div>
@@ -813,7 +813,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                 key={field}
                                                 className={`flex items-center justify-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer select-none ${
                                                     (formData as any)[field]
-                                                        ? 'bg-red-50 border-red-200 text-red-600 shadow-sm scale-[1.02]'
+                                                        ? 'bg-orange-50 border-orange-200 text-orange-600 shadow-sm scale-[1.02]'
                                                         : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'
                                                 }`}
                                             >
@@ -899,7 +899,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                 type="submit"
                                 form="menu-form"
                                 disabled={upsertMutation.isPending}
-                                className="px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] bg-red-600 text-white hover:bg-black rounded-2xl transition-all shadow-xl shadow-red-100 disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95"
+                                className="px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] bg-orange-600 text-white hover:bg-black rounded-2xl transition-all shadow-xl shadow-orange-100 disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95"
                             >
                                 {upsertMutation.isPending && (
                                     <RefreshCw size={16} className="animate-spin" />
@@ -920,7 +920,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                     />
                     <div className="relative bg-white rounded-[32px] p-10 max-sm:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-red-100">
+                            <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-100">
                                 <Trash2 size={36} strokeWidth={2.5} />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
@@ -929,7 +929,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                             <p className="text-xs text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
                                 {t.delete.confirm.replace('{name}', '')}
                                 <br />
-                                <span className="text-red-600 font-black">
+                                <span className="text-orange-600 font-black">
                                     "{itemToDelete.name}"
                                 </span>
                             </p>
@@ -937,7 +937,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                 <button
                                     onClick={() => deleteMutation.mutate(itemToDelete.id)}
                                     disabled={deleteMutation.isPending}
-                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
+                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {deleteMutation.isPending ? (
                                         <RefreshCw size={16} className="animate-spin" />

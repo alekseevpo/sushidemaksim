@@ -82,8 +82,8 @@ const FieldLabel = ({ title, hint, language, align = 'left', className = '' }: a
                     onClick={() => setShowHint(!showHint)}
                     className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
                         showHint
-                            ? 'bg-red-500 text-white shadow-lg'
-                            : 'bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500'
+                            ? 'bg-orange-500 text-white shadow-lg'
+                            : 'bg-gray-100 text-gray-400 hover:bg-orange-50 hover:text-orange-500'
                     }`}
                 >
                     <HelpCircle size={10} strokeWidth={3} />
@@ -99,7 +99,7 @@ const FieldLabel = ({ title, hint, language, align = 'left', className = '' }: a
                         >
                             <div className="bg-gray-900 px-4 py-2 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
                                     <span className="text-[9px] font-black text-white uppercase tracking-widest">
                                         {infoLabel}
                                     </span>
@@ -221,7 +221,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                     published_at: null,
                                 });
                             }}
-                            className="p-3 bg-gray-50 text-gray-400 hover:text-red-500 rounded-2xl transition"
+                            className="p-3 bg-gray-50 text-gray-400 hover:text-orange-500 rounded-2xl transition"
                         >
                             <XCircle size={24} />
                         </button>
@@ -250,14 +250,14 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                 type="text"
                                 value={form.title}
                                 onChange={e => setForm({ ...form, title: e.target.value })}
-                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner mb-4"
+                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner mb-4"
                                 required
                             />
                             <input
                                 type="text"
                                 value={form.slug}
                                 onChange={e => setForm({ ...form, slug: e.target.value })}
-                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner mb-4"
+                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner mb-4"
                                 required
                             />
 
@@ -276,14 +276,14 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                 type="text"
                                 value={form.author}
                                 onChange={e => setForm({ ...form, author: e.target.value })}
-                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner"
                                 required
                             />
                             <input
                                 type="text"
                                 value={form.imageUrl}
                                 onChange={e => setForm({ ...form, imageUrl: e.target.value })}
-                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner"
                                 required
                             />
                         </div>
@@ -297,7 +297,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                             <textarea
                                 value={form.excerpt}
                                 onChange={e => setForm({ ...form, excerpt: e.target.value })}
-                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner resize-none h-24"
+                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner resize-none h-24"
                                 required
                             />
                         </div>
@@ -311,7 +311,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                             <textarea
                                 value={form.content}
                                 onChange={e => setForm({ ...form, content: e.target.value })}
-                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner resize-none min-h-[300px]"
+                                className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner resize-none min-h-[300px]"
                                 required
                             />
                         </div>
@@ -319,7 +319,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                         <button
                             type="submit"
                             disabled={mutation.isPending}
-                            className="w-full py-6 bg-black text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-red-600 transition flex items-center justify-center gap-2 shadow-2xl shadow-black/10 active:scale-[0.98]"
+                            className="w-full py-6 bg-black text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-orange-600 transition flex items-center justify-center gap-2 shadow-2xl shadow-black/10 active:scale-[0.98]"
                         >
                             {mutation.isPending && <RefreshCw size={20} className="animate-spin" />}
                             {isEditing.id ? t.save : t.publish}
@@ -394,7 +394,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                         disabled={togglePublishMutation.isPending}
                                         className={`p-3 rounded-2xl transition-all ${
                                             post.published_at
-                                                ? 'bg-red-50 text-red-400 hover:bg-red-100'
+                                                ? 'bg-orange-50 text-orange-400 hover:bg-orange-100'
                                                 : 'bg-green-50 text-green-400 hover:bg-green-100'
                                         }`}
                                     >
@@ -411,7 +411,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                             deleteMutation.mutate(post.id);
                                         }
                                     }}
-                                    className="p-3 bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                                    className="p-3 bg-gray-50 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-2xl transition-all"
                                 >
                                     <Trash2 size={18} />
                                 </button>

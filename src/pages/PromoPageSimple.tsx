@@ -147,7 +147,12 @@ export default function PromoPageSimple() {
                                 <Link
                                     to="/menu"
                                     className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-xs md:text-sm text-white transition-all hover:opacity-95 active:scale-90 shadow-lg shadow-gray-200"
-                                    style={{ backgroundColor: promo.color }}
+                                    style={{
+                                        backgroundColor:
+                                            promo.color?.toLowerCase() === '#dc2626'
+                                                ? '#F26522'
+                                                : promo.color,
+                                    }}
                                 >
                                     Ver menú <ArrowRight size={16} strokeWidth={1.5} />
                                 </Link>
@@ -217,7 +222,7 @@ export default function PromoPageSimple() {
                             </div>
                         </div>
                         {/* Gift (?) Image */}
-                        <div className="aspect-square rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white bg-gradient-to-br from-red-500 to-rose-600 relative group-hover:-translate-y-3 group-hover:rotate-6 group-hover:scale-105 transition-all duration-500 delay-[150ms] flex flex-col items-center justify-center text-white">
+                        <div className="aspect-square rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white bg-gradient-to-br from-orange-500 to-rose-600 relative group-hover:-translate-y-3 group-hover:rotate-6 group-hover:scale-105 transition-all duration-500 delay-[150ms] flex flex-col items-center justify-center text-white">
                             <span className="text-6xl lg:text-8xl font-black drop-shadow-2xl opacity-90 mt-2">
                                 ?
                             </span>
@@ -234,14 +239,14 @@ export default function PromoPageSimple() {
                 </div>
 
                 {/* Weekly Banner */}
-                <div className="bg-red-600 rounded-[2.5rem] md:rounded-[3rem] px-5 py-10 md:p-12 text-center text-white mb-20 relative overflow-hidden shadow-[0_20px_50px_rgba(220,38,38,0.3)]">
+                <div className="bg-orange-600 rounded-[2.5rem] md:rounded-[3rem] px-5 py-10 md:p-12 text-center text-white mb-20 relative overflow-hidden shadow-[0_20px_50px_rgba(242,101,34,0.3)]">
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
 
                     <div className="relative z-10 max-w-3xl mx-auto">
                         <h2 className="text-2xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
                             ¡Premio a tu lealtad!
                         </h2>
-                        <p className="text-base md:text-2xl font-medium mb-8 opacity-90 text-red-100">
+                        <p className="text-base md:text-2xl font-medium mb-8 opacity-90 text-orange-100">
                             ¡Cada 5º pedido con un 5% de descuento para nuestros clientes favoritos!
                         </p>
                         <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full text-sm md:text-xl font-black mb-10 border border-white/30 tracking-wide">
@@ -250,7 +255,7 @@ export default function PromoPageSimple() {
                         <br />
                         <Link
                             to={user ? '/menu' : '/profile'}
-                            className="inline-flex items-center gap-2 bg-white text-red-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-90 shadow-xl hover:shadow-2xl"
+                            className="inline-flex items-center gap-2 bg-white text-orange-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-90 shadow-xl hover:shadow-2xl"
                         >
                             {user ? 'HACER UN PEDIDO' : 'REGISTRARSE'}{' '}
                             <ArrowRight size={20} strokeWidth={1.5} />
@@ -261,7 +266,7 @@ export default function PromoPageSimple() {
                 {/* Promo Menu Items from API */}
                 <div className="mb-10 max-w-5xl mx-auto">
                     <div className="flex items-center justify-center gap-3 mb-10">
-                        <Tag size={28} strokeWidth={1.5} className="text-red-600" />
+                        <Tag size={28} strokeWidth={1.5} className="text-orange-600" />
                         <h2 className="text-3xl font-black text-gray-900 m-0 tracking-tight">
                             Menús especiales
                         </h2>
@@ -316,10 +321,10 @@ export default function PromoPageSimple() {
                                         </p>
                                         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-0 mt-auto">
                                             <div className="flex flex-col">
-                                                <span className="text-[10px] md:text-sm font-bold text-gray-400 line-through decoration-red-500/50 -mb-1">
+                                                <span className="text-[10px] md:text-sm font-bold text-gray-400 line-through decoration-orange-500/50 -mb-1">
                                                     {Math.round(item.price * 1.11)} €
                                                 </span>
-                                                <span className="text-base md:text-3xl font-black text-red-600 leading-none">
+                                                <span className="text-base md:text-3xl font-black text-orange-600 leading-none">
                                                     {item.price.toFixed(2).replace('.', ',')} €
                                                 </span>
                                             </div>
@@ -328,7 +333,7 @@ export default function PromoPageSimple() {
                                                 className={`flex items-center justify-center gap-1 px-3 py-2 md:px-6 md:py-3.5 rounded-xl font-black text-[10px] md:text-sm border-none cursor-pointer transition-all duration-300 active:scale-90 ${
                                                     addedItems.has(item.id)
                                                         ? 'bg-green-500 text-white shadow-lg'
-                                                        : 'bg-red-600 text-white hover:bg-red-700 shadow-xl'
+                                                        : 'bg-orange-600 text-white hover:bg-orange-700 shadow-xl'
                                                 }`}
                                             >
                                                 {addedItems.has(item.id) ? (

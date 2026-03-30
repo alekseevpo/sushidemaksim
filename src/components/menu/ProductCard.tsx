@@ -67,7 +67,7 @@ export default function ProductCard({
                     >
                         <Heart
                             size={16}
-                            className={isFavorite ? 'text-red-500' : 'text-gray-400'}
+                            className={isFavorite ? 'text-orange-500' : 'text-gray-400'}
                             fill={isFavorite ? 'currentColor' : 'none'}
                         />
                     </button>
@@ -83,7 +83,7 @@ export default function ProductCard({
                         loading={isPriority ? 'eager' : 'lazy'}
                         decoding="async"
                         {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
-                        className="w-full h-full object-cover transition-transform duration-700"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
                     />
                 ) : (
@@ -160,7 +160,7 @@ export default function ProductCard({
                         className={`h-8 w-8 md:h-11 md:w-[140px] md:px-6 rounded-lg md:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
                             isAdded
                                 ? 'bg-green-500 text-white cursor-default'
-                                : 'bg-gray-900 text-white hover:bg-red-600 hover:shadow-xl hover:shadow-red-200 active:scale-95'
+                                : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95'
                         }`}
                     >
                         <AnimatePresence mode="wait" initial={false}>

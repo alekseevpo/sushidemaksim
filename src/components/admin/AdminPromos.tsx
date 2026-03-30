@@ -141,8 +141,8 @@ const FieldLabel = ({ title, hint, language, align = 'left', className = '' }: a
                     onClick={() => setShowHint(!showHint)}
                     className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
                         showHint
-                            ? 'bg-red-500 text-white shadow-lg'
-                            : 'bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500'
+                            ? 'bg-orange-500 text-white shadow-lg'
+                            : 'bg-gray-100 text-gray-400 hover:bg-orange-50 hover:text-orange-500'
                     }`}
                 >
                     <HelpCircle size={10} strokeWidth={3} />
@@ -160,7 +160,7 @@ const FieldLabel = ({ title, hint, language, align = 'left', className = '' }: a
                         >
                             <div className="bg-gray-900 px-4 py-2 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
                                     <span className="text-[9px] font-black text-white uppercase tracking-widest">
                                         {infoLabel}
                                     </span>
@@ -255,7 +255,11 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
-                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <RefreshCw
+                    className="animate-spin text-orange-600 mb-6"
+                    size={48}
+                    strokeWidth={2}
+                />
                 <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
                     {t.loading}
                 </p>
@@ -295,7 +299,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                 is_active: true,
                             });
                         }}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-orange-600 text-white px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95"
                     >
                         <Plus size={16} strokeWidth={3} /> {t.newPromo}
                     </button>
@@ -309,7 +313,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         onSubmit={handleSave}
                         className="sticky top-8 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 space-y-6"
                     >
-                        <div className="flex items-center gap-3 text-red-600 border-l-4 border-red-100 pl-4 mb-2">
+                        <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4 mb-2">
                             <h3 className="font-black text-xs uppercase tracking-widest">
                                 {isEditing ? t.editPromo : t.addPromo}
                             </h3>
@@ -326,7 +330,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     required
                                     value={form.title}
                                     onChange={e => setForm({ ...form, title: e.target.value })}
-                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -339,7 +343,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     required
                                     value={form.discount}
                                     onChange={e => setForm({ ...form, discount: e.target.value })}
-                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -355,7 +359,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     onChange={e =>
                                         setForm({ ...form, description: e.target.value })
                                     }
-                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner resize-none"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner resize-none"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -375,13 +379,13 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     onChange={e =>
                                         setForm({ ...form, valid_until: e.target.value })
                                     }
-                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner"
                                 />
                                 <input
                                     required
                                     value={form.icon}
                                     onChange={e => setForm({ ...form, icon: e.target.value })}
-                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 text-center outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 text-center outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -401,7 +405,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                         required
                                         value={form.color}
                                         onChange={e => setForm({ ...form, color: e.target.value })}
-                                        className="w-full bg-white border border-gray-100 rounded-2xl pl-12 pr-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner lowercase"
+                                        className="w-full bg-white border border-gray-100 rounded-2xl pl-12 pr-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner lowercase"
                                     />
                                     <div
                                         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-md border border-gray-200 shadow-sm"
@@ -412,7 +416,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     required
                                     value={form.bg}
                                     onChange={e => setForm({ ...form, bg: e.target.value })}
-                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-red-400 transition-all shadow-inner"
+                                    className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner"
                                     placeholder="from-amber-500 to-amber-400"
                                 />
                             </div>
@@ -443,7 +447,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             <button
                                 type="submit"
                                 disabled={upsertMutation.isPending}
-                                className="flex-1 bg-gray-900 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95 shadow-lg"
+                                className="flex-1 bg-gray-900 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95 shadow-lg"
                             >
                                 {upsertMutation.isPending ? (
                                     <RefreshCw size={16} className="animate-spin" />
@@ -500,7 +504,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                                         {p.description}
                                                     </p>
                                                     {p.valid_until && (
-                                                        <div className="mt-2 text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                                                        <div className="mt-2 text-[9px] font-black text-orange-400 uppercase tracking-widest flex items-center gap-1.5">
                                                             <Clock size={10} strokeWidth={3} />{' '}
                                                             {p.valid_until}
                                                         </div>
@@ -540,7 +544,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                                 </button>
                                                 <button
                                                     onClick={() => setPromoToDelete(p)}
-                                                    className="p-3 bg-red-50 text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition-all border border-red-100 shadow-sm active:scale-95"
+                                                    className="p-3 bg-orange-50 text-orange-400 rounded-xl hover:bg-orange-600 hover:text-white transition-all border border-orange-100 shadow-sm active:scale-95"
                                                     title={t.alerts.deleted}
                                                 >
                                                     <Trash2 size={18} strokeWidth={2} />
@@ -578,7 +582,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     />
                     <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-red-50">
+                            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
                                 <Trash2 size={36} strokeWidth={2.5} />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
@@ -586,7 +590,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             </h3>
                             <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
                                 {t.modals.deleteDesc.replace('{name}', '')}
-                                <span className="text-red-600 font-black block mt-2 text-base">
+                                <span className="text-orange-600 font-black block mt-2 text-base">
                                     "{promoToDelete.title}"
                                 </span>
                             </p>
@@ -594,7 +598,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                 <button
                                     onClick={() => deleteMutation.mutate(promoToDelete.id)}
                                     disabled={deleteMutation.isPending}
-                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
+                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {deleteMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />

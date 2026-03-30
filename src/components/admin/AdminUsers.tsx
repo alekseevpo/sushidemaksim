@@ -285,7 +285,7 @@ const UserRow = memo(
                     <div className="flex flex-col gap-2">
                         {birthDate ? (
                             <div className="flex items-center gap-2 text-[11px] font-black text-gray-700 bg-gray-100/50 px-2 py-1 rounded-xl w-fit border border-gray-100">
-                                <Calendar size={12} strokeWidth={2} className="text-red-400" />
+                                <Calendar size={12} strokeWidth={2} className="text-orange-400" />
                                 <span className="tabular-nums">{birthDate}</span>
                             </div>
                         ) : (
@@ -324,7 +324,7 @@ const UserRow = memo(
                     </div>
                 </td>
                 <td className="px-5 py-4 text-center">
-                    <div className="font-black text-red-600 text-base tabular-nums">
+                    <div className="font-black text-orange-600 text-base tabular-nums">
                         {Number(user.totalSpent || 0)
                             .toFixed(2)
                             .replace('.', ',')}{' '}
@@ -368,7 +368,7 @@ const UserRow = memo(
                                 <Crown size={12} strokeWidth={2.5} /> {t.roles.superadmin}
                             </span>
                         ) : user.role === 'admin' ? (
-                            <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-red-100 shadow-sm">
+                            <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-orange-100 shadow-sm">
                                 <Shield size={12} strokeWidth={2.5} /> {t.roles.admin}
                             </span>
                         ) : user.role === 'waiter' ? (
@@ -410,7 +410,7 @@ const UserRow = memo(
                                     )}
                                     <button
                                         onClick={() => onDelete(user)}
-                                        className="p-2 text-gray-300 hover:text-red-600 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 transition-all shadow-sm active:scale-95"
+                                        className="p-2 text-gray-300 hover:text-orange-600 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 transition-all shadow-sm active:scale-95"
                                         title={t.modals.deleteTitle}
                                     >
                                         <Trash2 size={18} strokeWidth={2} />
@@ -549,7 +549,11 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
     if (isLoading && users.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
-                <RefreshCw className="animate-spin text-red-600 mb-6" size={48} strokeWidth={2} />
+                <RefreshCw
+                    className="animate-spin text-orange-600 mb-6"
+                    size={48}
+                    strokeWidth={2}
+                />
                 <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
                     {t.loading}
                 </p>
@@ -572,7 +576,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                         placeholder={t.searchPlaceholder}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 transition-all placeholder:text-gray-400 shadow-inner"
+                        className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all placeholder:text-gray-400 shadow-inner"
                     />
                     {search && (
                         <button
@@ -592,7 +596,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                 setFilter(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-[11px] font-black uppercase tracking-widest text-gray-700 appearance-none cursor-pointer focus:bg-white focus:border-red-400 transition-all shadow-sm"
+                            className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-[11px] font-black uppercase tracking-widest text-gray-700 appearance-none cursor-pointer focus:bg-white focus:border-orange-400 transition-all shadow-sm"
                         >
                             <option value="active">{t.filters.active}</option>
                             <option value="archived">{t.filters.archived}</option>
@@ -618,8 +622,8 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
             </div>
 
             {fetchError && (
-                <div className="bg-red-50 text-red-600 p-5 rounded-2xl mb-6 border-2 border-red-100 flex items-center gap-4 animate-in shake duration-500 shadow-xl shadow-red-50">
-                    <div className="bg-red-600 p-2 rounded-lg">
+                <div className="bg-orange-50 text-orange-600 p-5 rounded-2xl mb-6 border-2 border-orange-100 flex items-center gap-4 animate-in shake duration-500 shadow-xl shadow-orange-50">
+                    <div className="bg-orange-600 p-2 rounded-lg">
                         <AlertCircle className="text-white" size={20} strokeWidth={2} />
                     </div>
                     <p className="font-black uppercase tracking-tight text-sm">
@@ -644,13 +648,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                                 <ChevronDown
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             ) : (
                                                 <ChevronUp
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             )
                                         ) : (
@@ -679,13 +683,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                                 <ChevronDown
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             ) : (
                                                 <ChevronUp
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             )
                                         ) : (
@@ -708,13 +712,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                                 <ChevronDown
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             ) : (
                                                 <ChevronUp
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             )
                                         ) : (
@@ -737,13 +741,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                                 <ChevronDown
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             ) : (
                                                 <ChevronUp
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             )
                                         ) : (
@@ -766,13 +770,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                                 <ChevronDown
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             ) : (
                                                 <ChevronUp
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             )
                                         ) : (
@@ -795,13 +799,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                                 <ChevronDown
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             ) : (
                                                 <ChevronUp
                                                     size={14}
                                                     strokeWidth={3}
-                                                    className="text-red-500"
+                                                    className="text-orange-500"
                                                 />
                                             )
                                         ) : (
@@ -859,8 +863,8 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                 onClick={() => setPage(pageNum)}
                                 className={`w-10 h-10 flex items-center justify-center rounded-xl font-black text-sm transition-all shadow-sm active:scale-90 border ${
                                     pageNum === page
-                                        ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-200 scale-110'
-                                        : 'bg-white text-gray-400 border-gray-100 hover:border-red-400 hover:text-red-500'
+                                        ? 'bg-orange-600 text-white border-orange-600 shadow-lg shadow-orange-200 scale-110'
+                                        : 'bg-white text-gray-400 border-gray-100 hover:border-orange-400 hover:text-orange-500'
                                 }`}
                             >
                                 {pageNum}
@@ -879,7 +883,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                     />
                     <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-red-100 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+                            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
                                 <Trash2 size={40} strokeWidth={2.5} />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
@@ -887,12 +891,12 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                             </h3>
                             <p className="text-[12px] text-gray-400 font-bold mb-8 leading-relaxed uppercase tracking-widest">
                                 {t.modals.deleteConfirm.replace('{name}', '').replace('{id}', '')}
-                                <span className="text-red-600 font-black block mt-2 text-base">
+                                <span className="text-orange-600 font-black block mt-2 text-base">
                                     {userToDelete.name} (ID: #{userToDelete.id})
                                 </span>
                             </p>
-                            <div className="p-4 bg-red-50 border-2 border-red-100 rounded-2xl mb-10">
-                                <p className="text-red-700 font-black text-[10px] uppercase tracking-widest leading-relaxed">
+                            <div className="p-4 bg-orange-50 border-2 border-orange-100 rounded-2xl mb-10">
+                                <p className="text-orange-700 font-black text-[10px] uppercase tracking-widest leading-relaxed">
                                     {t.modals.deleteWarning}
                                 </p>
                             </div>
@@ -903,7 +907,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                         setUserToDelete(null);
                                     }}
                                     disabled={deleteMutation.isPending}
-                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
+                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {deleteMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />
@@ -996,7 +1000,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                 <button
                                     onClick={confirmRoleChange}
                                     disabled={roleMutation.isPending}
-                                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 active:scale-95 flex items-center justify-center gap-3"
+                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
                                 >
                                     {roleMutation.isPending && (
                                         <RefreshCw size={16} className="animate-spin" />

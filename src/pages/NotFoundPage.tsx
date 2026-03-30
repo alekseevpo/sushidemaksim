@@ -17,7 +17,7 @@ export default function NotFoundPage() {
             </Helmet>
 
             {/* Background elements */}
-            <div className="absolute top-1/4 -left-20 w-64 h-64 bg-red-100/30 rounded-full blur-3xl" />
+            <div className="absolute top-1/4 -left-20 w-64 h-64 bg-orange-100/30 rounded-full blur-3xl" />
             <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-orange-100/20 rounded-full blur-3xl" />
 
             <div className="relative z-10 flex flex-col items-center max-w-lg text-center gap-8">
@@ -33,10 +33,10 @@ export default function NotFoundPage() {
                     </h1>
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-[40px] shadow-2xl flex items-center justify-center rotate-12 relative overflow-hidden border border-gray-100">
-                            <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent opacity-50" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
                             <Search
                                 size={48}
-                                className="text-red-600 animate-pulse relative z-10"
+                                className="text-orange-600 animate-pulse relative z-10"
                                 strokeWidth={1.5}
                             />
                         </div>
@@ -109,7 +109,7 @@ export default function NotFoundPage() {
                 }}
                 className="absolute top-20 right-10 opacity-10 hidden lg:block"
             >
-                <Utensils size={100} className="text-red-500" />
+                <Utensils size={100} className="text-orange-500" />
             </motion.div>
         </div>
     );

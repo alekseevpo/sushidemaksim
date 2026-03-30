@@ -82,7 +82,7 @@ export default function PayForFriendPage() {
         return (
             <div className="min-h-screen flex items-center justify-center p-6 bg-[#FBF7F0]">
                 <div className="max-w-md w-full bg-white rounded-[32px] p-8 shadow-xl text-center border border-gray-100">
-                    <XCircle size={64} strokeWidth={1.5} className="text-red-500 mx-auto mb-6" />
+                    <XCircle size={64} strokeWidth={1.5} className="text-orange-500 mx-auto mb-6" />
                     <h2 className="text-2xl font-black mb-4 text-gray-900">
                         ¡Vaya! Algo salió mal
                     </h2>
@@ -139,7 +139,7 @@ export default function PayForFriendPage() {
                             >
                                 <div
                                     className={`w-32 h-32 mx-auto rounded-[32px] flex items-center justify-center text-white font-black text-3xl overflow-hidden shadow-2xl border-4 border-white
-                                        ${order.users?.avatar?.startsWith('http') ? 'bg-gray-100' : order.users?.avatar ? 'bg-gray-100 dark:text-gray-900' : 'bg-red-600'}`}
+                                        ${order.users?.avatar?.startsWith('http') ? 'bg-gray-100' : order.users?.avatar ? 'bg-gray-100 dark:text-gray-900' : 'bg-orange-600'}`}
                                 >
                                     {order.users?.avatar ? (
                                         order.users.avatar.startsWith('http') ? (
@@ -183,7 +183,7 @@ export default function PayForFriendPage() {
                                     initial={{ scale: 0, rotate: 10 }}
                                     animate={{ scale: 1, rotate: -5 }}
                                     transition={{ delay: 0.6, type: 'spring' }}
-                                    className="absolute -top-4 right-1/2 translate-x-16 bg-red-600 text-white text-[11px] font-black px-3 py-1.5 rounded-2xl shadow-xl border-2 border-white whitespace-nowrap"
+                                    className="absolute -top-4 right-1/2 translate-x-16 bg-orange-600 text-white text-[11px] font-black px-3 py-1.5 rounded-2xl shadow-xl border-2 border-white whitespace-nowrap"
                                 >
                                     ¡TENGO HAMBRE! 🐼
                                 </motion.div>
@@ -259,7 +259,7 @@ export default function PayForFriendPage() {
                                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
                                             Total a pagar
                                         </p>
-                                        <p className="text-2xl md:text-3xl font-black text-red-600 tracking-tighter">
+                                        <p className="text-2xl md:text-3xl font-black text-orange-600 tracking-tighter">
                                             {order.total.toFixed(2).replace('.', ',')} €
                                         </p>
                                     </div>
@@ -268,7 +268,7 @@ export default function PayForFriendPage() {
                                             <MapPin
                                                 size={14}
                                                 strokeWidth={1.5}
-                                                className="text-red-500"
+                                                className="text-orange-500"
                                             />{' '}
                                             Entrega en:
                                         </div>
@@ -347,7 +347,7 @@ export default function PayForFriendPage() {
                         <div className="flex flex-col gap-4 w-full max-w-xs">
                             <Link
                                 to="/menu"
-                                className="bg-red-600 text-white py-4 rounded-2xl font-black no-underline shadow-xl shadow-red-100 hover:bg-red-700 transition transform active:scale-90"
+                                className="bg-orange-600 text-white py-4 rounded-2xl font-black no-underline shadow-xl shadow-orange-100 hover:bg-orange-700 transition transform active:scale-90"
                             >
                                 Pedir sushi para mí 🍣
                             </Link>

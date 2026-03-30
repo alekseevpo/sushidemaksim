@@ -75,9 +75,13 @@ const PageWrapper = ({
     const isProfile = location.pathname === '/profile';
 
     useEffect(() => {
-        window.scrollTo(0, 0);
-        (window as any).lenis?.scrollTo(0, { immediate: true });
-    }, [location.pathname]);
+        // Only scroll to top if there's no hash (anchor) or search params
+        // to avoid breaking shared links or deep linking
+        if (!location.hash && !location.search) {
+            window.scrollTo(0, 0);
+            (window as any).lenis?.scrollTo(0, { immediate: true });
+        }
+    }, [location.pathname, location.hash, location.search]);
 
     return (
         <motion.div

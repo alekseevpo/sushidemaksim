@@ -79,7 +79,7 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
                                         });
                                         onClose();
                                     }}
-                                    className="w-full flex items-center justify-center gap-3 bg-red-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-red-200 border-none cursor-pointer"
+                                    className="w-full flex items-center justify-center gap-3 bg-orange-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-orange-200 border-none cursor-pointer"
                                 >
                                     <Share2 size={20} />
                                     Enviar a...

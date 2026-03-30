@@ -59,7 +59,7 @@ export default function BlogPostPage() {
     if (error || !post) {
         return (
             <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-4">
-                <AlertCircle size={60} strokeWidth={1.5} className="text-red-500 mb-6" />
+                <AlertCircle size={60} strokeWidth={1.5} className="text-orange-500 mb-6" />
                 <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">
                     ¡Ups! Algo salió mal
                 </h1>
@@ -137,18 +137,18 @@ export default function BlogPostPage() {
             <div className="absolute top-24 left-4 md:left-8 z-50 flex flex-col gap-4">
                 <Link
                     to="/blog"
-                    className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-red-600 w-fit"
+                    className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-orange-600 w-fit"
                 >
                     <ArrowLeft size={16} strokeWidth={1.5} /> Volver
                 </Link>
 
                 {/* Breadcrumbs UI */}
                 <nav className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-gray-400/80 bg-white/40 backdrop-blur-sm px-3 py-1 rounded-full w-fit">
-                    <Link to="/" className="hover:text-red-500 transition-colors">
+                    <Link to="/" className="hover:text-orange-500 transition-colors">
                         Inicio
                     </Link>
                     <span>/</span>
-                    <Link to="/blog" className="hover:text-red-500 transition-colors">
+                    <Link to="/blog" className="hover:text-orange-500 transition-colors">
                         Blog
                     </Link>
                     <span>/</span>
@@ -175,7 +175,7 @@ export default function BlogPostPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <span className="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+                        <span className="inline-block bg-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
                             {post.category}
                         </span>
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
@@ -183,11 +183,11 @@ export default function BlogPostPage() {
                         </h1>
                         <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm font-medium">
                             <span className="flex items-center gap-2">
-                                <Calendar size={16} strokeWidth={1.5} className="text-red-500" />
+                                <Calendar size={16} strokeWidth={1.5} className="text-orange-500" />
                                 {new Date(post.createdAt).toLocaleDateString()}
                             </span>
                             <span className="flex items-center gap-2">
-                                <Clock size={16} strokeWidth={1.5} className="text-red-500" />
+                                <Clock size={16} strokeWidth={1.5} className="text-orange-500" />
                                 {post.readTime || '5'} min de lectura
                             </span>
                         </div>
@@ -204,7 +204,7 @@ export default function BlogPostPage() {
                     transition={{ delay: 0.5, type: 'spring' }}
                     className="absolute -top-8 right-6 md:-top-10 md:right-10 bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3 pr-6"
                 >
-                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-600 font-bold text-lg">
+                    <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 font-bold text-lg">
                         {post.author ? post.author.charAt(0) : 'E'}
                     </div>
                     <div>
@@ -218,7 +218,7 @@ export default function BlogPostPage() {
                 </motion.div>
 
                 {/* Excerpt Overview */}
-                <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-serif italic border-l-4 border-red-500 pl-6 mb-12">
+                <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-serif italic border-l-4 border-orange-500 pl-6 mb-12">
                     {post.excerpt}
                 </p>
 
@@ -256,11 +256,11 @@ export default function BlogPostPage() {
                 <div className="max-w-5xl mx-auto px-4 md:px-6 mt-24">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-2xl font-black text-gray-900">
-                            Artículos <span className="text-red-600 italic">Relacionados</span>
+                            Artículos <span className="text-orange-600 italic">Relacionados</span>
                         </h3>
                         <Link
                             to="/blog"
-                            className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors"
+                            className="text-sm font-bold text-gray-400 hover:text-orange-500 transition-colors"
                         >
                             Ver todos
                         </Link>
@@ -283,10 +283,10 @@ export default function BlogPostPage() {
                                     />
                                 </div>
                                 <div className="p-4 flex-1 flex flex-col">
-                                    <span className="text-[10px] font-black text-red-600 uppercase mb-2 tracking-widest">
+                                    <span className="text-[10px] font-black text-orange-600 uppercase mb-2 tracking-widest">
                                         {rPost.category}
                                     </span>
-                                    <h4 className="font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-red-600 transition-colors">
+                                    <h4 className="font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
                                         {rPost.title}
                                     </h4>
                                 </div>

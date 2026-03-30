@@ -275,7 +275,7 @@ export default function AdminOrders({
         {
             value: 'cancelled',
             label: t.statusNames.cancelled,
-            color: 'bg-red-50 text-red-700 border-red-200',
+            color: 'bg-orange-50 text-orange-700 border-orange-200',
         },
     ];
 
@@ -300,7 +300,7 @@ export default function AdminOrders({
                                 placeholder={t.searchPlaceholder}
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
-                                className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-red-400 focus:ring-4 focus:ring-red-50 focus:outline-none transition-all placeholder:text-gray-400"
+                                className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 focus:outline-none transition-all placeholder:text-gray-400"
                             />
                             {search && (
                                 <button
@@ -364,15 +364,15 @@ export default function AdminOrders({
                                 }}
                                 className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap relative active:scale-95 ${
                                     filter === tab.id
-                                        ? 'bg-white text-red-600 shadow-sm border border-red-100 font-black'
+                                        ? 'bg-white text-orange-600 shadow-sm border border-orange-100 font-black'
                                         : 'text-gray-400 hover:text-gray-600'
                                 }`}
                             >
                                 {tab.label}
                                 {tab.badge && (
                                     <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 border-2 border-white shadow-sm"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-orange-600 border-2 border-white shadow-sm"></span>
                                     </span>
                                 )}
                             </button>
@@ -382,8 +382,8 @@ export default function AdminOrders({
             </div>
 
             {fetchError && (
-                <div className="bg-red-50 text-red-600 p-5 rounded-2xl mb-6 border-2 border-red-100 flex items-center gap-4 animate-in shake duration-500 shadow-xl shadow-red-50">
-                    <div className="bg-red-600 p-2 rounded-lg">
+                <div className="bg-orange-50 text-orange-600 p-5 rounded-2xl mb-6 border-2 border-orange-100 flex items-center gap-4 animate-in shake duration-500 shadow-xl shadow-orange-50">
+                    <div className="bg-orange-600 p-2 rounded-lg">
                         <RefreshCw className="animate-spin text-white" size={20} strokeWidth={2} />
                     </div>
                     <p className="font-black uppercase tracking-tight text-sm">
@@ -406,7 +406,7 @@ export default function AdminOrders({
                     {isLoading && orders.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
                             <RefreshCw
-                                className="animate-spin text-red-600 mb-6"
+                                className="animate-spin text-orange-600 mb-6"
                                 size={48}
                                 strokeWidth={2}
                             />
@@ -425,7 +425,7 @@ export default function AdminOrders({
                                     <div className="flex items-center gap-4">
                                         <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
                                             <Package
-                                                className="text-red-500"
+                                                className="text-orange-500"
                                                 size={24}
                                                 strokeWidth={2}
                                             />
@@ -490,7 +490,7 @@ export default function AdminOrders({
                                     {/* Info Cliente & Stats */}
                                     <div className="space-y-8">
                                         <div>
-                                            <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-red-100 pl-3">
+                                            <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-orange-100 pl-3">
                                                 <Smartphone size={16} strokeWidth={2} />
                                                 <span className="text-[11px] font-black uppercase tracking-widest leading-none">
                                                     {t.clientContact}
@@ -499,7 +499,7 @@ export default function AdminOrders({
                                             <div className="flex items-center gap-4 mb-4">
                                                 <div
                                                     className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border-2 border-white
-                                                        ${order.users?.avatar?.startsWith('http') ? 'bg-white' : order.users?.avatar ? 'bg-gray-100 text-[24px]' : 'bg-red-600'}`}
+                                                        ${order.users?.avatar?.startsWith('http') ? 'bg-white' : order.users?.avatar ? 'bg-gray-100 text-[24px]' : 'bg-orange-600'}`}
                                                 >
                                                     {order.users?.avatar ? (
                                                         order.users.avatar.startsWith('http') ? (
@@ -626,7 +626,7 @@ export default function AdminOrders({
                                                     </p>
                                                 </div>
                                                 <div className="col-span-2 pt-3 border-t border-gray-200 mt-1 space-y-1.5">
-                                                    <div className="flex items-center gap-2 text-red-500">
+                                                    <div className="flex items-center gap-2 text-orange-500">
                                                         <Heart
                                                             size={12}
                                                             strokeWidth={3}
@@ -745,7 +745,7 @@ export default function AdminOrders({
                                                                 </div>
                                                             )}
                                                             {scheduled && (
-                                                                <div className="px-4 py-3 rounded-2xl bg-red-600 text-white border-2 border-red-700/50 text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-md">
+                                                                <div className="px-4 py-3 rounded-2xl bg-orange-600 text-white border-2 border-orange-700/50 text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-md">
                                                                     <Clock
                                                                         size={18}
                                                                         strokeWidth={3}
@@ -810,7 +810,7 @@ export default function AdminOrders({
                                                     className="flex items-center justify-between gap-3 py-2.5 border-b border-gray-100 last:border-0 hover:bg-white px-3 rounded-xl transition-all group/item"
                                                 >
                                                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                        <span className="text-[13px] font-black text-red-600 bg-red-50 w-7 h-7 flex items-center justify-center rounded-lg shadow-inner group-hover/item:bg-red-600 group-hover/item:text-white transition-colors">
+                                                        <span className="text-[13px] font-black text-orange-600 bg-orange-50 w-7 h-7 flex items-center justify-center rounded-lg shadow-inner group-hover/item:bg-orange-600 group-hover/item:text-white transition-colors">
                                                             {item.quantity}
                                                         </span>
                                                         <span className="text-[13px] font-black text-gray-800 uppercase tracking-tight line-clamp-1">
@@ -925,8 +925,8 @@ export default function AdminOrders({
                             }}
                             className={`w-12 h-12 flex items-center justify-center rounded-2xl font-black text-sm transition-all shadow-sm active:scale-90 border ${
                                 pageNum === pagination.page
-                                    ? 'bg-red-600 text-white border-red-600 shadow-md font-black italic'
-                                    : 'bg-white text-gray-400 border-gray-100 hover:border-red-400 hover:text-red-500'
+                                    ? 'bg-orange-600 text-white border-orange-600 shadow-md font-black italic'
+                                    : 'bg-white text-gray-400 border-gray-100 hover:border-orange-400 hover:text-orange-500'
                             }`}
                         >
                             {pageNum}

@@ -1,7 +1,7 @@
 export const ProfileSkeleton = () => (
     <div className="min-h-screen bg-transparent flex flex-col">
         {/* Header Section Skeleton - More Compact */}
-        <div className="bg-red-600 pt-8 pb-32 px-4 relative overflow-hidden">
+        <div className="bg-orange-600 pt-8 pb-32 px-4 relative overflow-hidden">
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                     <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white/20 skeleton border-2 border-white/10 shadow-xl" />

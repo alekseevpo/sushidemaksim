@@ -106,7 +106,7 @@ export default function CartSummary({
                     <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
                         <div className="text-right">
-                            <span className="text-red-600">
+                            <span className="text-orange-600">
                                 {finalTotal.toFixed(2).replace('.', ',')} €
                             </span>
                         </div>
@@ -116,14 +116,14 @@ export default function CartSummary({
 
             <div className="mb-8">
                 <div className="flex items-center gap-2 mb-3">
-                    <div className="w-1.5 h-4 bg-red-600 rounded-full" />
+                    <div className="w-1.5 h-4 bg-orange-600 rounded-full" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                         Cupón de descuento
                     </span>
                 </div>
                 {!promoDiscount ? (
                     <div className="relative group">
-                        <div className="flex gap-1 p-1 pr-1.5 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl transition-all duration-300 focus-within:border-red-500/30 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-red-500/5">
+                        <div className="flex gap-1 p-1 pr-1.5 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl transition-all duration-300 focus-within:border-orange-500/30 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-orange-500/5">
                             <input
                                 type="text"
                                 value={promoCode}
@@ -141,7 +141,7 @@ export default function CartSummary({
                                     ${
                                         isApplyingPromo || !promoCode.trim()
                                             ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                                            : 'bg-red-600 text-white hover:bg-black hover:scale-105 active:scale-95 shadow-red-100'
+                                            : 'bg-orange-600 text-white hover:bg-black hover:scale-105 active:scale-95 shadow-orange-100'
                                     }`}
                             >
                                 {isApplyingPromo ? (
@@ -182,7 +182,7 @@ export default function CartSummary({
                                     triggerHaptic(HAPTIC_PATTERNS.MEDIUM);
                                     handleRemovePromo();
                                 }}
-                                className="w-8 h-8 rounded-full hover:bg-red-50 text-gray-300 hover:text-red-500 transition-all duration-300 bg-white shadow-sm border border-gray-100 flex items-center justify-center cursor-pointer group/close"
+                                className="w-8 h-8 rounded-full hover:bg-orange-50 text-gray-300 hover:text-orange-500 transition-all duration-300 bg-white shadow-sm border border-gray-100 flex items-center justify-center cursor-pointer group/close"
                             >
                                 <X
                                     size={14}
@@ -198,8 +198,8 @@ export default function CartSummary({
                         animate={{ opacity: 1, y: 0 }}
                         className="mt-3 flex items-center gap-2 px-2"
                     >
-                        <div className="w-1 h-1 rounded-full bg-red-400 animate-pulse" />
-                        <p className="text-[10px] text-red-500 font-black uppercase tracking-wider italic">
+                        <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
+                        <p className="text-[10px] text-orange-500 font-black uppercase tracking-wider italic">
                             {promoError}
                         </p>
                     </motion.div>
@@ -223,7 +223,7 @@ export default function CartSummary({
                     (deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasApartment))
                 }
                 className={`px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base transition disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide
-                    ${isMinOrderMet ? 'bg-red-600 text-white hover:bg-red-700 shadow-red-200' : 'bg-gray-200 text-gray-400 shadow-none'}`}
+                    ${isMinOrderMet ? 'bg-orange-600 text-white hover:bg-orange-700 shadow-orange-200' : 'bg-gray-200 text-gray-400 shadow-none'}`}
                 data-testid="order-button"
             >
                 {isOrdering ? (

@@ -190,7 +190,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                         className="relative w-full max-w-md bg-white md:rounded-b-[2rem] shadow-2xl flex flex-col"
                     >
                         {/* Header Image/Pattern */}
-                        <div className="h-16 md:h-18 bg-red-600 relative overflow-hidden flex items-center justify-center shrink-0">
+                        <div className="h-16 md:h-18 bg-orange-600 relative overflow-hidden flex items-center justify-center shrink-0">
                             <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-2 pointer-events-none">
                                 {[...Array(15)].map((_, i) => (
                                     <div key={i} className="text-2xl font-serif text-white">
@@ -240,7 +240,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-3">
                                     {error && (
-                                        <div className="p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 text-red-600 text-[11px] font-bold">
+                                        <div className="p-3 bg-orange-50 border border-orange-100 rounded-xl flex items-center gap-3 text-orange-600 text-[11px] font-bold">
                                             <AlertCircle size={14} />
                                             {error}
                                         </div>
@@ -280,7 +280,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     Fecha primero
                                                 </div>
                                             ) : isDayClosed ? (
-                                                <div className="h-11 flex items-center justify-center bg-red-50 border border-red-100 rounded-xl text-[10px] font-bold text-red-500 uppercase text-center tracking-widest px-2">
+                                                <div className="h-11 flex items-center justify-center bg-orange-50 border border-orange-100 rounded-xl text-[10px] font-bold text-orange-500 uppercase text-center tracking-widest px-2">
                                                     Cerrado
                                                 </div>
                                             ) : (
@@ -294,7 +294,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                         name="time"
                                                         value={formData.time}
                                                         onChange={handleChange}
-                                                        className="w-full pl-10 pr-8 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none appearance-none cursor-pointer"
+                                                        className="w-full pl-10 pr-8 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none appearance-none cursor-pointer"
                                                     >
                                                         <option value="" disabled>
                                                             Selecciona hora
@@ -337,7 +337,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                                 ),
                                                             }))
                                                         }
-                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                                     >
                                                         <Minus size={14} strokeWidth={3} />
                                                     </button>
@@ -349,7 +349,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                                 guests: prev.guests + 1,
                                                             }))
                                                         }
-                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                                     >
                                                         <Plus size={14} strokeWidth={3} />
                                                     </button>
@@ -374,7 +374,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     pattern="[0-9]{9,}"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    className="w-full pl-11 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-11 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -396,7 +396,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                 placeholder="Tu nombre"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
+                                                className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none"
                                             />
                                         </div>
                                     </div>
@@ -418,7 +418,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     placeholder="tucorreo@ejemplo.com"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-red-600/5 focus:border-red-600 transition-all outline-none"
+                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -427,7 +427,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     <button
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 flex items-center justify-center gap-2 mt-4 active:scale-[0.98] border-none cursor-pointer"
+                                        className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 mt-4 active:scale-[0.98] border-none cursor-pointer"
                                     >
                                         {/* Shine & Anim Effects */}
                                         {/* No shine effect */}

@@ -51,7 +51,7 @@ export default function ProductGrid({
                         setSearch('');
                         setSelectedCategory('all');
                     }}
-                    className="mt-8 px-8 py-3.5 bg-gray-900 text-white rounded-2xl font-black border-none cursor-pointer hover:bg-red-600 transition-colors shadow-lg"
+                    className="mt-8 px-8 py-3.5 bg-gray-900 text-white rounded-2xl font-black border-none cursor-pointer hover:bg-orange-600 transition-colors shadow-lg"
                 >
                     Ver Todo
                 </button>
@@ -83,7 +83,7 @@ export default function ProductGrid({
                                         <cat.icon
                                             size={24}
                                             strokeWidth={1.5}
-                                            className="text-red-600"
+                                            className="text-orange-600"
                                         />
                                     )}
                                 </div>

@@ -1,7 +1,7 @@
 export const PromoSkeleton = () => (
     <div className="flex-1 bg-transparent">
         {/* Hero Header Skeleton */}
-        <section className="relative bg-red-600/10 pt-24 pb-32 px-4 border-b border-gray-100">
+        <section className="relative bg-orange-600/10 pt-24 pb-32 px-4 border-b border-gray-100">
             <div className="max-w-4xl mx-auto text-center relative z-10 space-y-4">
                 <div className="h-12 w-3/4 skeleton rounded-2xl mx-auto" />
                 <div className="h-6 w-1/2 skeleton rounded-lg mx-auto opacity-40" />
@@ -27,7 +27,7 @@ export const PromoSkeleton = () => (
             </div>
 
             {/* Weekly Banner Skeleton */}
-            <div className="bg-red-100 h-64 md:h-80 rounded-[2.5rem] md:rounded-[3rem] mb-20 skeleton" />
+            <div className="bg-orange-100 h-64 md:h-80 rounded-[2.5rem] md:rounded-[3rem] mb-20 skeleton" />
 
             {/* Promo Menu Items Skeleton */}
             <div className="max-w-5xl mx-auto space-y-10">

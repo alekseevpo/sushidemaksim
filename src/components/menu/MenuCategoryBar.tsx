@@ -123,7 +123,7 @@ export default function MenuCategoryBar({
     }
 
     return (
-        <aside className="hidden lg:block w-[220px] flex-shrink-0 relative bg-red-600">
+        <aside className="hidden lg:block w-[220px] flex-shrink-0 relative bg-orange-600">
             <div
                 className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col items-stretch pb-10 overflow-visible no-scrollbar"
                 data-lenis-prevent

@@ -290,14 +290,14 @@ export default function AdminDashboard({
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <h2 className="text-lg font-black text-gray-900 border-l-4 border-red-600 pl-3 uppercase tracking-tight">
+                <h2 className="text-lg font-black text-gray-900 border-l-4 border-orange-600 pl-3 uppercase tracking-tight">
                     {t.summary}
                 </h2>
 
                 <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => navigate('/menu')}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl text-xs font-black hover:bg-black transition shadow-lg active:scale-95 uppercase tracking-wider"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-orange-600 text-white rounded-xl text-xs font-black hover:bg-black transition shadow-lg active:scale-95 uppercase tracking-wider"
                     >
                         <ExternalLink size={16} strokeWidth={2} />
                         {t.viewStore}
@@ -326,7 +326,7 @@ export default function AdminDashboard({
                     <div className="flex items-center gap-5 relative z-10 w-full md:w-auto">
                         <div
                             className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-inner border border-black/5
-                            ${isClosed ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600 animate-pulse'}`}
+                            ${isClosed ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600 animate-pulse'}`}
                         >
                             <Power
                                 size={28}
@@ -340,7 +340,7 @@ export default function AdminDashboard({
                             </h3>
                             <div className="flex items-center gap-2">
                                 <span
-                                    className={`flex h-2.5 w-2.5 rounded-full ${isClosed ? 'bg-red-500' : 'bg-green-500 animate-pulse ring-4 ring-green-100'}`}
+                                    className={`flex h-2.5 w-2.5 rounded-full ${isClosed ? 'bg-orange-500' : 'bg-green-500 animate-pulse ring-4 ring-green-100'}`}
                                 />
                                 <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
                                     {isClosed ? t.storeClosed : t.storeOpen}
@@ -356,7 +356,7 @@ export default function AdminDashboard({
                             ${
                                 isClosed
                                     ? 'bg-green-600 text-white hover:bg-black shadow-green-100'
-                                    : 'bg-red-600 text-white hover:bg-black shadow-red-100'
+                                    : 'bg-orange-600 text-white hover:bg-black shadow-orange-100'
                             }
                             ${isUpdatingStatus ? 'opacity-50 cursor-not-allowed' : ''}
                         `}
@@ -405,7 +405,7 @@ export default function AdminDashboard({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -20, scale: 0.98 }}
                     >
-                        <div className="bg-red-600 text-white p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-5 shadow-2xl shadow-red-100 border-2 border-red-500/50">
+                        <div className="bg-orange-600 text-white p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-5 shadow-2xl shadow-orange-100 border-2 border-orange-500/50">
                             <div className="flex items-center gap-5">
                                 <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-md shadow-inner">
                                     <AlertTriangle
@@ -424,7 +424,7 @@ export default function AdminDashboard({
                             </div>
                             <button
                                 onClick={toggleStoreStatus}
-                                className="w-full md:w-auto bg-white text-red-600 px-10 py-4 rounded-2xl text-[11px] font-black hover:bg-black hover:text-white transition-all shadow-xl active:scale-95 uppercase tracking-widest"
+                                className="w-full md:w-auto bg-white text-orange-600 px-10 py-4 rounded-2xl text-[11px] font-black hover:bg-black hover:text-white transition-all shadow-xl active:scale-95 uppercase tracking-widest"
                             >
                                 {t.activateNow}
                             </button>
@@ -464,7 +464,7 @@ export default function AdminDashboard({
                             .toFixed(2)
                             .replace('.', ',')} €`}
                         icon={AlertTriangle}
-                        colorClass="bg-red-50 text-red-600"
+                        colorClass="bg-orange-50 text-orange-600"
                         desc={t.stats.missedDesc}
                         hint={t.stats.missedHint}
                         t={t}
@@ -503,12 +503,12 @@ export default function AdminDashboard({
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-50">
                         <h3 className="font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">
-                            <div className="w-1.5 h-6 bg-red-600 rounded-full" />
+                            <div className="w-1.5 h-6 bg-orange-600 rounded-full" />
                             {t.recentOrders}
                         </h3>
                         <button
                             onClick={() => setActiveTab('orders')}
-                            className="text-red-600 text-[10px] font-black hover:text-black transition-colors uppercase tracking-widest border-b-2 border-red-100"
+                            className="text-orange-600 text-[10px] font-black hover:text-black transition-colors uppercase tracking-widest border-b-2 border-orange-100"
                         >
                             {t.viewAll}
                         </button>
@@ -537,7 +537,7 @@ export default function AdminDashboard({
                                     <div className="flex items-center gap-3">
                                         <div
                                             className={`w-11 h-11 rounded-2xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border border-white
-                                                ${order.user_avatar?.startsWith('http') ? 'bg-white' : order.user_avatar ? 'bg-gray-100 text-[18px]' : 'bg-red-600'}`}
+                                                ${order.user_avatar?.startsWith('http') ? 'bg-white' : order.user_avatar ? 'bg-gray-100 text-[18px]' : 'bg-orange-600'}`}
                                         >
                                             {order.user_avatar ? (
                                                 order.user_avatar.startsWith('http') ? (
@@ -598,7 +598,7 @@ export default function AdminDashboard({
 
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
                     <h3 className="font-black text-gray-900 uppercase tracking-tight mb-6 pb-2 border-b border-gray-50 flex items-center gap-2">
-                        <div className="w-1.5 h-6 bg-red-600 rounded-full" />
+                        <div className="w-1.5 h-6 bg-orange-600 rounded-full" />
                         {t.topProducts}
                     </h3>
 
@@ -619,7 +619,7 @@ export default function AdminDashboard({
                         <div className="space-y-4">
                             {stats.topItems.map((item: any, idx: number) => (
                                 <div key={idx} className="flex items-center gap-4 group">
-                                    <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-black text-[14px] shadow-inner group-hover:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center font-black text-[14px] shadow-inner group-hover:scale-110 transition-transform">
                                         #{idx + 1}
                                     </div>
                                     <div className="flex-1">
@@ -633,7 +633,7 @@ export default function AdminDashboard({
                                         </div>
                                         <div className="w-full bg-gray-50 h-2.5 rounded-full overflow-hidden border border-gray-100 shadow-inner p-0.5">
                                             <div
-                                                className="bg-red-600 h-full rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(220,38,38,0.3)]"
+                                                className="bg-orange-600 h-full rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(242,101,34,0.3)]"
                                                 style={{
                                                     width: `${Math.min(100, (item.sold / (stats.topItems[0].sold || 1)) * 100)}%`,
                                                 }}
@@ -651,7 +651,7 @@ export default function AdminDashboard({
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6 overflow-hidden hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-8 pb-3 border-b border-gray-100">
                     <h3 className="font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">
-                        <div className="w-1.5 h-6 bg-red-600 rounded-full" />
+                        <div className="w-1.5 h-6 bg-orange-600 rounded-full" />
                         {t.reportHistory}
                     </h3>
                     <span className="text-[10px] font-black text-gray-400 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100 uppercase tracking-widest shadow-inner">
@@ -697,7 +697,7 @@ export default function AdminDashboard({
                                     >
                                         <td className="px-4 py-5">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex flex-col items-center justify-center shadow-sm group-hover:bg-red-600 group-hover:border-red-600 transition-colors">
+                                                <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex flex-col items-center justify-center shadow-sm group-hover:bg-orange-600 group-hover:border-orange-600 transition-colors">
                                                     <span className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1 group-hover:text-white/80">
                                                         {new Date(report.date).toLocaleDateString(
                                                             dateLocale,
@@ -710,7 +710,7 @@ export default function AdminDashboard({
                                                         {new Date(report.date).getDate()}
                                                     </span>
                                                 </div>
-                                                <span className="text-xs font-black text-gray-700 uppercase tracking-tight group-hover:text-red-600 transition-colors">
+                                                <span className="text-xs font-black text-gray-700 uppercase tracking-tight group-hover:text-orange-600 transition-colors">
                                                     {new Date(report.date).toLocaleDateString(
                                                         dateLocale,
                                                         {
@@ -755,7 +755,7 @@ export default function AdminDashboard({
                                             <ChevronRight
                                                 size={18}
                                                 strokeWidth={2.5}
-                                                className="text-gray-200 group-hover:text-red-500 group-hover:translate-x-1.5 transition-all inline-block"
+                                                className="text-gray-200 group-hover:text-orange-500 group-hover:translate-x-1.5 transition-all inline-block"
                                             />
                                         </td>
                                     </tr>

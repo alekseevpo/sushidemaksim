@@ -68,8 +68,8 @@ export default function StoreStatusBanner() {
                 <div className="max-w-7xl mx-auto px-4 py-2 md:py-2.5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
                         <div className="flex items-center gap-3 w-full md:w-auto">
-                            <div className="w-8 h-8 rounded-xl bg-red-600/10 flex items-center justify-center shrink-0 border border-red-500/20 shadow-inner">
-                                <Clock size={16} className="text-red-500" />
+                            <div className="w-8 h-8 rounded-xl bg-orange-600/10 flex items-center justify-center shrink-0 border border-orange-500/20 shadow-inner">
+                                <Clock size={16} className="text-orange-500" />
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function StoreStatusBanner() {
                                             ? 'Restaurante Cerrado'
                                             : 'Fuera de Horario'}
                                     </p>
-                                    <span className="px-1.5 py-0.5 bg-red-600/20 text-red-500 text-[7px] md:text-[8px] font-black rounded-full border border-red-500/20">
+                                    <span className="px-1.5 py-0.5 bg-orange-600/20 text-orange-500 text-[7px] md:text-[8px] font-black rounded-full border border-orange-500/20">
                                         PRE-ORDEN
                                     </span>
                                 </div>
@@ -95,8 +95,8 @@ export default function StoreStatusBanner() {
 
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             {timeLeftDisplay && (
-                                <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 decoration-red-500">
-                                    <Timer size={14} className="text-red-500" />
+                                <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 decoration-orange-500">
+                                    <Timer size={14} className="text-orange-500" />
                                     <span className="text-[10px] uppercase font-black text-gray-400 tracking-wider">
                                         Abrimos en:
                                     </span>
@@ -117,7 +117,7 @@ export default function StoreStatusBanner() {
                                             Se procesarán al abrir.
                                         </p>
                                         {timeLeftDisplay && (
-                                            <p className="lg:hidden text-[8px] text-red-400 font-black leading-none">
+                                            <p className="lg:hidden text-[8px] text-orange-400 font-black leading-none">
                                                 ● {timeLeftDisplay}
                                             </p>
                                         )}

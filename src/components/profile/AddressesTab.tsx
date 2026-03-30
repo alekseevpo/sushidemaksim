@@ -244,7 +244,7 @@ export default function AddressesTab({
                 {!showAddAddress && (
                     <button
                         onClick={handleAddClick}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
+                        className="flex items-center gap-2 px-6 py-2.5 bg-orange-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95"
                     >
                         <Plus size={16} strokeWidth={1.5} /> Añadir dirección
                     </button>
@@ -255,9 +255,9 @@ export default function AddressesTab({
             {showAddAddress && (
                 <div
                     ref={formRef}
-                    className="bg-gray-50 border-2 border-red-600/20 rounded-[32px] p-6 md:p-8 space-y-6 relative overflow-hidden"
+                    className="bg-gray-50 border-2 border-orange-600/20 rounded-[32px] p-6 md:p-8 space-y-6 relative overflow-hidden"
                 >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-600 rounded-full blur-[60px] opacity-5 -mr-16 -mt-16" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600 rounded-full blur-[60px] opacity-5 -mr-16 -mt-16" />
 
                     <div className="flex items-center justify-between relative z-10">
                         <h3 className="text-lg font-black text-gray-900 m-0">
@@ -281,7 +281,7 @@ export default function AddressesTab({
                                 onChange={e =>
                                     setNewAddress(p => ({ ...p, label: e.target.value }))
                                 }
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
+                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                 placeholder="Casa"
                             />
                         </div>
@@ -294,7 +294,7 @@ export default function AddressesTab({
                                 onChange={e =>
                                     setNewAddress(p => ({ ...p, phone: e.target.value }))
                                 }
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
+                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                 placeholder="+34 600 000 000"
                             />
                         </div>
@@ -307,7 +307,7 @@ export default function AddressesTab({
                                 <input
                                     value={searchQuery || newAddress.street}
                                     onChange={e => handleStreetChange(e.target.value)}
-                                    className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all ${newAddress.street && 'border-green-100 bg-green-50/10'}`}
+                                    className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all ${newAddress.street && 'border-green-100 bg-green-50/10'}`}
                                     placeholder="Introduce tu calle y número..."
                                     autoComplete="off"
                                 />
@@ -325,15 +325,15 @@ export default function AddressesTab({
                                             key={i}
                                             type="button"
                                             onClick={() => handleSelectSuggestion(s)}
-                                            className="flex items-start gap-3 w-full p-4 text-left hover:bg-red-50 transition-colors group"
+                                            className="flex items-start gap-3 w-full p-4 text-left hover:bg-orange-50 transition-colors group"
                                         >
                                             <MapPin
                                                 size={14}
                                                 strokeWidth={1.5}
-                                                className="mt-1 text-gray-300 group-hover:text-red-500 transition-colors shrink-0"
+                                                className="mt-1 text-gray-300 group-hover:text-orange-500 transition-colors shrink-0"
                                             />
                                             <div className="flex flex-col min-w-0">
-                                                <span className="text-xs font-bold text-gray-900 group-hover:text-red-600 truncate">
+                                                <span className="text-xs font-bold text-gray-900 group-hover:text-orange-600 truncate">
                                                     {s.address?.road ||
                                                         s.display_name.split(',')[0]}
                                                     {s.address?.house_number &&
@@ -366,7 +366,7 @@ export default function AddressesTab({
                                 placeholder="Busca arriba..."
                             />
                             {!newAddress.house && newAddress.street && (
-                                <p className="text-[9px] font-bold text-red-500 mt-1 px-1 animate-pulse leading-none h-1">
+                                <p className="text-[9px] font-bold text-orange-500 mt-1 px-1 animate-pulse leading-none h-1">
                                     Busca tu calle con el número arriba
                                 </p>
                             )}
@@ -380,7 +380,7 @@ export default function AddressesTab({
                                 onChange={e =>
                                     setNewAddress(p => ({ ...p, apartment: e.target.value }))
                                 }
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-600/20 outline-none transition-all"
+                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                 placeholder="Piso 3, Puerta A..."
                             />
                         </div>
@@ -416,7 +416,7 @@ export default function AddressesTab({
                                 onChange={e =>
                                     setNewAddress(p => ({ ...p, isDefault: e.target.checked }))
                                 }
-                                className="w-5 h-5 rounded-lg border-2 border-gray-300 text-red-600 focus:ring-red-600 transition-all cursor-pointer"
+                                className="w-5 h-5 rounded-lg border-2 border-gray-300 text-orange-600 focus:ring-orange-600 transition-all cursor-pointer"
                             />
                             <span className="text-sm font-black text-gray-600 group-hover:text-gray-900 transition-colors">
                                 Establecer como predeterminada
@@ -432,7 +432,7 @@ export default function AddressesTab({
                             </button>
                             <button
                                 onClick={handleSaveAddress}
-                                className="flex-1 sm:flex-none h-[52px] flex items-center justify-center px-8 bg-red-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-red-700 transition-all shadow-xl shadow-red-100 active:scale-95 text-center leading-tight"
+                                className="flex-1 sm:flex-none h-[52px] flex items-center justify-center px-8 bg-orange-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 active:scale-95 text-center leading-tight"
                             >
                                 {editId ? 'Guardar Cambios' : 'Guardar Dirección'}
                             </button>
@@ -454,7 +454,7 @@ export default function AddressesTab({
                         </p>
                         <button
                             onClick={handleAddClick}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all"
+                            className="inline-flex items-center gap-2 px-8 py-3 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition-all"
                         >
                             <Plus size={18} strokeWidth={1.5} /> Añadir ahora
                         </button>
@@ -466,13 +466,13 @@ export default function AddressesTab({
                             className={`group p-3 md:p-4 rounded-[24px] border transition-all duration-300 flex flex-row items-center gap-3 md:gap-5
                                 ${
                                     addr.isDefault
-                                        ? 'bg-red-50/50 border-red-200 shadow-lg shadow-red-100/30'
-                                        : 'bg-white border-gray-100 hover:border-red-100 hover:shadow-md'
+                                        ? 'bg-orange-50/50 border-orange-200 shadow-lg shadow-orange-100/30'
+                                        : 'bg-white border-gray-100 hover:border-orange-100 hover:shadow-md'
                                 }`}
                         >
                             <div
                                 className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-sm
-                                ${addr.isDefault ? 'bg-red-600 text-white shadow-red-200' : 'bg-gray-100 text-gray-400'}`}
+                                ${addr.isDefault ? 'bg-orange-600 text-white shadow-orange-200' : 'bg-gray-100 text-gray-400'}`}
                             >
                                 <MapPin size={addr.isDefault ? 18 : 20} strokeWidth={1.5} />
                             </div>
@@ -522,7 +522,7 @@ export default function AddressesTab({
                                 </button>
                                 <button
                                     onClick={() => setAddressToDelete(addr.id)}
-                                    className="h-9 w-9 md:h-11 md:w-11 flex items-center justify-center bg-red-50/50 text-red-400 border border-red-50 rounded-2xl hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-sm"
+                                    className="h-9 w-9 md:h-11 md:w-11 flex items-center justify-center bg-orange-50/50 text-orange-400 border border-orange-50 rounded-2xl hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-all shadow-sm"
                                 >
                                     <Trash2 size={16} strokeWidth={1.5} />
                                 </button>
