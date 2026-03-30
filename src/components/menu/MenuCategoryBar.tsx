@@ -124,69 +124,67 @@ export default function MenuCategoryBar({
 
     return (
         <aside className="hidden lg:block w-[220px] flex-shrink-0 relative bg-red-600">
-            <div className="sticky top-[72px] h-[calc(100vh-72px)] overflow-hidden">
-                <div
-                    className="h-full flex flex-col items-stretch pb-10 overflow-y-auto no-scrollbar"
-                    data-lenis-prevent
-                >
-                    <LayoutGroup id="sidebar-katana">
-                        <nav className="flex flex-col py-4 px-3 relative z-10">
-                            <button
-                                onClick={() => setSelectedCategory('all')}
-                                className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
+            <div
+                className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col items-stretch pb-10 overflow-visible no-scrollbar"
+                data-lenis-prevent
+            >
+                <LayoutGroup id="sidebar-katana">
+                    <nav className="flex flex-col py-4 px-3 relative z-10">
+                        <button
+                            onClick={() => setSelectedCategory('all')}
+                            className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
+                                selectedCategory === 'all'
+                                    ? 'text-white'
+                                    : 'text-white/40 hover:text-white'
+                            }`}
+                        >
+                            <Sparkles
+                                size={20}
+                                strokeWidth={selectedCategory === 'all' ? 2.5 : 2}
+                                className={`relative z-10 transition-transform duration-300 ${
                                     selectedCategory === 'all'
+                                        ? 'stroke-current scale-110'
+                                        : 'group-hover:scale-110'
+                                }`}
+                            />
+                            <span className="text-sm relative z-10 font-bold tracking-wide">
+                                Todos
+                            </span>
+                            {selectedCategory === 'all' && <KatanaUnderline />}
+                        </button>
+
+                        {CATEGORIES.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
+                                    selectedCategory === cat.id
                                         ? 'text-white'
                                         : 'text-white/40 hover:text-white'
                                 }`}
                             >
-                                <Sparkles
+                                <cat.icon
                                     size={20}
-                                    strokeWidth={selectedCategory === 'all' ? 2.5 : 2}
+                                    strokeWidth={selectedCategory === cat.id ? 2.5 : 2}
                                     className={`relative z-10 transition-transform duration-300 ${
-                                        selectedCategory === 'all'
-                                            ? 'stroke-current scale-110'
+                                        selectedCategory === cat.id
+                                            ? 'scale-110'
                                             : 'group-hover:scale-110'
                                     }`}
                                 />
                                 <span className="text-sm relative z-10 font-bold tracking-wide">
-                                    Todos
+                                    {cat.name}
                                 </span>
-                                {selectedCategory === 'all' && <KatanaUnderline />}
+                                {selectedCategory === cat.id && <KatanaUnderline />}
                             </button>
+                        ))}
+                    </nav>
+                </LayoutGroup>
 
-                            {CATEGORIES.map(cat => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setSelectedCategory(cat.id)}
-                                    className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
-                                        selectedCategory === cat.id
-                                            ? 'text-white'
-                                            : 'text-white/40 hover:text-white'
-                                    }`}
-                                >
-                                    <cat.icon
-                                        size={20}
-                                        strokeWidth={selectedCategory === cat.id ? 2.5 : 2}
-                                        className={`relative z-10 transition-transform duration-300 ${
-                                            selectedCategory === cat.id
-                                                ? 'scale-110'
-                                                : 'group-hover:scale-110'
-                                        }`}
-                                    />
-                                    <span className="text-sm relative z-10 font-bold tracking-wide">
-                                        {cat.name}
-                                    </span>
-                                    {selectedCategory === cat.id && <KatanaUnderline />}
-                                </button>
-                            ))}
-                        </nav>
-                    </LayoutGroup>
-
-                    <div className="mt-auto py-10 flex items-center justify-center pointer-events-none select-none opacity-40 relative z-10">
-                        <span className="text-white text-7xl font-serif drop-shadow-[2px_5px_10px_rgba(0,0,0,0.3)]">
-                            福
-                        </span>
-                    </div>
+                <div className="mt-auto py-10 flex items-center justify-center pointer-events-none select-none opacity-40 relative z-10">
+                    <span className="text-white text-7xl font-serif drop-shadow-[2px_5px_10px_rgba(0,0,0,0.3)]">
+                        福
+                    </span>
                 </div>
             </div>
         </aside>
