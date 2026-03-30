@@ -423,7 +423,7 @@ export default function Header() {
                                                 setLoginModalMode('login');
                                                 setIsLoginModalOpen(true);
                                             }}
-                                            className="bg-gray-900 text-white px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 transition-all hover:bg-black"
+                                            className="bg-gray-900 text-white border-2 border-transparent px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 transition-all hover:bg-black"
                                         >
                                             ACCEDER
                                         </button>
@@ -731,7 +731,7 @@ export default function Header() {
                                                             setShowMobileMenu(false);
                                                             setIsLoginModalOpen(true);
                                                         }}
-                                                        className="w-full py-4 rounded-[20px] bg-gray-900 text-white border-none cursor-pointer font-black text-[14px] shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-2"
+                                                        className="w-full py-4 rounded-[20px] bg-gray-900 text-white border-2 border-transparent cursor-pointer font-black text-[14px] shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-2"
                                                     >
                                                         <User size={18} />
                                                         Acceder
