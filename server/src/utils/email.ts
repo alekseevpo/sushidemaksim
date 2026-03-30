@@ -803,7 +803,7 @@ export async function sendReservationEmail(
             `
                     : `
             <div style="text-align: center;">
-                <a href="${config.frontendUrl}/admin" style="display:inline-block;background:#000000;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:14px;box-shadow:0 8px 25px rgba(0,0,0,0.1);">GESTIONAR EN PANEL</a>
+                <a href="${config.frontendUrl}" style="display:inline-block;background:#000000;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:14px;box-shadow:0 8px 25px rgba(0,0,0,0.1);">GESTIONAR EN PANEL</a>
             </div>
             `
             }
