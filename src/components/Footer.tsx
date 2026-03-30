@@ -41,7 +41,7 @@ export default function Footer() {
             id: 'thefork',
             name: 'The Fork',
             icon: '/fork.png',
-            url: 'https://www.thefork.es/restaurante/sushi-de-maksim-r804561',
+            url: 'https://www.thefork.es/restaurante/sushi-de-maksim-r753228',
             hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30',
         },
     ];
