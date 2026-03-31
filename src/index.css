@@ -4,6 +4,7 @@
 
 html {
     scrollbar-gutter: stable;
+    background-color: #ea580c;
 }
 
 /* Global backdrop-filter removal — as requested by the user */

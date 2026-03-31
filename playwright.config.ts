@@ -29,7 +29,7 @@ export default defineConfig({
         },
     ],
 
-    /* Run your local dev server before starting the tests */
+    /* Run your local dev server before starting the tests 
     webServer: [
         {
             command: 'npm run dev',
@@ -44,4 +44,5 @@ export default defineConfig({
             timeout: 60_000,
         },
     ],
+    */
 });

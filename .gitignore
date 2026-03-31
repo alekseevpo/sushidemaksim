@@ -15,7 +15,14 @@ server/data/*.sqlite
 
 # Logs
 *.log
+logs/
 server/server.log
+nohup.out
+test_debug.txt
+test_output*.txt
+
+# Archive
+scripts/archive/
 
 # OS files
 .DS_Store
