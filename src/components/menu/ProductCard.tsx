@@ -83,7 +83,7 @@ export default function ProductCard({
                         loading={isPriority ? 'eager' : 'lazy'}
                         decoding="async"
                         {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 active:scale-110 md:active:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 md:group-hover:scale-105 active:scale-110 md:active:scale-105"
                         onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
                     />
                 ) : (
