@@ -295,17 +295,26 @@ router.get(
                 query = query.eq('status', status);
             }
         }
-        if (userId) query = query.eq('user_id', userId);
+
+        if (userId) {
+            query = query.eq('user_id', userId);
+        }
 
         if (search) {
             const searchNum = parseInt(search);
+            const isUUID = search.includes('-') && search.length > 20;
+
             if (!isNaN(searchNum) && searchNum.toString() === search) {
                 query = query.or(
-                    `id.eq.${searchNum},phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promocode.ilike.%${search}%`
+                    `id.eq.${searchNum},phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promo_code.ilike.%${search}%`
+                );
+            } else if (isUUID) {
+                query = query.or(
+                    `user_id.eq.${search},phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promo_code.ilike.%${search}%`
                 );
             } else {
                 query = query.or(
-                    `phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promocode.ilike.%${search}%`
+                    `phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promo_code.ilike.%${search}%`
                 );
             }
         }
@@ -326,12 +335,13 @@ router.get(
         const userStatsMap: Record<string, any> = {};
 
         if (userIds.length > 0) {
-            const { data: usersWithAllOrders } = await supabase
+            const statsQuery = supabase
                 .from('users')
                 .select(
                     'id, created_at, orders(total, created_at, items:order_items(name, quantity))'
-                )
-                .in('id', userIds);
+                );
+
+            const { data: usersWithAllOrders } = await statsQuery.in('id', userIds);
 
             (usersWithAllOrders || []).forEach((u: any) => {
                 const userOrders = u.orders || [];
@@ -381,6 +391,9 @@ router.get(
                 }
 
                 userStatsMap[u.id] = {
+                    name: u.name,
+                    email: u.email,
+                    avatar: u.avatar,
                     orderCount,
                     totalSpent,
                     avgCheck,
@@ -430,6 +443,14 @@ router.patch(
     }),
     asyncHandler(async (req: Request, res: Response) => {
         const { status } = req.body;
+
+        // 1. Fetch old state to check transitions and get user info
+        const { data: oldOrder } = await supabase
+            .from('orders')
+            .select('status, user_id, users(email, name)')
+            .eq('id', req.params.id)
+            .single();
+
         const { data: order } = await supabase
             .from('orders')
             .update({ status })
@@ -437,7 +458,74 @@ router.patch(
             .select('*, order_items(*)')
             .single();
 
-        const orderWithItems = { ...order, items: order.order_items };
+        const orderWithItems = { ...order, items: order?.order_items || [] };
+
+        // 2. Loyalty Check: If transitioned to 'delivered' and has a user_id
+        if (
+            order &&
+            status === 'delivered' &&
+            oldOrder &&
+            oldOrder.status !== 'delivered' &&
+            oldOrder.user_id
+        ) {
+            try {
+                // Get total delivered orders for this user (including this one, because order was just updated)
+                const { count: deliveredCount, error: countErr } = await supabase
+                    .from('orders')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', oldOrder.user_id)
+                    .eq('status', 'delivered');
+
+                if (countErr) {
+                    console.error('[LOYALTY] Error counting delivered orders:', countErr);
+                } else if (deliveredCount && deliveredCount > 0) {
+                    const userEmail = (oldOrder as any).users?.email;
+                    const userName = (oldOrder as any).users?.name || 'Cliente';
+
+                    // ───── 5% DISCOUNT (Triggered after 4th, 9th, 14th... to be used in 5th, 10th, 15th...) ─────
+                    if (deliveredCount % 5 === 4) {
+                        const code = `LOYALTY5-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+                        await supabase.from('promo_codes').insert({
+                            code,
+                            discount_percentage: 5,
+                            user_id: oldOrder.user_id,
+                            is_used: false,
+                        });
+
+                        if (userEmail) {
+                            const { sendLoyaltyGiftEmail } = await import('../utils/email.js');
+                            await sendLoyaltyGiftEmail(userEmail, userName, code);
+                            console.log(
+                                `[LOYALTY] Sent 5% promo ${code} to ${userEmail} after their ${deliveredCount}th order (for use in 5th/10th/etc).`
+                            );
+                        }
+                    }
+
+                    // ───── FREE DESSERT (Triggered after 9th, 19th... to be used in 10th, 20th...) ─────
+                    if (deliveredCount % 10 === 9) {
+                        const dessertCode = `DESSERT-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+
+                        // Store dessert code with 0% discount (it's a marker)
+                        await supabase.from('promo_codes').insert({
+                            code: dessertCode,
+                            discount_percentage: 0,
+                            user_id: oldOrder.user_id,
+                            is_used: false,
+                        });
+
+                        if (userEmail) {
+                            const { sendDessertGiftEmail } = await import('../utils/email.js');
+                            await sendDessertGiftEmail(userEmail, userName, dessertCode);
+                            console.log(
+                                `[LOYALTY] Sent Dessert promo ${dessertCode} to ${userEmail} after their ${deliveredCount}th order (for use in 10th/20th/etc).`
+                            );
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('[LOYALTY] Failed to process loyalty reward:', err);
+            }
+        }
 
         // Realtime Broadcast
         if (order) {
@@ -518,9 +606,10 @@ router.get(
             let query = getBaseQuery();
 
             if (search) {
-                const searchNum = parseInt(search);
-                if (!isNaN(searchNum) && searchNum.toString() === search) {
-                    query = query.eq('id', searchNum);
+                const isUUID = search.includes('-') && search.length > 20;
+
+                if (isUUID) {
+                    query = query.eq('id', search);
                 } else {
                     query = query.or(`email.ilike.%${search}%,name.ilike.%${search}%`);
                 }
@@ -557,9 +646,10 @@ router.get(
             let query = getBaseQuery({ count: 'exact' });
 
             if (search) {
-                const searchNum = parseInt(search);
-                if (!isNaN(searchNum) && searchNum.toString() === search) {
-                    query = query.eq('id', searchNum);
+                const isUUID = search.includes('-') && search.length > 20;
+
+                if (isUUID) {
+                    query = query.eq('id', search);
                 } else {
                     query = query.or(`email.ilike.%${search}%,name.ilike.%${search}%`);
                 }
@@ -610,7 +700,7 @@ router.patch(
         role: { required: true, enum: ['user', 'admin', 'waiter'] },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
 
         const { data: currentUser } = await supabase
             .from('users')
@@ -630,7 +720,7 @@ router.patch(
         const { data: user, error } = await supabase
             .from('users')
             .update({ role })
-            .eq('id', id)
+            .eq('id', req.params.id)
             .select('id, name, email, role, is_superadmin')
             .single();
 
@@ -646,13 +736,12 @@ router.patch(
         isVerified: { required: true, type: 'boolean' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
         const { isVerified } = req.body;
 
         const { error } = await supabase
             .from('users')
             .update({ is_verified: isVerified })
-            .eq('id', id);
+            .eq('id', req.params.id);
 
         if (error) throw error;
         res.json({ success: true });
@@ -663,7 +752,7 @@ router.patch(
 router.delete(
     '/users/:id',
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
 
         if (id === req.userId) {
             return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
@@ -673,7 +762,7 @@ router.delete(
         const { error } = await supabase
             .from('users')
             .update({ deleted_at: new Date().toISOString() })
-            .eq('id', id);
+            .eq('id', req.params.id);
 
         if (error) throw error;
         res.json({ success: true, message: `Usuario #${id} archivado correctamente` });
@@ -684,8 +773,7 @@ router.delete(
 router.patch(
     '/users/:id/restore',
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
-
+        const id = req.params.id;
         const { error } = await supabase.from('users').update({ deleted_at: null }).eq('id', id);
 
         if (error) throw error;
@@ -700,7 +788,7 @@ router.patch(
         verified: { required: true, type: 'boolean' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
         const { verified } = req.body;
 
         const { data: user, error } = await supabase

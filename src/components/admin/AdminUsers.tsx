@@ -20,6 +20,7 @@ import {
 
 import { api, ApiError } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../context/ToastContext';
 
 interface AdminUsersProps {
     language?: 'ru' | 'es';
@@ -168,6 +169,7 @@ const UserRow = memo(
         language: 'ru' | 'es';
     }) => {
         const t = USERS_TRANSLATIONS[language];
+        const { success } = useToast();
         const dateLocale = language === 'ru' ? 'ru-RU' : 'es-ES';
 
         const isOnline = user.lastSeenAt
@@ -213,12 +215,21 @@ const UserRow = memo(
 
         return (
             <tr className="hover:bg-gray-50/50 transition-colors group">
-                <td className="px-5 py-4 font-black text-gray-400 text-xs tabular-nums">
-                    #{user.id}
+                <td
+                    className="px-4 py-2.5 font-black text-gray-300 text-[9px] tabular-nums group-hover:text-gray-400 transition-colors cursor-pointer active:scale-95"
+                    title={user.id}
+                    onClick={() => {
+                        navigator.clipboard.writeText(user.id);
+                        success(language === 'ru' ? 'ID скопирован' : 'ID copiado');
+                    }}
+                >
+                    {typeof user.id === 'string' && user.id.includes('-')
+                        ? `#${user.id.slice(0, 8)}...`
+                        : `#${user.id}`}
                 </td>
-                <td className="px-5 py-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-gray-100 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-110">
+                <td className="px-4 py-2.5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-110">
                             {user.avatar ? (
                                 user.avatar.startsWith('http') ? (
                                     <img
@@ -241,7 +252,7 @@ const UserRow = memo(
                             )}
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="flex items-center gap-2 mb-0.5">
                                 <div className="font-black text-gray-900 line-clamp-1">
                                     {user.name}
                                 </div>
@@ -270,22 +281,22 @@ const UserRow = memo(
                                     </div>
                                 )}
                             </div>
-                            <div className="text-gray-400 text-[11px] font-bold line-clamp-1">
+                            <div className="text-gray-400 text-[10px] font-bold line-clamp-1">
                                 {user.email}
                             </div>
                             {user.phone && (
-                                <div className="text-gray-400 text-[10px] font-bold mt-0.5 tracking-tight tabular-nums">
+                                <div className="text-gray-400 text-[9px] font-bold mt-0.5 tracking-tight tabular-nums">
                                     {user.phone}
                                 </div>
                             )}
                         </div>
                     </div>
                 </td>
-                <td className="px-5 py-4">
-                    <div className="flex flex-col gap-2">
+                <td className="px-4 py-2.5">
+                    <div className="flex flex-col gap-1.5">
                         {birthDate ? (
-                            <div className="flex items-center gap-2 text-[11px] font-black text-gray-700 bg-gray-100/50 px-2 py-1 rounded-xl w-fit border border-gray-100">
-                                <Calendar size={12} strokeWidth={2} className="text-orange-400" />
+                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-700 bg-gray-100/50 px-2 py-0.5 rounded-lg w-fit border border-gray-100">
+                                <Calendar size={10} strokeWidth={2} className="text-orange-400" />
                                 <span className="tabular-nums">{birthDate}</span>
                             </div>
                         ) : (
@@ -318,13 +329,13 @@ const UserRow = memo(
                         )}
                     </div>
                 </td>
-                <td className="px-5 py-4 text-center">
-                    <div className="inline-flex items-center justify-center bg-gray-50 text-gray-900 w-10 h-10 rounded-2xl font-black text-sm border border-gray-100 shadow-inner tabular-nums">
+                <td className="px-4 py-2.5 text-center">
+                    <div className="inline-flex items-center justify-center bg-gray-50 text-gray-900 w-8 h-8 rounded-xl font-black text-xs border border-gray-100 shadow-inner tabular-nums">
                         {user.orderCount}
                     </div>
                 </td>
-                <td className="px-5 py-4 text-center">
-                    <div className="font-black text-orange-600 text-base tabular-nums">
+                <td className="px-4 py-2.5 text-center">
+                    <div className="font-black text-orange-600 text-sm tabular-nums">
                         {Number(user.totalSpent || 0)
                             .toFixed(2)
                             .replace('.', ',')}{' '}
@@ -332,19 +343,19 @@ const UserRow = memo(
                     </div>
                 </td>
 
-                <td className="px-5 py-4">
+                <td className="px-4 py-2.5">
                     <div className="flex flex-col gap-1">
                         {user.lastSeenAt ? (
-                            <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100 w-fit">
+                            <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 w-fit">
                                 {isOnline ? (
-                                    <div className="relative flex h-2.5 w-2.5">
+                                    <div className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border-2 border-white shadow-sm"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500 border-2 border-white shadow-sm"></span>
                                     </div>
                                 ) : (
-                                    <div className="h-2.5 w-2.5 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
+                                    <div className="h-2 w-2 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
                                 )}
-                                <span className="text-gray-700 font-black text-[11px] tabular-nums tracking-tight">
+                                <span className="text-gray-700 font-black text-[10px] tabular-nums tracking-tight">
                                     {lastSeenStr}
                                 </span>
                             </div>
@@ -358,26 +369,26 @@ const UserRow = memo(
                         )}
                     </div>
                 </td>
-                <td className="px-5 py-4 text-[11px] font-black text-gray-400 uppercase tracking-widest tabular-nums">
+                <td className="px-4 py-2.5 text-center text-[10px] font-bold text-gray-400 tabular-nums">
                     {regDate}
                 </td>
-                <td className="px-5 py-4 text-center">
-                    <div className="flex flex-col items-center gap-1.5">
+                <td className="px-4 py-2.5 text-center">
+                    <div className="flex flex-col items-center gap-1">
                         {user.isSuperadmin ? (
-                            <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-amber-100 shadow-sm">
-                                <Crown size={12} strokeWidth={2.5} /> {t.roles.superadmin}
+                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-amber-100 shadow-sm">
+                                <Crown size={10} strokeWidth={2.5} /> {t.roles.superadmin}
                             </span>
                         ) : user.role === 'admin' ? (
-                            <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-orange-100 shadow-sm">
-                                <Shield size={12} strokeWidth={2.5} /> {t.roles.admin}
+                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm">
+                                <Shield size={10} strokeWidth={2.5} /> {t.roles.admin}
                             </span>
                         ) : user.role === 'waiter' ? (
-                            <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-orange-100 shadow-sm">
-                                <Clock size={12} strokeWidth={2.5} /> {t.roles.waiter}
+                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm">
+                                <Clock size={10} strokeWidth={2.5} /> {t.roles.waiter}
                             </span>
                         ) : (
-                            <span className="inline-flex items-center gap-1.5 bg-gray-50 text-gray-500 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-gray-200">
-                                <UsersIcon size={12} strokeWidth={2.5} /> {t.roles.user}
+                            <span className="inline-flex items-center gap-1 bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-gray-200">
+                                <UsersIcon size={10} strokeWidth={2.5} /> {t.roles.user}
                             </span>
                         )}
                         {user.deletedAt && (
@@ -387,33 +398,33 @@ const UserRow = memo(
                         )}
                     </div>
                 </td>
-                <td className="px-5 py-4 text-center">
+                <td className="px-4 py-2.5 text-center">
                     {!user.isSuperadmin && (
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1.5">
                             {user.deletedAt ? (
                                 <button
                                     onClick={() => onRestore(user)}
-                                    className="p-2 px-3 flex items-center gap-2 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-green-100 shadow-sm active:scale-95"
+                                    className="p-1.5 px-2.5 flex items-center gap-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-green-100 shadow-sm active:scale-95"
                                     title={t.modals.restore}
                                 >
-                                    <RotateCcw size={14} strokeWidth={3} /> {t.modals.restore}
+                                    <RotateCcw size={12} strokeWidth={3} /> {t.modals.restore}
                                 </button>
                             ) : (
                                 <>
                                     {currentUser?.isSuperadmin && (
                                         <button
                                             onClick={() => onToggleRole(user)}
-                                            className="px-4 py-2 bg-white text-gray-600 hover:bg-black hover:text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-gray-200 shadow-sm active:scale-95"
+                                            className="px-3 py-1.5 bg-white text-gray-600 hover:bg-black hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-gray-200 shadow-sm active:scale-95"
                                         >
                                             {t.table.role}
                                         </button>
                                     )}
                                     <button
                                         onClick={() => onDelete(user)}
-                                        className="p-2 text-gray-300 hover:text-orange-600 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 transition-all shadow-sm active:scale-95"
+                                        className="p-1.5 text-gray-300 hover:text-orange-600 bg-gray-50 hover:bg-white rounded-lg border border-gray-100 transition-all shadow-sm active:scale-95"
                                         title={t.modals.deleteTitle}
                                     >
-                                        <Trash2 size={18} strokeWidth={2} />
+                                        <Trash2 size={16} strokeWidth={2} />
                                     </button>
                                 </>
                             )}
@@ -564,7 +575,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Search Bar */}
-            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm mb-6 flex flex-col md:flex-row gap-3 items-center justify-between">
                 <div className="relative w-full max-w-md">
                     <Search
                         size={18}
@@ -576,7 +587,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                         placeholder={t.searchPlaceholder}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all placeholder:text-gray-400 shadow-inner"
+                        className="w-full pl-11 pr-10 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-[13px] font-bold focus:bg-white focus:border-orange-400 transition-all placeholder:text-gray-400 shadow-inner"
                     />
                     {search && (
                         <button
@@ -596,7 +607,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                 setFilter(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl text-[11px] font-black uppercase tracking-widest text-gray-700 appearance-none cursor-pointer focus:bg-white focus:border-orange-400 transition-all shadow-sm"
+                            className="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-700 appearance-none cursor-pointer focus:bg-white focus:border-orange-400 transition-all shadow-sm"
                         >
                             <option value="active">{t.filters.active}</option>
                             <option value="archived">{t.filters.archived}</option>
@@ -609,7 +620,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
 
                     <button
                         onClick={() => refetch()}
-                        className="p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 rounded-xl shadow-sm transition-all active:scale-95"
+                        className="p-2.5 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 rounded-xl shadow-sm transition-all active:scale-95"
                         title={t.refresh}
                     >
                         <RefreshCw
@@ -638,7 +649,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                         <thead className="bg-gray-50/50 text-gray-400 border-b border-gray-100">
                             <tr>
                                 <th
-                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('id')}
                                 >
                                     <div className="flex items-center gap-2">
@@ -666,14 +677,14 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-5 py-5 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
                                     {t.table.nameEmail}
                                 </th>
-                                <th className="px-5 py-5 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
                                     {t.table.birthDate}
                                 </th>
                                 <th
-                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('orderCount')}
                                 >
                                     <div className="flex items-center justify-center gap-2">
@@ -702,7 +713,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('totalSpent')}
                                 >
                                     <div className="flex items-center justify-center gap-2">
@@ -731,7 +742,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('lastSeenAt')}
                                 >
                                     <div className="flex items-center gap-2">
@@ -760,7 +771,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('createdAt')}
                                 >
                                     <div className="flex items-center gap-2">
@@ -789,7 +800,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('role')}
                                 >
                                     <div className="flex items-center justify-center gap-2">
@@ -817,7 +828,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-5 py-5 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">
+                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center whitespace-nowrap">
                                     {t.table.actions}
                                 </th>
                             </tr>

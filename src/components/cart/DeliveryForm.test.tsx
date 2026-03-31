@@ -3,20 +3,22 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import DeliveryForm from './DeliveryForm';
 
 // Mock Lucide icons to speed up tests and avoid potential SVG issues
-vi.mock('lucide-react', () => ({
-    MapPin: () => <div data-testid="map-pin" />,
-    Truck: () => <div data-testid="truck" />,
-    Store: () => <div data-testid="store" />,
-    CreditCard: () => <div data-testid="credit-card" />,
-    Wallet: () => <div data-testid="wallet" />,
-    Smartphone: () => <div data-testid="smartphone" />,
-    Users: () => <div data-testid="users" />,
-    Minus: () => <div data-testid="minus">minus</div>,
-    Plus: () => <div data-testid="plus">plus</div>,
-    Calendar: () => <div data-testid="calendar" />,
-    ChevronLeft: () => <div data-testid="chevron-left" />,
-    ChevronRight: () => <div data-testid="chevron-right" />,
-}));
+vi.mock('lucide-react', async importOriginal => {
+    const actual = await importOriginal<any>();
+    return {
+        ...actual,
+        Package: () => <div data-testid="package-icon" />,
+        MapPin: () => <div data-testid="mappin-icon" />,
+        Truck: () => <div data-testid="truck-icon" />,
+        Store: () => <div data-testid="store-icon" />,
+        Smartphone: () => <div data-testid="smartphone-icon" />,
+        Clock: () => <div data-testid="clock-icon" />,
+        ChevronDown: () => <div data-testid="chevron-down-icon" />,
+        Plus: () => <div data-testid="plus" />,
+        Minus: () => <div data-testid="minus" />,
+        Calendar: () => <div data-testid="calendar" />,
+    };
+});
 
 // Mock triggerHaptic
 vi.mock('../../utils/haptics', () => ({

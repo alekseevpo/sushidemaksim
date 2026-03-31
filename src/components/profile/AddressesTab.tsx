@@ -19,6 +19,8 @@ interface AddressSuggestion {
         state?: string;
         neighbourhood?: string;
     };
+    lat: string;
+    lon: string;
 }
 
 interface Props {
@@ -48,6 +50,8 @@ export default function AddressesTab({
         postalCode: '',
         phone: '',
         isDefault: false,
+        lat: undefined as number | undefined,
+        lon: undefined as number | undefined,
     });
 
     const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
@@ -111,7 +115,16 @@ export default function AddressesTab({
         const city = addr.city || addr.town || addr.village || addr.suburb || 'Comunidad de Madrid';
         const postalCode = addr.postcode || '';
 
-        setNewAddress(p => ({ ...p, street, house, city, postalCode, apartment: '' }));
+        setNewAddress(p => ({
+            ...p,
+            street,
+            house,
+            city,
+            postalCode,
+            apartment: '',
+            lat: s.lat ? parseFloat(s.lat) : undefined,
+            lon: s.lon ? parseFloat(s.lon) : undefined,
+        }));
         ignoreNextSearchRef.current = true;
         setSearchQuery(street);
         setShowSuggestions(false);
@@ -154,6 +167,8 @@ export default function AddressesTab({
             postalCode: addr.postalCode || '',
             phone: addr.phone || '',
             isDefault: addr.isDefault,
+            lat: (addr as any).lat,
+            lon: (addr as any).lon,
         });
         ignoreNextSearchRef.current = true;
         setSearchQuery(addr.street);
@@ -176,6 +191,8 @@ export default function AddressesTab({
             postalCode: '',
             phone: '',
             isDefault: false,
+            lat: undefined,
+            lon: undefined,
         });
         setSearchQuery('');
         setEditId(null);
@@ -443,7 +460,23 @@ export default function AddressesTab({
 
             {/* Address List */}
             <div className="grid grid-cols-1 gap-4">
-                {addresses.length === 0 && !showAddAddress ? (
+                {!addresses ? (
+                    <div className="space-y-4">
+                        {[1, 2].map(i => (
+                            <div
+                                key={i}
+                                className="p-5 bg-white border border-gray-100 rounded-[24px] animate-pulse flex items-center gap-5"
+                            >
+                                <div className="w-12 h-12 bg-gray-100 rounded-xl shrink-0" />
+                                <div className="flex-1 space-y-3">
+                                    <div className="h-4 w-1/4 bg-gray-100 rounded" />
+                                    <div className="h-3 w-1/2 bg-gray-50 rounded" />
+                                    <div className="h-2 w-1/3 bg-gray-50/50 rounded" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : addresses.length === 0 && !showAddAddress ? (
                     <div className="bg-gray-50 rounded-[40px] p-12 text-center border-2 border-dashed border-gray-200">
                         <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 text-3xl">
                             🏠

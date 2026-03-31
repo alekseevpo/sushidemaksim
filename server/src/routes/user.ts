@@ -58,11 +58,13 @@ router.put(
         birthDate: { type: 'string' },
     }),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { name, email, phone, avatar, birthDate } = req.body;
+        const { name, phone, avatar, birthDate } = req.body;
 
         const { data: currentUser, error: fetchError } = await supabase
             .from('users')
-            .select('email, email_last_changed_at, name')
+            .select(
+                'email, email_last_changed_at, name, phone, birth_date, profile_last_changed_at'
+            )
             .eq('id', req.userId)
             .single();
 
@@ -70,12 +72,14 @@ router.put(
 
         const updateData: any = {};
 
-        if (email && email.toLowerCase().trim() !== currentUser.email.toLowerCase()) {
-            const newEmail = email.toLowerCase().trim();
+        // 1. Name, Phone, BirthDate Change Cooldown (Shared 30-day limit)
+        const isNameChanging = name && name.trim() !== (currentUser.name || '');
+        const isPhoneChanging = phone !== undefined && phone?.trim() !== (currentUser.phone || '');
+        const isBirthDateChanging = birthDate !== undefined && birthDate !== currentUser.birth_date;
 
-            // Check 30-day limit
-            if (currentUser.email_last_changed_at) {
-                const lastChanged = new Date(currentUser.email_last_changed_at);
+        if (isNameChanging || isPhoneChanging || isBirthDateChanging) {
+            if (currentUser.profile_last_changed_at) {
+                const lastChanged = new Date(currentUser.profile_last_changed_at);
                 const thirtyDaysAgo = new Date();
                 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -83,33 +87,34 @@ router.put(
                     const nextAllowed = new Date(lastChanged);
                     nextAllowed.setDate(nextAllowed.getDate() + 30);
                     return res.status(429).json({
-                        error: `Solo puedes cambiar tu email una vez cada 30 días. Próximo cambio disponible: ${nextAllowed.toLocaleDateString('es-ES')}`,
+                        error: `Solo puedes modificar tu nombre, teléfono o cumpleaños una vez cada 30 días. Disponible: ${nextAllowed.toLocaleDateString('es-ES')}`,
                     });
                 }
             }
-
-            // Check if email already exists
-            const { data: existing } = await supabase
-                .from('users')
-                .select('id')
-                .ilike('email', newEmail)
-                .neq('id', req.userId)
-                .maybeSingle();
-
-            if (existing) {
-                return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
-            }
-
-            // [MOD] Instant email update — no verification needed
-            updateData.email = newEmail.toLowerCase().trim();
-            updateData.pending_email = null;
-            updateData.email_last_changed_at = new Date().toISOString();
+            updateData.profile_last_changed_at = new Date().toISOString();
         }
 
         if (name) updateData.name = name.trim();
         if (phone !== undefined) updateData.phone = phone?.trim() || '';
         if (avatar !== undefined) updateData.avatar = avatar?.trim() || '';
-        if (birthDate !== undefined) updateData.birth_date = birthDate || null;
+        if (birthDate !== undefined) {
+            if (birthDate) {
+                const birthYear = new Date(birthDate).getFullYear();
+                if (birthYear < 1945) {
+                    return res
+                        .status(400)
+                        .json({ error: 'El año de nacimiento no puede ser inferior a 1945' });
+                }
+                const tomorrow = new Date();
+                tomorrow.setHours(23, 59, 59, 999);
+                if (new Date(birthDate) > tomorrow) {
+                    return res
+                        .status(400)
+                        .json({ error: 'La fecha de nacimiento no puede ser en el futuro' });
+                }
+            }
+            updateData.birth_date = birthDate || null;
+        }
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({ error: 'No hay datos para actualizar' });
@@ -281,15 +286,22 @@ router.post(
                 .eq('user_id', req.userId);
         }
 
-        // Check for existing duplicate
-        const { data: existing } = await supabase
+        // Check for existing duplicate with robust NULL/empty equality
+        const { data: userAddresses } = await supabase
             .from('user_addresses')
-            .select('id, phone, lat, lon')
-            .eq('user_id', req.userId)
-            .ilike('street', street.trim())
-            .ilike('house', house?.trim() || '')
-            .ilike('apartment', apartment?.trim() || '')
-            .maybeSingle();
+            .select('id, street, house, apartment, phone, lat, lon')
+            .eq('user_id', req.userId);
+
+        const targetStreet = street.trim().toLowerCase();
+        const targetHouse = (house?.trim() || '').toLowerCase();
+        const targetApartment = (apartment?.trim() || '').toLowerCase();
+
+        const existing = userAddresses?.find(addr => {
+            const s = (addr.street || '').trim().toLowerCase();
+            const h = (addr.house || '').trim().toLowerCase();
+            const a = (addr.apartment || '').trim().toLowerCase();
+            return s === targetStreet && h === targetHouse && a === targetApartment;
+        });
 
         if (existing) {
             // Update to set as default if requested, and FILL coordinates if they are now provided

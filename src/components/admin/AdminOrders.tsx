@@ -22,7 +22,9 @@ import {
     Activity,
 } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
 import { Order, OrderItem } from '../../types';
+import { AdminOrdersSkeleton } from '../skeletons/AdminOrdersSkeleton';
 
 interface AdminOrdersProps {
     isGlobalSoundEnabled: boolean;
@@ -87,6 +89,8 @@ const ORDERS_TRANSLATIONS = {
             delivered: 'Доставлен',
             cancelled: 'Отменен',
         },
+        corruptOrder: 'ОШИБКА: ЗАКАЗ БЕЗ ТОВАРОВ',
+        corruptOrderDesc: 'Этот заказ был прерван при создании. Пожалуйста, свяжитесь с клиентом.',
     },
     es: {
         searchPlaceholder: 'Buscar ID, Teléfono, Promo...',
@@ -143,6 +147,9 @@ const ORDERS_TRANSLATIONS = {
             delivered: 'Entregado',
             cancelled: 'Cancelado',
         },
+        corruptOrder: 'ERROR: PEDIDO SIN PRODUCTOS',
+        corruptOrderDesc:
+            'Este pedido se interrumpió durante su creación. Por favor, contacte con el cliente.',
     },
 } as const;
 
@@ -153,6 +160,7 @@ export default function AdminOrders({
     language = 'es',
 }: AdminOrdersProps) {
     const queryClient = useQueryClient();
+    const { success } = useToast();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<string>('active');
     const [page, setPage] = useState(1);
@@ -211,7 +219,7 @@ export default function AdminOrders({
 
     // Update Status Mutation
     const statusMutation = useMutation({
-        mutationFn: ({ id, newStatus }: { id: number; newStatus: string }) =>
+        mutationFn: ({ id, newStatus }: { id: string; newStatus: string }) =>
             api.patch(`/admin/orders/${id}/status`, { status: newStatus }),
         onMutate: async () => {
             // Optimistic update
@@ -232,7 +240,7 @@ export default function AdminOrders({
         },
     });
 
-    const handleUpdateStatus = (id: number, newStatus: string) => {
+    const handleUpdateStatus = (id: string, newStatus: string) => {
         statusMutation.mutate({ id, newStatus });
     };
 
@@ -404,16 +412,7 @@ export default function AdminOrders({
             ) : (
                 <div className="grid gap-6">
                     {isLoading && orders.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
-                            <RefreshCw
-                                className="animate-spin text-orange-600 mb-6"
-                                size={48}
-                                strokeWidth={2}
-                            />
-                            <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">
-                                {t.loadingOrders}
-                            </p>
-                        </div>
+                        <AdminOrdersSkeleton count={3} />
                     ) : (
                         orders.map((order: Order) => (
                             <div
@@ -432,9 +431,22 @@ export default function AdminOrders({
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-3 mb-1">
-                                                <h4 className="font-black text-gray-900 text-lg tracking-tight">
+                                                <h4
+                                                    className="font-black text-gray-900 text-lg tracking-tight cursor-pointer active:scale-95 transition-transform"
+                                                    title={order.id}
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(order.id);
+                                                        success(
+                                                            language === 'ru'
+                                                                ? 'ID заказа скопирован'
+                                                                : 'Pedido ID copiado'
+                                                        );
+                                                    }}
+                                                >
                                                     {t.orderId}
-                                                    {String(order.id).padStart(5, '0')}
+                                                    {order.id.length > 8
+                                                        ? order.id.slice(0, 8).toUpperCase()
+                                                        : order.id}
                                                 </h4>
                                                 <span
                                                     className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm ${
@@ -686,12 +698,33 @@ export default function AdminOrders({
                                                         part.includes('[ENTREGA PROGRAMADA:') ||
                                                         part.includes('[PROGRAMADO:')
                                                     ) {
-                                                        scheduled = part
+                                                        const rawDate = part
                                                             .replace('[ENTREGA PROGRAMADA: ', '')
                                                             .replace('[ENTREGA PROGRAMADA:', '')
                                                             .replace('[PROGRAMADO: ', '')
                                                             .replace('[PROGRAMADO:', '')
                                                             .replace(']', '');
+
+                                                        // Reformat YYYY-MM-DD to DD-MM-YYYY if needed
+                                                        const dateParts = rawDate.split(' ');
+                                                        if (dateParts.length === 2) {
+                                                            const [dPart, tPart] = dateParts;
+                                                            const components = dPart.split('-');
+                                                            if (components.length === 3) {
+                                                                const [c1, c2, c3] = components;
+                                                                // If first component is 4 digits (YYYY), it's ISO, reformat to DD-MM-YYYY
+                                                                if (c1.length === 4) {
+                                                                    scheduled = `${c3}-${c2}-${c1} ${tPart}`;
+                                                                } else {
+                                                                    // Already DD-MM-YYYY or something else, keep as is
+                                                                    scheduled = rawDate;
+                                                                }
+                                                            } else {
+                                                                scheduled = rawDate;
+                                                            }
+                                                        } else {
+                                                            scheduled = rawDate;
+                                                        }
                                                     } else if (
                                                         part.includes(
                                                             '[NO LLAMAR PARA CONFIRMACIÓN]'
@@ -797,33 +830,61 @@ export default function AdminOrders({
 
                                     {/* Items del pedido (Receipt Style) */}
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-purple-100 pl-3">
-                                            <ShoppingCart size={16} strokeWidth={2} />
-                                            <span className="text-[11px] font-black uppercase tracking-widest">
-                                                {t.products} ({order.items?.length || 0})
-                                            </span>
-                                        </div>
-                                        <div className="space-y-1 bg-gray-50/50 p-4 rounded-3xl border border-gray-100 shadow-inner">
-                                            {order.items?.map((item: OrderItem, idx: number) => (
-                                                <div
-                                                    key={idx}
-                                                    className="flex items-center justify-between gap-3 py-2.5 border-b border-gray-100 last:border-0 hover:bg-white px-3 rounded-xl transition-all group/item"
-                                                >
-                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                        <span className="text-[13px] font-black text-orange-600 bg-orange-50 w-7 h-7 flex items-center justify-center rounded-lg shadow-inner group-hover/item:bg-orange-600 group-hover/item:text-white transition-colors">
-                                                            {item.quantity}
-                                                        </span>
-                                                        <span className="text-[13px] font-black text-gray-800 uppercase tracking-tight line-clamp-1">
-                                                            {item.name}
+                                        <div className="flex items-center justify-between gap-3 text-gray-400 mb-4 border-l-4 border-purple-100 pl-3">
+                                            <div className="flex items-center gap-3">
+                                                <ShoppingCart size={16} strokeWidth={2} />
+                                                <span className="text-[11px] font-black uppercase tracking-widest">
+                                                    {t.products} ({order.items?.length || 0})
+                                                </span>
+                                            </div>
+                                            {order.total > 0 &&
+                                                (!order.items || order.items.length === 0) && (
+                                                    <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-xl border border-red-100 animate-pulse">
+                                                        <X size={14} strokeWidth={3} />
+                                                        <span className="text-[9px] font-black uppercase tracking-tighter">
+                                                            {t.corruptOrder}
                                                         </span>
                                                     </div>
-                                                    <span className="text-[12px] font-black text-gray-400 tabular-nums">
-                                                        {formatCurrency(
-                                                            item.priceAtTime * item.quantity
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            ))}
+                                                )}
+                                        </div>
+                                        <div className="space-y-1 bg-gray-50/50 p-4 rounded-3xl border border-gray-100 shadow-inner">
+                                            {order.items
+                                                ?.filter((item: OrderItem) => {
+                                                    const isDeliveryFee =
+                                                        item.name
+                                                            ?.toLowerCase()
+                                                            .includes('gastos') ||
+                                                        item.name
+                                                            ?.toLowerCase()
+                                                            .includes('envío') ||
+                                                        (item as any).menuItemId === -1 ||
+                                                        (item as any).menu_item_id === -1 ||
+                                                        (item as any).menuItemId === 0 ||
+                                                        !(item as any).menuItemId;
+                                                    return !isDeliveryFee;
+                                                })
+                                                .map((item: OrderItem, idx: number) => {
+                                                    return (
+                                                        <div
+                                                            key={idx}
+                                                            className="flex items-center justify-between gap-3 py-3 border-b border-gray-100 last:border-0 px-4 rounded-2xl transition-all group/item shadow-sm hover:bg-white"
+                                                        >
+                                                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                                <span className="text-[13px] font-black w-8 h-8 flex items-center justify-center rounded-xl shadow-sm transition-all text-orange-600 bg-orange-50 group-hover/item:bg-orange-600 group-hover/item:text-white">
+                                                                    {item.quantity}
+                                                                </span>
+                                                                <span className="text-[13px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
+                                                                    {item.name}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-[12px] font-black tabular-nums text-gray-400">
+                                                                {formatCurrency(
+                                                                    item.priceAtTime * item.quantity
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
 
                                             {order.deliveryFee && order.deliveryFee > 0 ? (
                                                 <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3">
@@ -837,6 +898,22 @@ export default function AdminOrders({
                                                     </span>
                                                 </div>
                                             ) : null}
+
+                                            {order.total > 0 &&
+                                                (!order.items || order.items.length === 0) && (
+                                                    <div className="p-4 bg-red-50 border-2 border-red-100 rounded-2xl flex flex-col items-center justify-center text-center gap-3 my-2 animate-in zoom-in duration-300">
+                                                        <div className="bg-white p-2 rounded-full shadow-sm">
+                                                            <X
+                                                                size={24}
+                                                                strokeWidth={3}
+                                                                className="text-red-500"
+                                                            />
+                                                        </div>
+                                                        <p className="text-[11px] font-black text-red-900 uppercase tracking-tight leading-tight">
+                                                            {t.corruptOrderDesc}
+                                                        </p>
+                                                    </div>
+                                                )}
                                         </div>
                                     </div>
 
@@ -850,12 +927,10 @@ export default function AdminOrders({
                                         </div>
                                         <div className="relative group/status">
                                             <select
+                                                data-testid="order-status-select"
                                                 value={order.status}
                                                 onChange={e =>
-                                                    handleUpdateStatus(
-                                                        Number(order.id),
-                                                        e.target.value
-                                                    )
+                                                    handleUpdateStatus(order.id, e.target.value)
                                                 }
                                                 disabled={statusMutation.isPending}
                                                 className={`w-full px-5 py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-8 focus:ring-gray-100 shadow-md ${

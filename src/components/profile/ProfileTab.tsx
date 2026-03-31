@@ -32,27 +32,11 @@ interface Props {
 const AVATAR_CATEGORIES = [
     {
         name: 'Sushi & Food',
-        icons: ['🍣', '🍱', '🍙', '🍥', '🍜', '🥟', '🍤', '🥢', '🍵', '🍶', '🍱', '🍢', '🍡'],
+        icons: ['🍣', '🍱', '🍙', '🍥', '🍜', '🥟', '🍤', '🥢', '🍵', '🍶', '🍢', '🍡'],
     },
     {
         name: 'Personajes',
-        icons: [
-            '🥷',
-            '🧑‍🍳',
-            '🦹',
-            '🦸',
-            '🧙',
-            '🧙',
-            '🧛',
-            '👹',
-            '👺',
-            '👻',
-            '👾',
-            '🤖',
-            '👽',
-            '💀',
-            '🤡',
-        ],
+        icons: ['🥷', '🧑‍🍳', '🦹', '🦸', '🧙', '🧛', '👹', '👺', '👻', '👾', '🤖', '👽', '💀', '🤡'],
     },
     {
         name: 'Animales Cool',
@@ -127,6 +111,17 @@ export default function ProfileTab({ user, updateProfile }: Props) {
     };
 
     const saveProfile = async () => {
+        if (editBirthDate) {
+            const birthYear = new Date(editBirthDate).getFullYear();
+            if (birthYear < 1945) {
+                error('El año de nacimiento no puede ser inferior a 1945');
+                return;
+            }
+            if (new Date(editBirthDate) > new Date()) {
+                error('La fecha de nacimiento no puede ser en el futuro');
+                return;
+            }
+        }
         try {
             const res = (await updateProfile({
                 name: editName,
@@ -257,6 +252,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         setter: setEditEmail,
                         icon: Mail,
                         type: 'email',
+                        disabled: true,
                     },
                     {
                         label: 'Teléfono',
@@ -278,6 +274,8 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         setter: setEditBirthDate,
                         icon: Calendar,
                         type: 'date',
+                        min: '1945-01-01',
+                        max: new Date().toISOString().split('T')[0],
                     },
                 ].map(field => (
                     <div
@@ -294,26 +292,63 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 <input
                                     type={field.type}
                                     value={field.editedValue}
-                                    onChange={e => field.setter(e.target.value)}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 outline-none transition-all shadow-sm h-[42px]"
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        field.setter(e.target.value)
+                                    }
+                                    disabled={(field as any).disabled}
+                                    min={(field as any).min}
+                                    max={(field as any).max}
+                                    className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 outline-none transition-all shadow-sm h-[42px] ${(field as any).disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}`}
                                     placeholder={`Introduce tu ${field.label.toLowerCase()}`}
                                 />
-                                {field.label.includes('Cumpleaños') && (
-                                    <p className="text-[10px] text-gray-500 mt-1 font-medium animate-in fade-in slide-in-from-top-1">
-                                        🎁 ¡Te enviaremos un regalo especial en tu día!
+                                {['Nombre Completo', 'Teléfono', 'Fecha de Cumpleaños'].includes(
+                                    field.label
+                                ) && (
+                                    <p className="text-[10px] text-orange-600/70 mt-1 font-bold animate-in fade-in slide-in-from-top-1 flex items-center gap-1">
+                                        <Shield size={10} className="text-orange-500" />
+                                        Solo se puede cambiar una vez cada 30 días.
                                     </p>
                                 )}
+                                {field.label === 'Correo Electrónico' && (
+                                    <p className="text-[10px] text-gray-400 mt-2 font-medium flex items-center gap-1.5 opacity-80">
+                                        Para cambiar tu email, contacta con
+                                        <a
+                                            href="https://wa.me/34631920312?text=Hola,%20me%20gustar%C3%ADa%20solicitar%20un%20cambio%20de%20correo%20electr%C3%B3nico%20para%20mi%20cuenta."
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-emerald-600 font-black hover:underline flex items-center gap-1"
+                                        >
+                                            WhatsApp
+                                        </a>
+                                    </p>
+                                )}
+                                {field.label.includes('Cumpleaños') &&
+                                    !['Nombre Completo', 'Teléfono'].includes(field.label) && (
+                                        <p className="text-[10px] text-gray-500 mt-1 font-medium animate-in fade-in slide-in-from-top-1">
+                                            🎁 ¡Te enviaremos un regalo especial en tu día!
+                                        </p>
+                                    )}
                             </div>
                         ) : (
                             <div className="flex items-center justify-between min-h-[32px]">
                                 <p className="text-sm font-black text-gray-900 m-0">
                                     {field.value}
                                 </p>
-                                {field.label === 'Fecha de Cumpleaños' && user.birthDate && (
-                                    <div
-                                        className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.isBirthDateVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} border-none`}
-                                    >
-                                        {user.isBirthDateVerified ? 'Verificado' : 'Pendiente'}
+                                {field.label === 'Correo Electrónico' && (
+                                    <div className="flex flex-col items-end gap-1.5">
+                                        <div
+                                            className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.isVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} border-none`}
+                                        >
+                                            {user.isVerified ? 'Verificado' : 'Sin verificar'}
+                                        </div>
+                                        <a
+                                            href="https://wa.me/34631920312?text=Hola,%20me%20gustar%C3%ADa%20solicitar%20un%20cambio%20de%20correo%20electr%C3%B3nico%20para%20mi%20cuenta."
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-[9px] text-emerald-600 font-black hover:underline"
+                                        >
+                                            Solicitar cambio
+                                        </a>
                                     </div>
                                 )}
                             </div>

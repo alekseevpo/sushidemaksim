@@ -75,13 +75,16 @@ const PageWrapper = ({
     const isProfile = location.pathname === '/profile';
 
     useEffect(() => {
-        // Only scroll to top if there's no hash (anchor) or search params
-        // to avoid breaking shared links or deep linking
-        if (!location.hash && !location.search) {
-            window.scrollTo(0, 0);
-            (window as any).lenis?.scrollTo(0, { immediate: true });
+        // Scroll to top on pathname change, regardless of search params.
+        // We keep hash check to respect anchor links.
+        if (!location.hash) {
+            // Use requestAnimationFrame to ensure it wins against browser native restoration
+            requestAnimationFrame(() => {
+                window.scrollTo(0, 0);
+                (window as any).lenis?.scrollTo(0, { immediate: true });
+            });
         }
-    }, [location.pathname, location.hash, location.search]);
+    }, [location.pathname, location.hash]);
 
     return (
         <motion.div
@@ -108,6 +111,13 @@ function App() {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
     const isWaiterRoute = location.pathname.startsWith('/waiter');
+
+    useEffect(() => {
+        // Disable automatic scroll restoration on mount
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+    }, []);
 
     return (
         <ErrorBoundary>

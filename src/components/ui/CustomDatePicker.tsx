@@ -114,7 +114,7 @@ export default function CustomDatePicker({
                     {value ? (
                         formatDateForDisplay(value)
                     ) : (
-                        <span className="text-gray-400 font-medium">
+                        <span className="text-gray-400 font-medium text-[14px]">
                             {placeholder || 'dd/mm/aaaa'}
                         </span>
                     )}

@@ -69,6 +69,18 @@ router.post(
             }
         }
 
+        // ─── Requirements Check for Loyalty Promos ───
+        if (promo.code.startsWith('LOYALTY-')) {
+            // Expiry Check (7 days)
+            const createdAt = new Date(promo.created_at);
+            const expiredAt = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
+            if (new Date() > expiredAt) {
+                return res
+                    .status(400)
+                    .json({ error: 'El código de fidelidad ha expirado (válido por 7 días)' });
+            }
+        }
+
         res.json({ percentage: promo.discount_percentage });
     })
 );

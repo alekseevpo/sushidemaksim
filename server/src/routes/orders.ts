@@ -28,32 +28,40 @@ router.post(
         const {
             deliveryAddress,
             phoneNumber,
-            notes,
+            notes: reqNotes,
             promoCode,
             guestItems,
             postalCode,
             email,
             customerName,
+            paymentMethod,
         } = req.body;
 
+        let notesToSave = reqNotes?.trim() || '';
+
         // 0. Business Hour Validation
-        const { data: globalSettings } = await supabase.from('site_settings').select('*');
-        const manualClosed =
-            globalSettings?.find(s => s.key === 'is_store_closed')?.value === 'true';
         const isOpenNow = isStoreOpen();
-        const isStoreClosed = manualClosed || !isOpenNow;
+        const isStoreClosed = !isOpenNow;
 
         let serverEstimatedTime = '30-60 min';
         if (isStoreClosed) {
-            const scheduledMatch = notes?.match(
-                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\]/
+            const scheduledMatch = notesToSave?.match(
+                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4})\s+(\d{2}:\d{2})\]/
             );
             if (!scheduledMatch) {
                 return res.status(400).json({
                     error: 'Nuestra cocina está descansando ahora. ¡Pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona una "Entrega programada".',
                 });
             }
-            const [, dateStr, timeStr] = scheduledMatch;
+            const timeStr = scheduledMatch[2];
+            let dateStr = scheduledMatch[1];
+
+            // Normalize DD-MM-YYYY to YYYY-MM-DD for reliable Date constructor across environments
+            if (dateStr.match(/^\d{2}-\d{2}-\d{4}$/)) {
+                const [d, m, y] = dateStr.split('-');
+                dateStr = `${y}-${m}-${d}`;
+            }
+
             const scheduledDate = new Date(dateStr);
             if (!isTimeWithinBusinessHours(scheduledDate, timeStr)) {
                 return res.status(400).json({
@@ -63,11 +71,16 @@ router.post(
             serverEstimatedTime = `${dateStr} ${timeStr}`;
         } else {
             // Also check if it's scheduled even if store is open
-            const scheduledMatch = notes?.match(
-                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\]/
+            const scheduledMatch = notesToSave?.match(
+                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4})\s+(\d{2}:\d{2})\]/
             );
             if (scheduledMatch) {
-                serverEstimatedTime = `${scheduledMatch[1]} ${scheduledMatch[2]}`;
+                let dateStr = scheduledMatch[1];
+                if (dateStr.match(/^\d{2}-\d{2}-\d{4}$/)) {
+                    const [d, m, y] = dateStr.split('-');
+                    dateStr = `${y}-${m}-${d}`;
+                }
+                serverEstimatedTime = `${dateStr} ${scheduledMatch[2]}`;
             }
         }
 
@@ -83,7 +96,7 @@ router.post(
             const { data: dbCartItems, error: cartError } = await supabase
                 .from('cart_items')
                 .select('quantity, menu_item_id, menu_items(name, price, image)')
-                .eq('user_id', req.userId);
+                .eq('user_id', req.userId); // req.userId is now a UUID string
 
             if (cartError) throw cartError;
             cartItems = dbCartItems || [];
@@ -171,13 +184,16 @@ router.post(
 
                     finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
                     usedPromoId = promo.id;
+                    notesToSave += notesToSave
+                        ? ` | [PROMO: ${promo.code} (-${promo.discount_percentage}%)]`
+                        : `[PROMO: ${promo.code} (-${promo.discount_percentage}%)]`;
                 }
             }
         }
 
         // 2.5 Dynamic Delivery Fee from Zones
         let deliveryFee = 0;
-        if (notes?.includes('[TIPO: DOMICILIO]')) {
+        if (notesToSave?.includes('[TIPO: DOMICILIO]')) {
             const { deliveryZoneId } = req.body;
 
             // Get delivery zones directly from the table
@@ -251,135 +267,179 @@ router.post(
             }
         }
 
-        // 3. Create Order
-        const { data: order, error: orderError } = await supabase
-            .from('orders')
-            .insert({
-                user_id: req.userId || null,
-                total: Math.round(finalTotal * 100) / 100,
-                delivery_address: deliveryAddress?.trim() || '',
-                phone_number: phoneNumber?.trim() || '',
-                status: 'pending',
-                estimated_delivery_time: serverEstimatedTime,
-                notes: notes?.trim() || '',
-                device_type: deviceType,
-                os_name: osName,
-                browser_name: browserName,
-                lat: req.body.lat,
-                lon: req.body.lon,
-            })
-            .select()
-            .single();
+        // 3 & 4. Create Order and items atomically via RPC
+        const rpcArgs = {
+            p_user_id: req.userId || null,
+            p_total: Number(finalTotal.toFixed(2)),
+            p_delivery_address: deliveryAddress?.trim() || '',
+            p_phone_number: phoneNumber?.trim() || '',
+            p_notes: notesToSave,
+            p_payment_method: paymentMethod || 'EFECTIVO',
+            p_promo_code: promoCode || null,
+            p_estimated_delivery_time: serverEstimatedTime,
+            p_status: 'pending',
+            p_device_type: deviceType || 'unknown',
+            p_os_name: osName || 'unknown',
+            p_browser_name: browserName || 'unknown',
+            p_lat: req.body.lat || null,
+            p_lon: req.body.lon || null,
+            p_items: cartItems
+                .map((item: any) => ({
+                    menu_item_id: item.menu_item_id < 0 ? null : item.menu_item_id,
+                    name: item.menu_items.name,
+                    quantity: item.quantity,
+                    price_at_time: item.menu_items.price,
+                    image: item.menu_items.image,
+                    description: item.menu_items.description || '',
+                    category: item.menu_items.category || '',
+                }))
+                .concat(
+                    deliveryFee > 0
+                        ? [
+                              {
+                                  menu_item_id: null,
+                                  name: 'Gastos de Envío',
+                                  quantity: 1,
+                                  price_at_time: deliveryFee,
+                                  image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png',
+                                  description: '',
+                                  category: 'extras',
+                              },
+                          ]
+                        : []
+                ),
+        };
 
-        if (orderError) throw orderError;
+        console.log('--- ATOMIC RPC START (V3) ---');
+        console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
 
-        // 4. Create Order Items
-        const orderItemsToInsert = cartItems.map((item: any) => ({
-            order_id: order.id,
-            menu_item_id: item.menu_item_id,
-            name: item.menu_items.name,
-            quantity: item.quantity,
-            price_at_time: item.menu_items.price,
-            image: item.menu_items.image,
-        }));
+        const { data: rpcData, error: rpcError } = await supabase.rpc('create_order_v3', rpcArgs);
 
-        // ADD DELIVERY FEE AS A PRODUCT ITEM (So it appears in the check/receipt)
-        if (deliveryFee > 0) {
-            orderItemsToInsert.push({
-                order_id: order.id,
-                menu_item_id: -1, // Virtual ID for delivery
-                name: 'Gastos de Envío',
-                quantity: 1,
-                price_at_time: deliveryFee,
-                image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png', // Delivery truck icon
+        if (rpcError) {
+            console.error('❌ RPC EXECUTION ERROR:', rpcError);
+            throw new Error(
+                `RPC Error: ${rpcError.message} (${rpcError.code}) - ${rpcError.details}`
+            );
+        }
+
+        console.log('--- RPC SUCCESS ---', rpcData);
+        const orderId = rpcData?.id;
+
+        if (!orderId) {
+            console.error('❌ NO ORDER ID RETURNED BY RPC');
+            throw new Error('Database failed to return an order ID');
+        }
+
+        try {
+            // Format items for receipts/notifications
+            const itemsForReceipt = cartItems.map((item: any) => ({
+                name: item.menu_items.name,
+                quantity: item.quantity,
+                price_at_time: item.menu_items.price,
+            }));
+            if (deliveryFee > 0) {
+                itemsForReceipt.push({
+                    name: 'Gastos de Envío',
+                    quantity: 1,
+                    price_at_time: deliveryFee,
+                } as any);
+            }
+
+            // 5. Cleanup (Promo and Cart)
+            if (usedPromoId) {
+                await supabase.from('promo_codes').update({ is_used: true }).eq('id', usedPromoId);
+            }
+            if (req.userId) {
+                await supabase.from('cart_items').delete().eq('user_id', req.userId);
+            }
+
+            // Return order with items
+            const { data: fullOrder, error: fetchError } = await supabase
+                .from('orders')
+                .select('*, order_items(*)')
+                .eq('id', orderId)
+                .single();
+
+            if (fetchError) {
+                console.error('❌ ERROR FETCHING NEW ORDER:', fetchError);
+                // Non-critical: we still have the orderId
+            }
+
+            // 6. Send Receipts
+            // Admin always gets a copy
+            try {
+                await sendOrderReceiptEmail(
+                    'info@sushidemaksim.com',
+                    {
+                        orderId: orderId,
+                        customerName: (fullOrder as any).users?.name || customerName || 'Cliente',
+                        items: itemsForReceipt,
+                        total: finalTotal,
+                        deliveryAddress,
+                        phoneNumber,
+                        notes: notesToSave,
+                    },
+                    true
+                );
+            } catch (adminEmailErr) {
+                console.error('Failed to send admin notification email:', adminEmailErr);
+            }
+
+            // Customer gets receipt if email is available (Auth or Guest)
+            const targetEmail = (fullOrder as any).users?.email || email;
+            if (targetEmail) {
+                try {
+                    await sendOrderReceiptEmail(targetEmail, {
+                        orderId: orderId,
+                        customerName: (fullOrder as any).users?.name || customerName || 'Cliente',
+                        items: itemsForReceipt,
+                        total: finalTotal,
+                        deliveryAddress,
+                        phoneNumber,
+                        notes: notesToSave,
+                    });
+                } catch (customerEmailErr) {
+                    console.error('Failed to send customer receipt email:', customerEmailErr);
+                }
+            }
+
+            // 7. Generate WhatsApp Link for return (Pointing to Store WhatsApp: +34 641 51 83 90)
+            const isCard = notesToSave?.includes('TARJETA');
+            const paymentMethodText = isCard ? 'Tarjeta' : 'Efectivo';
+
+            const itemsSummary = cartItems
+                .map(item => `- ${item.menu_items.name} x${item.quantity}`)
+                .join('\n');
+
+            const waTextParts = [
+                `¡Hola Sushi de Maksim! Mi pedido #${String(orderId).padStart(5, '0')} ha sido realizado con éxito.`,
+                `PRODUCTOS:\n${itemsSummary}`,
+            ];
+
+            if (deliveryFee > 0) {
+                waTextParts.push(`Gastos de Envío: ${deliveryFee.toFixed(2)}€`);
+            }
+
+            waTextParts.push(`Direccion: ${deliveryAddress}`);
+            waTextParts.push(`Metodo de Pago: ${paymentMethodText}`);
+            waTextParts.push(`Total: ${finalTotal.toFixed(2)}€`);
+            waTextParts.push(`Muchas gracias.`);
+
+            const waText = encodeURIComponent(waTextParts.join('\n\n'));
+            const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
+
+            res.status(201).json({
+                order: formatOrder(fullOrder),
+                whatsappUrl,
+            });
+        } catch (postRpcError: any) {
+            console.error('❌ CRITICAL ERROR IN POST-RPC PROCESSING:', postRpcError);
+            res.status(500).json({
+                error: 'Error interno en el procesamiento del pedido',
+                details: postRpcError.message,
+                orderId, // Still return the orderId if we have it
             });
         }
-
-        const { error: itemsError } = await supabase.from('order_items').insert(orderItemsToInsert);
-        if (itemsError) throw itemsError;
-
-        // 5. Cleanup (Promo and Cart)
-        if (usedPromoId) {
-            await supabase.from('promo_codes').update({ is_used: true }).eq('id', usedPromoId);
-        }
-        if (req.userId) {
-            await supabase.from('cart_items').delete().eq('user_id', req.userId);
-        }
-
-        // Return order with items
-        const { data: fullOrder } = await supabase
-            .from('orders')
-            .select('*, users(email, name), order_items(*)')
-            .eq('id', order.id)
-            .single();
-
-        // 6. Send Receipts
-        // Admin always gets a copy
-        try {
-            await sendOrderReceiptEmail(
-                'info@sushidemaksim.com',
-                {
-                    orderId: order.id,
-                    customerName: (fullOrder as any).users?.name || customerName || 'Cliente',
-                    items: orderItemsToInsert,
-                    total: finalTotal,
-                    deliveryAddress,
-                    phoneNumber,
-                    notes,
-                },
-                true
-            );
-        } catch (adminEmailErr) {
-            console.error('Failed to send admin notification email:', adminEmailErr);
-        }
-
-        // Customer gets receipt if email is available (Auth or Guest)
-        const targetEmail = (fullOrder as any).users?.email || email;
-        if (targetEmail) {
-            try {
-                await sendOrderReceiptEmail(targetEmail, {
-                    orderId: order.id,
-                    customerName: (fullOrder as any).users?.name || customerName || 'Cliente',
-                    items: orderItemsToInsert,
-                    total: finalTotal,
-                    deliveryAddress,
-                    phoneNumber,
-                    notes,
-                });
-            } catch (customerEmailErr) {
-                console.error('Failed to send customer receipt email:', customerEmailErr);
-            }
-        }
-
-        // 7. Generate WhatsApp Link for return (Pointing to Store WhatsApp: +34 641 51 83 90)
-        const isCard = notes?.includes('TARJETA');
-        const paymentMethodText = isCard ? 'Tarjeta' : 'Efectivo';
-
-        const itemsSummary = cartItems
-            .map(item => `- ${item.menu_items.name} x${item.quantity}`)
-            .join('\n');
-
-        const waTextParts = [
-            `¡Hola Sushi de Maksim! Mi pedido #${String(order.id).padStart(5, '0')} ha sido realizado con éxito.`,
-            `PRODUCTOS:\n${itemsSummary}`,
-            `Direccion: ${deliveryAddress}`,
-            `Metodo de Pago: ${paymentMethodText}`,
-        ];
-
-        if (deliveryFee > 0) {
-            waTextParts.push(`Gastos de Envío: ${deliveryFee.toFixed(2)}€`);
-        }
-
-        waTextParts.push(`Total: ${finalTotal.toFixed(2)}€`);
-        waTextParts.push(`Muchas gracias.`);
-
-        const waText = encodeURIComponent(waTextParts.join('\n\n'));
-        const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
-
-        res.status(201).json({
-            order: formatOrder(fullOrder),
-            whatsappUrl,
-        });
     })
 );
 
@@ -522,6 +582,7 @@ router.post(
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
         const osName = parser.getOS().name || 'Unknown';
+        const browserName = parser.getBrowser().name || 'Unknown';
 
         // 1. Get items from user's cart in DB
         const { data: dbItems } = await supabase
@@ -610,54 +671,85 @@ router.post(
             serverEstimatedTime = `${scheduledMatch[1]} ${scheduledMatch[2]}`;
         }
 
-        // 3. Create Draft Order
-        const { data: order, error: orderError } = await supabase
-            .from('orders')
-            .insert({
-                user_id: req.userId || null,
-                total: Math.round(finalTotal * 100) / 100,
-                delivery_address: deliveryAddress?.trim() || '',
-                phone_number: phoneNumber?.trim() || '',
-                status: 'waiting_payment',
-                notes: `${notes || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
-                device_type: deviceType,
-                os_name: osName,
-                estimated_delivery_time: serverEstimatedTime,
-            })
-            .select()
-            .single();
+        // 3 & 4. Create Order and items atomically via RPC
+        const rpcArgs = {
+            p_user_id: req.userId || null,
+            p_total: Number(finalTotal.toFixed(2)),
+            p_delivery_address: deliveryAddress?.trim() || '',
+            p_phone_number: phoneNumber?.trim() || '',
+            p_notes: `${notes || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
+            p_payment_method: 'EFECTIVO',
+            p_promo_code: promoCode || null,
+            p_estimated_delivery_time: serverEstimatedTime,
+            p_status: 'waiting_payment',
+            p_device_type: deviceType || 'unknown',
+            p_os_name: osName || 'unknown',
+            p_browser_name: browserName || 'unknown',
+            p_lat: req.body.lat || null,
+            p_lon: req.body.lon || null,
+            p_items: cartItems
+                .map((item: any) => ({
+                    menu_item_id: item.menu_item_id,
+                    name: item.menu_items.name,
+                    quantity: item.quantity,
+                    price_at_time: item.menu_items.price,
+                    image: item.menu_items.image,
+                    description: item.menu_items.description || '',
+                    category: item.menu_items.category || '',
+                }))
+                .concat(
+                    deliveryFee > 0
+                        ? [
+                              {
+                                  menu_item_id: null,
+                                  name: 'Gastos de Envío',
+                                  quantity: 1,
+                                  price_at_time: deliveryFee,
+                                  image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png',
+                                  description: '',
+                                  category: 'extras',
+                              },
+                          ]
+                        : []
+                ),
+        };
 
-        if (orderError) throw orderError;
+        console.log('--- ATOMIC INVITE RPC START (V3) ---');
+        console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
 
-        // 4. Create Items
-        const itemsToInsert = cartItems.map((item: any) => ({
-            order_id: order.id,
-            menu_item_id: item.menu_item_id,
-            name: item.menu_items.name,
-            quantity: item.quantity,
-            price_at_time: item.menu_items.price,
-            image: item.menu_items.image,
-        }));
+        const { data: rpcData, error: rpcError } = await supabase.rpc('create_order_v3', rpcArgs);
 
-        if (deliveryFee > 0) {
-            itemsToInsert.push({
-                order_id: order.id,
-                menu_item_id: -1,
-                name: 'Gastos de Envío',
-                quantity: 1,
-                price_at_time: deliveryFee,
-                image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png',
+        if (rpcError) {
+            console.error('❌ INVITE RPC EXECUTION ERROR:', rpcError);
+            throw new Error(
+                `Invite RPC Error: ${rpcError.message} (${rpcError.code}) - ${rpcError.details}`
+            );
+        }
+
+        console.log('--- INVITE RPC SUCCESS ---', rpcData);
+        const orderId = rpcData?.id;
+
+        if (!orderId) {
+            console.error('❌ NO ORDER ID RETURNED BY INVITE RPC');
+            throw new Error('Database failed to return an invite order ID');
+        }
+
+        try {
+            const origin =
+                (req.headers.origin as string) ||
+                (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
+            res.status(201).json({
+                orderId: orderId,
+                shareUrl: `${origin}/invitacion/${orderId}`,
+            });
+        } catch (postRpcError: any) {
+            console.error('❌ CRITICAL ERROR IN POST-INVITE-RPC:', postRpcError);
+            res.status(500).json({
+                error: 'Error interno en el procesamiento de la invitación',
+                details: postRpcError.message,
+                orderId,
             });
         }
-        await supabase.from('order_items').insert(itemsToInsert);
-
-        const origin =
-            (req.headers.origin as string) ||
-            (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
-        res.status(201).json({
-            orderId: order.id,
-            shareUrl: `${origin}/invitacion/${order.id}`,
-        });
     })
 );
 

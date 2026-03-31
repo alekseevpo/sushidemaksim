@@ -19,6 +19,14 @@ vi.mock('../hooks/useAuth', () => ({
     useAuth: () => ({
         register: mockRegister,
         login: mockLogin,
+        forgotPassword: async (email: string) => {
+            await mockPost('/auth/forgot-password', { email });
+            return { success: true };
+        },
+        resetPassword: async (email: string, code: string, newPassword: string) => {
+            await mockPost('/auth/reset-password', { email, code, newPassword });
+            return { success: true };
+        },
         user: null,
         isAuthenticated: false,
         isLoading: false,
@@ -166,8 +174,8 @@ describe('LoginModal - Registration', () => {
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'john@example.com' },
         });
-        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), {
-            target: { value: 'password123' },
+        fireEvent.change(screen.getByPlaceholderText(/Crea una contraseña segura/i), {
+            target: { value: 'Password123!' },
         });
 
         fireEvent.submit(screen.getByTestId('register-form'));
@@ -177,7 +185,7 @@ describe('LoginModal - Registration', () => {
                 'John Doe',
                 'john@example.com',
                 '123456789',
-                'password123'
+                'Password123!'
             );
             expect(mockOnClose).toHaveBeenCalled();
             expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('¡Cuenta creada!'));
@@ -195,8 +203,8 @@ describe('LoginModal - Registration', () => {
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'john@example.com' },
         });
-        fireEvent.change(screen.getByPlaceholderText(/Mínimo 6 caracteres/i), {
-            target: { value: 'password123' },
+        fireEvent.change(screen.getByPlaceholderText(/Crea una contraseña segura/i), {
+            target: { value: 'Password123!' },
         });
 
         fireEvent.submit(screen.getByTestId('register-form'));
@@ -250,42 +258,73 @@ describe('LoginModal - Password Recovery', () => {
 
     it('handles password reset successfully', async () => {
         mockPost.mockResolvedValue({ data: { success: true } });
-        const { container } = render(
-            <LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />
-        );
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="forgot" />);
 
-        const codeInput = container.querySelector('input[name="code"]') as HTMLInputElement;
-        fireEvent.change(codeInput, { target: { value: '123456' } });
+        // 1. Forgot Password step
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.submit(screen.getByText('Enviar instrucciones').closest('form')!);
 
-        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), {
-            target: { value: 'newpassword123' },
+        await waitFor(() => {
+            expect(screen.getByText('Verifica tu email')).toBeInTheDocument();
+        });
+
+        // 2. Click "Introducir el código"
+        fireEvent.click(screen.getByText('Introducir el código'));
+
+        // 3. Fill PIN
+        const pinInputs = screen.getAllByPlaceholderText('•');
+        ['1', '2', '3', '4', '5', '6'].forEach((v, i) => {
+            fireEvent.change(pinInputs[i], { target: { value: v } });
+        });
+
+        // 4. Fill Password
+        fireEvent.change(screen.getByPlaceholderText('Mínimo 9 caracteres'), {
+            target: { value: 'NewPassword123!' },
         });
         fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), {
-            target: { value: 'newpassword123' },
+            target: { value: 'NewPassword123!' },
         });
 
+        // 5. Submit Reset
         fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
 
         await waitFor(() => {
             expect(mockPost).toHaveBeenCalledWith('/auth/reset-password', {
-                email: '',
+                email: 'test@example.com',
                 code: '123456',
-                newPassword: 'newpassword123',
+                newPassword: 'NewPassword123!',
             });
             expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
         });
     });
 
     it('shows error when passwords do not match in reset mode', async () => {
-        const { container } = render(
-            <LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />
-        );
+        render(<LoginModal isOpen={true} onClose={() => {}} initialMode="forgot" />);
 
-        const codeInput = container.querySelector('input[name="code"]') as HTMLInputElement;
-        fireEvent.change(codeInput, { target: { value: '123456' } });
+        // 1. Forgot Password step
+        fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.submit(screen.getByText('Enviar instrucciones').closest('form')!);
 
-        fireEvent.change(screen.getByPlaceholderText('Mínimo 6 caracteres'), {
-            target: { value: 'password123' },
+        await waitFor(() => {
+            expect(screen.getByText('Verifica tu email')).toBeInTheDocument();
+        });
+
+        // 2. Click "Introducir el código"
+        fireEvent.click(screen.getByText('Introducir el código'));
+
+        // 3. Fill PIN
+        const pinInputs = screen.getAllByPlaceholderText('•');
+        ['1', '2', '3', '4', '5', '6'].forEach((v, i) => {
+            fireEvent.change(pinInputs[i], { target: { value: v } });
+        });
+
+        // 4. Fill Non-matching Passwords
+        fireEvent.change(screen.getByPlaceholderText('Mínimo 9 caracteres'), {
+            target: { value: 'Password123!' },
         });
         fireEvent.change(screen.getByPlaceholderText('Repite la contraseña'), {
             target: { value: 'different' },
@@ -298,7 +337,7 @@ describe('LoginModal - Password Recovery', () => {
 
     it('toggles password visibility in reset mode', () => {
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="reset-password" />);
-        const passwordInput = screen.getByPlaceholderText('Mínimo 6 caracteres');
+        const passwordInput = screen.getByPlaceholderText('Mínimo 9 caracteres');
         expect(passwordInput).toHaveAttribute('type', 'password');
 
         const toggleButton = screen.getByLabelText('Mostrar contraseña');

@@ -15,7 +15,7 @@ interface CartSummaryProps {
     isAuthenticated: boolean;
     hasAddress: boolean;
     hasHouse: boolean;
-    hasApartment: boolean;
+    hasZone: boolean;
     handleOrder: () => void;
     handleInvite: () => void;
     promoCode: string;
@@ -40,7 +40,7 @@ export default function CartSummary({
     isAuthenticated,
     hasAddress,
     hasHouse,
-    hasApartment,
+    hasZone,
     handleOrder,
     handleInvite,
     promoCode,
@@ -208,9 +208,10 @@ export default function CartSummary({
 
             <button
                 onClick={() => {
-                    if (deliveryType === 'delivery' && (!hasHouse || !hasApartment)) {
+                    if (deliveryType === 'delivery' && !hasHouse) {
                         triggerHaptic(HAPTIC_PATTERNS.ERROR);
-                        return; // Should be handled by parent toast/validation but just in case
+                        // Optional: scrollToAddressForm
+                        return;
                     }
                     triggerHaptic(HAPTIC_PATTERNS.SUCCESS);
                     handleOrder();
@@ -220,7 +221,7 @@ export default function CartSummary({
                     isInviting ||
                     items.length === 0 ||
                     !isMinOrderMet ||
-                    (deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasApartment))
+                    (deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasZone))
                 }
                 className={`px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base transition disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide
                     ${isMinOrderMet ? 'bg-orange-600 text-white hover:bg-orange-700 shadow-orange-200' : 'bg-gray-200 text-gray-400 shadow-none'}`}
@@ -232,7 +233,11 @@ export default function CartSummary({
                     `Mínimo ${minOrder.toFixed(2).replace('.', ',')}€`
                 ) : (
                     <>
-                        <span>Realizar pedido</span>
+                        <span>
+                            {deliveryType === 'delivery' && !hasZone
+                                ? 'Zona no válida'
+                                : 'Realizar pedido'}
+                        </span>
                         <ArrowRight size={18} strokeWidth={2} />
                     </>
                 )}
@@ -253,6 +258,27 @@ export default function CartSummary({
             >
                 {isInviting ? 'Generando...' : '¡Que me inviten! 🎁'}
             </button>
+
+            {/* Validation Hints for Delivery */}
+            {deliveryType === 'delivery' && !isOrdering && isMinOrderMet && items.length > 0 && (
+                <div className="mt-4 px-2 space-y-1.5">
+                    {!hasAddress && (
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center animate-pulse">
+                            📍 Selecciona una dirección de entrega
+                        </p>
+                    )}
+                    {hasAddress && !hasHouse && (
+                        <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest text-center animate-bounce">
+                            🏠 Indica el número o portal
+                        </p>
+                    )}
+                    {hasAddress && hasHouse && !hasZone && (
+                        <p className="text-[10px] text-red-500 font-black uppercase tracking-widest text-center">
+                            ❌ Lo sentimos, no entregamos en esta zona
+                        </p>
+                    )}
+                </div>
+            )}
 
             {items.length > 0 && (
                 <p className="text-[10px] text-gray-400 mt-4 text-center font-medium px-4">

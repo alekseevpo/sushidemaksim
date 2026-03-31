@@ -16,13 +16,18 @@ router.post('/track', async (req: Request, res: Response) => {
         }
 
         // 1. Record in generic site_events table
-        const { error: siteError } = await supabase.from('site_events').insert({
+        const payload: any = {
             event_name: eventName,
             session_id: sessionId,
-            user_id: userId || null,
             path: path || null,
             metadata: metadata || {},
-        });
+        };
+
+        if (userId) {
+            payload.user_id = userId;
+        }
+
+        const { error: siteError } = await supabase.from('site_events').insert(payload);
 
         if (siteError) {
             console.error('❌ Supabase Generic Analytics Error:', siteError.message);
@@ -31,14 +36,17 @@ router.post('/track', async (req: Request, res: Response) => {
         // 2. Compatibility: If it's a funnel event, also potentially write to legacy funnel_events table
         const funnelSteps = ['cart_view', 'checkout_start', 'delivery_info_filled', 'order_placed'];
         if (funnelSteps.includes(eventName)) {
-            await supabase.from('funnel_events').insert({
+            const funnelPayload: any = {
                 session_id: sessionId,
                 step: eventName,
                 total_value: Number(metadata?.totalValue) || 0,
                 items_count: Number(metadata?.itemsCount) || 0,
                 metadata: metadata || {},
-                user_id: userId || null,
-            });
+            };
+            if (userId) {
+                funnelPayload.user_id = userId;
+            }
+            await supabase.from('funnel_events').insert(funnelPayload);
         }
 
         res.status(201).json({ success: true });
@@ -101,10 +109,9 @@ router.post('/waiter-order', async (req: Request, res: Response) => {
         }
 
         // 3. Record in generic site_events table for analytics
-        await supabase.from('site_events').insert({
+        const sitePayload: any = {
             event_name: 'waiter_order_submitted',
             session_id: waiterSessionId,
-            user_id: waiterId || null,
             path: '/waiter',
             metadata: {
                 ...metadata,
@@ -115,17 +122,27 @@ router.post('/waiter-order', async (req: Request, res: Response) => {
                 source: 'waiter_interface',
                 label: 'Заказ в заведении',
             },
-        });
+        };
+
+        if (waiterId) {
+            sitePayload.user_id = waiterId;
+        }
+
+        await supabase.from('site_events').insert(sitePayload);
 
         // 4. Record in funnel_events
-        await supabase.from('funnel_events').insert({
+        const waiterFunnelPayload: any = {
             session_id: waiterSessionId,
             step: 'order_placed',
             total_value: Number(totalValue) || 0,
             items_count: Number(itemsCount) || 0,
             metadata: { ...metadata, source: 'waiter_interface', order_id: order?.id },
-            user_id: waiterId || null,
-        });
+        };
+        if (waiterId) {
+            waiterFunnelPayload.user_id = waiterId;
+        }
+
+        await supabase.from('funnel_events').insert(waiterFunnelPayload);
 
         res.status(201).json({ success: true, orderId: order?.id });
     } catch (err: any) {

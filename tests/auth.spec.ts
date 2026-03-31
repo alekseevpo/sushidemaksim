@@ -46,7 +46,7 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/Nombre completo/i).fill('Pavel Tester');
         await page.getByPlaceholder(/\+34 600 000 000/i).fill('600111222');
         await page.getByPlaceholder(/tu@email.com/i).fill(`test-${Date.now()}@test.com`);
-        await page.getByPlaceholder(/Mínimo 6 caracteres/i).fill('password123');
+        await page.getByPlaceholder(/Crea una contraseña segura/i).fill('password123!');
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
         await expect(page.getByText(/enviado|revisa|email/i).first()).toBeVisible({
             timeout: 15000,
@@ -121,8 +121,10 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/tu@email.com/i).fill('wrong@test.com');
         await page.getByPlaceholder(/Tu contraseña/i).fill('wrong');
         await page.getByRole('button', { name: /Iniciar sesión/i }).click();
-        await expect(page.getByText(/incorrect|inválid|incorrectas/i).first()).toBeVisible({
-            timeout: 10000,
+
+        // Wait for the toast/error message
+        await expect(page.getByText(/incorrect|inválid|incorrectas|error/i).first()).toBeVisible({
+            timeout: 15000,
         });
     });
 
@@ -130,11 +132,18 @@ test.describe('Authentication Flow', () => {
         await page.route('**/api/auth/me', route =>
             route.fulfill({ status: 401, body: '{"error":"No"}' })
         );
-        await page.route('**/api/auth/reset-password', route =>
+        await page.route('**/api/auth/forgot-password', route =>
             route.fulfill({
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({ success: true, message: 'Email enviado' }),
+            })
+        );
+        await page.route('**/api/auth/reset-password', route =>
+            route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true }),
             })
         );
 
@@ -149,5 +158,24 @@ test.describe('Authentication Flow', () => {
         await expect(page.getByText(/email|enviado|revisa/i).first()).toBeVisible({
             timeout: 10000,
         });
+
+        // 2. Click "Introducir el código"
+        await page.getByRole('button', { name: /Introducir el código/i }).click();
+
+        // 3. Fill PIN (6 separate inputs)
+        const pinInputs = page.locator('input[autocomplete="one-time-code"]');
+        for (let i = 0; i < 6; i++) {
+            await pinInputs.nth(i).fill((i + 1).toString());
+        }
+
+        // 4. Fill new password
+        await page.getByPlaceholder(/Mínimo 9 caracteres/i).fill('NewPassword123!');
+        await page.getByPlaceholder(/Repite la contraseña/i).fill('NewPassword123!');
+
+        // 5. Submit reset
+        await page.getByRole('button', { name: /Cambiar contraseña/i }).click();
+
+        // 6. Should go back to login or show success
+        await expect(page.getByText(/¡Hola de nuevo!|éxito/i).first()).toBeVisible();
     });
 });

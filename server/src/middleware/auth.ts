@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 
 export interface AuthRequest extends Request {
-    userId?: number;
+    userId?: string;
 }
 
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
@@ -16,7 +16,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
     const token = authHeader.split(' ')[1];
 
     try {
-        const payload = jwt.verify(token, config.jwtSecret) as { userId: number };
+        const payload = jwt.verify(token, config.jwtSecret) as { userId: string };
         req.userId = payload.userId;
         next();
     } catch {
@@ -33,7 +33,7 @@ export function optionalAuthMiddleware(req: AuthRequest, res: Response, next: Ne
     const token = authHeader.split(' ')[1];
 
     try {
-        const payload = jwt.verify(token, config.jwtSecret) as { userId: number };
+        const payload = jwt.verify(token, config.jwtSecret) as { userId: string };
         req.userId = payload.userId;
     } catch {
         return res

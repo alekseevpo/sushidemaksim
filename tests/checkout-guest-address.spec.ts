@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Guest Checkout - Address Selection', () => {
+test.describe('Guest Checkout - Address Selection', () => {
     test.beforeEach(async ({ page, context }) => {
         // saturday night
         await context.addInitScript(() => {
@@ -11,7 +11,11 @@ test.describe.skip('Guest Checkout - Address Selection', () => {
 
             if (!window.sessionStorage.getItem('guest_checkout_cleared')) {
                 window.localStorage.clear();
+                window.localStorage.setItem('cookieConsent', 'accepted');
                 window.sessionStorage.setItem('guest_checkout_cleared', 'true');
+            } else {
+                // Ensure even if not cleared, we have consent
+                window.localStorage.setItem('cookieConsent', 'accepted');
             }
         });
 

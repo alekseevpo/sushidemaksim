@@ -94,13 +94,14 @@ test.describe('Order Checkout Flow', () => {
                 status: 200,
                 body: JSON.stringify({
                     success: true,
-                    order: { id: 12345 },
+                    order: { id: 448 },
                     whatsappUrl: 'https://wa.me/test',
                 }),
             })
         );
 
         await page.goto('/menu');
+        await page.waitForLoadState('networkidle');
 
         // Add an item
         const gyozasText = page.getByText('Gyozas con carne');
@@ -132,6 +133,6 @@ test.describe('Order Checkout Flow', () => {
         await expect(page.getByTestId('success-title')).toBeVisible({
             timeout: 15000,
         });
-        await expect(page.getByText(/12345/)).toBeVisible();
+        await expect(page.getByText(/#00448/)).toBeVisible();
     });
 });

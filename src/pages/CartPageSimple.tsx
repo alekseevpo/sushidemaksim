@@ -66,6 +66,10 @@ export default function CartPageSimple() {
     const [lastOrderSummary, setLastOrderSummary] = useState<{
         total: number;
         deliveryCost: number;
+        address: string;
+        house: string;
+        apartment: string;
+        phone: string;
     } | null>(null);
 
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -262,14 +266,15 @@ export default function CartPageSimple() {
 
             // Check for duplicates on frontend
             const isDuplicate = (user?.addresses || []).some((addr: any) => {
-                const s = addr.street || '';
-                const h = addr.house || '';
-                const a = addr.apartment || '';
-                return (
-                    s.toLowerCase() === streetVal.toLowerCase() &&
-                    h.toLowerCase() === houseVal.toLowerCase() &&
-                    a.toLowerCase() === aptVal.toLowerCase()
-                );
+                const s = (addr.street || '').trim().toLowerCase();
+                const h = (addr.house || '').trim().toLowerCase();
+                const a = (addr.apartment || '').trim().toLowerCase();
+
+                const targetS = streetVal.trim().toLowerCase();
+                const targetH = houseVal.trim().toLowerCase();
+                const targetA = aptVal.trim().toLowerCase();
+
+                return s === targetS && h === targetH && a === targetA;
             });
 
             if (isDuplicate) {
@@ -464,8 +469,10 @@ export default function CartPageSimple() {
         }
         notesArray.push(`[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
         if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
-        if (isScheduled && scheduledDate && scheduledTime)
-            notesArray.push(`[PROGRAMADO: ${scheduledDate} ${scheduledTime}]`);
+        if (isScheduled && scheduledDate && scheduledTime) {
+            const [y, m, d] = scheduledDate.split('-');
+            notesArray.push(`[PROGRAMADO: ${d}-${m}-${y} ${scheduledTime}]`);
+        }
         if (noCall) notesArray.push('[SIN CONFIRMACIÓN LLAMADA]');
         if (noBuzzer) notesArray.push('[NO LLAMAR TIMBRE]');
         if (deliveryDetails.chopsticksCount > 0)
@@ -516,6 +523,10 @@ export default function CartPageSimple() {
             setLastOrderSummary({
                 total: cartSubtotal - discountAmount,
                 deliveryCost: deliveryCost,
+                address: streetVal,
+                house: houseVal,
+                apartment: aptVal,
+                phone: deliveryPhone,
             });
 
             setOrderSuccess(data.order.id);
@@ -753,17 +764,74 @@ export default function CartPageSimple() {
                                 todayStr={todayStr}
                                 isStoreClosed={isStoreClosed}
                                 saveAddress={saveAddress}
-                                onSavedAddressSelect={addr => {
-                                    const zone = detectZone(addr.lat, addr.lon, deliveryZones);
+                                onSavedAddressSelect={async addr => {
+                                    let lat = addr.lat;
+                                    let lon = addr.lon;
+                                    let zone = detectZone(lat, lon, deliveryZones, addr.postalCode);
+
+                                    // If no coordinates, try to geocode
+                                    if ((!lat || !lon) && !zone) {
+                                        try {
+                                            const q =
+                                                `${addr.street} ${addr.house || ''}, ${addr.postalCode || ''}, Madrid`.trim();
+                                            const searchData = await api.get(
+                                                `/delivery-zones/search?q=${encodeURIComponent(q)}`
+                                            );
+                                            if (searchData && searchData.length > 0) {
+                                                const best = searchData[0];
+                                                lat = parseFloat(best.lat);
+                                                lon = parseFloat(best.lon);
+                                                zone = detectZone(
+                                                    lat,
+                                                    lon,
+                                                    deliveryZones,
+                                                    addr.postalCode || best.address?.postcode
+                                                );
+
+                                                // Update the address in profile so it's faster next time
+                                                if (!isNaN(lat) && !isNaN(lon) && addr.id) {
+                                                    api.put(`/user/addresses/${addr.id}`, {
+                                                        lat,
+                                                        lon,
+                                                        postalCode:
+                                                            addr.postalCode ||
+                                                            best.address?.postcode,
+                                                    }).catch(e =>
+                                                        console.warn('Update saved addr failed', e)
+                                                    );
+                                                }
+                                            }
+                                        } catch (err) {
+                                            console.error(
+                                                'Geocoding failed for saved address',
+                                                err
+                                            );
+                                        }
+                                    }
+
+                                    const street = addr.street || '';
+                                    let houseNum = addr.house || '';
+
+                                    // Heuristic: If house is empty but street has a number at the end
+                                    if (!houseNum && street) {
+                                        const match =
+                                            street.match(/(.+?)\s*,\s*(\d+[a-zA-Z]?)$/) ||
+                                            street.match(/(.+?)\s+(\d+[a-zA-Z]?)$/);
+                                        if (match) {
+                                            houseNum = match[2];
+                                        }
+                                    }
+
                                     updateDeliveryDetails({
-                                        address: addr.street || '',
-                                        house: addr.house || '',
+                                        address: street,
+                                        house: houseNum,
                                         apartment: addr.apartment || '',
                                         phone: addr.phone || phone || '',
-                                        lat: addr.lat,
-                                        lon: addr.lon,
+                                        lat: lat,
+                                        lon: lon,
                                         postalCode: addr.postalCode || '',
                                         selectedZone: zone,
+                                        saveAddress: false, // Don't save if already saved
                                     });
                                 }}
                                 setSaveAddress={val => updateDeliveryDetails({ saveAddress: val })}
@@ -794,7 +862,7 @@ export default function CartPageSimple() {
                                 isAuthenticated={isAuthenticated}
                                 hasAddress={!!address.trim()}
                                 hasHouse={!!house.trim()}
-                                hasApartment={!!apartment.trim()}
+                                hasZone={!!selectedZone}
                                 handleOrder={handleOrder}
                                 handleInvite={handleInvite}
                                 promoCode={promoCode}
@@ -822,16 +890,16 @@ export default function CartPageSimple() {
             {orderSuccess && (
                 <OrderSuccessModal
                     orderId={orderSuccess}
-                    phone={phone || ''}
+                    phone={lastOrderSummary?.phone || phone || ''}
                     isAuthenticated={isAuthenticated}
                     user={user}
                     isScheduled={deliveryDetails.isScheduled}
                     scheduledDate={deliveryDetails.scheduledDate}
                     scheduledTime={deliveryDetails.scheduledTime}
                     deliveryType={deliveryType}
-                    address={address}
-                    house={house}
-                    apartment={apartment}
+                    address={lastOrderSummary?.address || address}
+                    house={lastOrderSummary?.house || house}
+                    apartment={lastOrderSummary?.apartment || apartment}
                     orderWhatsappUrl={orderWhatsappUrl}
                     total={lastOrderSummary?.total ?? cartSubtotal - discountAmount}
                     deliveryCost={lastOrderSummary?.deliveryCost ?? deliveryCost}

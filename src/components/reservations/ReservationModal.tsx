@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    Mail,
-    User,
-    CheckCircle2,
-    AlertCircle,
-    Clock,
-    ChevronDown,
-    Minus,
-    Plus,
-} from 'lucide-react';
+import { Mail, User, CheckCircle2, AlertCircle, Minus, Plus, X } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
 import CustomDatePicker from '../ui/CustomDatePicker';
+import CustomTimePicker from '../ui/CustomTimePicker';
 
 interface ReservationModalProps {
     isOpen: boolean;
@@ -63,7 +55,8 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
 
     const getTimeSlots = () => {
         if (!formData.date) return [];
-        const dateObj = new Date(formData.date);
+        const [yr, mo, dy] = formData.date.split('-').map(Number);
+        const dateObj = new Date(yr, mo - 1, dy);
         const day = dateObj.getDay();
         const intervals = BUSINESS_HOURS[day] || [];
 
@@ -195,150 +188,158 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                     />
 
                     <motion.div
-                        initial={{ y: '-100%', opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: '-100%', opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        initial={{ y: 20, opacity: 0, scale: 0.95 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        exit={{ y: 20, opacity: 0, scale: 0.95 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         onClick={e => e.stopPropagation()}
-                        className="relative w-full max-w-md bg-white md:rounded-b-[2rem] shadow-2xl flex flex-col"
+                        className="relative w-[92%] max-w-sm bg-white rounded-[2.5rem] shadow-2xl flex flex-col border border-white/20 mt-[10vh] md:mt-[15vh]"
                     >
-                        {/* Header Image/Pattern */}
-                        <div className="h-16 md:h-18 bg-orange-600 relative overflow-hidden flex items-center justify-center shrink-0">
-                            <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-2 pointer-events-none">
-                                {[...Array(15)].map((_, i) => (
-                                    <div key={i} className="text-2xl font-serif text-white">
-                                        福
-                                    </div>
-                                ))}
+                        {/* Compact Header */}
+                        <div className="px-6 pt-6 pb-2 flex items-center justify-between shrink-0">
+                            <div>
+                                <h2 className="text-xl font-black text-gray-900 tracking-tight leading-tight">
+                                    Reservar Mesa
+                                </h2>
+                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                                    Sushi de Maksim
+                                </p>
                             </div>
-                            <h2 className="relative z-10 text-base md:text-xl font-black text-white tracking-[0.1em] uppercase">
-                                Reservar Mesa
-                            </h2>
+                            <button
+                                onClick={onClose}
+                                className="p-2.5 rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all border-none cursor-pointer"
+                            >
+                                <X size={18} strokeWidth={2.5} />
+                            </button>
                         </div>
 
-                        <div className="px-4 py-4 md:p-6 flex flex-col gap-4">
+                        <div className="px-6 py-4 flex flex-col gap-5 overflow-visible">
                             {isSuccess ? (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="text-center py-6"
+                                    className="text-center py-4"
                                 >
-                                    <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                                        <CheckCircle2 size={40} />
+                                    <div className="w-16 h-16 bg-green-50 text-green-600 rounded-[22px] flex items-center justify-center mx-auto mb-5 shadow-sm border border-green-100">
+                                        <CheckCircle2 size={32} strokeWidth={2.5} />
                                     </div>
-                                    <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tighter">
-                                        ¡Reserva Solicitada!
+                                    <h3 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">
+                                        ¡Mesa Reservada!
                                     </h3>
-                                    <p className="text-gray-500 font-medium mb-8">
+                                    <p className="text-sm text-gray-500 font-medium mb-8 leading-relaxed">
                                         Hemos recibido tu solicitud para el{' '}
                                         <span className="text-gray-900 font-bold">
                                             {(() => {
                                                 const d = new Date(formData.date);
-                                                return `${d.getDate()} de ${d.toLocaleString('es-ES', { month: 'long' })} ${d.getFullYear()}`;
+                                                return `${d.getDate()} de ${d.toLocaleString('es-ES', { month: 'long' })}`;
                                             })()}
                                         </span>{' '}
                                         a las{' '}
                                         <span className="text-gray-900 font-bold">
                                             {formData.time}
                                         </span>
-                                        . Te contactaremos pronto para confirmar.
+                                        . Te esperamos.
                                     </p>
                                     <button
                                         onClick={onClose}
-                                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-black transition-all"
+                                        className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-black transition-all shadow-xl shadow-gray-100"
                                     >
                                         ENTENDIDO
                                     </button>
                                 </motion.div>
                             ) : (
-                                <form onSubmit={handleSubmit} className="space-y-3">
+                                <form onSubmit={handleSubmit} className="space-y-4">
                                     {error && (
-                                        <div className="p-3 bg-orange-50 border border-orange-100 rounded-xl flex items-center gap-3 text-orange-600 text-[11px] font-bold">
+                                        <div className="p-3.5 bg-orange-50 border border-orange-100 rounded-2xl flex items-center gap-3 text-orange-600 text-[11px] font-bold">
                                             <AlertCircle size={14} />
                                             {error}
                                         </div>
                                     )}
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                    {/* 1. Nombre Completo */}
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                                            Nombre Completo
+                                        </label>
+                                        <div className="relative group">
+                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
+                                                <User size={16} strokeWidth={1.5} />
+                                            </div>
+                                            <input
+                                                required
+                                                type="text"
+                                                name="name"
+                                                placeholder="Tu nombre y apellidos"
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                className="w-full pl-11 pr-4 py-2.5 bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] focus:bg-white focus:border-orange-600 outline-none transition-all font-bold text-[14px] text-gray-900 shadow-sm placeholder:text-gray-400 placeholder:font-medium"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* 2. Fecha y Hora */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
                                                 Fecha
                                             </label>
-                                            <div className="relative">
-                                                <CustomDatePicker
-                                                    value={formData.date}
-                                                    onChange={date => {
-                                                        const today = new Date().toLocaleDateString(
-                                                            'en-CA'
-                                                        );
-                                                        if (date < today && date !== '') return;
-                                                        setFormData(prev => ({
-                                                            ...prev,
-                                                            date,
-                                                            time: '',
-                                                        }));
-                                                    }}
-                                                    min={today}
-                                                    placeholder="dd/mm/aaaa"
-                                                />
-                                            </div>
+                                            <CustomDatePicker
+                                                value={formData.date}
+                                                onChange={date => {
+                                                    const today = new Date().toLocaleDateString(
+                                                        'en-CA'
+                                                    );
+                                                    if (date < today && date !== '') return;
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        date,
+                                                        time: '',
+                                                    }));
+                                                }}
+                                                min={today}
+                                                placeholder="Hoy/Mañana"
+                                            />
                                         </div>
 
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
                                                 Hora
                                             </label>
                                             {!formData.date ? (
-                                                <div className="h-11 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-bold text-gray-400 uppercase text-center tracking-widest px-2">
-                                                    Fecha primero
+                                                <div className="h-11 flex items-center justify-center bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] text-[11px] font-bold text-gray-400 uppercase tracking-widest px-2 opacity-60">
+                                                    Escoge fecha first
                                                 </div>
                                             ) : isDayClosed ? (
-                                                <div className="h-11 flex items-center justify-center bg-orange-50 border border-orange-100 rounded-xl text-[10px] font-bold text-orange-500 uppercase text-center tracking-widest px-2">
+                                                <div className="h-11 flex items-center justify-center bg-orange-50/50 border-2 border-transparent rounded-[1.25rem] text-[11px] font-bold text-orange-500 uppercase tracking-widest px-2">
                                                     Cerrado
                                                 </div>
                                             ) : (
-                                                <div className="relative">
-                                                    <Clock
-                                                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                                                        size={16}
-                                                    />
-                                                    <select
-                                                        required
-                                                        name="time"
-                                                        value={formData.time}
-                                                        onChange={handleChange}
-                                                        className="w-full pl-10 pr-8 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none appearance-none cursor-pointer"
-                                                    >
-                                                        <option value="" disabled>
-                                                            Selecciona hora
-                                                        </option>
-                                                        {availableSlots.map(slot => (
-                                                            <option key={slot} value={slot}>
-                                                                {slot}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    <ChevronDown
-                                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                                                        size={14}
-                                                    />
-                                                </div>
+                                                <CustomTimePicker
+                                                    value={formData.time}
+                                                    onChange={time =>
+                                                        setFormData(prev => ({ ...prev, time }))
+                                                    }
+                                                    slots={availableSlots}
+                                                    placeholder="Selecciona"
+                                                />
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-1">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                    {/* 3. Personas и Телефон */}
+                                    <div className="grid grid-cols-[0.8fr,1.2fr] gap-3 min-w-0 overflow-hidden">
+                                        <div className="space-y-1">
+                                            <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
                                                 Personas
                                             </label>
-                                            <div className="flex items-center justify-between bg-gray-50 p-1 rounded-xl border border-gray-100 h-11">
-                                                <div className="pl-3">
-                                                    <span className="text-sm font-black text-gray-900 leading-none">
-                                                        {formData.guests}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg shadow-sm border border-gray-100">
+                                            <div className="flex items-center justify-between bg-gray-50/50 p-1 rounded-[1.25rem] border-2 border-transparent h-11 shadow-sm">
+                                                <span
+                                                    className="pl-3 text-[15px] font-medium text-gray-900 leading-none min-w-[1.5rem] text-center"
+                                                    style={{ fontVariantNumeric: 'tabular-nums' }}
+                                                >
+                                                    {formData.guests}
+                                                </span>
+                                                <div className="flex items-center gap-0.5 bg-white p-0.5 rounded-lg shadow-sm border border-gray-100">
                                                     <button
                                                         type="button"
                                                         onClick={() =>
@@ -350,9 +351,9 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                                 ),
                                                             }))
                                                         }
-                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
+                                                        className="w-6 h-6 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                                     >
-                                                        <Minus size={14} strokeWidth={3} />
+                                                        <Minus size={12} strokeWidth={3} />
                                                     </button>
                                                     <button
                                                         type="button"
@@ -365,20 +366,20 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                                 ),
                                                             }))
                                                         }
-                                                        className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
+                                                        className="w-6 h-6 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                                     >
-                                                        <Plus size={14} strokeWidth={3} />
+                                                        <Plus size={12} strokeWidth={3} />
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                        <div className="space-y-1 min-w-0">
+                                            <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
                                                 Teléfono
                                             </label>
-                                            <div className="flex items-center bg-gray-50 border border-gray-100 rounded-xl focus-within:ring-4 focus-within:ring-orange-600/5 focus-within:border-orange-600 transition-all overflow-hidden h-11">
-                                                <div className="pl-3 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-200/50 h-full flex items-center">
+                                            <div className="flex items-center bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] focus-within:bg-white focus-within:border-orange-600 transition-all overflow-hidden h-11 shadow-sm min-w-0">
+                                                <div className="pl-4 pr-2 text-gray-400 font-bold text-[13px] select-none border-r border-gray-200/50 h-[60%] flex items-center">
                                                     +34
                                                 </div>
                                                 <input
@@ -386,7 +387,6 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     type="tel"
                                                     name="phone"
                                                     placeholder="600 000 000"
-                                                    pattern="[0-9]{9}"
                                                     maxLength={9}
                                                     value={formData.phone}
                                                     onChange={e => {
@@ -405,43 +405,21 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                             } as any);
                                                         }
                                                     }}
-                                                    className="flex-1 bg-transparent border-none text-sm font-bold outline-none px-3 h-full"
+                                                    className="flex-1 min-w-0 bg-transparent border-none text-[14px] font-medium outline-none px-2 h-full tracking-wider placeholder:text-gray-400/50 placeholder:font-medium placeholder:tracking-normal"
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
-                                            Nombre Completo
-                                        </label>
-                                        <div className="relative">
-                                            <User
-                                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                                                size={16}
-                                            />
-                                            <input
-                                                required
-                                                type="text"
-                                                name="name"
-                                                placeholder="Tu nombre"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[12px] font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none"
-                                            />
-                                        </div>
-                                    </div>
-
                                     {!isAuthenticated && (
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
                                                 Email
                                             </label>
-                                            <div className="relative">
-                                                <Mail
-                                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                                                    size={16}
-                                                />
+                                            <div className="relative group">
+                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
+                                                    <Mail size={16} strokeWidth={1.5} />
+                                                </div>
                                                 <input
                                                     required
                                                     type="email"
@@ -449,7 +427,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                                     placeholder="tucorreo@ejemplo.com"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full pl-10 pr-2 h-11 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-4 focus:ring-orange-600/5 focus:border-orange-600 transition-all outline-none"
+                                                    className="w-full pl-11 pr-4 py-2.5 bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] focus:bg-white focus:border-orange-600 outline-none transition-all font-bold text-[14px] text-gray-900 shadow-sm placeholder:text-gray-400 placeholder:font-medium"
                                                 />
                                             </div>
                                         </div>
@@ -458,16 +436,13 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                     <button
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 mt-4 active:scale-[0.98] border-none cursor-pointer"
+                                        className="w-full py-4.5 bg-orange-600 text-white rounded-[1.5rem] font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3 mt-6 active:scale-[0.98] border-none cursor-pointer h-14"
                                     >
-                                        {/* Shine & Anim Effects */}
-                                        {/* No shine effect */}
-
                                         {isSubmitting ? (
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         ) : (
                                             <>
-                                                <span className="relative z-10 flex items-center gap-3">
+                                                <span className="relative z-10 flex items-center gap-3 tracking-[0.1em]">
                                                     RESERVAR AHORA
                                                 </span>
                                             </>

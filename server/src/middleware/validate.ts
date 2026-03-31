@@ -98,6 +98,8 @@ export const emailRule: Rule = {
 export const passwordRule: Rule = {
     required: true,
     type: 'string',
-    minLength: 6,
+    minLength: 9,
     maxLength: 100,
+    match: /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>_+-])/,
+    message: 'Пароль должен быть не менее 9 символов и содержать цифру и спецсимвол',
 };

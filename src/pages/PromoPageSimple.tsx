@@ -247,7 +247,8 @@ export default function PromoPageSimple() {
                             ¡Premio a tu lealtad!
                         </h2>
                         <p className="text-base md:text-2xl font-medium mb-8 opacity-90 text-orange-100">
-                            ¡Cada 5º pedido con un 5% de descuento para nuestros clientes favoritos!
+                            ¡Tras completar 4 pedidos recibirás un 5% de descuento para tu 5º
+                            pedido!
                         </p>
                         <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full text-sm md:text-xl font-black mb-10 border border-white/30 tracking-wide">
                             Para usuarios registrados

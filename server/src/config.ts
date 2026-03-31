@@ -34,10 +34,13 @@ export const config = {
         fromName: process.env.SMTP_FROM_NAME || 'Sushi de Maksim',
     },
     resendApiKey: process.env.RESEND_API_KEY || '',
+    emailFrom: process.env.EMAIL_FROM || 'Sushi de Maksim <info@sushidemaksim.com>',
     adminEmail: process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'alekseevpo@gmail.com',
     supabase: {
         url: process.env.SUPABASE_URL || '',
         key: process.env.SUPABASE_KEY || '',
     },
-    frontendUrl: process.env.FRONTEND_URL || 'https://sushidemaksim.vercel.app',
+    frontendUrl:
+        process.env.FRONTEND_URL ||
+        (nodeEnv === 'development' ? 'http://localhost:5173' : 'https://sushidemaksim.vercel.app'),
 };

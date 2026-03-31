@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ShoppingCart, User, Phone, Mail, Clock, MessageSquare, RefreshCw } from 'lucide-react';
 import { api } from '../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '../../context/ToastContext';
 
 interface AdminAbandonedCartsProps {
     language?: 'ru' | 'es';
@@ -52,6 +53,7 @@ const ABANDONED_TRANSLATIONS = {
 
 export default function AdminAbandonedCarts({ language = 'es' }: AdminAbandonedCartsProps) {
     const t = ABANDONED_TRANSLATIONS[language];
+    const { success } = useToast();
     const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ['admin-abandoned-carts'],
         queryFn: () => api.get('/admin/abandoned-carts'),
@@ -141,13 +143,29 @@ export default function AdminAbandonedCarts({ language = 'es' }: AdminAbandonedC
                                                     ] || cart.stage}
                                                 </span>
                                             </div>
-                                            <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest flex items-center gap-2">
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
                                                 <Clock
                                                     size={12}
                                                     strokeWidth={3}
                                                     className="text-gray-300"
                                                 />
-                                                ID: {cart.sessionId.slice(0, 8)} •{' '}
+                                                <span
+                                                    className="bg-gray-50 px-2 py-0.5 rounded-lg border border-gray-100 tabular-nums cursor-pointer active:scale-95 transition-transform"
+                                                    title={cart.sessionId}
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(
+                                                            cart.sessionId
+                                                        );
+                                                        success(
+                                                            language === 'ru'
+                                                                ? 'ID сессии скопирован'
+                                                                : 'Sesión ID copiado'
+                                                        );
+                                                    }}
+                                                >
+                                                    #{cart.sessionId.slice(0, 8).toUpperCase()}...
+                                                </span>
+                                                •{' '}
                                                 {new Date(cart.lastActivity).toLocaleString(
                                                     language === 'ru' ? 'ru-RU' : 'es-ES',
                                                     {

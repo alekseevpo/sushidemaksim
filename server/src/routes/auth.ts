@@ -110,7 +110,7 @@ router.get(
             const { data: user, error: findError } = await supabase
                 .from('users')
                 .select('id, is_verified')
-                .eq('id', Number(payload.userId))
+                .eq('id', payload.userId)
                 .single();
 
             if (findError || !user) {
@@ -278,7 +278,16 @@ router.get(
 
         if (orderError) throw orderError;
 
-        res.json({ user: formatUser(user, orderCount || 0, addresses || []) });
+        const { data: promoCodes, error: promoError } = await supabase
+            .from('promo_codes')
+            .select('code, discount_percentage, is_used, created_at')
+            .eq('user_id', req.userId)
+            .eq('is_used', false)
+            .order('created_at', { ascending: false });
+
+        if (promoError) throw promoError;
+
+        res.json({ user: formatUser(user, orderCount || 0, addresses || [], 0, promoCodes || []) });
     })
 );
 

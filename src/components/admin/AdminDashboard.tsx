@@ -1,23 +1,20 @@
 import {
     RefreshCw,
     ExternalLink,
-    DollarSign,
-    ShoppingBag,
     Activity,
     TrendingUp,
     ChevronRight,
     AlertTriangle,
-    Power,
-    Clock,
     HelpCircle,
     Info,
     X,
+    ShoppingBag,
+    DollarSign,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import { useToast } from '../../context/ToastContext';
 
 interface AdminDashboardProps {
     stats: any;
@@ -34,15 +31,8 @@ const DASHBOARD_TRANSLATIONS = {
         viewStore: 'В ресторан',
         refresh: 'Обновить',
         storeParams: 'Параметры заведения',
-        storeClosed: 'Заведение закрыто',
-        storeOpen: 'Заведение открыто',
-        openStore: 'ОТКРЫТЬ ЗАВЕДЕНИЕ',
-        closeStore: 'ЗАКРЫТЬ (ЭКСТРЕННО)',
         deliveryTime: 'Время доставки',
         edit: 'ИЗМЕНИТЬ',
-        emergencyTitle: 'Внимание! Кухня на паузе',
-        emergencyDesc: 'Клиенты увидят сообщение о закрытии и не смогут оформить заказ.',
-        activateNow: 'ВКЛЮЧИТЬ ЗАВЕДЕНИЕ',
         stats: {
             revenue: 'Выручка за сегодня',
             missed: 'Упущенная выручка',
@@ -91,15 +81,8 @@ const DASHBOARD_TRANSLATIONS = {
         viewStore: 'Ver Restaurante',
         refresh: 'Actualizar',
         storeParams: 'Parámetros del Restaurante',
-        storeClosed: 'Restaurante Cerrado Temporalmente',
-        storeOpen: 'Restaurante Abierto y Operativo',
-        openStore: 'ABRIR RESTAURANTE',
-        closeStore: 'MARCAR CERRADA (EMERGENCIA)',
         deliveryTime: 'Tiempo Entrega',
         edit: 'EDITAR',
-        emergencyTitle: '¡Atención! La cocina está pausada',
-        emergencyDesc: 'Los clientes verán el mensaje de cierre y no podrán procesar el carrito.',
-        activateNow: 'ACTIVAR RESTAURANTE AHORA',
         stats: {
             revenue: 'Ingresos de hoy',
             missed: 'Ingresos Perdidos',
@@ -146,88 +129,91 @@ const DASHBOARD_TRANSLATIONS = {
     },
 } as const;
 
-const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: any) => {
+interface StatCardProps {
+    title: string;
+    value: string | number;
+    icon: any;
+    colorClass: string;
+    desc: string;
+    hint?: string;
+    t: any;
+}
+
+const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatCardProps) => {
     const [showHint, setShowHint] = useState(false);
     const hintRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (!showHint) return;
-        const handler = (e: MouseEvent) => {
-            if (hintRef.current && !hintRef.current.contains(e.target as Node)) {
-                setShowHint(false);
-            }
-        };
-        document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
-    }, [showHint]);
-
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between group hover:shadow-md transition-shadow relative overflow-visible">
-            <div className="flex justify-between items-start mb-4">
-                <div className="relative" ref={hintRef}>
-                    <div className="flex items-center gap-1.5 mb-1">
-                        <p className="text-[11px] font-black text-gray-400 uppercase tracking-wider">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between group hover:border-orange-100 hover:shadow-xl transition-all relative overflow-visible h-full min-h-[140px]">
+            <div className="w-full">
+                <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest truncate">
                             {title}
                         </p>
                         {hint && (
                             <button
                                 onClick={() => setShowHint(v => !v)}
-                                className={`w-5 h-5 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
+                                className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-pointer shrink-0 ${
                                     showHint
-                                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-110'
-                                        : 'bg-gray-100 text-gray-400 hover:bg-blue-50 hover:text-blue-500'
+                                        ? 'bg-orange-500 text-white shadow-lg'
+                                        : 'bg-gray-100 text-gray-400 hover:bg-orange-50 hover:text-orange-600'
                                 }`}
                                 aria-label={t.hints.hint}
                             >
-                                <HelpCircle size={12} strokeWidth={2.5} />
+                                <HelpCircle size={10} strokeWidth={3} />
                             </button>
                         )}
                     </div>
-                    <h3 className="text-2xl font-black text-gray-900 leading-none">{value}</h3>
-
-                    <AnimatePresence>
-                        {showHint && hint && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -4, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -4, scale: 0.95 }}
-                                transition={{ duration: 0.2, ease: 'easeOut' }}
-                                className="absolute left-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
-                            >
-                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2.5 flex items-center justify-between border-b border-blue-100">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-5 h-5 rounded-lg bg-blue-500 flex items-center justify-center">
-                                            <Info size={11} className="text-white" />
-                                        </div>
-                                        <span className="text-[10px] font-black text-blue-800 uppercase tracking-widest">
-                                            {t.hints.howCalculated}
-                                        </span>
-                                    </div>
-                                    <button
-                                        onClick={() => setShowHint(false)}
-                                        className="w-5 h-5 rounded-full bg-blue-100 hover:bg-blue-200 flex items-center justify-center text-blue-600 transition-colors border-none cursor-pointer"
-                                    >
-                                        <X size={10} strokeWidth={3} />
-                                    </button>
-                                </div>
-                                <div className="px-4 py-3">
-                                    <p className="text-[12px] text-gray-600 leading-relaxed font-medium">
-                                        {hint}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    <div
+                        className={`p-2 rounded-xl ${colorClass} shadow-inner group-hover:scale-110 transition-transform shrink-0`}
+                    >
+                        <Icon size={18} strokeWidth={2.5} />
+                    </div>
                 </div>
-                <div
-                    className={`p-2.5 rounded-xl ${colorClass} shadow-inner group-hover:scale-110 transition-transform`}
-                >
-                    <Icon size={20} strokeWidth={2} />
-                </div>
+                <h3 className="text-2xl font-black text-gray-900 leading-tight mb-2 tracking-tight">
+                    {value}
+                </h3>
             </div>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight line-clamp-1">
-                {desc}
-            </p>
+
+            <div className="relative" ref={hintRef}>
+                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-tight line-clamp-1 bg-gray-50/80 px-2 py-1 rounded-lg border border-gray-100/50 w-fit max-w-full">
+                    {desc}
+                </p>
+
+                <AnimatePresence>
+                    {showHint && hint && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            className="absolute left-0 bottom-full mb-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] overflow-hidden"
+                        >
+                            <div className="bg-gradient-to-r from-gray-50 to-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-5 h-5 rounded-lg bg-gray-900 flex items-center justify-center">
+                                        <Info size={11} className="text-white" />
+                                    </div>
+                                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">
+                                        {t.hints.howCalculated}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setShowHint(false)}
+                                    className="text-gray-400 hover:text-gray-900 border-none bg-transparent cursor-pointer"
+                                >
+                                    <X size={14} strokeWidth={3} />
+                                </button>
+                            </div>
+                            <div className="p-4">
+                                <p className="text-[12px] text-gray-600 leading-relaxed font-medium">
+                                    {hint}
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
     );
 };
@@ -241,51 +227,10 @@ export default function AdminDashboard({
     language = 'es',
 }: AdminDashboardProps) {
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+    const { success } = useToast();
 
     const t = DASHBOARD_TRANSLATIONS[language];
     const dateLocale = language === 'ru' ? 'ru-RU' : 'es-ES';
-
-    // Settings Query for Store Status
-    const { data: storeSettings, isLoading: settingsLoading } = useQuery({
-        queryKey: ['admin-settings'],
-        queryFn: async () => {
-            const data = await api.get('/admin/settings');
-            return data;
-        },
-    });
-
-    const updateSettingsMutation = useMutation({
-        mutationFn: (payload: any) => api.put('/admin/settings', payload),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
-            setIsUpdatingStatus(false);
-        },
-        onError: () => {
-            setIsUpdatingStatus(false);
-            alert('Error al actualizar el estado del restaurante');
-        },
-    });
-
-    const toggleStoreStatus = () => {
-        if (!storeSettings) return;
-        setIsUpdatingStatus(true);
-        updateSettingsMutation.mutate({
-            ...storeSettings,
-            is_store_closed: !storeSettings.is_store_closed,
-        });
-    };
-
-    const handleUpdateDeliveryTime = (time: string) => {
-        if (!storeSettings) return;
-        updateSettingsMutation.mutate({
-            ...storeSettings,
-            est_delivery_time: time,
-        });
-    };
-
-    const isClosed = storeSettings?.is_store_closed;
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -316,137 +261,26 @@ export default function AdminDashboard({
                 </div>
             </div>
 
-            {/* Store Status Toggle Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                        <Power size={120} strokeWidth={1} />
-                    </div>
-
-                    <div className="flex items-center gap-5 relative z-10 w-full md:w-auto">
-                        <div
-                            className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-inner border border-black/5
-                            ${isClosed ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600 animate-pulse'}`}
-                        >
-                            <Power
-                                size={28}
-                                strokeWidth={2.5}
-                                className={isUpdatingStatus ? 'animate-spin' : ''}
-                            />
-                        </div>
-                        <div>
-                            <h3 className="font-black text-gray-900 text-lg leading-none mb-2">
-                                {t.storeParams}
-                            </h3>
-                            <div className="flex items-center gap-2">
-                                <span
-                                    className={`flex h-2.5 w-2.5 rounded-full ${isClosed ? 'bg-orange-500' : 'bg-green-500 animate-pulse ring-4 ring-green-100'}`}
-                                />
-                                <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
-                                    {isClosed ? t.storeClosed : t.storeOpen}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={toggleStoreStatus}
-                        disabled={isUpdatingStatus || settingsLoading}
-                        className={`w-full md:w-auto flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-[11px] font-black transition-all shadow-xl active:scale-95 uppercase tracking-widest
-                            ${
-                                isClosed
-                                    ? 'bg-green-600 text-white hover:bg-black shadow-green-100'
-                                    : 'bg-orange-600 text-white hover:bg-black shadow-orange-100'
-                            }
-                            ${isUpdatingStatus ? 'opacity-50 cursor-not-allowed' : ''}
-                        `}
-                    >
-                        {isUpdatingStatus ? (
-                            <RefreshCw size={20} className="animate-spin" />
-                        ) : isClosed ? (
-                            t.openStore
-                        ) : (
-                            t.closeStore
-                        )}
-                    </button>
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center group hover:border-blue-100 transition-colors">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                            <Clock size={20} strokeWidth={2.5} />
-                        </div>
-                        <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">
-                            {t.deliveryTime}
-                        </h3>
-                    </div>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            defaultValue={storeSettings?.est_delivery_time || '30-60 min'}
-                            onBlur={e => handleUpdateDeliveryTime(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-4 text-sm font-black text-gray-700 outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300 transition-all text-center"
-                            placeholder="Ej: 30-45 min"
-                        />
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
-                            <span className="text-[9px] font-black text-blue-500 bg-white px-2 py-1 rounded-lg shadow-sm border border-blue-100 uppercase tracking-widest">
-                                {t.edit}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Emergency Alert if Store is Closed */}
-            <AnimatePresence>
-                {isClosed && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -20, scale: 0.98 }}
-                    >
-                        <div className="bg-orange-600 text-white p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-5 shadow-2xl shadow-orange-100 border-2 border-orange-500/50">
-                            <div className="flex items-center gap-5">
-                                <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-md shadow-inner">
-                                    <AlertTriangle
-                                        size={28}
-                                        className="text-white animate-bounce"
-                                    />
-                                </div>
-                                <div>
-                                    <p className="font-black text-lg uppercase tracking-tight leading-none mb-1">
-                                        {t.emergencyTitle}
-                                    </p>
-                                    <p className="text-xs text-white/80 font-bold uppercase tracking-wider">
-                                        {t.emergencyDesc}
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={toggleStoreStatus}
-                                className="w-full md:w-auto bg-white text-orange-600 px-10 py-4 rounded-2xl text-[11px] font-black hover:bg-black hover:text-white transition-all shadow-xl active:scale-95 uppercase tracking-widest"
-                            >
-                                {t.activateNow}
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     {[1, 2, 3, 4, 5].map(i => (
                         <div
                             key={i}
-                            className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-32 animate-pulse flex flex-col justify-between"
+                            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between h-[140px] animate-pulse"
                         >
-                            <div className="w-1/2 h-4 bg-gray-50 rounded"></div>
-                            <div className="w-3/4 h-8 bg-gray-50 rounded"></div>
+                            <div className="flex justify-between items-start">
+                                <div className="space-y-2 flex-1">
+                                    <div className="h-3 w-2/3 bg-gray-50 rounded" />
+                                    <div className="h-2 w-1/3 bg-gray-50/50 rounded" />
+                                </div>
+                                <div className="w-10 h-10 bg-gray-50 rounded-xl" />
+                            </div>
+                            <div className="h-8 w-1/2 bg-gray-100 rounded-lg mt-auto" />
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <StatCard
                         title={t.stats.revenue}
                         value={`${Number(stats?.revenueToday || 0)
@@ -516,11 +350,18 @@ export default function AdminDashboard({
 
                     {loading ? (
                         <div className="space-y-3">
-                            {[1, 2, 3].map(i => (
+                            {[1, 2, 3, 4].map(i => (
                                 <div
                                     key={i}
-                                    className="h-16 bg-gray-50 rounded-2xl animate-pulse"
-                                ></div>
+                                    className="h-14 bg-gray-50/50 rounded-2xl animate-pulse flex items-center px-4 gap-3"
+                                >
+                                    <div className="w-10 h-10 rounded-2xl bg-gray-100 shrink-0" />
+                                    <div className="flex-1 space-y-2">
+                                        <div className="h-3 w-1/2 bg-gray-100 rounded" />
+                                        <div className="h-2 w-1/4 bg-gray-100 rounded opacity-50" />
+                                    </div>
+                                    <div className="h-4 w-12 bg-gray-100 rounded" />
+                                </div>
                             ))}
                         </div>
                     ) : !stats?.recentOrders?.length ? (
@@ -578,7 +419,26 @@ export default function AdminDashboard({
                                         </div>
                                         <div>
                                             <p className="font-black text-gray-900 text-[13px] leading-none mb-1">
-                                                #{String(order.id).padStart(5, '0')}
+                                                <span
+                                                    className="cursor-pointer active:scale-95 transition-transform inline-block"
+                                                    title={String(order.id)}
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(
+                                                            String(order.id)
+                                                        );
+                                                        success(
+                                                            language === 'ru'
+                                                                ? 'ID заказа скопирован'
+                                                                : 'Pedido ID copiado'
+                                                        );
+                                                    }}
+                                                >
+                                                    #
+                                                    {typeof order.id === 'string' &&
+                                                    order.id.includes('-')
+                                                        ? order.id.slice(0, 8).toUpperCase()
+                                                        : String(order.id).padStart(5, '0')}
+                                                </span>
                                             </p>
                                             <p className="text-[10px] text-gray-400 font-black uppercase tracking-tight truncate max-w-[140px]">
                                                 {order.user_name || t.guest}
@@ -604,11 +464,20 @@ export default function AdminDashboard({
 
                     {loading ? (
                         <div className="space-y-4">
-                            {[1, 2, 3].map(i => (
+                            {[1, 2, 3, 4, 5].map(i => (
                                 <div
                                     key={i}
-                                    className="h-16 bg-gray-50 rounded-2xl animate-pulse"
-                                ></div>
+                                    className="h-12 bg-gray-50/50 rounded-2xl animate-pulse flex items-center px-4 gap-4"
+                                >
+                                    <div className="w-8 h-8 rounded-xl bg-gray-100 shrink-0" />
+                                    <div className="flex-1 space-y-2">
+                                        <div className="flex justify-between">
+                                            <div className="h-3 w-1/3 bg-gray-100 rounded" />
+                                            <div className="h-3 w-12 bg-gray-100 rounded" />
+                                        </div>
+                                        <div className="h-1.5 w-full bg-gray-100 rounded-full" />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     ) : !stats?.topItems?.length ? (

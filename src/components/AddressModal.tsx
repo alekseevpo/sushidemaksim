@@ -6,6 +6,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { api } from '../utils/api';
 import { RESTAURANT_LOCATION, detectZone } from '../utils/delivery';
+import { SearchSkeleton, MapPlaceholderSkeleton } from './skeletons/SearchSkeleton';
 
 // Fix Leaflet marker icons
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -76,7 +77,12 @@ interface AddressModalProps {
 function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }) {
     const map = useMap();
     useEffect(() => {
-        map.setView(center, zoom);
+        // Debounce/Timeout to ensure the container transition is finished
+        const timer = setTimeout(() => {
+            map.invalidateSize();
+            map.setView(center, zoom, { animate: true });
+        }, 100);
+        return () => clearTimeout(timer);
     }, [center, zoom, map]);
     return null;
 }
@@ -132,7 +138,7 @@ export default function AddressModal({
     const [isSearching, setIsSearching] = useState(false);
 
     const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
-    const [mapZoom, setMapZoom] = useState(15);
+    const [mapZoom, setMapZoom] = useState(window.innerWidth < 768 ? 14 : 15);
     const skipNextReverseGeocodeRef = useRef(false);
     const skipNextSearchRef = useRef(false);
     const wasSelectedViaSearchRef = useRef(false);
@@ -188,7 +194,7 @@ export default function AddressModal({
                 setMapZoom(15);
             } else {
                 setMarkerPosition(RESTAURANT_LOCATION);
-                setMapZoom(15);
+                setMapZoom(window.innerWidth < 768 ? 14 : 15);
                 setIsLocatingAddress(false);
             }
         }
@@ -479,7 +485,7 @@ export default function AddressModal({
 
                         <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl">
                             {/* Map Side */}
-                            <div className="h-56 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none">
+                            <div className="h-80 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none">
                                 {/* Floating Close Button (Mobile Only) */}
                                 <button
                                     onClick={onClose}
@@ -489,7 +495,7 @@ export default function AddressModal({
                                 </button>
                                 <MapContainer
                                     center={markerPosition}
-                                    zoom={15}
+                                    zoom={window.innerWidth < 768 ? 14 : 15}
                                     style={{ height: '100%', width: '100%' }}
                                     zoomControl={false}
                                     attributionControl={false}
@@ -566,12 +572,13 @@ export default function AddressModal({
                                 </MapContainer>
 
                                 <AnimatePresence>
+                                    {!markerPosition && <MapPlaceholderSkeleton />}
                                     {isLocatingAddress && (
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
-                                            className="absolute inset-0 z-[2000] bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
+                                            className="absolute inset-0 z-[40] bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
                                         >
                                             <div className="w-16 h-16 bg-orange-600 rounded-2xl shadow-xl flex items-center justify-center mb-4 animate-bounce">
                                                 <MapPin size={24} className="text-white" />
@@ -604,7 +611,7 @@ export default function AddressModal({
                                             placeholder="Introduce tu calle y número..."
                                             autoComplete="off"
                                             spellCheck={false}
-                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-transparent focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-orange-500/50 focus:ring-orange-500 transition-all placeholder:text-gray-400"
                                         />
                                         <AnimatePresence>
                                             {(searchResults.length > 0 ||
@@ -614,6 +621,7 @@ export default function AddressModal({
                                                     data-lenis-prevent
                                                     className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[320px] md:max-h-[440px] divide-y divide-gray-50 animate-in fade-in slide-in-from-top-2 duration-200 z-[1001] custom-scrollbar"
                                                 >
+                                                    {isSearching && <SearchSkeleton count={3} />}
                                                     {/* Virtual Result for exact typed address with a number */}
                                                     {searchQuery.trim().length >= 3 &&
                                                         /\d/.test(searchQuery) &&
@@ -801,6 +809,17 @@ export default function AddressModal({
                                                                 Mín
                                                             </span>
                                                         </span>
+                                                        {selectedZone.freeThreshold && (
+                                                            <>
+                                                                <div className="w-1 h-1 rounded-full bg-gray-200" />
+                                                                <span className="flex items-center gap-1">
+                                                                    {selectedZone.freeThreshold}€
+                                                                    <span className="text-[10px] opacity-40">
+                                                                        Gratis
+                                                                    </span>
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -828,7 +847,9 @@ export default function AddressModal({
                                                         </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-2 gap-3">
+                                                    <div
+                                                        className={`grid ${selectedZone.freeThreshold ? 'grid-cols-3' : 'grid-cols-2'} gap-3`}
+                                                    >
                                                         <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
                                                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
                                                                 Envío
@@ -847,6 +868,16 @@ export default function AddressModal({
                                                                 {selectedZone.minOrder}€
                                                             </p>
                                                         </div>
+                                                        {selectedZone.freeThreshold && (
+                                                            <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30">
+                                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">
+                                                                    Gratis desde
+                                                                </p>
+                                                                <p className="text-lg font-black text-orange-600 leading-none">
+                                                                    {selectedZone.freeThreshold}€
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

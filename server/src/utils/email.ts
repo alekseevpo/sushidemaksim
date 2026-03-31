@@ -27,7 +27,7 @@ async function sendEmail({
     subject: string;
     html: string;
 }): Promise<void> {
-    const defaultFrom = `Sushi de Maksim <${resend ? 'info@sushidemaksim.vercel.app' : config.smtp.user}>`;
+    const defaultFrom = resend ? config.emailFrom : `Sushi de Maksim <${config.smtp.user}>`;
 
     if (resend) {
         try {
@@ -93,7 +93,7 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:32px;text-align:center;">
+    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;">
       <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
     </div>
     <div style="padding:32px;">
@@ -158,7 +158,7 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
       <p style="color:#9CA3AF;font-size:13px;margin:0 0 8px;">¡Que tengas un día maravilloso!</p>
       <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-      <p style="color:#E5E7EB;font-size:11px;margin:12px 0 0;">*Por seguridad, por favor muestra tu DNI al repartidor para validar la fecha.</p>
+      <p style="color:#6b7280;font-size:11px;margin:12px 0 0;">*Por seguridad, por favor muestra tu DNI al repartidor para validar la fecha.</p>
     </div>
   </div>
 </body>
@@ -212,6 +212,12 @@ export async function sendOrderReceiptEmail(
                 .replace('[PROGRAMADO: ', '')
                 .replace('[PROGRAMADO:', '')
                 .replace(']', '');
+
+            // Reformat ISO 2026-04-04 14:00 to 04-04-2026 14:00
+            const isoMatch = scheduledTime.match(/^(\d{4})-(\d{2})-(\d{2})(.*)$/);
+            if (isoMatch) {
+                scheduledTime = `${isoMatch[3]}-${isoMatch[2]}-${isoMatch[1]}${isoMatch[4]}`;
+            }
         } else if (
             part.includes('[NO LLAMAR PARA CONFIRMACIÓN]') ||
             part.includes('[SIN CONFIRMACIÓN LLAMADA]')
@@ -267,15 +273,9 @@ export async function sendOrderReceiptEmail(
 <body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
   <div style="max-width:600px;margin:10px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
     
-    <!-- Header -->
-    <div style="background-color: #000000; padding: 16px 20px; text-align: center;">
-      <div style="margin-bottom: 4px;">
-        <span style="background-color: #dc2626; color: #ffffff; padding: 6px 10px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
-      </div>
-      <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
-        MAKSIM<span style="color:#dc2626;">.</span>
-      </h1>
-      <p style="color: #6b7280; margin: 2px 0 0; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">Confirmación de Pedido</p>
+    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
+      <h1 style="color: #fff; margin: 0; font-size: 24px;">🍣 Sushi de Maksim</h1>
+      <p style="color: #6b7280; margin: 8px 0 0; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">Confirmación de Pedido</p>
     </div>
 
     <div style="padding: 16px 20px;">
@@ -394,7 +394,7 @@ export async function sendOrderReceiptEmail(
     <!-- Footer -->
     <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
       <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-      <div style="color: #e5e7eb; font-size: 11px;">
+      <div style="color: #6b7280; font-size: 11px;">
         Este es un correo automático, por favor no respondas a este mensaje.
       </div>
     </div>
@@ -417,8 +417,8 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:32px;text-align:center;">
-      <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+    <div style="background:linear-gradient(135deg,#000000,#333333);padding:24px;text-align:center;">
+      <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
     </div>
     <div style="padding:32px;text-align:center;">
       <h2 style="color:#111827;margin:0 0 16px;font-size:20px;">¡Hola ${name}!</h2>
@@ -464,15 +464,9 @@ export async function sendVerificationEmail(
 <body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
   <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);">
     
-    <!-- Header with Stylized Logo -->
-    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-      <div style="margin-bottom: 16px;">
-        <span style="background-color: #dc2626; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
-      </div>
-      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
-        MAKSIM<span style="color:#dc2626;">.</span>
-      </h1>
-      <p style="color: #6b7280; margin: 5px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Sushi de Autor</p>
+    <div style="background-color: #000000; padding: 32px 20px; text-align: center;">
+      <h1 style="color:#fff;margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:4px;display:inline-block;border:4px solid #fff;padding:10px 20px;">MAKSIM.</h1>
+      <p style="color: #6b7280; margin: 10px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Sushi de Autor</p>
     </div>
 
     <!-- Content -->
@@ -508,7 +502,7 @@ export async function sendVerificationEmail(
     <!-- Footer -->
     <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
       <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-      <div style="color: #e5e7eb; font-size: 11px;">
+      <div style="color: #6b7280; font-size: 11px;">
         Recibiste este correo porque te registraste en sushidemaksim.vercel.app
       </div>
     </div>
@@ -544,13 +538,8 @@ export async function sendEmailChangeVerificationEmail(
   <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);">
     
     <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
-      <div style="margin-bottom: 16px;">
-        <span style="background-color: #dc2626; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
-      </div>
-      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
-        MAKSIM<span style="color:#dc2626;">.</span>
-      </h1>
-      <p style="color: #6b7280; margin: 5px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Confirmación de Email</p>
+      <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
+      <p style="color: #6b7280; margin: 10px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Confirmación de Email</p>
     </div>
 
     <div style="padding: 24px; text-align: center;">
@@ -592,6 +581,9 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
+      <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+    </div>
     <div style="background:linear-gradient(135deg,#000000,#333333);padding:24px;text-align:center;position:relative;">
       <div style="font-size:50px;margin-bottom:10px;">✨</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Ya eres del Club!</h1>
@@ -618,7 +610,7 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
       <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-      <p style="color:#E5E7EB;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en sushidemaksim.vercel.app</p>
+      <p style="color:#6b7280;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en sushidemaksim.vercel.app</p>
     </div>
   </div>
 </body>
@@ -662,7 +654,10 @@ export async function sendAbandonedCartEmail(
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#fdfbf7;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.06);border:1px solid #f1f5f9;">
-    <div style="background:#000;padding:32px 24px;text-align:center;">
+    <div style="background:#000;padding:24px 24px;text-align:center;">
+       <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
+    </div>
+    <div style="background:#111;padding:32px 24px;text-align:center;">
        <div style="background:#dc2626;display:inline-block;padding:8px 12px;border-radius:12px;margin-bottom:12px;">
          <span style="font-size:32px;">🍣</span>
        </div>
@@ -724,15 +719,9 @@ export async function sendReservationEmail(
 <body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
     <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
         
-        <!-- Header -->
-        <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-            <div style="margin-bottom: 8px;">
-                <span style="background-color: #dc2626; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 900; font-size: 20px;">🍣</span>
-            </div>
-            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
-                MAKSIM<span style="color:#dc2626;">.</span>
-            </h1>
-            <p style="color: #6b7280; margin: 4px 0 0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Reserva de Mesa</p>
+        <div style="background-color: #000000; padding: 32px 20px; text-align: center;">
+            <h1 style="color:#fff;margin:0;font-size:26px;">🍣 Sushi de Maksim</h1>
+            <p style="color: #6b7280; margin: 10px 0 0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Reserva de Mesa</p>
         </div>
 
         <div style="padding: 32px 24px;">
@@ -812,7 +801,7 @@ export async function sendReservationEmail(
         <!-- Footer -->
         <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
             <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-            <div style="color: #e5e7eb; font-size: 11px;">
+            <div style="color: #6b7280; font-size: 11px;">
                 Este es un correo automático de sushidemaksim.vercel.app
             </div>
         </div>
@@ -823,4 +812,110 @@ export async function sendReservationEmail(
     `;
 
     await sendEmail({ to: isAdminCopy ? config.adminEmail : reservationData.email, subject, html });
+}
+
+/**
+ * Send a loyalty gift email (every 5th order).
+ */
+export async function sendLoyaltyGiftEmail(to: string, name: string, code: string): Promise<void> {
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
+  <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
+      <h1 style="color:#fff;margin:0;font-size:22px;">🍣 Sushi de Maksim</h1>
+    </div>
+    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;position:relative;">
+      <div style="font-size:50px;margin-bottom:10px;">⭐</div>
+      <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Gracias por tu Fidelidad!</h1>
+      <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Tu 4º pedido merece un premio</p>
+    </div>
+    <div style="padding:24px;text-align:center;">
+      <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Hola ${name}!</p>
+      <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
+        Acabas de completar cuatro pedidos con nosotros... Eso significa que ya eres parte de la verdadera mafia del sushi. 😎 Para celebrarlo, tienes un descuento especial para tu <strong>5º pedido</strong>:
+      </p>
+      
+      <div style="background:#FEF2F2;border:2px dashed #FECDD3;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
+        <p style="color:#BE123C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Exclusivo</p>
+        <div style="font-size:32px;font-weight:900;color:#DC2626;letter-spacing:3px;">${code}</div>
+        <p style="color:#BE123C;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
+      </div>
+
+      <p style="color:#374151;font-size:14px;margin:0 0 32px;">
+        *Este código es para uso personal y es válido durante <strong>7 días</strong> a partir de hoy. Solo introdúcelo en la cesta.
+      </p>
+
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">PEDIR AHORA</a>
+    </div>
+    
+    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+      <p style="color:#6b7280;font-size:11px;margin:12px 0 0;">Regalo automático por tu lealtad a Sushi de Maksim</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '⭐ Tienes un premio por tu 4º pedido — Sushi de Maksim',
+        html,
+    });
+}
+
+/**
+ * Send a loyalty dessert gift email (every 10th order).
+ */
+export async function sendDessertGiftEmail(to: string, name: string, code: string): Promise<void> {
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
+  <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
+      <h1 style="color:#fff;margin:0;font-size:22px;">🍣 Sushi de Maksim</h1>
+    </div>
+    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;position:relative;">
+      <div style="font-size:50px;margin-bottom:10px;">🍰</div>
+      <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Tu Postре de Regalo!</h1>
+      <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">¡Has completado 9 pedidos! ⭐</p>
+    </div>
+    <div style="padding:24px;text-align:center;">
+      <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Felicidades ${name}!</p>
+      <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
+        Eres un verdadero embajador de Sushi de Maksim. Para celebrar tus 9 pedidos con nosotros, te invitamos a un postre delicioso en tu <strong>10º pedido</strong>:
+      </p>
+      
+      <div style="background:#FFF7ED;border:2px dashed #FDBA74;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
+        <p style="color:#C2410C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Regalo</p>
+        <div style="font-size:32px;font-weight:900;color:#DC2626;letter-spacing:3px;">${code}</div>
+        <p style="color:#C2410C;font-size:20px;font-weight:bold;margin:12px 0 0;">🍰 POSTRE GRATIS EN TU PEDIDO</p>
+      </div>
+
+      <p style="color:#374151;font-size:14px;line-height:1.4;margin:0 0 32px;">
+        *Añade el postre que prefieras a tu cesta e introduce este código al finalizar tu compra. ¡Nosotros nos encargamos del resto!
+        <br><br>
+        <span style="font-size:12px;color:#9CA3AF;">Válido durante <strong>7 días</strong> a partir de hoy.</span>
+      </p>
+
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">CANJEAR MI POSTRE</a>
+    </div>
+    
+    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+      <p style="color:#6b7280;font-size:11px;margin:12px 0 0;">Regalo exclusivo por tu fidelidad nivel Platino</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '🍰 ¡Felicidades! Tienes un postre de regalo por tu 9º pedido',
+        html,
+    });
 }

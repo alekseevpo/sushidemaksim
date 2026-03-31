@@ -18,7 +18,7 @@ vi.mock('../../utils/api', () => ({
 
 const mockOrders = [
     {
-        id: 123,
+        id: '550e8400-e29b-41d4-a716-446655440000',
         total: 25.5,
         status: 'pending',
         createdAt: '2023-01-01 10:00:00',
@@ -53,7 +53,7 @@ describe('AdminOrders (Integration)', () => {
         await waitFor(
             () => {
                 // Check for order ID and user name separately
-                expect(screen.getByText(/00123/)).toBeInTheDocument();
+                expect(screen.getByText(/550E8400/)).toBeInTheDocument();
                 expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
             },
             { timeout: 2000 }
@@ -69,15 +69,18 @@ describe('AdminOrders (Integration)', () => {
             />
         );
 
-        await waitFor(() => expect(screen.getByText(/00123/)).toBeInTheDocument());
+        await waitFor(() => expect(screen.getByText(/550E8400/)).toBeInTheDocument());
 
         const statusSelect = screen.getByRole('combobox');
         fireEvent.change(statusSelect, { target: { value: 'preparing' } });
 
         await waitFor(() => {
-            expect(api.patch).toHaveBeenCalledWith('/admin/orders/123/status', {
-                status: 'preparing',
-            });
+            expect(api.patch).toHaveBeenCalledWith(
+                '/admin/orders/550e8400-e29b-41d4-a716-446655440000/status',
+                {
+                    status: 'preparing',
+                }
+            );
         });
     });
 
@@ -91,21 +94,21 @@ describe('AdminOrders (Integration)', () => {
         );
 
         const searchInput = await screen.findByPlaceholderText(/Buscar ID, Teléfono, Promo/i);
-        await waitFor(() => expect(screen.getByText(/00123/)).toBeInTheDocument());
+        await waitFor(() => expect(screen.getByText(/550E8400/)).toBeInTheDocument());
 
         // Test search matches
-        fireEvent.change(searchInput, { target: { value: '123' } });
+        fireEvent.change(searchInput, { target: { value: '550E8400' } });
 
         // Wait for debounce and state update using waitFor
         await waitFor(
             () => {
-                expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=123'));
+                expect(api.get).toHaveBeenCalledWith(expect.stringContaining('search=550E8400'));
             },
             { timeout: 2000 }
         );
 
         await waitFor(() => {
-            expect(screen.getByText(/00123/)).toBeInTheDocument();
+            expect(screen.getByText(/550E8400/)).toBeInTheDocument();
         });
 
         // Prepare next mock
@@ -124,7 +127,7 @@ describe('AdminOrders (Integration)', () => {
         );
 
         await waitFor(() => {
-            expect(screen.queryByText(/00123/)).not.toBeInTheDocument();
+            expect(screen.queryByText(/550E8400/)).not.toBeInTheDocument();
         });
     });
 });

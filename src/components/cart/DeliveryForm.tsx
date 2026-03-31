@@ -15,6 +15,7 @@ import { useEffect, useRef } from 'react';
 import { tracker } from '../../analytics/tracker';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
 import CustomDatePicker from '../ui/CustomDatePicker';
+import CustomTimePicker from '../ui/CustomTimePicker';
 
 interface DeliveryFormProps {
     deliveryType: 'delivery' | 'pickup' | 'reservation';
@@ -134,7 +135,8 @@ export default function DeliveryForm({
 
     const getTimeSlots = () => {
         if (!scheduledDate) return [];
-        const dateObj = new Date(scheduledDate);
+        const [y, m, d] = scheduledDate.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d);
         const day = dateObj.getDay();
         const intervals = BUSINESS_HOURS[day] || [];
 
@@ -438,7 +440,7 @@ export default function DeliveryForm({
                                                             {selectedZone && (
                                                                 <span className="ml-1 text-[9px] md:text-xs font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
                                                                     {deliveryCost > 0
-                                                                        ? `+${deliveryCost.toFixed(2).replace('.', ',')}€ envío`
+                                                                        ? `+${deliveryCost.toFixed(2).replace('.', ',')}€ envío${selectedZone.freeThreshold ? ` (Gratis desde ${selectedZone.freeThreshold}€)` : ''}`
                                                                         : 'Envío GRATIS'}
                                                                 </span>
                                                             )}
@@ -455,7 +457,7 @@ export default function DeliveryForm({
                                         {/* Modal triggers address selection which includes house, apartment and postal code */}
 
                                         {isAuthenticated && (
-                                            <div className="px-2">
+                                            <div className="px-2 mt-2">
                                                 <label className="flex items-center gap-3 p-3 bg-orange-50/20 rounded-2xl border border-orange-100/30 cursor-pointer group hover:bg-orange-50/40 transition-all select-none">
                                                     <div className="relative flex items-center">
                                                         <input
@@ -579,7 +581,7 @@ export default function DeliveryForm({
                 )}
                 <div className="mb-4">
                     <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg focus-within:border-orange-400 focus-within:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition-all overflow-hidden">
-                        <div className="pl-3 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-100/50 h-full flex items-center bg-gray-50/50">
+                        <div className="pl-3 pr-2 text-gray-400 font-bold text-base select-none border-r border-gray-100/50 h-full flex items-center bg-gray-50/50">
                             +34
                         </div>
                         <input
@@ -594,7 +596,7 @@ export default function DeliveryForm({
                             pattern="[0-9]{9}"
                             required
                             data-testid="phone-input"
-                            className="flex-1 px-3 py-2.5 bg-transparent border-none text-sm outline-none font-bold placeholder:font-normal placeholder:text-gray-400"
+                            className="flex-1 px-3 py-2.5 bg-transparent border-none text-base outline-none font-bold placeholder:font-normal placeholder:text-gray-400"
                         />
                     </div>
                 </div>
@@ -682,28 +684,15 @@ export default function DeliveryForm({
                                     <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
                                         Hora
                                     </label>
-                                    {!isDayClosedSelect && availableSlots.length > 0 ? (
-                                        <select
-                                            value={scheduledTime}
-                                            onChange={e => setScheduledTime(e.target.value)}
-                                            className="w-full px-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[14px] font-bold outline-none focus:border-orange-400"
-                                        >
-                                            <option value="">Selecciona hora</option>
-                                            {availableSlots.map(slot => (
-                                                <option key={slot} value={slot}>
-                                                    {slot}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    ) : (
-                                        <input
-                                            type="time"
-                                            value={scheduledTime}
-                                            onChange={e => setScheduledTime(e.target.value)}
-                                            className="w-full px-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[14px] font-bold outline-none focus:border-orange-400 disabled:bg-gray-100 disabled:text-gray-400"
-                                            disabled={isDayClosedSelect}
-                                        />
-                                    )}
+                                    <CustomTimePicker
+                                        value={scheduledTime}
+                                        onChange={setScheduledTime}
+                                        slots={availableSlots}
+                                        disabled={isDayClosedSelect || availableSlots.length === 0}
+                                        placeholder={
+                                            isDayClosedSelect ? 'Cerrado' : 'Selecciona hora'
+                                        }
+                                    />
                                 </div>
                             </div>
 

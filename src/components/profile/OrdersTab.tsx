@@ -62,15 +62,30 @@ export default function OrdersTab() {
         setIsRepeating(String(order.id));
         try {
             if (order.items) {
-                for (const item of order.items) {
-                    await addItem({
-                        id: String(item.menuItemId || item.id),
-                        name: item.name,
-                        description: item.description || '',
-                        price: item.priceAtTime || item.price || 0,
-                        image: item.image || '',
-                        category: (item.category as any) || 'rollos-grandes',
-                    });
+                // Filter out delivery fee before adding items to cart
+                const itemsToRepeat = order.items.filter((item: any) => {
+                    const isDeliveryFee =
+                        item.name?.toLowerCase().includes('gastos') ||
+                        item.name?.toLowerCase().includes('envío') ||
+                        (item as any).menuItemId === -1 ||
+                        (item as any).menu_item_id === -1 ||
+                        (item as any).menuItemId === 0 ||
+                        !(item as any).menuItemId;
+                    return !isDeliveryFee;
+                });
+
+                for (const item of itemsToRepeat) {
+                    await addItem(
+                        {
+                            id: String(item.menuItemId || item.id),
+                            name: item.name,
+                            description: item.description || '',
+                            price: item.priceAtTime || item.price || 0,
+                            image: item.image || '',
+                            category: (item.category as any) || 'rollos-grandes',
+                        },
+                        item.quantity
+                    );
                 }
             }
             navigate('/cart');
@@ -151,7 +166,10 @@ export default function OrdersTab() {
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                        #{String(order.id).padStart(5, '0')}
+                                        #
+                                        {typeof order.id === 'string' && order.id.includes('-')
+                                            ? order.id.slice(0, 8).toUpperCase()
+                                            : String(order.id).padStart(5, '0')}
                                     </span>
                                     {getStatusBadge(order.status)}
                                 </div>

@@ -1,9 +1,20 @@
 import React, { useState, useEffect, memo } from 'react';
-import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowLeft, KeyRound, X } from 'lucide-react';
+import {
+    Mail,
+    Lock,
+    User,
+    Phone,
+    Eye,
+    EyeOff,
+    ArrowLeft,
+    KeyRound,
+    X,
+    CheckCircle2,
+    Circle,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
-import { api } from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ========== SUB-COMPONENTS (Memoized for performance) ==========
@@ -120,6 +131,37 @@ const LoginForm = memo(
     }
 );
 
+const PasswordHint = memo(({ password }: { password: string }) => {
+    const checks = [
+        { label: '9+ caracteres', met: password.length >= 9 },
+        { label: 'Un número', met: /\d/.test(password) },
+        { label: 'Un símbolo', met: /[!@#$%^&*(),.?":{}|<>_+-]/.test(password) },
+    ];
+
+    if (!password) return null;
+
+    return (
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-top-1 duration-200">
+            {checks.map((check, i) => (
+                <div
+                    key={i}
+                    className={`flex items-center gap-1.5 text-[9px] font-bold transition-colors ${
+                        check.met ? 'text-green-500' : 'text-gray-400'
+                    }`}
+                >
+                    {check.met ? (
+                        <CheckCircle2 size={11} className="shrink-0" />
+                    ) : (
+                        <Circle size={11} className="shrink-0 opacity-40" />
+                    )}
+                    <span>{check.label}</span>
+                </div>
+            ))}
+        </div>
+    );
+});
+PasswordHint.displayName = 'PasswordHint';
+
 const RegisterForm = memo(
     ({
         onRegister,
@@ -131,6 +173,7 @@ const RegisterForm = memo(
         isLoading: boolean;
     }) => {
         const [showPassword, setShowPassword] = useState(false);
+        const [password, setPassword] = useState('');
 
         return (
             <form onSubmit={onRegister} data-testid="register-form" className="space-y-3">
@@ -205,9 +248,11 @@ const RegisterForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
-                            placeholder="Mínimo 6 caracteres"
+                            placeholder="Crea una contraseña segura"
                         />
                         <button
                             type="button"
@@ -222,11 +267,17 @@ const RegisterForm = memo(
                             )}
                         </button>
                     </div>
+                    <PasswordHint password={password} />
                 </div>
 
                 <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={
+                        isLoading ||
+                        password.length < 9 ||
+                        !/\d/.test(password) ||
+                        !/[!@#$%^&*(),.?":{}|<>_+-]/.test(password)
+                    }
                     className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
                 >
                     {isLoading ? 'Creando...' : 'Crear cuenta'}
@@ -421,6 +472,12 @@ const ResetPasswordForm = memo(
     }) => {
         const [showPassword, setShowPassword] = useState(false);
         const [codeValue, setCodeValue] = useState(token || '');
+        const [password, setPassword] = useState('');
+
+        const isPasswordValid =
+            password.length >= 9 &&
+            /\d/.test(password) &&
+            /[!@#$%^&*(),.?":{}|<>_+-]/.test(password);
 
         return (
             <form onSubmit={onReset} className="space-y-3">
@@ -450,9 +507,11 @@ const ResetPasswordForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
-                            placeholder="Mínimo 6 caracteres"
+                            placeholder="Mínimo 9 caracteres"
                         />
                         <button
                             type="button"
@@ -467,6 +526,7 @@ const ResetPasswordForm = memo(
                             )}
                         </button>
                     </div>
+                    <PasswordHint password={password} />
                 </div>
 
                 <div className="space-y-1">
@@ -490,7 +550,7 @@ const ResetPasswordForm = memo(
 
                 <button
                     type="submit"
-                    disabled={isLoading || (!token && codeValue.length < 6)}
+                    disabled={isLoading || (!token && codeValue.length < 6) || !isPasswordValid}
                     className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 mt-2 h-12"
                 >
                     {isLoading ? 'Cambiando...' : 'Cambiar contraseña'}
@@ -518,7 +578,7 @@ export default function LoginModal({
     const [isLoading, setIsLoading] = useState(false);
     const [resetToken, setResetToken] = useState('');
     const [recoveryEmail, setRecoveryEmail] = useState('');
-    const { login, register } = useAuth();
+    const { login, register, forgotPassword, resetPassword } = useAuth();
     const { success: showSuccess, error: showError } = useToast();
     const navigate = useNavigate();
 
@@ -619,10 +679,14 @@ export default function LoginModal({
         const email = (form.elements.namedItem('email') as HTMLInputElement).value;
 
         try {
-            await api.post('/auth/forgot-password', { email });
-            setRecoveryEmail(email);
-            setMode('verify-sent');
-            showSuccess('Email de recuperación enviado');
+            const res = await forgotPassword(email);
+            if (res.success) {
+                setRecoveryEmail(email);
+                setMode('verify-sent');
+                showSuccess('Código de recuperación enviado');
+            } else {
+                showError(res.error || 'Error al procesar la solicitud');
+            }
         } catch (err: unknown) {
             const error = err as Error;
             showError(error.message || 'Error al procesar la solicitud');
@@ -647,14 +711,14 @@ export default function LoginModal({
         }
 
         try {
-            await api.post('/auth/reset-password', {
-                email: recoveryEmail,
-                code,
-                newPassword: password,
-            });
-            setMode('login');
-            showSuccess('Contraseña actualizada con éxito. Ya puedes iniciar sesión.');
-            setRecoveryEmail('');
+            const res = await resetPassword(recoveryEmail, code, password);
+            if (res.success) {
+                setMode('login');
+                showSuccess('Contraseña actualizada с éxito. Ya puedes iniciar sesión.');
+                setRecoveryEmail('');
+            } else {
+                showError(res.error || 'Error al actualizar la contraseña');
+            }
         } catch (err: unknown) {
             const error = err as Error;
             showError(error.message || 'Error al actualizar la contraseña');
@@ -712,7 +776,7 @@ export default function LoginModal({
                                     {mode === 'login' && 'Entra y disfruta del mejor sushi.'}
                                     {mode === 'register' && 'Únete a la familia Maksim.'}
                                     {mode === 'forgot' && 'Te ayudamos a volver.'}
-                                    {mode === 'verify-sent' && 'Hemos enviado un enlace.'}
+                                    {mode === 'verify-sent' && 'Hemos enviado un código.'}
                                     {mode === 'reset-password' && 'Casi has terminado.'}
                                 </p>
                             </div>

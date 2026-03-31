@@ -113,7 +113,6 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 contactSchedule: Array.isArray(data.contactSchedule) ? data.contactSchedule : [],
                 socialLinks: Array.isArray(data.socialLinks) ? data.socialLinks : [],
                 estDeliveryTime: data.estDeliveryTime || '30-60 min',
-                isStoreClosed: !!data.isStoreClosed,
                 closedMessage:
                     data.closedMessage || 'Lo sentimos, la cocina está cerrada temporalmente.',
             };

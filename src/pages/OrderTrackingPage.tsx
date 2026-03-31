@@ -104,7 +104,10 @@ export default function OrderTrackingPage() {
                                     Enlace de seguimiento
                                 </span>
                                 <h1 className="text-4xl md:text-5xl font-black m-0 tracking-tighter decoration-white/20 underline underline-offset-8">
-                                    Pedido #{String(order.id).padStart(5, '0')}
+                                    Pedido #
+                                    {typeof order.id === 'string' && order.id.includes('-')
+                                        ? order.id.slice(0, 8).toUpperCase()
+                                        : String(order.id).padStart(5, '0')}
                                 </h1>
                             </div>
                             <div className="bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20 min-w-[140px] text-center md:text-right transition-all">
@@ -116,7 +119,22 @@ export default function OrderTrackingPage() {
                                         : 'Entrega Estimada'}
                                 </span>
                                 <span className="text-xl md:text-2xl font-black whitespace-nowrap">
-                                    {order.estimatedDeliveryTime || '30-45 min'}
+                                    {(() => {
+                                        const val = order.estimatedDeliveryTime || '30-45 min';
+                                        if (
+                                            val.includes('-') &&
+                                            val.includes(' ') &&
+                                            val.split(' ')[0].split('-').length === 3
+                                        ) {
+                                            const parts = val.split(' ');
+                                            const [date, time] = parts;
+                                            const [y, m, d] = date.split('-');
+                                            if (y && y.length === 4) {
+                                                return `${d}-${m}-${y} ${time}`;
+                                            }
+                                        }
+                                        return val;
+                                    })()}
                                 </span>
                             </div>
                         </div>
@@ -216,7 +234,13 @@ export default function OrderTrackingPage() {
                                             Notas del pedido
                                         </h3>
                                         <p className="text-amber-700 font-medium text-sm leading-relaxed bg-amber-50 p-4 rounded-2xl border border-amber-100 italic">
-                                            {order.notes}
+                                            {(() => {
+                                                if (!order.notes) return '';
+                                                return order.notes.replace(
+                                                    /\[PROGRAMADO: (\d{4})-(\d{2})-(\d{2}) (.*?)\]/g,
+                                                    '[PROGRAMADO: $3-$2-$1 $4]'
+                                                );
+                                            })()}
                                         </p>
                                     </div>
                                 )}

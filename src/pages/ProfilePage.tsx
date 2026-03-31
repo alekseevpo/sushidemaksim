@@ -11,6 +11,9 @@ import {
     Gift,
     Percent,
     Trophy,
+    Tag,
+    Copy,
+    ClipboardCheck,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -38,6 +41,7 @@ export default function ProfilePage() {
 
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
     // Initial tab from URL or state or default
     const getInitialTab = (): TabId => {
@@ -62,6 +66,14 @@ export default function ProfilePage() {
 
     const isFirstMount = useRef(true);
 
+    useEffect(() => {
+        // Set first mount to false after a delay to ensure App's scrollTo(0,0) wins
+        const timer = setTimeout(() => {
+            isFirstMount.current = false;
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
+
     // Scroll active tab into view on mobile
     useEffect(() => {
         if (isFirstMount.current) return;
@@ -76,12 +88,13 @@ export default function ProfilePage() {
     }, [activeTab]);
 
     // Scroll to content when tab changes (especially on mobile)
+    // Removed isFirstMount from here because PageWrapper handles initial scroll
     useEffect(() => {
         if (isFirstMount.current) return;
-        if (activeTab === 'orders' || activeTab === 'addresses' || activeTab === 'favorites') {
+        if (activeTab) {
             const contentElement = document.getElementById('profile-content');
             if (contentElement && typeof contentElement.scrollIntoView === 'function') {
-                const headerOffset = window.innerWidth < 768 ? 160 : 120;
+                const headerOffset = window.innerWidth < 768 ? 190 : 150;
                 const elementPosition = contentElement.getBoundingClientRect().top;
                 const offsetPosition =
                     elementPosition + (window.scrollY || window.pageYOffset) - headerOffset;
@@ -93,10 +106,6 @@ export default function ProfilePage() {
             }
         }
     }, [activeTab]);
-
-    useEffect(() => {
-        isFirstMount.current = false;
-    }, []);
 
     // Update URL when tab changes manually
     const handleTabChange = (tab: TabId) => {
@@ -158,6 +167,62 @@ export default function ProfilePage() {
         { id: 'orders', label: 'Pedidos', icon: Package, color: 'bg-amber-500' },
         { id: 'favorites', label: 'Favoritos', icon: Heart, color: 'bg-orange-50' },
     ];
+
+    // Filter out used and expired coupons
+    const validPromoCodes = (user.promoCodes || []).filter(p => {
+        if (p.isUsed) return false;
+
+        const created = new Date(p.createdAt);
+        const now = new Date();
+        if (p.code.startsWith('NUEVO') || p.code.startsWith('NEW')) {
+            return now.getTime() < created.getTime() + 24 * 60 * 60 * 1000;
+        }
+        if (p.code.startsWith('LOYALTY-')) {
+            return now.getTime() < created.getTime() + 7 * 24 * 60 * 60 * 1000;
+        }
+        return true;
+    });
+
+    const getExpiryString = (code: string, createdAt: string) => {
+        const created = new Date(createdAt);
+        let expiryDate: Date;
+        if (code.startsWith('NUEVO') || code.startsWith('NEW')) {
+            expiryDate = new Date(created.getTime() + 24 * 60 * 60 * 1000);
+        } else if (code.startsWith('LOYALTY-')) {
+            expiryDate = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
+        } else {
+            return null;
+        }
+
+        return expiryDate.toLocaleString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
+    const loyaltyCode = validPromoCodes.find(p => p.code.startsWith('LOYALTY-'));
+    const dessertCode = validPromoCodes.find(p => p.code.startsWith('DESSERT-'));
+    const welcomeCode = validPromoCodes.find(
+        p => p.code.startsWith('NUEVO') || p.code.startsWith('NEW')
+    );
+    const otherCodes = validPromoCodes.filter(
+        p =>
+            !p.code.startsWith('LOYALTY-') &&
+            !p.code.startsWith('DESSERT-') &&
+            !p.code.startsWith('NUEVO') &&
+            !p.code.startsWith('NEW')
+    );
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedCode(text);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(10);
+        }
+        setTimeout(() => setCopiedCode(null), 2000);
+    };
 
     return (
         <div className="min-h-screen bg-transparent flex flex-col overflow-x-hidden">
@@ -264,35 +329,94 @@ export default function ProfilePage() {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-orange-500/10 transition-colors" />
                         <div className="flex items-center gap-4 mb-4">
                             <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 shadow-inner">
-                                <Percent size={24} strokeWidth={2.5} />
+                                <motion.div
+                                    animate={
+                                        (user.orderCount || 0) % 5 === 4
+                                            ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }
+                                            : {}
+                                    }
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                >
+                                    <Percent size={24} strokeWidth={2.5} />
+                                </motion.div>
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
                                     Próximo Descuento 5%
                                 </h3>
                                 <p className="text-[11px] text-gray-400 font-medium m-0">
-                                    En cada 5º pedido
+                                    Cada 5 pedidos
                                 </p>
                             </div>
                             <div className="ml-auto text-right">
                                 <span className="block text-lg font-black text-orange-600 leading-none">
-                                    {5 - ((user.orderCount || 0) % 5)}
+                                    {Math.max(0, 4 - ((user.orderCount || 0) % 5))}
                                 </span>
                                 <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                    faltan
+                                    {Math.max(0, 4 - ((user.orderCount || 0) % 5)) === 0
+                                        ? '¡LISTO!'
+                                        : 'faltan'}
                                 </span>
                             </div>
                         </div>
-                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50 mb-2">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${((user.orderCount || 0) % 5) * 20}%` }}
-                                className="h-full bg-orange-600 rounded-full shadow-[0_0_8px_rgba(242,101,34,0.3)]"
+                                animate={{
+                                    width: `${Math.min(100, (((user.orderCount || 0) % 5) / 4) * 100)}%`,
+                                }}
+                                className={`h-full rounded-full shadow-[0_0_8px_rgba(242,101,34,0.3)] ${
+                                    (user.orderCount || 0) % 5 === 4
+                                        ? 'bg-green-500'
+                                        : 'bg-orange-600'
+                                }`}
                             />
                         </div>
-                        <div className="flex justify-between mt-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                            <span>0</span>
-                            <span>5 pedidos</span>
+
+                        {loyaltyCode && (
+                            <div className="mb-4 p-3 bg-orange-50 border border-orange-100 rounded-2xl flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-0.5">
+                                        Tu Código -5%:
+                                    </span>
+                                    <span className="text-sm font-black text-orange-600 tracking-wider">
+                                        {loyaltyCode.code}
+                                    </span>
+                                    <span className="text-[9px] font-black text-gray-400 mt-1 flex items-center gap-1.5 uppercase tracking-tighter">
+                                        <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
+                                        Expira el:{' '}
+                                        {getExpiryString(loyaltyCode.code, loyaltyCode.createdAt)}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => copyToClipboard(loyaltyCode.code)}
+                                    className={`p-2.5 rounded-xl shadow-lg active:scale-95 transition-all flex items-center gap-2 ${
+                                        copiedCode === loyaltyCode.code
+                                            ? 'bg-green-500 text-white shadow-green-200'
+                                            : 'bg-orange-600 text-white shadow-orange-200'
+                                    }`}
+                                >
+                                    {copiedCode === loyaltyCode.code ? (
+                                        <>
+                                            <ClipboardCheck size={14} strokeWidth={3} />
+                                            <span className="text-[10px] font-black uppercase tracking-tight">
+                                                Copiado
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <Copy size={14} strokeWidth={3} />
+                                    )}
+                                </button>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                0 / 4 pedidos
+                            </span>
+                            <span className="text-[9px] font-bold text-gray-300 italic">
+                                *Código enviado tras el 4º pedido para usar en el 5º
+                            </span>
                         </div>
                     </motion.div>
 
@@ -305,38 +429,183 @@ export default function ProfilePage() {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-amber-500/10 transition-colors" />
                         <div className="flex items-center gap-4 mb-4">
                             <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 shadow-inner">
-                                <Gift size={24} strokeWidth={2.5} />
+                                <motion.div
+                                    animate={
+                                        (user.orderCount || 0) % 10 === 9
+                                            ? { scale: [1, 1.2, 1], y: [0, -5, 0] }
+                                            : {}
+                                    }
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                >
+                                    <Gift size={24} strokeWidth={2.5} />
+                                </motion.div>
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
                                     Postre de Regalo 🍰
                                 </h3>
                                 <p className="text-[11px] text-gray-400 font-medium m-0">
-                                    En cada 10º pedido
+                                    Cada 10 pedidos
                                 </p>
                             </div>
                             <div className="ml-auto text-right">
                                 <span className="block text-lg font-black text-amber-600 leading-none">
-                                    {10 - ((user.orderCount || 0) % 10)}
+                                    {Math.max(0, 9 - ((user.orderCount || 0) % 10))}
                                 </span>
                                 <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                    faltan
+                                    {Math.max(0, 9 - ((user.orderCount || 0) % 10)) === 0
+                                        ? '¡LISTO!'
+                                        : 'faltan'}
                                 </span>
                             </div>
                         </div>
-                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50 mb-2">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${((user.orderCount || 0) % 10) * 10}%` }}
-                                className="h-full bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                                animate={{
+                                    width: `${Math.min(100, (((user.orderCount || 0) % 10) / 9) * 100)}%`,
+                                }}
+                                className={`h-full rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)] ${
+                                    (user.orderCount || 0) % 10 === 9
+                                        ? 'bg-green-500'
+                                        : 'bg-amber-500'
+                                }`}
                             />
                         </div>
-                        <div className="flex justify-between mt-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                            <span>0</span>
-                            <span>10 pedidos</span>
+
+                        {dessertCode && (
+                            <div className="mb-4 p-3 bg-amber-50 border border-amber-100 rounded-2xl flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-0.5">
+                                        Tu Código Postre 🍰
+                                    </span>
+                                    <span className="text-sm font-black text-amber-600 tracking-wider">
+                                        {dessertCode.code}
+                                    </span>
+                                    <span className="text-[8px] font-bold text-amber-300">
+                                        Sin caducidad (Regalo permanente)
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => copyToClipboard(dessertCode.code)}
+                                    className={`p-2.5 rounded-xl shadow-lg active:scale-95 transition-all flex items-center gap-2 ${
+                                        copiedCode === dessertCode.code
+                                            ? 'bg-green-500 text-white shadow-green-200'
+                                            : 'bg-amber-600 text-white shadow-amber-200'
+                                    }`}
+                                >
+                                    {copiedCode === dessertCode.code ? (
+                                        <>
+                                            <ClipboardCheck size={14} strokeWidth={3} />
+                                            <span className="text-[10px] font-black uppercase tracking-tight">
+                                                Copiado
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <Copy size={14} strokeWidth={3} />
+                                    )}
+                                </button>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                0 / 9 pedidos
+                            </span>
+                            <span className="text-[9px] font-bold text-gray-300 italic">
+                                *Regalo enviado tras el 9º pedido para usar en el 10º
+                            </span>
                         </div>
                     </motion.div>
                 </div>
+
+                {/* Additional Active Coupons Section */}
+                {(welcomeCode || (otherCodes && otherCodes.length > 0)) && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8 p-6 bg-white rounded-[40px] shadow-xl border border-white relative overflow-hidden"
+                    >
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600">
+                                <Tag size={20} strokeWidth={2.5} />
+                            </div>
+                            <h3 className="text-lg font-black text-gray-900 tracking-tight">
+                                Mis Cupones Disponibles
+                            </h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {welcomeCode && (
+                                <div className="p-4 bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-3xl relative overflow-hidden group">
+                                    <div className="mb-2 flex justify-between items-start">
+                                        <div className="px-2 py-0.5 bg-orange-100 text-orange-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
+                                            Bienvenida -10%
+                                        </div>
+                                        <button
+                                            onClick={() => copyToClipboard(welcomeCode.code)}
+                                            className={`p-2 rounded-lg transition-all flex items-center gap-1.5 ${
+                                                copiedCode === welcomeCode.code
+                                                    ? 'bg-green-500 text-white'
+                                                    : 'hover:bg-orange-600 hover:text-white text-orange-600'
+                                            }`}
+                                        >
+                                            {copiedCode === welcomeCode.code ? (
+                                                <ClipboardCheck size={12} strokeWidth={3} />
+                                            ) : (
+                                                <Copy size={12} strokeWidth={3} />
+                                            )}
+                                        </button>
+                                    </div>
+                                    <div className="text-lg font-black text-gray-900 mb-1">
+                                        {welcomeCode.code}
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 font-medium leading-tight mb-2">
+                                        Válido solo por 24h tras el registro. Úsalo en el Checkout.
+                                    </p>
+                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-orange-500 uppercase tracking-tighter">
+                                        <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
+                                        Expira el:{' '}
+                                        {getExpiryString(welcomeCode.code, welcomeCode.createdAt)}
+                                    </div>
+                                </div>
+                            )}
+
+                            {otherCodes &&
+                                otherCodes.map(promo => (
+                                    <div
+                                        key={promo.code}
+                                        className="p-4 bg-gray-50 border border-gray-100 rounded-3xl group"
+                                    >
+                                        <div className="mb-2 flex justify-between items-start">
+                                            <div className="px-2 py-0.5 bg-gray-200 text-gray-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
+                                                Bonifición Especial
+                                            </div>
+                                            <button
+                                                onClick={() => copyToClipboard(promo.code)}
+                                                className={`p-2 rounded-lg transition-all flex items-center gap-1.5 ${
+                                                    copiedCode === promo.code
+                                                        ? 'bg-green-500 text-white'
+                                                        : 'hover:bg-gray-900 hover:text-white text-gray-500'
+                                                }`}
+                                            >
+                                                {copiedCode === promo.code ? (
+                                                    <ClipboardCheck size={12} strokeWidth={3} />
+                                                ) : (
+                                                    <Copy size={12} strokeWidth={3} />
+                                                )}
+                                            </button>
+                                        </div>
+                                        <div className="text-lg font-black text-gray-900 mb-1">
+                                            {promo.code}
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 font-medium leading-tight">
+                                            -{promo.discountPercentage}% de descuento extra.
+                                        </p>
+                                    </div>
+                                ))}
+                        </div>
+                    </motion.div>
+                )}
 
                 <div className="flex flex-col lg:flex-row gap-6">
                     {/* Navigation Sidebar */}
@@ -346,7 +615,7 @@ export default function ProfilePage() {
                             top: 'calc(var(--header-height, 64px) + 12px)',
                         }}
                     >
-                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-2 px-1 md:px-2 snap-x snap-mandatory scroll-px-1">
+                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-2 px-4 md:px-2 snap-x snap-mandatory scroll-px-4">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
@@ -355,7 +624,7 @@ export default function ProfilePage() {
                                         key={tab.id}
                                         id={`tab-${tab.id}`}
                                         onClick={() => handleTabChange(tab.id)}
-                                        className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-3 md:p-4 rounded-2xl transition-all duration-300 group snap-center relative
+                                        className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-3 md:p-4 rounded-2xl transition-all duration-300 group snap-center relative scroll-mx-2
                                             ${
                                                 isActive
                                                     ? 'text-white'

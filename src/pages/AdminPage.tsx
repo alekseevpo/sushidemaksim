@@ -361,8 +361,8 @@ export default function AdminPage() {
                 preload="auto"
             />
             {/* Sidebar */}
-            <aside className="w-full md:w-72 bg-white border-r border-gray-200 flex flex-col md:fixed h-full z-10 transition-all duration-300">
-                <div className="p-6 border-b border-gray-100">
+            <aside className="w-full md:w-60 bg-white border-r border-gray-200 flex flex-col md:fixed h-full z-10 transition-all duration-300">
+                <div className="p-4 border-b border-gray-100">
                     <div className="flex flex-col gap-3">
                         <img
                             src="/logo.svg"
@@ -384,7 +384,7 @@ export default function AdminPage() {
                                         navigator.vibrate(5);
                                     }
                                 }}
-                                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold text-sm transition-all relative group
+                                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-bold text-sm transition-all relative group
                                     ${
                                         isActive
                                             ? 'text-orange-700 bg-orange-50/50'
@@ -402,7 +402,7 @@ export default function AdminPage() {
                                         }}
                                     />
                                 )}
-                                <div className="flex items-center gap-3.5 relative z-10 w-full">
+                                <div className="flex items-center gap-2.5 relative z-10 w-full">
                                     <Icon
                                         size={20}
                                         strokeWidth={isActive ? 2.5 : 2}
@@ -433,12 +433,12 @@ export default function AdminPage() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-72 p-3 md:p-6 flex flex-col min-h-screen">
+            <main className="flex-1 md:ml-60 p-3 md:p-4 flex flex-col min-h-screen">
                 <div className="w-full flex-1 flex flex-col">
                     {/* Top Bar */}
-                    <div className="flex justify-between items-center mb-10 pb-4 border-b border-gray-100">
+                    <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
                         <h1 className="text-2xl font-black text-gray-900 flex items-center gap-3 group">
-                            <div className="w-2 h-8 bg-orange-600 rounded-full group-hover:h-10 transition-all duration-300" />
+                            <div className="w-1.5 h-6 bg-orange-600 rounded-full group-hover:h-8 transition-all duration-300" />
                             {navLinks.find(t_link => t_link.id === activeTab)?.label}
                         </h1>
                         <div className="flex items-center gap-2 md:gap-4">
@@ -485,25 +485,29 @@ export default function AdminPage() {
                                 initial={{ opacity: 0, scale: 0.95, y: -20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                                className="mb-8 bg-blue-50/50 border border-blue-100 rounded-2xl p-6 relative backdrop-blur-sm"
+                                className="mb-5 bg-blue-50/50 border border-blue-100 rounded-2xl p-4 relative backdrop-blur-sm"
                             >
                                 <button
                                     onClick={() => setShowHelp(false)}
-                                    className="absolute top-4 right-4 text-blue-300 hover:text-blue-600 transition-colors p-1"
+                                    className="absolute top-3 right-3 text-blue-300 hover:text-blue-600 transition-colors p-1"
                                 >
-                                    <X size={20} strokeWidth={2} />
+                                    <X size={18} strokeWidth={2} />
                                 </button>
-                                <div className="flex gap-5">
+                                <div className="flex gap-4">
                                     <div className="mt-1">
-                                        <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shadow-inner">
-                                            <HelpCircle size={26} strokeWidth={2} />
+                                        <div className="w-9 h-9 bg-blue-100 text-blue-100/10 rounded-xl flex items-center justify-center shadow-inner">
+                                            <HelpCircle
+                                                size={18}
+                                                strokeWidth={2}
+                                                className="text-blue-600"
+                                            />
                                         </div>
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-black text-blue-900 mb-1.5 text-lg">
+                                        <h3 className="font-black text-blue-900 mb-0.5 text-base">
                                             {t.ui.welcome}
                                         </h3>
-                                        <p className="text-blue-700/80 text-sm font-medium leading-relaxed max-w-4xl">
+                                        <p className="text-blue-700/80 text-[13px] font-medium leading-relaxed max-w-4xl">
                                             {(t.help as any)[activeTab]}
                                         </p>
                                     </div>
@@ -553,7 +557,7 @@ export default function AdminPage() {
                     </Suspense>
 
                     {/* Developer Footer */}
-                    <footer className="mt-auto py-10 border-t border-gray-100">
+                    <footer className="mt-auto py-6 border-t border-gray-100">
                         <p className="text-gray-400 text-[10px] md:text-[11px] font-bold flex items-center justify-center gap-2 flex-wrap text-center uppercase tracking-widest">
                             {t.ui.developedBy}{' '}
                             <Heart

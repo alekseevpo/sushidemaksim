@@ -42,6 +42,12 @@ interface AuthContextType {
     setDefaultAddress: (id: string) => Promise<void>;
     deleteAccount: () => Promise<void>;
     addOrder: (order: Order) => void;
+    forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+    resetPassword: (
+        email: string,
+        code: string,
+        newPassword: string
+    ) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -185,6 +191,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         [queryClient]
     );
 
+    const forgotPassword = useCallback(async (email: string) => {
+        try {
+            await api.post('/auth/forgot-password', { email });
+            return { success: true };
+        } catch (error: unknown) {
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Error al enviar el email',
+            };
+        }
+    }, []);
+
+    const resetPassword = useCallback(async (email: string, code: string, newPassword: string) => {
+        try {
+            await api.post('/auth/reset-password', { email, code, newPassword });
+            return { success: true };
+        } catch (error: unknown) {
+            return {
+                success: false,
+                error:
+                    error instanceof Error ? error.message : 'Error al restablecer la contraseña',
+            };
+        }
+    }, []);
+
     const value = useMemo(
         () => ({
             user: user || null,
@@ -200,6 +231,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setDefaultAddress,
             deleteAccount,
             addOrder,
+            forgotPassword,
+            resetPassword,
         }),
         [
             user,
@@ -215,6 +248,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setDefaultAddress,
             deleteAccount,
             addOrder,
+            forgotPassword,
+            resetPassword,
         ]
     );
 

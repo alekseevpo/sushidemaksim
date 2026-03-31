@@ -38,6 +38,8 @@ export interface UserAddress {
     postalCode: string;
     phone: string;
     isDefault: boolean;
+    lat?: number;
+    lon?: number;
 }
 
 export type OrderStatus =
@@ -51,9 +53,9 @@ export type OrderStatus =
     | 'cancelled';
 
 export interface OrderItem {
-    id: string | number;
-    orderId?: string | number;
-    menuItemId?: string | number;
+    id: string;
+    orderId?: string;
+    menuItemId?: string;
     name: string;
     price: number;
     priceAtTime: number;
@@ -73,8 +75,8 @@ export interface UserStats {
 }
 
 export interface Order {
-    id: string | number;
-    userId?: string;
+    id: string;
+    userId: string; // Now always a UUID
     items?: OrderItem[];
     total: number;
     deliveryFee?: number;
@@ -112,4 +114,10 @@ export interface User {
     totalSpent?: number;
     isVerified?: boolean;
     deletedAt?: string;
+    promoCodes?: {
+        code: string;
+        discountPercentage: number;
+        isUsed: boolean;
+        createdAt: string;
+    }[];
 }

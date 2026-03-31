@@ -30,7 +30,8 @@ export function formatUser(
     u: any,
     orderCount: number = 0,
     addresses: any[] = [],
-    totalSpent: number = 0
+    totalSpent: number = 0,
+    promoCodes: any[] = []
 ) {
     if (!u) return null;
     return {
@@ -59,6 +60,14 @@ export function formatUser(
             postalCode: a.postal_code,
             phone: a.phone,
             isDefault: !!a.is_default,
+            lat: a.lat,
+            lon: a.lon,
+        })),
+        promoCodes: (promoCodes || []).map(p => ({
+            code: p.code,
+            discountPercentage: p.discount_percentage,
+            isUsed: !!p.is_used,
+            createdAt: p.created_at,
         })),
     };
 }
@@ -79,8 +88,10 @@ export function formatOrder(o: any, userStats: any = null) {
         category: item.category,
     }));
 
-    // Extract the special delivery item (id: -1)
-    const deliveryItem = allItems.find((i: any) => i.menuItemId === -1);
+    // Extract the special delivery item (id: -1 or by name)
+    const deliveryItem = allItems.find(
+        (i: any) => i.menuItemId === -1 || i.name === 'Gastos de Envío'
+    );
     const deliveryFee = deliveryItem ? deliveryItem.priceAtTime : 0;
 
     // Filter out delivery item from the regular items list if needed,
