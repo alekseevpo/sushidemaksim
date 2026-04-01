@@ -18,6 +18,8 @@ interface ProductCardProps {
     setFailedImages: React.Dispatch<React.SetStateAction<Set<number>>>;
     isPriority?: boolean;
     isHighlighted?: boolean;
+    isZoomed?: boolean;
+    onZoom?: () => void;
 }
 
 export default function ProductCard({
@@ -32,6 +34,8 @@ export default function ProductCard({
     setFailedImages,
     isPriority,
     isHighlighted,
+    isZoomed,
+    onZoom,
 }: ProductCardProps) {
     const [quantity, setQuantity] = useState(1);
 
@@ -40,9 +44,10 @@ export default function ProductCard({
     return (
         <div
             id={`item-${item.id}`}
-            className={`premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden ${
+            onClick={() => onZoom?.()}
+            className={`premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden transition-all duration-500 ${
                 isHighlighted ? 'highlight-item' : ''
-            }`}
+            } ${isZoomed ? 'ring-2 ring-orange-500/20 shadow-2xl' : ''}`}
         >
             {/* Action Buttons */}
             <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
@@ -83,7 +88,11 @@ export default function ProductCard({
                         loading={isPriority ? 'eager' : 'lazy'}
                         decoding="async"
                         {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-125 md:group-hover:scale-105 active:scale-125 md:active:scale-105"
+                        className={`w-full h-full object-cover transition-transform duration-500 ${
+                            isZoomed
+                                ? 'scale-[1.2] shadow-inner'
+                                : 'group-hover:scale-125 md:group-hover:scale-105'
+                        }`}
                         onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
                     />
                 ) : (

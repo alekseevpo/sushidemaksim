@@ -36,6 +36,8 @@ export default function ProductGrid({
     setFailedImages,
     highlightedItemId,
 }: ProductGridProps) {
+    const [activeItemId, setActiveItemId] = React.useState<number | null>(null);
+
     if (items.length === 0) {
         return (
             <div className="text-center py-24 bg-white rounded-[40px] border border-dashed border-gray-200 shadow-sm">
@@ -112,6 +114,8 @@ export default function ProductGrid({
                                     failedImages={failedImages}
                                     setFailedImages={setFailedImages}
                                     isHighlighted={String(item.id) === highlightedItemId}
+                                    isZoomed={activeItemId === item.id}
+                                    onZoom={() => setActiveItemId(item.id)}
                                 />
                             ))}
                         </div>
