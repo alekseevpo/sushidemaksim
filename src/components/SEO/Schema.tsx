@@ -20,7 +20,7 @@ export default function Schema() {
                     servesCuisine: 'Japanese, Sushi',
                     address: {
                         '@type': 'PostalAddress',
-                        streetAddress: 'Calle del Barrilero, 20',
+                        streetAddress: 'C. de Barrilero, 20',
                         addressLocality: 'Madrid',
                         postalCode: '28007',
                         addressCountry: 'ES',

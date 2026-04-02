@@ -96,8 +96,8 @@ export default function ContactsPage() {
     const [settings, setSettings] = useState<any>({
         contact_phone: '+34 631 920 312',
         contact_email: 'info@sushidemaksim.com',
-        contact_address_line1: 'Calle Barrilero, 20,',
-        contact_address_line2: '28007 Madrid',
+        contact_address_line1: 'C. de Barrilero, 20,',
+        contact_address_line2: '28007 Madrid España',
         contact_google_maps_url: '',
         contact_schedule: [
             { days: 'lunes', hours: 'Cerrado', closed: true },
@@ -165,7 +165,7 @@ export default function ContactsPage() {
         <div className="min-h-screen bg-transparent pt-0">
             <SEO
                 title="Contacto y Ubicación — Sushi de Maksim Madrid"
-                description="Visítanos en Madrid o haz tu pedido de sushi a domicilio. Dirección: Calle del Barrilero, 20. Teléfono: +34 631 920 312. ¡Te esperamos para ofrecerte el mejor sushi artesanal!"
+                description="Visítanos en Madrid o haz tu pedido de sushi a domicilio. Dirección: C. de Barrilero, 20. Teléfono: +34 631 920 312. ¡Te esperamos para ofrecerte el mejor sushi artesanal!"
                 keywords="contacto sushi madrid, direccion sushi de maksim, telefono sushi madrid, pedir sushi domicilio madrid"
                 schema={{
                     '@context': 'https://schema.org',
@@ -176,7 +176,7 @@ export default function ContactsPage() {
                     email: 'info@sushidemaksim.com',
                     address: {
                         '@type': 'PostalAddress',
-                        streetAddress: 'Calle del Barrilero, 20',
+                        streetAddress: 'C. de Barrilero, 20',
                         addressLocality: 'Madrid',
                         postalCode: '28007',
                         addressCountry: 'ES',
