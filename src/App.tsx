@@ -117,7 +117,7 @@ function StatusBarConfig() {
         capacitorUtil.setStatusBar({
             style: Style.Dark,
             backgroundColor: '#FBF7F0',
-            overlay: true
+            overlay: true,
         });
     }, [location.pathname]);
 

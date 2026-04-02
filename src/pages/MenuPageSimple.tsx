@@ -136,7 +136,11 @@ export default function MenuPageSimple() {
         }
     }, [isLoading, items.length]);
 
-    const handleCategoryClick = (id: string, e: React.MouseEvent<HTMLButtonElement>, isMobile: boolean) => {
+    const handleCategoryClick = (
+        id: string,
+        e: React.MouseEvent<HTMLButtonElement>,
+        isMobile: boolean
+    ) => {
         capacitorUtil.hapticsSelection();
         if (isMobile) {
             e.currentTarget.scrollIntoView({
@@ -152,7 +156,7 @@ export default function MenuPageSimple() {
 
     const handleShare = async (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
-        
+
         const shareUrl = `${window.location.origin}/menu#item-${item.id}`;
         const wasShared = await capacitorUtil.share({
             title: item.name,

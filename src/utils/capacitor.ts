@@ -55,11 +55,7 @@ export const capacitorUtil = {
     /**
      * Configure Status Bar
      */
-    async setStatusBar(options: { 
-        style?: Style; 
-        backgroundColor?: string; 
-        overlay?: boolean 
-    }) {
+    async setStatusBar(options: { style?: Style; backgroundColor?: string; overlay?: boolean }) {
         if (Capacitor.isNativePlatform()) {
             try {
                 if (options.style !== undefined) {
@@ -75,5 +71,5 @@ export const capacitorUtil = {
                 console.warn('StatusBar config failed', e);
             }
         }
-    }
+    },
 };

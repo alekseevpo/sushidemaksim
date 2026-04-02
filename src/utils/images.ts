@@ -6,11 +6,12 @@ export function getOptimizedImageUrl(
     if (!url) return '';
 
     const isDev = import.meta.env.DEV;
-    const isMobileLocal = isDev && (
-        window.location.hostname === 'localhost' || 
-        window.location.hostname === '127.0.0.1' || 
-        window.location.protocol === 'capacitor:'
-    ) && window.location.port !== '5173';
+    const isMobileLocal =
+        isDev &&
+        (window.location.hostname === 'localhost' ||
+            window.location.hostname === '127.0.0.1' ||
+            window.location.protocol === 'capacitor:') &&
+        window.location.port !== '5173';
 
     const SERVER_URL = 'https://sushidemaksim.vercel.app';
 

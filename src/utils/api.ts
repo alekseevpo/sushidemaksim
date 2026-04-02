@@ -50,15 +50,16 @@ export const api = {
 };
 const getBaseUrl = () => {
     // For local development on mobile/simulator, we need the fixed Mac IP
-    const isLocal = window.location.hostname === 'localhost' || 
-                   window.location.hostname === '127.0.0.1' || 
-                   window.location.protocol === 'capacitor:';
-    
+    const isLocal =
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.protocol === 'capacitor:';
+
     // If we're not on the web dev port (5173), we're likely in the mobile app or production
     if (isLocal && window.location.port !== '5173') {
         return 'https://sushidemaksim.vercel.app/api';
     }
-    
+
     // Default to relative path (Vite proxy covers this in web dev)
     return '/api';
 };

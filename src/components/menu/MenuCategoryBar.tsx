@@ -138,7 +138,7 @@ export default function MenuCategoryBar({
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-2 relative z-10">
                         <button
-                            onClick={(e) => {
+                            onClick={e => {
                                 capacitorUtil.hapticsSelection();
                                 setSelectedCategory('all', e);
                             }}
@@ -166,7 +166,7 @@ export default function MenuCategoryBar({
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
-                                onClick={(e) => {
+                                onClick={e => {
                                     capacitorUtil.hapticsSelection();
                                     setSelectedCategory(cat.id, e);
                                 }}
