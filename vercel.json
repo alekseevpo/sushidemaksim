@@ -23,7 +23,7 @@
             "destination": "server/src/index.ts"
         },
         {
-            "source": "/(.*)",
+            "source": "/((?!api|google|sitemap.xml|robots.txt|.*\\..*).*)",
             "destination": "/index.html"
         }
     ],
