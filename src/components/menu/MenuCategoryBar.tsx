@@ -1,10 +1,11 @@
 import { motion, LayoutGroup } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { CATEGORIES } from '../../constants/menu';
+import { capacitorUtil } from '../../utils/capacitor';
 
 interface MenuCategoryBarProps {
     selectedCategory: string;
-    setSelectedCategory: (cat: string) => void;
+    setSelectedCategory: (cat: string, e: React.MouseEvent<HTMLButtonElement>) => void;
     isMobile?: boolean;
 }
 
@@ -29,15 +30,16 @@ export default function MenuCategoryBar({
     isMobile = false,
 }: MenuCategoryBarProps) {
     const handleCategoryClick = (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
+        capacitorUtil.hapticsSelection();
         if (isMobile) {
             e.currentTarget.scrollIntoView({
                 behavior: 'smooth',
                 inline: 'center',
                 block: 'nearest',
             });
-            requestAnimationFrame(() => setSelectedCategory(id));
+            requestAnimationFrame(() => setSelectedCategory(id, e));
         } else {
-            setSelectedCategory(id);
+            setSelectedCategory(id, e);
         }
     };
 
@@ -136,7 +138,10 @@ export default function MenuCategoryBar({
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-2 relative z-10">
                         <button
-                            onClick={() => setSelectedCategory('all')}
+                            onClick={(e) => {
+                                capacitorUtil.hapticsSelection();
+                                setSelectedCategory('all', e);
+                            }}
                             className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
                                 selectedCategory === 'all'
                                     ? 'text-white'
@@ -161,7 +166,10 @@ export default function MenuCategoryBar({
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id)}
+                                onClick={(e) => {
+                                    capacitorUtil.hapticsSelection();
+                                    setSelectedCategory(cat.id, e);
+                                }}
                                 className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
                                     selectedCategory === cat.id
                                         ? 'text-white'

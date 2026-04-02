@@ -20,6 +20,9 @@ export const config = {
         ? process.env.CORS_ORIGIN.split(',')
         : [
               'http://localhost:5173',
+              'http://192.168.1.133:5173',
+              'capacitor://localhost',
+              'http://localhost',
               'https://sushidemaksim.vercel.app',
               'https://sushidemaksim.com',
           ],

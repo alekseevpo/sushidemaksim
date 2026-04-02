@@ -23,6 +23,8 @@ import { BlogSkeleton } from './components/skeletons/BlogSkeleton';
 import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 import { usePageTracking } from './hooks/usePageTracking';
+import { capacitorUtil } from './utils/capacitor';
+import { Style } from '@capacitor/status-bar';
 
 // Lazy-loaded pages with retry logic
 const lazyRetry = (componentImport: () => Promise<{ default: React.ComponentType<any> }>) => {
@@ -107,6 +109,21 @@ function PageTracker() {
     return null;
 }
 
+function StatusBarConfig() {
+    const location = useLocation();
+
+    useEffect(() => {
+        // Set status bar to dark text on light background
+        capacitorUtil.setStatusBar({
+            style: Style.Dark,
+            backgroundColor: '#FBF7F0',
+            overlay: true
+        });
+    }, [location.pathname]);
+
+    return null;
+}
+
 function App() {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
@@ -132,6 +149,7 @@ function App() {
                             <CookieConsent />
                             <RegistrationPrompt />
                             <FloatingCart />
+                            <StatusBarConfig />
 
                             {!isAdminRoute && !isWaiterRoute && <Header />}
                             <main className="flex-1 flex flex-col relative w-full">

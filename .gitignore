@@ -17,6 +17,7 @@ server/data/*.sqlite
 *.log
 logs/
 server/server.log
+server/server_log.txt
 nohup.out
 test_debug.txt
 test_output*.txt

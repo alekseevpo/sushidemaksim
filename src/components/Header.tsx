@@ -159,7 +159,7 @@ export default function Header() {
         <>
             <header
                 ref={headerRef}
-                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
+                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300 fixed-header
                 ${
                     isScrolled
                         ? 'bg-[#FBF7F0] shadow-sm border-b border-gray-200'
@@ -459,10 +459,10 @@ export default function Header() {
                                 <Link
                                     id="cart-icon"
                                     to="/cart"
-                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] ${
+                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] shadow-sm ${
                                         isScrolled || !isHome
-                                            ? 'text-gray-800 bg-gray-50 hover:bg-gray-100'
-                                            : 'text-white bg-white/10 hover:bg-white/20 border border-white/10'
+                                            ? 'text-gray-800 bg-gray-50 hover:bg-gray-100 shadow-gray-200/50'
+                                            : 'text-white bg-white/10 hover:bg-white/20 border border-white/10 shadow-black/5'
                                     }`}
                                 >
                                     <ShoppingCart size={20} strokeWidth={1.5} />
@@ -494,10 +494,10 @@ export default function Header() {
 
                             <button
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
+                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all shadow-sm ${
                                     isScrolled || !isHome
-                                        ? 'bg-gray-50 text-gray-800'
-                                        : 'bg-white/15 text-white border border-white/20'
+                                        ? 'bg-gray-50 text-gray-800 shadow-gray-200/50'
+                                        : 'bg-white/15 text-white border border-white/20 shadow-black/5'
                                 }`}
                             >
                                 {showMobileMenu ? (

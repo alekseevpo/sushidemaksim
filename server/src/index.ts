@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
@@ -28,6 +29,11 @@ const __dirname = path.dirname(__filename);
 
 // Trust proxy for correct IP detection behind Vercel, Nginx, etc.
 app.set('trust proxy', 1);
+
+app.use(cors({
+    origin: config.corsOrigin,
+    credentials: true
+}));
 
 // ─── Static Files for Uploads ──────────────────────────────────────────────────
 app.use('/api/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));

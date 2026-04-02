@@ -12,6 +12,8 @@ import MenuSearch from '../components/menu/MenuSearch';
 import ShareModal from '../components/menu/ShareModal';
 import ProductGrid from '../components/menu/ProductGrid';
 import FlyToCart, { FlyingItem } from '../components/menu/FlyToCart';
+import { capacitorUtil } from '../utils/capacitor';
+import { ImpactStyle } from '@capacitor/haptics';
 
 export default function MenuPageSimple() {
     const [searchParams] = useSearchParams();
@@ -134,9 +136,34 @@ export default function MenuPageSimple() {
         }
     }, [isLoading, items.length]);
 
-    const handleShare = (item: MenuItem, e: React.MouseEvent) => {
+    const handleCategoryClick = (id: string, e: React.MouseEvent<HTMLButtonElement>, isMobile: boolean) => {
+        capacitorUtil.hapticsSelection();
+        if (isMobile) {
+            e.currentTarget.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest',
+            });
+            requestAnimationFrame(() => setSelectedCategory(id));
+        } else {
+            setSelectedCategory(id);
+        }
+    };
+
+    const handleShare = async (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
-        setSharingItem(item);
+        
+        const shareUrl = `${window.location.origin}/menu#item-${item.id}`;
+        const wasShared = await capacitorUtil.share({
+            title: item.name,
+            text: item.description,
+            url: shareUrl,
+            dialogueTitle: 'Compartir Sushi',
+        });
+
+        if (!wasShared) {
+            setSharingItem(item);
+        }
     };
 
     const copyToClipboard = async (text: string) => {
@@ -195,9 +222,7 @@ export default function MenuPageSimple() {
         }
 
         // Haptic feedback
-        if (typeof navigator !== 'undefined' && navigator.vibrate) {
-            navigator.vibrate(10);
-        }
+        capacitorUtil.hapticsImpact(ImpactStyle.Medium);
 
         // Add to real cart
         addItem(
@@ -280,7 +305,7 @@ export default function MenuPageSimple() {
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
                     selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
+                    setSelectedCategory={(id, e) => handleCategoryClick(id, e, false)}
                 />
 
                 <div
@@ -301,7 +326,7 @@ export default function MenuPageSimple() {
                     {/* Fixed category bar on mobile */}
                     <MenuCategoryBar
                         selectedCategory={selectedCategory}
-                        setSelectedCategory={setSelectedCategory}
+                        setSelectedCategory={(id, e) => handleCategoryClick(id, e, true)}
                         isMobile
                     />
 
