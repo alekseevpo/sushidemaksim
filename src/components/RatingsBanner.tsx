@@ -53,8 +53,8 @@ const RatingIndicator = ({
 const RatingsBanner = () => {
     return (
         <section className="bg-white py-6 border-y border-gray-100 overflow-hidden">
-            <div className="max-w-5xl mx-auto px-4">
-                <div className="flex flex-col md:flex-row gap-6 md:gap-px items-stretch md:bg-gray-100/50 rounded-3xl overflow-hidden p-1 md:p-0">
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-px items-stretch md:bg-gray-100/50 rounded-3xl overflow-hidden p-1 md:p-0">
                     {/* Google Section */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -105,8 +105,8 @@ const RatingsBanner = () => {
 
                     {/* The Fork Section */}
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         className="flex-1 bg-white p-5 flex items-center gap-6"
                     >
@@ -148,7 +148,6 @@ const RatingsBanner = () => {
                                 Fabulous
                             </div>
                         </div>
-
                         <div className="flex-1 flex flex-col gap-2.5">
                             <div className="text-[9px] font-black text-[#006450] uppercase tracking-[0.15em] mb-1 flex items-center gap-1.5 opacity-70">
                                 <span className="w-1.5 h-1.5 bg-[#006450] rounded-full"></span>
@@ -173,6 +172,63 @@ const RatingsBanner = () => {
                                     </span>
                                 </div>
                             ))}
+                            <a
+                                href="https://www.thefork.es/restaurante/sushi-de-maksim-r753228"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[9px] font-black text-[#006450] hover:text-black transition-colors uppercase tracking-[0.2em] mt-3 block"
+                            >
+                                Reservar en The Fork
+                            </a>
+                        </div>
+                    </motion.div>
+
+                    {/* TripAdvisor Section */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        className="flex-1 bg-white p-5 flex items-center gap-6"
+                    >
+                        <div className="shrink-0 text-center">
+                            <div className="text-4xl font-black text-[#34E0A1] leading-none tracking-tighter mb-1.5">
+                                <CountUp value={5.0} decimals={1} />
+                            </div>
+                            <div className="flex justify-center gap-1.5 mb-2">
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div
+                                        key={i}
+                                        className="w-3 h-3 rounded-full bg-[#34E0A1]"
+                                        style={{ border: '2px solid #34E0A1' }}
+                                    ></div>
+                                ))}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-gray-400 text-[9px] font-black uppercase tracking-widest">
+                                    TripAdvisor
+                                </span>
+                                <span className="text-[#34E0A1] text-[8px] font-bold">
+                                    🏆 #1 Premium Sushi
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 flex flex-col gap-2.5">
+                            <div className="text-[10px] font-black text-gray-900 uppercase tracking-tighter mb-1">
+                                <span className="text-[#34E0A1] italic">Excelente</span> Selección
+                            </div>
+                            <p className="text-[9px] text-gray-400 font-medium leading-relaxed italic">
+                                "Una joya escondida en Madrid. Selección de pescado insuperable y
+                                servicio de primer nivel."
+                            </p>
+                            <a
+                                href="https://www.tripadvisor.es/Restaurant_Review-g187514-d25562668-Reviews-Sushi_de_Maksim-Madrid.html"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[9px] font-black text-[#34E0A1] hover:text-black transition-colors uppercase tracking-[0.2em] mt-1"
+                            >
+                                Leer Opiniones
+                            </a>
                         </div>
                     </motion.div>
                 </div>
