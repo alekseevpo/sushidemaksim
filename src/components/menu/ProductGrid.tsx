@@ -15,8 +15,6 @@ interface ProductGridProps {
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
     onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>, quantity: number) => void;
     addedItems: Set<number>;
-    failedImages: Set<number>;
-    setFailedImages: React.Dispatch<React.SetStateAction<Set<number>>>;
     highlightedItemId?: string | null;
 }
 
@@ -32,8 +30,6 @@ export default function ProductGrid({
     onShare,
     onAddToCart,
     addedItems,
-    failedImages,
-    setFailedImages,
     highlightedItemId,
 }: ProductGridProps) {
     const [activeItemId, setActiveItemId] = React.useState<number | null>(null);
@@ -111,8 +107,6 @@ export default function ProductGrid({
                                     onShare={onShare}
                                     onAddToCart={onAddToCart}
                                     isAdded={addedItems.has(item.id)}
-                                    failedImages={failedImages}
-                                    setFailedImages={setFailedImages}
                                     isHighlighted={String(item.id) === highlightedItemId}
                                     isZoomed={activeItemId === item.id}
                                     onZoom={() => setActiveItemId(item.id)}

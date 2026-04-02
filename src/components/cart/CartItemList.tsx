@@ -1,5 +1,6 @@
 import { Trash2, Minus, Plus, X } from 'lucide-react';
 import { getOptimizedImageUrl } from '../../utils/images';
+import SafeImage from '../common/SafeImage';
 import { CartItem } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
 
@@ -9,8 +10,6 @@ interface CartItemListProps {
     removeItem: (id: string) => void;
     clearCart: () => void;
     getCategoryEmoji: (category: string) => string;
-    failedImages: Set<string | number>;
-    setFailedImages: React.Dispatch<React.SetStateAction<Set<string | number>>>;
     chopsticksCount: number;
     updateChopsticks: (count: number) => void;
 }
@@ -21,8 +20,6 @@ export default function CartItemList({
     removeItem,
     clearCart,
     getCategoryEmoji,
-    failedImages,
-    setFailedImages,
     chopsticksCount,
     updateChopsticks,
 }: CartItemListProps) {
@@ -47,26 +44,23 @@ export default function CartItemList({
                         className="relative flex items-center gap-3 px-3 py-3 bg-white border-b border-gray-50 last:border-none animate-in slide-in-from-left duration-300"
                     >
                         <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img">
-                            {!failedImages.has(item.id) ? (
-                                <img
-                                    src={getOptimizedImageUrl(item.image, 256)}
-                                    alt={`Producto ${item.name}`}
-                                    loading="lazy"
-                                    className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
-                                    onError={() =>
-                                        setFailedImages(prev => new Set(prev).add(item.id))
-                                    }
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover/img:scale-110 transition-transform duration-500">
-                                    <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-                                    <div className="absolute w-12 h-12 bg-orange-500/5 rounded-full blur-xl"></div>
-                                    <span className="text-2xl relative z-10 drop-shadow-md">
-                                        {getCategoryEmoji(item.category)}
-                                    </span>
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent"></div>
-                                </div>
-                            )}
+                            <SafeImage
+                                src={item.image}
+                                alt={`Producto ${item.name}`}
+                                loading="lazy"
+                                className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
+                                getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 256)}
+                                fallbackContent={
+                                    <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover/img:scale-110 transition-transform duration-500">
+                                        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                        <div className="absolute w-12 h-12 bg-orange-500/5 rounded-full blur-xl"></div>
+                                        <span className="text-2xl relative z-10 drop-shadow-md">
+                                            {getCategoryEmoji(item.category)}
+                                        </span>
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent"></div>
+                                    </div>
+                                }
+                            />
                         </div>
 
                         <div className="flex-1 min-w-0">

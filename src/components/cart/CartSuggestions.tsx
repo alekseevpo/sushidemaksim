@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { getOptimizedImageUrl } from '../../utils/images';
+import SafeImage from '../common/SafeImage';
 
 interface MenuItem {
     id: number;
@@ -16,8 +17,6 @@ interface CartSuggestionsProps {
     isLoadingSuggestions: boolean;
     handleAddToCart: (item: MenuItem, quantity: number, isSuggestion?: boolean) => void;
     getCategoryEmoji: (category: string) => string;
-    failedImages: Set<string | number>;
-    setFailedImages: React.Dispatch<React.SetStateAction<Set<string | number>>>;
 }
 
 export default function CartSuggestions({
@@ -25,8 +24,6 @@ export default function CartSuggestions({
     isLoadingSuggestions,
     handleAddToCart,
     getCategoryEmoji,
-    failedImages,
-    setFailedImages,
 }: CartSuggestionsProps) {
     const [localQuantities, setLocalQuantities] = useState<Record<number, number>>({});
 
@@ -72,23 +69,20 @@ export default function CartSuggestions({
                         className="group flex items-center gap-2 p-1.5 bg-white/40 hover:bg-white rounded-[18px] transition-all duration-300 border border-transparent hover:border-gray-100 hover:shadow-lg hover:shadow-gray-200/40"
                     >
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-50 rounded-[14px] overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100/50">
-                            {!failedImages.has(item.id) ? (
-                                <img
-                                    src={getOptimizedImageUrl(item.image, 256)}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                    onError={() =>
-                                        setFailedImages(prev => new Set(prev).add(item.id))
-                                    }
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
-                                    <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-                                    <span className="text-xl md:text-2xl relative z-10 drop-shadow-sm">
-                                        {getCategoryEmoji(item.category)}
-                                    </span>
-                                </div>
-                            )}
+                            <SafeImage
+                                src={item.image}
+                                alt={item.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 256)}
+                                fallbackContent={
+                                    <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
+                                        <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                        <span className="text-xl md:text-2xl relative z-10 drop-shadow-sm">
+                                            {getCategoryEmoji(item.category)}
+                                        </span>
+                                    </div>
+                                }
+                            />
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[11px] md:text-[13px] font-black text-gray-900 line-clamp-2 m-0 leading-none uppercase tracking-tight">

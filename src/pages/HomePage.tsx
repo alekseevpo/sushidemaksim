@@ -11,7 +11,9 @@ import { useMenu, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ProductCard from '../components/menu/ProductCard';
 import ShareModal from '../components/menu/ShareModal';
 import { getOptimizedImageUrl } from '../utils/images';
+import SafeImage from '../components/common/SafeImage';
 import ReservationModal from '../components/reservations/ReservationModal';
+import { useSettings } from '../hooks/queries/useSettings';
 
 const Marquee = () => (
     <div className="relative py-4 md:py-6 overflow-hidden bg-black border-y border-white/5 select-none">
@@ -45,12 +47,9 @@ const CategoryCard = memo(
     }: {
         id: string;
         name: string;
-        icon?: string;
         image: string | null;
         index: number;
     }) => {
-        const [imageFailed, setImageFailed] = useState(false);
-
         return (
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -61,22 +60,21 @@ const CategoryCard = memo(
             >
                 <Link to={`/menu#section-${id}`} className="absolute inset-0 z-10" />
 
-                {image && !imageFailed ? (
-                    <img
-                        src={getOptimizedImageUrl(image, 640)}
-                        alt={`Sushi de Maksim: Categoría ${name} - Madrid`}
-                        loading="lazy"
-                        decoding="async"
-                        onError={() => setImageFailed(true)}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
-                ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                        <span className="text-gray-300 font-bold text-[10px] uppercase">
-                            No Image
-                        </span>
-                    </div>
-                )}
+                <SafeImage
+                    src={image || ''}
+                    alt={`Sushi de Maksim: Categoría ${name} - Madrid`}
+                    loading="lazy"
+                    decoding="async"
+                    getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 640)}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    fallbackContent={
+                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                            <span className="text-gray-300 font-bold text-[10px] uppercase">
+                                No Image
+                            </span>
+                        </div>
+                    }
+                />
 
                 {/* Soft gradient overlay for text readability at top */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent"></div>
@@ -94,7 +92,7 @@ const CategoryCard = memo(
 
 export default function HomePage() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { addItem } = useCart();
+    const { items, addItem } = useCart();
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
@@ -107,8 +105,6 @@ export default function HomePage() {
         }
     };
 
-    const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
-    const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
     const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
     const [copying, setCopying] = useState(false);
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
@@ -116,6 +112,7 @@ export default function HomePage() {
     // Use TanStack Query
     const { data: allItems = [], isLoading: itemsLoading } = useMenu('all', '');
     const { data: categoriesData = [], isLoading: catsLoading } = useCategories();
+    const { data: settings } = useSettings();
     const isLoading = itemsLoading || catsLoading;
 
     // Memoize the filtering for better performance
@@ -223,16 +220,6 @@ export default function HomePage() {
             quantity
         );
 
-        const itemId = Number(item.id);
-        setAddedItems(prev => new Set(prev).add(itemId));
-        setTimeout(() => {
-            setAddedItems(prev => {
-                const next = new Set(prev);
-                next.delete(itemId);
-                return next;
-            });
-        }, 1600);
-
         // Haptic
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
             navigator.vibrate(10);
@@ -243,7 +230,7 @@ export default function HomePage() {
         <div className="overflow-hidden">
             <SEO
                 title="Sushi a domicilio en Madrid — Sushi de Maksim | Calidad Premium"
-                description="El mejor sushi artesanal de Madrid con entrega a domicilio. Pide online rolls, nigiri y sashimi frescos. ⭐ 4.9/5 basado en +500 reseñas. ¡Pide ahora y disfruta de la experiencia japonesa!"
+                description={`El mejor sushi artesanal de Madrid con entrega a domicilio. Pide online rolls, nigiri y sashimi frescos. ⭐ ${settings?.ratingGoogle || '4.9'}/5 basado en ${settings?.ratingReviewsCount || '+500'} reseñas. ¡Pide ahora y disfruta de la experiencia japonesa!`}
                 keywords="sushi madrid, sushi a domicilio madrid, pedir sushi online, mejor sushi madrid, sushi de maksim, comida japonesa madrid"
                 schema={{
                     '@context': 'https://schema.org',
@@ -252,11 +239,11 @@ export default function HomePage() {
                     image: 'https://sushidemaksim.com/sushi-hero.webp',
                     '@id': 'https://sushidemaksim.com',
                     url: 'https://sushidemaksim.com',
-                    telephone: '+34631920312',
+                    telephone: settings?.contactPhone || '+34631920312',
                     priceRange: '$$',
                     address: {
                         '@type': 'PostalAddress',
-                        streetAddress: 'Calle del Barrilero, 20',
+                        streetAddress: settings?.contactAddressLine1 || 'C. de Barrilero, 20',
                         addressLocality: 'Madrid',
                         postalCode: '28007',
                         addressCountry: 'ES',
@@ -268,8 +255,8 @@ export default function HomePage() {
                     },
                     aggregateRating: {
                         '@type': 'AggregateRating',
-                        ratingValue: '4.9',
-                        reviewCount: '524',
+                        ratingValue: (settings?.ratingGoogle || 4.9).toString(),
+                        reviewCount: (settings?.ratingReviewsCount || 524).toString(),
                         bestRating: '5',
                         worstRating: '1',
                     },
@@ -318,19 +305,21 @@ export default function HomePage() {
                     {/* Background Image with optimized loading */}
                     <div className="absolute inset-0 z-0">
                         <div className="absolute inset-0 bg-black/60 z-10" />
-                        <motion.img
+                        <motion.div
                             initial={{ scale: 1.1, opacity: 0 }}
                             animate={{ scale: 1, opacity: 0.4 }}
                             transition={{ duration: 1.5, ease: 'easeOut' }}
-                            src={getOptimizedImageUrl(
-                                'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&auto=format&fit=crop',
-                                1080
-                            )}
-                            alt="Premium Sushi Background"
-                            className="w-full h-full object-cover sm:object-center object-[65%_center]"
-                            loading="eager"
-                            {...({ fetchpriority: 'high' } as any)}
-                        />
+                            className="w-full h-full"
+                        >
+                            <SafeImage
+                                src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&auto=format&fit=crop"
+                                alt="Premium Sushi Background"
+                                className="w-full h-full object-cover sm:object-center object-[65%_center]"
+                                loading="eager"
+                                getOptimizedUrl={url => getOptimizedImageUrl(url, 1080)}
+                                {...({ fetchpriority: 'high' } as any)}
+                            />
+                        </motion.div>
                     </div>
 
                     <div className="relative z-20 flex flex-col items-center max-w-4xl mx-auto">
@@ -522,7 +511,6 @@ export default function HomePage() {
                                 key={cat.id}
                                 id={cat.id}
                                 name={cat.name}
-                                icon={cat.icon}
                                 image={cat.image}
                                 index={idx}
                             />
@@ -691,9 +679,9 @@ export default function HomePage() {
                                                 onToggleFavorite={() => {}}
                                                 onShare={handleShare}
                                                 onAddToCart={handleAddToCart}
-                                                isAdded={addedItems.has(Number(item.id))}
-                                                failedImages={failedImages}
-                                                setFailedImages={setFailedImages}
+                                                isAdded={items.some(
+                                                    cartItem => cartItem.id === String(item.id)
+                                                )}
                                                 isPriority={index < 2}
                                             />
                                         </div>

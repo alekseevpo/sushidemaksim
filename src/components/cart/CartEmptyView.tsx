@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ShoppingCart, ArrowDown, Flame, Check, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getOptimizedImageUrl } from '../../utils/images';
+import SafeImage from '../common/SafeImage';
 
 interface MenuItem {
     id: number;
@@ -16,8 +18,6 @@ interface CartEmptyViewProps {
     isLoadingPopular: boolean;
     handleAddToCart: (item: MenuItem, quantity?: number, isSuggestion?: boolean) => void;
     getCategoryEmoji: (category: string) => string;
-    failedImages: Set<string | number>;
-    setFailedImages: React.Dispatch<React.SetStateAction<Set<string | number>>>;
     addedItems: Set<number>;
 }
 
@@ -26,8 +26,6 @@ export default function CartEmptyView({
     isLoadingPopular,
     handleAddToCart,
     getCategoryEmoji,
-    failedImages,
-    setFailedImages,
     addedItems,
 }: CartEmptyViewProps) {
     return (
@@ -114,27 +112,24 @@ export default function CartEmptyView({
                                           className="premium-card premium-card-hover group relative flex flex-col h-full rounded-[28px] md:rounded-[36px] overflow-hidden bg-white/60 backdrop-blur-sm shadow-xl shadow-gray-900/5"
                                       >
                                           <div className="aspect-[4/3] bg-gray-50 overflow-hidden relative border-b border-gray-100">
-                                              {!failedImages.has(item.id) ? (
-                                                  <img
-                                                      src={item.image}
-                                                      alt={item.name}
-                                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                      onError={() =>
-                                                          setFailedImages(prev =>
-                                                              new Set(prev).add(item.id)
-                                                          )
-                                                      }
-                                                  />
-                                              ) : (
-                                                  <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
-                                                      <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-                                                      <div className="absolute w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
-                                                      <span className="text-4xl relative z-10 drop-shadow-2xl translate-y-2">
-                                                          {getCategoryEmoji(item.category)}
-                                                      </span>
-                                                      <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
-                                                  </div>
-                                              )}
+                                              <SafeImage
+                                                  src={item.image}
+                                                  alt={item.name}
+                                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                  getOptimizedUrl={(url: string) =>
+                                                      getOptimizedImageUrl(url, 640)
+                                                  }
+                                                  fallbackContent={
+                                                      <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
+                                                          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                                          <div className="absolute w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
+                                                          <span className="text-4xl relative z-10 drop-shadow-2xl translate-y-2">
+                                                              {getCategoryEmoji(item.category)}
+                                                          </span>
+                                                          <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
+                                                      </div>
+                                                  }
+                                              />
                                               <div className="absolute top-3 right-3 bg-orange-600 text-white text-[8px] font-black px-2 py-1 rounded-lg shadow-lg uppercase tracking-widest">
                                                   Best Seller
                                               </div>

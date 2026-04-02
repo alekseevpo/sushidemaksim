@@ -23,6 +23,7 @@ import LoginModal from './LoginModal';
 import { useScrollLock } from '../hooks/useScrollLock';
 import ReservationModal from './reservations/ReservationModal';
 import { getSharpAvatar } from '../utils/avatar';
+import SafeImage from './common/SafeImage';
 
 export default function Header() {
     const { itemCount, total, isLoading: cartLoading } = useCart();
@@ -283,17 +284,16 @@ export default function Header() {
                                             >
                                                 {user.avatar ? (
                                                     user.avatar.startsWith('http') ? (
-                                                        <img
-                                                            src={getSharpAvatar(user.avatar)}
+                                                        <SafeImage
+                                                            src={user.avatar}
+                                                            getOptimizedUrl={getSharpAvatar}
                                                             alt={user.name}
                                                             className="w-full h-full object-cover"
-                                                            onError={e => {
-                                                                (
-                                                                    e.currentTarget as HTMLImageElement
-                                                                ).style.display = 'none';
-                                                                e.currentTarget.parentElement!.innerText =
-                                                                    initials;
-                                                            }}
+                                                            fallbackContent={
+                                                                <span className="select-none text-[16px] text-gray-900">
+                                                                    {initials}
+                                                                </span>
+                                                            }
                                                         />
                                                     ) : (
                                                         <span className="select-none">
@@ -330,20 +330,18 @@ export default function Header() {
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
-                                                                    <img
-                                                                        src={getSharpAvatar(
-                                                                            user.avatar
-                                                                        )}
+                                                                    <SafeImage
+                                                                        src={user.avatar}
+                                                                        getOptimizedUrl={
+                                                                            getSharpAvatar
+                                                                        }
                                                                         alt={user.name}
                                                                         className="w-full h-full object-cover"
-                                                                        onError={e => {
-                                                                            (
-                                                                                e.currentTarget as HTMLImageElement
-                                                                            ).style.display =
-                                                                                'none';
-                                                                            e.currentTarget.parentElement!.innerText =
-                                                                                initials;
-                                                                        }}
+                                                                        fallbackContent={
+                                                                            <span className="select-none text-xl text-gray-900">
+                                                                                {initials}
+                                                                            </span>
+                                                                        }
                                                                     />
                                                                 ) : (
                                                                     <span className="select-none">
@@ -648,20 +646,18 @@ export default function Header() {
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
-                                                                    <img
-                                                                        src={getSharpAvatar(
-                                                                            user.avatar
-                                                                        )}
+                                                                    <SafeImage
+                                                                        src={user.avatar}
+                                                                        getOptimizedUrl={
+                                                                            getSharpAvatar
+                                                                        }
                                                                         alt={user.name}
                                                                         className="w-full h-full object-cover"
-                                                                        onError={e => {
-                                                                            (
-                                                                                e.currentTarget as HTMLImageElement
-                                                                            ).style.display =
-                                                                                'none';
-                                                                            e.currentTarget.parentElement!.innerText =
-                                                                                initials;
-                                                                        }}
+                                                                        fallbackContent={
+                                                                            <span className="select-none text-sm text-gray-900">
+                                                                                {initials}
+                                                                            </span>
+                                                                        }
                                                                     />
                                                                 ) : (
                                                                     <span className="select-none text-2xl">

@@ -8,6 +8,7 @@ import SEO from '../components/SEO';
 import { PromoSkeleton } from '../components/skeletons/PromoSkeleton';
 import { useQuery } from '@tanstack/react-query';
 import { getOptimizedImageUrl } from '../utils/images';
+import SafeImage from '../components/common/SafeImage';
 
 const PROMO_IMAGES: Record<string, string> = {
     '10º Pedido':
@@ -30,7 +31,6 @@ interface PromoItem {
 
 export default function PromoPage() {
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
-    const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
     const { addItem } = useCart();
     const { user } = useAuth();
 
@@ -85,10 +85,11 @@ export default function PromoPage() {
 
             {/* Hero Header */}
             <section className="relative h-64 md:h-80 flex items-center justify-center overflow-hidden pt-12">
-                <img
-                    src={getOptimizedImageUrl('/images/promos/promo_hero_bg.png', 1080)}
+                <SafeImage
+                    src="/images/promos/promo_hero_bg.png"
                     alt="Ofertas y Promociones background"
                     className="absolute inset-0 w-full h-full object-cover"
+                    getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 1080)}
                     {...({ fetchpriority: 'high' } as any)}
                 />
                 <div className="absolute inset-0 bg-black/60"></div>
@@ -112,13 +113,13 @@ export default function PromoPage() {
                         >
                             {/* Image Header wrapper */}
                             <div className="h-48 md:h-56 w-full relative overflow-hidden flex flex-col items-center justify-end pb-5">
-                                <img
-                                    src={getOptimizedImageUrl(
-                                        PROMO_IMAGES[promo.title] || '/sushi-hero.webp',
-                                        800
-                                    )}
+                                <SafeImage
+                                    src={PROMO_IMAGES[promo.title] || '/sushi-hero.webp'}
                                     alt={promo.title}
                                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    getOptimizedUrl={(url: string) =>
+                                        getOptimizedImageUrl(url, 800)
+                                    }
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
@@ -297,27 +298,24 @@ export default function PromoPage() {
                                     className="bg-white rounded-3xl shadow-xl shadow-gray-200/40 overflow-hidden hover:-translate-y-1 transition-transform duration-300 flex flex-col group border border-gray-50"
                                 >
                                     <div className="h-32 md:h-56 bg-gray-50 overflow-hidden relative flex items-center justify-center">
-                                        {!failedImages.has(item.id) ? (
-                                            <img
-                                                src={getOptimizedImageUrl(item.image, 640)}
-                                                alt={`Oferta ${item.name}`}
-                                                loading="lazy"
-                                                decoding="async"
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                onError={() =>
-                                                    setFailedImages(prev =>
-                                                        new Set(prev).add(item.id)
-                                                    )
-                                                }
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
-                                                <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
-                                                <span className="text-3xl md:text-6xl relative z-10 drop-shadow-2xl">
-                                                    🎁
-                                                </span>
-                                            </div>
-                                        )}
+                                        <SafeImage
+                                            src={item.image}
+                                            alt={`Oferta ${item.name}`}
+                                            loading="lazy"
+                                            decoding="async"
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            getOptimizedUrl={(url: string) =>
+                                                getOptimizedImageUrl(url, 640)
+                                            }
+                                            fallbackContent={
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-700">
+                                                    <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
+                                                    <span className="text-3xl md:text-6xl relative z-10 drop-shadow-2xl">
+                                                        🎁
+                                                    </span>
+                                                </div>
+                                            }
+                                        />
                                         <span className="absolute top-2 left-2 md:top-4 md:left-4 bg-black/80 backdrop-blur-md text-white text-[8px] md:text-xs uppercase tracking-wider font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full">
                                             Promo
                                         </span>

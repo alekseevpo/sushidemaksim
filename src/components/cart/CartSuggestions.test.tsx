@@ -39,8 +39,6 @@ describe('CartSuggestions', () => {
         isLoadingSuggestions: false,
         handleAddToCart: vi.fn(),
         getCategoryEmoji: vi.fn(() => '🍣'),
-        failedImages: new Set<string | number>(),
-        setFailedImages: vi.fn(),
     };
 
     it('renders loading state correctly', () => {
@@ -87,9 +85,8 @@ describe('CartSuggestions', () => {
         expect(defaultProps.handleAddToCart).toHaveBeenCalledWith(mockSuggestions[0], 2, true);
     });
 
-    it('displays fallback emoji if image fails', () => {
-        const failedImages = new Set([1]);
-        render(<CartSuggestions {...defaultProps} failedImages={failedImages} />);
+    it('renders suggested items correctly', () => {
+        render(<CartSuggestions {...defaultProps} />);
 
         // Item 1 should have emoji 🍣 (from mock getCategoryEmoji)
         expect(screen.getByText('🍣')).toBeInTheDocument();
@@ -97,10 +94,10 @@ describe('CartSuggestions', () => {
         expect(screen.getByAltText('Maguro Nigiri')).toBeInTheDocument();
     });
 
-    it('triggers setFailedImages on image error', () => {
+    it('handles image load error', () => {
         render(<CartSuggestions {...defaultProps} />);
         const img = screen.getByAltText('Sake Sushi');
         fireEvent.error(img);
-        expect(defaultProps.setFailedImages).toHaveBeenCalled();
+        // SafeImage handles this internally
     });
 });

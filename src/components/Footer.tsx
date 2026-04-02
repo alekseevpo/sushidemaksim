@@ -1,17 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { api } from '../utils/api';
+import { useSettings } from '../hooks/queries/useSettings';
 
 export default function Footer() {
-    const [settings, setSettings] = useState<any>(null);
+    const { data: settings } = useSettings();
 
-    useEffect(() => {
-        api.get('/settings').then(setSettings).catch(console.error);
-    }, []);
-
-    const phoneNumber = settings?.contact_phone || '+34 631 920 312';
+    const phoneNumber = settings?.contactPhone || '+34 631 920 312';
     const cleanPhone = phoneNumber.replace(/\s/g, '');
 
     // Social Platforms Configuration
@@ -48,7 +43,7 @@ export default function Footer() {
 
     // Priority: Settings URL > Static Config Default URL
     const getUrl = (platformId: string, defaultUrl: string) => {
-        const found = settings?.social_links?.find((l: any) =>
+        const found = settings?.socialLinks?.find((l: any) =>
             l.platform.toLowerCase().includes(platformId.toLowerCase())
         );
         return found?.url && found.url !== '#' ? found.url : defaultUrl;

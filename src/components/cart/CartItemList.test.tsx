@@ -21,10 +21,10 @@ describe('CartItemList', () => {
         updateQuantity: vi.fn(),
         removeItem: vi.fn(),
         clearCart: vi.fn(),
-        getCategoryEmoji: vi.fn(() => '🍱'),
+        getCategoryEmoji: vi.fn(() => '🍣'),
         failedImages: new Set<string | number>(),
         setFailedImages: vi.fn(),
-        chopsticksCount: 2,
+        chopsticksCount: 0,
         updateChopsticks: vi.fn(),
     };
 
@@ -45,23 +45,13 @@ describe('CartItemList', () => {
     it('renders the chopsticks question and count', () => {
         render(<CartItemList {...defaultProps} />);
         expect(screen.getByText(/¿Cuántos palillos le pongo\?/i)).toBeInTheDocument();
-        expect(screen.getByText('2')).toBeInTheDocument();
+        expect(screen.getByText('0')).toBeInTheDocument();
     });
 
     it('calls updateChopsticks when clicking buttons', () => {
-        render(<CartItemList {...defaultProps} />);
-
-        // Let's use getByTestId or labels if they exist.
-        // Actually, I can find by svg minus/plus icons if I label them or just search for the buttons near the text.
+        render(<CartItemList {...defaultProps} chopsticksCount={2} />);
 
         const buttons = screen.getAllByRole('button');
-        // Let's check the button content or order.
-        // 0: Vaciar
-        // 1: Minus (item 1)
-        // 2: Plus (item 1)
-        // 3: Remove (item 1)
-        // 4: Minus (chopsticks)
-        // 5: Plus (chopsticks)
 
         const minusChopsticks = buttons[4];
         const plusChopsticks = buttons[5];
@@ -124,7 +114,7 @@ describe('CartItemList', () => {
         expect(defaultProps.removeItem).toHaveBeenCalledWith('1');
     });
 
-    it('calls setFailedImages on image error', () => {
+    it('handles image load error', () => {
         render(<CartItemList {...defaultProps} />);
         const img = screen.getByRole('img');
         fireEvent.error(img);

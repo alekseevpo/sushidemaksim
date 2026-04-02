@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Heart, Share2, Sparkles, Check, Plus, Minus } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
+import SafeImage from '../common/SafeImage';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { EMOJI } from '../../constants/menu';
 import { User } from '../../types';
@@ -14,8 +15,6 @@ interface ProductCardProps {
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
     onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>, quantity: number) => void;
     isAdded: boolean;
-    failedImages: Set<number>;
-    setFailedImages: React.Dispatch<React.SetStateAction<Set<number>>>;
     isPriority?: boolean;
     isHighlighted?: boolean;
     isZoomed?: boolean;
@@ -30,8 +29,6 @@ export default function ProductCard({
     onShare,
     onAddToCart,
     isAdded,
-    failedImages,
-    setFailedImages,
     isPriority,
     isHighlighted,
     isZoomed,
@@ -81,25 +78,24 @@ export default function ProductCard({
 
             {/* Image Container */}
             <div className="aspect-[4/3] md:h-56 bg-gray-50 overflow-hidden relative group/img">
-                {!failedImages.has(item.id) ? (
-                    <img
-                        src={getOptimizedImageUrl(item.image, 640)}
-                        alt={`Sushi de Maksim: ${item.name} - Madrid`}
-                        loading={isPriority ? 'eager' : 'lazy'}
-                        decoding="async"
-                        {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
-                        className={`w-full h-full object-cover transition-transform duration-500 ${
-                            isZoomed
-                                ? 'scale-[1.2] shadow-inner'
-                                : 'group-hover:scale-125 md:group-hover:scale-105'
-                        }`}
-                        onError={() => setFailedImages(prev => new Set(prev).add(item.id))}
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl grayscale opacity-30">
-                        {EMOJI[item.category] || '🍱'}
-                    </div>
-                )}
+                <SafeImage
+                    src={item.image}
+                    alt={`Sushi de Maksim: ${item.name} - Madrid`}
+                    loading={isPriority ? 'eager' : 'lazy'}
+                    decoding="async"
+                    getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 640)}
+                    {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
+                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                        isZoomed
+                            ? 'scale-[1.2] shadow-inner'
+                            : 'group-hover:scale-125 md:group-hover:scale-105'
+                    }`}
+                    fallbackContent={
+                        <div className="w-full h-full flex items-center justify-center text-4xl grayscale opacity-30">
+                            {EMOJI[item.category] || '🍱'}
+                        </div>
+                    }
+                />
 
                 {/* Badges Lowered */}
                 <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1">

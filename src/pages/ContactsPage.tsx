@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     MapPin,
     Phone,
@@ -13,11 +13,12 @@ import {
     Loader2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { api } from '../utils/api';
+import { useSettings } from '../hooks/queries/useSettings';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { getOptimizedImageUrl } from '../utils/images';
+import { api } from '../utils/api';
 
 const iconMap: Record<string, any> = {
     whatsapp: (props: any) => (
@@ -93,43 +94,18 @@ export default function ContactsPage() {
         message: '',
     });
 
-    const [settings, setSettings] = useState<any>({
-        contact_phone: '+34 631 920 312',
-        contact_email: 'info@sushidemaksim.com',
-        contact_address_line1: 'C. de Barrilero, 20,',
-        contact_address_line2: '28007 Madrid España',
-        contact_google_maps_url: '',
-        contact_schedule: [
-            { days: 'lunes', hours: 'Cerrado', closed: true },
-            { days: 'martes', hours: 'Cerrado', closed: true },
-            { days: 'miércoles', hours: '20:00–23:00' },
-            { days: 'jueves (Día del padre)', hours: '20:00–23:00' },
-            { days: 'viernes', hours: '20:00–23:00' },
-            { days: 'sábado', hours: '14:00–17:00 / 20:00–23:00' },
-            { days: 'domingo', hours: '14:00–17:00' },
-        ],
-        social_links: [
-            { platform: 'WhatsApp', url: 'https://wa.me/34631920312', icon: 'whatsapp' },
-            { platform: 'Instagram', url: '#', icon: 'instagram' },
-        ],
-    });
+    const { data: settings } = useSettings();
 
-    useEffect(() => {
-        api.get('/settings')
-            .then(data => {
-                if (data && Object.keys(data).length > 0) {
-                    setSettings((prev: any) => ({
-                        ...prev,
-                        ...data,
-                        contact_schedule:
-                            data.contact_schedule && data.contact_schedule.length > 0
-                                ? data.contact_schedule
-                                : prev.contact_schedule,
-                    }));
-                }
-            })
-            .catch(console.error);
-    }, []);
+    const addressLine1 = settings?.contactAddressLine1 || 'C. de Barrilero, 20,';
+    const addressLine2 = settings?.contactAddressLine2 || '28007 Madrid España';
+    const currentPhone = settings?.contactPhone || '+34 631 920 312';
+    const currentEmail = settings?.contactEmail || 'info@sushidemaksim.com';
+    const contactSchedule = settings?.contactSchedule || [];
+
+    const fullAddress = `${addressLine1} ${addressLine2}`.trim();
+    const mapsUrl =
+        settings?.contactGoogleMapsUrl ||
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -155,28 +131,22 @@ export default function ContactsPage() {
         }
     };
 
-    const fullAddress =
-        `${settings.contact_address_line1} ${settings.contact_address_line2}`.trim();
-    const mapsUrl =
-        settings.contact_google_maps_url ||
-        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
-
     return (
         <div className="min-h-screen bg-transparent pt-0">
             <SEO
                 title="Contacto y Ubicación — Sushi de Maksim Madrid"
-                description="Visítanos en Madrid o haz tu pedido de sushi a domicilio. Dirección: C. de Barrilero, 20. Teléfono: +34 631 920 312. ¡Te esperamos para ofrecerte el mejor sushi artesanal!"
+                description={`Visítanos en Madrid o haz tu pedido de sushi a domicilio. Dirección: ${fullAddress}. Teléfono: ${currentPhone}. ¡Te esperamos para ofrecerte el mejor sushi artesanal!`}
                 keywords="contacto sushi madrid, direccion sushi de maksim, telefono sushi madrid, pedir sushi domicilio madrid"
                 schema={{
                     '@context': 'https://schema.org',
                     '@type': 'LocalBusiness',
                     name: 'Sushi de Maksim',
                     image: 'https://sushidemaksim.com/sushi-hero.webp',
-                    telephone: '+34631920312',
-                    email: 'info@sushidemaksim.com',
+                    telephone: currentPhone.replace(/\s/g, ''),
+                    email: currentEmail,
                     address: {
                         '@type': 'PostalAddress',
-                        streetAddress: 'C. de Barrilero, 20',
+                        streetAddress: addressLine1,
                         addressLocality: 'Madrid',
                         postalCode: '28007',
                         addressCountry: 'ES',
@@ -241,9 +211,9 @@ export default function ContactsPage() {
                     <ContactInfoCard
                         icon={Phone}
                         title="Llámanos"
-                        content={settings.contact_phone}
+                        content={currentPhone}
                         subContent="Atención telefónica directa para pedidos y consultas."
-                        link={`tel:${settings.contact_phone?.replace(/\s/g, '')}`}
+                        link={`tel:${currentPhone.replace(/\s/g, '')}`}
                         linkText="Llamar ahora"
                         colorClass="bg-amber-100/50"
                         delay={0.1}
@@ -261,9 +231,9 @@ export default function ContactsPage() {
                     <ContactInfoCard
                         icon={Mail}
                         title="Email"
-                        content={settings.contact_email}
+                        content={currentEmail}
                         subContent="Para eventos especiales, colaboraciones o prensa."
-                        link={`mailto:${settings.contact_email}`}
+                        link={`mailto:${currentEmail}`}
                         linkText="Enviar email"
                         colorClass="bg-orange-100/50"
                         delay={0.3}
@@ -400,21 +370,27 @@ export default function ContactsPage() {
                             </div>
                             <div className="max-w-2xl">
                                 <div className="space-y-4">
-                                    {settings.contact_schedule?.map((item: any, idx: number) => (
-                                        <div
-                                            key={idx}
-                                            className="flex justify-between items-start pb-2 border-b border-gray-100 last:border-0 last:pb-0"
-                                        >
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                                {item.days}
-                                            </span>
-                                            <span
-                                                className={`text-sm font-black text-right ${item.closed ? 'text-orange-500' : 'text-gray-900'}`}
+                                    {contactSchedule.length > 0 ? (
+                                        contactSchedule.map((item: any, idx: number) => (
+                                            <div
+                                                key={idx}
+                                                className="flex justify-between items-start pb-2 border-b border-gray-100 last:border-0 last:pb-0"
                                             >
-                                                {item.hours}
-                                            </span>
-                                        </div>
-                                    ))}
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                    {item.days}
+                                                </span>
+                                                <span
+                                                    className={`text-sm font-black text-right ${item.closed ? 'text-orange-500' : 'text-gray-900'}`}
+                                                >
+                                                    {item.hours}
+                                                </span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                                            Cargando horario...
+                                        </p>
+                                    )}
 
                                     <div className="pt-6 mt-6 border-t border-gray-100">
                                         <div className="flex items-center gap-2 mb-4 text-orange-600">
@@ -439,7 +415,7 @@ export default function ContactsPage() {
                                                         {holiday.name} ({holiday.date})
                                                     </span>
                                                     <a
-                                                        href={`https://wa.me/34631920312?text=${encodeURIComponent(`Hola, me gustaría confirmar el horario para el festivo ${holiday.name} (${holiday.date})`)}`}
+                                                        href={`https://wa.me/${currentPhone.replace(/\s/g, '').replace('+', '')}?text=${encodeURIComponent(`Hola, me gustaría confirmar el horario para el festivo ${holiday.name} (${holiday.date})`)}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-tight hover:bg-emerald-100 transition-colors border border-emerald-100/50"

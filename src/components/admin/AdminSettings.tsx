@@ -48,6 +48,10 @@ const SETTINGS_TRANSLATIONS = {
             no: 'ОТМЕНА',
         },
         newSocialName: 'Новая сеть',
+        ratingsTitle: 'Внешние рейтинги',
+        ratingTheFork: 'Рейтинг The Fork',
+        ratingGoogle: 'Рейтинг Google',
+        ratingReviewsCount: 'Количество отзывов (всего)',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -88,6 +92,10 @@ const SETTINGS_TRANSLATIONS = {
             no: 'CANCELAR',
         },
         newSocialName: 'Nueva Red',
+        ratingsTitle: 'Valoraciones Externas',
+        ratingTheFork: 'Puntuación The Fork',
+        ratingGoogle: 'Puntuación Google',
+        ratingReviewsCount: 'Total de reseñas',
     },
 } as const;
 
@@ -115,6 +123,9 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 estDeliveryTime: data.estDeliveryTime || '30-60 min',
                 closedMessage:
                     data.closedMessage || 'Lo sentimos, la cocina está cerrada temporalmente.',
+                ratingTheFork: data.ratingTheFork || 9.1,
+                ratingGoogle: data.ratingGoogle || 4.8,
+                ratingReviewsCount: data.ratingReviewsCount || 1000,
             };
         },
     });
@@ -321,6 +332,64 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             }
                             className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all"
                             placeholder="https://www.google.com/maps/..."
+                        />
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4 mb-8 mt-12">
+                    <h3 className="font-black text-xs uppercase tracking-[0.15em]">
+                        {t.ratingsTitle}
+                    </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                            {t.ratingTheFork}
+                        </label>
+                        <input
+                            type="number"
+                            step="0.1"
+                            value={localSettings.ratingTheFork}
+                            onChange={e =>
+                                setLocalSettings({
+                                    ...localSettings,
+                                    ratingTheFork: parseFloat(e.target.value),
+                                })
+                            }
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all tabular-nums"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                            {t.ratingGoogle}
+                        </label>
+                        <input
+                            type="number"
+                            step="0.1"
+                            value={localSettings.ratingGoogle}
+                            onChange={e =>
+                                setLocalSettings({
+                                    ...localSettings,
+                                    ratingGoogle: parseFloat(e.target.value),
+                                })
+                            }
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all tabular-nums"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                            {t.ratingReviewsCount}
+                        </label>
+                        <input
+                            type="number"
+                            value={localSettings.ratingReviewsCount}
+                            onChange={e =>
+                                setLocalSettings({
+                                    ...localSettings,
+                                    ratingReviewsCount: parseInt(e.target.value),
+                                })
+                            }
+                            className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-black text-gray-900 outline-none focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all tabular-nums"
                         />
                     </div>
                 </div>

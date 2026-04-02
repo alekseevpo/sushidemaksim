@@ -3,6 +3,8 @@ import { Heart, Plus, Check } from 'lucide-react';
 
 import { api } from '../../utils/api';
 import { useCart } from '../../hooks/useCart';
+import { getOptimizedImageUrl } from '../../utils/images';
+import SafeImage from '../common/SafeImage';
 
 interface MenuItem {
     id: number;
@@ -21,7 +23,6 @@ export default function FavoritesTab() {
     const [favorites, setFavorites] = useState<MenuItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
-    const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
     const { addItem } = useCart();
 
     const EMOJI: Record<string, string> = {
@@ -172,20 +173,17 @@ export default function FavoritesTab() {
                     >
                         {/* Image Container */}
                         <div className="h-[130px] md:h-[190px] overflow-hidden relative flex items-center justify-center bg-gray-50/50">
-                            {!failedImages.has(item.id) ? (
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    onError={() =>
-                                        setFailedImages(prev => new Set(prev).add(item.id))
-                                    }
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-4xl md:text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 transform group-hover:scale-110">
-                                    {EMOJI[item.category] ?? '🍣'}
-                                </div>
-                            )}
+                            <SafeImage
+                                src={item.image}
+                                alt={item.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 400)}
+                                fallbackContent={
+                                    <div className="w-full h-full flex items-center justify-center text-4xl md:text-6xl grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 transform group-hover:scale-110">
+                                        {EMOJI[item.category] ?? '🍣'}
+                                    </div>
+                                }
+                            />
 
                             {/* Tags Overlay */}
                             <div className="absolute top-2 left-0 flex flex-col gap-1 z-10">

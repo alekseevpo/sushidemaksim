@@ -1,6 +1,7 @@
 import { Star } from 'lucide-react';
 import { motion, animate } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { useSettings } from '../hooks/queries/useSettings';
 
 const CountUp = ({
     value,
@@ -51,6 +52,13 @@ const RatingIndicator = ({
 );
 
 const RatingsBanner = () => {
+    const { data: settings } = useSettings();
+
+    // Default values if settings not loaded yet
+    const ratingGoogle = settings?.ratingGoogle || 4.8;
+    const ratingTheFork = settings?.ratingTheFork || 9.1;
+    const reviewsCount = settings?.ratingReviewsCount || 534;
+
     return (
         <section className="bg-white py-6 border-y border-gray-100 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4">
@@ -64,7 +72,7 @@ const RatingsBanner = () => {
                     >
                         <div className="shrink-0 text-center">
                             <div className="text-4xl font-black text-gray-900 leading-none tracking-tighter mb-1.5">
-                                <CountUp value={4.8} />
+                                <CountUp value={ratingGoogle} />
                             </div>
                             <div className="flex justify-center gap-0.5 mb-1.5">
                                 {[1, 2, 3, 4, 5].map(i => (
@@ -76,7 +84,7 @@ const RatingsBanner = () => {
                                     Google
                                 </span>
                                 <span className="text-gray-400 text-[8px] font-bold">
-                                    534 reseñas
+                                    {reviewsCount} reseñas
                                 </span>
                             </div>
                         </div>
@@ -130,14 +138,16 @@ const RatingsBanner = () => {
                                         strokeWidth="3"
                                         strokeDasharray="175.9"
                                         initial={{ strokeDashoffset: 175.9 }}
-                                        whileInView={{ strokeDashoffset: 175.9 * (1 - 9.0 / 10) }}
+                                        whileInView={{
+                                            strokeDashoffset: 175.9 * (1 - ratingTheFork / 10),
+                                        }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 1.5, ease: 'easeOut', delay: 0.2 }}
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                                     <span className="text-xl font-black text-gray-900 leading-none">
-                                        <CountUp value={9.0} />
+                                        <CountUp value={ratingTheFork} />
                                     </span>
                                     <span className="text-[7px] text-gray-400 font-bold uppercase">
                                         de 10
@@ -145,7 +155,7 @@ const RatingsBanner = () => {
                                 </div>
                             </div>
                             <div className="mt-2 px-2 py-0.5 bg-[#e6f4f2] text-[#006450] text-[8px] font-black rounded-lg uppercase tracking-wider">
-                                Excelente
+                                {ratingTheFork >= 9 ? 'Excelente' : 'Muy bueno'}
                             </div>
                         </div>
                         <div className="flex-1 flex flex-col gap-2.5">
@@ -154,9 +164,9 @@ const RatingsBanner = () => {
                                 The Fork
                             </div>
                             {[
-                                { label: 'Ambiente', s: 8.9, d: 0.3 },
-                                { label: 'Comida', s: 9.1, d: 0.4 },
-                                { label: 'Servicio', s: 9.3, d: 0.5 },
+                                { label: 'Ambiente', s: ratingTheFork - 0.2, d: 0.3 },
+                                { label: 'Comida', s: ratingTheFork, d: 0.4 },
+                                { label: 'Servicio', s: ratingTheFork + 0.2, d: 0.5 },
                             ].map(item => (
                                 <div key={item.label} className="flex items-center gap-2">
                                     <span className="text-gray-400 font-bold text-[8px] w-14 uppercase tracking-tighter">
@@ -168,7 +178,7 @@ const RatingsBanner = () => {
                                         color="bg-[#006450]"
                                     />
                                     <span className="text-gray-900 font-black text-[9px] w-4 text-right">
-                                        {item.s}
+                                        {item.s.toFixed(1)}
                                     </span>
                                 </div>
                             ))}

@@ -22,7 +22,6 @@ export default function MenuPage() {
     const { addItem } = useCart();
     const { user } = useAuth();
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
-    const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
     const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
     const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
     const [copying, setCopying] = useState(false);
@@ -170,7 +169,7 @@ export default function MenuPage() {
             const startY = e.clientY || 0;
 
             const animId = Date.now().toString() + Math.random().toString();
-            const hasImage = !failedImages.has(item.id) && item.image;
+            const hasImage = !!item.image;
 
             // Spawn the flying element
             setFlyingItems(prev => [
@@ -340,8 +339,6 @@ export default function MenuPage() {
                             onShare={handleShare}
                             onAddToCart={handleAddToCart}
                             addedItems={addedItems}
-                            failedImages={failedImages}
-                            setFailedImages={setFailedImages}
                             highlightedItemId={highlightedItemId}
                         />
                     )}

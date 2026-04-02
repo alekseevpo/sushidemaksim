@@ -1,11 +1,16 @@
 import { useEffect } from 'react';
+import { useSettings } from '../../hooks/queries/useSettings';
 
 /**
  * Component to inject JSON-LD structured data into the document head.
  * This helps Google understand the site content better and show rich results (stars, address, etc).
  */
 export default function Schema() {
+    const { data: settings } = useSettings();
+
     useEffect(() => {
+        if (!settings) return;
+
         const schemaData = {
             '@context': 'https://schema.org',
             '@graph': [
@@ -15,12 +20,12 @@ export default function Schema() {
                     name: 'Sushi de Maksim',
                     image: 'https://sushidemaksim.vercel.app/og-image.jpg',
                     url: 'https://sushidemaksim.vercel.app/',
-                    telephone: '+34631920312',
+                    telephone: settings.contactPhone || '+34631920312',
                     priceRange: '€€',
                     servesCuisine: 'Japanese, Sushi',
                     address: {
                         '@type': 'PostalAddress',
-                        streetAddress: 'C. de Barrilero, 20',
+                        streetAddress: settings.contactAddressLine1 || 'C. de Barrilero, 20',
                         addressLocality: 'Madrid',
                         postalCode: '28007',
                         addressCountry: 'ES',
@@ -52,8 +57,8 @@ export default function Schema() {
                     ],
                     aggregateRating: {
                         '@type': 'AggregateRating',
-                        ratingValue: '9.0',
-                        reviewCount: '150',
+                        ratingValue: (settings.ratingTheFork || 9.1).toString(),
+                        reviewCount: (settings.ratingReviewsCount || 1000).toString(),
                         bestRating: '10',
                         worstRating: '1',
                         author: {
@@ -98,10 +103,10 @@ export default function Schema() {
         return () => {
             const existingScript = document.getElementById('ld-json-schema');
             if (existingScript) {
-                document.head.removeChild(existingScript);
+                existingScript.remove();
             }
         };
-    }, []);
+    }, [settings]);
 
     return null;
 }

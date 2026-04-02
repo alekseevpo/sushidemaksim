@@ -75,7 +75,6 @@ export default function CartPage() {
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
 
-    const [failedImages, setFailedImages] = useState<Set<string | number>>(new Set());
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
 
     const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
@@ -633,8 +632,6 @@ export default function CartPage() {
                     isLoadingPopular={isLoadingPopular}
                     handleAddToCart={handleAddToCart}
                     getCategoryEmoji={getCategoryEmoji}
-                    failedImages={failedImages}
-                    setFailedImages={setFailedImages}
                     addedItems={addedItems}
                 />
             ) : (
@@ -704,8 +701,6 @@ export default function CartPage() {
                                 removeItem={removeItem}
                                 clearCart={clearCart}
                                 getCategoryEmoji={getCategoryEmoji}
-                                failedImages={failedImages}
-                                setFailedImages={setFailedImages}
                                 chopsticksCount={deliveryDetails.chopsticksCount}
                                 updateChopsticks={val =>
                                     updateDeliveryDetails({ chopsticksCount: val })
@@ -847,8 +842,6 @@ export default function CartPage() {
                                 isLoadingSuggestions={isLoadingSuggestions}
                                 handleAddToCart={handleAddToCart}
                                 getCategoryEmoji={getCategoryEmoji}
-                                failedImages={failedImages}
-                                setFailedImages={setFailedImages}
                             />
                             <CartSummary
                                 items={items}
