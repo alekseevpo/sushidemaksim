@@ -12,74 +12,74 @@ export default function Schema() {
                 {
                     '@type': 'Restaurant',
                     '@id': 'https://sushidemaksim.vercel.app/#restaurant',
-                    'name': 'Sushi de Maksim',
-                    'image': 'https://sushidemaksim.vercel.app/og-image.jpg',
-                    'url': 'https://sushidemaksim.vercel.app/',
-                    'telephone': '+34631920312',
-                    'priceRange': '€€',
-                    'servesCuisine': 'Japanese, Sushi',
-                    'address': {
+                    name: 'Sushi de Maksim',
+                    image: 'https://sushidemaksim.vercel.app/og-image.jpg',
+                    url: 'https://sushidemaksim.vercel.app/',
+                    telephone: '+34631920312',
+                    priceRange: '€€',
+                    servesCuisine: 'Japanese, Sushi',
+                    address: {
                         '@type': 'PostalAddress',
-                        'streetAddress': 'Calle del Barrilero, 20',
-                        'addressLocality': 'Madrid',
-                        'postalCode': '28007',
-                        'addressCountry': 'ES',
+                        streetAddress: 'Calle del Barrilero, 20',
+                        addressLocality: 'Madrid',
+                        postalCode: '28007',
+                        addressCountry: 'ES',
                     },
-                    'geo': {
+                    geo: {
                         '@type': 'GeoCoordinates',
-                        'latitude': 40.397042,
-                        'longitude': -3.672449,
+                        latitude: 40.397042,
+                        longitude: -3.672449,
                     },
-                    'openingHoursSpecification': [
+                    openingHoursSpecification: [
                         {
                             '@type': 'OpeningHoursSpecification',
-                            'dayOfWeek': ['Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                            'opens': '20:00',
-                            'closes': '23:00',
+                            dayOfWeek: ['Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                            opens: '20:00',
+                            closes: '23:00',
                         },
                         {
                             '@type': 'OpeningHoursSpecification',
-                            'dayOfWeek': 'Saturday',
-                            'opens': '14:00',
-                            'closes': '17:00',
+                            dayOfWeek: 'Saturday',
+                            opens: '14:00',
+                            closes: '17:00',
                         },
                         {
                             '@type': 'OpeningHoursSpecification',
-                            'dayOfWeek': 'Sunday',
-                            'opens': '14:00',
-                            'closes': '17:00',
+                            dayOfWeek: 'Sunday',
+                            opens: '14:00',
+                            closes: '17:00',
                         },
                     ],
-                    'aggregateRating': {
+                    aggregateRating: {
                         '@type': 'AggregateRating',
-                        'ratingValue': '9.0',
-                        'reviewCount': '150',
-                        'bestRating': '10',
-                        'worstRating': '1',
-                        'author': {
+                        ratingValue: '9.0',
+                        reviewCount: '150',
+                        bestRating: '10',
+                        worstRating: '1',
+                        author: {
                             '@type': 'Organization',
-                            'name': 'The Fork',
+                            name: 'The Fork',
                         },
                     },
-                    'hasMenu': 'https://sushidemaksim.vercel.app/menu',
-                    'acceptsReservations': 'true',
+                    hasMenu: 'https://sushidemaksim.vercel.app/menu',
+                    acceptsReservations: 'true',
                 },
                 {
                     '@type': 'WebSite',
                     '@id': 'https://sushidemaksim.vercel.app/#website',
-                    'url': 'https://sushidemaksim.vercel.app/',
-                    'name': 'Sushi de Maksim',
-                    'description':
+                    url: 'https://sushidemaksim.vercel.app/',
+                    name: 'Sushi de Maksim',
+                    description:
                         'Auténtica cocina japonesa con entrega a domicilio en Madrid. Sushi y rollos frescos.',
-                    'publisher': {
+                    publisher: {
                         '@id': 'https://sushidemaksim.vercel.app/#restaurant',
                     },
-                    'potentialAction': [
+                    potentialAction: [
                         {
                             '@type': 'SearchAction',
-                            'target': {
+                            target: {
                                 '@type': 'EntryPoint',
-                                'urlTemplate':
+                                urlTemplate:
                                     'https://sushidemaksim.vercel.app/menu?search={search_term_string}',
                             },
                             'query-input': 'required name=search_term_string',

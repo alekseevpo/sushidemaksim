@@ -420,7 +420,9 @@ export default function HomePage() {
                             </span>
                             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight mb-6">
                                 Reconocidos por los <br />
-                                <span className="text-orange-600 italic">Mejores de la Industria</span>
+                                <span className="text-orange-600 italic">
+                                    Mejores de la Industria
+                                </span>
                             </h2>
                             <p className="text-gray-500 text-lg font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
                                 Orgullosos de ser destacados por plataformas líderes y críticos
