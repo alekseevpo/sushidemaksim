@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderWithProviders, screen, fireEvent, waitFor } from '../test/test-utils';
-import MenuPageSimple from './MenuPageSimple';
-import { api } from '../utils/api';
+import { renderWithProviders, screen, fireEvent, waitFor } from '../../test/test-utils';
+import MenuPage from '../../pages/MenuPage';
+import { api } from '../../utils/api';
 import React from 'react';
 
 // Mock API
-vi.mock('../utils/api', () => ({
+vi.mock('../../utils/api', () => ({
     api: {
         get: vi.fn(),
         post: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock('../utils/api', () => ({
 
 // Mock useCart hook
 const mockAddItem = vi.fn();
-vi.mock('../hooks/useCart', () => ({
+vi.mock('../../hooks/useCart', () => ({
     useCart: () => ({
         addItem: mockAddItem,
     }),
@@ -22,7 +22,7 @@ vi.mock('../hooks/useCart', () => ({
 }));
 
 // Mock useAuth hook
-vi.mock('../hooks/useAuth', () => ({
+vi.mock('../../hooks/useAuth', () => ({
     useAuth: () => ({
         user: null,
     }),
@@ -48,13 +48,13 @@ const mockItems = [
     },
 ];
 
-describe('MenuPageSimple (Integration)', () => {
+describe('MenuPage (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         (api.get as any).mockResolvedValue({ items: mockItems });
     });
 
-    const renderMenu = () => renderWithProviders(<MenuPageSimple />);
+    const renderMenu = () => renderWithProviders(<MenuPage />);
 
     it('renders the menu items', async () => {
         renderMenu();

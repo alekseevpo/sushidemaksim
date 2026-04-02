@@ -13,7 +13,7 @@ import ShareModal from '../components/menu/ShareModal';
 import ProductGrid from '../components/menu/ProductGrid';
 import FlyToCart, { FlyingItem } from '../components/menu/FlyToCart';
 
-export default function MenuPageSimple() {
+export default function MenuPage() {
     const [searchParams] = useSearchParams();
     const initialCategory = searchParams.get('category') || 'all';
     const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);

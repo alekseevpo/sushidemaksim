@@ -46,6 +46,12 @@ export default function Footer() {
         },
     ];
 
+    const iconsPath = '/images/icons';
+    const socialConfigWithPaths = socialConfig.map(s => ({
+        ...s,
+        icon: `${iconsPath}${s.icon}`,
+    }));
+
     // Priority: Settings URL > Static Config Default URL
     const getUrl = (platformId: string, defaultUrl: string) => {
         const found = settings?.social_links?.find((l: any) =>
@@ -102,7 +108,7 @@ export default function Footer() {
                     </div>
 
                     <div className="flex flex-wrap items-center justify-center md:justify-end gap-3">
-                        {socialConfig.map(social => {
+                        {socialConfigWithPaths.map(social => {
                             const url = getUrl(social.id, social.url);
 
                             return (

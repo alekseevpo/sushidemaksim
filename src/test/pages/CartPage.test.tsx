@@ -1,36 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import CartPageSimple from './CartPageSimple';
-import { useAuth } from '../hooks/useAuth';
-import { useCart } from '../hooks/useCart';
+import CartPage from '../../pages/CartPage';
+import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../hooks/useCart';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Mock Hooks
-vi.mock('../hooks/useAuth', () => ({
+vi.mock('../../hooks/useAuth', () => ({
     useAuth: vi.fn(),
 }));
 
-vi.mock('../hooks/useCart', () => ({
+vi.mock('../../hooks/useCart', () => ({
     useCart: vi.fn(),
 }));
 
 // Mock storeStatus
-vi.mock('../utils/storeStatus', () => ({
+vi.mock('../../utils/storeStatus', () => ({
     isStoreOpen: vi.fn(() => true),
     isTimeWithinBusinessHours: vi.fn(() => true),
     BUSINESS_HOURS: {},
 }));
 
 // Mock API
-vi.mock('../utils/api', () => ({
+vi.mock('../../utils/api', () => ({
     api: {
         get: vi.fn(() => Promise.resolve({ items: [] })),
         post: vi.fn(() => Promise.resolve({})),
     },
 }));
 
-describe('CartPageSimple (Mocked Hooks)', () => {
+describe('CartPage (Mocked Hooks)', () => {
     const mockItems = [
         {
             id: '1',
@@ -90,7 +90,7 @@ describe('CartPageSimple (Mocked Hooks)', () => {
         return render(
             <HelmetProvider>
                 <BrowserRouter>
-                    <CartPageSimple />
+                    <CartPage />
                 </BrowserRouter>
             </HelmetProvider>
         );

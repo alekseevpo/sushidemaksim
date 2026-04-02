@@ -92,7 +92,7 @@ const CategoryCard = memo(
     }
 );
 
-export default function HomePageSimple() {
+export default function HomePage() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const { addItem } = useCart();
 

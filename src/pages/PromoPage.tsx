@@ -28,7 +28,7 @@ interface PromoItem {
     category: string;
 }
 
-export default function PromoPageSimple() {
+export default function PromoPage() {
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
     const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
     const { addItem } = useCart();

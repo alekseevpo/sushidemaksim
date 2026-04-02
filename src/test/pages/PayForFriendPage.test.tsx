@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import PayForFriendPage from './PayForFriendPage';
-import { api, ApiError } from '../utils/api';
+import PayForFriendPage from '../../pages/PayForFriendPage';
+import { api, ApiError } from '../../utils/api';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Mock API
-vi.mock('../utils/api', () => ({
+vi.mock('../../utils/api', () => ({
     api: {
         get: vi.fn(),
         post: vi.fn(),

@@ -29,7 +29,7 @@ interface MenuItem {
     category: string;
 }
 
-export default function CartPageSimple() {
+export default function CartPage() {
     const {
         items,
         total,

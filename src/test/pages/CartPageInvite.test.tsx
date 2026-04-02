@@ -1,17 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CartPageSimple from './CartPageSimple';
-import { useAuth } from '../hooks/useAuth';
-import { api } from '../utils/api';
+import CartPage from '../../pages/CartPage';
+import { useAuth } from '../../hooks/useAuth';
+import { api } from '../../utils/api';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
-import { CartProvider } from '../hooks/useCart';
-import { AuthProvider } from '../hooks/useAuth';
+import { CartProvider } from '../../hooks/useCart';
+import { AuthProvider } from '../../hooks/useAuth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock useCartQuery
-vi.mock('../hooks/queries/useCartQuery', () => ({
+vi.mock('../../hooks/queries/useCartQuery', () => ({
     useCartQuery: vi.fn(() => ({
         data: { items: mockCartItems, total: 20 },
         isLoading: false,
@@ -23,7 +23,7 @@ vi.mock('../hooks/queries/useCartQuery', () => ({
     CART_QUERY_KEY: ['cart'],
 }));
 
-vi.mock('../hooks/useAuth', async importOriginal => {
+vi.mock('../../hooks/useAuth', async importOriginal => {
     const actual = (await importOriginal()) as any;
     return {
         ...actual,
@@ -43,7 +43,7 @@ vi.mock('@tanstack/react-query', async importOriginal => {
 
 // Mock useToast - we'll capture the functions to assert on them later
 const mockError = vi.fn();
-vi.mock('../context/ToastContext', () => ({
+vi.mock('../../context/ToastContext', () => ({
     useToast: () => ({
         success: vi.fn(),
         error: mockError,
@@ -54,7 +54,7 @@ vi.mock('../context/ToastContext', () => ({
 }));
 
 // Mock API
-vi.mock('../utils/api', () => ({
+vi.mock('../../utils/api', () => ({
     api: {
         get: vi.fn(),
         post: vi.fn(),
@@ -66,7 +66,7 @@ vi.mock('../utils/api', () => ({
     },
 }));
 
-vi.mock('../utils/storeStatus', () => ({
+vi.mock('../../utils/storeStatus', () => ({
     isStoreOpen: vi.fn(() => true),
     isTimeWithinBusinessHours: vi.fn(() => true),
     getNextOpeningTime: vi.fn(() => null),
@@ -97,7 +97,7 @@ const mockCartItems = [
     },
 ];
 
-describe('CartPageSimple - Invitations (Integration)', () => {
+describe('CartPage - Invitations (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         localStorage.clear();
@@ -135,7 +135,7 @@ describe('CartPageSimple - Invitations (Integration)', () => {
                     <CartProvider>
                         <HelmetProvider>
                             <BrowserRouter>
-                                <CartPageSimple />
+                                <CartPage />
                             </BrowserRouter>
                         </HelmetProvider>
                     </CartProvider>

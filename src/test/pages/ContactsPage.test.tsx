@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ContactsPage from './ContactsPage';
+import ContactsPage from '../../pages/ContactsPage';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { api } from '../utils/api';
+import { api } from '../../utils/api';
 
 // Mock API
-vi.mock('../utils/api', () => ({
+vi.mock('../../utils/api', () => ({
     api: {
         post: vi.fn(),
         get: vi.fn().mockResolvedValue({}),
@@ -26,7 +26,7 @@ vi.mock('../utils/api', () => ({
 // Mock useToast
 const mockSuccess = vi.fn();
 const mockError = vi.fn();
-vi.mock('../context/ToastContext', () => ({
+vi.mock('../../context/ToastContext', () => ({
     useToast: () => ({
         success: mockSuccess,
         error: mockError,

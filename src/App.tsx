@@ -43,10 +43,10 @@ const lazyRetry = (componentImport: () => Promise<{ default: React.ComponentType
     });
 };
 
-const HomePageSimple = lazyRetry(() => import('./pages/HomePageSimple'));
-const MenuPageSimple = lazyRetry(() => import('./pages/MenuPageSimple'));
-const CartPageSimple = lazyRetry(() => import('./pages/CartPageSimple'));
-const PromoPageSimple = lazyRetry(() => import('./pages/PromoPageSimple'));
+const HomePage = lazyRetry(() => import('./pages/HomePage'));
+const MenuPage = lazyRetry(() => import('./pages/MenuPage'));
+const CartPage = lazyRetry(() => import('./pages/CartPage'));
+const PromoPage = lazyRetry(() => import('./pages/PromoPage'));
 const ProfilePage = lazyRetry(() => import('./pages/ProfilePage'));
 const AdminPage = lazyRetry(() => import('./pages/AdminPage'));
 const ContactsPage = lazyRetry(() => import('./pages/ContactsPage'));
@@ -144,7 +144,7 @@ function App() {
                                                     skeleton={<HomeSkeleton />}
                                                     isHome={true}
                                                 >
-                                                    <HomePageSimple />
+                                                    <HomePage />
                                                 </PageWrapper>
                                             }
                                         />
@@ -152,7 +152,7 @@ function App() {
                                             path="/menu"
                                             element={
                                                 <PageWrapper skeleton={<MenuSkeleton />}>
-                                                    <MenuPageSimple />
+                                                    <MenuPage />
                                                 </PageWrapper>
                                             }
                                         />
@@ -160,7 +160,7 @@ function App() {
                                             path="/cart"
                                             element={
                                                 <PageWrapper skeleton={<CartSkeleton />}>
-                                                    <CartPageSimple />
+                                                    <CartPage />
                                                 </PageWrapper>
                                             }
                                         />
@@ -168,7 +168,7 @@ function App() {
                                             path="/promo"
                                             element={
                                                 <PageWrapper skeleton={<PromoSkeleton />}>
-                                                    <PromoPageSimple />
+                                                    <PromoPage />
                                                 </PageWrapper>
                                             }
                                         />

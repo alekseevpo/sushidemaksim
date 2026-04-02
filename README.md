@@ -123,4 +123,16 @@ A premium gastronomic e-commerce platform designed to offer the best user experi
 - **SEO Optimized**: Dynamic metadata and semantic HTML for better search engine ranking.
 - **Tech Stack**: React 18, TypeScript, Tailwind CSS, Framer Motion, Express, PostgreSQL.
 
-_Documentation continues in Spanish for full technical details._
+---
+
+## 🗺️ Roadmap PRO (V4)
+Nuestro compromiso con la excelencia continúa. Próximos pasos en el desarrollo:
+
+1. **Arquitectura Limpia**: Refactorización del Backend (Controller-Service-Repository) y modularización de la administración.
+2. **Real-time (WebSockets)**: Actualizaciones instantáneas de pedidos para clientes y personal de sala.
+3. **Marketing Automatizado**: Sistema de recuperación de carritos abandonados y programa de fidelización por puntos.
+4. **Analítica Avanzada**: Mapas de calor de pedidos y análisis ABC de rentabilidad del menú.
+
+---
+
+_Desarrollado con ❤️ por **SelenIT** и **Pavel Alekseev**._
