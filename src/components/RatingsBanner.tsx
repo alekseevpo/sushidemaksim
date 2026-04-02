@@ -130,22 +130,22 @@ const RatingsBanner = () => {
                                         strokeWidth="3"
                                         strokeDasharray="175.9"
                                         initial={{ strokeDashoffset: 175.9 }}
-                                        whileInView={{ strokeDashoffset: 175.9 * (1 - 8.9 / 10) }}
+                                        whileInView={{ strokeDashoffset: 175.9 * (1 - 9.0 / 10) }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 1.5, ease: 'easeOut', delay: 0.2 }}
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                                     <span className="text-xl font-black text-gray-900 leading-none">
-                                        <CountUp value={8.9} />
+                                        <CountUp value={9.0} />
                                     </span>
                                     <span className="text-[7px] text-gray-400 font-bold uppercase">
-                                        of 10
+                                        de 10
                                     </span>
                                 </div>
                             </div>
                             <div className="mt-2 px-2 py-0.5 bg-[#e6f4f2] text-[#006450] text-[8px] font-black rounded-lg uppercase tracking-wider">
-                                Fabulous
+                                Excelente
                             </div>
                         </div>
                         <div className="flex-1 flex flex-col gap-2.5">
@@ -154,9 +154,9 @@ const RatingsBanner = () => {
                                 The Fork
                             </div>
                             {[
-                                { label: 'Ambience', s: 8.5, d: 0.3 },
-                                { label: 'Food', s: 9.1, d: 0.4 },
-                                { label: 'Service', s: 9.1, d: 0.5 },
+                                { label: 'Ambiente', s: 8.9, d: 0.3 },
+                                { label: 'Comida', s: 9.1, d: 0.4 },
+                                { label: 'Servicio', s: 9.3, d: 0.5 },
                             ].map(item => (
                                 <div key={item.label} className="flex items-center gap-2">
                                     <span className="text-gray-400 font-bold text-[8px] w-14 uppercase tracking-tighter">

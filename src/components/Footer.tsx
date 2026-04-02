@@ -23,13 +23,7 @@ export default function Footer() {
             url: `https://wa.me/${cleanPhone.replace('+', '')}`,
             hover: 'hover:bg-green-500/20 hover:border-green-500/30',
         },
-        {
-            id: 'telegram',
-            name: 'Telegram',
-            icon: '/telegram.png',
-            url: 'https://t.me/sushidemaksim',
-            hover: 'hover:bg-blue-400/20 hover:border-blue-400/30',
-        },
+
         {
             id: 'instagram',
             name: 'Instagram',

@@ -20,7 +20,7 @@ router.get(
         const { data: user, error: userError } = await supabase
             .from('users')
             .select(
-                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin'
+                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin, is_verified'
             )
             .eq('id', req.userId)
             .single();
@@ -139,7 +139,7 @@ router.put(
                 .update(updateData)
                 .eq('id', req.userId)
                 .select(
-                    'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin'
+                    'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin, is_verified'
                 )
                 .single();
             user = retry.data;
@@ -203,7 +203,7 @@ router.post(
             .update({ avatar: publicUrl })
             .eq('id', req.userId)
             .select(
-                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin'
+                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin, is_verified'
             )
             .single();
 
