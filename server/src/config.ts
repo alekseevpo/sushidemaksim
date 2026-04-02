@@ -38,7 +38,7 @@ export const config = {
     adminEmail: process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'alekseevpo@gmail.com',
     supabase: {
         url: process.env.SUPABASE_URL || '',
-        key: process.env.SUPABASE_KEY || '',
+        key: process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || '',
         serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
     },
     frontendUrl:
