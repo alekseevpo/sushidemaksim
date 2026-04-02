@@ -162,10 +162,48 @@ export default function ContactsPage() {
         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
     return (
-        <div className="bg-transparent pb-24">
+        <div className="min-h-screen bg-transparent pt-0">
             <SEO
-                title="Contacto"
-                description="Contacta con Sushi de Maksim en Madrid. Pedidos por teléfono, WhatsApp y redes sociales."
+                title="Contacto y Ubicación — Sushi de Maksim Madrid"
+                description="Visítanos en Madrid o haz tu pedido de sushi a domicilio. Dirección: Calle del Barrilero, 20. Teléfono: +34 631 920 312. ¡Te esperamos para ofrecerte el mejor sushi artesanal!"
+                keywords="contacto sushi madrid, direccion sushi de maksim, telefono sushi madrid, pedir sushi domicilio madrid"
+                schema={{
+                    '@context': 'https://schema.org',
+                    '@type': 'LocalBusiness',
+                    name: 'Sushi de Maksim',
+                    image: 'https://sushidemaksim.com/sushi-hero.webp',
+                    telephone: '+34631920312',
+                    email: 'info@sushidemaksim.com',
+                    address: {
+                        '@type': 'PostalAddress',
+                        streetAddress: 'Calle del Barrilero, 20',
+                        addressLocality: 'Madrid',
+                        postalCode: '28007',
+                        addressCountry: 'ES',
+                    },
+                    geo: {
+                        '@type': 'GeoCoordinates',
+                        latitude: 40.397042,
+                        longitude: -3.672449,
+                    },
+                    url: 'https://sushidemaksim.com/contacts',
+                    openingHoursSpecification: [
+                        {
+                            '@type': 'OpeningHoursSpecification',
+                            dayOfWeek: [
+                                'Monday',
+                                'Tuesday',
+                                'Wednesday',
+                                'Thursday',
+                                'Friday',
+                                'Saturday',
+                                'Sunday',
+                            ],
+                            opens: '12:00',
+                            closes: '23:30',
+                        },
+                    ],
+                }}
             />
 
             {/* Hero Section styled like BlogPage */}

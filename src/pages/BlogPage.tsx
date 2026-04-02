@@ -44,9 +44,9 @@ export default function BlogPage() {
     return (
         <div className="min-h-screen bg-transparent pb-20">
             <SEO
-                title="Blog & Estilo de Vida Japonés"
-                description="Historias, recetas y secretos del mundo del sushi artesanal. Aprende más sobre la comida japonesa con Sushi de Maksim."
-                keywords="blog sushi, recetas japonesas, cultura japonesa, maksim sushi, historia del sushi"
+                title="Blog de Sushi y Cultura Japonesa — Sushi de Maksim Madrid"
+                description="Descubre los secretos del sushi artesanal, recetas exclusivas y la cultura japonesa en el blog de Sushi de Maksim. ¡Pasión por el detalle en Madrid!"
+                keywords="blog sushi madrid, cultura japonesa, recetas sushi, secretos del sushi, sushi artesanal madrid"
                 schema={{
                     '@context': 'https://schema.org',
                     '@type': 'Blog',

@@ -84,7 +84,7 @@ export default function ProductCard({
                 {!failedImages.has(item.id) ? (
                     <img
                         src={getOptimizedImageUrl(item.image, 640)}
-                        alt={item.name}
+                        alt={`Sushi de Maksim: ${item.name} - Madrid`}
                         loading={isPriority ? 'eager' : 'lazy'}
                         decoding="async"
                         {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}

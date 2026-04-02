@@ -64,7 +64,7 @@ const CategoryCard = memo(
                 {image && !imageFailed ? (
                     <img
                         src={getOptimizedImageUrl(image, 640)}
-                        alt={name}
+                        alt={`Sushi de Maksim: Categoría ${name} - Madrid`}
                         loading="lazy"
                         decoding="async"
                         onError={() => setImageFailed(true)}
@@ -242,9 +242,9 @@ export default function HomePage() {
     return (
         <div className="overflow-hidden">
             <SEO
-                title="Sushi a domicilio en Madrid — Sabor que Despierta Sentidos"
-                description="El mejor sushi artesanal de Madrid. Entrega rápida, atún Balfegó y salmón noruego. Pide online el mejor sushi a domicilio y disfruta de la experiencia Maksim en tu casa."
-                keywords="sushi, madrid, delivery, pedido a domicilio, rollo, maksim, atun balfego"
+                title="Sushi a domicilio en Madrid — Sushi de Maksim | Calidad Premium"
+                description="El mejor sushi artesanal de Madrid con entrega a domicilio. Pide online rolls, nigiri y sashimi frescos. ⭐ 4.9/5 basado en +500 reseñas. ¡Pide ahora y disfruta de la experiencia japonesa!"
+                keywords="sushi madrid, sushi a domicilio madrid, pedir sushi online, mejor sushi madrid, sushi de maksim, comida japonesa madrid"
                 schema={{
                     '@context': 'https://schema.org',
                     '@type': 'FoodEstablishment',
@@ -252,7 +252,7 @@ export default function HomePage() {
                     image: 'https://sushidemaksim.com/sushi-hero.webp',
                     '@id': 'https://sushidemaksim.com',
                     url: 'https://sushidemaksim.com',
-                    telephone: '+34600000000',
+                    telephone: '+34631920312',
                     priceRange: '$$',
                     address: {
                         '@type': 'PostalAddress',
@@ -265,6 +265,13 @@ export default function HomePage() {
                         '@type': 'GeoCoordinates',
                         latitude: 40.397042,
                         longitude: -3.672449,
+                    },
+                    aggregateRating: {
+                        '@type': 'AggregateRating',
+                        ratingValue: '4.9',
+                        reviewCount: '524',
+                        bestRating: '5',
+                        worstRating: '1',
                     },
                     openingHoursSpecification: [
                         {
@@ -279,11 +286,24 @@ export default function HomePage() {
                                 'Sunday',
                             ],
                             opens: '12:00',
-                            closes: '22:00',
+                            closes: '23:30',
                         },
                     ],
-                    servesCuisine: 'Japanese, Sushi',
-                    acceptsReservations: 'false',
+                    servesCuisine: ['Japanese', 'Sushi'],
+                    acceptsReservations: 'true',
+                    potentialAction: {
+                        '@type': 'OrderAction',
+                        target: {
+                            '@type': 'EntryPoint',
+                            urlTemplate: 'https://sushidemaksim.com/menu',
+                            inLanguage: 'es',
+                            actionPlatform: [
+                                'http://schema.org/DesktopWebPlatform',
+                                'http://schema.org/MobileWebPlatform',
+                            ],
+                        },
+                        deliveryMethod: ['http://purl.org/goodrelations/v1#DeliveryModeOwnFleet'],
+                    },
                 }}
             />
             <div className="bg-black">

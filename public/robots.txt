@@ -1,12 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /admin/*
-Disallow: /profile
-Disallow: /profile/*
-Disallow: /cart
+Disallow: /admin-login
 Disallow: /verify
-Disallow: /verify-email-change
+Disallow: /order-tracking/*
 
-# Sitemaps
 Sitemap: https://sushidemaksim.vercel.app/sitemap.xml

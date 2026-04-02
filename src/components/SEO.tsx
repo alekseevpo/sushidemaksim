@@ -8,6 +8,7 @@ interface SEOProps {
     url?: string;
     type?: string;
     schema?: object | object[];
+    robots?: string;
 }
 
 export default function SEO({
@@ -18,18 +19,21 @@ export default function SEO({
     url = 'https://sushidemaksim.vercel.app',
     type = 'website',
     schema,
+    robots = 'index, follow',
 }: SEOProps) {
     const fullTitle = `${title} | Sushi de Maksim`;
+    const canonicalURL = url.endsWith('/') ? url : `${url}/`;
 
     return (
         <Helmet>
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
             {keywords && <meta name="keywords" content={keywords} />}
+            <meta name="robots" content={robots} />
 
             {/* Open Graph / Facebook / WhatsApp */}
             <meta property="og:type" content={type} />
-            <meta property="og:url" content={url} />
+            <meta property="og:url" content={canonicalURL} />
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
@@ -38,11 +42,11 @@ export default function SEO({
 
             {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:url" content={url} />
+            <meta name="twitter:url" content={canonicalURL} />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
-            <link rel="canonical" href={url} />
+            <link rel="canonical" href={canonicalURL} />
 
             {/* Structured Data (Schema.org) */}
             {schema &&
