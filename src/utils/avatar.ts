@@ -1,3 +1,5 @@
+import { getOptimizedImageUrl } from './images';
+
 /**
  * Utility to get a high-quality version of social provider avatars.
  * Social providers often return a tiny thumbnail by default.
@@ -32,5 +34,6 @@ export function getSharpAvatar(url: string | null | undefined, size = 256): stri
         return `${url}&width=${size}&height=${size}`;
     }
 
-    return url;
+    // Supabase or other generic URLs
+    return getOptimizedImageUrl(url, size);
 }

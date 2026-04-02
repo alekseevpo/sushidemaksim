@@ -7,6 +7,7 @@ import { TrackSkeleton } from '../components/skeletons/TrackSkeleton';
 import OrderStepper from '../components/OrderStepper';
 import { Order, OrderItem } from '../types';
 import { useOrderRealtime } from '../hooks/useOrderRealtime';
+import { getOptimizedImageUrl } from '../utils/images';
 
 export default function OrderTrackingPage() {
     const { id } = useParams();
@@ -169,7 +170,7 @@ export default function OrderTrackingPage() {
                                             {order.users.avatar ? (
                                                 order.users.avatar.startsWith('http') ? (
                                                     <img
-                                                        src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                        src={getOptimizedImageUrl(order.users.avatar, 200)}
                                                         alt={order.users.name}
                                                         className="w-full h-full object-cover"
                                                         onError={e => {

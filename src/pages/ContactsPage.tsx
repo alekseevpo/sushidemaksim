@@ -17,6 +17,7 @@ import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { getOptimizedImageUrl } from '../utils/images';
 
 const iconMap: Record<string, any> = {
     whatsapp: (props: any) => (
@@ -171,7 +172,7 @@ export default function ContactsPage() {
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="/images/promos/promo_hero_bg.png"
+                        src={getOptimizedImageUrl('/images/promos/promo_hero_bg.png', 1080)}
                         alt="Contacto Sushi de Maksim"
                         {...({ fetchpriority: 'high' } as any)}
                         decoding="async"

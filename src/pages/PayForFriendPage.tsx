@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, MapPin, ArrowRight, XCircle, CreditCard, Heart } from 'lucide-react';
 import { api, ApiError } from '../utils/api';
 import SEO from '../components/SEO';
+import { getOptimizedImageUrl } from '../utils/images';
 
 import { GenericSkeleton } from '../components/skeletons/GenericSkeleton';
 
@@ -144,7 +145,7 @@ export default function PayForFriendPage() {
                                     {order.users?.avatar ? (
                                         order.users.avatar.startsWith('http') ? (
                                             <img
-                                                src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                src={getOptimizedImageUrl(order.users.avatar, 200)}
                                                 alt={order.users.name}
                                                 className="w-full h-full object-cover"
                                                 onError={e => {
@@ -225,7 +226,7 @@ export default function PayForFriendPage() {
                                         >
                                             <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100 group-hover:scale-105 transition-transform">
                                                 <img
-                                                    src={itemImage}
+                                                    src={getOptimizedImageUrl(itemImage, 200)}
                                                     alt={item.name}
                                                     className="w-full h-full object-cover"
                                                     onError={e => {

@@ -126,20 +126,15 @@ export default function HomePageSimple() {
     const categoriesWithImages = useMemo(() => {
         // Hardcoded mapping for homepage to ensure premium look if DB fallback fails
         const TOP_CATEGORY_FALLBACKS: Record<string, string> = {
-            postre: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.png',
-            'rollos-clasicos':
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773679824487-765.webp',
-            entrantes:
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469716444-139.png',
-            'rollos-grandes':
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773691339304-197.webp',
-            'rollos-fritos':
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
-            'rollos-fritos-horneados':
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
-            menus: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773689515418-937.webp',
-            extras: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773690670774-801.webp',
-            sopas: 'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773688556688-515.webp',
+            postre: getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.png', 640),
+            'rollos-clasicos': getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773679824487-765.webp', 640),
+            entrantes: getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469716444-139.png', 640),
+            'rollos-grandes': getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773691339304-197.webp', 640),
+            'rollos-fritos': getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp', 640),
+            'rollos-fritos-horneados': getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp', 640),
+            menus: getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773689515418-937.webp', 640),
+            extras: getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773690670774-801.webp', 640),
+            sopas: getOptimizedImageUrl('https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773688556688-515.webp', 640),
         };
 
         return categoriesData.map((cat: any) => {
@@ -280,7 +275,7 @@ export default function HomePageSimple() {
                             initial={{ scale: 1.1, opacity: 0 }}
                             animate={{ scale: 1, opacity: 0.4 }}
                             transition={{ duration: 1.5, ease: 'easeOut' }}
-                            src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=2070&auto=format&fit=crop"
+                            src={getOptimizedImageUrl('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&auto=format&fit=crop', 1080)}
                             alt="Premium Sushi Background"
                             className="w-full h-full object-cover sm:object-center object-[65%_center]"
                             loading="eager"

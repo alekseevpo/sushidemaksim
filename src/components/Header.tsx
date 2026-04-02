@@ -459,10 +459,10 @@ export default function Header() {
                                 <Link
                                     id="cart-icon"
                                     to="/cart"
-                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] shadow-sm hover:shadow-md ${
+                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] ${
                                         isScrolled || !isHome
-                                            ? 'text-gray-800 bg-gray-50 hover:bg-gray-100'
-                                            : 'text-white bg-white/10 hover:bg-white/20 border border-white/10'
+                                            ? 'text-gray-800 bg-gray-50 hover:bg-gray-100 shadow-sm hover:shadow-md'
+                                            : 'text-white bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md shadow-lg'
                                     }`}
                                 >
                                     <ShoppingCart size={20} strokeWidth={1.5} />
@@ -494,10 +494,10 @@ export default function Header() {
 
                             <button
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all shadow-sm hover:shadow-md ${
+                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
                                     isScrolled || !isHome
-                                        ? 'bg-gray-50 text-gray-800'
-                                        : 'bg-white/15 text-white border border-white/20'
+                                        ? 'bg-gray-50 text-gray-800 shadow-sm hover:shadow-md'
+                                        : 'bg-white/15 text-white border border-white/20 backdrop-blur-md shadow-lg'
                                 }`}
                             >
                                 {showMobileMenu ? (
