@@ -26,12 +26,18 @@ export function getOptimizedImageUrl(
 
     // Apply Vercel Image Optimization
     // We whitelist domains in vercel.json.
-    // Standardizing on specific widths (multiples of 320) helps stay within the 5K limit.
     const optimizedWidth = width <= 320 ? 320 : width <= 640 ? 640 : 1080;
 
-    // Use Vercel's optimized proxy
-    // This will work for any domain whitelisted in vercel.json (like supabase.co)
+    // Use Vercel's optimized proxy for Supabase and absolute URLs
     if (baseUrl.includes('supabase.co') || baseUrl.startsWith('http')) {
+        // If it's a blob or data URL, return as is
+        if (baseUrl.startsWith('blob:') || baseUrl.startsWith('data:')) {
+            return baseUrl;
+        }
+
+        // Avoid double optimization if already has vercel params
+        if (baseUrl.includes('_vercel/image')) return baseUrl;
+
         return `/_vercel/image?url=${encodeURIComponent(baseUrl)}&w=${optimizedWidth}&q=${quality}`;
     }
 

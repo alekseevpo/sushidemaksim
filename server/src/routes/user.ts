@@ -120,7 +120,8 @@ router.put(
             return res.status(400).json({ error: 'No hay datos para actualizar' });
         }
 
-        const { data: user, error } = await supabase
+        // Try the update
+        let { data: user, error } = await supabase
             .from('users')
             .update(updateData)
             .eq('id', req.userId)
@@ -129,7 +130,25 @@ router.put(
             )
             .single();
 
+        // Handle case where profile_last_changed_at column doesn't exist yet in production
+        if (error?.code === '42703' && updateData.profile_last_changed_at) {
+            console.warn('⚠️ profile_last_changed_at column missing, retrying without it');
+            delete updateData.profile_last_changed_at;
+            const retry = await supabase
+                .from('users')
+                .update(updateData)
+                .eq('id', req.userId)
+                .select(
+                    'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin'
+                )
+                .single();
+            user = retry.data;
+            error = retry.error;
+        }
+
         if (error) throw error;
+        if (!user) throw new Error('No se pudo recuperar el perfil actualizado');
+
         res.json({
             user: {
                 ...user,
