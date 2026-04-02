@@ -30,12 +30,14 @@ export default function MenuCategoryBar({
 }: MenuCategoryBarProps) {
     const handleCategoryClick = (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
         if (isMobile) {
+            // Instant horizontal scroll start
             e.currentTarget.scrollIntoView({
                 behavior: 'smooth',
                 inline: 'center',
                 block: 'nearest',
             });
-            requestAnimationFrame(() => setSelectedCategory(id));
+            // Small micro-delay for selection update to allow smooth scroll start with higher priority
+            setTimeout(() => setSelectedCategory(id), 10);
         } else {
             setSelectedCategory(id);
         }
@@ -43,38 +45,39 @@ export default function MenuCategoryBar({
 
     if (isMobile) {
         return (
-            <div
+            <motion.div
+                layout
+                initial={false}
                 className="fixed left-0 right-0 z-[40] bg-[#FBF7F0] border-b border-gray-200 md:hidden shadow-sm select-none"
                 style={{ top: 'var(--header-height, 64px)' }}
             >
                 <div className="max-w-7xl mx-auto">
-                    <LayoutGroup id="mobile-categories">
+                    <LayoutGroup id="mobile-categories-new" inherit={false}>
                         <div
                             className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain touch-pan-x"
                             data-lenis-prevent
                             data-lenis-prevent-touch
                         >
-                            <div className="flex gap-2 flex-nowrap px-4">
+                            <div className="flex gap-2 flex-nowrap px-4 w-max relative">
                                 {/* TODOS Button */}
                                 <button
                                     id="cat-all"
                                     onClick={e => handleCategoryClick('all', e)}
-                                    style={{ WebkitFontSmoothing: 'antialiased' }}
-                                    className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
+                                    className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
                                         selectedCategory === 'all'
-                                            ? 'text-white border-transparent'
-                                            : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
+                                            ? 'text-white border-transparent z-10'
+                                            : 'bg-white text-gray-500 border-gray-100'
                                     }`}
                                 >
                                     {selectedCategory === 'all' && (
                                         <motion.div
-                                            layoutId="mobile-active-pill"
-                                            className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
+                                            layoutId="active-pill"
+                                            className="absolute inset-0 bg-orange-600 rounded-2xl shadow-lg shadow-orange-600/20 z-0"
                                             transition={{
                                                 type: 'spring',
-                                                stiffness: 300,
-                                                damping: 30,
-                                                mass: 0.8,
+                                                stiffness: 400,
+                                                damping: 35,
+                                                mass: 1,
                                             }}
                                         />
                                     )}
@@ -87,22 +90,21 @@ export default function MenuCategoryBar({
                                         key={cat.id}
                                         id={`cat-${cat.id}`}
                                         onClick={e => handleCategoryClick(cat.id, e)}
-                                        style={{ WebkitFontSmoothing: 'antialiased' }}
-                                        className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-colors motion-reduce:transition-none duration-300 ${
+                                        className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
                                             selectedCategory === cat.id
-                                                ? 'text-white border-transparent'
-                                                : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
+                                                ? 'text-white border-transparent z-10'
+                                                : 'bg-white text-gray-500 border-gray-100'
                                         }`}
                                     >
                                         {selectedCategory === cat.id && (
                                             <motion.div
-                                                layoutId="mobile-active-pill"
-                                                className="absolute inset-0 bg-gray-900 rounded-2xl shadow-lg shadow-gray-900/10 z-0"
+                                                layoutId="active-pill"
+                                                className="absolute inset-0 bg-orange-600 rounded-2xl shadow-lg shadow-orange-600/20 z-0"
                                                 transition={{
                                                     type: 'spring',
-                                                    stiffness: 300,
-                                                    damping: 30,
-                                                    mass: 0.8,
+                                                    stiffness: 400,
+                                                    damping: 35,
+                                                    mass: 1,
                                                 }}
                                             />
                                         )}
@@ -118,9 +120,10 @@ export default function MenuCategoryBar({
                         </div>
                     </LayoutGroup>
                 </div>
-            </div>
+            </motion.div>
         );
     }
+
 
     return (
         <aside className="hidden md:block w-[200px] flex-shrink-0 relative bg-orange-600">
