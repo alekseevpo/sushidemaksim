@@ -126,6 +126,7 @@ A premium gastronomic e-commerce platform designed to offer the best user experi
 ---
 
 ## 🗺️ Roadmap PRO (V4)
+
 Nuestro compromiso con la excelencia continúa. Próximos pasos en el desarrollo:
 
 1. **Arquitectura Limpia**: Refactorización del Backend (Controller-Service-Repository) y modularización de la administración.
