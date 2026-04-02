@@ -48,4 +48,7 @@ nohup.out
 # Audits & Reports
 layout-shifts.json
 lighthouse-report.json
-DOMAIN_TRANSFER_STATUS.md
+# Capacitor & Mobile-App
+android/
+ios/
+server/server_log.txt
