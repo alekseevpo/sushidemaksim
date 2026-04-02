@@ -22,6 +22,7 @@ import ProfileTab from '../components/profile/ProfileTab';
 import AddressesTab from '../components/profile/AddressesTab';
 import OrdersTab from '../components/profile/OrdersTab';
 import FavoritesTab from '../components/profile/FavoritesTab';
+import SafeImage from '../components/common/SafeImage';
 import { ProfileSkeleton } from '../components/skeletons/ProfileSkeleton';
 
 type TabId = 'profile' | 'addresses' | 'orders' | 'favorites';
@@ -242,22 +243,24 @@ export default function ProfilePage() {
                             <div className="w-full h-full rounded-[22px] bg-orange-50 flex items-center justify-center text-2xl md:text-4xl border-2 border-white overflow-hidden shadow-inner">
                                 {user.avatar ? (
                                     user.avatar.startsWith('http') ? (
-                                        <img
-                                            src={getSharpAvatar(user.avatar)}
+                                        <SafeImage
+                                            src={user.avatar}
+                                            getOptimizedUrl={getSharpAvatar}
                                             alt={user.name}
                                             className="w-full h-full object-cover"
-                                            onError={e => {
-                                                (
-                                                    e.currentTarget as HTMLImageElement
-                                                ).style.display = 'none';
-                                                e.currentTarget.parentElement!.innerText = initials;
-                                            }}
+                                            fallbackContent={
+                                                <div className="text-2xl md:text-4xl select-none font-black text-orange-600/60 uppercase">
+                                                    {initials}
+                                                </div>
+                                            }
                                         />
                                     ) : (
-                                        user.avatar
+                                        <span className="select-none">{user.avatar}</span>
                                     )
                                 ) : (
-                                    initials
+                                    <span className="select-none text-orange-600/60 font-black">
+                                        {initials}
+                                    </span>
                                 )}
                             </div>
                             <div className="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white w-6 h-6 rounded-full shadow-lg flex items-center justify-center">
