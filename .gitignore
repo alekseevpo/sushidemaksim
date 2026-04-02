@@ -52,3 +52,4 @@ lighthouse-report.json
 android/
 ios/
 server/server_log.txt
+DOMAIN_TRANSFER_STATUS.md
