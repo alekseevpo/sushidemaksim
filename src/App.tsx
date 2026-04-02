@@ -11,6 +11,7 @@ import SmoothScroll from './components/SmoothScroll';
 import RegistrationPrompt from './components/RegistrationPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
+import Schema from './components/SEO/Schema';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartSkeleton } from './components/skeletons/CartSkeleton';
@@ -124,6 +125,7 @@ function App() {
             <ToastProvider>
                 <AuthProvider>
                     <CartProvider>
+                        <Schema />
                         <PageTracker />
                         <div className="min-h-[100dvh] bg-[#FBF7F0] flex flex-col">
                             <Analytics />

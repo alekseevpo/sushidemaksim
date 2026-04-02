@@ -1,0 +1,107 @@
+import { useEffect } from 'react';
+
+/**
+ * Component to inject JSON-LD structured data into the document head.
+ * This helps Google understand the site content better and show rich results (stars, address, etc).
+ */
+export default function Schema() {
+    useEffect(() => {
+        const schemaData = {
+            '@context': 'https://schema.org',
+            '@graph': [
+                {
+                    '@type': 'Restaurant',
+                    '@id': 'https://sushidemaksim.vercel.app/#restaurant',
+                    'name': 'Sushi de Maksim',
+                    'image': 'https://sushidemaksim.vercel.app/og-image.jpg',
+                    'url': 'https://sushidemaksim.vercel.app/',
+                    'telephone': '+34631920312',
+                    'priceRange': '€€',
+                    'servesCuisine': 'Japanese, Sushi',
+                    'address': {
+                        '@type': 'PostalAddress',
+                        'streetAddress': 'Calle del Barrilero, 20',
+                        'addressLocality': 'Madrid',
+                        'postalCode': '28007',
+                        'addressCountry': 'ES',
+                    },
+                    'geo': {
+                        '@type': 'GeoCoordinates',
+                        'latitude': 40.397042,
+                        'longitude': -3.672449,
+                    },
+                    'openingHoursSpecification': [
+                        {
+                            '@type': 'OpeningHoursSpecification',
+                            'dayOfWeek': ['Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                            'opens': '20:00',
+                            'closes': '23:00',
+                        },
+                        {
+                            '@type': 'OpeningHoursSpecification',
+                            'dayOfWeek': 'Saturday',
+                            'opens': '14:00',
+                            'closes': '17:00',
+                        },
+                        {
+                            '@type': 'OpeningHoursSpecification',
+                            'dayOfWeek': 'Sunday',
+                            'opens': '14:00',
+                            'closes': '17:00',
+                        },
+                    ],
+                    'aggregateRating': {
+                        '@type': 'AggregateRating',
+                        'ratingValue': '9.0',
+                        'reviewCount': '150',
+                        'bestRating': '10',
+                        'worstRating': '1',
+                        'author': {
+                            '@type': 'Organization',
+                            'name': 'The Fork',
+                        },
+                    },
+                    'hasMenu': 'https://sushidemaksim.vercel.app/menu',
+                    'acceptsReservations': 'true',
+                },
+                {
+                    '@type': 'WebSite',
+                    '@id': 'https://sushidemaksim.vercel.app/#website',
+                    'url': 'https://sushidemaksim.vercel.app/',
+                    'name': 'Sushi de Maksim',
+                    'description':
+                        'Auténtica cocina japonesa con entrega a domicilio en Madrid. Sushi y rollos frescos.',
+                    'publisher': {
+                        '@id': 'https://sushidemaksim.vercel.app/#restaurant',
+                    },
+                    'potentialAction': [
+                        {
+                            '@type': 'SearchAction',
+                            'target': {
+                                '@type': 'EntryPoint',
+                                'urlTemplate':
+                                    'https://sushidemaksim.vercel.app/menu?search={search_term_string}',
+                            },
+                            'query-input': 'required name=search_term_string',
+                        },
+                    ],
+                },
+            ],
+        };
+
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = 'ld-json-schema';
+        script.innerHTML = JSON.stringify(schemaData);
+        document.head.appendChild(script);
+
+        return () => {
+            const existingScript = document.getElementById('ld-json-schema');
+            if (existingScript) {
+                document.head.removeChild(existingScript);
+            }
+        };
+    }, []);
+
+    return null;
+}
