@@ -88,8 +88,8 @@ describe('CartSuggestions', () => {
     it('renders suggested items correctly', () => {
         render(<CartSuggestions {...defaultProps} />);
 
-        // Item 1 should have emoji 🍣 (from mock getCategoryEmoji)
-        expect(screen.getByText('🍣')).toBeInTheDocument();
+        // Item 1 should have image
+        expect(screen.getByAltText('Sake Sushi')).toBeInTheDocument();
         // Item 2 should have image
         expect(screen.getByAltText('Maguro Nigiri')).toBeInTheDocument();
     });

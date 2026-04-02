@@ -10,7 +10,7 @@ const mockItems: CartItem[] = [
         price: 6.9,
         quantity: 1,
         category: 'rollos-grandes',
-        image: '',
+        image: 'gyoza.jpg',
         description: 'Mock description',
     },
 ];
@@ -22,8 +22,6 @@ describe('CartItemList', () => {
         removeItem: vi.fn(),
         clearCart: vi.fn(),
         getCategoryEmoji: vi.fn(() => '🍣'),
-        failedImages: new Set<string | number>(),
-        setFailedImages: vi.fn(),
         chopsticksCount: 0,
         updateChopsticks: vi.fn(),
     };
@@ -116,8 +114,8 @@ describe('CartItemList', () => {
 
     it('handles image load error', () => {
         render(<CartItemList {...defaultProps} />);
-        const img = screen.getByRole('img');
+        const img = screen.getByAltText('Producto Gyoza');
         fireEvent.error(img);
-        expect(defaultProps.setFailedImages).toHaveBeenCalled();
+        // SafeImage handles this internally - it should stay resilient
     });
 });

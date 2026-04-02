@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ContactsPage from '../../pages/ContactsPage';
 import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { api } from '../../utils/api';
 
@@ -38,13 +39,24 @@ describe('ContactsPage (Security)', () => {
         vi.clearAllMocks();
     });
 
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                retry: false,
+                staleTime: 0,
+            },
+        },
+    });
+
     const renderPage = () =>
         render(
-            <HelmetProvider>
-                <BrowserRouter>
-                    <ContactsPage />
-                </BrowserRouter>
-            </HelmetProvider>
+            <QueryClientProvider client={queryClient}>
+                <HelmetProvider>
+                    <BrowserRouter>
+                        <ContactsPage />
+                    </BrowserRouter>
+                </HelmetProvider>
+            </QueryClientProvider>
         );
 
     it('submits contact form', async () => {
