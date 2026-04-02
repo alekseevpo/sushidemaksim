@@ -124,7 +124,6 @@ export default function MenuCategoryBar({
         );
     }
 
-
     return (
         <aside className="hidden md:block w-[200px] flex-shrink-0 relative bg-orange-600">
             <div
