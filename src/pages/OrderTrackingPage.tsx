@@ -170,7 +170,10 @@ export default function OrderTrackingPage() {
                                             {order.users.avatar ? (
                                                 order.users.avatar.startsWith('http') ? (
                                                     <img
-                                                        src={getOptimizedImageUrl(order.users.avatar, 200)}
+                                                        src={getOptimizedImageUrl(
+                                                            order.users.avatar,
+                                                            200
+                                                        )}
                                                         alt={order.users.name}
                                                         className="w-full h-full object-cover"
                                                         onError={e => {
