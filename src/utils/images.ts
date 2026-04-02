@@ -24,6 +24,11 @@ export function getOptimizedImageUrl(
         return baseUrl;
     }
 
+    // Do not optimize if it's not an absolute URL
+    if (!baseUrl.startsWith('http')) {
+        return baseUrl;
+    }
+
     // Apply Vercel Image Optimization
     // We whitelist domains in vercel.json.
     const optimizedWidth = width <= 320 ? 320 : width <= 640 ? 640 : 1080;

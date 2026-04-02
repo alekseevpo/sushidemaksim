@@ -187,8 +187,9 @@ router.post(
         if (uploadError) {
             console.error('❌ Supabase storage error:', uploadError);
             return res.status(500).json({
-                error: 'Error al subir la imagen a Supabase Storage',
+                error: 'Error al subir la imagen. Verifica que el bucket "images" sea público y el Service Role Key sea correcto.',
                 details: uploadError.message,
+                code: (uploadError as any).code,
             });
         }
 
