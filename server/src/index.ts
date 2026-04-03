@@ -20,6 +20,7 @@ import contactRoutes from './routes/contact.js';
 import deliveryZonesRoutes from './routes/deliveryZones.js';
 import analyticsRoutes from './routes/analytics.js';
 import reservationsRoutes from './routes/reservations.js';
+import sitemapRoutes from './routes/sitemap.js';
 
 const app = express();
 console.log('DEBUG: Express app initialized');
@@ -122,6 +123,9 @@ app.get(['/invitacion/:id', '/api/orders/share/:id'], async (req, res) => {
         return res.redirect('/');
     }
 });
+
+// ─── Sitemap ───────────────────────────────────────────────────────────────────
+app.use('/sitemap.xml', sitemapRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

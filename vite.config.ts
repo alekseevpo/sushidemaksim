@@ -87,6 +87,14 @@ export default defineConfig({
                 target: 'http://127.0.0.1:3001',
                 changeOrigin: true,
             },
+            '/sitemap.xml': {
+                target: 'http://127.0.0.1:3001',
+                changeOrigin: true,
+            },
+            '/robots.txt': {
+                target: 'http://127.0.0.1:3001',
+                changeOrigin: true,
+            },
         },
     },
     // @ts-expect-error: Vitest types sometimes conflict with Vite types depending on exact versions
