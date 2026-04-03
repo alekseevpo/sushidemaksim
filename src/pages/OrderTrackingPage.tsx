@@ -178,7 +178,9 @@ export default function OrderTrackingPage() {
                                                         fallbackContent={
                                                             <span className="select-none text-xl text-gray-900">
                                                                 {order.users.name.split(' ')[0][0] +
-                                                                    (order.users.name.split(' ')[1]?.[0] || '')}
+                                                                    (order.users.name.split(
+                                                                        ' '
+                                                                    )[1]?.[0] || '')}
                                                             </span>
                                                         }
                                                     />

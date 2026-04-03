@@ -142,7 +142,12 @@ export default function AddressesTab({
             }
         }
 
-        const city = s.address?.city || s.address?.town || s.address?.village || s.address?.suburb || 'Comunidad de Madrid';
+        const city =
+            s.address?.city ||
+            s.address?.town ||
+            s.address?.village ||
+            s.address?.suburb ||
+            'Comunidad de Madrid';
         const postalCode = s.address?.postcode || s.display_name?.match(/\b\d{5}\b/)?.[0] || '';
 
         setNewAddress(p => ({
@@ -391,74 +396,99 @@ export default function AddressesTab({
                                 />
                                 {isSearching && (
                                     <div className="absolute right-10 top-1/2 -translate-y-1/2">
-                                        <Loader2 size={16} className="animate-spin text-orange-500" />
+                                        <Loader2
+                                            size={16}
+                                            className="animate-spin text-orange-500"
+                                        />
                                     </div>
                                 )}
                             </div>
 
-                            {showSuggestions && (suggestions.length > 0 || (searchQuery.trim().length >= 3 && /\d/.test(searchQuery))) && (
-                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-y-auto max-h-[320px] animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50 scrollbar-thin scrollbar-thumb-gray-200">
-                                    {/* Virtual Result */}
-                                    {searchQuery.trim().length >= 3 &&
-                                        /\d/.test(searchQuery) &&
-                                        !suggestions.some(r =>
-                                            r.display_name
-                                                .toLowerCase()
-                                                .includes(searchQuery.toLowerCase())
-                                        ) && (
-                                            <button
-                                                type="button"
-                                                onClick={() => performSearch(searchQuery.trim(), true)}
-                                                className="w-full px-4 py-4 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600"
-                                            >
-                                                <div className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-green-200">
-                                                    <MapPin size={16} className="text-green-600" />
-                                                </div>
-                                                <div className="flex flex-col min-w-0">
-                                                    <span className="text-xs font-black text-gray-900 truncate">
-                                                        ¿Es esta tu ubicación exacta?
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
-                                                        Localizar: "{searchQuery}"
-                                                    </span>
-                                                </div>
-                                                <ArrowRight size={14} className="text-green-600 ml-auto shrink-0" />
-                                            </button>
-                                        )}
+                            {showSuggestions &&
+                                (suggestions.length > 0 ||
+                                    (searchQuery.trim().length >= 3 && /\d/.test(searchQuery))) && (
+                                    <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-y-auto max-h-[320px] animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50 scrollbar-thin scrollbar-thumb-gray-200">
+                                        {/* Virtual Result */}
+                                        {searchQuery.trim().length >= 3 &&
+                                            /\d/.test(searchQuery) &&
+                                            !suggestions.some(r =>
+                                                r.display_name
+                                                    .toLowerCase()
+                                                    .includes(searchQuery.toLowerCase())
+                                            ) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        performSearch(searchQuery.trim(), true)
+                                                    }
+                                                    className="w-full px-4 py-4 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600"
+                                                >
+                                                    <div className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-green-200">
+                                                        <MapPin
+                                                            size={16}
+                                                            className="text-green-600"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-xs font-black text-gray-900 truncate">
+                                                            ¿Es esta tu ubicación exacta?
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
+                                                            Localizar: "{searchQuery}"
+                                                        </span>
+                                                    </div>
+                                                    <ArrowRight
+                                                        size={14}
+                                                        className="text-green-600 ml-auto shrink-0"
+                                                    />
+                                                </button>
+                                            )}
 
-                                    {suggestions.map((s, i) => {
-                                        const queryNum = searchQuery.match(/\b(\d+[a-zA-Z]?)\s*$/)?.[1] ||
-                                                         searchQuery.match(/^(\d+[a-zA-Z]?)\s/)?.[1] || '';
-                                        const hasOwnHouse = !!s.address?.house_number;
-                                        const displayHouse = hasOwnHouse ? s.address.house_number : queryNum;
+                                        {suggestions.map((s, i) => {
+                                            const queryNum =
+                                                searchQuery.match(/\b(\d+[a-zA-Z]?)\s*$/)?.[1] ||
+                                                searchQuery.match(/^(\d+[a-zA-Z]?)\s/)?.[1] ||
+                                                '';
+                                            const hasOwnHouse = !!s.address?.house_number;
+                                            const displayHouse = hasOwnHouse
+                                                ? s.address.house_number
+                                                : queryNum;
 
-                                        return (
-                                            <button
-                                                key={i}
-                                                type="button"
-                                                onClick={() => handleSelectSuggestion(s, searchQuery)}
-                                                className="flex items-start gap-3 w-full p-4 text-left hover:bg-orange-50 transition-colors group"
-                                            >
-                                                <MapPin
-                                                    size={14}
-                                                    strokeWidth={1.5}
-                                                    className="mt-1 text-gray-300 group-hover:text-orange-500 transition-colors shrink-0"
-                                                />
-                                                <div className="flex flex-col min-w-0">
-                                                    <span className="text-xs font-bold text-gray-900 group-hover:text-orange-600 truncate">
-                                                        {s.address?.road || s.display_name.split(',')[0]}
-                                                        {displayHouse && `, ${displayHouse}`}
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
-                                                        {s.address?.city || s.address?.town || s.address?.village || s.address?.suburb || 'Comunidad de Madrid'}
-                                                        {s.address?.postcode && ` • ${s.address.postcode}`}
-                                                    </span>
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                                            return (
+                                                <button
+                                                    key={i}
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleSelectSuggestion(s, searchQuery)
+                                                    }
+                                                    className="flex items-start gap-3 w-full p-4 text-left hover:bg-orange-50 transition-colors group"
+                                                >
+                                                    <MapPin
+                                                        size={14}
+                                                        strokeWidth={1.5}
+                                                        className="mt-1 text-gray-300 group-hover:text-orange-500 transition-colors shrink-0"
+                                                    />
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-xs font-bold text-gray-900 group-hover:text-orange-600 truncate">
+                                                            {s.address?.road ||
+                                                                s.display_name.split(',')[0]}
+                                                            {displayHouse && `, ${displayHouse}`}
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                                                            {s.address?.city ||
+                                                                s.address?.town ||
+                                                                s.address?.village ||
+                                                                s.address?.suburb ||
+                                                                'Comunidad de Madrid'}
+                                                            {s.address?.postcode &&
+                                                                ` • ${s.address.postcode}`}
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                         </div>
 
                         <div className="space-y-2">
@@ -467,7 +497,9 @@ export default function AddressesTab({
                             </label>
                             <input
                                 value={newAddress.house}
-                                onChange={e => setNewAddress(p => ({ ...p, house: e.target.value }))}
+                                onChange={e =>
+                                    setNewAddress(p => ({ ...p, house: e.target.value }))
+                                }
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                 placeholder="Ej: 20"
                             />

@@ -133,65 +133,75 @@ export default function BlogPostPage() {
                 type="article"
                 schema={[postSchema, breadcrumbSchema]}
             />
-            {/* Minimalist Header with Back Button */}
-            <div className="absolute top-24 left-4 md:left-8 z-50 flex flex-col gap-4">
-                <Link
-                    to="/blog"
-                    className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold text-gray-700 hover:text-orange-600 w-fit"
-                >
-                    <ArrowLeft size={16} strokeWidth={1.5} /> Volver
-                </Link>
-
-                {/* Breadcrumbs UI */}
-                <nav className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-gray-400/80 bg-white/40 backdrop-blur-sm px-3 py-1 rounded-full w-fit">
-                    <Link to="/" className="hover:text-orange-500 transition-colors">
-                        Inicio
-                    </Link>
-                    <span>/</span>
-                    <Link to="/blog" className="hover:text-orange-500 transition-colors">
-                        Blog
-                    </Link>
-                    <span>/</span>
-                    <span className="text-gray-200 truncate max-w-[100px] md:max-w-xs">
-                        {post.title}
-                    </span>
-                </nav>
-            </div>
-
-            <div className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden bg-gray-900">
+            <div className="relative min-h-[65vh] md:min-h-[75vh] w-full overflow-hidden bg-gray-900 flex flex-col">
                 <img
                     src={getOptimizedImageUrl(post.imageUrl || '/sushi-hero.webp', 1200)}
                     alt={`Hero de ${post.title}`}
                     {...({ fetchpriority: 'high' } as any)}
                     decoding="async"
-                    className="w-full h-full object-cover opacity-60"
+                    className="absolute inset-0 w-full h-full object-cover opacity-60"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
-                {/* Title Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 lg:px-32 max-w-5xl mx-auto">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <span className="inline-block bg-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
-                            {post.category}
-                        </span>
-                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
-                            {post.title}
-                        </h1>
-                        <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm font-medium">
-                            <span className="flex items-center gap-2">
-                                <Calendar size={16} strokeWidth={1.5} className="text-orange-500" />
-                                {new Date(post.createdAt).toLocaleDateString()}
+                {/* Content Overlay in Flow */}
+                <div className="relative z-10 flex-1 flex flex-col max-w-5xl mx-auto w-full px-6 py-12 md:px-12 lg:px-32">
+                    {/* Navigation Block */}
+                    <div className="flex flex-col gap-4 mb-12">
+                        <Link
+                            to="/blog"
+                            className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 transition-all text-sm font-bold text-white w-fit"
+                        >
+                            <ArrowLeft size={16} strokeWidth={1.5} /> Volver
+                        </Link>
+
+                        <nav className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-white/40 bg-white/5 backdrop-blur-sm px-3 py-1.5 rounded-full w-fit">
+                            <Link to="/" className="hover:text-orange-500 transition-colors">
+                                Inicio
+                            </Link>
+                            <span>/</span>
+                            <Link to="/blog" className="hover:text-orange-500 transition-colors">
+                                Blog
+                            </Link>
+                            <span>/</span>
+                            <span className="text-white/20 truncate max-w-[100px] md:max-w-xs">
+                                {post.title}
                             </span>
-                            <span className="flex items-center gap-2">
-                                <Clock size={16} strokeWidth={1.5} className="text-orange-500" />
-                                {post.readTime || '5'} min de lectura
+                        </nav>
+                    </div>
+
+                    {/* Title Block at the bottom */}
+                    <div className="mt-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <span className="inline-block bg-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+                                {post.category}
                             </span>
-                        </div>
-                    </motion.div>
+                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
+                                {post.title}
+                            </h1>
+                            <div className="flex flex-wrap items-center gap-4 md:gap-6 text-gray-300 text-sm font-medium">
+                                <span className="flex items-center gap-2">
+                                    <Calendar
+                                        size={16}
+                                        strokeWidth={1.5}
+                                        className="text-orange-500"
+                                    />
+                                    {new Date(post.createdAt).toLocaleDateString()}
+                                </span>
+                                <span className="flex items-center gap-2">
+                                    <Clock
+                                        size={16}
+                                        strokeWidth={1.5}
+                                        className="text-orange-500"
+                                    />
+                                    {post.readTime || '5'} min de lectura
+                                </span>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
             </div>
 

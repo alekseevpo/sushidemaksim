@@ -11,7 +11,10 @@ const router = Router();
 // CRON job to check birthdays and send 10% discount codes (1 week before and day of)
 router.post('/check-birthdays', async (req, res) => {
     const cronSecret = req.headers['x-cron-secret'];
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+    const authHeader = req.headers['authorization'];
+    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
         return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -92,7 +95,10 @@ router.post('/check-birthdays', async (req, res) => {
 // Daily report generation (to be called at ~0:05 AM)
 router.post('/generate-daily-report', async (req, res) => {
     const cronSecret = req.headers['x-cron-secret'];
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+    const authHeader = req.headers['authorization'];
+    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
         return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -179,7 +185,10 @@ router.post('/generate-daily-report', async (req, res) => {
 // CRON job to permanently delete accounts marked for deletion > 30 days ago
 router.post('/cleanup-deleted-users', async (req, res) => {
     const cronSecret = req.headers['x-cron-secret'];
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+    const authHeader = req.headers['authorization'];
+    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
         return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -219,7 +228,10 @@ router.post('/cleanup-deleted-users', async (req, res) => {
 // CRON job to check for abandoned carts (> 24h) and send reminders
 router.post('/check-abandoned-carts', async (req, res) => {
     const cronSecret = req.headers['x-cron-secret'];
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+    const authHeader = req.headers['authorization'];
+    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
         return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -295,7 +307,10 @@ router.post('/check-abandoned-carts', async (req, res) => {
 // CRON job to check for late orders (> 60m from creation and still not delivered)
 router.post('/check-late-orders', async (req, res) => {
     const cronSecret = req.headers['x-cron-secret'];
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
+    const authHeader = req.headers['authorization'];
+    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
         return res.status(403).json({ error: 'Unauthorized' });
     }
 

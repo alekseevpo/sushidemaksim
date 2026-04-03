@@ -682,7 +682,10 @@ export default function Header() {
                                                                 {user.email}
                                                             </p>
                                                         </div>
-                                                        <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-400 transition-colors shrink-0" />
+                                                        <ChevronRight
+                                                            size={18}
+                                                            className="text-gray-300 group-hover:text-gray-400 transition-colors shrink-0"
+                                                        />
                                                     </Link>
 
                                                     {(user.role === 'admin' ||
@@ -693,9 +696,7 @@ export default function Header() {
                                                                     ? '/admin'
                                                                     : '/waiter'
                                                             }
-                                                            onClick={() =>
-                                                                setShowMobileMenu(false)
-                                                            }
+                                                            onClick={() => setShowMobileMenu(false)}
                                                             className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 border border-orange-100"
                                                         >
                                                             <ShieldCheck
