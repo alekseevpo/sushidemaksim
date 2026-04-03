@@ -68,7 +68,7 @@ export default function BlogPage() {
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src={getOptimizedImageUrl('/blog_post_sushi_art.png', 1200)}
+                        src={getOptimizedImageUrl('/blog_post_sushi_art.jpg', 1200)}
                         alt="Mundo Sushi de Maksim"
                         {...({ fetchpriority: 'high' } as any)}
                         decoding="async"
