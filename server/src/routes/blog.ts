@@ -15,7 +15,8 @@ router.get(
                 'id, title, slug, excerpt, image_url, author, read_time, category, published, created_at, updated_at'
             )
             .eq('published', true)
-            .order('created_at', { ascending: false });
+            .order('created_at', { ascending: false })
+            .limit(5);
 
         if (error) {
             console.error('Error fetching blog posts:', error);
