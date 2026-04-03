@@ -37,7 +37,7 @@ export default function BlogPostPage() {
                     api.get('/blog'),
                 ]);
                 setPost(postData);
-                setAllPosts(postsData);
+                setAllPosts(postsData.posts || []);
                 setError(null);
             } catch (err: any) {
                 console.error('Error fetching blog data:', err);
@@ -242,7 +242,10 @@ export default function BlogPostPage() {
                 <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex gap-2">
                         <span className="px-4 py-2 bg-gray-50 text-gray-600 rounded-full text-xs font-bold shadow-sm border border-gray-100">
-                            #{post.category.toLowerCase().replace(/\s+/g, '')}
+                            #
+                            {post.category
+                                ? post.category.toLowerCase().replace(/\s+/g, '')
+                                : 'sushi'}
                         </span>
                         <span className="px-4 py-2 bg-gray-50 text-gray-600 rounded-full text-xs font-bold shadow-sm border border-gray-100">
                             #sushidemaksim
