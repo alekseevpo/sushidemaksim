@@ -607,7 +607,7 @@ export default function HomePage() {
                         className="relative h-[300px] md:h-[500px] rounded-[3rem] overflow-hidden order-last lg:order-first"
                     >
                         <img
-                            src={getOptimizedImageUrl('/blog_post_chef_hands.png', 1000)}
+                            src={getOptimizedImageUrl('/blog_post_chef_hands.jpg', 1000)}
                             alt="Reserva tu mesa"
                             className="w-full h-full object-cover"
                         />
@@ -766,7 +766,7 @@ export default function HomePage() {
                     >
                         <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
                             <img
-                                src={getOptimizedImageUrl('/blog_post_chef_hands.png', 800)}
+                                src={getOptimizedImageUrl('/blog_post_chef_hands.jpg', 800)}
                                 alt="Preparación artesanal de sushi"
                                 loading="lazy"
                                 decoding="async"
