@@ -161,33 +161,62 @@ export default function HomePage() {
             ),
         };
 
-        return categoriesData.map((cat: any) => {
-            // Normalize ID: replace spaces/slashes with hyphens, remove special chars
-            const catId = String(cat.id || cat.name || '')
-                .toLowerCase()
-                .trim()
-                .replace(/\s+/g, '-')
-                .replace(/\//g, '-')
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '') // Remove accents
-                .replace(/[^a-z0-9-]/g, '')
-                .replace(/-+/g, '-');
+        const CATEGORY_ORDER = [
+            'entrantes',
+            'rollos-grandes',
+            'rollos-clasicos',
+            'rollos-fritos-horneados',
+            'rollos-fritos',
+            'sopas',
+            'menus',
+            'extras',
+            'postre',
+        ];
 
-            // Try to find a representative item from allItems (using case-insensitive match)
-            // This is a fallback if cat.image is empty from the API
-            const representativeItem = !cat.image
-                ? allItems.find((item: any) => {
-                      const itemCat = String(item.category || '').toLowerCase();
-                      return itemCat.includes(catId) || catId.includes(itemCat);
-                  })
-                : null;
+        return categoriesData
+            .map((cat: any) => {
+                // Normalize ID: replace spaces/slashes with hyphens, remove special chars
+                const catId = String(cat.id || cat.name || '')
+                    .toLowerCase()
+                    .trim()
+                    .replace(/\s+/g, '-')
+                    .replace(/\//g, '-')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+                    .replace(/[^a-z0-9-]/g, '')
+                    .replace(/-+/g, '-');
 
-            return {
-                ...cat,
-                image:
-                    cat.image || representativeItem?.image || TOP_CATEGORY_FALLBACKS[catId] || null,
-            };
-        });
+                // Try to find a representative item from allItems (using case-insensitive match)
+                // This is a fallback if cat.image is empty from the API
+                const representativeItem = !cat.image
+                    ? allItems.find((item: any) => {
+                          const itemCat = String(item.category || '').toLowerCase();
+                          return itemCat.includes(catId) || catId.includes(itemCat);
+                      })
+                    : null;
+
+                return {
+                    ...cat,
+                    catId, // Store normalized ID for sorting
+                    image:
+                        cat.image ||
+                        representativeItem?.image ||
+                        TOP_CATEGORY_FALLBACKS[catId] ||
+                        null,
+                };
+            })
+            .sort((a: any, b: any) => {
+                const indexA = CATEGORY_ORDER.indexOf(a.catId);
+                const indexB = CATEGORY_ORDER.indexOf(b.catId);
+
+                // If both are in the list, sort by index
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                // If only one is in the list, prioritized identified one
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                // Fallback to alphabetical for unknown categories
+                return String(a.name).localeCompare(String(b.name));
+            });
     }, [categoriesData, allItems]);
 
     // 2. Pre-calculate the slice for rendering
