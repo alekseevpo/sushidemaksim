@@ -7,7 +7,8 @@ import { TrackSkeleton } from '../components/skeletons/TrackSkeleton';
 import OrderStepper from '../components/OrderStepper';
 import { Order, OrderItem } from '../types';
 import { useOrderRealtime } from '../hooks/useOrderRealtime';
-import { getOptimizedImageUrl } from '../utils/images';
+import { getSharpAvatar } from '../utils/avatar';
+import SafeImage from '../components/common/SafeImage';
 
 export default function OrderTrackingPage() {
     const { id } = useParams();
@@ -165,27 +166,21 @@ export default function OrderTrackingPage() {
                                     <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-6">
                                         <div
                                             className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg overflow-hidden shrink-0 shadow-sm border-2 border-white
-                                                        ${order.users.avatar?.startsWith('http') ? 'bg-gray-100' : order.users.avatar ? 'bg-gray-100' : 'bg-orange-600'}`}
+                                                        ${order.users.avatar?.startsWith('http') ? 'bg-gray-100' : order.users.avatar ? 'bg-gray-100 text-2xl' : 'bg-orange-600'}`}
                                         >
                                             {order.users.avatar ? (
                                                 order.users.avatar.startsWith('http') ? (
-                                                    <img
-                                                        src={getOptimizedImageUrl(
-                                                            order.users.avatar,
-                                                            200
-                                                        )}
+                                                    <SafeImage
+                                                        src={order.users.avatar}
+                                                        getOptimizedUrl={getSharpAvatar}
                                                         alt={order.users.name}
                                                         className="w-full h-full object-cover"
-                                                        onError={e => {
-                                                            (
-                                                                e.currentTarget as HTMLImageElement
-                                                            ).style.display = 'none';
-                                                            e.currentTarget.parentElement!.innerText =
-                                                                order.users!.name.split(' ')[0][0] +
-                                                                (order.users!.name.split(
-                                                                    ' '
-                                                                )[1]?.[0] || '');
-                                                        }}
+                                                        fallbackContent={
+                                                            <span className="select-none text-xl text-gray-900">
+                                                                {order.users.name.split(' ')[0][0] +
+                                                                    (order.users.name.split(' ')[1]?.[0] || '')}
+                                                            </span>
+                                                        }
                                                     />
                                                 ) : (
                                                     <span className="select-none">
@@ -193,7 +188,7 @@ export default function OrderTrackingPage() {
                                                     </span>
                                                 )
                                             ) : (
-                                                <span className="select-none">
+                                                <span className="select-none text-xl">
                                                     {order.users.name.split(' ')[0][0] +
                                                         (order.users.name.split(' ')[1]?.[0] || '')}
                                                 </span>

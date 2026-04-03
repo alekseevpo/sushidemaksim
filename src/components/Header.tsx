@@ -639,7 +639,11 @@ export default function Header() {
                                                 <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
                                             ) : isAuthenticated && user ? (
                                                 <div className="space-y-4">
-                                                    <div className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3">
+                                                    <Link
+                                                        to="/profile"
+                                                        onClick={() => setShowMobileMenu(false)}
+                                                        className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3 no-underline transition-all active:scale-[0.98] hover:bg-gray-100 group border border-gray-100"
+                                                    >
                                                         <div
                                                             className={`w-12 h-12 rounded-[20px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner border border-black/10
                                                         ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[20px]' : 'bg-orange-600'}`}
@@ -670,49 +674,39 @@ export default function Header() {
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div>
-                                                            <p className="font-black text-gray-900 text-[14px] leading-none mb-1">
+                                                        <div className="flex-1 min-w-0 text-left">
+                                                            <p className="font-black text-gray-900 text-[14px] leading-none mb-1 truncate">
                                                                 {user.name}
                                                             </p>
-                                                            <p className="text-[12px] text-gray-400 font-medium leading-none">
+                                                            <p className="text-[12px] text-gray-400 font-medium leading-none truncate">
                                                                 {user.email}
                                                             </p>
                                                         </div>
-                                                    </div>
-                                                    <div
-                                                        className={`grid gap-2 ${user.role === 'admin' || user.role === 'waiter' ? 'grid-cols-2' : 'grid-cols-1'}`}
-                                                    >
-                                                        {(user.role === 'admin' ||
-                                                            user.role === 'waiter') && (
-                                                            <Link
-                                                                to={
-                                                                    user.role === 'admin'
-                                                                        ? '/admin'
-                                                                        : '/waiter'
-                                                                }
-                                                                onClick={() =>
-                                                                    setShowMobileMenu(false)
-                                                                }
-                                                                className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 border border-orange-100"
-                                                            >
-                                                                <ShieldCheck
-                                                                    size={18}
-                                                                    strokeWidth={1.5}
-                                                                />
-                                                                {user.role === 'admin'
-                                                                    ? 'PANEL'
-                                                                    : 'CAMARERO'}
-                                                            </Link>
-                                                        )}
+                                                        <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-400 transition-colors shrink-0" />
+                                                    </Link>
+
+                                                    {(user.role === 'admin' ||
+                                                        user.role === 'waiter') && (
                                                         <Link
-                                                            to="/profile"
-                                                            onClick={() => setShowMobileMenu(false)}
-                                                            className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-gray-700 text-[13px] font-bold bg-gray-50 border border-gray-100"
+                                                            to={
+                                                                user.role === 'admin'
+                                                                    ? '/admin'
+                                                                    : '/waiter'
+                                                            }
+                                                            onClick={() =>
+                                                                setShowMobileMenu(false)
+                                                            }
+                                                            className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 border border-orange-100"
                                                         >
-                                                            <User size={18} strokeWidth={1.5} />
-                                                            MI PERFIL
+                                                            <ShieldCheck
+                                                                size={18}
+                                                                strokeWidth={1.5}
+                                                            />
+                                                            {user.role === 'admin'
+                                                                ? 'PANEL DE CONTROL'
+                                                                : 'TERMINAL CAMARERO'}
                                                         </Link>
-                                                    </div>
+                                                    )}
                                                     <button
                                                         onClick={() => {
                                                             logout();

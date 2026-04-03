@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Plus, Star, Trash2, Pencil, X } from 'lucide-react';
+import { MapPin, Plus, Star, Trash2, Pencil, X, Loader2, ArrowRight } from 'lucide-react';
 
 import { UserAddress } from '../../types';
 import { api } from '../../utils/api';
@@ -63,7 +63,9 @@ export default function AddressesTab({
     const [searchQuery, setSearchQuery] = useState('');
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+    const [isSearching, setIsSearching] = useState(false);
     const ignoreNextSearchRef = useRef(false);
+    const wasSelectedViaSearchRef = useRef(false);
 
     // Debounced Nominatim search
     useEffect(() => {
@@ -81,6 +83,7 @@ export default function AddressesTab({
         if (debounceRef.current) clearTimeout(debounceRef.current);
 
         debounceRef.current = setTimeout(async () => {
+            setIsSearching(true);
             try {
                 const data = await api.get(
                     `/delivery-zones/search?q=${encodeURIComponent(searchQuery)}`
@@ -89,6 +92,8 @@ export default function AddressesTab({
                 setShowSuggestions((data || []).length > 0);
             } catch {
                 setSuggestions([]);
+            } finally {
+                setIsSearching(false);
             }
         }, 400);
 
@@ -108,17 +113,42 @@ export default function AddressesTab({
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const handleSelectSuggestion = (s: AddressSuggestion) => {
-        const addr = s.address;
-        const street = addr.road || s.display_name.split(',')[0] || '';
-        const house = addr.house_number || '';
-        const city = addr.city || addr.town || addr.village || addr.suburb || 'Comunidad de Madrid';
-        const postalCode = addr.postcode || '';
+    const handleSelectSuggestion = (s: AddressSuggestion, queryHint?: string) => {
+        let street = s.address?.road || s.display_name.split(',')[0] || '';
+        let houseNum = s.address?.house_number || '';
+
+        // Advanced Extraction from display_name
+        if (!houseNum && s.display_name) {
+            const displayNameParts = s.display_name.split(',');
+            const firstPart = displayNameParts[0]?.trim() || '';
+
+            if (/^\d+[a-zA-Z]?$/.test(firstPart)) {
+                houseNum = firstPart;
+                street = displayNameParts[1]?.trim() || street;
+            } else {
+                const match = firstPart.match(/(.+?)\s+(\d+[a-zA-Z]?)$/);
+                if (match) {
+                    street = match[1].trim();
+                    houseNum = match[2];
+                }
+            }
+        }
+
+        // Try extract from query hint
+        if (queryHint) {
+            const numInQuery = queryHint.match(/\b\d+[a-zA-Z]?\b/)?.[0];
+            if (numInQuery && (!houseNum || houseNum !== numInQuery)) {
+                houseNum = numInQuery;
+            }
+        }
+
+        const city = s.address?.city || s.address?.town || s.address?.village || s.address?.suburb || 'Comunidad de Madrid';
+        const postalCode = s.address?.postcode || s.display_name?.match(/\b\d{5}\b/)?.[0] || '';
 
         setNewAddress(p => ({
             ...p,
             street,
-            house,
+            house: houseNum,
             city,
             postalCode,
             apartment: '',
@@ -127,8 +157,31 @@ export default function AddressesTab({
         }));
         ignoreNextSearchRef.current = true;
         setSearchQuery(street);
+        wasSelectedViaSearchRef.current = true;
         setShowSuggestions(false);
         setSuggestions([]);
+    };
+
+    const performSearch = async (query: string, selectFirst = false) => {
+        if (query.trim().length < 3) {
+            setSuggestions([]);
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
+            setSuggestions(data || []);
+            setShowSuggestions((data || []).length > 0);
+
+            if (selectFirst && data && data.length > 0) {
+                handleSelectSuggestion(data[0], query);
+            }
+        } catch (err) {
+            console.error('Search failed', err);
+        } finally {
+            setIsSearching(false);
+        }
     };
 
     const formRef = useRef<HTMLDivElement>(null);
@@ -152,6 +205,9 @@ export default function AddressesTab({
 
     const handleStreetChange = (value: string) => {
         setSearchQuery(value);
+        if (value !== newAddress.street) {
+            wasSelectedViaSearchRef.current = false;
+        }
         setNewAddress(p => ({ ...p, street: value }));
     };
 
@@ -333,41 +389,74 @@ export default function AddressesTab({
                                     strokeWidth={1.5}
                                     className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${newAddress.street ? 'text-green-500' : 'text-gray-300'}`}
                                 />
+                                {isSearching && (
+                                    <div className="absolute right-10 top-1/2 -translate-y-1/2">
+                                        <Loader2 size={16} className="animate-spin text-orange-500" />
+                                    </div>
+                                )}
                             </div>
 
-                            {showSuggestions && suggestions.length > 0 && (
-                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-y-auto max-h-[240px] animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50 scrollbar-thin scrollbar-thumb-gray-200">
-                                    {suggestions.map((s, i) => (
-                                        <button
-                                            key={i}
-                                            type="button"
-                                            onClick={() => handleSelectSuggestion(s)}
-                                            className="flex items-start gap-3 w-full p-4 text-left hover:bg-orange-50 transition-colors group"
-                                        >
-                                            <MapPin
-                                                size={14}
-                                                strokeWidth={1.5}
-                                                className="mt-1 text-gray-300 group-hover:text-orange-500 transition-colors shrink-0"
-                                            />
-                                            <div className="flex flex-col min-w-0">
-                                                <span className="text-xs font-bold text-gray-900 group-hover:text-orange-600 truncate">
-                                                    {s.address?.road ||
-                                                        s.display_name.split(',')[0]}
-                                                    {s.address?.house_number &&
-                                                        `, ${s.address.house_number}`}
-                                                </span>
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
-                                                    {s.address?.city ||
-                                                        s.address?.town ||
-                                                        s.address?.village ||
-                                                        s.address?.suburb ||
-                                                        'Comunidad de Madrid'}
-                                                    {s.address?.postcode &&
-                                                        ` • ${s.address.postcode}`}
-                                                </span>
-                                            </div>
-                                        </button>
-                                    ))}
+                            {showSuggestions && (suggestions.length > 0 || (searchQuery.trim().length >= 3 && /\d/.test(searchQuery))) && (
+                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-y-auto max-h-[320px] animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50 scrollbar-thin scrollbar-thumb-gray-200">
+                                    {/* Virtual Result */}
+                                    {searchQuery.trim().length >= 3 &&
+                                        /\d/.test(searchQuery) &&
+                                        !suggestions.some(r =>
+                                            r.display_name
+                                                .toLowerCase()
+                                                .includes(searchQuery.toLowerCase())
+                                        ) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => performSearch(searchQuery.trim(), true)}
+                                                className="w-full px-4 py-4 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600"
+                                            >
+                                                <div className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-green-200">
+                                                    <MapPin size={16} className="text-green-600" />
+                                                </div>
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="text-xs font-black text-gray-900 truncate">
+                                                        ¿Es esta tu ubicación exacta?
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
+                                                        Localizar: "{searchQuery}"
+                                                    </span>
+                                                </div>
+                                                <ArrowRight size={14} className="text-green-600 ml-auto shrink-0" />
+                                            </button>
+                                        )}
+
+                                    {suggestions.map((s, i) => {
+                                        const queryNum = searchQuery.match(/\b(\d+[a-zA-Z]?)\s*$/)?.[1] ||
+                                                         searchQuery.match(/^(\d+[a-zA-Z]?)\s/)?.[1] || '';
+                                        const hasOwnHouse = !!s.address?.house_number;
+                                        const displayHouse = hasOwnHouse ? s.address.house_number : queryNum;
+
+                                        return (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                onClick={() => handleSelectSuggestion(s, searchQuery)}
+                                                className="flex items-start gap-3 w-full p-4 text-left hover:bg-orange-50 transition-colors group"
+                                            >
+                                                <MapPin
+                                                    size={14}
+                                                    strokeWidth={1.5}
+                                                    className="mt-1 text-gray-300 group-hover:text-orange-500 transition-colors shrink-0"
+                                                />
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="text-xs font-bold text-gray-900 group-hover:text-orange-600 truncate">
+                                                        {s.address?.road || s.display_name.split(',')[0]}
+                                                        {displayHouse && `, ${displayHouse}`}
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                                                        {s.address?.city || s.address?.town || s.address?.village || s.address?.suburb || 'Comunidad de Madrid'}
+                                                        {s.address?.postcode && ` • ${s.address.postcode}`}
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -378,19 +467,19 @@ export default function AddressesTab({
                             </label>
                             <input
                                 value={newAddress.house}
-                                readOnly
-                                className="w-full bg-gray-100 border border-transparent rounded-xl px-4 py-3 text-sm font-bold text-gray-500 cursor-not-allowed outline-none"
-                                placeholder="Busca arriba..."
+                                onChange={e => setNewAddress(p => ({ ...p, house: e.target.value }))}
+                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
+                                placeholder="Ej: 20"
                             />
                             {!newAddress.house && newAddress.street && (
-                                <p className="text-[9px] font-bold text-orange-500 mt-1 px-1 animate-pulse leading-none h-1">
-                                    Busca tu calle con el número arriba
+                                <p className="text-[9px] font-bold text-orange-500 mt-1 px-1 leading-none h-1">
+                                    Escribe tu número manualmente
                                 </p>
                             )}
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
-                                Piso, Escalera, Puerta *
+                                Piso, Escalera, Puerta
                             </label>
                             <input
                                 value={newAddress.apartment}

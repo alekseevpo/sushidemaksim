@@ -202,7 +202,7 @@ export default function BlogPostPage() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.5, type: 'spring' }}
-                    className="absolute -top-8 right-6 md:-top-10 md:right-10 bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3 pr-6"
+                    className="absolute -top-4 right-6 md:-top-6 md:right-10 bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3 pr-6"
                 >
                     <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 font-bold text-lg">
                         {post.author ? post.author.charAt(0) : 'E'}

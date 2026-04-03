@@ -181,9 +181,12 @@ export default function BlogPage() {
                                             </span>
                                         </div>
 
-                                        <button className="text-[12px] font-black uppercase tracking-tighter text-orange-600 flex items-center gap-1 hover:gap-2 transition-all">
+                                        <Link
+                                            to={`/blog/${post.slug}`}
+                                            className="text-[12px] font-black uppercase tracking-tighter text-orange-600 flex items-center gap-1 hover:gap-2 transition-all no-underline"
+                                        >
                                             Leer más <ChevronRight size={14} strokeWidth={1.5} />
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </motion.article>
