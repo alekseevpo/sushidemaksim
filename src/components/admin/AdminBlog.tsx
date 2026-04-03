@@ -163,8 +163,11 @@ export default function AdminBlog({ language = 'es' }: Props) {
         },
         onError: (err: any) => {
             console.error('mutation error:', err);
-            alert((language === 'ru' ? 'Ошибка: ' : 'Error: ') + (err.response?.data?.error || err.message));
-        }
+            alert(
+                (language === 'ru' ? 'Ошибка: ' : 'Error: ') +
+                    (err.response?.data?.error || err.message)
+            );
+        },
     });
 
     const deleteMutation = useMutation({
@@ -174,8 +177,10 @@ export default function AdminBlog({ language = 'es' }: Props) {
             alert(language === 'ru' ? 'Пост удален' : 'Post eliminado');
         },
         onError: (err: any) => {
-            alert((language === 'ru' ? 'Ошибка при удалении: ' : 'Error al eliminar: ') + (err.message));
-        }
+            alert(
+                (language === 'ru' ? 'Ошибка при удалении: ' : 'Error al eliminar: ') + err.message
+            );
+        },
     });
 
     const togglePublishMutation = useMutation({
@@ -185,8 +190,8 @@ export default function AdminBlog({ language = 'es' }: Props) {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
         },
         onError: (err: any) => {
-            alert((language === 'ru' ? 'Ошибка: ' : 'Error: ') + (err.message));
-        }
+            alert((language === 'ru' ? 'Ошибка: ' : 'Error: ') + err.message);
+        },
     });
 
     if (isLoading) {
@@ -336,25 +341,34 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                             key={tool.label}
                                             type="button"
                                             onClick={() => {
-                                                const textarea = document.querySelector('textarea[name="content"]') as HTMLTextAreaElement;
+                                                const textarea = document.querySelector(
+                                                    'textarea[name="content"]'
+                                                ) as HTMLTextAreaElement;
                                                 const start = textarea.selectionStart;
                                                 const end = textarea.selectionEnd;
                                                 const text = textarea.value;
                                                 const selectedText = text.substring(start, end);
                                                 const before = text.substring(0, start);
                                                 const after = text.substring(end);
-                                                
-                                                let replacement = tool.tag === 'ul' 
-                                                    ? `<ul>\n  <li>${selectedText || 'item'}</li>\n</ul>`
-                                                    : `<${tool.tag}>${selectedText || ''}</${tool.tag}>`;
-                                                
+
+                                                const replacement =
+                                                    tool.tag === 'ul'
+                                                        ? `<ul>\n  <li>${selectedText || 'item'}</li>\n</ul>`
+                                                        : `<${tool.tag}>${selectedText || ''}</${tool.tag}>`;
+
                                                 const newValue = before + replacement + after;
                                                 setForm({ ...form, content: newValue });
-                                                
+
                                                 // Focus back
                                                 setTimeout(() => {
                                                     textarea.focus();
-                                                    textarea.setSelectionRange(start + tool.tag.length + 2, start + tool.tag.length + 2 + selectedText.length);
+                                                    textarea.setSelectionRange(
+                                                        start + tool.tag.length + 2,
+                                                        start +
+                                                            tool.tag.length +
+                                                            2 +
+                                                            selectedText.length
+                                                    );
                                                 }, 0);
                                             }}
                                             className="px-3 py-1 bg-gray-100 hover:bg-orange-500 hover:text-white rounded-lg text-[10px] font-black transition-all border border-gray-200 uppercase tracking-widest"
@@ -364,13 +378,15 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                     ))}
                                 </div>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                                 <div className="relative">
                                     <textarea
                                         name="content"
                                         value={form.content}
-                                        onChange={e => setForm({ ...form, content: e.target.value })}
+                                        onChange={e =>
+                                            setForm({ ...form, content: e.target.value })
+                                        }
                                         className="w-full px-5 py-4 bg-gray-50/50 border border-gray-100 rounded-[2rem] text-sm font-medium text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner resize-none min-h-[400px] font-mono leading-relaxed"
                                         required
                                         placeholder="Escribe el contenido HTML aquí..."
@@ -379,20 +395,21 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                         Editor HTML
                                     </div>
                                 </div>
-                                
+
                                 <div className="relative flex flex-col h-full min-h-[400px]">
                                     <div className="absolute top-4 right-6 z-10 text-[9px] font-black text-orange-400/50 uppercase tracking-widest pointer-events-none">
                                         Vista Previa Viva
                                     </div>
                                     <div className="flex-1 w-full p-8 bg-white border border-dashed border-gray-200 rounded-[2rem] overflow-y-auto max-h-[600px] no-scrollbar">
                                         {form.content ? (
-                                            <div 
+                                            <div
                                                 className="prose prose-sm md:prose-base prose-orange max-w-none text-gray-700 blog-preview"
                                                 dangerouslySetInnerHTML={{ __html: form.content }}
                                             />
                                         ) : (
                                             <div className="h-full flex items-center justify-center text-gray-300 italic text-sm text-center px-10">
-                                                El contenido aparecerá aquí formateado en tiempo real
+                                                El contenido aparecerá aquí formateado en tiempo
+                                                real
                                             </div>
                                         )}
                                     </div>

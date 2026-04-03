@@ -36,7 +36,7 @@ export default function BlogPage() {
             const data = await api.get(`/blog?page=${page}&limit=5`);
             setPosts(data.posts);
             setPagination(data.pagination);
-            
+
             // Scroll to top of posts container on page change
             if (page !== 1 || currentPage !== 1) {
                 const container = document.getElementById('blog-posts-container');
@@ -113,7 +113,10 @@ export default function BlogPage() {
             </section>
 
             {/* Container */}
-            <div id="blog-posts-container" className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20 min-h-[600px]">
+            <div
+                id="blog-posts-container"
+                className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20 min-h-[600px]"
+            >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {posts.map((post, index) => (
                         <motion.article
@@ -127,80 +130,80 @@ export default function BlogPage() {
                             }}
                             className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full relative"
                         >
-                                {/* Link overlay for the whole card */}
-                                <Link
-                                    to={`/blog/${post.slug}`}
-                                    className="absolute inset-0 z-10"
-                                    aria-label={`Leer más sobre ${post.title}`}
-                                ></Link>
+                            {/* Link overlay for the whole card */}
+                            <Link
+                                to={`/blog/${post.slug}`}
+                                className="absolute inset-0 z-10"
+                                aria-label={`Leer más sobre ${post.title}`}
+                            ></Link>
 
-                                {/* Image Wrapper */}
-                                <div className="relative h-64 overflow-hidden">
-                                    <img
-                                        src={getOptimizedImageUrl(
-                                            post.imageUrl || '/sushi-hero.webp',
-                                            600
-                                        )}
-                                        alt={`Imagen del articulo ${post.title}`}
-                                        loading="lazy"
-                                        decoding="async"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                    <div className="absolute top-4 left-4 z-20">
-                                        <span className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-bold text-gray-900 uppercase shadow-sm">
-                                            {post.category}
-                                        </span>
-                                    </div>
+                            {/* Image Wrapper */}
+                            <div className="relative h-64 overflow-hidden">
+                                <img
+                                    src={getOptimizedImageUrl(
+                                        post.imageUrl || '/sushi-hero.webp',
+                                        600
+                                    )}
+                                    alt={`Imagen del articulo ${post.title}`}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                                <div className="absolute top-4 left-4 z-20">
+                                    <span className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-bold text-gray-900 uppercase shadow-sm">
+                                        {post.category}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-6 flex-1 flex flex-col">
+                                <div className="flex items-center gap-4 text-gray-400 text-[11px] font-medium mb-3">
+                                    <span className="flex items-center gap-1.5 line-clamp-1">
+                                        <Calendar
+                                            size={12}
+                                            strokeWidth={1.5}
+                                            className="text-orange-500"
+                                        />{' '}
+                                        {new Date(post.createdAt).toLocaleDateString()}
+                                    </span>
+                                    <span className="flex items-center gap-1.5">
+                                        <Clock
+                                            size={12}
+                                            strokeWidth={1.5}
+                                            className="text-orange-500"
+                                        />{' '}
+                                        {post.readTime || '5'} min
+                                    </span>
                                 </div>
 
-                                {/* Content */}
-                                <div className="p-6 flex-1 flex flex-col">
-                                    <div className="flex items-center gap-4 text-gray-400 text-[11px] font-medium mb-3">
-                                        <span className="flex items-center gap-1.5 line-clamp-1">
-                                            <Calendar
-                                                size={12}
-                                                strokeWidth={1.5}
-                                                className="text-orange-500"
-                                            />{' '}
-                                            {new Date(post.createdAt).toLocaleDateString()}
-                                        </span>
-                                        <span className="flex items-center gap-1.5">
-                                            <Clock
-                                                size={12}
-                                                strokeWidth={1.5}
-                                                className="text-orange-500"
-                                            />{' '}
-                                            {post.readTime || '5'} min
-                                        </span>
-                                    </div>
+                                <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
+                                    {post.title}
+                                </h2>
 
-                                    <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
-                                        {post.title}
-                                    </h2>
+                                <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">
+                                    {post.excerpt}
+                                </p>
 
-                                    <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">
-                                        {post.excerpt}
-                                    </p>
-
-                                    <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between z-20">
-                                        <div className="flex items-center gap-2.5">
-                                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-[10px] font-bold text-orange-600">
-                                                {post.author ? post.author.charAt(0) : 'E'}
-                                            </div>
-                                            <span className="text-xs font-bold text-gray-700">
-                                                {post.author || 'Equipo Editorial'}
-                                            </span>
+                                <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between z-20">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-[10px] font-bold text-orange-600">
+                                            {post.author ? post.author.charAt(0) : 'E'}
                                         </div>
-
-                                        <Link
-                                            to={`/blog/${post.slug}`}
-                                            className="text-[12px] font-black uppercase tracking-tighter text-orange-600 flex items-center gap-1 hover:gap-2 transition-all no-underline"
-                                        >
-                                            Leer más <ChevronRight size={14} strokeWidth={1.5} />
-                                        </Link>
+                                        <span className="text-xs font-bold text-gray-700">
+                                            {post.author || 'Equipo Editorial'}
+                                        </span>
                                     </div>
+
+                                    <Link
+                                        to={`/blog/${post.slug}`}
+                                        className="text-[12px] font-black uppercase tracking-tighter text-orange-600 flex items-center gap-1 hover:gap-2 transition-all no-underline"
+                                    >
+                                        Leer más <ChevronRight size={14} strokeWidth={1.5} />
+                                    </Link>
                                 </div>
-                            </motion.article>
+                            </div>
+                        </motion.article>
                     ))}
                     {!loading && posts.length === 0 && (
                         <div className="col-span-full py-20 text-center text-gray-500 font-medium">
@@ -219,7 +222,7 @@ export default function BlogPage() {
                         >
                             <ArrowLeft size={18} strokeWidth={2.5} />
                         </button>
-                        
+
                         <div className="flex items-center gap-2 px-2">
                             {Array.from({ length: pagination.totalPages }).map((_, i) => {
                                 const pageNum = i + 1;
@@ -241,7 +244,9 @@ export default function BlogPage() {
                         </div>
 
                         <button
-                            onClick={() => setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))}
+                            onClick={() =>
+                                setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))
+                            }
                             disabled={currentPage === pagination.totalPages || loading}
                             className="p-3 rounded-xl bg-white border border-gray-100 text-gray-400 hover:text-orange-600 hover:border-orange-200 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
                         >

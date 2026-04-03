@@ -233,7 +233,7 @@ export default function BlogPostPage() {
                 </p>
 
                 {/* Main Body */}
-                <div 
+                <div
                     className="prose prose-lg md:prose-xl prose-orange max-w-none text-gray-700 space-y-6 blog-content"
                     dangerouslySetInnerHTML={{ __html: post.content }}
                 />

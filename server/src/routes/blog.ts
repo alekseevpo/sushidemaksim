@@ -14,7 +14,11 @@ router.get(
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        const { data: posts, error, count } = await supabase
+        const {
+            data: posts,
+            error,
+            count,
+        } = await supabase
             .from('blog_posts')
             .select(
                 'id, title, slug, excerpt, image_url, author, read_time, category, published, created_at, updated_at',
@@ -40,8 +44,8 @@ router.get(
                 totalPosts: count || 0,
                 totalPages,
                 currentPage: page,
-                limit
-            }
+                limit,
+            },
         });
     })
 );
