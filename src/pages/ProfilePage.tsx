@@ -276,12 +276,12 @@ export default function ProfilePage() {
                                 <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-2 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 w-fit mx-auto md:mx-0">
                                     <Trophy size={10} className="text-amber-400" />
                                     {(user.orderCount || 0) >= 50
-                                        ? 'Leyenda del Sushi 👑'
+                                        ? 'Leyenda del Sushi'
                                         : (user.orderCount || 0) >= 20
-                                          ? 'Cliente VIP ⭐'
+                                          ? 'Cliente VIP'
                                           : (user.orderCount || 0) >= 5
-                                            ? 'Cliente Fiel 💎'
-                                            : 'Nuevo Miembro 🌱'}
+                                            ? 'Cliente Fiel'
+                                            : 'Nuevo Miembro'}
                                 </div>
                             </div>
                             <p className="text-orange-100 font-medium opacity-80 m-0 text-sm mb-3">
