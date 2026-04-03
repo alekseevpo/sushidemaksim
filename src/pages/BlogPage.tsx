@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -30,34 +30,42 @@ export default function BlogPage() {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const fetchPosts = useCallback(
-        async (page: number) => {
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchPosts = async (page: number) => {
             setLoading(true);
             try {
                 const data = await api.get(`/blog?page=${page}&limit=5`);
-                setPosts(data.posts);
-                setPagination(data.pagination);
+                if (isMounted) {
+                    setPosts(data.posts || []);
+                    setPagination(data.pagination);
 
-                // Scroll to top of posts container on page change
-                if (page !== 1 || currentPage !== 1) {
-                    const container = document.getElementById('blog-posts-container');
-                    if (container) {
-                        const offset = container.getBoundingClientRect().top + window.scrollY - 100;
-                        window.scrollTo({ top: offset, behavior: 'smooth' });
+                    // Scroll to top of posts container on page change
+                    if (page !== 1) {
+                        const container = document.getElementById('blog-posts-container');
+                        if (container) {
+                            const offset =
+                                container.getBoundingClientRect().top + window.scrollY - 100;
+                            window.scrollTo({ top: offset, behavior: 'smooth' });
+                        }
                     }
                 }
             } catch (err) {
                 console.error('Error fetching blog posts:', err);
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
-        },
-        [currentPage]
-    );
+        };
 
-    useEffect(() => {
         fetchPosts(currentPage);
-    }, [currentPage, fetchPosts]);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [currentPage]);
 
     if (loading) return <BlogSkeleton />;
 
