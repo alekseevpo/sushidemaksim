@@ -134,18 +134,22 @@ export default function AdminBlog({ language = 'es' }: Props) {
 
     const { data: posts = [], isLoading } = useQuery({
         queryKey: ['admin-blog'],
-        queryFn: () => api.get('/admin/blog'),
+        queryFn: () => api.get('/admin/blog_posts'),
     });
 
     const mutation = useMutation({
         mutationFn: (data: any) => {
-            if (isEditing) {
-                return api.put(`/admin/blog/${isEditing.id}`, data);
+            if (isEditing && isEditing.id) {
+                return api.put(`/admin/blog_posts/${isEditing.id}`, data);
             }
-            return api.post('/admin/blog', data);
+            return api.post('/admin/blog_posts', {
+                ...data,
+                published: true, // Default to published on creation
+            });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
+            alert(language === 'ru' ? 'Изменения сохранены!' : 'Cambios guardados!');
             setIsEditing(null);
             setForm({
                 title: '',
@@ -157,21 +161,32 @@ export default function AdminBlog({ language = 'es' }: Props) {
                 published_at: null,
             });
         },
+        onError: (err: any) => {
+            console.error('mutation error:', err);
+            alert((language === 'ru' ? 'Ошибка: ' : 'Error: ') + (err.response?.data?.error || err.message));
+        }
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => api.delete(`/admin/blog/${id}`),
+        mutationFn: (id: string) => api.delete(`/admin/blog_posts/${id}`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
+            alert(language === 'ru' ? 'Пост удален' : 'Post eliminado');
         },
+        onError: (err: any) => {
+            alert((language === 'ru' ? 'Ошибка при удалении: ' : 'Error al eliminar: ') + (err.message));
+        }
     });
 
     const togglePublishMutation = useMutation({
         mutationFn: ({ id, published }: { id: string; published: boolean }) =>
-            api.patch(`/admin/blog/${id}/publish`, { published }),
+            api.patch(`/admin/blog_posts/${id}/publish`, { published }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
         },
+        onError: (err: any) => {
+            alert((language === 'ru' ? 'Ошибка: ' : 'Error: ') + (err.message));
+        }
     });
 
     if (isLoading) {

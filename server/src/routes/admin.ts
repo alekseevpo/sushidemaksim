@@ -1277,6 +1277,28 @@ router.delete(
     })
 );
 
+router.patch(
+    '/blog_posts/:id/publish',
+    validate({
+        published: { required: true, type: 'boolean' },
+    }),
+    asyncHandler(async (req: Request, res: Response) => {
+        const { published } = req.body;
+        const { data: post, error } = await supabase
+            .from('blog_posts')
+            .update({
+                published,
+                published_at: published ? new Date().toISOString() : null,
+            })
+            .eq('id', req.params.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json(formatBlogPost(post));
+    })
+);
+
 // ─── SITE SETTINGS MANAGEMENT ─────────────────────────────────────────────────
 router.get(
     '/settings',
