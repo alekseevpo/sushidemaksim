@@ -233,17 +233,10 @@ export default function BlogPostPage() {
                 </p>
 
                 {/* Main Body */}
-                <div className="prose prose-lg md:prose-xl prose-red max-w-none text-gray-700 space-y-8">
-                    {/* Render paragraphs, rudimentary simulation of rich text for now */}
-                    {post.content
-                        .split('\n')
-                        .filter(p => p.trim() !== '')
-                        .map((paragraph, idx) => (
-                            <p key={idx} className="leading-relaxed">
-                                {paragraph}
-                            </p>
-                        ))}
-                </div>
+                <div 
+                    className="prose prose-lg md:prose-xl prose-orange max-w-none text-gray-700 space-y-6 blog-content"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                />
 
                 {/* Footer Share / Tags area */}
                 <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
