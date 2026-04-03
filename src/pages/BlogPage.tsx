@@ -22,22 +22,39 @@ interface BlogPost {
 
 export default function BlogPage() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
+    const [pagination, setPagination] = useState<{
+        totalPages: number;
+        currentPage: number;
+        totalPosts: number;
+    } | null>(null);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const fetchPosts = async (page: number) => {
+        setLoading(true);
+        try {
+            const data = await api.get(`/blog?page=${page}&limit=5`);
+            setPosts(data.posts);
+            setPagination(data.pagination);
+            
+            // Scroll to top of posts container on page change
+            if (page !== 1 || currentPage !== 1) {
+                const container = document.getElementById('blog-posts-container');
+                if (container) {
+                    const offset = container.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: offset, behavior: 'smooth' });
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching blog posts:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const data = await api.get('/blog');
-                setPosts(data);
-            } catch (err) {
-                console.error('Error fetching blog posts:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPosts();
-    }, []);
+        fetchPosts(currentPage);
+    }, [currentPage]);
 
     if (loading) return <BlogSkeleton />;
 
@@ -96,26 +113,20 @@ export default function BlogPage() {
             </section>
 
             {/* Container */}
-            <div className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20">
+            <div id="blog-posts-container" className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20 min-h-[600px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {posts.length > 0 ? (
-                        posts.map((post, index) => (
-                            <motion.article
-                                key={post.id}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, amount: 0.2 }}
-                                transition={{
-                                    duration: 0.6,
-                                    delay: index * 0.1,
-                                    ease: [0.21, 0.47, 0.32, 0.98],
-                                }}
-                                style={{
-                                    willChange: 'opacity, transform',
-                                    backfaceVisibility: 'hidden',
-                                }}
-                                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full relative"
-                            >
+                    {posts.map((post, index) => (
+                        <motion.article
+                            key={post.id}
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                                duration: 0.6,
+                                delay: index * 0.1,
+                                ease: [0.21, 0.47, 0.32, 0.98],
+                            }}
+                            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full relative"
+                        >
                                 {/* Link overlay for the whole card */}
                                 <Link
                                     to={`/blog/${post.slug}`}
@@ -190,20 +201,61 @@ export default function BlogPage() {
                                     </div>
                                 </div>
                             </motion.article>
-                        ))
-                    ) : (
+                    ))}
+                    {!loading && posts.length === 0 && (
                         <div className="col-span-full py-20 text-center text-gray-500 font-medium">
                             No hay artículos publicados aún.
                         </div>
                     )}
                 </div>
 
-                <div className="mt-12 text-center">
+                {/* Pagination Controls */}
+                {pagination && pagination.totalPages > 1 && (
+                    <div className="mt-16 flex items-center justify-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1 || loading}
+                            className="p-3 rounded-xl bg-white border border-gray-100 text-gray-400 hover:text-orange-600 hover:border-orange-200 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
+                        >
+                            <ArrowLeft size={18} strokeWidth={2.5} />
+                        </button>
+                        
+                        <div className="flex items-center gap-2 px-2">
+                            {Array.from({ length: pagination.totalPages }).map((_, i) => {
+                                const pageNum = i + 1;
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        disabled={loading}
+                                        className={`w-10 h-10 rounded-xl text-[12px] font-black transition-all ${
+                                            currentPage === pageNum
+                                                ? 'bg-orange-600 text-white shadow-lg shadow-orange-200'
+                                                : 'bg-white text-gray-400 border border-gray-100 hover:border-orange-200 hover:text-orange-600'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))}
+                            disabled={currentPage === pagination.totalPages || loading}
+                            className="p-3 rounded-xl bg-white border border-gray-100 text-gray-400 hover:text-orange-600 hover:border-orange-200 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
+                        >
+                            <ChevronRight size={18} strokeWidth={2.5} />
+                        </button>
+                    </div>
+                )}
+
+                <div className="mt-12 text-center pb-12">
                     <Link
                         to="/menu"
-                        className="inline-flex items-center gap-2 text-gray-500 hover:text-orange-600 font-bold text-sm transition-colors"
+                        className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-900 font-bold text-[10px] uppercase tracking-widest transition-colors"
                     >
-                        <ArrowLeft size={16} strokeWidth={1.5} /> Volver al restaurante
+                        <ArrowLeft size={14} strokeWidth={2.5} /> Volver al restaurante
                     </Link>
                 </div>
             </div>

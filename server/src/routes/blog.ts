@@ -9,14 +9,20 @@ const router = Router();
 router.get(
     '/',
     asyncHandler(async (req: Request, res: Response) => {
-        const { data: posts, error } = await supabase
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 5;
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
+
+        const { data: posts, error, count } = await supabase
             .from('blog_posts')
             .select(
-                'id, title, slug, excerpt, image_url, author, read_time, category, published, created_at, updated_at'
+                'id, title, slug, excerpt, image_url, author, read_time, category, published, created_at, updated_at',
+                { count: 'exact' }
             )
             .eq('published', true)
             .order('created_at', { ascending: false })
-            .limit(5);
+            .range(from, to);
 
         if (error) {
             console.error('Error fetching blog posts:', error);
@@ -25,8 +31,18 @@ router.get(
                 .json({ error: 'Error interno del servidor al obtener las publicaciones' });
         }
 
-        const formatted = (posts || []).map(formatBlogPost);
-        res.json(formatted);
+        const totalPages = Math.ceil((count || 0) / limit);
+        const formattedPosts = (posts || []).map(formatBlogPost);
+
+        res.json({
+            posts: formattedPosts,
+            pagination: {
+                totalPosts: count || 0,
+                totalPages,
+                currentPage: page,
+                limit
+            }
+        });
     })
 );
 
