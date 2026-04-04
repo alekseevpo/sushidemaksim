@@ -193,3 +193,13 @@ export function getMadridHour() {
         })
     );
 }
+
+/**
+ * Validates if a string is a valid UUID format (v4 or similar).
+ * Prevents PostgreSQL 'invalid input syntax for type uuid' 500 errors.
+ */
+export function isValidUUID(uuid: string): boolean {
+    if (!uuid || typeof uuid !== 'string') return false;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+}

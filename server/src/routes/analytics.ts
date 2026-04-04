@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db/supabase.js';
+import { isValidUUID } from '../utils/helpers.js';
 
 const router = Router();
 
@@ -24,7 +25,12 @@ router.post('/track', async (req: Request, res: Response) => {
         };
 
         if (userId) {
-            payload.user_id = userId;
+            // 🚨 CRITICAL FIX: Sanitize userId before database insert to prevent UUID syntax errors
+            if (isValidUUID(userId)) {
+                payload.user_id = userId;
+            } else {
+                console.warn(`🛑 Analytics track: ignored malformed userId: "${userId}"`);
+            }
         }
 
         const { error: siteError } = await supabase.from('site_events').insert(payload);
