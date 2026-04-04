@@ -2,72 +2,46 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
 import { BlogSkeleton } from '../components/skeletons/BlogSkeleton';
 import { getOptimizedImageUrl } from '../utils/images';
-
-interface BlogPost {
-    id: number;
-    title: string;
-    slug: string;
-    excerpt: string;
-    imageUrl: string;
-    author: string;
-    readTime: number;
-    category: string;
-    createdAt: string;
-}
+import { useBlog } from '../hooks/queries/useBlog';
 
 export default function BlogPage() {
-    const [posts, setPosts] = useState<BlogPost[]>([]);
-    const [pagination, setPagination] = useState<{
-        totalPages: number;
-        currentPage: number;
-        totalPosts: number;
-    } | null>(null);
-    const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const { data: blogData, isLoading, isError } = useBlog(currentPage);
 
+    const posts = blogData?.posts || [];
+    const pagination = blogData?.pagination;
+
+    // Scroll to top of posts container on page change
     useEffect(() => {
-        let isMounted = true;
-
-        const fetchPosts = async (page: number) => {
-            setLoading(true);
-            try {
-                const data = await api.get(`/blog?page=${page}&limit=5`);
-                if (isMounted) {
-                    setPosts(data.posts || []);
-                    setPagination(data.pagination);
-
-                    // Scroll to top of posts container on page change
-                    if (page !== 1) {
-                        const container = document.getElementById('blog-posts-container');
-                        if (container) {
-                            const offset =
-                                container.getBoundingClientRect().top + window.scrollY - 100;
-                            window.scrollTo({ top: offset, behavior: 'smooth' });
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error('Error fetching blog posts:', err);
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
+        if (currentPage !== 1) {
+            const container = document.getElementById('blog-posts-container');
+            if (container) {
+                const offset = container.getBoundingClientRect().top + window.scrollY - 100;
+                window.scrollTo({ top: offset, behavior: 'smooth' });
             }
-        };
-
-        fetchPosts(currentPage);
-
-        return () => {
-            isMounted = false;
-        };
+        }
     }, [currentPage]);
 
-    if (loading) return <BlogSkeleton />;
+    if (isLoading) return <BlogSkeleton />;
+    if (isError) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-4">Error al cargar el blog</h2>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="px-6 py-2 bg-orange-600 text-white rounded-xl"
+                    >
+                        Reintentar
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-transparent pb-20">
@@ -216,7 +190,7 @@ export default function BlogPage() {
                             </div>
                         </motion.article>
                     ))}
-                    {!loading && posts.length === 0 && (
+                    {!isLoading && posts.length === 0 && (
                         <div className="col-span-full py-20 text-center text-gray-500 font-medium">
                             No hay artículos publicados aún.
                         </div>
@@ -228,20 +202,20 @@ export default function BlogPage() {
                     <div className="mt-16 flex items-center justify-center gap-2">
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1 || loading}
+                            disabled={currentPage === 1 || isLoading}
                             className="p-3 rounded-xl bg-white border border-gray-100 text-gray-400 hover:text-orange-600 hover:border-orange-200 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
                         >
                             <ArrowLeft size={18} strokeWidth={2.5} />
                         </button>
 
                         <div className="flex items-center gap-2 px-2">
-                            {Array.from({ length: pagination.totalPages }).map((_, i) => {
+                            {Array.from({ length: pagination?.totalPages || 0 }).map((_, i) => {
                                 const pageNum = i + 1;
                                 return (
                                     <button
                                         key={pageNum}
                                         onClick={() => setCurrentPage(pageNum)}
-                                        disabled={loading}
+                                        disabled={isLoading}
                                         className={`w-10 h-10 rounded-xl text-[12px] font-black transition-all ${
                                             currentPage === pageNum
                                                 ? 'bg-orange-600 text-white shadow-lg shadow-orange-200'
@@ -256,9 +230,11 @@ export default function BlogPage() {
 
                         <button
                             onClick={() =>
-                                setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))
+                                setCurrentPage(prev =>
+                                    Math.min(pagination?.totalPages || 1, prev + 1)
+                                )
                             }
-                            disabled={currentPage === pagination.totalPages || loading}
+                            disabled={currentPage === (pagination?.totalPages || 1) || isLoading}
                             className="p-3 rounded-xl bg-white border border-gray-100 text-gray-400 hover:text-orange-600 hover:border-orange-200 transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
                         >
                             <ChevronRight size={18} strokeWidth={2.5} />
