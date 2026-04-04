@@ -325,7 +325,7 @@ export default function HomePage() {
             <div className="bg-black">
                 {/* Hero Section */}
                 <section
-                    className="relative min-h-[100svh] w-full px-4 pt-10 md:pt-0 pb-10 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
+                    className="relative h-[100dvh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
                     style={{ contentVisibility: 'auto' }}
                 >
                     {/* Visual context for SEO */}
