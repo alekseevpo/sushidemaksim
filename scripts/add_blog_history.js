@@ -24,7 +24,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const article = {
     title: 'El Origen del Sushi en España: De Gran Canaria a Madrid',
     slug: 'el-origen-del-sushi-en-espana',
-    excerpt: '¿Sabías que el primer restaurante japonés de España no abrió en Madrid ni en Barcelona? Descubre la fascinante historia de cómo el sushi llegó a nuestras costas a finales de los años 60.',
+    excerpt:
+        '¿Sabías que el primer restaurante japonés de España no abrió en Madrid ni en Barcelona? Descubre la fascinante historia de cómo el sushi llegó a nuestras costas a finales de los años 60.',
     content: `España es hoy uno de los países con mayor pasión por el sushi fuera de Japón, pero su desembarco en nuestras costas fue una historia de necesidad, marineros y una ubicación estratégica.
 
 Todo comenzó en **1967** en las Islas Canarias. En aquel entonces, el puerto de **Las Palmas de Gran Canaria** era una base logística vital para la flota pesquera japonesa que operaba en el Atlántico medio. Cientos de marineros y técnicos japoneses pasaban meses en la isla, y con ellos llegó la nostalgia por los sabores de su tierra.
@@ -40,7 +41,7 @@ Hoy, en Sushi de Maksim, seguimos esa tradición de respeto por el producto y t�
     category: 'HISTORIA',
     read_time: 5,
     published: true,
-    image_url: '/uploads/blog/sushi_history_spain.png' // We will move the generated image here
+    image_url: '/uploads/blog/sushi_history_spain.png', // We will move the generated image here
 };
 
 async function addPost() {

@@ -36,9 +36,7 @@ function convertToHtml(text) {
 async function migrateBlog() {
     console.log('🚀 Loading blog posts for migration...');
 
-    const { data: posts, error } = await supabase
-        .from('blog_posts')
-        .select('id, title, content');
+    const { data: posts, error } = await supabase.from('blog_posts').select('id, title, content');
 
     if (error) {
         console.error('❌ Error fetching posts:', error);
@@ -56,7 +54,7 @@ async function migrateBlog() {
 
     for (const post of postsToMigrate) {
         const htmlContent = convertToHtml(post.content);
-        
+
         const { error: updError } = await supabase
             .from('blog_posts')
             .update({ content: htmlContent })
