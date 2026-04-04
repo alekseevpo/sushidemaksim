@@ -2,7 +2,12 @@ name: Hyper-Cron (Late Orders)
 
 on:
     schedule:
-        - cron: '*/30 * * * *'
+        # Wednesday - Friday: 20:00-23:00 Madrid (18:00-21:00 UTC)
+        - cron: '*/30 18-21 * * 3-5'
+        # Saturday: 14:00-17:00 and 20:00-23:00 Madrid (12:00-15:00 and 18:00-21:00 UTC)
+        - cron: '*/30 12-15,18-21 * * 6'
+        # Sunday: 14:00-17:00 Madrid (12:00-15:00 UTC)
+        - cron: '*/30 12-15 * * 0'
     workflow_dispatch: # Allows manual triggering
 
 jobs:
