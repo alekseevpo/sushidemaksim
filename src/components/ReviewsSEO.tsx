@@ -113,7 +113,10 @@ export default function ReviewsSEO() {
         itemReviewed: {
             '@type': 'Restaurant',
             name: 'Sushi de Maksim',
-            image: 'https://sushidemaksim.vercel.app/og-image.jpg',
+            image: 'https://sushidemaksim.com/sushi-hero.webp',
+            telephone: '+34 631 920 312',
+            priceRange: '$$',
+            servesCuisine: ['Japanese', 'Sushi'],
             address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Calle del Barrilero, 20',
@@ -145,9 +148,9 @@ export default function ReviewsSEO() {
     };
 
     return (
-        <section className="py-12 md:py-20 bg-transparent overflow-hidden relative">
+        <section className="py-8 md:py-20 bg-transparent overflow-hidden relative">
             <div className="max-w-7xl mx-auto px-4">
-                <div className="flex flex-col items-center text-center mb-16">
+                <div className="flex flex-col items-center text-center mb-10 md:mb-16">
                     <div className="flex items-center gap-2 mb-4">
                         <span className="text-orange-600 font-black text-[10px] uppercase tracking-[0.2em]">
                             Reseñas Reales

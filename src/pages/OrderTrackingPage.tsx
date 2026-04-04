@@ -46,6 +46,11 @@ export default function OrderTrackingPage() {
     if (error || !order) {
         return (
             <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center p-6">
+                <SEO
+                    title="404 - Página no encontrada | Sushi de Maksim"
+                    description="La página que buscas no existe. Vuelve al menú de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
+                    robots="noindex, nofollow"
+                />
                 <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
                     <div className="w-24 h-24 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
                         🔍
@@ -73,6 +78,7 @@ export default function OrderTrackingPage() {
             <SEO
                 title={`Seguimiento Pedido #${id}`}
                 description="Sigue el estado de tu pedido de Sushi de Maksim en tiempo real."
+                robots="noindex, nofollow"
             />
 
             <div className="max-w-4xl mx-auto px-2 md:px-4 pt-10">

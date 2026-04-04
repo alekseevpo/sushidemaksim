@@ -259,17 +259,18 @@ export default function HomePage() {
         <div className="overflow-hidden">
             <SEO
                 title="Sushi a domicilio en Madrid — Sushi de Maksim | Calidad Premium"
-                description={`El mejor sushi artesanal de Madrid con entrega a domicilio. Pide online rolls, nigiri y sashimi frescos. ⭐ ${settings?.ratingGoogle || '4.9'}/5 basado en ${settings?.ratingReviewsCount || '+500'} reseñas. ¡Pide ahora y disfruta de la experiencia japonesa!`}
+                description={`El mejor sushi artesanal de Madrid con entrega a domicilio. Pide online rolls, nigiri y sashimi frescos. ⭐ ${settings?.ratingGoogle || '4.9'}/5 basado en ${settings?.ratingReviewsCount || '+500'} reseñas. ¡Pide ahora и disfruta de la experiencia japonesa!`}
                 keywords="sushi madrid, sushi a domicilio madrid, pedir sushi online, mejor sushi madrid, sushi de maksim, comida japonesa madrid"
                 schema={{
                     '@context': 'https://schema.org',
-                    '@type': 'FoodEstablishment',
+                    '@type': 'Restaurant',
                     name: 'Sushi de Maksim',
                     image: 'https://sushidemaksim.com/sushi-hero.webp',
                     '@id': 'https://sushidemaksim.com',
                     url: 'https://sushidemaksim.com',
-                    telephone: settings?.contactPhone || '+34631920312',
+                    telephone: '+34 631 920 312',
                     priceRange: '$$',
+                    servesCuisine: ['Japanese', 'Sushi'],
                     address: {
                         '@type': 'PostalAddress',
                         streetAddress: settings?.contactAddressLine1 || 'C. de Barrilero, 20',
@@ -305,7 +306,6 @@ export default function HomePage() {
                             closes: '23:30',
                         },
                     ],
-                    servesCuisine: ['Japanese', 'Sushi'],
                     acceptsReservations: 'true',
                     potentialAction: {
                         '@type': 'OrderAction',
@@ -325,7 +325,7 @@ export default function HomePage() {
             <div className="bg-black">
                 {/* Hero Section */}
                 <section
-                    className="relative min-h-screen w-full px-4 pt-20 md:pt-0 pb-10 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
+                    className="relative min-h-[100svh] w-full px-4 pt-10 md:pt-0 pb-10 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
                     style={{ contentVisibility: 'auto' }}
                 >
                     {/* Visual context for SEO */}
@@ -406,7 +406,7 @@ export default function HomePage() {
                             repeat: Infinity,
                             repeatType: 'reverse',
                         }}
-                        className="absolute bottom-6 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none"
+                        className="absolute bottom-10 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none"
                         style={{ willChange: 'transform, opacity' }}
                     >
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-center ml-[0.3em]">
@@ -423,7 +423,7 @@ export default function HomePage() {
             <RatingsBanner />
 
             {/* Press & Partnerships Section */}
-            <section className="bg-[#fd6e2b]/5 py-12 md:py-20 overflow-hidden border-b border-gray-100">
+            <section className="bg-[#fd6e2b]/5 py-10 md:py-20 overflow-hidden border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-6">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -508,7 +508,7 @@ export default function HomePage() {
             </section>
 
             {/* Categories Section */}
-            <section className="py-12 md:py-16 px-2 md:px-6 bg-transparent overflow-hidden">
+            <section className="py-10 md:py-16 px-2 md:px-6 bg-transparent overflow-hidden">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div className="max-w-xl text-center md:text-left">
@@ -598,7 +598,7 @@ export default function HomePage() {
             </section>
 
             {/* Reservation Section */}
-            <section className="py-12 md:py-20 px-4 bg-white overflow-hidden">
+            <section className="py-10 md:py-20 px-4 bg-white overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -642,7 +642,7 @@ export default function HomePage() {
             </section>
 
             {/* Chef's Recommendations / Popular Section */}
-            <section className="py-12 md:py-24 px-0 md:px-6 bg-gray-50/50 overflow-hidden relative">
+            <section className="py-10 md:py-24 px-0 md:px-6 bg-gray-50/50 overflow-hidden relative">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div className="max-w-xl text-center md:text-left">
@@ -754,7 +754,7 @@ export default function HomePage() {
             <ReviewsSEO />
 
             {/* Blog Teaser / SEO Section */}
-            <section className="py-12 md:py-20 bg-transparent px-4 border-t border-gray-100">
+            <section className="py-10 md:py-20 bg-transparent px-4 border-t border-gray-100">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}

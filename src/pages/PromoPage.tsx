@@ -78,9 +78,30 @@ export default function PromoPage() {
     return (
         <div className="flex-1 bg-transparent">
             <SEO
-                title="Ofertas y Promociones"
-                description="Descubre nuestras promociones exclusivas, combos especiales de sushi con descuentos y ofertas limitadas. ¡Pide online ahora!"
+                title="Ofertas и Promociones"
+                description="Descubre nuestras promociones exclusivas, combos especiales de sushi con descuentos и ofertas limitadas. ¡Pide online ahora!"
                 keywords="ofertas sushi, promos sushi, combos sushi madrid, descuento sushi"
+                schema={[
+                    {
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            {
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: 'Inicio',
+                                item: 'https://sushidemaksim.com/',
+                            },
+                            {
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: 'Promociones',
+                                item: 'https://sushidemaksim.com/promos',
+                            },
+                        ],
+                    },
+                ]}
+                url="https://sushidemaksim.com/promos"
             />
 
             {/* Hero Header */}

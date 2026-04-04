@@ -263,17 +263,37 @@ export default function MenuPage() {
         })),
     };
 
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Inicio',
+                item: 'https://sushidemaksim.com/',
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Carta',
+                item: 'https://sushidemaksim.com/menu',
+            },
+        ],
+    };
+
     return (
         <div className="min-h-screen bg-transparent pb-0 pt-0 flex flex-col">
             <SEO
                 title={
                     selectedCategory === 'all'
-                        ? 'Menú de Sushi a Domicilio en Madrid | Carta Completa'
+                        ? 'Menú de Sushi a Domicilio en Madrid | Carta Compleта'
                         : `Menú de ${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'} en Madrid`
                 }
-                description="Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi y combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!"
+                description="Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi и combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!"
                 keywords="menu sushi madrid, carta sushi, pedir sushi online madrid, sushi a domicilio, nigiri madrid, rolls japoneses"
-                schema={menuSchema}
+                schema={[menuSchema, breadcrumbSchema]}
+                url="https://sushidemaksim.com/menu"
             />
             <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
                 {/* Desktop Sidebar Sidebar */}

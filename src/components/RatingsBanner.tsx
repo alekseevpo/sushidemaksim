@@ -60,7 +60,7 @@ const RatingsBanner = () => {
     const reviewsCount = settings?.ratingReviewsCount || 534;
 
     return (
-        <section className="bg-white py-6 border-y border-gray-100 overflow-hidden">
+        <section className="bg-white py-4 md:py-6 border-y border-gray-100 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-px items-stretch md:bg-gray-100/50 rounded-3xl overflow-hidden p-1 md:p-0">
                     {/* Google Section */}

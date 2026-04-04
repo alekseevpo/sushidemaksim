@@ -1,20 +1,18 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Home, Utensils, ArrowLeft, Search } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import SEO from '../components/SEO';
 
 export default function NotFoundPage() {
     const navigate = useNavigate();
 
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 relative overflow-hidden bg-[#FBF7F0]">
-            <Helmet>
-                <title>404 - Página no encontrada | Sushi de Maksim</title>
-                <meta
-                    name="description"
-                    content="La página que buscas no existe. Vuelve al menú de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
-                />
-            </Helmet>
+            <SEO
+                title="404 - Página no encontrada | Sushi de Maksim"
+                description="La página que buscas no existe. Vuelve al menú de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
+                robots="noindex, nofollow"
+            />
 
             {/* Background elements */}
             <div className="absolute top-1/4 -left-20 w-64 h-64 bg-orange-100/30 rounded-full blur-3xl" />

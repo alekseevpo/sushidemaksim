@@ -137,43 +137,66 @@ export default function ContactsPage() {
                 title="Contacto y Ubicación — Sushi de Maksim Madrid"
                 description={`Visítanos en Madrid o haz tu pedido de sushi a domicilio. Dirección: ${fullAddress}. Teléfono: ${currentPhone}. ¡Te esperamos para ofrecerte el mejor sushi artesanal!`}
                 keywords="contacto sushi madrid, direccion sushi de maksim, telefono sushi madrid, pedir sushi domicilio madrid"
-                schema={{
-                    '@context': 'https://schema.org',
-                    '@type': 'LocalBusiness',
-                    name: 'Sushi de Maksim',
-                    image: 'https://sushidemaksim.com/sushi-hero.webp',
-                    telephone: currentPhone.replace(/\s/g, ''),
-                    email: currentEmail,
-                    address: {
-                        '@type': 'PostalAddress',
-                        streetAddress: addressLine1,
-                        addressLocality: 'Madrid',
-                        postalCode: '28007',
-                        addressCountry: 'ES',
-                    },
-                    geo: {
-                        '@type': 'GeoCoordinates',
-                        latitude: 40.397042,
-                        longitude: -3.672449,
-                    },
-                    url: 'https://sushidemaksim.com/contacts',
-                    openingHoursSpecification: [
-                        {
-                            '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: [
-                                'Monday',
-                                'Tuesday',
-                                'Wednesday',
-                                'Thursday',
-                                'Friday',
-                                'Saturday',
-                                'Sunday',
-                            ],
-                            opens: '12:00',
-                            closes: '23:30',
+                schema={[
+                    {
+                        '@context': 'https://schema.org',
+                        '@type': 'Restaurant',
+                        name: 'Sushi de Maksim',
+                        image: 'https://sushidemaksim.com/sushi-hero.webp',
+                        telephone: '+34 631 920 312',
+                        email: currentEmail,
+                        priceRange: '$$',
+                        servesCuisine: ['Japanese', 'Sushi'],
+                        address: {
+                            '@type': 'PostalAddress',
+                            streetAddress: addressLine1,
+                            addressLocality: 'Madrid',
+                            postalCode: '28007',
+                            addressCountry: 'ES',
                         },
-                    ],
-                }}
+                        geo: {
+                            '@type': 'GeoCoordinates',
+                            latitude: 40.397042,
+                            longitude: -3.672449,
+                        },
+                        url: 'https://sushidemaksim.com/contacts',
+                        openingHoursSpecification: [
+                            {
+                                '@type': 'OpeningHoursSpecification',
+                                dayOfWeek: [
+                                    'Monday',
+                                    'Tuesday',
+                                    'Wednesday',
+                                    'Thursday',
+                                    'Friday',
+                                    'Saturday',
+                                    'Sunday',
+                                ],
+                                opens: '12:00',
+                                closes: '23:30',
+                            },
+                        ],
+                    },
+                    {
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            {
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: 'Inicio',
+                                item: 'https://sushidemaksim.com/',
+                            },
+                            {
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: 'Contacto',
+                                item: 'https://sushidemaksim.com/contacts',
+                            },
+                        ],
+                    },
+                ]}
+                url="https://sushidemaksim.com/contacts"
             />
 
             {/* Hero Section styled like BlogPage */}

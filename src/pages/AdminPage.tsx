@@ -19,6 +19,7 @@ import {
     ShoppingCart,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import SEO from '../components/SEO';
 import { api } from '../utils/api';
 const AdminMenu = lazy(() => import('../components/admin/AdminMenu'));
 const AdminUsers = lazy(() => import('../components/admin/AdminUsers'));
@@ -355,6 +356,11 @@ export default function AdminPage() {
 
     return (
         <div className="min-h-screen metallic-brushed flex flex-col md:flex-row">
+            <SEO
+                title="Panel de Administración"
+                description="Gestión interna de Sushi de Maksim"
+                robots="noindex, nofollow"
+            />
             <audio
                 ref={audioRef}
                 src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"

@@ -44,7 +44,11 @@ export default function VerifyPage() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-6">
-            <SEO title="Activar cuenta" description="Activación de cuenta de usuario" />
+            <SEO
+                title="Activar cuenta"
+                description="Activación de cuenta de usuario"
+                robots="noindex, nofollow"
+            />
 
             <div className="max-w-md w-full bg-white rounded-[32px] p-8 md:p-12 shadow-2xl text-center border border-gray-100 animate-in fade-in zoom-in duration-500">
                 {status === 'success' && (

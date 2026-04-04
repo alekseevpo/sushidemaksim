@@ -13,7 +13,7 @@ export function usePageTracking() {
 
     useEffect(() => {
         const currentPath = location.pathname + location.search;
-        
+
         // Prevent double tracking if same path and same user (or both undefined)
         if (
             lastTrackedRef.current?.path === currentPath &&
@@ -28,13 +28,13 @@ export function usePageTracking() {
                 title: document.title,
                 referrer: document.referrer,
                 path: location.pathname,
-                search: location.search
+                search: location.search,
             },
         });
 
         lastTrackedRef.current = {
             path: currentPath,
-            userId: user?.id
+            userId: user?.id,
         };
     }, [location.pathname, location.search, user?.id]);
 }

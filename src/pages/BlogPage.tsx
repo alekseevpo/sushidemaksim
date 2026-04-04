@@ -32,7 +32,7 @@ export default function BlogPage() {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold mb-4">Error al cargar el blog</h2>
-                    <button 
+                    <button
                         onClick={() => window.location.reload()}
                         className="px-6 py-2 bg-orange-600 text-white rounded-xl"
                     >
@@ -47,23 +47,44 @@ export default function BlogPage() {
         <div className="min-h-screen bg-transparent pb-20">
             <SEO
                 title="Blog de Sushi y Cultura Japonesa — Sushi de Maksim Madrid"
-                description="Descubre los secretos del sushi artesanal, recetas exclusivas y la cultura japonesa en el blog de Sushi de Maksim. ¡Pasión por el detalle en Madrid!"
+                description="Descubre los secretos del sushi artesanal, recetas exclusivas и la cultura japonesa en el blog de Sushi de Maksim. ¡Pasión por el detalle en Madrid!"
                 keywords="blog sushi madrid, cultura japonesa, recetas sushi, secretos del sushi, sushi artesanal madrid"
-                schema={{
-                    '@context': 'https://schema.org',
-                    '@type': 'Blog',
-                    name: 'Blog de Sushi de Maksim',
-                    description: 'Historias, recetas y secretos del mundo del sushi artesanal.',
-                    url: 'https://sushidemaksim.vercel.app/blog',
-                    publisher: {
-                        '@type': 'Organization',
-                        name: 'Sushi de Maksim',
-                        logo: {
-                            '@type': 'ImageObject',
-                            url: 'https://sushidemaksim.vercel.app/logo.svg',
+                schema={[
+                    {
+                        '@context': 'https://schema.org',
+                        '@type': 'Blog',
+                        name: 'Blog de Sushi de Maksim',
+                        description: 'Historias, recetas y secretos del mundo del sushi artesanal.',
+                        url: 'https://sushidemaksim.com/blog',
+                        publisher: {
+                            '@type': 'Organization',
+                            name: 'Sushi de Maksim',
+                            logo: {
+                                '@type': 'ImageObject',
+                                url: 'https://sushidemaksim.com/logo.svg',
+                            },
                         },
                     },
-                }}
+                    {
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            {
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: 'Inicio',
+                                item: 'https://sushidemaksim.com/',
+                            },
+                            {
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: 'Blog',
+                                item: 'https://sushidemaksim.com/blog',
+                            },
+                        ],
+                    },
+                ]}
+                url="https://sushidemaksim.com/blog"
             />
 
             {/* Hero Section */}
