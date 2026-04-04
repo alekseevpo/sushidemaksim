@@ -109,11 +109,24 @@ export default function DeliveryForm({
     setGuestsCount,
     onSavedAddressSelect,
 }: DeliveryFormProps) {
+    const hasSentFocusTrack = useRef(false);
     const hasSentDeliveryStep = useRef(false);
+
+    const trackFormFocus = () => {
+        if (!hasSentFocusTrack.current) {
+            tracker.track('checkout_step_change', {
+                metadata: {
+                    step: 'form_interaction',
+                    message: 'User started filling contact info',
+                },
+            });
+            hasSentFocusTrack.current = true;
+        }
+    };
 
     // Analytics: Track when delivery info is mostly filled
     useEffect(() => {
-        const isAddressFilled = deliveryType === 'pickup' || (address && house && apartment);
+        const isAddressFilled = deliveryType === 'pickup' || (address && house);
         const hasContactInfo = phone.length > 5;
 
         if (isAddressFilled && hasContactInfo && !hasSentDeliveryStep.current) {
@@ -123,11 +136,13 @@ export default function DeliveryForm({
                     customerName: customerNameState,
                     guestEmail: guestEmailState,
                     phone,
+                    address,
+                    zone: selectedZone?.name,
                 },
             });
             hasSentDeliveryStep.current = true;
         }
-    }, [address, house, apartment, deliveryType, customerNameState, guestEmailState, phone]);
+    }, [address, house, deliveryType, customerNameState, guestEmailState, phone, selectedZone]);
 
     const handleAddressClick = () => {
         setIsAddressModalOpen(true);
@@ -167,7 +182,13 @@ export default function DeliveryForm({
                     type="button"
                     onClick={() => {
                         triggerHaptic();
+                        const prevType = deliveryType;
                         setDeliveryType('delivery');
+                        if (prevType !== 'delivery') {
+                            tracker.track('checkout_step_change', {
+                                metadata: { from: prevType, to: 'delivery' },
+                            });
+                        }
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'delivery'
@@ -189,7 +210,13 @@ export default function DeliveryForm({
                     type="button"
                     onClick={() => {
                         triggerHaptic();
+                        const prevType = deliveryType;
                         setDeliveryType('pickup');
+                        if (prevType !== 'pickup') {
+                            tracker.track('checkout_step_change', {
+                                metadata: { from: prevType, to: 'pickup' },
+                            });
+                        }
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'pickup'
@@ -211,8 +238,14 @@ export default function DeliveryForm({
                     type="button"
                     onClick={() => {
                         triggerHaptic();
+                        const prevType = deliveryType;
                         setDeliveryType('reservation');
                         setIsScheduled(true);
+                        if (prevType !== 'reservation') {
+                            tracker.track('checkout_step_change', {
+                                metadata: { from: prevType, to: 'reservation' },
+                            });
+                        }
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'reservation'
@@ -561,6 +594,7 @@ export default function DeliveryForm({
                                 type="text"
                                 value={customerNameState}
                                 onChange={e => setCustomerNameState(e.target.value)}
+                                onFocus={trackFormFocus}
                                 placeholder="Ej: Juan Pérez"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />
@@ -573,6 +607,7 @@ export default function DeliveryForm({
                                 type="email"
                                 value={guestEmailState}
                                 onChange={e => setGuestEmailState(e.target.value)}
+                                onFocus={trackFormFocus}
                                 placeholder="tu@email.com"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />
@@ -591,6 +626,7 @@ export default function DeliveryForm({
                                 const val = e.target.value.replace(/\D/g, '');
                                 if (val.length <= 9) setPhone(val);
                             }}
+                            onFocus={trackFormFocus}
                             placeholder="600 000 000"
                             maxLength={9}
                             pattern="[0-9]{9}"

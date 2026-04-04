@@ -11,12 +11,17 @@ export type EventName =
     | 'remove_from_cart'
     | 'search'
     | 'promo_apply'
+    | 'promo_code_error'
+    | 'delivery_zone_error'
+    | 'checkout_step_change'
     | 'cart_view'
     | 'checkout_start'
     | 'delivery_info_filled'
     | 'payment_method_selected'
     | 'order_placed'
-    | 'error_notice';
+    | 'error_notice'
+    | 'user_idle_start'
+    | 'user_idle_end';
 
 /**
  * Service for tracking user progress and interactions.
@@ -73,6 +78,12 @@ class AnalyticsTracker {
                         path: window.location.pathname,
                         metadata: {
                             ...data.metadata,
+                            is_test:
+                                typeof window !== 'undefined' &&
+                                (window.location.hostname === 'localhost' ||
+                                    window.location.hostname.includes('127.0.0.1') ||
+                                    navigator.webdriver ||
+                                    localStorage.getItem('is_test_mode') === 'true'),
                             utmSource: this.utmSource,
                             timestamp: new Date().toISOString(),
                             userAgent: navigator.userAgent,

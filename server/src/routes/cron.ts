@@ -15,7 +15,7 @@ router.post('/check-birthdays', async (req, res) => {
     const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
 
     if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
-        return res.status(403).json({ error: 'Unauthorized' });
+        return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
     try {
@@ -99,7 +99,7 @@ router.post('/generate-daily-report', async (req, res) => {
     const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
 
     if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
-        return res.status(403).json({ error: 'Unauthorized' });
+        return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
     try {
@@ -189,7 +189,7 @@ router.post('/cleanup-deleted-users', async (req, res) => {
     const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
 
     if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
-        return res.status(403).json({ error: 'Unauthorized' });
+        return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
     try {
@@ -232,7 +232,7 @@ router.post('/check-abandoned-carts', async (req, res) => {
     const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
 
     if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
-        return res.status(403).json({ error: 'Unauthorized' });
+        return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
     try {
@@ -311,7 +311,7 @@ router.post('/check-late-orders', async (req, res) => {
     const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
 
     if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
-        return res.status(403).json({ error: 'Unauthorized' });
+        return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
     try {

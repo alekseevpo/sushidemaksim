@@ -299,10 +299,19 @@ export default function CartPage() {
         }
     };
 
-    // Analytics: Track cart view
+    const hasItems = items.length > 0;
+
+    // Analytics: Track cart view & checkout start
     useEffect(() => {
-        if (!cartLoading && items.length > 0) {
-            tracker.track('cart_view', {
+        if (!cartLoading && hasItems) {
+            // Track clear page view for cart
+            tracker.track('page_view', {
+                metadata: { title: 'Корзина и оформление', path: '/cart' },
+                userId: user?.id,
+            });
+
+            // Track checkout start funnel step
+            tracker.track('checkout_start', {
                 metadata: {
                     totalValue: cartSubtotal,
                     itemsCount: items.reduce((s, i) => s + i.quantity, 0),
@@ -316,7 +325,7 @@ export default function CartPage() {
                 userId: user?.id,
             });
         }
-    }, [cartLoading, items, cartSubtotal, user?.id]);
+    }, [cartLoading, hasItems, user?.id, cartSubtotal, items]);
 
     const handleAddToCart = async (item: MenuItem, quantity: number = 1, isSuggestion = false) => {
         try {
@@ -362,10 +371,28 @@ export default function CartPage() {
             setPromoDiscount(data.percentage);
             setPromoCode(code.trim().toUpperCase());
             showSuccess(`¡Código aplicado! -${data.percentage}%`);
+
+            tracker.track('promo_apply', {
+                metadata: {
+                    code: code.trim().toUpperCase(),
+                    discount: data.percentage,
+                    subtotal: cartSubtotal,
+                },
+                userId: user?.id,
+            });
         } catch (err: any) {
             setPromoError(err.message || 'Código inválido');
             setPromoDiscount(null);
             showError(err.message || 'Código inválido o requisitos no cumplidos');
+
+            tracker.track('promo_code_error', {
+                metadata: {
+                    code: code.trim().toUpperCase(),
+                    error: err.message || 'Invalid code',
+                    subtotal: cartSubtotal,
+                },
+                userId: user?.id,
+            });
         } finally {
             setIsApplyingPromo(false);
         }
@@ -391,24 +418,50 @@ export default function CartPage() {
         console.log('deliveryType:', deliveryType);
         console.log('total:', total);
         console.log('MIN_ORDER:', MIN_ORDER);
-        console.log('selectedZone:', selectedZone?.name);
 
         const streetVal = address.trim();
         const houseVal = house.trim();
         const aptVal = apartment.trim();
 
         if (deliveryType === 'delivery') {
-            if (!streetVal || streetVal.length < 3) return showError('Indica tu calle / dirección');
-            if (!houseVal) return showError('Indica tu portal/casa');
+            if (!streetVal || streetVal.length < 3) {
+                tracker.track('error_notice', {
+                    metadata: { type: 'validation', field: 'address', message: 'Missing street' },
+                });
+                return showError('Indica tu calle / dirección');
+            }
+            if (!houseVal) {
+                tracker.track('error_notice', {
+                    metadata: { type: 'validation', field: 'house', message: 'Missing house' },
+                });
+                return showError('Indica tu portal/casa');
+            }
         }
 
-        if (!paymentMethod) return showError('Selecciona un método de pago');
+        if (!paymentMethod) {
+            tracker.track('error_notice', {
+                metadata: {
+                    type: 'validation',
+                    field: 'paymentMethod',
+                    message: 'No payment method',
+                },
+            });
+            return showError('Selecciona un método de pago');
+        }
 
         const deliveryPhone = phone.trim() || user?.phone || '';
-        if (!deliveryPhone || deliveryPhone.length < 9) return showError('Teléfono no válido');
+        if (!deliveryPhone || deliveryPhone.length < 9) {
+            tracker.track('error_notice', {
+                metadata: { type: 'validation', field: 'phone', message: 'Invalid phone' },
+            });
+            return showError('Teléfono no válido');
+        }
 
         // Business Hour Validation
         if (isStoreClosed && !isScheduled) {
+            tracker.track('error_notice', {
+                metadata: { type: 'store_closed', message: 'Attempted order while closed' },
+            });
             return showError(
                 'Nuestra cocina está descansando en este momento, ¡pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona "Entrega programada".'
             );

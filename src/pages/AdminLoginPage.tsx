@@ -38,27 +38,27 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="flex-1 bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="flex-1 metallic-brushed flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
-                    <div className="bg-orange-600 px-6 py-4 rounded-3xl shadow-2xl shadow-orange-900/20 group hover:rotate-3 transition-all duration-500">
+                    <div className="bg-white/80 backdrop-blur-md px-6 py-4 rounded-3xl shadow-2xl border border-white/50 group hover:rotate-3 transition-all duration-500">
                         <img
                             src="/logo.svg"
                             alt="Sushi de Maksim"
-                            className="h-10 w-auto brightness-0 invert"
+                            className="h-10 w-auto brightness-0 opacity-70"
                         />
                     </div>
                 </div>
-                <h2 className="mt-8 text-center text-3xl font-black text-gray-900 tracking-tighter uppercase">
-                    Admin <span className="text-orange-600">Access</span>
+                <h2 className="mt-8 text-center text-3xl font-black text-gray-900 tracking-tighter uppercase metallic-text">
+                    Admin <span className="text-slate-600">Access</span>
                 </h2>
-                <p className="mt-2 text-center text-sm text-gray-400 font-medium">
+                <p className="mt-2 text-center text-sm text-slate-500 font-bold uppercase tracking-widest">
                     Panel de Gestión | Sushi de Maksim
                 </p>
             </div>
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-100">
+                <div className="metallic-card py-8 px-4 sm:rounded-2xl sm:px-10">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {error && (
                             <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-md">
@@ -134,14 +134,14 @@ export default function AdminLoginPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition disabled:opacity-50 disabled:cursor-not-allowed items-center gap-2"
+                                className="w-full metallic-button flex justify-center py-3 px-4 border border-transparent rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed items-center gap-2"
                             >
                                 {isLoading ? (
                                     <span>Autenticando...</span>
                                 ) : (
                                     <>
                                         Entrar al panel seguro{' '}
-                                        <ArrowRight size={18} strokeWidth={1.5} />
+                                        <ArrowRight size={18} strokeWidth={2.5} />
                                     </>
                                 )}
                             </button>

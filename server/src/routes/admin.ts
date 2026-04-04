@@ -1659,6 +1659,9 @@ router.get(
             const s = sessions.get(sid);
             s.events.push(e);
 
+            // Update userId if found in any event (in case it wasn't in the newest one)
+            if (e.user_id && !s.userId) s.userId = e.user_id;
+
             if (e.event_name === 'order_placed') {
                 s.hasOrdered = true;
             }
@@ -1674,17 +1677,65 @@ router.get(
             }
         });
 
+        // 2.5 Enrich with User Profile data if logged in
+        const userIds = Array.from(sessions.values())
+            .map(s => s.userId)
+            .filter(Boolean);
+
+        if (userIds.length > 0) {
+            const { data: usersData } = await supabase
+                .from('users')
+                .select('id, name, email, phone')
+                .in('id', userIds);
+
+            if (usersData) {
+                const usersMap = new Map(usersData.map(u => [u.id, u]));
+                for (const s of sessions.values()) {
+                    if (s.userId) {
+                        const profile = usersMap.get(s.userId);
+                        if (profile) {
+                            // Only overwrite if not already filled by the form
+                            if (!s.contact.name) s.contact.name = profile.name || '';
+                            if (!s.contact.email) s.contact.email = profile.email || '';
+                            if (!s.contact.phone) s.contact.phone = profile.phone || '';
+                        }
+                    }
+                }
+            }
+        }
+
         // 3. Filter for abandoned ones (has items/contact but no order)
         const abandoned = Array.from(sessions.values())
-            .filter(
-                s => !s.hasOrdered && (s.items.length > 0 || s.contact.phone || s.contact.email)
-            )
+            .filter(s => {
+                // Ignore test sessions
+                if (s.events.some((e: any) => e.metadata?.is_test)) return false;
+
+                return (
+                    !s.hasOrdered &&
+                    (s.items.length > 0 || (s.contact && (s.contact.phone || s.contact.email)))
+                );
+            })
             .map(s => {
                 // Determine "Stage"
                 let stage = 'Cart';
-                if (s.contact.phone || s.contact.email) stage = 'Contact Info';
+                if (s.contact?.phone || s.contact?.email) stage = 'Contact Info';
                 if (s.events.some((e: any) => e.event_name === 'payment_method_selected'))
                     stage = 'Payment';
+                if (s.events.some((e: any) => e.event_name === 'delivery_zone_error'))
+                    stage = 'Zone Error';
+
+                // Sort events for timeline
+                const timeline = s.events
+                    .sort(
+                        (a: any, b: any) =>
+                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    )
+                    .map((e: any) => ({
+                        id: e.id,
+                        name: e.event_name,
+                        time: e.created_at,
+                        metadata: e.metadata,
+                    }));
 
                 return {
                     sessionId: s.sessionId,
@@ -1693,6 +1744,7 @@ router.get(
                     items: s.items,
                     contact: s.contact,
                     stage,
+                    timeline,
                     totalValue: s.items.reduce(
                         (sum: number, i: any) => sum + i.price * i.quantity,
                         0

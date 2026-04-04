@@ -354,20 +354,20 @@ export default function AdminPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+        <div className="min-h-screen metallic-brushed flex flex-col md:flex-row">
             <audio
                 ref={audioRef}
                 src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
                 preload="auto"
             />
             {/* Sidebar */}
-            <aside className="w-full md:w-60 bg-white border-r border-gray-200 flex flex-col md:fixed h-full z-10 transition-all duration-300">
+            <aside className="w-full md:w-60 bg-white/80 backdrop-blur-xl border-r border-gray-300 flex flex-col md:fixed h-full z-10 transition-all duration-300 shadow-2xl">
                 <div className="p-4 border-b border-gray-100">
                     <div className="flex flex-col gap-3">
                         <img
                             src="/logo.svg"
                             alt="Sushi de Maksim"
-                            className="h-10 w-auto object-contain brightness-0"
+                            className="h-10 w-auto object-contain brightness-0 opacity-70"
                         />
                     </div>
                 </div>
@@ -387,14 +387,14 @@ export default function AdminPage() {
                                 className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-bold text-sm transition-all relative group
                                     ${
                                         isActive
-                                            ? 'text-orange-700 bg-orange-50/50'
-                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                            ? 'text-slate-900 bg-white/50 shadow-sm border border-white/50'
+                                            : 'text-slate-500 hover:bg-white/30 hover:text-slate-900'
                                     }`}
                             >
                                 {isActive && (
                                     <motion.div
                                         layoutId="admin-nav-active"
-                                        className="absolute inset-0 bg-orange-50 rounded-xl"
+                                        className="absolute inset-0 bg-gradient-to-r from-white/80 to-transparent rounded-xl"
                                         transition={{
                                             type: 'spring',
                                             bounce: 0.2,
@@ -406,7 +406,7 @@ export default function AdminPage() {
                                     <Icon
                                         size={20}
                                         strokeWidth={isActive ? 2.5 : 2}
-                                        className={`shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-orange-600' : 'text-gray-400'}`}
+                                        className={`shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-slate-900' : 'text-slate-400'}`}
                                     />
                                     <span className="flex-1 text-left leading-[1.2] py-0.5">
                                         {tab.label}
@@ -424,7 +424,7 @@ export default function AdminPage() {
                 <div className="p-4 border-t border-gray-100 mt-auto">
                     <button
                         onClick={() => navigate('/menu')}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-gray-50 text-gray-700 hover:bg-gray-900 hover:text-white rounded-xl font-black text-xs md:text-sm transition-all border border-gray-200 active:scale-[0.98]"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 metallic-button rounded-xl active:scale-[0.98]"
                     >
                         <ArrowLeft size={16} strokeWidth={2} />
                         {t.ui.backToShop}
@@ -437,8 +437,8 @@ export default function AdminPage() {
                 <div className="w-full flex-1 flex flex-col">
                     {/* Top Bar */}
                     <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                        <h1 className="text-2xl font-black text-gray-900 flex items-center gap-3 group">
-                            <div className="w-1.5 h-6 bg-orange-600 rounded-full group-hover:h-8 transition-all duration-300" />
+                        <h1 className="text-2xl metallic-text flex items-center gap-3 group">
+                            <div className="w-1.5 h-6 bg-slate-800 rounded-full group-hover:h-8 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                             {navLinks.find(t_link => t_link.id === activeTab)?.label}
                         </h1>
                         <div className="flex items-center gap-2 md:gap-4">
@@ -468,10 +468,10 @@ export default function AdminPage() {
 
                             <button
                                 onClick={() => setShowHelp(!showHelp)}
-                                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 hover:text-blue-600 font-bold transition-all bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md active:scale-95"
+                                className="flex items-center gap-2 px-4 py-2 metallic-button rounded-xl active:scale-95"
                             >
-                                <HelpCircle size={18} strokeWidth={2} />
-                                <span className="hidden md:inline uppercase tracking-tight text-[11px]">
+                                <HelpCircle size={18} strokeWidth={2.5} />
+                                <span className="hidden md:inline uppercase tracking-tight text-[11px] font-black">
                                     {showHelp ? t.ui.hideHelp : t.ui.showHelp}
                                 </span>
                             </button>
@@ -485,29 +485,29 @@ export default function AdminPage() {
                                 initial={{ opacity: 0, scale: 0.95, y: -20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                                className="mb-5 bg-blue-50/50 border border-blue-100 rounded-2xl p-4 relative backdrop-blur-sm"
+                                className="mb-5 metallic-surface rounded-2xl p-4 relative backdrop-blur-md shadow-lg"
                             >
                                 <button
                                     onClick={() => setShowHelp(false)}
-                                    className="absolute top-3 right-3 text-blue-300 hover:text-blue-600 transition-colors p-1"
+                                    className="absolute top-3 right-3 text-slate-400 hover:text-slate-900 transition-colors p-1"
                                 >
                                     <X size={18} strokeWidth={2} />
                                 </button>
                                 <div className="flex gap-4">
                                     <div className="mt-1">
-                                        <div className="w-9 h-9 bg-blue-100 text-blue-100/10 rounded-xl flex items-center justify-center shadow-inner">
+                                        <div className="w-10 h-10 bg-white/50 text-slate-600 rounded-xl flex items-center justify-center shadow-inner border border-white/50">
                                             <HelpCircle
-                                                size={18}
-                                                strokeWidth={2}
-                                                className="text-blue-600"
+                                                size={20}
+                                                strokeWidth={2.5}
+                                                className="text-slate-800"
                                             />
                                         </div>
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-black text-blue-900 mb-0.5 text-base">
+                                        <h3 className="font-black text-slate-900 mb-0.5 text-base metallic-text !bg-clip-text !text-transparent">
                                             {t.ui.welcome}
                                         </h3>
-                                        <p className="text-blue-700/80 text-[13px] font-medium leading-relaxed max-w-4xl">
+                                        <p className="text-slate-700 text-[13px] font-bold leading-relaxed max-w-4xl">
                                             {(t.help as any)[activeTab]}
                                         </p>
                                     </div>

@@ -7,13 +7,12 @@ import {
     AlertTriangle,
     HelpCircle,
     Info,
-    X,
     ShoppingBag,
     DollarSign,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useToast } from '../../context/ToastContext';
 
 interface AdminDashboardProps {
@@ -141,10 +140,9 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatCardProps) => {
     const [showHint, setShowHint] = useState(false);
-    const hintRef = useRef<HTMLDivElement>(null);
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between group hover:border-orange-100 hover:shadow-xl transition-all relative overflow-visible h-full min-h-[140px]">
+        <div className="metallic-card p-5 flex flex-col justify-between group hover:border-white/50 hover:shadow-xl transition-all relative overflow-visible h-full min-h-[140px]">
             <div className="w-full">
                 <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-1.5 min-w-0">
@@ -152,17 +150,52 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatC
                             {title}
                         </p>
                         {hint && (
-                            <button
-                                onClick={() => setShowHint(v => !v)}
-                                className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-pointer shrink-0 ${
-                                    showHint
-                                        ? 'bg-orange-500 text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-400 hover:bg-orange-50 hover:text-orange-600'
-                                }`}
-                                aria-label={t.hints.hint}
-                            >
-                                <HelpCircle size={10} strokeWidth={3} />
-                            </button>
+                            <div className="relative">
+                                <div
+                                    onMouseEnter={() => setShowHint(true)}
+                                    onMouseLeave={() => setShowHint(false)}
+                                    className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-help shrink-0 z-20 ${
+                                        showHint
+                                            ? 'bg-orange-500 text-white shadow-lg'
+                                            : 'bg-gray-100 text-gray-400 hover:bg-orange-50 hover:text-orange-600'
+                                    }`}
+                                    aria-label={t.hints.hint}
+                                >
+                                    <HelpCircle size={10} strokeWidth={3} />
+                                </div>
+
+                                <AnimatePresence mode="wait">
+                                    {showHint && hint && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                                            className="absolute left-0 bottom-full mb-3 w-72 bg-slate-900 text-white rounded-2xl shadow-2xl z-[100] overflow-visible border border-white/20 backdrop-blur-sm"
+                                            style={{
+                                                transformOrigin: 'bottom left',
+                                            }}
+                                        >
+                                            <div className="bg-white/10 px-4 py-2.5 flex items-center justify-between border-b border-white/10">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-5 h-5 rounded-lg bg-orange-600 flex items-center justify-center">
+                                                        <Info size={11} className="text-white" />
+                                                    </div>
+                                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">
+                                                        {t.hints.howCalculated}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="p-4">
+                                                <p className="text-[12px] text-slate-200 leading-relaxed font-medium">
+                                                    {hint}
+                                                </p>
+                                            </div>
+                                            {/* Arrow Component */}
+                                            <div className="absolute -bottom-1.5 left-2 w-3 h-3 bg-slate-900 rotate-45 border-r border-b border-white/20" />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         )}
                     </div>
                     <div
@@ -171,48 +204,15 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatC
                         <Icon size={18} strokeWidth={2.5} />
                     </div>
                 </div>
-                <h3 className="text-2xl font-black text-gray-900 leading-tight mb-2 tracking-tight">
+                <h3 className="text-2xl metallic-text leading-tight mb-2 tracking-tight">
                     {value}
                 </h3>
             </div>
 
-            <div className="relative" ref={hintRef}>
+            <div className="relative mt-2">
                 <p className="text-[9px] text-gray-500 font-bold uppercase tracking-tight line-clamp-1 bg-gray-50/80 px-2 py-1 rounded-lg border border-gray-100/50 w-fit max-w-full">
                     {desc}
                 </p>
-
-                <AnimatePresence>
-                    {showHint && hint && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute left-0 bottom-full mb-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] overflow-hidden"
-                        >
-                            <div className="bg-gradient-to-r from-gray-50 to-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-5 h-5 rounded-lg bg-gray-900 flex items-center justify-center">
-                                        <Info size={11} className="text-white" />
-                                    </div>
-                                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">
-                                        {t.hints.howCalculated}
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={() => setShowHint(false)}
-                                    className="text-gray-400 hover:text-gray-900 border-none bg-transparent cursor-pointer"
-                                >
-                                    <X size={14} strokeWidth={3} />
-                                </button>
-                            </div>
-                            <div className="p-4">
-                                <p className="text-[12px] text-gray-600 leading-relaxed font-medium">
-                                    {hint}
-                                </p>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </div>
         </div>
     );
@@ -242,18 +242,18 @@ export default function AdminDashboard({
                 <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => navigate('/menu')}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-orange-600 text-white rounded-xl text-xs font-black hover:bg-black transition shadow-lg active:scale-95 uppercase tracking-wider"
+                        className="flex items-center gap-2 px-5 py-2.5 metallic-button rounded-xl text-xs active:scale-95 uppercase tracking-wider shadow-lg"
                     >
                         <ExternalLink size={16} strokeWidth={2} />
                         {t.viewStore}
                     </button>
                     <button
                         onClick={() => loadStats()}
-                        className="flex items-center gap-2 text-xs font-black text-gray-500 hover:text-gray-900 transition bg-white border border-gray-100 px-5 py-2.5 rounded-xl uppercase tracking-wider shadow-sm hover:shadow-md"
+                        className="flex items-center gap-2 text-xs metallic-button !bg-none !bg-white/50 px-5 py-2.5 rounded-xl uppercase tracking-wider shadow-sm"
                     >
                         <RefreshCw
                             size={14}
-                            strokeWidth={2}
+                            strokeWidth={2.5}
                             className={loading ? 'animate-spin' : ''}
                         />
                         {t.refresh}
@@ -334,10 +334,10 @@ export default function AdminDashboard({
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-50">
-                        <h3 className="font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">
-                            <div className="w-1.5 h-6 bg-orange-600 rounded-full" />
+                <div className="metallic-card p-5 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/20">
+                        <h3 className="metallic-text uppercase tracking-tight flex items-center gap-2 text-sm">
+                            <div className="w-1.5 h-6 bg-slate-800 rounded-full" />
                             {t.recentOrders}
                         </h3>
                         <button
@@ -457,8 +457,8 @@ export default function AdminDashboard({
                 </div>
 
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-                    <h3 className="font-black text-gray-900 uppercase tracking-tight mb-6 pb-2 border-b border-gray-50 flex items-center gap-2">
-                        <div className="w-1.5 h-6 bg-orange-600 rounded-full" />
+                    <h3 className="metallic-text uppercase tracking-tight mb-6 pb-2 border-b border-white/20 flex items-center gap-2 text-sm">
+                        <div className="w-1.5 h-6 bg-slate-800 rounded-full" />
                         {t.topProducts}
                     </h3>
 
@@ -517,7 +517,7 @@ export default function AdminDashboard({
             </div>
 
             {/* Daily Reports Section */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6 overflow-hidden hover:shadow-md transition-shadow">
+            <div className="metallic-card p-6 mt-6 overflow-hidden hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-8 pb-3 border-b border-gray-100">
                     <h3 className="font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">
                         <div className="w-1.5 h-6 bg-orange-600 rounded-full" />

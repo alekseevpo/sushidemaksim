@@ -498,491 +498,508 @@ export default function AdminOrders({
                                 </div>
 
                                 {/* Cuerpo del pedido */}
-                                <div className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-hidden">
-                                    {/* Info Cliente & Stats */}
-                                    <div className="space-y-8">
-                                        <div>
-                                            <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-orange-100 pl-3">
-                                                <Smartphone size={16} strokeWidth={2} />
-                                                <span className="text-[11px] font-black uppercase tracking-widest leading-none">
-                                                    {t.clientContact}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-4 mb-4">
-                                                <div
-                                                    className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border-2 border-white
-                                                        ${order.users?.avatar?.startsWith('http') ? 'bg-white' : order.users?.avatar ? 'bg-gray-100 text-[24px]' : 'bg-orange-600'}`}
-                                                >
-                                                    {order.users?.avatar ? (
-                                                        order.users.avatar.startsWith('http') ? (
-                                                            <img
-                                                                src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                                                                alt={order.users.name}
-                                                                className="w-full h-full object-cover"
-                                                                onError={e => {
-                                                                    (
-                                                                        e.currentTarget as HTMLImageElement
-                                                                    ).style.display = 'none';
-                                                                    e.currentTarget.parentElement!.innerText =
-                                                                        (order.users?.name || '?')
-                                                                            .split(' ')
-                                                                            .filter(Boolean)
-                                                                            .map(n => n[0])
-                                                                            .join('')
-                                                                            .toUpperCase()
-                                                                            .slice(0, 2);
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <span className="select-none text-2xl">
-                                                                {order.users.avatar}
-                                                            </span>
-                                                        )
-                                                    ) : (
-                                                        <span className="select-none text-xl">
-                                                            {(order.users?.name || t.guest)
-                                                                .split(' ')
-                                                                .filter(Boolean)
-                                                                .map(n => n[0])
-                                                                .join('')
-                                                                .toUpperCase()
-                                                                .slice(0, 2)}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-black text-gray-900 text-[16px] truncate leading-tight mb-1">
-                                                        {order.users?.name || t.guest}
-                                                    </p>
-                                                    {order.userStats && (
-                                                        <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black border border-blue-100 w-fit uppercase tracking-tighter">
-                                                            <Calendar size={12} strokeWidth={2.5} />
-                                                            {t.regDate}{' '}
-                                                            {new Date(
-                                                                order.userStats.registrationDate
-                                                            ).toLocaleDateString(dateLocale)}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <p className="text-sm text-gray-900 font-black tabular-nums">
-                                                    {order.phoneNumber}
-                                                </p>
-                                                <a
-                                                    href={`https://wa.me/${order.phoneNumber.replace(/\D/g, '')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="p-1 px-3 bg-green-50 text-green-700 rounded-xl text-[10px] font-black border border-green-200 hover:bg-green-600 hover:text-white transition-all flex items-center gap-2 shadow-sm active:scale-95 uppercase tracking-widest"
-                                                >
-                                                    <MessageSquare size={12} strokeWidth={2.5} />
-                                                    {t.whatsapp}
-                                                </a>
-                                            </div>
-                                            {order.users?.email && (
-                                                <p className="text-[11px] font-bold text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-lg w-fit border border-gray-100">
-                                                    {order.users.email}
-                                                </p>
-                                            )}
-                                        </div>
+                                {(() => {
+                                    const notes = order.notes || '';
+                                    let paymentMethod = '';
+                                    let deliveryType = '';
+                                    let scheduled = '';
+                                    let noCall = false;
+                                    let noBuzzer = false;
+                                    let actualNote = '';
 
-                                        {order.userStats && (
-                                            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50/50 rounded-3xl border border-gray-100 shadow-inner">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-gray-400">
-                                                        <ShoppingCart size={12} strokeWidth={2} />
-                                                        <span className="text-[9px] font-black uppercase tracking-widest">
-                                                            {t.userStats.orders}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[13px] font-black text-gray-900">
-                                                        {order.userStats.orderCount || 0}
-                                                    </p>
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-gray-400">
-                                                        <Wallet size={12} strokeWidth={2} />
-                                                        <span className="text-[9px] font-black uppercase tracking-widest">
-                                                            {t.userStats.invested}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[13px] font-black text-gray-900">
-                                                        {formatCurrency(
-                                                            order.userStats.totalSpent || 0
-                                                        )}
-                                                    </p>
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-gray-400">
-                                                        <TrendingUp size={12} strokeWidth={2} />
-                                                        <span className="text-[9px] font-black uppercase tracking-widest">
-                                                            {t.userStats.avgTicket}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[13px] font-black text-gray-900">
-                                                        {formatCurrency(
-                                                            order.userStats.avgCheck || 0
-                                                        )}
-                                                    </p>
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-gray-400">
-                                                        <Clock size={12} strokeWidth={2} />
-                                                        <span className="text-[9px] font-black uppercase tracking-widest">
-                                                            {t.userStats.frequency}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[10px] font-black text-gray-900 leading-none uppercase tracking-tight">
-                                                        {order.userStats.frequency ||
-                                                            t.userStats.firstOrder}
-                                                    </p>
-                                                </div>
-                                                <div className="col-span-2 pt-3 border-t border-gray-200 mt-1 space-y-1.5">
-                                                    <div className="flex items-center gap-2 text-orange-500">
-                                                        <Heart
-                                                            size={12}
-                                                            strokeWidth={3}
-                                                            fill="currentColor"
-                                                        />
-                                                        <span className="text-[9px] font-black uppercase tracking-widest">
-                                                            {t.userStats.favorite}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[11px] font-black text-gray-900 line-clamp-1 uppercase tracking-tight">
-                                                        {order.userStats.favoriteDish || 'N/A'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        )}
+                                    const parts = notes.split(' | ');
+                                    parts.forEach((part: string) => {
+                                        if (
+                                            part.includes('[MÉTODO DE PAGO:') ||
+                                            part.includes('[PAGO:')
+                                        ) {
+                                            paymentMethod = part
+                                                .replace('[MÉTODO DE PAGO: ', '')
+                                                .replace('[MÉTODO DE PAGO:', '')
+                                                .replace('[PAGO: ', '')
+                                                .replace('[PAGO:', '')
+                                                .replace(']', '');
+                                        } else if (part.includes('[TIPO:')) {
+                                            deliveryType = part
+                                                .replace('[TIPO: ', '')
+                                                .replace('[TIPO:', '')
+                                                .replace(']', '');
+                                        } else if (
+                                            part.includes('[ENTREGA PROGRAMADA:') ||
+                                            part.includes('[PROGRAMADO:')
+                                        ) {
+                                            const rawDate = part
+                                                .replace('[ENTREGA PROGRAMADA: ', '')
+                                                .replace('[ENTREGA PROGRAMADA:', '')
+                                                .replace('[PROGRAMADO: ', '')
+                                                .replace('[PROGRAMADO:', '')
+                                                .replace(']', '');
 
-                                        <div className="max-w-[300px]">
-                                            <div className="flex items-center gap-3 text-gray-400 mb-3 border-l-4 border-blue-100 pl-3">
-                                                <Monitor size={16} strokeWidth={2} />
-                                                <span className="text-[11px] font-black uppercase tracking-widest">
-                                                    {t.deliveryAddress}
-                                                </span>
-                                            </div>
-                                            <p className="text-[14px] text-gray-700 leading-relaxed font-black break-words bg-gray-50/30 p-3 rounded-2xl border border-dashed border-gray-100">
-                                                {order.deliveryAddress}
-                                            </p>
-                                        </div>
-
-                                        {order.notes &&
-                                            (() => {
-                                                const notes = order.notes || '';
-                                                let paymentMethod = '';
-                                                let deliveryType = '';
-                                                let scheduled = '';
-                                                let noCall = false;
-                                                let noBuzzer = false;
-                                                let actualNote = '';
-
-                                                const parts = notes.split(' | ');
-                                                parts.forEach((part: string) => {
-                                                    if (
-                                                        part.includes('[MÉTODO DE PAGO:') ||
-                                                        part.includes('[PAGO:')
-                                                    ) {
-                                                        paymentMethod = part
-                                                            .replace('[MÉTODO DE PAGO: ', '')
-                                                            .replace('[MÉTODO DE PAGO:', '')
-                                                            .replace('[PAGO: ', '')
-                                                            .replace('[PAGO:', '')
-                                                            .replace(']', '');
-                                                    } else if (part.includes('[TIPO:')) {
-                                                        deliveryType = part
-                                                            .replace('[TIPO: ', '')
-                                                            .replace('[TIPO:', '')
-                                                            .replace(']', '');
-                                                    } else if (
-                                                        part.includes('[ENTREGA PROGRAMADA:') ||
-                                                        part.includes('[PROGRAMADO:')
-                                                    ) {
-                                                        const rawDate = part
-                                                            .replace('[ENTREGA PROGRAMADA: ', '')
-                                                            .replace('[ENTREGA PROGRAMADA:', '')
-                                                            .replace('[PROGRAMADO: ', '')
-                                                            .replace('[PROGRAMADO:', '')
-                                                            .replace(']', '');
-
-                                                        // Reformat YYYY-MM-DD to DD-MM-YYYY if needed
-                                                        const dateParts = rawDate.split(' ');
-                                                        if (dateParts.length === 2) {
-                                                            const [dPart, tPart] = dateParts;
-                                                            const components = dPart.split('-');
-                                                            if (components.length === 3) {
-                                                                const [c1, c2, c3] = components;
-                                                                // If first component is 4 digits (YYYY), it's ISO, reformat to DD-MM-YYYY
-                                                                if (c1.length === 4) {
-                                                                    scheduled = `${c3}-${c2}-${c1} ${tPart}`;
-                                                                } else {
-                                                                    // Already DD-MM-YYYY or something else, keep as is
-                                                                    scheduled = rawDate;
-                                                                }
-                                                            } else {
-                                                                scheduled = rawDate;
-                                                            }
-                                                        } else {
-                                                            scheduled = rawDate;
-                                                        }
-                                                    } else if (
-                                                        part.includes(
-                                                            '[NO LLAMAR PARA CONFIRMACIÓN]'
-                                                        ) ||
-                                                        part.includes('[SIN CONFIRMACIÓN LLAMADA]')
-                                                    ) {
-                                                        noCall = true;
-                                                    } else if (
-                                                        part.includes(
-                                                            '[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]'
-                                                        ) ||
-                                                        part.includes('[NO LLAMAR TIMBRE]')
-                                                    ) {
-                                                        noBuzzer = true;
+                                            const dateParts = rawDate.split(' ');
+                                            if (dateParts.length === 2) {
+                                                const [dPart, tPart] = dateParts;
+                                                const components = dPart.split('-');
+                                                if (components.length === 3) {
+                                                    const [c1, c2, c3] = components;
+                                                    if (c1.length === 4) {
+                                                        scheduled = `${c3}-${c2}-${c1} ${tPart}`;
                                                     } else {
-                                                        actualNote +=
-                                                            (actualNote ? ' | ' : '') + part;
+                                                        scheduled = rawDate;
                                                     }
-                                                });
+                                                } else {
+                                                    scheduled = rawDate;
+                                                }
+                                            } else {
+                                                scheduled = rawDate;
+                                            }
+                                        } else if (
+                                            part.includes('[NO LLAMAR PARA CONFIRMACIÓN]') ||
+                                            part.includes('[SIN CONFIRMACIÓN LLAMADA]')
+                                        ) {
+                                            noCall = true;
+                                        } else if (
+                                            part.includes(
+                                                '[NO LLAMAR AL TELEFONILLO - LLAMAR AL MÓVIL]'
+                                            ) ||
+                                            part.includes('[NO LLAMAR TIMBRE]')
+                                        ) {
+                                            noBuzzer = true;
+                                        } else {
+                                            actualNote += (actualNote ? ' | ' : '') + part;
+                                        }
+                                    });
 
-                                                return (
-                                                    <div className="space-y-4">
-                                                        <div className="flex flex-wrap gap-2.5 mb-2">
-                                                            {deliveryType && (
-                                                                <div
-                                                                    className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${deliveryType === 'RECOGIDA EN LOCAL' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-700 border-gray-200'}`}
-                                                                >
-                                                                    {deliveryType ===
-                                                                    'RECOGIDA EN LOCAL' ? (
-                                                                        <Store size={14} />
-                                                                    ) : (
-                                                                        <Truck size={14} />
-                                                                    )}
-                                                                    {deliveryType ===
-                                                                    'RECOGIDA EN LOCAL'
-                                                                        ? t.types.recogida
-                                                                        : t.types.domicilio}
-                                                                </div>
-                                                            )}
-                                                            {paymentMethod && (
-                                                                <div
-                                                                    className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${paymentMethod.includes('TARJETA') ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
-                                                                >
-                                                                    <Wallet size={14} />
-                                                                    {paymentMethod.includes(
-                                                                        'TARJETA'
-                                                                    )
-                                                                        ? '💳 '
-                                                                        : '💵 '}
-                                                                    {paymentMethod.toUpperCase()}
-                                                                </div>
-                                                            )}
-                                                            {scheduled && (
-                                                                <div className="px-4 py-3 rounded-2xl bg-orange-600 text-white border-2 border-orange-700/50 text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-md">
-                                                                    <Clock
-                                                                        size={18}
-                                                                        strokeWidth={3}
+                                    const isPickup =
+                                        deliveryType === 'RECOGIDA EN LOCAL' ||
+                                        order.deliveryAddress === 'RECOGIDA';
+
+                                    return (
+                                        <div className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-hidden">
+                                            {/* Column 1: Client & Delivery */}
+                                            <div className="space-y-8">
+                                                <div>
+                                                    <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-orange-100 pl-3">
+                                                        <Smartphone size={16} strokeWidth={2} />
+                                                        <span className="text-[11px] font-black uppercase tracking-widest leading-none">
+                                                            {t.clientContact}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-4 mb-4">
+                                                        <div
+                                                            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border-2 border-white
+                                                                ${order.users?.avatar?.startsWith('http') ? 'bg-white' : order.users?.avatar ? 'bg-gray-100 text-[24px]' : 'bg-orange-600'}`}
+                                                        >
+                                                            {order.users?.avatar ? (
+                                                                order.users.avatar.startsWith(
+                                                                    'http'
+                                                                ) ? (
+                                                                    <img
+                                                                        src={`${order.users.avatar}${order.users.avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                                        alt={order.users.name}
+                                                                        className="w-full h-full object-cover"
+                                                                        onError={e => {
+                                                                            (
+                                                                                e.currentTarget as HTMLImageElement
+                                                                            ).style.display =
+                                                                                'none';
+                                                                            e.currentTarget.parentElement!.innerText =
+                                                                                (
+                                                                                    order.users
+                                                                                        ?.name ||
+                                                                                    '?'
+                                                                                )
+                                                                                    .split(' ')
+                                                                                    .filter(Boolean)
+                                                                                    .map(n => n[0])
+                                                                                    .join('')
+                                                                                    .toUpperCase()
+                                                                                    .slice(0, 2);
+                                                                        }}
                                                                     />
-                                                                    <div className="flex flex-col leading-none">
-                                                                        <span className="mb-1">
-                                                                            {t.types.scheduled}
-                                                                        </span>
-                                                                        <span className="text-[10px] opacity-90 font-mono tracking-tight">
-                                                                            {scheduled}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
+                                                                ) : (
+                                                                    <span className="select-none text-2xl">
+                                                                        {order.users.avatar}
+                                                                    </span>
+                                                                )
+                                                            ) : (
+                                                                <span className="select-none text-xl">
+                                                                    {(order.users?.name || t.guest)
+                                                                        .split(' ')
+                                                                        .filter(Boolean)
+                                                                        .map(n => n[0])
+                                                                        .join('')
+                                                                        .toUpperCase()
+                                                                        .slice(0, 2)}
+                                                                </span>
                                                             )}
-                                                            {noCall && (
-                                                                <div className="px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                                                                    <VolumeX size={14} />
-                                                                    {t.types.noCall}
-                                                                </div>
-                                                            )}
-                                                            {noBuzzer && (
-                                                                <div className="px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                                                                    <Smartphone size={14} />
-                                                                    {t.types.noBuzzer}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-black text-gray-900 text-[16px] truncate leading-tight mb-1">
+                                                                {order.users?.name || t.guest}
+                                                            </p>
+                                                            {order.userStats && (
+                                                                <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black border border-blue-100 w-fit uppercase tracking-tighter">
+                                                                    <Calendar
+                                                                        size={12}
+                                                                        strokeWidth={2.5}
+                                                                    />
+                                                                    {t.regDate}{' '}
+                                                                    {new Date(
+                                                                        order.userStats
+                                                                            .registrationDate
+                                                                    ).toLocaleDateString(
+                                                                        dateLocale
+                                                                    )}
                                                                 </div>
                                                             )}
                                                         </div>
-
-                                                        {actualNote && (
-                                                            <div className="bg-amber-50 border-2 border-amber-200/40 rounded-3xl p-5 shadow-inner">
-                                                                <div className="flex items-center gap-3 text-amber-600 mb-3">
-                                                                    <MessageSquare
-                                                                        size={16}
-                                                                        strokeWidth={3}
-                                                                    />
-                                                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">
-                                                                        {t.clientMessage}
-                                                                    </span>
-                                                                </div>
-                                                                <p className="text-[15px] text-amber-900 font-black leading-relaxed relative z-10">
-                                                                    {actualNote}
-                                                                </p>
-                                                            </div>
-                                                        )}
                                                     </div>
-                                                );
-                                            })()}
-                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <p className="text-sm text-gray-900 font-black tabular-nums">
+                                                            {order.phoneNumber}
+                                                        </p>
+                                                        <a
+                                                            href={`https://wa.me/${order.phoneNumber.replace(/\D/g, '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="p-1 px-3 bg-green-50 text-green-700 rounded-xl text-[10px] font-black border border-green-200 hover:bg-green-600 hover:text-white transition-all flex items-center gap-2 shadow-sm active:scale-95 uppercase tracking-widest"
+                                                        >
+                                                            <MessageSquare
+                                                                size={12}
+                                                                strokeWidth={2.5}
+                                                            />
+                                                            {t.whatsapp}
+                                                        </a>
+                                                    </div>
+                                                    {order.users?.email && (
+                                                        <p className="text-[11px] font-bold text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-lg w-fit border border-gray-100">
+                                                            {order.users.email}
+                                                        </p>
+                                                    )}
+                                                </div>
 
-                                    {/* Items del pedido (Receipt Style) */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between gap-3 text-gray-400 mb-4 border-l-4 border-purple-100 pl-3">
-                                            <div className="flex items-center gap-3">
-                                                <ShoppingCart size={16} strokeWidth={2} />
-                                                <span className="text-[11px] font-black uppercase tracking-widest">
-                                                    {t.products} ({order.items?.length || 0})
-                                                </span>
-                                            </div>
-                                            {order.total > 0 &&
-                                                (!order.items || order.items.length === 0) && (
-                                                    <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-xl border border-red-100 animate-pulse">
-                                                        <X size={14} strokeWidth={3} />
-                                                        <span className="text-[9px] font-black uppercase tracking-tighter">
-                                                            {t.corruptOrder}
-                                                        </span>
+                                                {order.userStats && (
+                                                    <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50/50 rounded-3xl border border-gray-100 shadow-inner">
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2 text-gray-400">
+                                                                <ShoppingCart
+                                                                    size={12}
+                                                                    strokeWidth={2}
+                                                                />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">
+                                                                    {t.userStats.orders}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[13px] font-black text-gray-900">
+                                                                {order.userStats.orderCount || 0}
+                                                            </p>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2 text-gray-400">
+                                                                <Wallet size={12} strokeWidth={2} />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">
+                                                                    {t.userStats.invested}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[13px] font-black text-gray-900">
+                                                                {formatCurrency(
+                                                                    order.userStats.totalSpent || 0
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2 text-gray-400">
+                                                                <TrendingUp
+                                                                    size={12}
+                                                                    strokeWidth={2}
+                                                                />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">
+                                                                    {t.userStats.avgTicket}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[13px] font-black text-gray-900">
+                                                                {formatCurrency(
+                                                                    order.userStats.avgCheck || 0
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2 text-gray-400">
+                                                                <Clock size={12} strokeWidth={2} />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">
+                                                                    {t.userStats.frequency}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[10px] font-black text-gray-900 leading-none uppercase tracking-tight">
+                                                                {order.userStats.frequency ||
+                                                                    t.userStats.firstOrder}
+                                                            </p>
+                                                        </div>
+                                                        <div className="col-span-2 pt-3 border-t border-gray-200 mt-1 space-y-1.5">
+                                                            <div className="flex items-center gap-2 text-orange-500">
+                                                                <Heart
+                                                                    size={12}
+                                                                    strokeWidth={3}
+                                                                    fill="currentColor"
+                                                                />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">
+                                                                    {t.userStats.favorite}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[11px] font-black text-gray-900 line-clamp-1 uppercase tracking-tight">
+                                                                {order.userStats.favoriteDish ||
+                                                                    'N/A'}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 )}
-                                        </div>
-                                        <div className="space-y-1 bg-gray-50/50 p-4 rounded-3xl border border-gray-100 shadow-inner">
-                                            {order.items
-                                                ?.filter((item: OrderItem) => {
-                                                    const isDeliveryFee =
-                                                        item.name
-                                                            ?.toLowerCase()
-                                                            .includes('gastos') ||
-                                                        item.name
-                                                            ?.toLowerCase()
-                                                            .includes('envío') ||
-                                                        (item as any).menuItemId === -1 ||
-                                                        (item as any).menu_item_id === -1 ||
-                                                        (item as any).menuItemId === 0 ||
-                                                        !(item as any).menuItemId;
-                                                    return !isDeliveryFee;
-                                                })
-                                                .map((item: OrderItem, idx: number) => {
-                                                    return (
-                                                        <div
-                                                            key={idx}
-                                                            className="flex items-center justify-between gap-3 py-3 border-b border-gray-100 last:border-0 px-4 rounded-2xl transition-all group/item shadow-sm hover:bg-white"
-                                                        >
-                                                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                                <span className="text-[13px] font-black w-8 h-8 flex items-center justify-center rounded-xl shadow-sm transition-all text-orange-600 bg-orange-50 group-hover/item:bg-orange-600 group-hover/item:text-white">
-                                                                    {item.quantity}
-                                                                </span>
-                                                                <span className="text-[13px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
-                                                                    {item.name}
-                                                                </span>
-                                                            </div>
-                                                            <span className="text-[12px] font-black tabular-nums text-gray-400">
-                                                                {formatCurrency(
-                                                                    item.priceAtTime * item.quantity
-                                                                )}
+
+                                                {!isPickup && (
+                                                    <div className="max-w-[300px]">
+                                                        <div className="flex items-center gap-3 text-gray-400 mb-3 border-l-4 border-blue-100 pl-3">
+                                                            <Monitor size={16} strokeWidth={2} />
+                                                            <span className="text-[11px] font-black uppercase tracking-widest">
+                                                                {t.deliveryAddress}
                                                             </span>
                                                         </div>
-                                                    );
-                                                })}
-
-                                            {order.deliveryFee && order.deliveryFee > 0 ? (
-                                                <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">
-                                                            {t.deliveryFee}
-                                                        </span>
-                                                    </div>
-                                                    <span className="text-[12px] font-black text-gray-900 tabular-nums">
-                                                        {formatCurrency(order.deliveryFee)}
-                                                    </span>
-                                                </div>
-                                            ) : null}
-
-                                            {order.total > 0 &&
-                                                (!order.items || order.items.length === 0) && (
-                                                    <div className="p-4 bg-red-50 border-2 border-red-100 rounded-2xl flex flex-col items-center justify-center text-center gap-3 my-2 animate-in zoom-in duration-300">
-                                                        <div className="bg-white p-2 rounded-full shadow-sm">
-                                                            <X
-                                                                size={24}
-                                                                strokeWidth={3}
-                                                                className="text-red-500"
-                                                            />
-                                                        </div>
-                                                        <p className="text-[11px] font-black text-red-900 uppercase tracking-tight leading-tight">
-                                                            {t.corruptOrderDesc}
+                                                        <p className="text-[14px] text-gray-700 leading-relaxed font-black break-words bg-gray-50/30 p-3 rounded-2xl border border-dashed border-gray-100">
+                                                            {order.deliveryAddress}
                                                         </p>
                                                     </div>
                                                 )}
-                                        </div>
-                                    </div>
 
-                                    {/* Actions */}
-                                    <div className="lg:border-l-2 border-dashed border-gray-100 lg:pl-10 flex flex-col justify-start">
-                                        <div className="flex items-center gap-3 text-gray-400 mb-5 border-l-4 border-green-100 pl-3">
-                                            <Activity size={16} strokeWidth={2} />
-                                            <span className="text-[11px] font-black uppercase tracking-widest">
-                                                {t.orderStatus}
-                                            </span>
-                                        </div>
-                                        <div className="relative group/status">
-                                            <select
-                                                data-testid="order-status-select"
-                                                value={order.status}
-                                                onChange={e =>
-                                                    handleUpdateStatus(order.id, e.target.value)
-                                                }
-                                                disabled={statusMutation.isPending}
-                                                className={`w-full px-5 py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-8 focus:ring-gray-100 shadow-md ${
-                                                    statusOptions.find(
-                                                        s => s.value === order.status
-                                                    )?.color ||
-                                                    'bg-white border-gray-200 text-gray-700'
-                                                }`}
-                                            >
-                                                {statusOptions.map(opt => (
-                                                    <option
-                                                        key={opt.value}
-                                                        value={opt.value}
-                                                        className="bg-white text-gray-900 font-black uppercase tracking-widest"
+                                                <div className="space-y-4">
+                                                    <div className="flex flex-wrap gap-2.5 mb-2">
+                                                        <div
+                                                            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${isPickup ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-700 border-gray-200'}`}
+                                                        >
+                                                            {isPickup ? (
+                                                                <Store size={14} />
+                                                            ) : (
+                                                                <Truck size={14} />
+                                                            )}
+                                                            {isPickup
+                                                                ? t.types.recogida
+                                                                : t.types.domicilio}
+                                                        </div>
+                                                        {paymentMethod && (
+                                                            <div
+                                                                className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${paymentMethod.includes('TARJETA') ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
+                                                            >
+                                                                <Wallet size={14} />
+                                                                {paymentMethod.toUpperCase()}
+                                                            </div>
+                                                        )}
+                                                        {scheduled && (
+                                                            <div className="px-4 py-3 rounded-2xl bg-orange-600 text-white border-2 border-orange-700/50 text-[11px] font-black uppercase tracking-widest flex items-center gap-3 shadow-md">
+                                                                <Clock size={18} strokeWidth={3} />
+                                                                <div className="flex flex-col leading-none">
+                                                                    <span className="mb-1">
+                                                                        {t.types.scheduled}
+                                                                    </span>
+                                                                    <span className="text-[10px] opacity-90 font-mono tracking-tight">
+                                                                        {scheduled}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {noCall && (
+                                                            <div className="px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                                                <VolumeX size={14} />
+                                                                {t.types.noCall}
+                                                            </div>
+                                                        )}
+                                                        {noBuzzer && (
+                                                            <div className="px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 border border-gray-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                                                <Smartphone size={14} />
+                                                                {t.types.noBuzzer}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {actualNote && (
+                                                        <div className="bg-amber-50 border-2 border-amber-200/40 rounded-3xl p-5 shadow-inner">
+                                                            <div className="flex items-center gap-3 text-amber-600 mb-3">
+                                                                <MessageSquare
+                                                                    size={16}
+                                                                    strokeWidth={3}
+                                                                />
+                                                                <span className="text-[11px] font-black uppercase tracking-[0.2em]">
+                                                                    {t.clientMessage}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[15px] text-amber-900 font-black leading-relaxed relative z-10">
+                                                                {actualNote}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Column 2: Products */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between gap-3 text-gray-400 mb-4 border-l-4 border-purple-100 pl-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <ShoppingCart size={16} strokeWidth={2} />
+                                                        <span className="text-[11px] font-black uppercase tracking-widest">
+                                                            {t.products} ({order.items?.length || 0}
+                                                            )
+                                                        </span>
+                                                    </div>
+                                                    {order.total > 0 &&
+                                                        (!order.items ||
+                                                            order.items.length === 0) && (
+                                                            <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-xl border border-red-100 animate-pulse">
+                                                                <X size={14} strokeWidth={3} />
+                                                                <span className="text-[9px] font-black uppercase tracking-tighter">
+                                                                    {t.corruptOrder}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                </div>
+                                                <div className="space-y-1 bg-gray-50/50 p-4 rounded-3xl border border-gray-100 shadow-inner">
+                                                    {order.items
+                                                        ?.filter((item: OrderItem) => {
+                                                            const isDeliveryFee =
+                                                                item.name
+                                                                    ?.toLowerCase()
+                                                                    .includes('gastos') ||
+                                                                item.name
+                                                                    ?.toLowerCase()
+                                                                    .includes('envío') ||
+                                                                (item as any).menuItemId === -1 ||
+                                                                (item as any).menu_item_id === -1 ||
+                                                                (item as any).menuItemId === 0 ||
+                                                                !(item as any).menuItemId;
+                                                            return !isDeliveryFee;
+                                                        })
+                                                        .map((item: OrderItem, idx: number) => {
+                                                            return (
+                                                                <div
+                                                                    key={idx}
+                                                                    className="flex items-center justify-between gap-3 py-3 border-b border-gray-100 last:border-0 px-4 rounded-2xl transition-all group/item shadow-sm hover:bg-white"
+                                                                >
+                                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                                        <span className="text-[13px] font-black w-8 h-8 flex items-center justify-center rounded-xl shadow-sm transition-all text-orange-600 bg-orange-50 group-hover/item:bg-orange-600 group-hover/item:text-white">
+                                                                            {item.quantity}
+                                                                        </span>
+                                                                        <span className="text-[13px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
+                                                                            {item.name}
+                                                                        </span>
+                                                                    </div>
+                                                                    <span className="text-[12px] font-black tabular-nums text-gray-400">
+                                                                        {formatCurrency(
+                                                                            item.priceAtTime *
+                                                                                item.quantity
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        })}
+
+                                                    {order.deliveryFee && order.deliveryFee > 0 ? (
+                                                        <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">
+                                                                    {t.deliveryFee}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-[12px] font-black text-gray-900 tabular-nums">
+                                                                {formatCurrency(order.deliveryFee)}
+                                                            </span>
+                                                        </div>
+                                                    ) : null}
+
+                                                    {order.total > 0 &&
+                                                        (!order.items ||
+                                                            order.items.length === 0) && (
+                                                            <div className="p-4 bg-red-50 border-2 border-red-100 rounded-2xl flex flex-col items-center justify-center text-center gap-3 my-2 animate-in zoom-in duration-300">
+                                                                <div className="bg-white p-2 rounded-full shadow-sm">
+                                                                    <X
+                                                                        size={24}
+                                                                        strokeWidth={3}
+                                                                        className="text-red-500"
+                                                                    />
+                                                                </div>
+                                                                <p className="text-[11px] font-black text-red-900 uppercase tracking-tight leading-tight">
+                                                                    {t.corruptOrderDesc}
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                </div>
+                                            </div>
+
+                                            {/* Column 3: Actions */}
+                                            <div className="lg:border-l-2 border-dashed border-gray-100 lg:pl-10 flex flex-col justify-start">
+                                                <div className="flex items-center gap-3 text-gray-400 mb-5 border-l-4 border-green-100 pl-3">
+                                                    <Activity size={16} strokeWidth={2} />
+                                                    <span className="text-[11px] font-black uppercase tracking-widest">
+                                                        {t.orderStatus}
+                                                    </span>
+                                                </div>
+                                                <div className="relative group/status">
+                                                    <select
+                                                        data-testid="order-status-select"
+                                                        value={order.status}
+                                                        onChange={e =>
+                                                            handleUpdateStatus(
+                                                                order.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        disabled={statusMutation.isPending}
+                                                        className={`w-full px-5 py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-8 focus:ring-gray-100 shadow-md ${
+                                                            statusOptions.find(
+                                                                s => s.value === order.status
+                                                            )?.color ||
+                                                            'bg-white border-gray-200 text-gray-700'
+                                                        }`}
                                                     >
-                                                        {opt.label}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
-                                                <RefreshCw
-                                                    size={18}
-                                                    strokeWidth={3}
-                                                    className={
-                                                        statusMutation.isPending
-                                                            ? 'animate-spin'
-                                                            : 'text-current opacity-40'
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
+                                                        {statusOptions.map(opt => (
+                                                            <option
+                                                                key={opt.value}
+                                                                value={opt.value}
+                                                                className="bg-white text-gray-900 font-black uppercase tracking-widest"
+                                                            >
+                                                                {opt.label}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+                                                        <RefreshCw
+                                                            size={18}
+                                                            strokeWidth={3}
+                                                            className={
+                                                                statusMutation.isPending
+                                                                    ? 'animate-spin'
+                                                                    : 'text-current opacity-40'
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
 
-                                        <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <Globe
-                                                    size={18}
-                                                    strokeWidth={2}
-                                                    className="text-gray-300"
-                                                />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                                                    {t.origin}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2.5 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm">
-                                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ring-4 ring-green-100"></span>
-                                                <p className="text-[10px] font-black text-green-700 uppercase tracking-widest">
-                                                    {t.webDirect}
-                                                </p>
+                                                <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <Globe
+                                                            size={18}
+                                                            strokeWidth={2}
+                                                            className="text-gray-300"
+                                                        />
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                                            {t.origin}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2.5 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm">
+                                                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ring-4 ring-green-100"></span>
+                                                        <p className="text-[10px] font-black text-green-700 uppercase tracking-widest">
+                                                            {t.webDirect}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    );
+                                })()}
                             </div>
                         ))
                     )}
