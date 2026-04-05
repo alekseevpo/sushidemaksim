@@ -325,7 +325,7 @@ export default function HomePage() {
             <div className="bg-black">
                 {/* Hero Section */}
                 <section
-                    className="relative h-[100dvh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
+                    className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
                     style={{ contentVisibility: 'auto' }}
                 >
                     {/* Visual context for SEO */}
@@ -335,7 +335,7 @@ export default function HomePage() {
                     <div className="absolute inset-0 z-0">
                         <div className="absolute inset-0 bg-black/60 z-10" />
                         <motion.div
-                            initial={{ scale: 1.1, opacity: 0 }}
+                            initial={{ scale: 1, opacity: 0 }}
                             animate={{ scale: 1, opacity: 0.4 }}
                             transition={{ duration: 1.5, ease: 'easeOut' }}
                             className="w-full h-full"
