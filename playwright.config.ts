@@ -33,7 +33,7 @@ export default defineConfig({
     webServer: [
         {
             command: process.env.CI
-                ? 'npm run preview -- --port 5173 --host 0.0.0.0'
+                ? 'NODE_ENV=production npm run preview -- --port 5173 --host 0.0.0.0'
                 : 'npm run dev:client',
             url: 'http://localhost:5173',
             reuseExistingServer: !process.env.CI,
