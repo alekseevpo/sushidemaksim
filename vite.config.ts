@@ -97,6 +97,10 @@ export default defineConfig({
             },
         },
     },
+    preview: {
+        host: '0.0.0.0',
+        port: 5173,
+    },
     // @ts-expect-error: Vitest types sometimes conflict with Vite types depending on exact versions
     test: {
         globals: true,
