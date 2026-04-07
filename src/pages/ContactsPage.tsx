@@ -424,8 +424,6 @@ export default function ContactsPage() {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {[
-                                                { name: 'Jueves Santo', date: '2 Abr' },
-                                                { name: 'Viernes Santo', date: '3 Abr' },
                                                 { name: 'Fiesta del Trabajo', date: '1 May' },
                                                 { name: 'Comunidad de Madrid', date: '2 May' },
                                                 { name: 'San Isidro', date: '15 May' },

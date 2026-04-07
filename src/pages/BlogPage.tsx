@@ -7,6 +7,7 @@ import Newsletter from '../components/Newsletter';
 import { BlogSkeleton } from '../components/skeletons/BlogSkeleton';
 import { getOptimizedImageUrl } from '../utils/images';
 import { useBlog } from '../hooks/queries/useBlog';
+import EventBanner from '../components/EventBanner';
 
 export default function BlogPage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -123,6 +124,9 @@ export default function BlogPage() {
                 id="blog-posts-container"
                 className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20 min-h-[600px]"
             >
+                {/* Promo Event Banner */}
+                <EventBanner />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {posts.map((post, index) => (
                         <motion.article
