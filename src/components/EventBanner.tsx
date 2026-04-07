@@ -31,12 +31,12 @@ export default function EventBanner() {
 
                 <h2 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
                     Buffet Libre <br className="hidden md:block" />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500 drop-shadow-sm">
                         Sushi & Bar
                     </span>
                 </h2>
 
-                <p className="text-gray-300 text-sm md:text-base mb-8 max-w-lg font-medium leading-relaxed">
+                <p className="text-gray-200 text-sm md:text-base mb-8 max-w-lg font-medium leading-relaxed drop-shadow-md">
                     Un día especial celebrando con un <strong>Buffet Abierto todo incluido</strong>.
                     Disfruta sin límite de nuestros mejores sushis, rollos, ensaladas y aperitivos
                     fríos o calientes.
@@ -45,7 +45,7 @@ export default function EventBanner() {
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-2">
+                    <div className="bg-gray-900/60 backdrop-blur-sm border border-white/10 rounded-2xl p-4 flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-orange-400 mb-1">
                             <Coffee size={16} strokeWidth={2.5} />
                             <h4 className="text-xs font-black uppercase tracking-wider">
@@ -61,7 +61,7 @@ export default function EventBanner() {
                         </p>
                     </div>
 
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-2">
+                    <div className="bg-gray-900/60 backdrop-blur-sm border border-white/10 rounded-2xl p-4 flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-amber-400 mb-1">
                             <Beer size={16} strokeWidth={2.5} />
                             <h4 className="text-xs font-black uppercase tracking-wider">
@@ -86,14 +86,14 @@ export default function EventBanner() {
                         RESERVAR MI PLAZA
                         <ArrowRight size={18} strokeWidth={2.5} />
                     </button>
-                    <div className="flex items-center gap-2 text-gray-500 text-[10px] uppercase font-bold tracking-widest max-w-[200px] text-center sm:text-left leading-tight">
+                    <div className="flex items-center gap-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest max-w-[200px] text-center sm:text-left leading-tight">
                         <Info size={14} className="shrink-0" />
                         Plazas muy limitadas
                     </div>
                 </div>
             </div>
 
-            {/* Image Section */}
+            {/* Desktop Image Section */}
             <div className="relative h-64 md:h-auto md:w-2/5 overflow-hidden hidden md:block">
                 <div className="absolute inset-0 bg-gradient-to-r from-gray-900 to-transparent z-10 w-24"></div>
                 <img
@@ -105,13 +105,14 @@ export default function EventBanner() {
                 />
             </div>
 
-            {/* Mobile Image (shown only on small screens) */}
-            <div className="relative h-48 md:hidden w-full overflow-hidden block">
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent z-10 h-24 bottom-0"></div>
+            {/* Mobile Image (Background behind text) */}
+            <div className="absolute inset-0 md:hidden z-0 overflow-hidden rounded-[2rem]">
+                <div className="absolute inset-0 bg-gray-900/80 z-10 backdrop-blur-[2px]"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent z-20"></div>
                 <img
                     src={getOptimizedImageUrl('/sushi-hero.webp', 600)}
                     alt="Buffet Libre Sushi de Maksim"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+                    className="w-full h-full object-cover opacity-60"
                     loading="lazy"
                     decoding="async"
                 />
