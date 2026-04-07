@@ -60,11 +60,26 @@ jobs:
                   node-version: '20'
                   cache: 'npm'
 
-            - name: Install dependencies
+
+            - name: Install root dependencies
               run: npm ci
 
-            - name: Install backend dependencies
+            - name: Cache Server dependencies
+              id: server-cache
+              uses: actions/cache@v4
+              with:
+                  path: server/node_modules
+                  key: server-${{ runner.os }}-${{ hashFiles('server/package-lock.json') }}
+
+            - name: Install server dependencies
+              if: steps.server-cache.outputs.cache-hit != 'true'
               run: cd server && npm install
+
+            - name: Build frontend for E2E
+              run: npm run build
+
+            - name: Build backend for E2E
+              run: cd server && npm run build
 
             - name: Cache Playwright Browsers
               id: playwright-cache

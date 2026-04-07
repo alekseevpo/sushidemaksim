@@ -32,13 +32,13 @@ export default defineConfig({
     /* Run your local dev server before starting the tests */
     webServer: [
         {
-            command: 'npm run dev:client',
+            command: process.env.CI ? 'npm run preview' : 'npm run dev:client',
             url: 'http://localhost:5173',
             reuseExistingServer: !process.env.CI,
             timeout: 120_000,
         },
         {
-            command: 'npm run dev:server',
+            command: process.env.CI ? 'cd server && npm run start' : 'npm run dev:server',
             url: 'http://localhost:3001/api/health',
             reuseExistingServer: !process.env.CI,
             timeout: 120_000,
