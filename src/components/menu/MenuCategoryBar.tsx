@@ -67,7 +67,7 @@ export default function MenuCategoryBar({
                 <div className="max-w-7xl mx-auto">
                     <LayoutGroup id="mobile-categories-new" inherit={false}>
                         <div
-                            className="overflow-x-auto no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain touch-pan-x"
+                            className="overflow-x-auto overflow-y-hidden no-scrollbar snap-x snap-proximity py-3 flex items-center overscroll-contain touch-pan-x"
                             data-lenis-prevent
                             data-lenis-prevent-touch
                         >

@@ -152,6 +152,7 @@ export default function Header() {
 
     const isHome = location.pathname === '/';
     const isProfile = location.pathname === '/profile';
+    const isMenu = location.pathname === '/menu' || location.pathname.startsWith('/menu/');
     const isTransparentHeaderPage = isHome || isProfile;
     const hasToken = !!localStorage.getItem('sushi_token');
     const showSkeleton = authLoading || (hasToken && !user);
@@ -163,10 +164,18 @@ export default function Header() {
                 className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
                 ${
                     isScrolled
-                        ? 'bg-[#FBF7F0] shadow-sm border-b border-gray-200'
+                        ? `bg-[#FBF7F0] ${
+                              isMenu
+                                  ? 'md:shadow-sm md:border-b md:border-gray-200 border-b-0 shadow-none'
+                                  : 'shadow-sm border-b border-gray-200'
+                          }`
                         : isTransparentHeaderPage
                           ? 'bg-transparent border-b border-transparent'
-                          : 'bg-[#FBF7F0] border-b border-gray-100'
+                          : `bg-[#FBF7F0] ${
+                                isMenu
+                                    ? 'md:border-b md:border-gray-100 border-b-0 shadow-none'
+                                    : 'border-b border-gray-100'
+                            }`
                 }
             `}
             >
