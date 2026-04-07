@@ -7,7 +7,7 @@ import Newsletter from '../components/Newsletter';
 import RatingsBanner from '../components/RatingsBanner';
 import ReviewsSEO from '../components/ReviewsSEO';
 import { useCart } from '../hooks/useCart';
-import { useMenu, useCategories, MenuItem } from '../hooks/queries/useMenu';
+import { usePopularItems, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ProductCard from '../components/menu/ProductCard';
 import ShareModal from '../components/menu/ShareModal';
 import { getOptimizedImageUrl } from '../utils/images';
@@ -109,16 +109,11 @@ export default function HomePage() {
     const [copying, setCopying] = useState(false);
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
-    // Use TanStack Query
-    const { data: allItems = [], isLoading: itemsLoading } = useMenu('all', '');
+    // Use TanStack Query — fetch only popular items instead of entire catalog
+    const { data: popularItems = [], isLoading: itemsLoading } = usePopularItems(8);
     const { data: categoriesData = [], isLoading: catsLoading } = useCategories();
     const { data: settings } = useSettings();
     const isLoading = itemsLoading || catsLoading;
-
-    // Memoize the filtering for better performance
-    const popularItems = useMemo(() => {
-        return allItems.filter((item: any) => item.isPopular).slice(0, 8);
-    }, [allItems]);
 
     const categoriesWithImages = useMemo(() => {
         // Hardcoded mapping for homepage to ensure premium look if DB fallback fails
@@ -186,23 +181,13 @@ export default function HomePage() {
                     .replace(/[^a-z0-9-]/g, '')
                     .replace(/-+/g, '-');
 
-                // Try to find a representative item from allItems (using case-insensitive match)
-                // This is a fallback if cat.image is empty from the API
-                const representativeItem = !cat.image
-                    ? allItems.find((item: any) => {
-                          const itemCat = String(item.category || '').toLowerCase();
-                          return itemCat.includes(catId) || catId.includes(itemCat);
-                      })
-                    : null;
+                // Category images come from the API or hardcoded fallbacks.
+                // No need to scan full menu catalog.
 
                 return {
                     ...cat,
                     catId, // Store normalized ID for sorting
-                    image:
-                        cat.image ||
-                        representativeItem?.image ||
-                        TOP_CATEGORY_FALLBACKS[catId] ||
-                        null,
+                    image: cat.image || TOP_CATEGORY_FALLBACKS[catId] || null,
                 };
             })
             .sort((a: any, b: any) => {
@@ -217,7 +202,7 @@ export default function HomePage() {
                 // Fallback to alphabetical for unknown categories
                 return String(a.name).localeCompare(String(b.name));
             });
-    }, [categoriesData, allItems]);
+    }, [categoriesData]);
 
     // 2. Pre-calculate the slice for rendering
     const categoryList = useMemo(() => {
@@ -396,24 +381,13 @@ export default function HomePage() {
                         </motion.div>
                     </div>
 
-                    {/* Scroll Down Indicator */}
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                            delay: 1.5,
-                            duration: 1,
-                            repeat: Infinity,
-                            repeatType: 'reverse',
-                        }}
-                        className="absolute bottom-10 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none"
-                        style={{ willChange: 'transform, opacity' }}
-                    >
+                    {/* Scroll Down Indicator — CSS-only for perf (avoid FM infinite loop) */}
+                    <div className="absolute bottom-10 inset-x-0 flex flex-col items-center justify-center gap-1.5 text-white/40 pointer-events-none animate-pulse">
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-center ml-[0.3em]">
                             Scrollea
                         </span>
                         <ArrowRight className="rotate-90" size={16} />
-                    </motion.div>
+                    </div>
                 </section>
 
                 <Marquee />
@@ -606,9 +580,12 @@ export default function HomePage() {
                         viewport={{ once: true }}
                         className="relative h-[300px] md:h-[500px] rounded-[3rem] overflow-hidden order-last lg:order-first"
                     >
-                        <img
-                            src={getOptimizedImageUrl('/blog_post_chef_hands.jpg', 1000)}
-                            alt="Reserva tu mesa"
+                        <SafeImage
+                            src="/blog_post_chef_hands.jpg"
+                            getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 1000)}
+                            alt="Reserva tu mesa — Sushi de Maksim Madrid"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -765,16 +742,17 @@ export default function HomePage() {
                         className="relative px-4"
                     >
                         <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
-                            <img
-                                src={getOptimizedImageUrl('/blog_post_chef_hands.jpg', 800)}
-                                alt="Preparación artesanal de sushi"
+                            <SafeImage
+                                src="/blog_post_chef_hands.jpg"
+                                getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 800)}
+                                alt="Preparación artesanal de sushi — Sushi de Maksim"
                                 loading="lazy"
                                 decoding="async"
                                 className="w-full h-full object-cover"
                             />
                         </div>
                         {/* Floating Badge */}
-                        <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-2xl border border-gray-100 max-w-[160px] md:max-w-[200px] animate-bounce duration-[3000ms]">
+                        <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-2xl border border-gray-100 max-w-[160px] md:max-w-[200px] animate-float">
                             <div className="flex gap-1 mb-1 md:mb-2">
                                 {[1, 2, 3, 4, 5].map(i => (
                                     <Star

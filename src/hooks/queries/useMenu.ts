@@ -93,3 +93,14 @@ export const useCategories = () => {
         staleTime: 60 * 60 * 1000, // 1 hour
     });
 };
+
+export const usePopularItems = (limit: number = 8) => {
+    return useQuery({
+        queryKey: ['menu', 'popular', limit],
+        queryFn: async () => {
+            const data = await api.get(`/menu?is_popular=true&limit=${limit}`);
+            return data.items as MenuItem[];
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+};

@@ -6,11 +6,50 @@ import { formatMenuItem } from '../utils/helpers.js';
 
 const router = Router();
 
+// ─── In-memory cache for menu data (TTL: 5 min) ────────────────────────────────
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+interface CacheEntry {
+    data: any;
+    expiry: number;
+}
+const menuCache = new Map<string, CacheEntry>();
+
+function getCached(key: string): any | null {
+    const entry = menuCache.get(key);
+    if (entry && entry.expiry > Date.now()) return entry.data;
+    if (entry) menuCache.delete(key);
+    return null;
+}
+
+function setCache(key: string, data: any, ttl: number = CACHE_TTL): void {
+    menuCache.set(key, { data, expiry: Date.now() + ttl });
+}
+
+/** Clear menu cache — called from admin when menu items are updated */
+export function invalidateMenuCache(): void {
+    menuCache.clear();
+}
+
 // GET /api/menu — all items, optional ?category= and ?search= filter
 router.get(
     '/',
     asyncHandler(async (req: Request, res: Response) => {
         const { category, search, is_promo, is_popular, is_chef_choice, limit } = req.query;
+
+        // Build cache key from query params (skip caching search queries)
+        const hasSearch = search && typeof search === 'string' && search.trim().length > 0;
+        const cacheKey = hasSearch
+            ? null
+            : `menu:${category || 'all'}:${is_promo || ''}:${is_popular || ''}:${is_chef_choice || ''}:${limit || ''}`;
+
+        // Try cache first (skip for search queries, they're too dynamic)
+        if (cacheKey) {
+            const cached = getCached(cacheKey);
+            if (cached) {
+                res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+                return res.json(cached);
+            }
+        }
 
         let query = supabase.from('menu_items').select('*');
 
@@ -34,8 +73,8 @@ router.get(
             query = query.limit(parseInt(limit as string));
         }
 
-        if (search && typeof search === 'string' && search.trim().length > 0) {
-            const term = search.trim();
+        if (hasSearch) {
+            const term = (search as string).trim();
             query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
         }
 
@@ -44,7 +83,18 @@ router.get(
         if (error) throw error;
 
         const formatted = (items || []).map(formatMenuItem);
-        res.json({ items: formatted, total: formatted.length });
+        const result = { items: formatted, total: formatted.length };
+
+        // Cache non-search results
+        if (cacheKey) {
+            setCache(cacheKey, result);
+        }
+
+        res.set(
+            'Cache-Control',
+            hasSearch ? 'private, no-cache' : 'public, max-age=300, s-maxage=600'
+        );
+        res.json(result);
     })
 );
 
@@ -52,6 +102,13 @@ router.get(
 router.get(
     '/info/categories',
     asyncHandler(async (_req: Request, res: Response) => {
+        // Try cache first
+        const cached = getCached('menu:categories');
+        if (cached) {
+            res.set('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+            return res.json(cached);
+        }
+
         const { data, error } = await supabase
             .from('menu_items')
             .select('category, image')
@@ -87,14 +144,20 @@ router.get(
             postre: { name: 'Postre', icon: '🍰' },
         };
 
-        const result = Object.entries(counts).map(([cat, count]) => ({
+        const categories = Object.entries(counts).map(([cat, count]) => ({
             id: cat,
             ...(categoryMap[cat] || { name: cat, icon: '📋' }),
             count,
             image: images[cat] || null,
         }));
 
-        res.json({ categories: result });
+        const result = { categories };
+
+        // Cache for 1 hour — categories rarely change
+        setCache('menu:categories', result, 60 * 60 * 1000);
+
+        res.set('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+        res.json(result);
     })
 );
 
@@ -118,6 +181,7 @@ router.get(
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
 
+        res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
         res.json({ item: formatMenuItem(item) });
     })
 );

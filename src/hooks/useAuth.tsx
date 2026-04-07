@@ -133,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         };
         sendHeartbeat();
-        const interval = setInterval(sendHeartbeat, 30000);
+        const interval = setInterval(sendHeartbeat, 180_000); // 3 min
         return () => clearInterval(interval);
     }, [user, logout]);
 

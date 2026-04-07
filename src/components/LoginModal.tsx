@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ========== SUB-COMPONENTS (Memoized for performance) ==========
@@ -604,19 +605,19 @@ export default function LoginModal({
         };
     }, []);
 
+    useBodyScrollLock(isOpen);
+
     useEffect(() => {
         if (isOpen) {
             setMode(initialMode);
-            document.body.style.overflow = 'hidden';
+            // paddingRight logic is kept to prevent layout shift from scrollbar
             document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
         } else {
-            document.body.style.overflow = '';
             document.body.style.paddingRight = '';
             setRecoveryEmail('');
         }
 
         return () => {
-            document.body.style.overflow = '';
             document.body.style.paddingRight = '';
         };
     }, [isOpen, initialMode]);

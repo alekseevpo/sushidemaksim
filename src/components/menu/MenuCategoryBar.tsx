@@ -30,12 +30,26 @@ export default function MenuCategoryBar({
 }: MenuCategoryBarProps) {
     const handleCategoryClick = (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
         if (isMobile) {
-            // Instant horizontal scroll start
-            e.currentTarget.scrollIntoView({
-                behavior: 'smooth',
-                inline: 'center',
-                block: 'nearest',
-            });
+            // Manually scroll the container horizontally to avoid vertical layout jumping bugs
+            // caused by native scrollIntoView on fixed elements in mobile Safari/Chrome.
+            const btn = e.currentTarget;
+            const container = btn.closest('.overflow-x-auto');
+            if (container) {
+                const containerRect = container.getBoundingClientRect();
+                const btnRect = btn.getBoundingClientRect();
+                const scrollLeft =
+                    container.scrollLeft +
+                    btnRect.left -
+                    containerRect.left -
+                    containerRect.width / 2 +
+                    btnRect.width / 2;
+
+                container.scrollTo({
+                    left: scrollLeft,
+                    behavior: 'smooth',
+                });
+            }
+
             // Small micro-delay for selection update to allow smooth scroll start with higher priority
             setTimeout(() => setSelectedCategory(id), 10);
         } else {
@@ -46,7 +60,6 @@ export default function MenuCategoryBar({
     if (isMobile) {
         return (
             <motion.div
-                layout
                 initial={false}
                 className="fixed left-0 right-0 z-[40] bg-[#FBF7F0] border-b border-gray-200 md:hidden shadow-sm select-none"
                 style={{ top: 'var(--header-height, 64px)' }}
@@ -65,22 +78,10 @@ export default function MenuCategoryBar({
                                     onClick={e => handleCategoryClick('all', e)}
                                     className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
                                         selectedCategory === 'all'
-                                            ? 'text-white border-transparent z-10'
+                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20 border-transparent z-10'
                                             : 'bg-white text-gray-500 border-gray-100'
                                     }`}
                                 >
-                                    {selectedCategory === 'all' && (
-                                        <motion.div
-                                            layoutId="active-pill"
-                                            className="absolute inset-0 bg-orange-600 rounded-2xl shadow-lg shadow-orange-600/20 z-0"
-                                            transition={{
-                                                type: 'spring',
-                                                stiffness: 400,
-                                                damping: 35,
-                                                mass: 1,
-                                            }}
-                                        />
-                                    )}
                                     <span className="relative z-10">Todos</span>
                                 </button>
 
@@ -92,22 +93,10 @@ export default function MenuCategoryBar({
                                         onClick={e => handleCategoryClick(cat.id, e)}
                                         className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
                                             selectedCategory === cat.id
-                                                ? 'text-white border-transparent z-10'
+                                                ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20 border-transparent z-10'
                                                 : 'bg-white text-gray-500 border-gray-100'
                                         }`}
                                     >
-                                        {selectedCategory === cat.id && (
-                                            <motion.div
-                                                layoutId="active-pill"
-                                                className="absolute inset-0 bg-orange-600 rounded-2xl shadow-lg shadow-orange-600/20 z-0"
-                                                transition={{
-                                                    type: 'spring',
-                                                    stiffness: 400,
-                                                    damping: 35,
-                                                    mass: 1,
-                                                }}
-                                            />
-                                        )}
                                         <cat.icon
                                             size={16}
                                             strokeWidth={2.5}

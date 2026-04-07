@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, User, CheckCircle2, AlertCircle, Minus, Plus, X } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { api } from '../../utils/api';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
 import CustomDatePicker from '../ui/CustomDatePicker';
@@ -156,16 +157,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
         }
     };
 
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen]);
+    useBodyScrollLock(isOpen);
 
     const today = new Date().toLocaleDateString('en-CA');
 

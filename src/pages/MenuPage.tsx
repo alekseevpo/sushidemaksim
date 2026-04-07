@@ -62,15 +62,19 @@ export default function MenuPage() {
             const isMobile = window.innerWidth < 1024;
             // Use stable predictive offset (compact header 64px + bar 80px/32px)
             const offset = isMobile ? 144 : 96;
-            const targetTop = menuTop.getBoundingClientRect().top + window.scrollY - offset;
+            const targetTop = Math.max(
+                0,
+                menuTop.getBoundingClientRect().top + window.scrollY - offset
+            );
 
-            requestAnimationFrame(() => {
-                if ((window as any).lenis) {
-                    (window as any).lenis.scrollTo(targetTop, { duration: 1.2 });
-                } else {
-                    window.scrollTo({ top: targetTop, behavior: 'smooth' });
-                }
-            });
+            // Using instant scroll avoids the "jump from bottom" visual glitch
+            // that occurs when the DOM drastically shrinks in height (e.g. going from "All" to a small category)
+            // while a long smooth-scroll animation is trying to play.
+            if ((window as any).lenis) {
+                (window as any).lenis.scrollTo(targetTop, { immediate: true });
+            } else {
+                window.scrollTo({ top: targetTop, behavior: 'instant' });
+            }
         }
     }, [selectedCategory, user?.id]);
 
@@ -84,15 +88,16 @@ export default function MenuPage() {
             if (menuTop) {
                 const isMobile = window.innerWidth < 1024;
                 const offset = isMobile ? 144 : 96;
-                const targetTop = menuTop.getBoundingClientRect().top + window.scrollY - offset;
+                const targetTop = Math.max(
+                    0,
+                    menuTop.getBoundingClientRect().top + window.scrollY - offset
+                );
 
-                requestAnimationFrame(() => {
-                    if ((window as any).lenis) {
-                        (window as any).lenis.scrollTo(targetTop, { duration: 1.2 });
-                    } else {
-                        window.scrollTo({ top: targetTop, behavior: 'smooth' });
-                    }
-                });
+                if ((window as any).lenis) {
+                    (window as any).lenis.scrollTo(targetTop, { immediate: true });
+                } else {
+                    window.scrollTo({ top: targetTop, behavior: 'instant' });
+                }
             }
         }
     }, [debouncedSearch, isLoading, items.length]);

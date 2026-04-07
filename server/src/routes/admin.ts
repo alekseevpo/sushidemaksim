@@ -18,6 +18,7 @@ import {
     getMadridStartOfDay,
     getMadridYesterdayStartOfDay,
 } from '../utils/helpers.js';
+import { invalidateMenuCache } from './menu.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -157,6 +158,7 @@ router.post(
             throw error;
         }
         res.status(201).json({ item: formatMenuItem(item) });
+        invalidateMenuCache();
     })
 );
 
@@ -239,6 +241,7 @@ router.put(
         }
 
         res.json({ item: formatMenuItem(item) });
+        invalidateMenuCache();
     })
 );
 
@@ -268,6 +271,7 @@ router.delete(
             throw error;
         }
         res.json({ success: true, message: `Producto ${id} eliminado` });
+        invalidateMenuCache();
     })
 );
 

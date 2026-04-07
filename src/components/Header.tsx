@@ -754,16 +754,20 @@ export default function Header() {
                 )}
             </header>
 
-            <LoginModal
-                isOpen={isLoginModalOpen}
-                onClose={() => setIsLoginModalOpen(false)}
-                initialMode={loginModalMode}
-            />
+            {isLoginModalOpen && (
+                <LoginModal
+                    isOpen={isLoginModalOpen}
+                    onClose={() => setIsLoginModalOpen(false)}
+                    initialMode={loginModalMode}
+                />
+            )}
 
-            <ReservationModal
-                isOpen={isReservationModalOpen}
-                onClose={() => setIsReservationModalOpen(false)}
-            />
+            {isReservationModalOpen && (
+                <ReservationModal
+                    isOpen={isReservationModalOpen}
+                    onClose={() => setIsReservationModalOpen(false)}
+                />
+            )}
         </>
     );
 }

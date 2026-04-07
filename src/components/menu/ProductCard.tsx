@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Heart, Share2, Sparkles, Check, Plus, Minus } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
@@ -21,7 +21,7 @@ interface ProductCardProps {
     onZoom?: () => void;
 }
 
-export default function ProductCard({
+const ProductCard = React.memo(function ProductCard({
     item,
     user,
     isFavorite,
@@ -199,4 +199,6 @@ export default function ProductCard({
             </div>
         </div>
     );
-}
+});
+
+export default ProductCard;
