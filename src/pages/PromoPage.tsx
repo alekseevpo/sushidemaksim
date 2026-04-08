@@ -212,13 +212,11 @@ export default function PromoPage() {
                     <div className="w-full max-w-[320px] lg:max-w-[400px] shrink-0 grid grid-cols-2 gap-3 lg:gap-4 relative z-10 mx-auto">
                         {/* Image 1 */}
                         <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl border-4 border-white/30 relative group-hover:-translate-y-2 group-hover:-rotate-2 transition-all duration-500 bg-white">
-                            <img
-                                src={getOptimizedImageUrl(
-                                    'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682529547-664.webp',
-                                    400
-                                )}
+                            <SafeImage
+                                src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp"
                                 alt="Rollo Frito 1"
                                 className="w-full h-full object-cover"
+                                getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 400)}
                             />
                             <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">
                                 1
@@ -226,13 +224,11 @@ export default function PromoPage() {
                         </div>
                         {/* Image 2 */}
                         <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl border-4 border-white/30 relative group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500 delay-[50ms] bg-white">
-                            <img
-                                src={getOptimizedImageUrl(
-                                    'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682745971-320.webp',
-                                    400
-                                )}
+                            <SafeImage
+                                src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682745971-320.webp"
                                 alt="Rollo Frito 2"
                                 className="w-full h-full object-cover scale-110"
+                                getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 400)}
                             />
                             <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">
                                 2
@@ -240,13 +236,11 @@ export default function PromoPage() {
                         </div>
                         {/* Image 3 */}
                         <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl border-4 border-white/30 relative group-hover:-translate-y-2 group-hover:-rotate-1 transition-all duration-500 delay-[100ms] bg-white">
-                            <img
-                                src={getOptimizedImageUrl(
-                                    'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773686290480-300.webp',
-                                    400
-                                )}
+                            <SafeImage
+                                src="https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773686290480-300.webp"
                                 alt="Rollo Frito 3"
                                 className="w-full h-full object-cover scale-110"
+                                getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 400)}
                             />
                             <div className="absolute top-2 left-2 lg:top-3 lg:left-3 bg-black/70 backdrop-blur-sm text-white font-black text-[10px] lg:text-xs px-2.5 py-1 rounded-full shadow-lg">
                                 3

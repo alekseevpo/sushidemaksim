@@ -141,11 +141,10 @@ export default function Header() {
         { to: '/menu', label: 'Menú', icon: Menu },
         { to: '/blog', label: 'Blog', icon: BookOpen },
         { to: '/contacts', label: 'Contactos', icon: Phone },
-        { to: '/promo', label: 'Promo', highlight: true, icon: Star },
+        { to: '/promo', label: 'Promo', icon: Star },
         {
             label: 'Reserva',
             onClick: () => setIsReservationModalOpen(true),
-            highlight: true,
             icon: Calendar,
         },
     ];
@@ -229,13 +228,9 @@ export default function Header() {
                                     ${
                                         isActive
                                             ? 'text-white shadow-inner'
-                                            : link.highlight
-                                              ? isTransparentHeaderPage && !isScrolled
-                                                  ? 'text-white bg-white/10 hover:bg-white/20 active:scale-95'
-                                                  : 'text-orange-600 hover:text-orange-700'
-                                              : isScrolled || !isTransparentHeaderPage
-                                                ? 'text-gray-600 hover:text-gray-900'
-                                                : 'text-white/80 hover:text-white'
+                                            : isScrolled || !isTransparentHeaderPage
+                                              ? 'text-gray-600 hover:text-gray-900'
+                                              : 'text-white/80 hover:text-white'
                                     }`;
 
                                 if (isAction) {

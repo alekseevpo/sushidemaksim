@@ -46,14 +46,14 @@ export default function StoreStatusBanner() {
         return () => clearInterval(timer);
     }, []);
 
-    const isStoreClosed = !!settings?.is_store_closed;
+    const isStoreClosed = !!settings?.is_store_closed || !!settings?.isStoreClosed;
 
     if (isAdminRoute || !isStoreClosed || !isVisible) {
         return null;
     }
 
     const todayDay = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
-    const schedule = settings?.contact_schedule || [];
+    const schedule = settings?.contactSchedule || settings?.contact_schedule || [];
     const todaySchedule = schedule.find((s: any) => s.days.toLowerCase().includes(todayDay));
 
     return (

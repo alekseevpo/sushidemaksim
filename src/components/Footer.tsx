@@ -27,6 +27,13 @@ export default function Footer() {
             hover: 'hover:bg-pink-500/20 hover:border-pink-500/30',
         },
         {
+            id: 'telegram',
+            name: 'Telegram',
+            icon: '/telegram.png',
+            url: 'https://t.me/sushidemaksim',
+            hover: 'hover:bg-blue-500/20 hover:border-blue-500/30',
+        },
+        {
             id: 'thefork',
             name: 'The Fork',
             icon: '/fork.png',

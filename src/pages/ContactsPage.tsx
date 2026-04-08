@@ -11,6 +11,7 @@ import {
     Send,
     Calendar,
     Loader2,
+    HelpCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../hooks/queries/useSettings';
@@ -38,52 +39,45 @@ const iconMap: Record<string, any> = {
             <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
         </svg>
     ),
-    instagram: Instagram,
-    facebook: Facebook,
-    thefork: Utensils,
+    telegram: (props: any) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <path d="M22 2L11 13" />
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+        </svg>
+    ),
+    instagram: (props: any) => <Instagram {...props} />,
+    facebook: (props: any) => <Facebook {...props} />,
+    thefork: (props: any) => <Utensils {...props} />,
 };
 
-const ContactInfoCard = ({
-    icon: Icon,
-    title,
-    content,
-    subContent,
-    link,
-    linkText,
-    colorClass,
-    delay,
-}: any) => (
-    <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay }}
-        className="premium-card p-6 md:p-8 flex flex-col group"
-    >
-        <div
-            className={`w-12 h-12 ${colorClass} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
-        >
-            <Icon size={24} strokeWidth={1.5} className="text-gray-900" />
-        </div>
-        <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">{title}</h3>
-        <p className="text-gray-900 font-bold mb-1">{content}</p>
-        <p className="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">{subContent}</p>
-        {link && (
-            <a
-                href={link}
-                target={link.startsWith('http') ? '_blank' : undefined}
-                rel={link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className="text-sm font-black text-orange-600 hover:text-black inline-flex items-center gap-2 transition-colors group/link"
-            >
-                {linkText}
-                <ArrowRight
-                    size={14}
-                    className="group-hover/link:translate-x-1 transition-transform"
-                />
-            </a>
-        )}
-    </motion.div>
-);
+const MADRID_HOLIDAYS_2026 = [
+    { name: 'Año Nuevo', date: '2026-01-01' },
+    { name: 'Epifanía del Señor', date: '2026-01-06' },
+    { name: 'San José', date: '2026-03-19' },
+    { name: 'Jueves Santo', date: '2026-04-02' },
+    { name: 'Viernes Santo', date: '2026-04-03' },
+    { name: 'Fiesta del Trabajo', date: '2026-05-01' },
+    { name: 'Fiesta de la Comunidad de Madrid', date: '2026-05-02' },
+    { name: 'San Isidro', date: '2026-05-15' },
+    { name: 'Asunción de la Virgen', date: '2026-08-15' },
+    { name: 'Fiesta Nacional de España', date: '2026-10-12' },
+    { name: 'Día de Todos los Santos', date: '2026-11-02' },
+    { name: 'Nuestra Señora de la Almudena', date: '2026-11-09' },
+    { name: 'Día de la Constitución', date: '2026-12-07' },
+    { name: 'Inmaculada Concepción', date: '2026-12-08' },
+    { name: 'Natividad del Señor', date: '2026-12-25' },
+];
 
 export default function ContactsPage() {
     const { success: showSuccess, error: showError } = useToast();
@@ -100,12 +94,38 @@ export default function ContactsPage() {
     const addressLine2 = settings?.contactAddressLine2 || '28007 Madrid España';
     const currentPhone = settings?.contactPhone || '+34 631 920 312';
     const currentEmail = settings?.contactEmail || 'info@sushidemaksim.com';
-    const contactSchedule = settings?.contactSchedule || [];
+    const contactSchedule =
+        settings?.contactSchedule && settings.contactSchedule.length > 0
+            ? settings.contactSchedule
+            : [
+                  { days: 'Miércoles - Domingo', hours: '14:00 - 23:00' },
+                  { days: 'Lunes - Martes', hours: 'Cerrado', closed: true },
+              ];
 
     const fullAddress = `${addressLine1} ${addressLine2}`.trim();
     const mapsUrl =
         settings?.contactGoogleMapsUrl ||
         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
+
+    const upcomingHolidays = MADRID_HOLIDAYS_2026.filter(h => {
+        const hDate = new Date(h.date);
+        const today = new Date();
+        // Show holidays from current month and next month
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+
+        const isCurrentOrFutureMonth =
+            (hDate.getMonth() >= currentMonth && hDate.getFullYear() === currentYear) ||
+            hDate.getFullYear() > currentYear;
+
+        // Only show if it hasn't passed today
+        const hasNotPassed = hDate.getTime() >= today.setHours(0, 0, 0, 0);
+
+        // Limit to current and next month for compact view
+        const isWithinRange = hDate.getMonth() <= currentMonth + 1;
+
+        return isCurrentOrFutureMonth && hasNotPassed && isWithinRange;
+    }).slice(0, 3); // Max 3 for compactness
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -164,16 +184,14 @@ export default function ContactsPage() {
                             {
                                 '@type': 'OpeningHoursSpecification',
                                 dayOfWeek: [
-                                    'Monday',
-                                    'Tuesday',
                                     'Wednesday',
                                     'Thursday',
                                     'Friday',
                                     'Saturday',
                                     'Sunday',
                                 ],
-                                opens: '12:00',
-                                closes: '23:30',
+                                opens: '14:00',
+                                closes: '23:00',
                             },
                         ],
                     },
@@ -229,46 +247,143 @@ export default function ContactsPage() {
                 </motion.div>
             </section>
 
-            <div className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 md:mb-24">
-                    <ContactInfoCard
-                        icon={Phone}
-                        title="Llámanos"
-                        content={currentPhone}
-                        subContent="Atención telefónica directa para pedidos y consultas."
-                        link={`tel:${currentPhone.replace(/\s/g, '')}`}
-                        linkText="Llamar ahora"
-                        colorClass="bg-amber-100/50"
-                        delay={0.1}
-                    />
-                    <ContactInfoCard
-                        icon={MapPin}
-                        title="Visítanos"
-                        content={fullAddress}
-                        subContent="Nuestra cocina central en el corazón de Retiro."
-                        link={mapsUrl}
-                        linkText="Ver en Google Maps"
-                        colorClass="bg-blue-100/50"
-                        delay={0.2}
-                    />
-                    <ContactInfoCard
-                        icon={Mail}
-                        title="Email"
-                        content={currentEmail}
-                        subContent="Para eventos especiales, colaboraciones o prensa."
-                        link={`mailto:${currentEmail}`}
-                        linkText="Enviar email"
-                        colorClass="bg-orange-100/50"
-                        delay={0.3}
-                    />
-                </div>
+            <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-16 md:-mt-24 relative z-20">
+                {/* Unified Master Contact Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="premium-card p-4 md:p-8 mb-8 md:mb-16 bg-white shadow-2xl shadow-gray-200/50"
+                >
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
+                        {/* Column 1: Info List */}
+                        <div className="space-y-8 md:space-y-10">
+                            <div>
+                                <h3 className="text-xs font-black text-orange-600 uppercase tracking-[0.2em] mb-6">
+                                    Información de Contacto
+                                </h3>
+                                <div className="space-y-6 md:space-y-8">
+                                    {/* Phone Row */}
+                                    <div className="flex items-center gap-4 md:gap-5 group">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-100/50 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                            <Phone size={20} className="text-amber-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">
+                                                Llámanos
+                                            </p>
+                                            <a
+                                                href={`tel:${currentPhone.replace(/\s/g, '')}`}
+                                                className="text-lg md:text-2xl font-black text-gray-900 block hover:text-orange-600 transition-colors"
+                                            >
+                                                {currentPhone}
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Address Row */}
+                                    <div className="flex items-center gap-4 md:gap-5 group">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100/50 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                            <MapPin size={20} className="text-blue-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">
+                                                Visítanos
+                                            </p>
+                                            <a
+                                                href={mapsUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-base md:text-xl font-bold text-gray-900 block hover:text-orange-600 transition-colors leading-tight"
+                                            >
+                                                {fullAddress}
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Email Row */}
+                                    <div className="flex items-center gap-4 md:gap-5 group">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100/50 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                            <Mail size={20} className="text-orange-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">
+                                                Escríbenos
+                                            </p>
+                                            <a
+                                                href={`mailto:${currentEmail}`}
+                                                className="text-base md:text-xl font-bold text-gray-900 block hover:text-orange-600 transition-colors"
+                                            >
+                                                {currentEmail}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Column 2: Social Sidebar */}
+                        <div className="bg-gray-50 rounded-xl md:rounded-[2.5rem] p-6 md:p-10 border border-gray-100/50 flex flex-col items-center justify-center text-center h-full">
+                            <h3 className="text-xl md:text-2xl font-black text-gray-900 mb-2 uppercase tracking-tight">
+                                Conecta con nosotros
+                            </h3>
+                            <p className="text-gray-500 text-xs md:text-sm mb-8 leading-relaxed font-medium max-w-[240px]">
+                                Respuesta rápida por WhatsApp и Telegram.
+                            </p>
+
+                            <div className="flex items-center justify-center gap-6 md:gap-8 mb-8">
+                                <a
+                                    href={`https://wa.me/${currentPhone.replace(/\s/g, '').replace('+', '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-14 h-14 md:w-16 md:h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white hover:scale-110 hover:-rotate-6 transition-all duration-300 shadow-lg shadow-emerald-500/20 active:scale-95"
+                                    title="WhatsApp"
+                                >
+                                    {iconMap.whatsapp({ size: 28, strokeWidth: 2.5 })}
+                                </a>
+
+                                <a
+                                    href="https://t.me/sushidemaksim"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-14 h-14 md:w-16 md:h-16 bg-blue-500 rounded-full flex items-center justify-center text-white hover:scale-110 hover:rotate-6 transition-all duration-300 shadow-lg shadow-blue-500/20 active:scale-95"
+                                    title="Telegram"
+                                >
+                                    {iconMap.telegram({ size: 28, strokeWidth: 2.5 })}
+                                </a>
+
+                                <a
+                                    href="https://www.instagram.com/sushi_de_maksim/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white hover:scale-110 hover:-rotate-6 transition-all duration-300 shadow-lg shadow-pink-500/20 active:scale-95"
+                                    title="Instagram"
+                                >
+                                    {iconMap.instagram({ size: 28, strokeWidth: 2.5 })}
+                                </a>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    const element = document.getElementById('contact-form-section');
+                                    element?.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                className="w-full py-4 md:py-5 bg-gray-900 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-black transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-gray-200"
+                            >
+                                Contactar ahora
+                                <ArrowRight size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
                     <motion.div
+                        id="contact-form-section"
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 px-4 py-8 md:p-10 rounded-[2rem] border border-gray-100 relative overflow-hidden order-2 xl:order-1"
+                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 px-4 py-8 md:p-10 rounded-[2rem] border border-gray-100 relative overflow-hidden order-2 xl:order-1 scroll-mt-24"
                     >
                         <div className="relative z-10">
                             <h2 className="text-2xl md:text-3xl font-black mb-2 tracking-tight">
@@ -383,7 +498,7 @@ export default function ContactsPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100"
+                            className="bg-gray-50 p-5 md:p-8 rounded-[2rem] border border-gray-100"
                         >
                             <div className="flex items-center gap-3 mb-6">
                                 <Clock size={20} className="text-gray-900" />
@@ -391,7 +506,7 @@ export default function ContactsPage() {
                                     Horario
                                 </h3>
                             </div>
-                            <div className="max-w-2xl">
+                            <div className="w-full">
                                 <div className="space-y-4">
                                     {contactSchedule.length > 0 ? (
                                         contactSchedule.map((item: any, idx: number) => (
@@ -414,80 +529,99 @@ export default function ContactsPage() {
                                             Cargando horario...
                                         </p>
                                     )}
+                                </div>
 
-                                    <div className="pt-6 mt-6 border-t border-gray-100">
-                                        <div className="flex items-center gap-2 mb-4 text-orange-600">
-                                            <Calendar size={14} strokeWidth={2.5} />
-                                            <span className="text-[10px] font-black uppercase tracking-widest">
+                                {upcomingHolidays.length > 0 && (
+                                    <div className="mt-10 pt-8 border-t border-gray-100">
+                                        <div className="flex items-center gap-2 mb-6">
+                                            <Calendar
+                                                size={16}
+                                                className="text-orange-600"
+                                                strokeWidth={2.5}
+                                            />
+                                            <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em]">
                                                 Próximos Festivos
-                                            </span>
+                                            </h4>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {[
-                                                { name: 'Fiesta del Trabajo', date: '1 May' },
-                                                { name: 'Comunidad de Madrid', date: '2 May' },
-                                                { name: 'San Isidro', date: '15 May' },
-                                            ].map((holiday, hIdx) => (
-                                                <div
-                                                    key={hIdx}
-                                                    className="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-gray-50"
-                                                >
-                                                    <span className="text-[11px] font-bold text-gray-600">
-                                                        {holiday.name} ({holiday.date})
-                                                    </span>
-                                                    <a
-                                                        href={`https://wa.me/${currentPhone.replace(/\s/g, '').replace('+', '')}?text=${encodeURIComponent(`Hola, me gustaría confirmar el horario para el festivo ${holiday.name} (${holiday.date})`)}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-tight hover:bg-emerald-100 transition-colors border border-emerald-100/50"
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {upcomingHolidays.map((h, i) => {
+                                                const d = new Date(h.date);
+                                                const formattedDate = d.toLocaleDateString(
+                                                    'es-ES',
+                                                    {
+                                                        day: 'numeric',
+                                                        month: 'short',
+                                                    }
+                                                );
+
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 group shadow-sm transition-all hover:border-orange-100 min-h-[64px]"
                                                     >
-                                                        {iconMap.whatsapp({
-                                                            size: 10,
-                                                            strokeWidth: 2.5,
-                                                        })}
-                                                        Consultar
-                                                    </a>
-                                                </div>
-                                            ))}
+                                                        <span className="text-[11px] font-black text-gray-900 leading-tight max-w-[70%] uppercase tracking-tight">
+                                                            {h.name}
+                                                        </span>
+                                                        <span className="shrink-0 px-3 py-1 bg-gray-900 text-white text-[10px] font-black rounded-lg uppercase tracking-tight whitespace-nowrap shadow-sm">
+                                                            {formattedDate}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-                                        <div className="mt-4 flex items-center gap-3 bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm transition-all hover:bg-amber-100/50">
-                                            <div className="w-8 h-8 bg-amber-200 rounded-lg flex items-center justify-center text-amber-900">
-                                                {iconMap.whatsapp({ size: 16, strokeWidth: 2.5 })}
+
+                                        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-gray-100/50 rounded-2xl border border-gray-200 group transition-colors">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-gray-500 shrink-0 shadow-sm">
+                                                    <HelpCircle size={16} strokeWidth={2.5} />
+                                                </div>
+                                                <p className="text-[11px] md:text-xs font-bold text-gray-600 leading-tight">
+                                                    Consultar horario especial en días festivos
+                                                </p>
                                             </div>
-                                            <p className="text-xs text-amber-900 font-black leading-tight m-0">
-                                                Consultar horario especial en días festivos
-                                            </p>
+                                            <a
+                                                href={`https://wa.me/${currentPhone.replace(/\s/g, '').replace('+', '')}?text=${encodeURIComponent('Hola, me gustaría consultar el horario especial para los próximos días festivos.')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#25D366] text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[#128C7E] transition-all shadow-md active:scale-95"
+                                            >
+                                                {iconMap.whatsapp({ size: 14, strokeWidth: 2.5 })}
+                                                Consultar
+                                            </a>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </motion.div>
                     </div>
                 </div>
             </div>
 
-            <section className="px-4 pb-16 md:pb-24">
+            <section className="py-16 md:py-24">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="max-w-7xl mx-auto bg-orange-600 rounded-[2rem] md:rounded-[3rem] px-5 py-10 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-orange-200"
+                    className="max-w-7xl mx-auto px-4 md:px-6"
                 >
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
-                    <div className="relative z-10 max-w-3xl mx-auto">
-                        <h2 className="text-2xl md:text-6xl font-black mb-6 md:mb-8 leading-tight tracking-tighter">
-                            ¿Listo para la experiencia?
-                        </h2>
-                        <p className="text-orange-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
-                            Pide ahora y descubre por qué somos el sushi favorito del centro de
-                            Madrid.
-                        </p>
-                        <Link
-                            to="/menu"
-                            className="inline-block w-full sm:w-auto bg-white text-orange-600 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
-                        >
-                            HACER MI PEDIDO
-                        </Link>
+                    <div className="bg-orange-600 rounded-[2rem] md:rounded-[3rem] px-5 py-10 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-orange-200">
+                        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
+                        <div className="relative z-10 max-w-3xl mx-auto">
+                            <h2 className="text-2xl md:text-6xl font-black mb-6 md:mb-8 leading-tight tracking-tighter">
+                                ¿Listo para la experiencia?
+                            </h2>
+                            <p className="text-orange-100 text-base md:text-xl font-medium mb-10 md:mb-12 opacity-90 leading-relaxed">
+                                Pide ahora y descubre por qué somos el sushi favorito del centro de
+                                Madrid.
+                            </p>
+                            <Link
+                                to="/menu"
+                                className="inline-block w-full sm:w-auto bg-white text-orange-600 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
+                            >
+                                HACER MI PEDIDO
+                            </Link>
+                        </div>
                     </div>
                 </motion.div>
             </section>
