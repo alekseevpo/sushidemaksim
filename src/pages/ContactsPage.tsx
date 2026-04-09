@@ -248,7 +248,7 @@ export default function ContactsPage() {
             </section>
 
             <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-8 md:-mt-14 relative z-20">
-    {/* Unified Master Contact Card */}
+                {/* Unified Master Contact Card */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

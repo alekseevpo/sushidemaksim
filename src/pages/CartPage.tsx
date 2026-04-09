@@ -721,7 +721,9 @@ export default function CartPage() {
                                                 </div>
                                                 <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
                                                     <span>Lunes – Martes</span>
-                                                    <span className="font-bold text-orange-600">Cerrado</span>
+                                                    <span className="font-bold text-orange-600">
+                                                        Cerrado
+                                                    </span>
                                                 </div>
                                             </div>
                                             <p className="mt-3 text-[11px] bg-orange-100/50 px-2 py-1.5 rounded-lg text-orange-900 font-bold inline-block">
