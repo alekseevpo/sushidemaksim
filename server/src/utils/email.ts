@@ -919,3 +919,41 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
         html,
     });
 }
+
+/**
+ * Send a contact form message to the admin.
+ */
+export async function sendContactFormEmail(
+    fromName: string,
+    fromEmail: string,
+    message: string
+): Promise<void> {
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
+  <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+    <div style="background:#111;padding:24px;text-align:center;">
+       <h1 style="color:#fff;margin:0;font-size:20px;">📩 Nuevo Mensaje de Contacto</h1>
+    </div>
+    <div style="padding:32px;">
+      <p style="margin:0 0 16px;"><strong style="color:#374151;">De:</strong> ${fromName} (${fromEmail})</p>
+      <p style="margin:0 0 8px;"><strong style="color:#374151;">Mensaje:</strong></p>
+      <div style="background:#f3f4f6;padding:20px;border-radius:12px;color:#4b5563;line-height:1.6;font-style:italic;">
+        "${message}"
+      </div>
+    </div>
+    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    await sendEmail({
+        to: config.adminEmail,
+        subject: `📩 Mensaje de ${fromName} via sushidemaksim.com`,
+        html,
+    });
+}

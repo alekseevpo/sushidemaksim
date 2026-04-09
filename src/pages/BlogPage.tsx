@@ -98,7 +98,6 @@ export default function BlogPage() {
                         decoding="async"
                         className="w-full h-full object-cover opacity-40 scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
                 </div>
 
                 <motion.div
@@ -122,7 +121,7 @@ export default function BlogPage() {
             {/* Container */}
             <div
                 id="blog-posts-container"
-                className="max-w-7xl mx-auto px-2 md:px-4 -mt-10 relative z-20 min-h-[600px]"
+                className="max-w-7xl mx-auto px-2 md:px-4 -mt-8 md:-mt-14 relative z-20 min-h-[600px]"
             >
                 {/* Promo Event Banner */}
                 <EventBanner />

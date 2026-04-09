@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { sendContactFormEmail } from '../utils/email.js';
 
 const router = Router();
 
@@ -12,9 +13,10 @@ router.post('/', async (req, res) => {
     try {
         // reCAPTCHA verification removed as per user request
 
-        // Process message (e.g., save to DB or send email)
-        // For now, we'll just log it and simulate success
-        console.log(`📩 New message from ${name} (${email}): ${message}`);
+        // Process message: send email to admin
+        await sendContactFormEmail(name, email, message);
+
+        console.log(`📩 New message from ${name} (${email}) sent to admin.`);
 
         return res.json({ message: '¡Mensaje enviado con éxito!' });
     } catch (error) {

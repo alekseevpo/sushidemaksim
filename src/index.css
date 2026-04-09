@@ -5,6 +5,7 @@
 html {
     scrollbar-gutter: stable;
     background-color: #ea580c;
+    height: 100%;
 }
 
 /* Disable backdrop-filter only for users who prefer reduced motion */
@@ -46,6 +47,8 @@ html.lenis body {
         background-color: #fbf7f0;
         overflow-x: clip;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+        min-height: 100%;
+        overscroll-behavior-y: none;
     }
 }
 

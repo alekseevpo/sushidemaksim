@@ -12,7 +12,7 @@ export default function EventBanner() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="w-full bg-gray-900 rounded-[2rem] overflow-hidden shadow-2xl relative mt-8 mb-16 flex flex-col md:flex-row group"
+            className="w-full bg-gray-900 rounded-[2rem] overflow-hidden shadow-2xl relative mt-0 mb-16 flex flex-col md:flex-row group"
         >
             {/* Background Texture/Pattern */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-20 z-0"></div>

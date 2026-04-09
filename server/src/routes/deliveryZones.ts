@@ -163,7 +163,7 @@ router.get(
                         bounded: 1,
                     },
                     headers: {
-                        'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                        'User-Agent': 'SushiDeMaksim-App/1.0 (19fire43@gmail.com)',
                         'Accept-Language': 'es',
                     },
                 });
@@ -184,7 +184,7 @@ router.get(
                             bounded: 1,
                         },
                         headers: {
-                            'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                            'User-Agent': 'SushiDeMaksim-App/1.0 (19fire43@gmail.com)',
                             'Accept-Language': 'es',
                         },
                     });
@@ -208,7 +208,7 @@ router.get(
                                 bounded: 1,
                             },
                             headers: {
-                                'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                                'User-Agent': 'SushiDeMaksim-App/1.0 (19fire43@gmail.com)',
                                 'Accept-Language': 'es',
                             },
                         }
@@ -238,7 +238,7 @@ router.get(
                         bounded: 1,
                     },
                     headers: {
-                        'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                        'User-Agent': 'SushiDeMaksim-App/1.0 (19fire43@gmail.com)',
                         'Accept-Language': 'es',
                     },
                 });
@@ -336,7 +336,7 @@ router.get(
                     addressdetails: 1,
                 },
                 headers: {
-                    'User-Agent': 'SushiDeMaksim-App/1.0 (alekseevpo@gmail.com)',
+                    'User-Agent': 'SushiDeMaksim-App/1.0 (19fire43@gmail.com)',
                 },
             });
 

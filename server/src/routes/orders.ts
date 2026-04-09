@@ -369,7 +369,7 @@ router.post(
             // Admin always gets a copy
             try {
                 await sendOrderReceiptEmail(
-                    'info@sushidemaksim.com',
+                    config.adminEmail,
                     {
                         orderId: orderId,
                         customerName: (fullOrder as any).users?.name || customerName || 'Cliente',

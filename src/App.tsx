@@ -127,7 +127,7 @@ function App() {
                     <CartProvider>
                         <Schema />
                         <PageTracker />
-                        <div className="min-h-[100dvh] bg-[#FBF7F0] flex flex-col">
+                        <div className="min-h-[100svh] bg-[#FBF7F0] flex flex-col">
                             <Analytics />
                             <SpeedInsights />
                             <SmoothScroll />
