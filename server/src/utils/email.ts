@@ -31,9 +31,12 @@ async function sendEmail({
 
     if (resend) {
         try {
+            // Split if it's a comma-separated string
+            const recipients = to.includes(',') ? to.split(',').map(e => e.trim()) : [to];
+
             const { error } = await resend.emails.send({
                 from: defaultFrom,
-                to: [to],
+                to: recipients,
                 subject,
                 html,
             });

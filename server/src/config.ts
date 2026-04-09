@@ -35,7 +35,7 @@ export const config = {
     },
     resendApiKey: process.env.RESEND_API_KEY || '',
     emailFrom: process.env.EMAIL_FROM || 'Sushi de Maksim <info@sushidemaksim.com>',
-    adminEmail: process.env.ADMIN_EMAIL || process.env.SMTP_USER || '19fire43@gmail.com',
+    adminEmail: process.env.ADMIN_EMAIL || '19fire43@gmail.com,maksimsushimadrid@gmail.com',
     supabase: {
         url: process.env.SUPABASE_URL || '',
         key: process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || '',
