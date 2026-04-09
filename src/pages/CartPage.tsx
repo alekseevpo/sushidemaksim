@@ -716,7 +716,11 @@ export default function CartPage() {
                                             </p>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-orange-800/80 font-medium">
                                                 <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Miércoles – Domingo</span>
+                                                    <span>Miércoles – Viernes</span>
+                                                    <span className="font-bold">19:00 – 23:00</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
+                                                    <span>Sábado – Domingo</span>
                                                     <span className="font-bold">14:00 – 23:00</span>
                                                 </div>
                                                 <div className="flex justify-between border-b border-orange-100/30 pb-0.5">

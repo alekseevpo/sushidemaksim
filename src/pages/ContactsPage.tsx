@@ -98,7 +98,8 @@ export default function ContactsPage() {
         settings?.contactSchedule && settings.contactSchedule.length > 0
             ? settings.contactSchedule
             : [
-                  { days: 'Miércoles - Domingo', hours: '14:00 - 23:00' },
+                  { days: 'Miércoles - Viernes', hours: '19:00 - 23:00' },
+                  { days: 'Sábado - Domingo', hours: '14:00 - 23:00' },
                   { days: 'Lunes - Martes', hours: 'Cerrado', closed: true },
               ];
 

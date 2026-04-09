@@ -14,20 +14,21 @@ describe('storeStatus Utility', () => {
             expect(isStoreOpen(monday)).toBe(false);
         });
 
-        it('returns true during business hours (Wednesday 15:00)', () => {
+        it('returns true during business hours (Wednesday 20:00)', () => {
             // Wednesday = 3
             // 2026-04-01 is Wednesday
-            const wednesday = new Date('2026-04-01T15:00:00');
+            const wednesday = new Date('2026-04-01T20:00:00');
             expect(isStoreOpen(wednesday)).toBe(true);
         });
 
-        it('returns false outside business hours (Wednesday 10:00)', () => {
-            const wednesdayMorning = new Date('2026-04-01T10:00:00');
-            expect(isStoreOpen(wednesdayMorning)).toBe(false);
+        it('returns false outside business hours (Wednesday 15:00)', () => {
+            // Wednesday afternoon is now closed (starts at 19:00)
+            const wednesdayAfternoon = new Date('2026-04-01T15:00:00');
+            expect(isStoreOpen(wednesdayAfternoon)).toBe(false);
         });
 
         it('handles boundary cases (exactly at start and end)', () => {
-            const start = new Date('2026-04-01T14:00:00');
+            const start = new Date('2026-04-01T19:00:00');
             const end = new Date('2026-04-01T23:00:00');
             expect(isStoreOpen(start)).toBe(true);
             expect(isStoreOpen(end)).toBe(false); // Should be false because of timeStr < interval.end
@@ -43,8 +44,8 @@ describe('storeStatus Utility', () => {
     describe('isTimeWithinBusinessHours', () => {
         it('validates a time string for a given date', () => {
             const date = new Date('2026-04-01T00:00:00'); // Wednesday
-            expect(isTimeWithinBusinessHours(date, '15:00')).toBe(true);
-            expect(isTimeWithinBusinessHours(date, '10:00')).toBe(false);
+            expect(isTimeWithinBusinessHours(date, '20:00')).toBe(true);
+            expect(isTimeWithinBusinessHours(date, '15:00')).toBe(false);
         });
     });
 
@@ -52,7 +53,7 @@ describe('storeStatus Utility', () => {
         it('finds the next opening time today', () => {
             const wednesdayReady = new Date('2026-04-01T10:00:00'); // Wed 10:00
             const next = getNextOpeningTime(wednesdayReady);
-            expect(next?.getHours()).toBe(14);
+            expect(next?.getHours()).toBe(19);
             expect(next?.getMinutes()).toBe(0);
             expect(next?.getDay()).toBe(3);
         });
@@ -60,9 +61,9 @@ describe('storeStatus Utility', () => {
         it('finds the next opening time tomorrow or later', () => {
             const monday = new Date('2026-03-30T10:00:00'); // Monday
             const next = getNextOpeningTime(monday);
-            // Next is Wednesday at 14:00
+            // Next is Wednesday at 19:00
             expect(next?.getDay()).toBe(3);
-            expect(next?.getHours()).toBe(14);
+            expect(next?.getHours()).toBe(19);
         });
     });
 

@@ -5,9 +5,9 @@
 export const BUSINESS_HOURS: Record<number, { start: string; end: string }[]> = {
     1: [], // Lunes: Cerrado
     2: [], // Martes: Cerrado
-    3: [{ start: '14:00', end: '23:00' }], // Miércoles
-    4: [{ start: '14:00', end: '23:00' }], // Jueves
-    5: [{ start: '14:00', end: '23:00' }], // Viernes
+    3: [{ start: '19:00', end: '23:00' }], // Miércoles
+    4: [{ start: '19:00', end: '23:00' }], // Jueves
+    5: [{ start: '19:00', end: '23:00' }], // Viernes
     6: [{ start: '14:00', end: '23:00' }], // Sábado
     0: [{ start: '14:00', end: '23:00' }], // Domingo
 };
