@@ -106,8 +106,7 @@ export default function EventBanner() {
             </div>
 
             {/* Pure black background for mobile */}
-            <div className="absolute inset-0 md:hidden z-0 bg-black">
-            </div>
+            <div className="absolute inset-0 md:hidden z-0 bg-black"></div>
         </motion.div>
     );
 }

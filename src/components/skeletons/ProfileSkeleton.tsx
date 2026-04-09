@@ -90,4 +90,3 @@ export const ProfileSkeleton = () => (
         </main>
     </div>
 );
-

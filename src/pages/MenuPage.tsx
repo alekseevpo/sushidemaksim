@@ -128,7 +128,7 @@ export default function MenuPage() {
                                     '--header-height'
                                 )
                             ) || 80;
-                        const isMobile = window.innerWidth < 1024;
+
                         const offset = headerHeight + 16;
                         const top = el.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
@@ -307,10 +307,7 @@ export default function MenuPage() {
                     setSelectedCategory={setSelectedCategory}
                 />
 
-                <div
-                    className="flex-1 min-w-0 md:pl-8 pt-4 min-h-[70vh]"
-                    id="menu-content"
-                >
+                <div className="flex-1 min-w-0 md:pl-8 pt-4 min-h-[70vh]" id="menu-content">
                     {/* Header Section with Search */}
                     <div className="mb-4">
                         <MenuSearch
