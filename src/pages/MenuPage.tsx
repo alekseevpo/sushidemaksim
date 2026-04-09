@@ -60,8 +60,8 @@ export default function MenuPage() {
         const menuTop = document.getElementById('menu-content');
         if (menuTop) {
             const isMobile = window.innerWidth < 1024;
-            // Use stable predictive offset (compact header 64px + bar 80px/32px)
-            const offset = isMobile ? 144 : 96;
+            // Use stable predictive offset (compact header 64px + small buffer)
+            const offset = isMobile ? 80 : 80;
             const targetTop = Math.max(
                 0,
                 menuTop.getBoundingClientRect().top + window.scrollY - offset
@@ -87,7 +87,7 @@ export default function MenuPage() {
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
                 const isMobile = window.innerWidth < 1024;
-                const offset = isMobile ? 144 : 96;
+                const offset = isMobile ? 80 : 80;
                 const targetTop = Math.max(
                     0,
                     menuTop.getBoundingClientRect().top + window.scrollY - offset
@@ -129,7 +129,7 @@ export default function MenuPage() {
                                 )
                             ) || 80;
                         const isMobile = window.innerWidth < 1024;
-                        const offset = headerHeight + (isMobile ? 80 : 32);
+                        const offset = headerHeight + 16;
                         const top = el.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
                     }
@@ -308,7 +308,7 @@ export default function MenuPage() {
                 />
 
                 <div
-                    className="flex-1 min-w-0 md:pl-8 pt-20 md:pt-8 min-h-[70vh]"
+                    className="flex-1 min-w-0 md:pl-8 pt-4 min-h-[70vh]"
                     id="menu-content"
                 >
                     {/* Header Section with Search */}

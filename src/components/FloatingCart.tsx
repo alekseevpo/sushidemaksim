@@ -24,7 +24,7 @@ export default function FloatingCart() {
                 >
                     <div className="relative">
                         <ShoppingCart size={20} strokeWidth={1.5} />
-                        <span className="absolute -top-1.5 -right-1.5 bg-white text-orange-600 text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-sm border border-white/20">
                             {itemCount}
                         </span>
                     </div>

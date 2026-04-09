@@ -461,15 +461,11 @@ export default function Header() {
                                 <Link
                                     id="cart-icon"
                                     to="/cart"
-                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] ${
-                                        isScrolled || !isHome
-                                            ? 'text-gray-800 bg-gray-50 hover:bg-gray-100 shadow-sm hover:shadow-md'
-                                            : 'text-white bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md shadow-lg'
-                                    }`}
+                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] text-white bg-orange-600 shadow-lg shadow-orange-600/20 active:scale-95`}
                                 >
-                                    <ShoppingCart size={20} strokeWidth={1.5} />
+                                    <ShoppingCart size={20} strokeWidth={2.5} />
                                     {!cartLoading && total > 0 && (
-                                        <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap">
+                                        <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap text-white">
                                             {total.toFixed(2)} €
                                         </span>
                                     )}
@@ -485,7 +481,7 @@ export default function Header() {
                                                     stiffness: 500,
                                                     damping: 15,
                                                 }}
-                                                className="absolute -top-1.5 -right-1.5 bg-orange-600 text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
+                                                className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
                                             >
                                                 {itemCount}
                                             </motion.span>

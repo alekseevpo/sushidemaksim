@@ -12,10 +12,10 @@ export default function EventBanner() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="w-full bg-gray-900 rounded-[2rem] overflow-hidden shadow-2xl relative mt-0 mb-16 flex flex-col md:flex-row group"
+            className="w-full bg-black rounded-[2rem] overflow-hidden shadow-2xl relative mt-0 mb-16 flex flex-col md:flex-row group"
         >
             {/* Background Texture/Pattern */}
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-20 z-0"></div>
+            {/* No transition pattern - solid black */}
 
             {/* Content Section */}
             <div className="relative z-10 p-8 md:p-12 md:w-3/5 flex flex-col justify-center">
@@ -45,7 +45,7 @@ export default function EventBanner() {
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <div className="bg-gray-900/60 backdrop-blur-sm border border-white/10 rounded-2xl p-4 flex flex-col gap-2">
+                    <div className="bg-[#111111] border border-white/5 rounded-2xl p-4 flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-orange-400 mb-1">
                             <Coffee size={16} strokeWidth={2.5} />
                             <h4 className="text-xs font-black uppercase tracking-wider">
@@ -61,7 +61,7 @@ export default function EventBanner() {
                         </p>
                     </div>
 
-                    <div className="bg-gray-900/60 backdrop-blur-sm border border-white/10 rounded-2xl p-4 flex flex-col gap-2">
+                    <div className="bg-[#111111] border border-white/5 rounded-2xl p-4 flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-amber-400 mb-1">
                             <Beer size={16} strokeWidth={2.5} />
                             <h4 className="text-xs font-black uppercase tracking-wider">
@@ -105,17 +105,8 @@ export default function EventBanner() {
                 />
             </div>
 
-            {/* Mobile Image (Background behind text) */}
-            <div className="absolute inset-0 md:hidden z-0 overflow-hidden rounded-[2rem]">
-                <div className="absolute inset-0 bg-gray-900/80 z-10 backdrop-blur-[2px]"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent z-20"></div>
-                <img
-                    src={getOptimizedImageUrl('/sushi-hero.webp', 600)}
-                    alt="Buffet Libre Sushi de Maksim"
-                    className="w-full h-full object-cover opacity-60"
-                    loading="lazy"
-                    decoding="async"
-                />
+            {/* Pure black background for mobile */}
+            <div className="absolute inset-0 md:hidden z-0 bg-black">
             </div>
         </motion.div>
     );
