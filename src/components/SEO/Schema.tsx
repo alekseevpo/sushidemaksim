@@ -38,21 +38,15 @@ export default function Schema() {
                     openingHoursSpecification: [
                         {
                             '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: ['Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                            opens: '20:00',
+                            dayOfWeek: [
+                                'Wednesday',
+                                'Thursday',
+                                'Friday',
+                                'Saturday',
+                                'Sunday',
+                            ],
+                            opens: '14:00',
                             closes: '23:00',
-                        },
-                        {
-                            '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: 'Saturday',
-                            opens: '14:00',
-                            closes: '17:00',
-                        },
-                        {
-                            '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: 'Sunday',
-                            opens: '14:00',
-                            closes: '17:00',
                         },
                     ],
                     aggregateRating: {

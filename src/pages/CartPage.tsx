@@ -716,20 +716,12 @@ export default function CartPage() {
                                             </p>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-orange-800/80 font-medium">
                                                 <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Miércoles – Viernes</span>
-                                                    <span className="font-bold">20:00 – 23:00</span>
+                                                    <span>Miércoles – Domingo</span>
+                                                    <span className="font-bold">14:00 – 23:00</span>
                                                 </div>
                                                 <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Sábado (Comida)</span>
-                                                    <span className="font-bold">14:00 – 17:00</span>
-                                                </div>
-                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Sábado (Cena)</span>
-                                                    <span className="font-bold">20:00 – 23:00</span>
-                                                </div>
-                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Domingo</span>
-                                                    <span className="font-bold">14:00 – 17:00</span>
+                                                    <span>Lunes – Martes</span>
+                                                    <span className="font-bold text-orange-600">Cerrado</span>
                                                 </div>
                                             </div>
                                             <p className="mt-3 text-[11px] bg-orange-100/50 px-2 py-1.5 rounded-lg text-orange-900 font-bold inline-block">

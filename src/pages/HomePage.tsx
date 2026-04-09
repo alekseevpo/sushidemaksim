@@ -279,16 +279,14 @@ export default function HomePage() {
                         {
                             '@type': 'OpeningHoursSpecification',
                             dayOfWeek: [
-                                'Monday',
-                                'Tuesday',
                                 'Wednesday',
                                 'Thursday',
                                 'Friday',
                                 'Saturday',
                                 'Sunday',
                             ],
-                            opens: '12:00',
-                            closes: '23:30',
+                            opens: '14:00',
+                            closes: '23:00',
                         },
                     ],
                     acceptsReservations: 'true',
