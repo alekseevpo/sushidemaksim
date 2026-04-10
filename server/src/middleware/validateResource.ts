@@ -3,13 +3,12 @@ import { z, ZodError } from 'zod';
 
 /**
  * Middleware for validating request data using Zod schemas.
- * 
+ *
  * Usage:
  * router.post('/path', validateResource(mySchema), handler)
  */
-export const validateResource = 
-    (schema: z.ZodTypeAny) => 
-    async (req: Request, res: Response, next: NextFunction) => {
+export const validateResource =
+    (schema: z.ZodTypeAny) => async (req: Request, res: Response, next: NextFunction) => {
         try {
             await schema.parseAsync({
                 body: req.body,
@@ -19,11 +18,11 @@ export const validateResource =
             next();
         } catch (e: any) {
             if (e instanceof ZodError) {
-                const errors = e.issues.map((err) => ({
+                const errors = e.issues.map(err => ({
                     path: err.path.join('.'),
                     message: err.message,
                 }));
-                
+
                 return res.status(400).json({
                     error: errors[0].message,
                     errors: errors,

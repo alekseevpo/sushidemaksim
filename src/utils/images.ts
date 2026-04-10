@@ -1,4 +1,4 @@
-export function getOptimizedImageUrl(url: string | null | undefined): string {
+export function getOptimizedImageUrl(url: string | null | undefined, _width?: number, _quality?: number): string {
     if (!url) return '';
 
     // Always return the direct URL to avoid Vercel Image Optimization limits (402 errors).
