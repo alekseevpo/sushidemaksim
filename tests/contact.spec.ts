@@ -6,9 +6,9 @@ test.describe('Contact Form (Refactored)', () => {
     });
 
     test('SUCCESS: should send a message with valid data', async ({ page }) => {
-        await page.fill('input[name="name"]', 'Test User');
-        await page.fill('input[name="email"]', 'test@example.com');
-        await page.fill('textarea[name="message"]', 'Hello, this is a test message for the audit.');
+        await page.getByPlaceholder('Nombre completo').fill('Test User');
+        await page.getByPlaceholder('tu@email.com').fill('test@example.com');
+        await page.getByPlaceholder('¿En qué podemos ayudarte?').fill('Hello, this is a test message for the audit.');
 
         // Intercept API call to verify it's working
         await page.route('**/api/contact', async route => {
@@ -26,18 +26,14 @@ test.describe('Contact Form (Refactored)', () => {
     });
 
     test('ERROR: should show validation errors from Zod', async ({ page }) => {
-        // Leave name empty and provide invalid email
-        await page.fill('input[name="email"]', 'invalid-email');
-        await page.fill('textarea[name="message"]', 'Short');
+        // Fill all fields but provide invalid email to trigger Zod validation
+        await page.getByPlaceholder('Nombre completo').fill('Test User');
+        await page.getByPlaceholder('tu@email.com').fill('invalid-email');
+        await page.getByPlaceholder('¿En qué podemos ayudarte?').fill('Short message');
 
         await page.click('button[type="submit"]');
 
-        // The frontend might have its own validation, but we want to see the backend/Zod responses if possible.
-        // However, standard HTML5 validation might kick in first.
-        // Let's check for messages that our Zod schema would produce.
-
-        // If HTML5 validation is present, we might need to bypass it or check for it.
-        // For this test, let's assume we want to see the Zod error for "invalid email"
+        // We expect the Zod error message from the backend (or frontend validation if synced)
         await expect(page.getByText('Email inválido')).toBeVisible();
     });
 });
