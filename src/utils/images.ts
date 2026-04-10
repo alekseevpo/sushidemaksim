@@ -40,10 +40,8 @@ export function getOptimizedImageUrl(
             return baseUrl;
         }
 
-        // Avoid double optimization if already has vercel params
-        if (baseUrl.includes('_vercel/image')) return baseUrl;
-
-        return `/_vercel/image?url=${encodeURIComponent(baseUrl)}&w=${optimizedWidth}&q=${quality}`;
+        // Return direct URL to bypass Vercel 402 limits
+        return baseUrl;
     }
 
     return baseUrl;
