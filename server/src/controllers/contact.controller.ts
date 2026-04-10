@@ -5,7 +5,10 @@ import { processContactMessage } from '../services/contact.service.js';
 /**
  * Controller for handling contact form submission.
  */
-export async function contactHandler(req: Request<{}, {}, ContactInput>, res: Response) {
+export async function contactHandler(
+    req: Request<Record<string, never>, Record<string, never>, ContactInput>,
+    res: Response
+) {
     try {
         await processContactMessage(req.body);
 
