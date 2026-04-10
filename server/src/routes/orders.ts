@@ -426,7 +426,7 @@ router.post(
             waTextParts.push(`Muchas gracias.`);
 
             const waText = encodeURIComponent(waTextParts.join('\n\n'));
-            const whatsappUrl = `https://wa.me/34641518390?text=${waText}`;
+            const whatsappUrl = `https://wa.me/34631920312?text=${waText}`;
 
             res.status(201).json({
                 order: formatOrder(fullOrder),

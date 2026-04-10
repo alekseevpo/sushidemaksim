@@ -361,13 +361,13 @@ export async function sendOrderReceiptEmail(
         <table style="width:100%; border-collapse:collapse; margin-bottom: 16px;">
           <tr>
             <td style="width: 33%; padding: 0 4px;">
-              <a href="https://wa.me/34641518390" style="display: block; background-color: #25D366; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">WhatsApp</a>
+              <a href="https://wa.me/34631920312" style="display: block; background-color: #25D366; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">WhatsApp</a>
             </td>
             <td style="width: 33%; padding: 0 4px;">
               <a href="mailto:info@sushidemaksim.vercel.app" style="display: block; background-color: #ffffff; color: #000000; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Email</a>
             </td>
             <td style="width: 33%; padding: 0 4px;">
-              <a href="tel:+34641518390" style="display: block; background-color: #dc2626; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Llamar</a>
+              <a href="tel:+34631920312" style="display: block; background-color: #dc2626; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Llamar</a>
             </td>
           </tr>
         </table>

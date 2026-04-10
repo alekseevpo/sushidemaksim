@@ -73,28 +73,36 @@ export default function ProductGrid({
                 if (sectionItems.length === 0) return null;
 
                 return (
-                    <div key={cat.id} className="scroll-mt-32" id={`section-${cat.id}`}>
-                        {selectedCategory === 'all' && !search && (
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-gray-100">
-                                    {cat.icon && (
-                                        <cat.icon
-                                            size={24}
-                                            strokeWidth={1.5}
-                                            className="text-orange-600"
-                                        />
-                                    )}
+                    <div key={cat.id} className="scroll-mt-32 md:scroll-mt-40" id={`section-${cat.id}`}>
+                        {/* Always show header when single category is selected, or for each category in 'All' view */}
+                        {(!search || selectedCategory === 'all') && (
+                            <div className="mb-8 md:mb-12">
+                                <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-4">
+                                    <div className="hidden md:flex w-12 h-12 rounded-2xl bg-white shadow-sm items-center justify-center text-2xl border border-gray-100">
+                                        {cat.icon && (
+                                            <cat.icon
+                                                size={24}
+                                                strokeWidth={1.5}
+                                                className="text-orange-600"
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] md:text-xs font-black text-orange-600 uppercase tracking-[0.3em] mb-1">
+                                            Nuestro Menú
+                                        </span>
+                                        <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter italic leading-none">
+                                            {cat.name || CATEGORIES.find(c => c.id === cat.id)?.name}
+                                        </h2>
+                                    </div>
                                 </div>
-                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
-                                    {cat.name}
-                                </h2>
-                                <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
+                                {(cat as any).description && (
+                                    <p className="text-gray-500 text-sm md:text-lg max-w-2xl leading-relaxed font-normal">
+                                        {(cat as any).description}
+                                    </p>
+                                )}
+                                <div className="h-[2px] w-full max-w-[100px] bg-gradient-to-r from-orange-500 to-transparent mt-6 md:mt-8"></div>
                             </div>
-                        )}
-                        {selectedCategory === 'all' && !search && (cat as any).description && (
-                            <p className="text-gray-500 text-sm md:text-base max-w-2xl mb-8 leading-relaxed font-normal -mt-4">
-                                {(cat as any).description}
-                            </p>
                         )}
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-4">
                             {sectionItems.map(item => (

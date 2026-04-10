@@ -28,26 +28,11 @@ export default function MenuSearch({
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="lg:hidden flex items-center justify-between w-full h-16 pt-2"
+                        className="lg:hidden flex items-center justify-end w-full h-16 pt-2"
                     >
-                        <div className="flex flex-col gap-1">
-                            <div className="flex items-baseline gap-2">
-                                <h1 className="text-2xl text-gray-900 font-black tracking-tighter mb-0 italic">
-                                    Nuestro Menú
-                                </h1>
-                                <span className="text-orange-600 font-bold text-base italic whitespace-nowrap">
-                                    {categoryName}
-                                </span>
-                            </div>
-                            {selectedCategory !== 'all' && (
-                                <p className="text-gray-500 text-[10px] font-medium leading-tight max-w-[280px]">
-                                    {CATEGORIES.find(c => c.id === selectedCategory)?.description}
-                                </p>
-                            )}
-                        </div>
                         <button
                             onClick={() => setIsSearchExpanded(true)}
-                            className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors cursor-pointer shrink-0"
+                            className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors cursor-pointer"
                         >
                             <Search size={22} strokeWidth={2} />
                         </button>
@@ -97,22 +82,7 @@ export default function MenuSearch({
             </AnimatePresence>
 
             {/* Desktop Header */}
-            <div className="hidden lg:flex items-center justify-between w-full">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-baseline gap-4">
-                        <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0 whitespace-nowrap italic">
-                            Nuestro Menú
-                        </h1>
-                        <span className="text-orange-600 font-bold text-2xl italic whitespace-nowrap">
-                            {categoryName}
-                        </span>
-                    </div>
-                    {selectedCategory !== 'all' && (
-                        <p className="text-gray-500 text-sm font-medium leading-relaxed max-w-xl">
-                            {CATEGORIES.find(c => c.id === selectedCategory)?.description}
-                        </p>
-                    )}
-                </div>
+            <div className="hidden lg:flex items-center justify-end w-full">
                 <div className="relative w-full max-w-md ml-8">
                     <Search
                         size={18}
@@ -124,7 +94,7 @@ export default function MenuSearch({
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         placeholder="¿Qué te apetece hoy?"
-                        className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-orange-400 focus:shadow-[0_0_0_4_rgba(242,101,34,0.05)] transition-all shadow-sm"
+                        className="w-full pl-12 pr-12 py-3.5 border border-gray-200 rounded-2xl bg-white text-base outline-none focus:border-orange-400 focus:shadow-[0_0_0_4px_rgba(242,101,34,0.05)] transition-all shadow-sm"
                     />
                     {search && (
                         <button
