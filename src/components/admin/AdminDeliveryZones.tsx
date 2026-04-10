@@ -15,6 +15,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import {
     Trash2,
     Settings,
@@ -60,9 +61,78 @@ interface Props {
 }
 
 const ZONES_TRANSLATIONS = {
-    ru: { title: 'Зоны доставки', subtitle: 'Нарисуйте полигоны для определения зон.' },
-    es: { title: 'Zonas de Entrega', subtitle: 'Dibuja polígonos para definir las áreas.' },
-};
+    ru: {
+        title: 'Зоны доставки',
+        subtitle: 'Нарисуйте полигоны для определения зон.',
+        newRadiusZone: 'Новая зона (радиус)',
+        refresh: 'Обновить',
+        loading: 'Загрузка карты зон...',
+        savedCount: 'сохраненных зон',
+        noZones:
+            'Зоны не определены. Используйте инструмент рисования (полигон), чтобы создать новую.',
+        shipping: 'Доставка',
+        min: 'Мин',
+        free: 'Бесплатно',
+        distance: 'Дистанция',
+        deleteConfirm: 'Удалить эту зону?',
+        deleteSuccess: 'Зона удалена',
+        saveSuccess: 'Зона успешно сохранена',
+        saveError: 'Ошибка при сохранении зоны',
+        modal: {
+            title: 'Настройка зоны',
+            type: 'Тип зоны',
+            polygon: 'Полигон (вручную)',
+            radius: 'Радиус (круг)',
+            name: 'Название зоны',
+            minRadius: 'Мин. радиус (км)',
+            maxRadius: 'Макс. радиус (км)',
+            cost: 'Цена доставки (€)',
+            minOrder: 'Мин. заказ (€)',
+            freeFrom: 'Бесплатно от (€)',
+            color: 'Цвет',
+            opacity: 'Прозрачность (0.1 - 1.0)',
+            cancel: 'Отмена',
+            save: 'Сохранить зону',
+            saving: 'Сохранение...',
+            desc: 'Вы собираетесь удалить зону "{name}". Это действие нельзя отменить.',
+        },
+    },
+    es: {
+        title: 'Zonas de Entrega',
+        subtitle: 'Dibuja polígonos para definir las áreas.',
+        newRadiusZone: 'Nueva Zona Radio',
+        refresh: 'Refrescar',
+        loading: 'Cargando mapa de zonas...',
+        savedCount: 'Zonas Guardadas',
+        noZones: 'No hay zonas definidas. Usa la herramienta de dibujo (polígono) para crear una.',
+        shipping: 'Envío',
+        min: 'Mín',
+        free: 'Gratis',
+        distance: 'Distancia',
+        deleteConfirm: '¿Eliminar esta zona?',
+        deleteSuccess: 'Zona eliminada',
+        saveSuccess: 'Zona guardada correctamente',
+        saveError: 'Error al guardar la zona',
+        modal: {
+            title: 'Configurar Zona',
+            type: 'Tipo de Zona',
+            polygon: 'Polígono (Personalizado)',
+            radius: 'Radio (Círculo)',
+            name: 'Nombre de la Zona',
+            minRadius: 'Radio Mín (км)',
+            maxRadius: 'Radio Máx (км)',
+            cost: 'Costo Envío (€)',
+            minOrder: 'Pedido Mín. (€)',
+            freeFrom: 'Envío Gratis desde (€)',
+            color: 'Color',
+            opacity: 'Opacidad (0.1 - 1.0)',
+            cancel: 'Cancelar',
+            save: 'Guardar Zona',
+            saving: 'Guardando...',
+            desc: 'Estás a punto de eliminar la zona "{name}". Esta acción no se puede deshacer.',
+        },
+    },
+} as const;
 
 export default function AdminDeliveryZones({ language = 'es' }: Props) {
     const t = ZONES_TRANSLATIONS[language] || ZONES_TRANSLATIONS.es;
@@ -70,6 +140,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
     const queryClient = useQueryClient();
     const [editingZone, setEditingZone] = useState<Partial<DeliveryZone> | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [zoneToDelete, setZoneToDelete] = useState<DeliveryZone | null>(null);
 
     const {
         data: zones = [],
@@ -91,12 +162,12 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['delivery-zones'] });
-            success('Zona guardada correctamente');
+            success(t.saveSuccess);
             setIsModalOpen(false);
             setEditingZone(null);
         },
         onError: (err: any) => {
-            toastError(err.message || 'Error al guardar la zona');
+            toastError(err.message || t.saveError);
         },
     });
 
@@ -104,7 +175,8 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
         mutationFn: (id: string) => api.delete(`/admin/delivery-zones/${id}`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['delivery-zones'] });
-            success('Zona eliminada');
+            success(t.deleteSuccess);
+            setZoneToDelete(null);
         },
     });
 
@@ -165,7 +237,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
         return (
             <div className="flex flex-col items-center justify-center p-12 text-gray-400">
                 <RefreshCw size={32} className="animate-spin mb-4" />
-                <p>Cargando mapa de zonas...</p>
+                <p>{t.loading}</p>
             </div>
         );
     }
@@ -183,17 +255,17 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold text-sm shadow-sm"
                     >
                         <PlusCircle size={18} />
-                        Nueva Zona Radio
+                        {t.newRadiusZone}
                     </button>
                     <button
                         onClick={() => refetch()}
                         className="p-2 text-gray-400 hover:text-gray-600 transition border border-gray-100 rounded-lg bg-gray-50"
-                        title="Refrescar"
+                        title={t.refresh}
                     >
                         <RefreshCw size={20} />
                     </button>
                     <div className="text-xs font-bold px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100">
-                        {zones.length} Zonas Guardadas
+                        {zones.length} {t.savedCount}
                     </div>
                 </div>
             </div>
@@ -256,9 +328,12 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                             <Popup>
                                                 <div className="font-bold">{zone.name}</div>
                                                 <div className="text-xs">
-                                                    Distancia: {zone.minRadius}-{zone.maxRadius} км
+                                                    {t.distance}: {zone.minRadius}-{zone.maxRadius}{' '}
+                                                    км
                                                 </div>
-                                                <div className="text-xs">Envío: {zone.cost}€</div>
+                                                <div className="text-xs">
+                                                    {t.shipping}: {zone.cost}€
+                                                </div>
                                             </Popup>
                                         </Circle>
                                     );
@@ -288,9 +363,11 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                         >
                                             <Popup>
                                                 <div className="font-bold">{zone.name}</div>
-                                                <div className="text-xs">Envío: {zone.cost}€</div>
                                                 <div className="text-xs">
-                                                    Mínimo: {zone.minOrder}€
+                                                    {t.shipping}: {zone.cost}€
+                                                </div>
+                                                <div className="text-xs">
+                                                    {t.min}: {zone.minOrder}€
                                                 </div>
                                             </Popup>
                                         </Polygon>
@@ -307,10 +384,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                     {zones.length === 0 ? (
                         <div className="text-center p-8 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
                             <MapPin size={32} className="mx-auto text-gray-300 mb-2" />
-                            <p className="text-sm text-gray-500">
-                                No hay zonas definidas. Usa la herramienta de dibujo (polígono) para
-                                crear una.
-                            </p>
+                            <p className="text-sm text-gray-500">{t.noZones}</p>
                         </div>
                     ) : (
                         zones.map(zone => (
@@ -345,18 +419,19 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                         </div>
                                         <div className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
                                             <span>
-                                                Envío: <b className="text-gray-800">{zone.cost}€</b>
+                                                {t.shipping}:{' '}
+                                                <b className="text-gray-800">{zone.cost}€</b>
                                             </span>
                                             <span className="text-gray-300">|</span>
                                             <span>
-                                                Mín:{' '}
+                                                {t.min}:{' '}
                                                 <b className="text-gray-800">{zone.minOrder}€</b>
                                             </span>
                                             {zone.freeThreshold && (
                                                 <>
                                                     <span className="text-gray-300">|</span>
                                                     <span className="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">
-                                                        Gratis &gt;{zone.freeThreshold}€
+                                                        {t.free} &gt;{zone.freeThreshold}€
                                                     </span>
                                                 </>
                                             )}
@@ -375,11 +450,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                             <Settings size={14} />
                                         </button>
                                         <button
-                                            onClick={() => {
-                                                if (window.confirm('¿Eliminar esta zona?')) {
-                                                    deleteMutation.mutate(zone.id);
-                                                }
-                                            }}
+                                            onClick={() => setZoneToDelete(zone)}
                                             className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
                                         >
                                             <Trash2 size={14} />
@@ -397,7 +468,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <h2 className="text-xl font-bold text-gray-900">Configurar Zona</h2>
+                            <h2 className="text-xl font-bold text-gray-900">{t.modal.title}</h2>
                             <button
                                 onClick={() => setIsModalOpen(false)}
                                 className="text-gray-400 hover:text-gray-600"
@@ -409,7 +480,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
-                                        Tipo de Zona
+                                        {t.modal.type}
                                     </label>
                                     <select
                                         value={editingZone.type || 'polygon'}
@@ -421,13 +492,13 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                         }
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
                                     >
-                                        <option value="polygon">Polígono (Personalizado)</option>
-                                        <option value="radius">Radio (Círculo)</option>
+                                        <option value="polygon">{t.modal.polygon}</option>
+                                        <option value="radius">{t.modal.radius}</option>
                                     </select>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
-                                        Nombre de la Zona
+                                        {t.modal.name}
                                     </label>
                                     <input
                                         type="text"
@@ -445,7 +516,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                 <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2">
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase">
-                                            Radio Mín (км)
+                                            {t.modal.minRadius}
                                         </label>
                                         <input
                                             type="number"
@@ -462,7 +533,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase">
-                                            Radio Máx (км)
+                                            {t.modal.maxRadius}
                                         </label>
                                         <input
                                             type="number"
@@ -482,7 +553,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
-                                        Costo Envío (€)
+                                        {t.modal.cost}
                                     </label>
                                     <input
                                         type="number"
@@ -498,7 +569,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
-                                        Pedido Mín. (€)
+                                        {t.modal.minOrder}
                                     </label>
                                     <input
                                         type="number"
@@ -516,7 +587,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
-                                        Envío Gratis desde (€)
+                                        {t.modal.freeFrom}
                                     </label>
                                     <input
                                         type="number"
@@ -537,7 +608,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
-                                        Color
+                                        {t.modal.color}
                                     </label>
                                     <input
                                         type="color"
@@ -553,7 +624,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">
-                                        Opacidad (0-1)
+                                        {t.modal.opacity}
                                     </label>
                                     <input
                                         type="range"
@@ -577,19 +648,34 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                 onClick={() => setIsModalOpen(false)}
                                 className="px-5 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition"
                             >
-                                Cancelar
+                                {t.modal.cancel}
                             </button>
                             <button
                                 onClick={() => upsertMutation.mutate(editingZone)}
                                 disabled={upsertMutation.isPending || !editingZone.name}
                                 className="px-6 py-2 text-sm font-bold bg-orange-600 text-white hover:bg-orange-700 rounded-lg transition disabled:bg-gray-300"
                             >
-                                {upsertMutation.isPending ? 'Guardando...' : 'Guardar Zona'}
+                                {upsertMutation.isPending ? t.modal.saving : t.modal.save}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Modal de Confirmación de Eliminación */}
+            <DeleteConfirmationModal
+                isOpen={!!zoneToDelete}
+                onClose={() => setZoneToDelete(null)}
+                onConfirm={() => {
+                    if (zoneToDelete) {
+                        deleteMutation.mutate(zoneToDelete.id);
+                    }
+                }}
+                title={t.deleteConfirm}
+                description={t.modal.desc?.replace('{name}', zoneToDelete?.name || '') || ''}
+                isLoading={deleteMutation.isPending}
+                language={language}
+            />
         </div>
     );
 }

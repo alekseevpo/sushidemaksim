@@ -31,9 +31,7 @@ export default function EventBanner() {
 
                 <h2 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
                     Buffet Libre <br className="hidden md:block" />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500 drop-shadow-sm">
-                        Sushi & Bar
-                    </span>
+                    <span className="text-orange-500 drop-shadow-sm">Sushi & Bar</span>
                 </h2>
 
                 <p className="text-gray-200 text-sm md:text-base mb-8 max-w-lg font-medium leading-relaxed drop-shadow-md">
@@ -95,7 +93,6 @@ export default function EventBanner() {
 
             {/* Desktop Image Section */}
             <div className="relative h-64 md:h-auto md:w-2/5 overflow-hidden hidden md:block">
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-900 to-transparent z-10 w-24"></div>
                 <img
                     src={getOptimizedImageUrl('/sushi-hero.webp', 800)}
                     alt="Buffet Libre Sushi de Maksim"

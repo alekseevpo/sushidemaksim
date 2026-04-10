@@ -2,9 +2,6 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
     test.beforeEach(async ({ page, context }) => {
-        // Pipe logs
-        page.on('console', msg => console.log(`BROWSER_AUTH: ${msg.text()}`));
-
         // Set cookie consent before any script runs.
         // We only clear sushi_token once at the start.
         await context.addInitScript(() => {

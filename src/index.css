@@ -286,13 +286,9 @@ input[type='time'] {
     border-width: 2px !important;
 }
 
-/* Premium Mesh Background */
+/* Premium Mesh Background - Flattened */
 .mesh-bg {
     background-color: #fbf7f0;
-    background-image:
-        radial-gradient(at 0% 0%, hsla(19, 89%, 54%, 0.05) 0px, transparent 50%),
-        radial-gradient(at 50% 0%, hsla(38, 100%, 50%, 0.03) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, hsla(19, 89%, 54%, 0.05) 0px, transparent 50%);
 }
 
 @keyframes float {

@@ -256,7 +256,7 @@ export default function Header() {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="active-nav"
-                                                className="absolute inset-0 bg-orange-600 rounded-xl shadow-lg shadow-orange-600/20"
+                                                className="absolute inset-0 bg-orange-600 rounded-xl"
                                                 transition={{
                                                     type: 'spring',
                                                     stiffness: 380,

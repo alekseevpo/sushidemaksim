@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Edit2, Trash2, CheckCircle, XCircle, RefreshCw, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { api } from '../../utils/api';
 
 interface Props {
@@ -18,6 +19,19 @@ const BLOG_TRANSLATIONS = {
         publish: 'Опубликовать',
         create: 'Создать пост',
         noPosts: 'Статей пока нет',
+        authorLabel: 'Автор',
+        published: 'Опубликован',
+        draft: 'Черновик',
+        saveSuccess: 'Изменения сохранены!',
+        deleteSuccess: 'Пост удален',
+        deleteConfirm: 'Удалить этот пост?',
+        errorPrefix: 'Ошибка: ',
+        deleteError: 'Ошибка при удалении: ',
+        htmlEditor: 'HTML Редактор',
+        livePreview: 'Предпросмотр',
+        placeholder: 'Введите HTML-код статьи здесь...',
+        previewEmpty: 'Содержимое появится здесь в реальном времени',
+        loading: 'Загрузка блога...',
         fields: {
             title: 'Заголовок',
             slug: 'URL-адрес (Slug)',
@@ -35,6 +49,9 @@ const BLOG_TRANSLATIONS = {
             content: 'Основной текст статьи. Можно использовать Markdown разметку',
             info: 'Подсказка',
         },
+        modals: {
+            deleteDesc: 'Вы собираетесь удалить "{name}". Это действие нельзя отменить.',
+        },
     },
     es: {
         title: 'Blog / Noticias',
@@ -45,6 +62,19 @@ const BLOG_TRANSLATIONS = {
         publish: 'Publicar',
         create: 'Crear Post',
         noPosts: 'No hay artículos aún',
+        authorLabel: 'Autor',
+        published: 'Publicado',
+        draft: 'Borrador',
+        saveSuccess: '¡Cambios guardados!',
+        deleteSuccess: 'Post eliminado',
+        deleteConfirm: '¿Eliminar este post?',
+        errorPrefix: 'Error: ',
+        deleteError: 'Error al eliminar: ',
+        htmlEditor: 'Editor HTML',
+        livePreview: 'Vista Previa Viva',
+        placeholder: 'Escribe el contenido HTML aquí...',
+        previewEmpty: 'El contenido aparecerá aquí formateado en tiempo real',
+        loading: 'Cargando blog...',
         fields: {
             title: 'Título',
             slug: 'Dirección URL (Slug)',
@@ -61,6 +91,9 @@ const BLOG_TRANSLATIONS = {
             excerpt: 'Breve texto (1-2 frases) visible en la lista de artículos',
             content: 'Texto principal del artículo. Se puede usar formato Markdown',
             info: 'Ayuda',
+        },
+        modals: {
+            deleteDesc: 'Estás a punto de borrar "{name}". Esta acción no se puede deshacer.',
         },
     },
 };
@@ -122,6 +155,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
     const t = BLOG_TRANSLATIONS[language] || BLOG_TRANSLATIONS.es;
     const queryClient = useQueryClient();
     const [isEditing, setIsEditing] = useState<any>(null);
+    const [itemToDelete, setItemToDelete] = useState<any>(null);
     const [form, setForm] = useState({
         title: '',
         slug: '',
@@ -149,7 +183,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
-            alert(language === 'ru' ? 'Изменения сохранены!' : 'Cambios guardados!');
+            alert(t.saveSuccess);
             setIsEditing(null);
             setForm({
                 title: '',
@@ -163,10 +197,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
         },
         onError: (err: any) => {
             console.error('mutation error:', err);
-            alert(
-                (language === 'ru' ? 'Ошибка: ' : 'Error: ') +
-                    (err.response?.data?.error || err.message)
-            );
+            alert(t.errorPrefix + (err.response?.data?.error || err.message));
         },
     });
 
@@ -174,12 +205,11 @@ export default function AdminBlog({ language = 'es' }: Props) {
         mutationFn: (id: string) => api.delete(`/admin/blog_posts/${id}`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
-            alert(language === 'ru' ? 'Пост удален' : 'Post eliminado');
+            setItemToDelete(null);
+            alert(t.deleteSuccess);
         },
         onError: (err: any) => {
-            alert(
-                (language === 'ru' ? 'Ошибка при удалении: ' : 'Error al eliminar: ') + err.message
-            );
+            alert(t.deleteError + err.message);
         },
     });
 
@@ -190,14 +220,17 @@ export default function AdminBlog({ language = 'es' }: Props) {
             queryClient.invalidateQueries({ queryKey: ['admin-blog'] });
         },
         onError: (err: any) => {
-            alert((language === 'ru' ? 'Ошибка: ' : 'Error: ') + err.message);
+            alert(t.errorPrefix + err.message);
         },
     });
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <RefreshCw className="animate-spin text-gray-400" />
+            <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in">
+                <RefreshCw size={24} className="animate-spin text-orange-600 mb-4" />
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    {t.loading}
+                </p>
             </div>
         );
     }
@@ -389,16 +422,16 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                         }
                                         className="w-full px-5 py-4 bg-gray-50/50 border border-gray-100 rounded-[2rem] text-sm font-medium text-gray-900 outline-none focus:bg-white focus:border-orange-400 transition-all shadow-inner resize-none min-h-[400px] font-mono leading-relaxed"
                                         required
-                                        placeholder="Escribe el contenido HTML aquí..."
+                                        placeholder={t.placeholder}
                                     />
                                     <div className="absolute bottom-4 right-6 text-[9px] font-black text-gray-300 uppercase tracking-widest pointer-events-none">
-                                        Editor HTML
+                                        {t.htmlEditor}
                                     </div>
                                 </div>
 
                                 <div className="relative flex flex-col h-full min-h-[400px]">
                                     <div className="absolute top-4 right-6 z-10 text-[9px] font-black text-orange-400/50 uppercase tracking-widest pointer-events-none">
-                                        Vista Previa Viva
+                                        {t.livePreview}
                                     </div>
                                     <div className="flex-1 w-full p-8 bg-white border border-dashed border-gray-200 rounded-[2rem] overflow-y-auto max-h-[600px] no-scrollbar">
                                         {form.content ? (
@@ -408,8 +441,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                             />
                                         ) : (
                                             <div className="h-full flex items-center justify-center text-gray-300 italic text-sm text-center px-10">
-                                                El contenido aparecerá aquí formateado en tiempo
-                                                real
+                                                {t.previewEmpty}
                                             </div>
                                         )}
                                     </div>
@@ -454,11 +486,11 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                                     : 'bg-gray-50 text-gray-400'
                                             }`}
                                         >
-                                            {post.published_at ? 'Опубликован' : 'Черновик'}
+                                            {post.published_at ? t.published : t.draft}
                                         </div>
                                     </div>
                                     <p className="text-gray-400 text-[10px] font-bold uppercase mb-4 tracking-widest">
-                                        Автор: {post.author}
+                                        {t.authorLabel}: {post.author}
                                     </p>
                                     <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
                                         {post.excerpt}
@@ -507,11 +539,7 @@ export default function AdminBlog({ language = 'es' }: Props) {
                                     </button>
                                 </div>
                                 <button
-                                    onClick={() => {
-                                        if (confirm('Удалить этот пост?')) {
-                                            deleteMutation.mutate(post.id);
-                                        }
-                                    }}
+                                    onClick={() => setItemToDelete(post)}
                                     className="p-3 bg-gray-50 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-2xl transition-all"
                                 >
                                     <Trash2 size={18} />
@@ -531,6 +559,18 @@ export default function AdminBlog({ language = 'es' }: Props) {
                     )}
                 </div>
             )}
+
+            <DeleteConfirmationModal
+                isOpen={!!itemToDelete}
+                onClose={() => setItemToDelete(null)}
+                onConfirm={() => deleteMutation.mutate(itemToDelete.id)}
+                title={t.deleteConfirm}
+                description={t.modals?.deleteDesc || t.deleteConfirm}
+                itemName={itemToDelete?.title}
+                itemType={t.fields.title.toLowerCase()}
+                isLoading={deleteMutation.isPending}
+                language={language}
+            />
         </div>
     );
 }

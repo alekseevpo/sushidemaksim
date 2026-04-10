@@ -625,11 +625,10 @@ export default function LoginModal({
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        const form = e.target as HTMLFormElement;
-        const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-        const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-
         try {
+            const form = e.target as HTMLFormElement;
+            const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+            const password = (form.elements.namedItem('password') as HTMLInputElement).value;
             const res = await login(email, password);
             if (res.success) {
                 onClose();
@@ -715,7 +714,7 @@ export default function LoginModal({
             const res = await resetPassword(recoveryEmail, code, password);
             if (res.success) {
                 setMode('login');
-                showSuccess('Contraseña actualizada с éxito. Ya puedes iniciar sesión.');
+                showSuccess('Contraseña actualizada con éxito. Ya puedes iniciar sesión.');
                 setRecoveryEmail('');
             } else {
                 showError(res.error || 'Error al actualizar la contraseña');

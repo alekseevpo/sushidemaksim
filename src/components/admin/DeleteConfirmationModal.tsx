@@ -11,7 +11,19 @@ interface DeleteConfirmationModalProps {
     isLoading?: boolean;
     itemType?: string;
     itemName?: string;
+    language?: 'ru' | 'es';
 }
+
+const TRANSLATIONS = {
+    ru: {
+        confirm: 'ДА, УДАЛИТЬ',
+        cancel: 'ОТМЕНА',
+    },
+    es: {
+        confirm: 'SÍ, ELIMINAR',
+        cancel: 'CANCELAR',
+    },
+};
 
 export default function DeleteConfirmationModal({
     isOpen,
@@ -22,7 +34,10 @@ export default function DeleteConfirmationModal({
     isLoading = false,
     itemType = 'elemento',
     itemName,
+    language = 'es',
 }: DeleteConfirmationModalProps) {
+    const t = TRANSLATIONS[language];
+
     const modal = (
         <AnimatePresence>
             {isOpen && (
@@ -70,7 +85,9 @@ export default function DeleteConfirmationModal({
                                     {isLoading ? (
                                         <RefreshCw size={18} className="animate-spin" />
                                     ) : (
-                                        <>SÍ, ELIMINAR {itemType.toUpperCase()}</>
+                                        <>
+                                            {t.confirm} {(itemType || '').toUpperCase()}
+                                        </>
                                     )}
                                 </button>
 
@@ -78,7 +95,7 @@ export default function DeleteConfirmationModal({
                                     onClick={onClose}
                                     className="w-full py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs md:text-sm hover:bg-gray-200 transition-colors active:scale-95"
                                 >
-                                    CANCELAR
+                                    {t.cancel}
                                 </button>
                             </div>
                         </div>
