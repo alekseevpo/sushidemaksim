@@ -394,7 +394,11 @@ export default function ContactsPage() {
                                 Te responderemos en menos de 24h.
                             </p>
 
-                            <form onSubmit={handleSubmit} noValidate className="space-y-4 md:space-y-6">
+                            <form
+                                onSubmit={handleSubmit}
+                                noValidate
+                                className="space-y-4 md:space-y-6"
+                            >
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">

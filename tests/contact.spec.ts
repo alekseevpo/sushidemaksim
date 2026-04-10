@@ -8,7 +8,9 @@ test.describe('Contact Form (Refactored)', () => {
     test('SUCCESS: should send a message with valid data', async ({ page }) => {
         await page.getByPlaceholder('Nombre completo').fill('Test User');
         await page.getByPlaceholder('tu@email.com').fill('test@example.com');
-        await page.getByPlaceholder('¿En qué podemos ayudarte?').fill('Hello, this is a test message for the audit.');
+        await page
+            .getByPlaceholder('¿En qué podemos ayudarte?')
+            .fill('Hello, this is a test message for the audit.');
 
         // Intercept API call to verify it's working
         await page.route('**/api/contact', async route => {
