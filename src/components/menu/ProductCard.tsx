@@ -126,7 +126,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                 </div>
 
-                <p className="text-gray-500 text-[11px] md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 md:line-clamp-3 min-h-[2.5rem] md:min-h-[3.5rem] font-medium overflow-hidden">
+                <p className="text-gray-500 text-xs md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 md:line-clamp-3 min-h-[2.5rem] md:min-h-[3.5rem] font-medium overflow-hidden">
                     {item.description}
                 </p>
                 <div className="mt-auto flex items-center justify-between gap-1">

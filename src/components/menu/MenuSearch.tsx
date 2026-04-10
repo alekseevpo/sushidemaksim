@@ -30,17 +30,24 @@ export default function MenuSearch({
                         exit={{ opacity: 0, y: -10 }}
                         className="lg:hidden flex items-center justify-between w-full h-16 pt-2"
                     >
-                        <div className="flex items-baseline gap-2">
-                            <h1 className="text-2xl text-gray-900 font-black tracking-tighter mb-0">
-                                Nuestro Menú
-                            </h1>
-                            <span className="text-orange-600 font-bold text-base italic whitespace-nowrap">
-                                {categoryName}
-                            </span>
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-baseline gap-2">
+                                <h1 className="text-2xl text-gray-900 font-black tracking-tighter mb-0 italic">
+                                    Nuestro Menú
+                                </h1>
+                                <span className="text-orange-600 font-bold text-base italic whitespace-nowrap">
+                                    {categoryName}
+                                </span>
+                            </div>
+                            {selectedCategory !== 'all' && (
+                                <p className="text-gray-500 text-[10px] font-medium leading-tight max-w-[280px]">
+                                    {CATEGORIES.find(c => c.id === selectedCategory)?.description}
+                                </p>
+                            )}
                         </div>
                         <button
                             onClick={() => setIsSearchExpanded(true)}
-                            className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors cursor-pointer"
+                            className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors cursor-pointer shrink-0"
                         >
                             <Search size={22} strokeWidth={2} />
                         </button>
@@ -91,13 +98,20 @@ export default function MenuSearch({
 
             {/* Desktop Header */}
             <div className="hidden lg:flex items-center justify-between w-full">
-                <div className="flex items-baseline gap-4">
-                    <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0 whitespace-nowrap">
-                        Nuestro Menú
-                    </h1>
-                    <span className="text-orange-600 font-bold text-2xl italic whitespace-nowrap">
-                        {categoryName}
-                    </span>
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-baseline gap-4">
+                        <h1 className="text-5xl text-gray-900 font-black tracking-tighter mb-0 whitespace-nowrap italic">
+                            Nuestro Menú
+                        </h1>
+                        <span className="text-orange-600 font-bold text-2xl italic whitespace-nowrap">
+                            {categoryName}
+                        </span>
+                    </div>
+                    {selectedCategory !== 'all' && (
+                        <p className="text-gray-500 text-sm font-medium leading-relaxed max-w-xl">
+                            {CATEGORIES.find(c => c.id === selectedCategory)?.description}
+                        </p>
+                    )}
                 </div>
                 <div className="relative w-full max-w-md ml-8">
                     <Search

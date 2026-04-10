@@ -92,7 +92,7 @@ export default function ProductGrid({
                             </div>
                         )}
                         {selectedCategory === 'all' && !search && (cat as any).description && (
-                            <p className="text-gray-500 text-sm md:text-base max-w-2xl mb-8 leading-relaxed font-norma -mt-4">
+                            <p className="text-gray-500 text-sm md:text-base max-w-2xl mb-8 leading-relaxed font-normal -mt-4">
                                 {(cat as any).description}
                             </p>
                         )}
