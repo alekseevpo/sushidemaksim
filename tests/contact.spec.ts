@@ -33,9 +33,9 @@ test.describe('Contact Form (Refactored)', () => {
         await page.click('button[type="submit"]');
 
         // The frontend might have its own validation, but we want to see the backend/Zod responses if possible.
-        // However, standard HTML5 validation might kick in first. 
+        // However, standard HTML5 validation might kick in first.
         // Let's check for messages that our Zod schema would produce.
-        
+
         // If HTML5 validation is present, we might need to bypass it or check for it.
         // For this test, let's assume we want to see the Zod error for "invalid email"
         await expect(page.getByText('Email inválido')).toBeVisible();

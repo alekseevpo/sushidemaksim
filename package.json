@@ -47,7 +47,8 @@
         "react-leaflet-draw": "^0.20.4",
         "react-router-dom": "^6.20.1",
         "recharts": "^3.8.0",
-        "ua-parser-js": "^2.0.9"
+        "ua-parser-js": "^2.0.9",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@playwright/test": "^1.58.2",

@@ -18,7 +18,7 @@ export const validateResource =
             next();
         } catch (e: any) {
             if (e instanceof ZodError) {
-                const errors = e.issues.map(err => ({
+                const errors = e.issues.map((err: any) => ({
                     path: err.path.join('.'),
                     message: err.message,
                 }));
