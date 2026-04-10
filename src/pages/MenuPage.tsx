@@ -315,7 +315,6 @@ export default function MenuPage() {
                             setSearch={setSearch}
                             isSearchExpanded={isSearchExpanded}
                             setIsSearchExpanded={setIsSearchExpanded}
-                            selectedCategory={selectedCategory}
                         />
                     </div>
 

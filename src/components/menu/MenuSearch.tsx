@@ -1,13 +1,11 @@
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CATEGORIES } from '../../constants/menu';
 
 interface MenuSearchProps {
     search: string;
     setSearch: (val: string) => void;
     isSearchExpanded: boolean;
     setIsSearchExpanded: (val: boolean) => void;
-    selectedCategory: string;
 }
 
 export default function MenuSearch({
@@ -15,10 +13,7 @@ export default function MenuSearch({
     setSearch,
     isSearchExpanded,
     setIsSearchExpanded,
-    selectedCategory,
 }: MenuSearchProps) {
-    const categoryName = CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Todos';
-
     return (
         <header className="mb-4 md:mb-12 relative">
             <AnimatePresence mode="wait">

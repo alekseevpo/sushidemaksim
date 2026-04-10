@@ -73,7 +73,11 @@ export default function ProductGrid({
                 if (sectionItems.length === 0) return null;
 
                 return (
-                    <div key={cat.id} className="scroll-mt-32 md:scroll-mt-40" id={`section-${cat.id}`}>
+                    <div
+                        key={cat.id}
+                        className="scroll-mt-32 md:scroll-mt-40"
+                        id={`section-${cat.id}`}
+                    >
                         {/* Always show header when single category is selected, or for each category in 'All' view */}
                         {(!search || selectedCategory === 'all') && (
                             <div className="mb-8 md:mb-12">
@@ -92,7 +96,8 @@ export default function ProductGrid({
                                             Nuestro Menú
                                         </span>
                                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter italic leading-none">
-                                            {cat.name || CATEGORIES.find(c => c.id === cat.id)?.name}
+                                            {cat.name ||
+                                                CATEGORIES.find(c => c.id === cat.id)?.name}
                                         </h2>
                                     </div>
                                 </div>
