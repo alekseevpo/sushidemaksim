@@ -536,7 +536,6 @@ router.delete(
     })
 );
 
-
 // PUT /api/user/active — update last seen timestamp
 router.put(
     '/active',

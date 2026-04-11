@@ -9,8 +9,8 @@
 1. Зайдите в **Project Settings**.
 2. Перейдите в раздел **Environment Variables**.
 3. Добавьте новую переменную или измените существующую:
-   - **Name**: `FRONTEND_URL`
-   - **Value**: `https://sushidemaksim.com` (без косой черты в конце)
+    - **Name**: `FRONTEND_URL`
+    - **Value**: `https://sushidemaksim.com` (без косой черты в конце)
 4. Сохраните и сделайте **Redeploy** (пересборку) проекта.
 
 ## 2. Как это работает в коде
@@ -18,7 +18,8 @@
 Я уже внедрил в файл `server/src/config.ts` логику приоритетов:
 
 ```typescript
-frontendUrl: process.env.FRONTEND_URL || (nodeEnv === 'production' ? 'https://sushidemaksim.vercel.app' : 'http://localhost:5173')
+frontendUrl: process.env.FRONTEND_URL ||
+    (nodeEnv === 'production' ? 'https://sushidemaksim.vercel.app' : 'http://localhost:5173');
 ```
 
 1. **Приоритет 1**: Если задана переменная `FRONTEND_URL` (например, `.com`), используется она.

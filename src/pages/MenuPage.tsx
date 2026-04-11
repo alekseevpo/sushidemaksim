@@ -307,9 +307,14 @@ export default function MenuPage() {
                     setSelectedCategory={setSelectedCategory}
                 />
 
-                <div className="flex-1 min-w-0 md:pl-8 pt-20 md:pt-4 min-h-[70vh] relative" id="menu-content">
+                <div
+                    className="flex-1 min-w-0 md:pl-8 pt-20 md:pt-4 min-h-[70vh] relative"
+                    id="menu-content"
+                >
                     {/* Search Section - Absolute when collapsed to align with title, Relative when expanded to push content */}
-                    <div className={`${isSearchExpanded ? 'relative w-full mb-6' : 'absolute top-[68px] right-0 w-auto'} md:relative md:top-0 md:right-0 md:w-full md:mb-4 z-10 transition-all duration-300`}>
+                    <div
+                        className={`${isSearchExpanded ? 'relative w-full mb-6' : 'absolute top-[68px] right-0 w-auto'} md:relative md:top-0 md:right-0 md:w-full md:mb-4 z-10 transition-all duration-300`}
+                    >
                         <MenuSearch
                             search={search}
                             setSearch={setSearch}
