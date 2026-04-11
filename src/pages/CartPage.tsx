@@ -259,6 +259,12 @@ export default function CartPage() {
         if (deliveryType === 'delivery' && (!streetVal || !streetVal.trim())) {
             return showError('Por favor, indica tu calle para el envío');
         }
+
+        if (!isAuthenticated) {
+            document.dispatchEvent(new CustomEvent('custom:openLogin'));
+            return;
+        }
+
         setIsInviting(true);
 
         const notesArray = [];
@@ -315,7 +321,7 @@ export default function CartPage() {
                     });
                 } else {
                     await navigator.clipboard.writeText(inviteData.shareUrl);
-                    showSuccess('Link copiado al portapapeles. ¡Envíalo a tu amigo!');
+                    showSuccess('Enlace de invitación generado');
                 }
             }
         } catch (err: any) {
