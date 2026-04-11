@@ -21,7 +21,8 @@ export type EventName =
     | 'order_placed'
     | 'error_notice'
     | 'user_idle_start'
-    | 'user_idle_end';
+    | 'user_idle_end'
+    | 'form_focus';
 
 /**
  * Service for tracking user progress and interactions.

@@ -19,25 +19,19 @@ import { useFormContext, Controller } from 'react-hook-form';
 import type { CheckoutInput } from '../../schemas/checkout.schema';
 
 interface DeliveryFormProps {
-    deliveryZones: any[];
-    isOrdering: boolean;
     onSavedAddressSelect?: (addr: any) => void;
     user: any;
     isAuthenticated: boolean;
     todayStr: string;
     isStoreClosed: boolean;
-    upcomingHolidays: any[];
 }
 
 export default function DeliveryForm({
-    deliveryZones,
-    isOrdering,
     onSavedAddressSelect,
     user,
     isAuthenticated,
     todayStr,
     isStoreClosed,
-    upcomingHolidays,
 }: DeliveryFormProps) {
     const {
         register,
@@ -52,13 +46,10 @@ export default function DeliveryForm({
     const house = watch('house');
     const apartment = watch('apartment');
     const postalCode = watch('postalCode');
-    const phone = watch('phone');
     const isScheduled = watch('isScheduled');
     const scheduledDate = watch('scheduledDate');
-    const scheduledTime = watch('scheduledTime');
     const guestsCount = watch('guestsCount') || 2;
     const selectedZone = watch('selectedZone');
-    const saveAddress = watch('saveAddress');
 
     const handleAddressClick = () => {
         triggerHaptic();
@@ -615,7 +606,8 @@ export default function DeliveryForm({
                                         control={control}
                                         render={({ field }) => (
                                             <CustomDatePicker
-                                                {...field}
+                                                value={field.value || ''}
+                                                onChange={field.onChange}
                                                 min={todayStr}
                                                 placeholder="dd/mm/aaaa"
                                             />
@@ -632,7 +624,8 @@ export default function DeliveryForm({
                                         control={control}
                                         render={({ field }) => (
                                             <CustomTimePicker
-                                                {...field}
+                                                value={field.value || ''}
+                                                onChange={field.onChange}
                                                 slots={availableSlots}
                                                 disabled={
                                                     isDayClosedSelect || availableSlots.length === 0

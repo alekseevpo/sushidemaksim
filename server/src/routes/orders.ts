@@ -33,8 +33,6 @@ router.post(
             isScheduled = false,
             scheduledDate,
             scheduledTime,
-            guestsCount = 2,
-            chopsticksCount = 0,
             customNote = '',
             deliveryZoneId,
             promoCode,

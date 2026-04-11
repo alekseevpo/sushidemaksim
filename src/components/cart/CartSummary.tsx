@@ -40,7 +40,7 @@ export default function CartSummary({
     setPromoCode,
     minOrder = 0,
 }: CartSummaryProps) {
-    const { items, deliveryDetails, updateDeliveryDetails } = useCart();
+    const { items, deliveryDetails } = useCart();
     const { deliveryType, address, house, selectedZone, paymentMethod } = deliveryDetails;
     const isMinOrderMet = total >= minOrder;
     const finalTotal = total - (promoDiscount ? (total * promoDiscount) / 100 : 0) + deliveryCost;

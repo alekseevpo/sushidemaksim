@@ -4,10 +4,9 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { supabase } from '../db/supabase.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate } from '../middleware/validate.js';
 import { validateResource } from '../middleware/validateResource.js';
 import {
     createBlogPostSchema,

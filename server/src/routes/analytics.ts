@@ -7,7 +7,6 @@ import {
     funnelEventSchema,
 } from '../schemas/analytics.schema.js';
 import { supabase } from '../db/supabase.js';
-import { isValidUUID } from '../utils/helpers.js';
 
 const router = Router();
 

@@ -8,7 +8,6 @@ import SEO from '../components/SEO';
 import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
-import { detectZone } from '../utils/delivery';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { checkoutSchema, type CheckoutInput } from '../schemas/checkout.schema';
@@ -23,24 +22,6 @@ import CartEmptyView from '../components/cart/CartEmptyView';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { tracker } from '../analytics/tracker';
 
-const MADRID_HOLIDAYS_2026 = [
-    { name: 'Año Nuevo', date: '2026-01-01' },
-    { name: 'Epifanía del Señor', date: '2026-01-06' },
-    { name: 'San José', date: '2026-03-19' },
-    { name: 'Jueves Santo', date: '2026-04-02' },
-    { name: 'Viernes Santo', date: '2026-04-03' },
-    { name: 'Fiesta del Trabajo', date: '2026-05-01' },
-    { name: 'Fiesta de la Comunidad de Madrid', date: '2026-05-02' },
-    { name: 'San Isidro', date: '2026-05-15' },
-    { name: 'Asunción de la Virgen', date: '2026-08-15' },
-    { name: 'Fiesta Nacional de España', date: '2026-10-12' },
-    { name: 'Día de Todos los Santos', date: '2026-11-02' },
-    { name: 'Nuestra Señora de la Almudena', date: '2026-11-09' },
-    { name: 'Día de la Constitución', date: '2026-12-07' },
-    { name: 'Inmaculada Concepción', date: '2026-12-08' },
-    { name: 'Natividad del Señor', date: '2026-12-25' },
-];
-
 interface MenuItem {
     id: number;
     name: string;
@@ -53,7 +34,6 @@ interface MenuItem {
 export default function CartPage() {
     const {
         items,
-        total,
         isLoading: cartLoading,
         updateQuantity,
         removeItem,
@@ -65,7 +45,7 @@ export default function CartPage() {
     } = useCart();
 
     const { isAuthenticated, user } = useAuth();
-    const { success: showSuccess, error: showError, info: showInfo } = useToast();
+    const { success: showSuccess, error: showError } = useToast();
 
     const [promoCode, setPromoCode] = useState('');
     const [promoDiscount, setPromoDiscount] = useState<number | null>(null);
@@ -103,16 +83,9 @@ export default function CartPage() {
     const isOpenNow = isStoreOpen();
     const isStoreClosed = isManualClosed || !isOpenNow;
 
-    const upcomingHolidays = MADRID_HOLIDAYS_2026.filter(h => {
-        const hDate = new Date(h.date);
-        const today = new Date();
-        const hasNotPassed = hDate.getTime() >= today.setHours(0, 0, 0, 0);
-        return hasNotPassed;
-    }).slice(0, 3); // Max 3 for compactness
-
     const methods = useForm<CheckoutInput>({
-        resolver: zodResolver(checkoutSchema),
-        defaultValues: deliveryDetails,
+        resolver: zodResolver(checkoutSchema) as any,
+        defaultValues: deliveryDetails as any,
         mode: 'onTouched',
     });
 
@@ -126,7 +99,7 @@ export default function CartPage() {
     const cartSubtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
     const discountAmount = promoDiscount ? (cartSubtotal * promoDiscount) / 100 : 0;
 
-    const { deliveryType, selectedZone, isScheduled, scheduledDate, scheduledTime } = watch();
+    const { deliveryType, selectedZone, isScheduled, scheduledDate } = watch();
 
     const MIN_ORDER =
         deliveryType === 'delivery'
@@ -147,14 +120,12 @@ export default function CartPage() {
                   : (siteSettings?.deliveryFee ?? 3.5)
             : 0;
 
-    const finalTotal = cartSubtotal - discountAmount + deliveryCost;
-
     // Sync form changes back to deliveryDetails in useCart for persistence
     const watchedFields = watch();
     useEffect(() => {
         const hasChanged = JSON.stringify(watchedFields) !== JSON.stringify(deliveryDetails);
         if (hasChanged) {
-            updateDeliveryDetails(watchedFields);
+            updateDeliveryDetails(watchedFields as any);
         }
     }, [watchedFields, deliveryDetails, updateDeliveryDetails]);
 
@@ -818,14 +789,11 @@ export default function CartPage() {
                                 />
 
                                 <DeliveryForm
-                                    deliveryZones={deliveryZones}
-                                    isOrdering={isOrdering}
                                     onSavedAddressSelect={handleAddressSelect}
                                     user={user}
                                     isAuthenticated={isAuthenticated}
                                     todayStr={todayStr}
                                     isStoreClosed={isStoreClosed}
-                                    upcomingHolidays={upcomingHolidays}
                                 />
 
                                 <CartSuggestions
@@ -846,12 +814,16 @@ export default function CartPage() {
                                         promoError={promoError}
                                         isStoreClosed={isStoreClosed}
                                         isScheduled={isScheduled}
-                                        onOrder={handleSubmit(onSubmit, errs => {
-                                            const firstError = Object.values(errs)[0];
-                                            if (firstError?.message) {
-                                                showError(firstError.message as string);
-                                            }
-                                        })}
+                                        onOrder={() =>
+                                            (
+                                                handleSubmit(onSubmit as any, errs => {
+                                                    const firstError = Object.values(errs)[0];
+                                                    if (firstError?.message) {
+                                                        showError(firstError.message as string);
+                                                    }
+                                                }) as any
+                                            )()
+                                        }
                                         onApplyPromo={handleApplyPromo}
                                         onRemovePromo={handleRemovePromo}
                                         isOrdering={isOrdering}
