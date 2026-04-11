@@ -236,6 +236,11 @@ export default function CartPage() {
     }, []);
 
     const handleInvite = async () => {
+        if (!isAuthenticated) {
+            document.dispatchEvent(new CustomEvent('custom:openLogin'));
+            return;
+        }
+
         const formData = methods.getValues();
         const {
             deliveryType,
@@ -258,11 +263,6 @@ export default function CartPage() {
 
         if (deliveryType === 'delivery' && (!streetVal || !streetVal.trim())) {
             return showError('Por favor, indica tu calle para el envío');
-        }
-
-        if (!isAuthenticated) {
-            document.dispatchEvent(new CustomEvent('custom:openLogin'));
-            return;
         }
 
         setIsInviting(true);
