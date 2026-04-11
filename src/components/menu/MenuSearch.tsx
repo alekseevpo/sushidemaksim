@@ -20,9 +20,9 @@ export default function MenuSearch({
                 {!isSearchExpanded ? (
                     <motion.div
                         key="search-button"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
                         className="lg:hidden flex items-center justify-end w-full h-16 pt-2"
                     >
                         <button
@@ -35,10 +35,10 @@ export default function MenuSearch({
                 ) : (
                     <motion.div
                         key="search-input-mobile"
-                        initial={{ opacity: 0, width: '48px', x: 20 }}
-                        animate={{ opacity: 1, width: '100%', x: 0 }}
-                        exit={{ opacity: 0, width: '48px', x: 20 }}
-                        className="lg:hidden relative w-full flex items-center gap-2 h-16 pt-2"
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        className="lg:hidden relative z-20 w-full flex items-center gap-2 h-16 pt-2 px-1 bg-[#FBF7F0]/95 backdrop-blur-sm"
                     >
                         <div className="relative flex-1">
                             <Search

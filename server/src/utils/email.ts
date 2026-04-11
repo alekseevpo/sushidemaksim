@@ -613,7 +613,7 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
       <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-      <p style="color:#6b7280;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en sushidemaksim.vercel.app</p>
+      <p style="color:#6b7280;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en https://sushidemaksim.vercel.app</p>
     </div>
   </div>
 </body>
@@ -805,7 +805,7 @@ export async function sendReservationEmail(
         <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
             <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
             <div style="color: #6b7280; font-size: 11px;">
-                Este es un correo automático de sushidemaksim.vercel.app
+                Este es un correo automático de https://sushidemaksim.vercel.app
             </div>
         </div>
 

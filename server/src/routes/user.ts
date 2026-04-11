@@ -536,7 +536,6 @@ router.delete(
     })
 );
 
-export default router;
 
 // PUT /api/user/active — update last seen timestamp
 router.put(
@@ -553,9 +552,12 @@ router.put(
             if (error.code === '42703') {
                 return res.status(200).json({ status: 'waiting_migration' });
             }
+            console.error('❌ Error updating last_seen_at:', error);
             throw error;
         }
 
         res.json({ success: true });
     })
 );
+
+export default router;

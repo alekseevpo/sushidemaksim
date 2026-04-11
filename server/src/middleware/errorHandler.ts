@@ -8,15 +8,15 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
 
     // Log with stack in development
     if (config.isDev) {
-        console.error('❌ Error:', err.stack || message);
+        console.error('❌ Server Error:', err.stack || message);
         try {
             const logMsg = `\n[${new Date().toISOString()}] ERROR: ${err.message || 'No message'}\nCODE: ${err.code || 'No code'}\nSTACK: ${err.stack || ''}\nJSON: ${JSON.stringify(err, null, 2)}\n`;
             fs.appendFileSync('/tmp/server_error.log', logMsg);
         } catch (e) {
-            // Logging failed, but we shouldn't crash the entire error handler
+            console.error('⚠️ Failed to write to error log file:', e);
         }
     } else {
-        console.error('❌ Error:', message);
+        console.error('❌ Server Error:', message);
     }
 
     // Handle PostgreSQL specific errors (Supabase)

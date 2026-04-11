@@ -37,7 +37,9 @@ export default defineConfig({
                 : 'npm run dev:client',
             url: 'http://localhost:5173',
             reuseExistingServer: !process.env.CI,
-            timeout: 120_000,
+            timeout: 180_000,
+            stdout: 'pipe',
+            stderr: 'pipe',
         },
         {
             command: process.env.CI
@@ -45,7 +47,9 @@ export default defineConfig({
                 : 'npm run dev:server',
             url: 'http://localhost:3001/api/health',
             reuseExistingServer: !process.env.CI,
-            timeout: 120_000,
+            timeout: 180_000,
+            stdout: 'pipe',
+            stderr: 'pipe',
         },
     ],
 });
