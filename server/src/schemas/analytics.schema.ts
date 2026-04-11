@@ -7,7 +7,7 @@ export const trackEventSchema = z.object({
     body: z.object({
         eventName: z.string().min(1),
         sessionId: z.string().min(1),
-        userId: z.string().uuid('ID de usuario inválido').optional().nullable(),
+        userId: z.string().optional().nullable(),
         path: z.string().optional().nullable(),
         metadata: z.record(z.any()).optional().default({}),
     }),

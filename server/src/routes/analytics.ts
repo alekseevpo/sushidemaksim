@@ -18,6 +18,12 @@ router.post(
     '/track',
     validateResource(trackEventSchema),
     asyncHandler(async (req: Request, res: Response) => {
+        // Analytics tracking is temporarily disabled by owner request
+        return res.status(200).json({
+            success: true,
+            message: 'Tracking is temporarily disabled',
+        });
+
         const { eventName, sessionId, userId, path, metadata } = req.body;
 
         // 1. Record in generic site_events table
@@ -32,11 +38,12 @@ router.post(
         const { error: siteError } = await supabase.from('site_events').insert(payload);
 
         if (siteError) {
-            console.error('❌ Supabase Generic Analytics Error:', siteError.message);
+            console.error('❌ Supabase Generic Analytics Error:', (siteError as any).message);
         }
 
         // 2. Compatibility: If it's a funnel event, also potentially write to legacy funnel_events table
-        const funnelSteps = ['cart_view', 'checkout_start', 'delivery_info_filled', 'order_placed'];
+        // 'cart_view' and 'checkout_start' are removed to stop gathering abandonment data per request
+        const funnelSteps: string[] = ['order_placed'];
         if (funnelSteps.includes(eventName)) {
             const funnelPayload: any = {
                 session_id: sessionId,
@@ -143,6 +150,12 @@ router.post(
     '/funnel',
     validateResource(funnelEventSchema),
     asyncHandler(async (req: Request, res: Response) => {
+        // Analytics tracking is temporarily disabled by owner request
+        return res.status(200).json({
+            success: true,
+            message: 'Tracking is temporarily disabled',
+        });
+
         const { sessionId, step, totalValue, itemsCount, metadata, userId } = req.body;
         await supabase.from('funnel_events').insert({
             session_id: sessionId,

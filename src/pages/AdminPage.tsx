@@ -16,7 +16,7 @@ import {
     BarChart3,
     Heart,
     CalendarDays,
-    ShoppingCart,
+    Map as MapIcon,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -29,11 +29,9 @@ const AdminBlog = lazy(() => import('../components/admin/AdminBlog'));
 const AdminSettings = lazy(() => import('../components/admin/AdminSettings'));
 const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
 const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
-const AdminAbandonedCarts = lazy(() => import('../components/admin/AdminAbandonedCarts'));
 const AdminDeliveryZones = lazy(() => import('../components/admin/AdminDeliveryZones'));
 const AdminReservations = lazy(() => import('../components/admin/AdminReservations'));
 import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
-import { Map as MapIcon } from 'lucide-react';
 
 type TabId =
     | 'dashboard'
@@ -275,7 +273,7 @@ export default function AdminPage() {
         () => [
             { id: 'dashboard', label: t.nav.dashboard, icon: LayoutDashboard },
             { id: 'analytics', label: t.nav.analytics, icon: BarChart3 },
-            { id: 'abandoned', label: t.nav.abandoned, icon: ShoppingCart },
+            // { id: 'abandoned', label: t.nav.abandoned, icon: ShoppingCart },
             {
                 id: 'orders',
                 label: t.nav.orders,
@@ -543,7 +541,7 @@ export default function AdminPage() {
                             />
                         )}
 
-                        {activeTab === 'abandoned' && <AdminAbandonedCarts language={language} />}
+                        {/* {activeTab === 'abandoned' && <AdminAbandonedCarts language={language} />} */}
 
                         {activeTab === 'menu' && <AdminMenu language={language} />}
                         {activeTab === 'users' && <AdminUsers language={language} />}

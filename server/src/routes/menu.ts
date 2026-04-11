@@ -4,7 +4,7 @@ import { config } from '../config.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { formatMenuItem } from '../utils/helpers.js';
 import { validateResource } from '../middleware/validateResource.js';
-import { getMenuQuerySchema, menuIdParamSchema } from '../schemas/menu.schema.ts';
+import { getMenuQuerySchema, menuIdParamSchema } from '../schemas/menu.schema';
 
 const router = Router();
 

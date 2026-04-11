@@ -50,7 +50,7 @@
         "react-router-dom": "^6.20.1",
         "recharts": "^3.8.0",
         "ua-parser-js": "^2.0.9",
-        "zod": "^4.3.6"
+        "zod": "^3.23.8"
     },
     "devDependencies": {
         "@playwright/test": "^1.58.2",

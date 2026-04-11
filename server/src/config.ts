@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { envSchema } from './schemas/config.schema.ts';
+import { envSchema } from './schemas/config.schema';
 
 const DEFAULT_JWT_SECRET = 'sushi-de-maksim-secret-key-2024-CHANGE-IN-PRODUCTION';
 

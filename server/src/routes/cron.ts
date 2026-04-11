@@ -235,6 +235,12 @@ router.post('/check-abandoned-carts', async (req, res) => {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
+    // Abandoned cart reminders are temporarily disabled by owner request
+    return res.json({
+        success: true,
+        message: 'Abandoned cart reminders are currently disabled',
+    });
+
     try {
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
@@ -277,10 +283,13 @@ router.post('/check-abandoned-carts', async (req, res) => {
         // 3. Filter and send
         for (const [userId, data] of userCarts.entries()) {
             // Only send if never sent or sent > 7 days ago (to avoid spamming)
-            const lastReminderDate = data.lastReminder ? new Date(data.lastReminder) : null;
-            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            const lastReminderDate = data.lastReminder
+                ? new Date(data.lastReminder as string)
+                : null;
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).getTime();
 
-            if (!lastReminderDate || lastReminderDate < sevenDaysAgo) {
+            const lastReminderTime = lastReminderDate?.getTime() ?? 0;
+            if (lastReminderTime < sevenDaysAgo) {
                 try {
                     await sendAbandonedCartEmail(data.email, data.name, data.items);
 

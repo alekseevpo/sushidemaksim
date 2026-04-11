@@ -18,12 +18,8 @@ import {
     verifyEmailSchema,
     verifyBirthdaySchema,
 } from '../schemas/user.schema.js';
-import { updateOrderStatusSchema, getOrdersSchema } from '../schemas/order.schema.js';
-import {
-    createMenuItemSchema,
-    updateMenuItemSchema,
-    menuIdParamSchema,
-} from '../schemas/menu.schema.js';
+import { getOrdersSchema, updateOrderStatusSchema } from '../schemas/order.schema.js';
+import { createMenuItemSchema, updateMenuItemSchema, menuIdParamSchema } from '../schemas/menu.schema.js';
 import { updateSettingsSchema } from '../schemas/settings.schema.js';
 import {
     createDeliveryZoneSchema,
@@ -40,7 +36,6 @@ import {
     updatePromoSchema,
     promoIdParamSchema,
 } from '../schemas/promo.schema.js';
-import { AuthRequest } from '../middleware/auth.js';
 import {
     formatMenuItem,
     formatOrder,
