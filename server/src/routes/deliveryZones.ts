@@ -7,7 +7,7 @@ import {
     houseNumbersQuerySchema,
     addressSearchQuerySchema,
     reverseGeocodeQuerySchema,
-} from '../schemas/deliveryZone.schema';
+} from '../schemas/deliveryZone.schema.js';
 
 import axios from 'axios';
 
