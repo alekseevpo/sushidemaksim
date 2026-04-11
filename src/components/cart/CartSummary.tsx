@@ -239,6 +239,7 @@ export default function CartSummary({
                     triggerHaptic(HAPTIC_PATTERNS.LIGHT);
                     onInvite();
                 }}
+                data-testid="invite-button"
                 disabled={isInviting || isOrdering || items.length === 0}
                 className="w-full py-4 bg-white border-2 border-orange-100 text-orange-600 rounded-2xl font-black text-base uppercase tracking-wider hover:bg-orange-50 hover:border-orange-200 transition-all flex items-center justify-center gap-2 mb-4 active:scale-95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
