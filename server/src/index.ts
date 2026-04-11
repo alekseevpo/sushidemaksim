@@ -190,7 +190,8 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 // ─── Start Server ──────────────────────────────────────────────────────────────
-if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+// In CI/E2E environments, we need the server to listen even if NODE_ENV=test
+if (!process.env.VERCEL) {
     app.listen(config.port, () => {
         console.log(`\n🍣 Sushi de Maksim API [${config.nodeEnv}]`);
         console.log(`   Server:  http://localhost:${config.port}`);
