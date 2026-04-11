@@ -2,7 +2,13 @@ import { Router, Response } from 'express';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate } from '../middleware/validate.js';
+import { validateResource } from '../middleware/validateResource.js';
+import {
+    addToCartSchema,
+    updateCartItemSchema,
+    cartItemIdParamSchema,
+    bulkCartSchema,
+} from '../schemas/cart.schema.js';
 
 import { formatMenuItem } from '../utils/helpers.js';
 
@@ -50,12 +56,9 @@ router.get(
 // POST /api/cart — add item
 router.post(
     '/',
-    validate({
-        menuItemId: { required: true, type: 'number', min: 1 },
-        quantity: { type: 'number', min: 1, max: 99 },
-    }),
+    validateResource(addToCartSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { menuItemId, quantity = 1 } = req.body;
+        const { menuItemId, quantity } = req.body;
 
         const { data: existing, error: findError } = await supabase
             .from('cart_items')
@@ -84,12 +87,10 @@ router.post(
 // PUT /api/cart/:itemId — set quantity (0 = remove)
 router.put(
     '/:itemId',
-    validate({
-        quantity: { required: true, type: 'number', min: 0, max: 99 },
-    }),
+    validateResource(updateCartItemSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { quantity } = req.body;
-        const itemId = req.params.itemId;
+        const { itemId } = req.params as any;
 
         if (quantity === 0) {
             await supabase.from('cart_items').delete().eq('id', itemId).eq('user_id', req.userId);
@@ -110,11 +111,13 @@ router.put(
 // DELETE /api/cart/:itemId — remove single item
 router.delete(
     '/:itemId',
+    validateResource(cartItemIdParamSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { itemId } = req.params as any;
         const { error } = await supabase
             .from('cart_items')
             .delete()
-            .eq('id', req.params.itemId)
+            .eq('id', itemId)
             .eq('user_id', req.userId);
 
         if (error) return res.status(404).json({ error: 'Item no encontrado en la cesta' });
@@ -125,9 +128,7 @@ router.delete(
 // POST /api/cart/bulk — sync multiple items (merges with existing)
 router.post(
     '/bulk',
-    validate({
-        items: { required: true, type: 'array' },
-    }),
+    validateResource(bulkCartSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { items: incomingItems } = req.body;
 

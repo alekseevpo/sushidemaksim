@@ -8,6 +8,39 @@ import { authMiddleware } from '../middleware/auth.js';
 import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validate } from '../middleware/validate.js';
+import { validateResource } from '../middleware/validateResource.js';
+import {
+    createBlogPostSchema,
+    updateBlogPostSchema,
+    publishBlogPostSchema,
+} from '../schemas/blog.schema.js';
+import {
+    updateUserRoleSchema,
+    verifyEmailSchema,
+    verifyBirthdaySchema,
+} from '../schemas/user.schema.js';
+import { updateOrderStatusSchema, getOrdersSchema } from '../schemas/order.schema.js';
+import {
+    createMenuItemSchema,
+    updateMenuItemSchema,
+    menuIdParamSchema,
+} from '../schemas/menu.schema.js';
+import { updateSettingsSchema } from '../schemas/settings.schema.js';
+import {
+    createDeliveryZoneSchema,
+    updateDeliveryZoneSchema,
+    deliveryZoneIdParamSchema,
+} from '../schemas/deliveryZone.schema.js';
+import {
+    getReservationsQuerySchema,
+    updateReservationSchema,
+    reservationIdParamSchema,
+} from '../schemas/reservation.schema.js';
+import {
+    createPromoSchema,
+    updatePromoSchema,
+    promoIdParamSchema,
+} from '../schemas/promo.schema.js';
 import { AuthRequest } from '../middleware/auth.js';
 import {
     formatMenuItem,
@@ -94,26 +127,7 @@ router.get(
 // POST /api/admin/menu
 router.post(
     '/menu',
-    validate({
-        name: { required: true, type: 'string', minLength: 2, maxLength: 200 },
-        price: { required: true, type: 'number', min: 0.01 },
-        category: {
-            required: true,
-            enum: [
-                'entrantes',
-                'rollos-grandes',
-                'rollos-clasicos',
-                'rollos-fritos',
-                'sopas',
-                'menus',
-                'extras',
-                'postre',
-            ],
-        },
-        description: { type: 'string', maxLength: 500 },
-        image: { type: 'string', maxLength: 500 },
-        pieces: { type: 'number', min: 1, max: 999 },
-    }),
+    validateResource(createMenuItemSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const {
             name,
@@ -165,31 +179,9 @@ router.post(
 // PUT /api/admin/menu/:id
 router.put(
     '/menu/:id',
-    validate({
-        name: { type: 'string', minLength: 2, maxLength: 200 },
-        price: { type: 'number', min: 0.01 },
-        category: {
-            enum: [
-                'entrantes',
-                'rollos-grandes',
-                'rollos-clasicos',
-                'rollos-fritos',
-                'sopas',
-                'menus',
-                'extras',
-                'postre',
-            ],
-        },
-        description: { type: 'string', maxLength: 500 },
-        image: { type: 'string', maxLength: 500 },
-        pieces: { type: 'number', min: 1, max: 999 },
-    }),
+    validateResource(updateMenuItemSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id);
-
-        if (isNaN(id)) {
-            return res.status(400).json({ error: 'ID de producto inválido' });
-        }
+        const { id } = req.params as any;
 
         const {
             name,
@@ -248,11 +240,9 @@ router.put(
 // DELETE /api/admin/menu/:id
 router.delete(
     '/menu/:id',
+    validateResource(menuIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) {
-            return res.status(400).json({ error: 'ID de producto inválido' });
-        }
+        const { id } = req.params as any;
 
         // 1. Handle dependencies before deletion to avoid FK constraint errors (23503)
         // Order history is preserved because order_items stores name/price/image strings
@@ -280,13 +270,10 @@ router.delete(
 // GET /api/admin/orders
 router.get(
     '/orders',
+    validateResource(getOrdersSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const page = Math.max(1, parseInt(req.query.page as string) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
+        const { page, limit, status, userId, search } = req.query as any;
         const offset = (page - 1) * limit;
-        const status = req.query.status as string | undefined;
-        const userId = req.query.userId as string | undefined;
-        const search = req.query.search as string | undefined;
 
         let query = supabase
             .from('orders')
@@ -430,21 +417,7 @@ router.get(
 // PATCH /api/admin/orders/:id/status
 router.patch(
     '/orders/:id/status',
-    validate({
-        status: {
-            required: true,
-            enum: [
-                'waiting_payment',
-                'pending',
-                'received',
-                'confirmed',
-                'preparing',
-                'on_the_way',
-                'delivered',
-                'cancelled',
-            ],
-        },
-    }),
+    validateResource(updateOrderStatusSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const { status } = req.body;
 
@@ -700,9 +673,7 @@ router.get(
 // PATCH /api/admin/users/:id/role
 router.patch(
     '/users/:id/role',
-    validate({
-        role: { required: true, enum: ['user', 'admin', 'waiter'] },
-    }),
+    validateResource(updateUserRoleSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = req.params.id;
 
@@ -736,9 +707,7 @@ router.patch(
 // PATCH /api/admin/users/:id/verify-email
 router.patch(
     '/users/:id/verify-email',
-    validate({
-        isVerified: { required: true, type: 'boolean' },
-    }),
+    validateResource(verifyEmailSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { isVerified } = req.body;
 
@@ -788,9 +757,7 @@ router.patch(
 // PATCH /api/admin/users/:id/verify-birthday
 router.patch(
     '/users/:id/verify-birthday',
-    validate({
-        verified: { required: true, type: 'boolean' },
-    }),
+    validateResource(verifyBirthdaySchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = req.params.id;
         const { verified } = req.body;
@@ -1150,6 +1117,7 @@ router.get(
 
 router.post(
     '/promos',
+    validateResource(createPromoSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const { title, description, discount, valid_until, icon, color, bg, is_active } = req.body;
         const { data: promo, error } = await supabase
@@ -1164,12 +1132,14 @@ router.post(
 
 router.put(
     '/promos/:id',
+    validateResource(updatePromoSchema),
     asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params as any;
         const { title, description, discount, valid_until, icon, color, bg, is_active } = req.body;
         const { data: promo, error } = await supabase
             .from('promos')
             .update({ title, description, discount, valid_until, icon, color, bg, is_active })
-            .eq('id', req.params.id)
+            .eq('id', id)
             .select()
             .single();
         if (error) throw error;
@@ -1179,8 +1149,10 @@ router.put(
 
 router.delete(
     '/promos/:id',
+    validateResource(promoIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { error } = await supabase.from('promos').delete().eq('id', req.params.id);
+        const { id } = req.params as any;
+        const { error } = await supabase.from('promos').delete().eq('id', id);
         if (error) throw error;
         res.json({ success: true });
     })
@@ -1201,6 +1173,7 @@ router.get(
 
 router.post(
     '/blog_posts',
+    validateResource(createBlogPostSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const {
             title,
@@ -1237,6 +1210,7 @@ router.post(
 
 router.put(
     '/blog_posts/:id',
+    validateResource(updateBlogPostSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const {
             title,
@@ -1283,9 +1257,7 @@ router.delete(
 
 router.patch(
     '/blog_posts/:id/publish',
-    validate({
-        published: { required: true, type: 'boolean' },
-    }),
+    validateResource(publishBlogPostSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const { published } = req.body;
         const { data: post, error } = await supabase
@@ -1327,6 +1299,7 @@ router.get(
 
 router.put(
     '/settings',
+    validateResource(updateSettingsSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const updates = Object.keys(req.body).map(key => {
             const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
@@ -1475,13 +1448,7 @@ router.get(
 // POST /api/admin/delivery-zones
 router.post(
     '/delivery-zones',
-    validate({
-        name: { required: true, type: 'string', minLength: 1 },
-        cost: { required: true, type: 'number', min: 0 },
-        min_order: { type: 'number', min: 0 },
-        color: { type: 'string' },
-        // coordinates optional because we might use radii
-    }),
+    validateResource(createDeliveryZoneSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const {
             name,
@@ -1523,8 +1490,9 @@ router.post(
 // PUT /api/admin/delivery-zones/:id
 router.put(
     '/delivery-zones/:id',
+    validateResource(updateDeliveryZoneSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.params as any;
         const {
             name,
             cost,
@@ -1566,8 +1534,9 @@ router.put(
 // DELETE /api/admin/delivery-zones/:id
 router.delete(
     '/delivery-zones/:id',
+    validateResource(deliveryZoneIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.params as any;
         const { error } = await supabase.from('delivery_zones').delete().eq('id', id);
         if (error) throw error;
         res.json({ success: true });
@@ -1579,8 +1548,9 @@ router.delete(
 // GET /api/admin/reservations
 router.get(
     '/reservations',
+    validateResource(getReservationsQuerySchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { status, date } = req.query;
+        const { status, date } = req.query as any;
         let query = supabase
             .from('reservations')
             .select('*')
@@ -1598,8 +1568,9 @@ router.get(
 // PATCH /api/admin/reservations/:id
 router.patch(
     '/reservations/:id',
+    validateResource(updateReservationSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.params as any;
         const { status, notes } = req.body;
 
         const updateData: any = {};
@@ -1621,8 +1592,9 @@ router.patch(
 // DELETE /api/admin/reservations/:id
 router.delete(
     '/reservations/:id',
+    validateResource(reservationIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.params as any;
         const { error } = await supabase.from('reservations').delete().eq('id', id);
         if (error) throw error;
         res.status(204).send();

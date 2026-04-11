@@ -5,7 +5,13 @@ import { supabase } from '../db/supabase.js';
 import { config } from '../config.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate, emailRule, passwordRule } from '../middleware/validate.js';
+import { validateResource } from '../middleware/validateResource.js';
+import {
+    registerSchema,
+    loginSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema,
+} from '../schemas/user.schema.js';
 import { sendVerificationEmail } from '../utils/email.js';
 import { authLimiter, strictLimiter } from '../middleware/rateLimiters.js';
 import { formatUser } from '../utils/helpers.js';
@@ -16,12 +22,7 @@ const router = Router();
 router.post(
     '/register',
     authLimiter,
-    validate({
-        name: { required: true, type: 'string', minLength: 2, maxLength: 80 },
-        email: emailRule,
-        password: passwordRule,
-        phone: { type: 'string', maxLength: 30 },
-    }),
+    validateResource(registerSchema),
     asyncHandler(async (req, res: Response) => {
         const { name, email, phone, password } = req.body;
 
@@ -197,10 +198,7 @@ router.get(
 router.post(
     '/login',
     authLimiter,
-    validate({
-        email: { ...emailRule, message: 'Email inválido' },
-        password: { required: true, type: 'string' },
-    }),
+    validateResource(loginSchema),
     asyncHandler(async (req, res: Response) => {
         const { email, password } = req.body;
 
@@ -295,7 +293,7 @@ router.get(
 router.post(
     '/forgot-password',
     strictLimiter,
-    validate({ email: emailRule }),
+    validateResource(forgotPasswordSchema),
     asyncHandler(async (req, res: Response) => {
         const { email } = req.body;
 
@@ -363,11 +361,7 @@ router.post(
 router.post(
     '/reset-password',
     strictLimiter,
-    validate({
-        email: emailRule,
-        code: { required: true, type: 'string', minLength: 6, maxLength: 6 },
-        newPassword: passwordRule,
-    }),
+    validateResource(resetPasswordSchema),
     asyncHandler(async (req, res: Response) => {
         const { email, code, newPassword } = req.body;
 

@@ -1,9 +1,13 @@
 import 'dotenv/config';
+import { envSchema } from './schemas/config.schema.ts';
 
 const DEFAULT_JWT_SECRET = 'sushi-de-maksim-secret-key-2024-CHANGE-IN-PRODUCTION';
 
-const jwtSecret = process.env.JWT_SECRET || DEFAULT_JWT_SECRET;
-const nodeEnv = process.env.NODE_ENV || 'development';
+// Validate and parse environment variables
+const env = envSchema.parse(process.env);
+
+const jwtSecret = env.JWT_SECRET || DEFAULT_JWT_SECRET;
+const nodeEnv = env.NODE_ENV;
 
 if (nodeEnv === 'production' && jwtSecret === DEFAULT_JWT_SECRET) {
     console.warn(
@@ -12,36 +16,34 @@ if (nodeEnv === 'production' && jwtSecret === DEFAULT_JWT_SECRET) {
 }
 
 export const config = {
-    port: parseInt(process.env.PORT || '3001'),
+    port: env.PORT,
     jwtSecret,
     jwtExpiresIn: '7d' as const,
     bcryptRounds: 10,
-    corsOrigin: process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(',')
-        : [
-              'http://localhost:5173',
-              'https://sushidemaksim.vercel.app',
-              'https://sushidemaksim.com',
-          ],
+    corsOrigin: env.CORS_ORIGIN || [
+        'http://localhost:5173',
+        'https://sushidemaksim.vercel.app',
+        'https://sushidemaksim.com',
+    ],
     nodeEnv,
     isDev: nodeEnv === 'development',
     isProd: nodeEnv === 'production',
     smtp: {
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        user: process.env.SMTP_USER || '',
-        pass: process.env.SMTP_PASS || '',
-        fromName: process.env.SMTP_FROM_NAME || 'Sushi de Maksim',
+        host: env.SMTP_HOST,
+        port: env.SMTP_PORT,
+        user: env.SMTP_USER,
+        pass: env.SMTP_PASS,
+        fromName: env.SMTP_FROM_NAME,
     },
-    resendApiKey: process.env.RESEND_API_KEY || '',
-    emailFrom: process.env.EMAIL_FROM || 'Sushi de Maksim <info@sushidemaksim.com>',
-    adminEmail: process.env.ADMIN_EMAIL || '19fire43@gmail.com,maksimsushimadrid@gmail.com',
+    resendApiKey: env.RESEND_API_KEY,
+    emailFrom: env.EMAIL_FROM,
+    adminEmail: env.ADMIN_EMAIL,
     supabase: {
-        url: process.env.SUPABASE_URL || '',
-        key: process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || '',
-        serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+        url: env.SUPABASE_URL,
+        key: env.SUPABASE_KEY || env.SUPABASE_ANON_KEY || '',
+        serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
     },
     frontendUrl:
-        process.env.FRONTEND_URL ||
+        env.FRONTEND_URL ||
         (nodeEnv === 'production' ? 'https://sushidemaksim.vercel.app' : 'http://localhost:5173'),
 };

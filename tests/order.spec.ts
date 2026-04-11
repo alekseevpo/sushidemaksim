@@ -135,4 +135,38 @@ test.describe('Order Checkout Flow', () => {
         });
         await expect(page.getByText(/#00448/)).toBeVisible();
     });
+
+    test('FAILURE: should block order with empty address', async ({ page }) => {
+        await page.goto('/menu');
+        await page.waitForLoadState('networkidle');
+
+        // Add an item
+        const addButton = page.getByTestId('add-to-cart-button').first();
+        await addButton.click();
+
+        // Go to cart
+        await page.goto('/cart');
+        await expect(page.getByText(/Resumen/i)).toBeVisible();
+
+        // Select Domicilio (should be selected by default, but let's be sure)
+        const domicileBtn = page.getByRole('button', { name: /Domicilio/i });
+        await domicileBtn.click();
+
+        // Ensure address prompt is visible (means no address selected)
+        await expect(page.getByTestId('address-input')).toBeVisible();
+
+        // Fill other required info
+        await page.getByTestId('phone-input').fill('600123456');
+
+        // Select payment method
+        const cashBtn = page.getByRole('button', { name: /Efectivo/i });
+        await cashBtn.click();
+
+        // The button should be disabled because address is missing
+        const orderBtn = page.getByTestId('order-button');
+        await expect(orderBtn).toBeDisabled();
+
+        // Should show the hint
+        await expect(page.getByText(/Selecciona una dirección de entrega/i)).toBeVisible();
+    });
 });

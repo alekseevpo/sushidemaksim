@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import CartPage from '../../pages/CartPage';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
@@ -175,7 +175,10 @@ describe('CartPage - Invitations (Integration)', () => {
         fireEvent.click(cardBtn);
 
         const inviteBtn = screen.getByText(/Que me inviten!/i);
-        fireEvent.click(inviteBtn);
+
+        await act(async () => {
+            fireEvent.click(inviteBtn);
+        });
 
         await waitFor(() => {
             expect(api.post).toHaveBeenCalledWith(

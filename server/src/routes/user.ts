@@ -4,7 +4,14 @@ import multer from 'multer';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate, passwordRule } from '../middleware/validate.js';
+import { validateResource } from '../middleware/validateResource.js';
+import {
+    updateProfileSchema,
+    changePasswordSchema,
+    addressSchema,
+    updateAddressSchema,
+    favoriteSchema,
+} from '../schemas/user.schema.js';
 import { strictLimiter } from '../middleware/rateLimiters.js';
 import { formatUser } from '../utils/helpers.js';
 
@@ -50,13 +57,7 @@ router.get(
 router.put(
     '/profile',
     strictLimiter,
-    validate({
-        name: { type: 'string', minLength: 2, maxLength: 80 },
-        email: { type: 'string', match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
-        phone: { type: 'string', maxLength: 30 },
-        avatar: { type: 'string' },
-        birthDate: { type: 'string' },
-    }),
+    validateResource(updateProfileSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { name, phone, avatar, birthDate } = req.body;
 
@@ -228,10 +229,7 @@ router.post(
 router.put(
     '/change-password',
     strictLimiter,
-    validate({
-        currentPassword: { required: true, type: 'string' },
-        newPassword: { ...passwordRule, required: true },
-    }),
+    validateResource(changePasswordSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { currentPassword, newPassword } = req.body;
 
@@ -284,17 +282,7 @@ router.get(
 // POST /api/user/addresses
 router.post(
     '/addresses',
-    validate({
-        street: { required: true, type: 'string', minLength: 3, maxLength: 200 },
-        label: { type: 'string', maxLength: 50 },
-        house: { type: 'string', maxLength: 50 },
-        apartment: { type: 'string', maxLength: 100 },
-        city: { type: 'string', maxLength: 100 },
-        postalCode: { type: 'string', maxLength: 20 },
-        phone: { type: 'string', maxLength: 30 },
-        lat: { type: 'number' },
-        lon: { type: 'number' },
-    }),
+    validateResource(addressSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { label, street, house, apartment, city, postalCode, phone, isDefault, lat, lon } =
             req.body;
@@ -379,21 +367,10 @@ router.post(
         });
     })
 );
-
 // PUT /api/user/addresses/:id
 router.put(
     '/addresses/:id',
-    validate({
-        street: { type: 'string', minLength: 3, maxLength: 200 },
-        label: { type: 'string', maxLength: 50 },
-        house: { type: 'string', maxLength: 50 },
-        apartment: { type: 'string', maxLength: 100 },
-        city: { type: 'string', maxLength: 100 },
-        postalCode: { type: 'string', maxLength: 20 },
-        phone: { type: 'string', maxLength: 30 },
-        lat: { type: 'number' },
-        lon: { type: 'number' },
-    }),
+    validateResource(updateAddressSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const id = req.params.id;
         const { label, street, house, apartment, city, postalCode, phone, isDefault, lat, lon } =
@@ -492,7 +469,7 @@ router.get(
 // POST /api/user/favorites
 router.post(
     '/favorites',
-    validate({ menuItemId: { required: true, type: 'number' } }),
+    validateResource(favoriteSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { menuItemId } = req.body;
 

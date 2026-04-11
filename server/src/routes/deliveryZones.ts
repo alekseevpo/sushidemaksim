@@ -2,6 +2,12 @@ import { Router, Response, Request } from 'express';
 import { supabase } from '../db/supabase.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { formatDeliveryZone } from '../utils/helpers.js';
+import { validateResource } from '../middleware/validateResource.js';
+import {
+    houseNumbersQuerySchema,
+    addressSearchQuerySchema,
+    reverseGeocodeQuerySchema,
+} from '../schemas/deliveryZone.schema.ts';
 
 import axios from 'axios';
 
@@ -28,9 +34,8 @@ const houseNumbersCache = new Map<string, { data: string[]; timestamp: number }>
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
 // Get REAL house numbers for a street using Overpass API
-router.get('/house-numbers', async (req, res) => {
-    const { street, city, lat, lon } = req.query;
-    if (!street || (!city && (!lat || !lon))) return res.json([]);
+router.get('/house-numbers', validateResource(houseNumbersQuerySchema), async (req, res) => {
+    const { street, city, lat, lon } = req.query as any;
 
     const cacheKey = `houses-${street}-${city}-${lat}-${lon}`.toLowerCase().trim();
     const now = Date.now();
@@ -111,11 +116,9 @@ router.get('/house-numbers', async (req, res) => {
 // Proxy search because Nominatim blocks direct browser access (CORS/UA)
 router.get(
     '/search',
+    validateResource(addressSearchQuerySchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { q } = req.query;
-        if (!q || typeof q !== 'string') {
-            return res.status(400).json({ error: 'Query required' });
-        }
+        const { q } = req.query as any;
 
         const query = q.trim().toLowerCase();
         const now = Date.now();
@@ -320,11 +323,9 @@ router.get(
 // Proxy reverse geocode
 router.get(
     '/reverse',
+    validateResource(reverseGeocodeQuerySchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { lat, lon } = req.query;
-        if (!lat || !lon) {
-            return res.status(400).json({ error: 'Lat and Lon required' });
-        }
+        const { lat, lon } = req.query as any;
 
         try {
             const response = await axios.get('https://nominatim.openstreetmap.org/reverse', {

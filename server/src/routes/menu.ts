@@ -3,6 +3,8 @@ import { supabase } from '../db/supabase.js';
 import { config } from '../config.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { formatMenuItem } from '../utils/helpers.js';
+import { validateResource } from '../middleware/validateResource.js';
+import { getMenuQuerySchema, menuIdParamSchema } from '../schemas/menu.schema.ts';
 
 const router = Router();
 
@@ -33,11 +35,12 @@ export function invalidateMenuCache(): void {
 // GET /api/menu — all items, optional ?category= and ?search= filter
 router.get(
     '/',
+    validateResource(getMenuQuerySchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { category, search, is_promo, is_popular, is_chef_choice, limit } = req.query;
+        const { category, search, is_promo, is_popular, is_chef_choice, limit } = req.query as any;
 
         // Build cache key from query params (skip caching search queries)
-        const hasSearch = search && typeof search === 'string' && search.trim().length > 0;
+        const hasSearch = search && search.trim().length > 0;
         const cacheKey = hasSearch
             ? null
             : `menu:${category || 'all'}:${is_promo || ''}:${is_popular || ''}:${is_chef_choice || ''}:${limit || ''}`;
@@ -57,24 +60,16 @@ router.get(
             query = query.eq('category', category);
         }
 
-        if (is_promo === 'true') {
-            query = query.eq('is_promo', true);
-        }
-
-        if (is_popular === 'true') {
-            query = query.eq('is_popular', true);
-        }
-
-        if (is_chef_choice === 'true') {
-            query = query.eq('is_chef_choice', true);
-        }
+        if (is_promo) query = query.eq('is_promo', true);
+        if (is_popular) query = query.eq('is_popular', true);
+        if (is_chef_choice) query = query.eq('is_chef_choice', true);
 
         if (limit) {
-            query = query.limit(parseInt(limit as string));
+            query = query.limit(limit);
         }
 
         if (hasSearch) {
-            const term = (search as string).trim();
+            const term = search.trim();
             query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
         }
 
@@ -164,12 +159,9 @@ router.get(
 // GET /api/menu/:id — single item
 router.get(
     '/:id',
+    validateResource(menuIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id);
-
-        if (isNaN(id) || id <= 0) {
-            return res.status(400).json({ error: 'ID de producto inválido' });
-        }
+        const { id } = req.params as any;
 
         const { data: item, error } = await supabase
             .from('menu_items')
@@ -189,9 +181,9 @@ router.get(
 // POST /api/menu/:id/share — track share events
 router.post(
     '/:id/share',
+    validateResource(menuIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+        const { id } = req.params as any;
 
         // We use a generic analytics table. If it doesn't exist, we just log and continue
         // as the user might need to run the migration first.

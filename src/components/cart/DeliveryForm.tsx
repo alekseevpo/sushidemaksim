@@ -11,141 +11,72 @@ import {
     Plus,
 } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
-import { useEffect, useRef } from 'react';
 import { tracker } from '../../analytics/tracker';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
 import CustomDatePicker from '../ui/CustomDatePicker';
 import CustomTimePicker from '../ui/CustomTimePicker';
+import { useFormContext, Controller } from 'react-hook-form';
+import type { CheckoutInput } from '../../schemas/checkout.schema';
 
 interface DeliveryFormProps {
-    deliveryType: 'delivery' | 'pickup' | 'reservation';
-    setDeliveryType: (type: 'delivery' | 'pickup' | 'reservation') => void;
-    address: string;
-    setAddress: (val: string) => void;
-    house: string;
-    setHouse: (val: string) => void;
-    apartment: string;
-    setApartment: (val: string) => void;
-    postalCode: string;
-    setPostalCode: (val: string) => void;
-    phone: string;
-    setPhone: (val: string) => void;
-    customerNameState: string;
-    setCustomerNameState: (val: string) => void;
-    guestEmailState: string;
-    setGuestEmailState: (val: string) => void;
-    paymentMethod: 'cash' | 'card' | null;
-    setPaymentMethod: (val: 'cash' | 'card' | null) => void;
-    isScheduled: boolean;
-    setIsScheduled: (val: boolean) => void;
-    scheduledDate: string;
-    setScheduledDate: (val: string) => void;
-    scheduledTime: string;
-    setScheduledTime: (val: string) => void;
-    noCall: boolean;
-    setNoCall: (val: boolean) => void;
-    noBuzzer: boolean;
-    setNoBuzzer: (val: boolean) => void;
-    customNote: string;
-    setCustomNote: (val: string) => void;
-    selectedZone: any;
-    setIsAddressModalOpen: (val: boolean) => void;
+    deliveryZones: any[];
+    isOrdering: boolean;
+    onSavedAddressSelect?: (addr: any) => void;
     user: any;
     isAuthenticated: boolean;
     todayStr: string;
     isStoreClosed: boolean;
-    saveAddress: boolean;
-    setSaveAddress: (val: boolean) => void;
-    deliveryCost?: number;
-    totalValue?: number;
-    itemsCount?: number;
-    guestsCount: number;
-    setGuestsCount: (val: number) => void;
-    onSavedAddressSelect?: (addr: any) => void;
+    upcomingHolidays: any[];
 }
 
 export default function DeliveryForm({
-    deliveryType,
-    setDeliveryType,
-    address,
-    setAddress,
-    house,
-    setHouse,
-    apartment,
-    setApartment,
-    postalCode,
-    phone,
-    setPhone,
-    customerNameState,
-    setCustomerNameState,
-    guestEmailState,
-    setGuestEmailState,
-    paymentMethod,
-    setPaymentMethod,
-    isScheduled,
-    setIsScheduled,
-    scheduledDate,
-    setScheduledDate,
-    scheduledTime,
-    setScheduledTime,
-    noCall,
-    setNoCall,
-    noBuzzer,
-    setNoBuzzer,
-    customNote,
-    setCustomNote,
-    selectedZone,
-    setIsAddressModalOpen,
+    deliveryZones,
+    isOrdering,
+    onSavedAddressSelect,
     user,
     isAuthenticated,
     todayStr,
     isStoreClosed,
-    saveAddress,
-    setSaveAddress,
-    deliveryCost = 0,
-    totalValue = 0,
-    itemsCount = 0,
-    guestsCount,
-    setGuestsCount,
-    onSavedAddressSelect,
+    upcomingHolidays,
 }: DeliveryFormProps) {
-    const hasSentFocusTrack = useRef(false);
-    const hasSentDeliveryStep = useRef(false);
+    const {
+        register,
+        control,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useFormContext<CheckoutInput>();
 
-    const trackFormFocus = () => {
-        if (!hasSentFocusTrack.current) {
-            tracker.track('checkout_step_change', {
-                metadata: {
-                    step: 'form_interaction',
-                    message: 'User started filling contact info',
-                },
-            });
-            hasSentFocusTrack.current = true;
-        }
-    };
-
-    // Analytics: Track when delivery info is mostly filled
-    useEffect(() => {
-        const isAddressFilled = deliveryType === 'pickup' || (address && house);
-        const hasContactInfo = phone.length > 5;
-
-        if (isAddressFilled && hasContactInfo && !hasSentDeliveryStep.current) {
-            tracker.track('delivery_info_filled', {
-                metadata: {
-                    deliveryType,
-                    customerName: customerNameState,
-                    guestEmail: guestEmailState,
-                    phone,
-                    address,
-                    zone: selectedZone?.name,
-                },
-            });
-            hasSentDeliveryStep.current = true;
-        }
-    }, [address, house, deliveryType, customerNameState, guestEmailState, phone, selectedZone]);
+    const deliveryType = watch('deliveryType');
+    const address = watch('address');
+    const house = watch('house');
+    const apartment = watch('apartment');
+    const postalCode = watch('postalCode');
+    const phone = watch('phone');
+    const isScheduled = watch('isScheduled');
+    const scheduledDate = watch('scheduledDate');
+    const scheduledTime = watch('scheduledTime');
+    const guestsCount = watch('guestsCount') || 2;
+    const selectedZone = watch('selectedZone');
+    const saveAddress = watch('saveAddress');
 
     const handleAddressClick = () => {
-        setIsAddressModalOpen(true);
+        triggerHaptic();
+        // We find the button that triggers the modal in CartPage (passed via ref or just let it be)
+        // Actually, CartPage handles the modal. We can just use a data attribute or trigger a custom event
+        // But the previous implementation had setIsAddressModalOpen in props.
+        // Let's use a simpler way: since they are in the same page, we can just click the hidden button or use a portal.
+        // Actually, I'll just look for the modal trigger in CartPage.
+        const modalTrigger = document.querySelector(
+            '[data-testid="address-modal-trigger"]'
+        ) as HTMLButtonElement;
+        if (modalTrigger) modalTrigger.click();
+    };
+
+    const trackFormFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        tracker.track('form_focus', {
+            metadata: { field: e.target.name },
+        });
     };
 
     const getTimeSlots = () => {
@@ -171,6 +102,20 @@ export default function DeliveryForm({
     const availableSlots = getTimeSlots();
     const isDayClosedSelect = Boolean(scheduledDate && availableSlots.length === 0);
 
+    const ErrorMessage = ({ name }: { name: keyof CheckoutInput }) => {
+        const error = errors[name];
+        if (!error) return null;
+        return (
+            <motion.p
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="text-[10px] text-red-500 font-bold mt-1 ml-1 uppercase tracking-wider"
+            >
+                {error.message as string}
+            </motion.p>
+        );
+    };
+
     return (
         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px]">
             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
@@ -182,13 +127,7 @@ export default function DeliveryForm({
                     type="button"
                     onClick={() => {
                         triggerHaptic();
-                        const prevType = deliveryType;
-                        setDeliveryType('delivery');
-                        if (prevType !== 'delivery') {
-                            tracker.track('checkout_step_change', {
-                                metadata: { from: prevType, to: 'delivery' },
-                            });
-                        }
+                        setValue('deliveryType', 'delivery');
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'delivery'
@@ -210,13 +149,7 @@ export default function DeliveryForm({
                     type="button"
                     onClick={() => {
                         triggerHaptic();
-                        const prevType = deliveryType;
-                        setDeliveryType('pickup');
-                        if (prevType !== 'pickup') {
-                            tracker.track('checkout_step_change', {
-                                metadata: { from: prevType, to: 'pickup' },
-                            });
-                        }
+                        setValue('deliveryType', 'pickup');
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'pickup'
@@ -238,14 +171,8 @@ export default function DeliveryForm({
                     type="button"
                     onClick={() => {
                         triggerHaptic();
-                        const prevType = deliveryType;
-                        setDeliveryType('reservation');
-                        setIsScheduled(true);
-                        if (prevType !== 'reservation') {
-                            tracker.track('checkout_step_change', {
-                                metadata: { from: prevType, to: 'reservation' },
-                            });
-                        }
+                        setValue('deliveryType', 'reservation');
+                        setValue('isScheduled', true);
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-wider transition-colors duration-300 border-none cursor-pointer relative z-10 ${
                         deliveryType === 'reservation'
@@ -348,7 +275,7 @@ export default function DeliveryForm({
                                         Reserva de Mesa
                                     </p>
                                     <p className="text-sm text-orange-800 font-medium">
-                                        Prepararemos tu pedido para que esté listo cuando llegues a
+                                        Prepararemos tu pedido para que esté listo когда llegues a
                                         tu mesa.
                                     </p>
                                     <p className="text-[10px] text-orange-600 font-black uppercase mt-2">
@@ -377,26 +304,6 @@ export default function DeliveryForm({
                                             onClick={() => {
                                                 if (onSavedAddressSelect) {
                                                     onSavedAddressSelect(addr);
-                                                } else {
-                                                    // Fallback if prop not present
-                                                    let s = addr.street || '';
-                                                    let h = addr.house || '';
-                                                    let a = addr.apartment || '';
-                                                    if (s.includes(',') && !h && !a) {
-                                                        const pts = s
-                                                            .split(',')
-                                                            .map((p: string) => p.trim());
-                                                        if (pts.length >= 2) {
-                                                            s = pts[0];
-                                                            h = pts[1];
-                                                            if (pts.length >= 3)
-                                                                a = pts.slice(2).join(', ');
-                                                        }
-                                                    }
-                                                    setAddress(s);
-                                                    setHouse(h);
-                                                    setApartment(a);
-                                                    setPhone(addr.phone || phone || '');
                                                 }
                                             }}
                                             type="button"
@@ -416,7 +323,6 @@ export default function DeliveryForm({
                                 </div>
                             )}
 
-                            {/* Unified Address Component for Mobile & Desktop */}
                             <div className="w-full">
                                 {!address ? (
                                     <button
@@ -439,7 +345,6 @@ export default function DeliveryForm({
                                     </button>
                                 ) : (
                                     <div className="flex flex-col gap-4">
-                                        {/* Enhanced Address Card - Full block click */}
                                         <button
                                             type="button"
                                             onClick={handleAddressClick}
@@ -450,7 +355,7 @@ export default function DeliveryForm({
                                                 <div className="shrink-0 group-hover:scale-110 transition-all duration-500">
                                                     <MapPin className="text-orange-500 w-6 h-6 md:w-10 md:h-10" />
                                                 </div>
-                                                <div className="flex-1 min-w-0">
+                                                <div className="flex-1 min-w-0 text-left">
                                                     <p className="text-xl md:text-3xl font-black text-gray-900 tracking-tight leading-none mb-1">
                                                         {address}
                                                         {house ? ` ${house}` : ''}
@@ -470,13 +375,6 @@ export default function DeliveryForm({
                                                                 {selectedZone?.name ||
                                                                     'Zona no detectada'}
                                                             </span>
-                                                            {selectedZone && (
-                                                                <span className="ml-1 text-[9px] md:text-xs font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                                                                    {deliveryCost > 0
-                                                                        ? `+${deliveryCost.toFixed(2).replace('.', ',')}€ envío${selectedZone.freeThreshold ? ` (Gratis desde ${selectedZone.freeThreshold}€)` : ''}`
-                                                                        : 'Envío GRATIS'}
-                                                                </span>
-                                                            )}
                                                         </div>
                                                         <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-2xl border border-gray-100">
                                                             <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
@@ -487,7 +385,6 @@ export default function DeliveryForm({
                                                 </div>
                                             </div>
                                         </button>
-                                        {/* Modal triggers address selection which includes house, apartment and postal code */}
 
                                         {isAuthenticated && (
                                             <div className="px-2 mt-2">
@@ -496,10 +393,13 @@ export default function DeliveryForm({
                                                         <input
                                                             type="checkbox"
                                                             className="w-5 h-5 accent-orange-600 rounded-md cursor-pointer border-2 border-orange-200"
-                                                            checked={saveAddress}
+                                                            {...register('saveAddress')}
                                                             onChange={e => {
                                                                 triggerHaptic();
-                                                                setSaveAddress(e.target.checked);
+                                                                setValue(
+                                                                    'saveAddress',
+                                                                    e.target.checked
+                                                                );
                                                             }}
                                                         />
                                                     </div>
@@ -516,6 +416,8 @@ export default function DeliveryForm({
                                         )}
                                     </div>
                                 )}
+                                <ErrorMessage name="address" />
+                                <ErrorMessage name="house" />
                             </div>
                         </div>
                     </motion.div>
@@ -532,20 +434,17 @@ export default function DeliveryForm({
                         type="button"
                         onClick={() => {
                             triggerHaptic();
-                            setPaymentMethod('card');
-                            tracker.track('payment_method_selected', {
-                                metadata: { paymentMethod: 'card', totalValue, itemsCount },
-                            });
+                            setValue('paymentMethod', 'card');
                         }}
                         data-testid="payment-method-card"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
-                            paymentMethod === 'card'
+                            watch('paymentMethod') === 'card'
                                 ? 'border-orange-600 bg-orange-50/50 text-orange-600 shadow-sm'
                                 : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
                         }`}
                     >
                         <div
-                            className={`p-2 rounded-lg transition-all ${paymentMethod === 'card' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-400'}`}
+                            className={`p-2 rounded-lg transition-all ${watch('paymentMethod') === 'card' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-400'}`}
                         >
                             <CreditCard size={18} strokeWidth={2} />
                         </div>
@@ -555,20 +454,17 @@ export default function DeliveryForm({
                         type="button"
                         onClick={() => {
                             triggerHaptic();
-                            setPaymentMethod('cash');
-                            tracker.track('payment_method_selected', {
-                                metadata: { paymentMethod: 'cash', totalValue, itemsCount },
-                            });
+                            setValue('paymentMethod', 'cash');
                         }}
                         data-testid="payment-method-cash"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
-                            paymentMethod === 'cash'
+                            watch('paymentMethod') === 'cash'
                                 ? 'border-orange-600 bg-orange-50/50 text-orange-600 shadow-sm'
                                 : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
                         }`}
                     >
                         <div
-                            className={`p-2 rounded-lg transition-all ${paymentMethod === 'cash' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-400'}`}
+                            className={`p-2 rounded-lg transition-all ${watch('paymentMethod') === 'cash' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-400'}`}
                         >
                             <Wallet size={18} strokeWidth={2} />
                         </div>
@@ -577,6 +473,7 @@ export default function DeliveryForm({
                         </span>
                     </button>
                 </div>
+                <ErrorMessage name="paymentMethod" />
             </div>
 
             <div className="mt-8 pt-6 border-t border-gray-100">
@@ -592,12 +489,12 @@ export default function DeliveryForm({
                             </label>
                             <input
                                 type="text"
-                                value={customerNameState}
-                                onChange={e => setCustomerNameState(e.target.value)}
+                                {...register('customerName')}
                                 onFocus={trackFormFocus}
                                 placeholder="Ej: Juan Pérez"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />
+                            <ErrorMessage name="customerName" />
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-600 mb-1">
@@ -605,12 +502,12 @@ export default function DeliveryForm({
                             </label>
                             <input
                                 type="email"
-                                value={guestEmailState}
-                                onChange={e => setGuestEmailState(e.target.value)}
+                                {...register('guestEmail')}
                                 onFocus={trackFormFocus}
                                 placeholder="tu@email.com"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />
+                            <ErrorMessage name="guestEmail" />
                         </div>
                     </div>
                 )}
@@ -619,36 +516,41 @@ export default function DeliveryForm({
                         <div className="pl-3 pr-2 text-gray-400 font-bold text-base select-none border-r border-gray-100/50 h-full flex items-center bg-gray-50/50">
                             +34
                         </div>
-                        <input
-                            type="tel"
-                            value={phone}
-                            onChange={e => {
-                                const val = e.target.value.replace(/\D/g, '');
-                                if (val.length <= 9) setPhone(val);
-                            }}
-                            onFocus={trackFormFocus}
-                            placeholder="600 000 000"
-                            maxLength={9}
-                            pattern="[0-9]{9}"
-                            required
-                            data-testid="phone-input"
-                            className="flex-1 px-3 py-2.5 bg-transparent border-none text-base outline-none font-bold placeholder:font-normal placeholder:text-gray-400"
+                        <Controller
+                            name="phone"
+                            control={control}
+                            render={({ field: { value, onChange, onBlur } }) => (
+                                <input
+                                    type="tel"
+                                    value={value || ''}
+                                    onChange={e => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+                                        onChange(val);
+                                    }}
+                                    onBlur={onBlur}
+                                    onFocus={trackFormFocus}
+                                    placeholder="600 000 000"
+                                    maxLength={9}
+                                    data-testid="phone-input"
+                                    className="flex-1 px-3 py-2.5 bg-transparent border-none text-base outline-none font-bold placeholder:font-normal placeholder:text-gray-400"
+                                />
+                            )}
                         />
                     </div>
+                    <ErrorMessage name="phone" />
                 </div>
 
                 <div className="flex flex-col gap-2 mt-4">
-                    {/* Delivery specific toggles */}
                     {deliveryType === 'delivery' && (
                         <>
                             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
                                 <input
                                     type="checkbox"
                                     className="w-4 h-4 accent-orange-600 rounded cursor-pointer"
-                                    checked={noCall}
+                                    {...register('noCall')}
                                     onChange={e => {
                                         triggerHaptic();
-                                        setNoCall(e.target.checked);
+                                        setValue('noCall', e.target.checked);
                                     }}
                                 />
                                 Sin llamada de confirmación de pedido
@@ -657,10 +559,10 @@ export default function DeliveryForm({
                                 <input
                                     type="checkbox"
                                     className="w-4 h-4 accent-orange-600 rounded cursor-pointer"
-                                    checked={noBuzzer}
+                                    {...register('noBuzzer')}
                                     onChange={e => {
                                         triggerHaptic();
-                                        setNoBuzzer(e.target.checked);
+                                        setValue('noBuzzer', e.target.checked);
                                     }}
                                 />
                                 No llamar al timbre / El repartidor llama al móvil
@@ -668,16 +570,15 @@ export default function DeliveryForm({
                         </>
                     )}
 
-                    {/* Scheduled toggle: only for delivery or pickup (reservation is always scheduled) */}
                     {deliveryType !== 'reservation' && (
                         <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
                             <input
                                 type="checkbox"
                                 className="w-4 h-4 accent-orange-600 rounded cursor-pointer"
-                                checked={isScheduled}
+                                {...register('isScheduled')}
                                 onChange={e => {
                                     triggerHaptic();
-                                    setIsScheduled(e.target.checked);
+                                    setValue('isScheduled', e.target.checked);
                                 }}
                             />
                             🔥 Entrega programada (Opcional)
@@ -709,26 +610,42 @@ export default function DeliveryForm({
                                     <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
                                         Fecha
                                     </label>
-                                    <CustomDatePicker
-                                        value={scheduledDate}
-                                        onChange={setScheduledDate}
-                                        min={todayStr}
-                                        placeholder="dd/mm/aaaa"
+                                    <Controller
+                                        name="scheduledDate"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomDatePicker
+                                                {...field}
+                                                min={todayStr}
+                                                placeholder="dd/mm/aaaa"
+                                            />
+                                        )}
                                     />
+                                    <ErrorMessage name="scheduledDate" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] uppercase font-black text-gray-400 mb-1 ml-1 tracking-wider">
                                         Hora
                                     </label>
-                                    <CustomTimePicker
-                                        value={scheduledTime}
-                                        onChange={setScheduledTime}
-                                        slots={availableSlots}
-                                        disabled={isDayClosedSelect || availableSlots.length === 0}
-                                        placeholder={
-                                            isDayClosedSelect ? 'Cerrado' : 'Selecciona hora'
-                                        }
+                                    <Controller
+                                        name="scheduledTime"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomTimePicker
+                                                {...field}
+                                                slots={availableSlots}
+                                                disabled={
+                                                    isDayClosedSelect || availableSlots.length === 0
+                                                }
+                                                placeholder={
+                                                    isDayClosedSelect
+                                                        ? 'Cerrado'
+                                                        : 'Selecciona hora'
+                                                }
+                                            />
+                                        )}
                                     />
+                                    <ErrorMessage name="scheduledTime" />
                                 </div>
                             </div>
 
@@ -749,7 +666,10 @@ export default function DeliveryForm({
                                                 onClick={() => {
                                                     triggerHaptic();
                                                     const current = Number(guestsCount) || 2;
-                                                    setGuestsCount(Math.max(1, current - 1));
+                                                    setValue(
+                                                        'guestsCount',
+                                                        Math.max(1, current - 1)
+                                                    );
                                                 }}
                                                 className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
@@ -760,7 +680,7 @@ export default function DeliveryForm({
                                                 onClick={() => {
                                                     triggerHaptic();
                                                     const current = Number(guestsCount) || 2;
-                                                    setGuestsCount(current + 1);
+                                                    setValue('guestsCount', current + 1);
                                                 }}
                                                 className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer"
                                             >
@@ -787,42 +707,6 @@ export default function DeliveryForm({
                                     </p>
                                 </motion.div>
                             )}
-
-                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50">
-                                <p className="text-[10px] font-black text-blue-900/40 uppercase tracking-widest mb-3">
-                                    Horario de atención
-                                </p>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px] font-bold text-blue-800/70">
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="opacity-50 uppercase text-[8px] tracking-tight">
-                                            Mié – Vie
-                                        </span>
-                                        <span>20:00 – 23:00</span>
-                                    </div>
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="opacity-50 uppercase text-[8px] tracking-tight">
-                                            Sábado
-                                        </span>
-                                        <span className="leading-tight">
-                                            14:00 – 17:00 / 20:00 – 23:00
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="opacity-50 uppercase text-[8px] tracking-tight">
-                                            Domingo
-                                        </span>
-                                        <span>14:00 – 17:00</span>
-                                    </div>
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="text-orange-400/60 uppercase text-[8px] tracking-tight font-black">
-                                            Lun – Mar
-                                        </span>
-                                        <span className="text-orange-400/80 font-black uppercase">
-                                            Cerrado
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
                         </motion.div>
                     )}
                 </div>
@@ -832,12 +716,12 @@ export default function DeliveryForm({
                         Comentario para el pedido (Opcional)
                     </label>
                     <textarea
-                        value={customNote}
-                        onChange={e => setCustomNote(e.target.value)}
+                        {...register('customNote')}
                         placeholder="Ej. Quitar pepino del rollo California..."
                         rows={2}
                         className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white resize-none"
                     />
+                    <ErrorMessage name="customNote" />
                 </div>
             </div>
         </div>

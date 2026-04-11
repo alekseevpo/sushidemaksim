@@ -1,0 +1,150 @@
+import { z } from 'zod';
+
+/**
+ * Shared base rules to maintain consistency across Auth and User modules.
+ */
+export const emailSchema = z
+    .string()
+    .min(1, 'El email es obligatorio')
+    .email('Email inválido')
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Email inválido')
+    .max(100, 'El email es demasiado largo');
+
+export const passwordSchema = z
+    .string()
+    .min(1, 'La contraseña es obligatoria')
+    .min(9, 'La contraseña debe tener al menos 9 caracteres')
+    .max(100, 'La contraseña no puede superar los 100 caracteres')
+    .regex(
+        /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>_+-])/,
+        'La contraseña должен содержать хотя бы одну цифру и один спецсимвол'
+    );
+
+/**
+ * --- AUTH SCHEMAS ---
+ */
+
+export const registerSchema = z.object({
+    body: z.object({
+        name: z
+            .string()
+            .min(2, 'El nombre debe иметь не менее 2 символов')
+            .max(80, 'El nombre es demasiado largo'),
+        email: emailSchema,
+        password: passwordSchema,
+        phone: z.string().max(30, 'El teléfono es demasiado largo').optional().or(z.literal('')),
+    }),
+});
+
+export const loginSchema = z.object({
+    body: z.object({
+        email: emailSchema,
+        password: z.string().min(1, 'La contraseña es obligatoria'),
+    }),
+});
+
+export const forgotPasswordSchema = z.object({
+    body: z.object({
+        email: emailSchema,
+    }),
+});
+
+export const resetPasswordSchema = z.object({
+    body: z.object({
+        email: emailSchema,
+        code: z.string().length(6, 'El código debe tener 6 caracteres'),
+        newPassword: passwordSchema,
+    }),
+});
+
+/**
+ * --- USER SCHEMAS ---
+ */
+
+export const updateProfileSchema = z.object({
+    body: z.object({
+        name: z
+            .string()
+            .min(2, 'El nombre должен быть не менее 2 символов')
+            .max(80, 'El nombre es слишком длинный')
+            .optional(),
+        phone: z.string().max(30).optional(),
+        avatar: z.string().url('URL de avatar inválida').optional().or(z.literal('')),
+        birthDate: z.string().optional().nullable(),
+    }),
+});
+
+export const changePasswordSchema = z.object({
+    body: z.object({
+        currentPassword: z.string().min(1, 'La contraseña actual es obligatoria'),
+        newPassword: passwordSchema,
+    }),
+});
+
+export const addressSchema = z.object({
+    body: z.object({
+        label: z.string().max(50).optional(),
+        street: z.string().min(3, 'La calle es obligatoria').max(200),
+        house: z.string().max(50).optional(),
+        apartment: z.string().max(100).optional(),
+        city: z.string().max(100).optional(),
+        postalCode: z.string().max(20).optional(),
+        phone: z.string().max(30).optional(),
+        isDefault: z.boolean().optional(),
+        lat: z.number().optional(),
+        lon: z.number().optional(),
+    }),
+});
+
+export const updateAddressSchema = z.object({
+    body: addressSchema.shape.body.partial(),
+    params: z.object({
+        id: z.string().min(1, 'ID de dirección obligatorio'),
+    }),
+});
+
+export const favoriteSchema = z.object({
+    body: z.object({
+        menuItemId: z.number({
+            required_error: 'El ID del producto es obligatorio',
+            invalid_type_error: 'El ID del producto debe ser un número',
+        }),
+    }),
+});
+
+/**
+ * --- ADMIN USER SCHEMAS ---
+ */
+
+export const updateUserRoleSchema = z.object({
+    body: z.object({
+        role: z.enum(['user', 'admin', 'waiter'], {
+            errorMap: () => ({ message: 'Rol inválido. Debe ser: user, admin o waiter' }),
+        }),
+    }),
+    params: z.object({
+        id: z.string().min(1, 'ID de usuario obligatorio'),
+    }),
+});
+
+export const verifyEmailSchema = z.object({
+    body: z.object({
+        isVerified: z.boolean({
+            required_error: 'El estado de verificación es obligatorio',
+        }),
+    }),
+    params: z.object({
+        id: z.string().min(1, 'ID de usuario obligatorio'),
+    }),
+});
+
+export const verifyBirthdaySchema = z.object({
+    body: z.object({
+        verified: z.boolean({
+            required_error: 'El estado de verificación es obligatorio',
+        }),
+    }),
+    params: z.object({
+        id: z.string().min(1, 'ID de usuario obligatorio'),
+    }),
+});

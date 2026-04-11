@@ -1,7 +1,8 @@
 import { Router, Response } from 'express';
 import { supabase } from '../db/supabase.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate, emailRule } from '../middleware/validate.js';
+import { validateResource } from '../middleware/validateResource.js';
+import { subscribeSchema } from '../schemas/newsletter.schema.js';
 import { strictLimiter } from '../middleware/rateLimiters.js';
 import { sendNewsletterWelcomeEmail } from '../utils/email.js';
 
@@ -11,7 +12,7 @@ const router = Router();
 router.post(
     '/subscribe',
     strictLimiter,
-    validate({ email: emailRule }),
+    validateResource(subscribeSchema),
     asyncHandler(async (req, res: Response) => {
         const { email } = req.body;
         const normalizedEmail = email.toLowerCase().trim();

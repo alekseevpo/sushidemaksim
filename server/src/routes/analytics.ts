@@ -1,4 +1,11 @@
 import { Router, Request, Response } from 'express';
+import { asyncHandler } from '../middleware/asyncHandler.js';
+import { validateResource } from '../middleware/validateResource.js';
+import {
+    trackEventSchema,
+    waiterOrderSchema,
+    funnelEventSchema,
+} from '../schemas/analytics.schema.js';
 import { supabase } from '../db/supabase.js';
 import { isValidUUID } from '../utils/helpers.js';
 
@@ -8,13 +15,11 @@ const router = Router();
  * Endpoint to record generic site events for analytics.
  * Supports different types of events stored in 'site_events' table.
  */
-router.post('/track', async (req: Request, res: Response) => {
-    try {
+router.post(
+    '/track',
+    validateResource(trackEventSchema),
+    asyncHandler(async (req: Request, res: Response) => {
         const { eventName, sessionId, userId, path, metadata } = req.body;
-
-        if (!eventName || !sessionId) {
-            return res.status(400).json({ error: 'Missing required eventName or sessionId' });
-        }
 
         // 1. Record in generic site_events table
         const payload: any = {
@@ -22,16 +27,8 @@ router.post('/track', async (req: Request, res: Response) => {
             session_id: sessionId,
             path: path || null,
             metadata: metadata || {},
+            user_id: userId || null,
         };
-
-        if (userId) {
-            // 🚨 CRITICAL FIX: Sanitize userId before database insert to prevent UUID syntax errors
-            if (isValidUUID(userId)) {
-                payload.user_id = userId;
-            } else {
-                console.warn(`🛑 Analytics track: ignored malformed userId: "${userId}"`);
-            }
-        }
 
         const { error: siteError } = await supabase.from('site_events').insert(payload);
 
@@ -48,28 +45,21 @@ router.post('/track', async (req: Request, res: Response) => {
                 total_value: Number(metadata?.totalValue) || 0,
                 items_count: Number(metadata?.itemsCount) || 0,
                 metadata: metadata || {},
+                user_id: userId || null,
             };
-            if (userId) {
-                funnelPayload.user_id = userId;
-            }
             await supabase.from('funnel_events').insert(funnelPayload);
         }
 
         res.status(201).json({ success: true });
-    } catch (err: any) {
-        console.error('❌ Analytics API Error:', err.message);
-        res.status(500).json({ error: err.message });
-    }
-});
+    })
+);
 
 // Record an order taken by a waiter in the restaurant
-router.post('/waiter-order', async (req: Request, res: Response) => {
-    try {
+router.post(
+    '/waiter-order',
+    validateResource(waiterOrderSchema),
+    asyncHandler(async (req: Request, res: Response) => {
         const { items, totalValue, itemsCount, waiterId, metadata = {} } = req.body;
-
-        if (!items || !totalValue) {
-            return res.status(400).json({ error: 'Missing items or totalValue' });
-        }
 
         const waiterSessionId = `waiter-${waiterId || 'anonymous'}-${Date.now()}`;
 
@@ -128,11 +118,8 @@ router.post('/waiter-order', async (req: Request, res: Response) => {
                 source: 'waiter_interface',
                 label: 'Заказ в заведении',
             },
+            user_id: waiterId || null,
         };
-
-        if (waiterId) {
-            sitePayload.user_id = waiterId;
-        }
 
         await supabase.from('site_events').insert(sitePayload);
 
@@ -143,36 +130,31 @@ router.post('/waiter-order', async (req: Request, res: Response) => {
             total_value: Number(totalValue) || 0,
             items_count: Number(itemsCount) || 0,
             metadata: { ...metadata, source: 'waiter_interface', order_id: order?.id },
+            user_id: waiterId || null,
         };
-        if (waiterId) {
-            waiterFunnelPayload.user_id = waiterId;
-        }
 
         await supabase.from('funnel_events').insert(waiterFunnelPayload);
 
         res.status(201).json({ success: true, orderId: order?.id });
-    } catch (err: any) {
-        console.error('❌ Waiter Analytics API Error:', err.message);
-        res.status(500).json({ error: err.message });
-    }
-});
+    })
+);
 
 // Deprecated old endpoint for compatibility during migration
-router.post('/funnel', async (req, res) => {
-    const { sessionId, step, totalValue, itemsCount, metadata, userId } = req.body;
-    try {
+router.post(
+    '/funnel',
+    validateResource(funnelEventSchema),
+    asyncHandler(async (req: Request, res: Response) => {
+        const { sessionId, step, totalValue, itemsCount, metadata, userId } = req.body;
         await supabase.from('funnel_events').insert({
             session_id: sessionId,
             step,
-            total_value: Number(totalValue) || 0,
-            items_count: Number(itemsCount) || 0,
+            total_value: totalValue,
+            items_count: itemsCount,
             metadata: metadata || {},
             user_id: userId || null,
         });
         res.status(201).json({ success: true });
-    } catch (e: any) {
-        res.status(500).json({ error: e.message });
-    }
-});
+    })
+);
 
 export default router;

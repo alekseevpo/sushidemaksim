@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'; // Heartbeat update
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -9,6 +9,9 @@ import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
 import { detectZone } from '../utils/delivery';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { checkoutSchema, type CheckoutInput } from '../schemas/checkout.schema';
 
 // Modular Components
 import CartItemList from '../components/cart/CartItemList';
@@ -19,6 +22,24 @@ import CartSuggestions from '../components/cart/CartSuggestions';
 import CartEmptyView from '../components/cart/CartEmptyView';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { tracker } from '../analytics/tracker';
+
+const MADRID_HOLIDAYS_2026 = [
+    { name: 'Año Nuevo', date: '2026-01-01' },
+    { name: 'Epifanía del Señor', date: '2026-01-06' },
+    { name: 'San José', date: '2026-03-19' },
+    { name: 'Jueves Santo', date: '2026-04-02' },
+    { name: 'Viernes Santo', date: '2026-04-03' },
+    { name: 'Fiesta del Trabajo', date: '2026-05-01' },
+    { name: 'Fiesta de la Comunidad de Madrid', date: '2026-05-02' },
+    { name: 'San Isidro', date: '2026-05-15' },
+    { name: 'Asunción de la Virgen', date: '2026-08-15' },
+    { name: 'Fiesta Nacional de España', date: '2026-10-12' },
+    { name: 'Día de Todos los Santos', date: '2026-11-02' },
+    { name: 'Nuestra Señora de la Almudena', date: '2026-11-09' },
+    { name: 'Día de la Constitución', date: '2026-12-07' },
+    { name: 'Inmaculada Concepción', date: '2026-12-08' },
+    { name: 'Natividad del Señor', date: '2026-12-25' },
+];
 
 interface MenuItem {
     id: number;
@@ -46,22 +67,14 @@ export default function CartPage() {
     const { isAuthenticated, user } = useAuth();
     const { success: showSuccess, error: showError, info: showInfo } = useToast();
 
-    const cartSubtotal = Number(total) || 0;
     const [promoCode, setPromoCode] = useState('');
     const [promoDiscount, setPromoDiscount] = useState<number | null>(null);
     const [promoError, setPromoError] = useState<string | null>(null);
 
-    const discountAmount = promoDiscount ? (cartSubtotal * promoDiscount) / 100 : 0;
-    const { deliveryType, selectedZone, guestsCount } = deliveryDetails;
-
-    // We need siteSettings for these. But they are loaded in useEffect.
-    // I'll keep them where they are if they need it, or move siteSettings load to useCart?
-    // Actually, I can just calculate them later OR handle nulls.
-
-    const [isOrdering, setIsOrdering] = useState(false);
-    const [isInviting, setIsInviting] = useState(false);
+    const [isOrderingState, setIsOrdering] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
     const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
+    const [isInviting, setIsInviting] = useState(false);
     const [isLoadingSettings, setIsLoadingSettings] = useState(true);
     const [lastOrderSummary, setLastOrderSummary] = useState<{
         total: number;
@@ -86,24 +99,34 @@ export default function CartPage() {
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
     const todayStr = new Date().toLocaleDateString('sv-SE'); // Local date in YYYY-MM-DD format
+    const isManualClosed = !!siteSettings?.is_store_closed;
+    const isOpenNow = isStoreOpen();
+    const isStoreClosed = isManualClosed || !isOpenNow;
+
+    const upcomingHolidays = MADRID_HOLIDAYS_2026.filter(h => {
+        const hDate = new Date(h.date);
+        const today = new Date();
+        const hasNotPassed = hDate.getTime() >= today.setHours(0, 0, 0, 0);
+        return hasNotPassed;
+    }).slice(0, 3); // Max 3 for compactness
+
+    const methods = useForm<CheckoutInput>({
+        resolver: zodResolver(checkoutSchema),
+        defaultValues: deliveryDetails,
+        mode: 'onTouched',
+    });
 
     const {
-        address,
-        house,
-        apartment,
-        phone,
-        postalCode,
-        customerName: customerNameState,
-        guestEmail: guestEmailState,
-        paymentMethod,
-        noCall,
-        noBuzzer,
-        isScheduled,
-        scheduledDate,
-        scheduledTime,
-        customNote,
-        saveAddress,
-    } = deliveryDetails;
+        handleSubmit,
+        watch,
+        reset,
+        formState: { isSubmitting: isOrderingForm },
+    } = methods;
+
+    const cartSubtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const discountAmount = promoDiscount ? (cartSubtotal * promoDiscount) / 100 : 0;
+
+    const { deliveryType, selectedZone, isScheduled, scheduledDate, scheduledTime } = watch();
 
     const MIN_ORDER =
         deliveryType === 'delivery'
@@ -111,26 +134,39 @@ export default function CartPage() {
                 ? (selectedZone.minOrder ?? 0)
                 : (siteSettings?.minOrder ?? 15)
             : 0;
-    const isManualClosed = !!siteSettings?.is_store_closed;
-    const isOpenNow = isStoreOpen();
-    const isStoreClosed = isManualClosed || !isOpenNow;
 
-    const EMOJI: Record<string, string> = {
-        rolls: '🍣',
-        'rollos-grandes': '🍣',
-        'rolls-calientes': '🍘',
-        sets: '🍱',
-        classic: '🍙',
-        baked: '🍘',
-        sweet: '🍥',
-        sauces: '🥢',
-        extras: '🥢',
-        entrantes: '🥟',
-        postre: '🍰',
-        bebidas: '🥤',
-    };
+    const deliveryCost =
+        deliveryType === 'delivery'
+            ? cartSubtotal >=
+              (selectedZone
+                  ? (selectedZone.freeThreshold ?? siteSettings?.freeDeliveryThreshold ?? 60)
+                  : (siteSettings?.freeDeliveryThreshold ?? 60))
+                ? 0
+                : selectedZone
+                  ? (selectedZone.cost ?? 0)
+                  : (siteSettings?.deliveryFee ?? 3.5)
+            : 0;
 
-    const getCategoryEmoji = (category: string) => EMOJI[category] || '🍱';
+    const finalTotal = cartSubtotal - discountAmount + deliveryCost;
+
+    // Sync form changes back to deliveryDetails in useCart for persistence
+    const watchedFields = watch();
+    useEffect(() => {
+        const hasChanged = JSON.stringify(watchedFields) !== JSON.stringify(deliveryDetails);
+        if (hasChanged) {
+            updateDeliveryDetails(watchedFields);
+        }
+    }, [watchedFields, deliveryDetails, updateDeliveryDetails]);
+
+    // Handle initial state sync if user logs in
+    useEffect(() => {
+        if (user && !methods.getValues('customerName')) {
+            methods.setValue('customerName', user.name || '');
+        }
+        if (user && !methods.getValues('guestEmail')) {
+            methods.setValue('guestEmail', user.email || '');
+        }
+    }, [user, methods]);
 
     useScrollLock(isAddressModalOpen || !!orderSuccess);
 
@@ -140,17 +176,15 @@ export default function CartPage() {
 
     const handleAddressSelect = useCallback(
         (res: any) => {
-            updateDeliveryDetails({
-                address: res.address || '',
-                house: res.house || '',
-                apartment: res.apartment || '',
-                postalCode: res.postalCode || '',
-                selectedZone: res.zone,
-                lat: res.coordinates?.[0],
-                lon: res.coordinates?.[1],
-            });
+            methods.setValue('address', res.address || '');
+            methods.setValue('house', res.house || '');
+            methods.setValue('apartment', res.apartment || '');
+            methods.setValue('postalCode', res.postalCode || '');
+            methods.setValue('selectedZone', res.zone);
+            methods.setValue('lat', res.coordinates?.[0]);
+            methods.setValue('lon', res.coordinates?.[1]);
         },
-        [updateDeliveryDetails]
+        [methods]
     );
 
     useEffect(() => {
@@ -181,25 +215,22 @@ export default function CartPage() {
                     z.name === deliveryDetails.selectedZone.name
             );
             if (freshZone) {
-                // If metadata has changed (cost, threshold, etc.), update the state
                 const current = JSON.stringify(deliveryDetails.selectedZone);
                 const latest = JSON.stringify(freshZone);
                 if (current !== latest) {
-                    updateDeliveryDetails({ selectedZone: freshZone });
+                    methods.setValue('selectedZone', freshZone);
                 }
             }
         }
-    }, [deliveryZones, deliveryDetails.selectedZone, updateDeliveryDetails]);
+    }, [deliveryZones, deliveryDetails.selectedZone, methods]);
 
-    // Schedule integrity sync (prevent past dates from remembered state)
+    // Schedule integrity sync
     useEffect(() => {
         if (isScheduled && scheduledDate && scheduledDate < todayStr) {
-            updateDeliveryDetails({
-                scheduledDate: todayStr,
-                scheduledTime: '', // Reset time too as it might be past
-            });
+            methods.setValue('scheduledDate', todayStr);
+            methods.setValue('scheduledTime', '');
         }
-    }, [todayStr, isScheduled, scheduledDate, updateDeliveryDetails]);
+    }, [todayStr, isScheduled, scheduledDate, methods]);
 
     const loadSuggestions = useCallback(async () => {
         if (suggestions.length > 0) return;
@@ -215,7 +246,6 @@ export default function CartPage() {
         }
     }, [suggestions.length]);
 
-    // Re-filter suggestions based on what's currently in the cart
     const filteredSuggestions = useMemo(() => {
         return suggestions.filter(
             suggestion => !items.find(cartItem => String(cartItem.id) === String(suggestion.id))
@@ -234,7 +264,96 @@ export default function CartPage() {
         }
     }, []);
 
-    // Popular items for empty cart
+    const handleInvite = async () => {
+        const formData = methods.getValues();
+        const {
+            deliveryType,
+            address: streetVal = '',
+            house: houseVal = '',
+            apartment: aptVal = '',
+            phone,
+            isScheduled,
+            scheduledDate,
+            scheduledTime,
+            paymentMethod,
+            guestsCount,
+            chopsticksCount,
+            customNote = '',
+        } = formData;
+
+        const finalTotal = cartSubtotal - discountAmount;
+
+        if (items.length === 0) return;
+
+        if (deliveryType === 'delivery' && (!streetVal || !streetVal.trim())) {
+            return showError('Por favor, indica tu calle para el envío');
+        }
+        setIsInviting(true);
+
+        const notesArray = [];
+        notesArray.push(`[TIPO: ${deliveryType === 'pickup' ? 'RECOGIDA' : 'DOMICILIO'}]`);
+        if (paymentMethod)
+            notesArray.push(
+                `[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`
+            );
+        if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
+        if (customNote && customNote.trim()) notesArray.push(customNote.trim());
+
+        try {
+            const payload: any = {
+                deliveryType,
+                address: streetVal,
+                house: houseVal,
+                apartment: aptVal,
+                postalCode:
+                    formData.postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
+                phone,
+                senderName: user?.name || formData.customerName || 'Un amigo',
+                notes: notesArray.join(' | '),
+                total: finalTotal,
+                items: items.map(i => ({
+                    id: i.id,
+                    name: i.name,
+                    quantity: i.quantity,
+                    price: i.price,
+                    image: i.image,
+                })),
+                deliveryAddress:
+                    deliveryType === 'pickup'
+                        ? 'RECOGIDA'
+                        : `${streetVal}${houseVal ? `, ${houseVal}` : ''}`,
+                phoneNumber: phone || user?.phone || '',
+                isScheduled,
+                scheduledDate,
+                scheduledTime,
+                guestsCount,
+                chopsticksCount,
+                customNote,
+                paymentMethod,
+                deliveryZoneId: selectedZone?.id,
+            };
+
+            const inviteData = await api.post('/orders/invite', payload);
+
+            if (inviteData?.shareUrl) {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: '¡Paga mi pedido de Sushi de Maksim! 🍣',
+                        text: `${user?.name || formData.customerName || 'Tu amigo'} te ha enviado un link para pagar su pedido.`,
+                        url: inviteData.shareUrl,
+                    });
+                } else {
+                    await navigator.clipboard.writeText(inviteData.shareUrl);
+                    showSuccess('Link copiado al portapapeles. ¡Envíalo a tu amigo!');
+                }
+            }
+        } catch (err: any) {
+            showError(err.message || 'Error al generar invitación');
+        } finally {
+            setIsInviting(false);
+        }
+    };
+
     useEffect(() => {
         if (items.length === 0 && popularItems.length === 0 && !isLoadingPopular) {
             loadPopularItems();
@@ -251,19 +370,17 @@ export default function CartPage() {
         isLoadingSuggestions,
     ]);
 
-    // Save current address to user profile if requested
     const saveCurrentAddress = async () => {
-        if (!isAuthenticated || !saveAddress || deliveryType !== 'delivery') return;
+        if (!isAuthenticated || !deliveryDetails.saveAddress || deliveryType !== 'delivery') return;
 
         try {
-            const streetVal = address.trim();
-            const houseVal = house.trim();
-            const aptVal = apartment.trim();
-            const deliveryPhone = phone || user?.phone || '';
+            const streetVal = (methods.getValues('address') || '').trim();
+            const houseVal = (methods.getValues('house') || '').trim();
+            const aptVal = (methods.getValues('apartment') || '').trim();
+            const deliveryPhone = methods.getValues('phone') || user?.phone || '';
 
             if (!streetVal) return;
 
-            // Check for duplicates on frontend
             const isDuplicate = (user?.addresses || []).some((addr: any) => {
                 const s = (addr.street || '').trim().toLowerCase();
                 const h = (addr.house || '').trim().toLowerCase();
@@ -276,10 +393,7 @@ export default function CartPage() {
                 return s === targetS && h === targetH && a === targetA;
             });
 
-            if (isDuplicate) {
-                console.log('Skipping address save: already exists in profile');
-                return;
-            }
+            if (isDuplicate) return;
 
             const { lat, lon } = deliveryDetails;
 
@@ -287,7 +401,9 @@ export default function CartPage() {
                 street: streetVal,
                 house: houseVal,
                 apartment: aptVal,
-                postalCode: postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
+                postalCode:
+                    methods.getValues('postalCode') ||
+                    (selectedZone ? selectedZone.postalCodes?.[0] : ''),
                 phone: deliveryPhone,
                 label: 'Dirección reciente',
                 lat,
@@ -301,16 +417,13 @@ export default function CartPage() {
 
     const hasItems = items.length > 0;
 
-    // Analytics: Track cart view & checkout start
     useEffect(() => {
         if (!cartLoading && hasItems) {
-            // Track clear page view for cart
             tracker.track('page_view', {
-                metadata: { title: 'Корзина и оформление', path: '/cart' },
+                metadata: { title: 'Carrito y Finalización', path: '/cart' },
                 userId: user?.id,
             });
 
-            // Track checkout start funnel step
             tracker.track('checkout_start', {
                 metadata: {
                     totalValue: cartSubtotal,
@@ -329,7 +442,6 @@ export default function CartPage() {
 
     const handleAddToCart = async (item: MenuItem, quantity: number = 1, isSuggestion = false) => {
         try {
-            // Map our local MenuItem to the global SushiItem type
             const sushiItem = {
                 id: String(item.id),
                 name: item.name,
@@ -405,7 +517,6 @@ export default function CartPage() {
     };
 
     useEffect(() => {
-        // If welcome promo is applied and subtotal drops below 70, invalidate it
         const isWelcomePromo = promoCode.startsWith('NUEVO') || promoCode.startsWith('NEW');
         if (promoDiscount && isWelcomePromo && cartSubtotal < 70) {
             handleRemovePromo();
@@ -413,55 +524,26 @@ export default function CartPage() {
         }
     }, [cartSubtotal, promoCode, promoDiscount]);
 
-    const handleOrder = async () => {
-        console.log('--- HANDLE ORDER ---');
-        console.log('deliveryType:', deliveryType);
-        console.log('total:', total);
-        console.log('MIN_ORDER:', MIN_ORDER);
+    const onSubmit = async (data: CheckoutInput) => {
+        const {
+            deliveryType,
+            address: streetVal = '',
+            house: houseVal = '',
+            apartment: aptVal = '',
+            phone,
+            customerName: customerNameVal,
+            guestEmail: guestEmailVal,
+            paymentMethod,
+            guestsCount,
+            isScheduled,
+            scheduledDate,
+            scheduledTime,
+            noCall,
+            noBuzzer,
+            customNote = '',
+        } = data;
 
-        const streetVal = address.trim();
-        const houseVal = house.trim();
-        const aptVal = apartment.trim();
-
-        if (deliveryType === 'delivery') {
-            if (!streetVal || streetVal.length < 3) {
-                tracker.track('error_notice', {
-                    metadata: { type: 'validation', field: 'address', message: 'Missing street' },
-                });
-                return showError('Indica tu calle / dirección');
-            }
-            if (!houseVal) {
-                tracker.track('error_notice', {
-                    metadata: { type: 'validation', field: 'house', message: 'Missing house' },
-                });
-                return showError('Indica tu portal/casa');
-            }
-        }
-
-        if (!paymentMethod) {
-            tracker.track('error_notice', {
-                metadata: {
-                    type: 'validation',
-                    field: 'paymentMethod',
-                    message: 'No payment method',
-                },
-            });
-            return showError('Selecciona un método de pago');
-        }
-
-        const deliveryPhone = phone.trim() || user?.phone || '';
-        if (!deliveryPhone || deliveryPhone.length < 9) {
-            tracker.track('error_notice', {
-                metadata: { type: 'validation', field: 'phone', message: 'Invalid phone' },
-            });
-            return showError('Teléfono no válido');
-        }
-
-        // Business Hour Validation
         if (isStoreClosed && !isScheduled) {
-            tracker.track('error_notice', {
-                metadata: { type: 'store_closed', message: 'Attempted order while closed' },
-            });
             return showError(
                 'Nuestra cocina está descansando en este momento, ¡pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona "Entrega programada".'
             );
@@ -472,7 +554,6 @@ export default function CartPage() {
                 return showError('Por favor, selecciona una fecha a partir de hoy.');
             }
 
-            // If it is today, ensure the time is not in the past
             if (scheduledDate === todayStr) {
                 const now = new Date();
                 const nowMinutes = now.getHours() * 60 + now.getMinutes();
@@ -480,7 +561,6 @@ export default function CartPage() {
                 const scheduledMinutes = h * 60 + m;
 
                 if (scheduledMinutes < nowMinutes + 15) {
-                    // Small margin (15 min) for processing
                     return showError(
                         'La hora seleccionada ya ha pasado o es demasiado cercana. Elige una hora posterior.'
                     );
@@ -495,7 +575,6 @@ export default function CartPage() {
             }
         }
 
-        // Analytics: Track checkout start
         tracker.track('checkout_start', {
             metadata: {
                 totalValue: cartSubtotal,
@@ -527,21 +606,34 @@ export default function CartPage() {
         }
         if (noCall) notesArray.push('[SIN CONFIRMACIÓN LLAMADA]');
         if (noBuzzer) notesArray.push('[NO LLAMAR TIMBRE]');
-        if (deliveryDetails.chopsticksCount > 0)
-            notesArray.push(`[PALILLOS: ${deliveryDetails.chopsticksCount}]`);
+        if (data.chopsticksCount > 0) notesArray.push(`[PALILLOS: ${data.chopsticksCount}]`);
         if (customNote.trim()) notesArray.push(customNote.trim());
 
         try {
-            const { lat, lon } = deliveryDetails;
+            const { lat, lon } = data;
             const payload: any = {
+                deliveryType,
+                address: streetVal,
+                house: houseVal,
+                apartment: aptVal,
+                postalCode: data.postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
+                phone,
+                customerName: isAuthenticated ? user?.name || '' : customerNameVal,
+                guestEmail: isAuthenticated ? user?.email || '' : guestEmailVal,
+                paymentMethod,
+                guestsCount: data.guestsCount,
+                chopsticksCount: data.chopsticksCount,
+                isScheduled: data.isScheduled,
+                scheduledDate: data.scheduledDate,
+                scheduledTime: data.scheduledTime,
+                noCall: data.noCall,
+                noBuzzer: data.noBuzzer,
+                customNote: data.customNote,
                 deliveryAddress:
                     deliveryType === 'pickup'
                         ? 'RECOGIDA'
-                        : `${streetVal}, ${houseVal}, ${aptVal}, CP: ${postalCode}`,
-                phoneNumber: deliveryPhone,
-                customerName: isAuthenticated ? user?.name || '' : customerNameState,
-                email: isAuthenticated ? user?.email || '' : guestEmailState,
-                postalCode: postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
+                        : `${streetVal}, ${houseVal}, ${aptVal}, CP: ${data.postalCode || ''}`,
+                phoneNumber: phone,
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
                 promoCode: promoDiscount ? promoCode : undefined,
@@ -556,38 +648,40 @@ export default function CartPage() {
                 }));
             }
 
-            const data = await api.post('/orders', payload);
+            const dataRes = await api.post('/orders', payload);
 
-            // Save address if requested
             await saveCurrentAddress();
 
-            // Analytics: Track order placed
             tracker.track('order_placed', {
                 metadata: {
                     totalValue: cartSubtotal,
                     itemsCount: items.reduce((s, i) => s + i.quantity, 0),
-                    orderId: data.order.id,
+                    orderId: dataRes.order.id,
                 },
                 userId: user?.id,
             });
 
-            // Capture summary before clearing cart
             setLastOrderSummary({
                 total: cartSubtotal - discountAmount,
-                deliveryCost: deliveryCost,
-                address: streetVal,
+                deliveryCost: deliveryType === 'delivery' ? deliveryCost : 0,
+                address:
+                    deliveryType === 'pickup'
+                        ? 'RECOGIDA'
+                        : deliveryType === 'reservation'
+                          ? 'RESERVA'
+                          : streetVal,
                 house: houseVal,
                 apartment: aptVal,
-                phone: deliveryPhone,
+                phone: phone,
             });
 
-            setOrderSuccess(data.order.id);
-            setOrderWhatsappUrl(data.whatsappUrl || null);
+            setOrderSuccess(dataRes.order.id);
+            setOrderWhatsappUrl(dataRes.whatsappUrl || null);
             clearCart();
+            reset();
             resetDeliveryDetails();
             handleRemovePromo();
 
-            // Reset for next order session
             tracker.resetSession();
 
             showSuccess('¡Pedido realizado! 🍣');
@@ -607,71 +701,24 @@ export default function CartPage() {
         }
     };
 
-    const handleInvite = async () => {
-        if (items.length === 0) return;
-        if (deliveryType === 'delivery' && !address.trim()) {
-            return showError('Por favor, indica tu calle para el envío');
-        }
-        setIsInviting(true);
+    const isOrdering = isOrderingState || isOrderingForm;
 
-        const notesArray = [];
-        notesArray.push(`[TIPO: ${deliveryType === 'pickup' ? 'RECOGIDA' : 'DOMICILIO'}]`);
-        if (paymentMethod)
-            notesArray.push(
-                `[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`
-            );
-        if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
-        if (customNote.trim()) notesArray.push(customNote.trim());
-
-        try {
-            const payload: any = {
-                deliveryAddress:
-                    deliveryType === 'pickup'
-                        ? 'RECOGIDA'
-                        : `${address}${house ? `, Portal: ${house}` : ''}${apartment ? `, Piso: ${apartment}` : ''}`,
-                phoneNumber: phone || user?.phone || '',
-                senderName: user?.name || '',
-                notes: notesArray.join(' | '),
-            };
-            if (!isAuthenticated) {
-                payload.guestItems = items.map(i => ({
-                    menuItemId: parseInt(i.id),
-                    quantity: i.quantity,
-                }));
-            }
-            // Save address if requested
-            await saveCurrentAddress();
-
-            const data = await api.post('/orders/invite', payload);
-            if (navigator.share) {
-                await navigator.share({
-                    title: 'Sushi de Maksim',
-                    text: '¡Invítame!',
-                    url: data.shareUrl,
-                });
-            } else {
-                await navigator.clipboard.writeText(data.shareUrl);
-                showInfo('Enlace de invitación generado! 📋');
-            }
-        } catch (err) {
-            showError('Error al generar invitación');
-        } finally {
-            setIsInviting(false);
-        }
+    const EMOJI: Record<string, string> = {
+        rolls: '🍣',
+        'rollos-grandes': '🍣',
+        'rolls-calientes': '🍘',
+        sets: '🍱',
+        classic: '🍙',
+        baked: '🍘',
+        sweet: '🍥',
+        sauces: '🥢',
+        extras: '🥢',
+        entrantes: '🥟',
+        postre: '🍰',
+        bebidas: '🥤',
     };
 
-    const deliveryCost =
-        deliveryType === 'delivery'
-            ? cartSubtotal >=
-              (selectedZone
-                  ? (selectedZone.freeThreshold ?? siteSettings?.freeDeliveryThreshold ?? 60)
-                  : (siteSettings?.freeDeliveryThreshold ?? 60))
-                ? 0
-                : selectedZone
-                  ? (selectedZone.cost ?? 0)
-                  : (siteSettings?.deliveryFee ?? 3.5)
-            : 0;
-    const finalTotal = cartSubtotal - discountAmount + deliveryCost;
+    const getCategoryEmoji = (category: string) => EMOJI[category] || '🍱';
 
     return (
         <div className="min-h-screen bg-transparent flex flex-col">
@@ -689,237 +736,141 @@ export default function CartPage() {
                 />
             ) : (
                 <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-4 sm:py-8">
-                    {isStoreClosed && (
-                        <div className="mb-6">
-                            <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 md:p-5 shadow-sm">
-                                <div className="flex items-start gap-3">
-                                    <div className="mt-0.5 w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0 border border-orange-200 shadow-inner">
-                                        <AlertCircle
-                                            size={22}
-                                            className="text-orange-600"
-                                            strokeWidth={2.5}
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-black text-orange-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
-                                            Restaurante Cerrado
-                                        </h3>
-                                        <p className="text-[13px] text-orange-800/80 whitespace-pre-line leading-snug">
-                                            {isManualClosed
-                                                ? siteSettings?.closed_message ||
-                                                  'Nuestra cocina está tomando un breve descanso.'
-                                                : 'Actualmente nuestra cocina está fuera de servicio.'}
-                                        </p>
-                                        <div className="mt-3 pt-3 border-t border-orange-200/50">
-                                            <p className="text-[11px] font-bold text-orange-900/40 uppercase tracking-widest mb-1.5">
-                                                Horario de Servicio:
+                    <FormProvider {...methods}>
+                        {isStoreClosed && (
+                            <div className="mb-6">
+                                <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 md:p-5 shadow-sm">
+                                    <div className="flex items-start gap-3">
+                                        <div className="mt-0.5 w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0 border border-orange-200 shadow-inner">
+                                            <AlertCircle
+                                                size={22}
+                                                className="text-orange-600"
+                                                strokeWidth={2.5}
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-black text-orange-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
+                                                Restaurante Cerrado
+                                            </h3>
+                                            <p className="text-[13px] text-orange-800/80 whitespace-pre-line leading-snug">
+                                                {isManualClosed
+                                                    ? siteSettings?.closed_message ||
+                                                      'Nuestra cocina está tomando un breve descanso.'
+                                                    : 'Actualmente nuestra cocina está fuera de servicio.'}
                                             </p>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-orange-800/80 font-medium">
-                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Miércoles – Viernes</span>
-                                                    <span className="font-bold">19:00 – 23:00</span>
+                                            <div className="mt-3 pt-3 border-t border-orange-200/50">
+                                                <p className="text-[11px] font-bold text-orange-900/40 uppercase tracking-widest mb-1.5">
+                                                    Horario de Servicio:
+                                                </p>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-orange-800/80 font-medium">
+                                                    <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
+                                                        <span>Miércoles – Viernes</span>
+                                                        <span className="font-bold">
+                                                            19:00 – 23:00
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
+                                                        <span>Sábado – Domingo</span>
+                                                        <span className="font-bold">
+                                                            14:00 – 23:00
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
+                                                        <span>Lunes – Martes</span>
+                                                        <span className="font-bold text-orange-600">
+                                                            Cerrado
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Sábado – Domingo</span>
-                                                    <span className="font-bold">14:00 – 23:00</span>
-                                                </div>
-                                                <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                    <span>Lunes – Martes</span>
-                                                    <span className="font-bold text-orange-600">
-                                                        Cerrado
-                                                    </span>
-                                                </div>
+                                                <p className="mt-3 text-[11px] bg-orange-100/50 px-2 py-1.5 rounded-lg text-orange-900 font-bold inline-block">
+                                                    🚀 Aceptamos pedidos programados
+                                                </p>
                                             </div>
-                                            <p className="mt-3 text-[11px] bg-orange-100/50 px-2 py-1.5 rounded-lg text-orange-900 font-bold inline-block">
-                                                🚀 Aceptamos pedidos programados
-                                            </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    <h1 className="text-lg font-black text-gray-900 mb-2 px-2 md:px-0 uppercase tracking-[0.2em] opacity-30">
-                        Tu cesta
-                    </h1>
+                        <h1 className="text-lg font-black text-gray-900 mb-2 px-2 md:px-0 uppercase tracking-[0.2em] opacity-30">
+                            Tu cesta
+                        </h1>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 flex flex-col gap-6">
-                            <CartItemList
-                                items={items}
-                                updateQuantity={updateQuantity}
-                                removeItem={removeItem}
-                                clearCart={clearCart}
-                                getCategoryEmoji={getCategoryEmoji}
-                                chopsticksCount={deliveryDetails.chopsticksCount}
-                                updateChopsticks={val =>
-                                    updateDeliveryDetails({ chopsticksCount: val })
-                                }
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Hidden trigger for AddressModal since it's controlled by CartPage but triggered by DeliveryForm */}
+                            <button
+                                type="button"
+                                data-testid="address-modal-trigger"
+                                className="hidden"
+                                onClick={() => setIsAddressModalOpen(true)}
                             />
+                            <div className="lg:col-span-2 flex flex-col gap-6">
+                                <CartItemList
+                                    items={items}
+                                    updateQuantity={updateQuantity}
+                                    removeItem={removeItem}
+                                    clearCart={clearCart}
+                                    getCategoryEmoji={getCategoryEmoji}
+                                    chopsticksCount={deliveryDetails.chopsticksCount}
+                                    updateChopsticks={val =>
+                                        methods.setValue('chopsticksCount', val)
+                                    }
+                                />
 
-                            <DeliveryForm
-                                deliveryType={deliveryType}
-                                setDeliveryType={val =>
-                                    updateDeliveryDetails({ deliveryType: val })
-                                }
-                                address={address}
-                                setAddress={val => updateDeliveryDetails({ address: val })}
-                                house={house}
-                                setHouse={val => updateDeliveryDetails({ house: val })}
-                                apartment={apartment}
-                                setApartment={val => updateDeliveryDetails({ apartment: val })}
-                                postalCode={postalCode}
-                                setPostalCode={val => updateDeliveryDetails({ postalCode: val })}
-                                phone={phone}
-                                setPhone={val => updateDeliveryDetails({ phone: val })}
-                                customerNameState={customerNameState}
-                                setCustomerNameState={val =>
-                                    updateDeliveryDetails({ customerName: val })
-                                }
-                                guestEmailState={guestEmailState}
-                                setGuestEmailState={val =>
-                                    updateDeliveryDetails({ guestEmail: val })
-                                }
-                                paymentMethod={paymentMethod}
-                                setPaymentMethod={val =>
-                                    updateDeliveryDetails({ paymentMethod: val })
-                                }
-                                isScheduled={isScheduled}
-                                setIsScheduled={val => updateDeliveryDetails({ isScheduled: val })}
-                                scheduledDate={scheduledDate}
-                                setScheduledDate={val =>
-                                    updateDeliveryDetails({ scheduledDate: val })
-                                }
-                                scheduledTime={scheduledTime}
-                                setScheduledTime={val =>
-                                    updateDeliveryDetails({ scheduledTime: val })
-                                }
-                                noCall={noCall}
-                                setNoCall={val => updateDeliveryDetails({ noCall: val })}
-                                noBuzzer={deliveryDetails.noBuzzer}
-                                setNoBuzzer={val => updateDeliveryDetails({ noBuzzer: val })}
-                                customNote={deliveryDetails.customNote}
-                                setCustomNote={val => updateDeliveryDetails({ customNote: val })}
-                                guestsCount={guestsCount}
-                                setGuestsCount={val => updateDeliveryDetails({ guestsCount: val })}
-                                selectedZone={selectedZone}
-                                setIsAddressModalOpen={setIsAddressModalOpen}
-                                user={user}
-                                isAuthenticated={isAuthenticated}
-                                todayStr={todayStr}
-                                isStoreClosed={isStoreClosed}
-                                saveAddress={saveAddress}
-                                onSavedAddressSelect={async addr => {
-                                    let lat = addr.lat;
-                                    let lon = addr.lon;
-                                    let zone = detectZone(lat, lon, deliveryZones, addr.postalCode);
+                                <DeliveryForm
+                                    deliveryZones={deliveryZones}
+                                    isOrdering={isOrdering}
+                                    onSavedAddressSelect={handleAddressSelect}
+                                    user={user}
+                                    isAuthenticated={isAuthenticated}
+                                    todayStr={todayStr}
+                                    isStoreClosed={isStoreClosed}
+                                    upcomingHolidays={upcomingHolidays}
+                                />
 
-                                    // If no coordinates, try to geocode
-                                    if ((!lat || !lon) && !zone) {
-                                        try {
-                                            const q =
-                                                `${addr.street} ${addr.house || ''}, ${addr.postalCode || ''}, Madrid`.trim();
-                                            const searchData = await api.get(
-                                                `/delivery-zones/search?q=${encodeURIComponent(q)}`
-                                            );
-                                            if (searchData && searchData.length > 0) {
-                                                const best = searchData[0];
-                                                lat = parseFloat(best.lat);
-                                                lon = parseFloat(best.lon);
-                                                zone = detectZone(
-                                                    lat,
-                                                    lon,
-                                                    deliveryZones,
-                                                    addr.postalCode || best.address?.postcode
-                                                );
+                                <CartSuggestions
+                                    suggestions={filteredSuggestions}
+                                    isLoadingSuggestions={isLoadingSuggestions}
+                                    handleAddToCart={handleAddToCart}
+                                    getCategoryEmoji={getCategoryEmoji}
+                                />
+                            </div>
 
-                                                // Update the address in profile so it's faster next time
-                                                if (!isNaN(lat) && !isNaN(lon) && addr.id) {
-                                                    api.put(`/user/addresses/${addr.id}`, {
-                                                        lat,
-                                                        lon,
-                                                        postalCode:
-                                                            addr.postalCode ||
-                                                            best.address?.postcode,
-                                                    }).catch(e =>
-                                                        console.warn('Update saved addr failed', e)
-                                                    );
-                                                }
+                            <div className="lg:col-span-1">
+                                <div className="sticky top-24">
+                                    <CartSummary
+                                        total={cartSubtotal}
+                                        deliveryCost={deliveryCost}
+                                        promoCode={promoCode}
+                                        promoDiscount={promoDiscount}
+                                        promoError={promoError}
+                                        isStoreClosed={isStoreClosed}
+                                        isScheduled={isScheduled}
+                                        onOrder={handleSubmit(onSubmit, errs => {
+                                            const firstError = Object.values(errs)[0];
+                                            if (firstError?.message) {
+                                                showError(firstError.message as string);
                                             }
-                                        } catch (err) {
-                                            console.error(
-                                                'Geocoding failed for saved address',
-                                                err
-                                            );
-                                        }
-                                    }
+                                        })}
+                                        onApplyPromo={handleApplyPromo}
+                                        onRemovePromo={handleRemovePromo}
+                                        isOrdering={isOrdering}
+                                        isInviting={isInviting}
+                                        onInvite={handleInvite}
+                                        isApplyingPromo={isApplyingPromo}
+                                        setPromoCode={setPromoCode}
+                                        minOrder={MIN_ORDER}
+                                    />
 
-                                    const street = addr.street || '';
-                                    let houseNum = addr.house || '';
-
-                                    // Heuristic: If house is empty but street has a number at the end
-                                    if (!houseNum && street) {
-                                        const match =
-                                            street.match(/(.+?)\s*,\s*(\d+[a-zA-Z]?)$/) ||
-                                            street.match(/(.+?)\s+(\d+[a-zA-Z]?)$/);
-                                        if (match) {
-                                            houseNum = match[2];
-                                        }
-                                    }
-
-                                    updateDeliveryDetails({
-                                        address: street,
-                                        house: houseNum,
-                                        apartment: addr.apartment || '',
-                                        phone: addr.phone || phone || '',
-                                        lat: lat,
-                                        lon: lon,
-                                        postalCode: addr.postalCode || '',
-                                        selectedZone: zone,
-                                        saveAddress: false, // Don't save if already saved
-                                    });
-                                }}
-                                setSaveAddress={val => updateDeliveryDetails({ saveAddress: val })}
-                                deliveryCost={deliveryCost}
-                                totalValue={cartSubtotal}
-                                itemsCount={items.reduce((s, i) => s + i.quantity, 0)}
-                            />
+                                    <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                        <p className="text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
+                                            Pago seguro & encriptado
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-                        <div className="flex flex-col gap-8">
-                            <CartSuggestions
-                                suggestions={filteredSuggestions}
-                                isLoadingSuggestions={isLoadingSuggestions}
-                                handleAddToCart={handleAddToCart}
-                                getCategoryEmoji={getCategoryEmoji}
-                            />
-                            <CartSummary
-                                items={items}
-                                total={total}
-                                deliveryType={deliveryType}
-                                deliveryCost={deliveryCost}
-                                finalTotal={finalTotal}
-                                isStoreClosed={isStoreClosed}
-                                isOrdering={isOrdering}
-                                isInviting={isInviting}
-                                isAuthenticated={isAuthenticated}
-                                hasAddress={!!address.trim()}
-                                hasHouse={!!house.trim()}
-                                hasZone={!!selectedZone}
-                                handleOrder={handleOrder}
-                                handleInvite={handleInvite}
-                                promoCode={promoCode}
-                                setPromoCode={setPromoCode}
-                                promoDiscount={promoDiscount}
-                                handleApplyPromo={handleApplyPromo}
-                                isApplyingPromo={isApplyingPromo}
-                                promoError={promoError}
-                                handleRemovePromo={handleRemovePromo}
-                                minOrder={MIN_ORDER}
-                            />
-                        </div>
-                    </div>
+                    </FormProvider>
                 </main>
             )}
 
@@ -928,28 +879,15 @@ export default function CartPage() {
                 onClose={handleCloseAddressModal}
                 onSelect={handleAddressSelect}
                 deliveryZones={deliveryZones}
-                currentAddress={deliveryDetails}
             />
 
-            {orderSuccess && (
-                <OrderSuccessModal
-                    orderId={orderSuccess}
-                    phone={lastOrderSummary?.phone || phone || ''}
-                    isAuthenticated={isAuthenticated}
-                    user={user}
-                    isScheduled={deliveryDetails.isScheduled}
-                    scheduledDate={deliveryDetails.scheduledDate}
-                    scheduledTime={deliveryDetails.scheduledTime}
-                    deliveryType={deliveryType}
-                    address={lastOrderSummary?.address || address}
-                    house={lastOrderSummary?.house || house}
-                    apartment={lastOrderSummary?.apartment || apartment}
-                    orderWhatsappUrl={orderWhatsappUrl}
-                    total={lastOrderSummary?.total ?? cartSubtotal - discountAmount}
-                    deliveryCost={lastOrderSummary?.deliveryCost ?? deliveryCost}
-                    guestsCount={guestsCount}
-                />
-            )}
+            <OrderSuccessModal
+                isOpen={!!orderSuccess}
+                orderId={orderSuccess || 0}
+                summary={lastOrderSummary}
+                whatsappUrl={orderWhatsappUrl}
+                onClose={() => setOrderSuccess(null)}
+            />
         </div>
     );
 }

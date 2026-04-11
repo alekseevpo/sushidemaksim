@@ -1,19 +1,20 @@
 import { Router } from 'express';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
+import { validateResource } from '../middleware/validateResource.js';
+import { createReservationSchema } from '../schemas/reservation.schema.js';
 import { isTimeWithinBusinessHours } from '../utils/storeStatus.js';
 import { sendReservationEmail } from '../utils/email.js';
 
 const router = Router();
 
 // Create a new reservation
-router.post('/', async (req, res) => {
-    try {
+router.post(
+    '/',
+    validateResource(createReservationSchema),
+    asyncHandler(async (req, res) => {
         const { name, email, phone, date, time, guests, notes, user_id } = req.body;
-
-        if (!name || !email || !phone || !date || !time || !guests) {
-            return res.status(400).json({ error: 'Faltan campos obligatorios' });
-        }
 
         // Validate time within business hours
         // Parse "YYYY-MM-DD" to get the correct day of the week regardless of server TZ
@@ -34,7 +35,7 @@ router.post('/', async (req, res) => {
                 phone,
                 reservation_date: date,
                 reservation_time: time,
-                guests: parseInt(guests.toString()),
+                guests,
                 notes: notes || '',
                 user_id: user_id || null,
                 status: 'pending',
@@ -54,7 +55,7 @@ router.post('/', async (req, res) => {
             phone,
             reservation_date: date,
             reservation_time: time,
-            guests: parseInt(guests.toString()),
+            guests,
             notes: notes || '',
         };
 
@@ -71,19 +72,14 @@ router.post('/', async (req, res) => {
         }
 
         res.status(201).json(dataForEmails);
-    } catch (error: any) {
-        console.error('DETAILED RESERVATION ERROR:', {
-            message: error.message,
-            stack: error.stack,
-            body: req.body,
-        });
-        res.status(500).json({ error: error.message || 'Internal Server Error' });
-    }
-});
+    })
+);
 
 // Get user reservations (authenticated)
-router.get('/my', authMiddleware, async (req: AuthRequest, res) => {
-    try {
+router.get(
+    '/my',
+    authMiddleware,
+    asyncHandler(async (req: AuthRequest, res) => {
         const { data, error } = await supabase
             .from('reservations')
             .select('*')
@@ -93,9 +89,7 @@ router.get('/my', authMiddleware, async (req: AuthRequest, res) => {
         if (error) throw error;
 
         res.json(data);
-    } catch (error: any) {
-        res.status(500).json({ error: error.message });
-    }
-});
+    })
+);
 
 export default router;

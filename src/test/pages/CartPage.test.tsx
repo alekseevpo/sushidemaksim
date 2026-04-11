@@ -117,7 +117,7 @@ describe('CartPage (Mocked Hooks)', () => {
         const toggle = await screen.findByText(/Entrega programada/i);
         fireEvent.click(toggle);
 
-        expect(updateMock).toHaveBeenCalledWith({ isScheduled: true });
+        expect(updateMock).toHaveBeenCalledWith(expect.objectContaining({ isScheduled: true }));
     });
 
     it('toggles saveAddress to false when a saved address is selected', async () => {

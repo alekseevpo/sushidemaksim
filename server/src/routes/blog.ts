@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db/supabase.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
+import { validateResource } from '../middleware/validateResource.js';
+import { getBlogPostsSchema } from '../schemas/blog.schema.js';
 import { formatBlogPost } from '../utils/helpers.js';
 
 const router = Router();
@@ -8,25 +10,29 @@ const router = Router();
 // GET /api/blog (Public) - Get all published blog posts
 router.get(
     '/',
+    validateResource(getBlogPostsSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 5;
+        const { page, limit, category } = req.query as any;
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        const {
-            data: posts,
-            error,
-            count,
-        } = await supabase
+        let query = supabase
             .from('blog_posts')
             .select(
                 'id, title, slug, excerpt, image_url, author, read_time, category, published, created_at, updated_at',
                 { count: 'exact' }
             )
-            .eq('published', true)
-            .order('created_at', { ascending: false })
-            .range(from, to);
+            .eq('published', true);
+
+        if (category) {
+            query = query.eq('category', category);
+        }
+
+        const {
+            data: posts,
+            error,
+            count,
+        } = await query.order('created_at', { ascending: false }).range(from, to);
 
         if (error) {
             console.error('Error fetching blog posts:', error);

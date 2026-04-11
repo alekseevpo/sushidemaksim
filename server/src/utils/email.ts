@@ -96,7 +96,7 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;">
+    <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;">
       <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
     </div>
     <div style="padding:32px;">
@@ -104,8 +104,8 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
       <p style="color:#374151;font-size:16px;margin:0 0 24px;">
         Has solicitado restablecer tu contraseña. Usa el siguiente código:
       </p>
-      <div style="background:#FEF2F2;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
-        <span style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#DC2626;">${code}</span>
+      <div style="background:#FFF7ED;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+        <span style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#ea580c;">${code}</span>
       </div>
       <p style="color:#6B7280;font-size:14px;margin:0 0 8px;">
         Este código es válido durante <strong>15 minutos</strong>.
@@ -134,7 +134,7 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;position:relative;">
+    <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
       <div style="font-size:50px;margin-bottom:10px;">🎁</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Feliz Cumpleaños!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Queremos celebrar tu día especial</p>
@@ -145,9 +145,9 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
         En este día tan especial, para nosotros es un honor celebrarlo contigo. Te enviamos un regalo exclusivo para que disfrutes de lo que más te gusta:
       </p>
       
-      <div style="background:#FFF7ED;border:2px dashed #FDBA74;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
+      <div style="background:#FFF7ED;border:2px dashed #f26522;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
         <p style="color:#C2410C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Descuento</p>
-        <div style="font-size:36px;font-weight:900;color:#DC2626;letter-spacing:5px;">${code}</div>
+        <div style="font-size:36px;font-weight:900;color:#ea580c;letter-spacing:5px;">${code}</div>
         <p style="color:#C2410C;font-size:20px;font-weight:bold;margin:12px 0 0;">-10% EN TODO EL MENÚ</p>
       </div>
 
@@ -155,7 +155,7 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
         *Válido para tu próximo pedido desde hoy. Solo tienes que introducir el código al finalizar tu compra.
       </p>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">CANJEAR MI REGALO</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">CANJEAR MI REGALO</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
@@ -236,6 +236,11 @@ export async function sendOrderReceiptEmail(
         }
     });
 
+    // Final override based on address if notes parsing missed it
+    if (orderData.deliveryAddress === 'RECOGIDA') {
+        deliveryType = 'RECOGIDA';
+    }
+
     const regularItems = orderData.items.filter((item: any) => Number(item.menu_item_id) !== -1);
     const deliveryItem = orderData.items.find((item: any) => Number(item.menu_item_id) === -1);
 
@@ -244,7 +249,7 @@ export async function sendOrderReceiptEmail(
             (item: any) => `
     <tr style="border-bottom: 1px solid #f3f4f6;">
       <td style="padding: 12px 0;">
-        <div style="font-weight: 600; color: #111827; font-size: 15px;">${item.name} ${item.quantity > 1 ? `<span style="color:#dc2626;">x${item.quantity}</span>` : ''}</div>
+        <div style="font-weight: 600; color: #111827; font-size: 15px;">${item.name} ${item.quantity > 1 ? `<span style="color:#ea580c;">x${item.quantity}</span>` : ''}</div>
         <div style="color: #6b7280; font-size: 13px;">Precio unitario: ${item.price_at_time.toFixed(2).replace('.', ',')} €</div>
       </td>
       <td style="padding: 12px 0; text-align: right; vertical-align: top; font-weight: 700; color: #111827; font-size: 15px;">
@@ -300,7 +305,7 @@ export async function sendOrderReceiptEmail(
           <table style="width:100%; border-collapse:collapse;">
             <tr>
               <td style="padding-top: 8px; color: #111827; font-size: 18px; font-weight: 900;">TOTAL</td>
-              <td style="padding-top: 8px; text-align: right; color: #dc2626; font-size: 20px; font-weight: 900;">${orderData.total.toFixed(2).replace('.', ',')} €</td>
+              <td style="padding-top: 8px; text-align: right; color: #ea580c; font-size: 20px; font-weight: 900;">${orderData.total.toFixed(2).replace('.', ',')} €</td>
             </tr>
           </table>
         </div>
@@ -329,11 +334,11 @@ export async function sendOrderReceiptEmail(
             scheduledTime || noCall || noBuzzer || customerNote
                 ? `
         <h4 style="color: #9ca3af; margin: 12px 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
-        <div style="background-color: #fff1f2; border-radius: 12px; padding: 12px; border: 1px solid #fecdd3;">
-          ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #fecdd3;">⏰ Entrega programada: <span style="color: #dc2626;">${scheduledTime}</span></div>` : ''}
-          ${noCall ? '<div style="color: #be123c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🚫 No llamar para confirmar pedido</div>' : ''}
-          ${noBuzzer ? '<div style="color: #be123c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
-          ${customerNote ? `<div style="color: #4b5563; font-size: 13px; line-height: 1.4; margin-top: ${noCall || noBuzzer ? '8px' : '0'}; border-top: ${noCall || noBuzzer ? '1px solid #fecdd3' : 'none'}; padding-top: ${noCall || noBuzzer ? '8px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
+        <div style="background-color: #FFF7ED; border-radius: 12px; padding: 12px; border: 1px solid #ffedd5;">
+          ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #ffedd5;">⏰ Entrega programada: <span style="color: #ea580c;">${scheduledTime}</span></div>` : ''}
+          ${noCall ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🚫 No llamar para confirmar pedido</div>' : ''}
+          ${noBuzzer ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
+          ${customerNote ? `<div style="color: #4b5563; font-size: 13px; line-height: 1.4; margin-top: ${noCall || noBuzzer ? '8px' : '0'}; border-top: ${noCall || noBuzzer ? '1px solid #ffedd5' : 'none'}; padding-top: ${noCall || noBuzzer ? '8px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
         </div>
         `
                 : ''
@@ -356,7 +361,7 @@ export async function sendOrderReceiptEmail(
 
       <!-- Store Info & Support -->
       <div style="margin-top: 12px; padding: 16px; background-color: #000000; border-radius: 16px; color: #ffffff;">
-        <h4 style="color: #dc2626; margin: 0 0 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center;">¿Necesitas algo? Contáctanos</h4>
+        <h4 style="color: #ea580c; margin: 0 0 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center;">¿Necesitas algo? Contáctanos</h4>
         
         <table style="width:100%; border-collapse:collapse; margin-bottom: 16px;">
           <tr>
@@ -367,7 +372,7 @@ export async function sendOrderReceiptEmail(
               <a href="mailto:info@sushidemaksim.vercel.app" style="display: block; background-color: #ffffff; color: #000000; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Email</a>
             </td>
             <td style="width: 33%; padding: 0 4px;">
-              <a href="tel:+34631920312" style="display: block; background-color: #dc2626; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Llamar</a>
+              <a href="tel:+34631920312" style="display: block; background-color: #ea580c; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Llamar</a>
             </td>
           </tr>
         </table>
@@ -431,7 +436,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
       <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 32px;">
         Prepárate para disfrutar del mejor sushi artesanal directamente en tu mesa. ¡Explora nuestro menú y haz tu primer pedido hoy mismo!
       </p>
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#fff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;box-shadow:0 4px 12px rgba(220,38,38,0.2);">VER EL MENÚ</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#fff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:15px;box-shadow:0 4px 12px rgba(234,88,12,0.2);">VER EL MENÚ</a>
     </div>
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
       <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
@@ -480,25 +485,25 @@ export async function sendVerificationEmail(
       </p>
 
       <!-- Welcome Gift Section -->
-      <div style="background: #fff1f2; border: 2px dashed #fecdd3; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
-        <p style="color: #be123c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-10%)</p>
-        <div style="color: #dc2626; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
-        <p style="color: #9f1239; font-size: 14px; font-weight: bold; margin: 0 0 4px;">
+      <div style="background: #FFF7ED; border: 2px dashed #ffedd5; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
+        <p style="color: #c2410c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-10%)</p>
+        <div style="color: #ea580c; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
+        <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0 0 4px;">
           * Mínimo de pedido: <strong>70€</strong>
         </p>
-        <p style="color: #9f1239; font-size: 14px; font-weight: bold; margin: 0;">
+        <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0;">
           ⚠️ Válido solo durante <strong>24 horas</strong>
         </p>
       </div>
 
       <!-- Activation Button -->
-      <a href="${activationUrl}" style="display:inline-block;background:#dc2626;color:#ffffff;padding:18px 40px;border-radius:18px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 8px 25px rgba(220,38,38,0.25);margin-bottom:32px;">
+      <a href="${activationUrl}" style="display:inline-block;background:#ea580c;color:#ffffff;padding:18px 40px;border-radius:18px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 8px 25px rgba(234,88,12,0.25);margin-bottom:32px;">
         ACTIVAR MI CUENTA
       </a>
 
       <p style="color: #9ca3af; font-size: 13px; line-height: 1.5; margin: 0;">
         Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
-        <a href="${activationUrl}" style="color: #dc2626; text-decoration: none;">${activationUrl}</a>
+        <a href="${activationUrl}" style="color: #ea580c; text-decoration: none;">${activationUrl}</a>
       </p>
     </div>
 
@@ -551,7 +556,7 @@ export async function sendEmailChangeVerificationEmail(
         Has solicitado cambiar tu correo electrónico en Sushi de Maksim. Para completar el proceso, por favor haz clic en el botón de abajo.
       </p>
 
-      <a href="${activationUrl}" style="display:inline-block;background:#dc2626;color:#ffffff;padding:18px 40px;border-radius:18px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 8px 25px rgba(220,38,38,0.25);margin-bottom:32px;">
+      <a href="${activationUrl}" style="display:inline-block;background:#ea580c;color:#ffffff;padding:18px 40px;border-radius:18px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 8px 25px rgba(234,88,12,0.25);margin-bottom:32px;">
         CONFIRMAR NUEVO EMAIL
       </a>
 
@@ -598,17 +603,17 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
         Gracias por suscribirte. Como prometimos, aquí tienes un regalo especial para que disfrutes de tu próximo pedido con nosotros:
       </p>
       
-      <div style="background:#FFF1F2;border:2px dashed #FECDD3;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
-        <p style="color:#BE123C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Promocional</p>
-        <div style="font-size:36px;font-weight:900;color:#DC2626;letter-spacing:5px;">${promoCode}</div>
-        <p style="color:#9F1239;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
+      <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
+        <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Promocional</p>
+        <div style="font-size:36px;font-weight:900;color:#ea580c;letter-spacing:5px;">${promoCode}</div>
+        <p style="color:#9a3412;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
       </div>
 
       <p style="color:#374151;font-size:15px;margin:0 0 32px;">
         *Válido durante las próximas 24 horas. Solo tienes que introducir el código al finalizar tu compra en la web.
       </p>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">¡PEDIR AHORA!</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">¡PEDIR AHORA!</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
@@ -661,7 +666,7 @@ export async function sendAbandonedCartEmail(
        <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
     </div>
     <div style="background:#111;padding:32px 24px;text-align:center;">
-       <div style="background:#dc2626;display:inline-block;padding:8px 12px;border-radius:12px;margin-bottom:12px;">
+       <div style="background:#ea580c;display:inline-block;padding:8px 12px;border-radius:12px;margin-bottom:12px;">
          <span style="font-size:32px;">🍣</span>
        </div>
        <h1 style="color:#fff;margin:0;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¿Se te antoja algo?</h1>
@@ -678,7 +683,7 @@ export async function sendAbandonedCartEmail(
         ${moreItems}
       </div>
 
-      <a href="${config.frontendUrl}/cart" style="display:inline-block;background:#dc2626;color:#ffffff;padding:18px 48px;border-radius:20px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 10px 30px rgba(220,38,38,0.2);">VOLVER A MI CESTA</a>
+      <a href="${config.frontendUrl}/cart" style="display:inline-block;background:#ea580c;color:#ffffff;padding:18px 48px;border-radius:20px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 10px 30px rgba(234,88,12,0.2);">VOLVER A MI CESTA</a>
       
       <p style="color:#9ca3af;font-size:13px;margin:24px 0 0;">
         Si tienes problemas con tu pedido, escríbenos por WhatsApp.
@@ -784,8 +789,8 @@ export async function sendReservationEmail(
             ${
                 !isAdminCopy
                     ? `
-            <div style="background-color: #fff1f2; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #fecdd3;">
-                <p style="color: #be123c; font-size: 14px; font-weight: 800; margin: 0;">
+            <div style="background-color: #FFF7ED; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #ffedd5;">
+                <p style="color: #c2410c; font-size: 14px; font-weight: 800; margin: 0;">
                     ⏳ Tu reserva está en estado: PENDIENTE
                 </p>
                 <p style="color: #4b5563; font-size: 13px; margin: 8px 0 0;">
@@ -830,7 +835,7 @@ export async function sendLoyaltyGiftEmail(to: string, name: string, code: strin
     <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
       <h1 style="color:#fff;margin:0;font-size:22px;">🍣 Sushi de Maksim</h1>
     </div>
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;position:relative;">
+    <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
       <div style="font-size:50px;margin-bottom:10px;">⭐</div>
       <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Gracias por tu Fidelidad!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Tu 4º pedido merece un premio</p>
@@ -841,17 +846,17 @@ export async function sendLoyaltyGiftEmail(to: string, name: string, code: strin
         Acabas de completar cuatro pedidos con nosotros... Eso significa que ya eres parte de la verdadera mafia del sushi. 😎 Para celebrarlo, tienes un descuento especial para tu <strong>5º pedido</strong>:
       </p>
       
-      <div style="background:#FEF2F2;border:2px dashed #FECDD3;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
-        <p style="color:#BE123C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Exclusivo</p>
-        <div style="font-size:32px;font-weight:900;color:#DC2626;letter-spacing:3px;">${code}</div>
-        <p style="color:#BE123C;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
+      <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
+        <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Exclusivo</p>
+        <div style="font-size:32px;font-weight:900;color:#ea580c;letter-spacing:3px;">${code}</div>
+        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
       </div>
 
       <p style="color:#374151;font-size:14px;margin:0 0 32px;">
         *Este código es para uso personal y es válido durante <strong>7 días</strong> a partir de hoy. Solo introdúcelo en la cesta.
       </p>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">PEDIR AHORA</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">PEDIR AHORA</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
@@ -882,7 +887,7 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
     <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
       <h1 style="color:#fff;margin:0;font-size:22px;">🍣 Sushi de Maksim</h1>
     </div>
-    <div style="background:linear-gradient(135deg,#DC2626,#F87171);padding:24px;text-align:center;position:relative;">
+    <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
       <div style="font-size:50px;margin-bottom:10px;">🍰</div>
       <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Tu Postре de Regalo!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">¡Has completado 9 pedidos! ⭐</p>
@@ -893,10 +898,10 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
         Eres un verdadero embajador de Sushi de Maksim. Para celebrar tus 9 pedidos con nosotros, te invitamos a un postre delicioso en tu <strong>10º pedido</strong>:
       </p>
       
-      <div style="background:#FFF7ED;border:2px dashed #FDBA74;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
-        <p style="color:#C2410C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Regalo</p>
-        <div style="font-size:32px;font-weight:900;color:#DC2626;letter-spacing:3px;">${code}</div>
-        <p style="color:#C2410C;font-size:20px;font-weight:bold;margin:12px 0 0;">🍰 POSTRE GRATIS EN TU PEDIDO</p>
+      <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
+        <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Regalo</p>
+        <div style="font-size:32px;font-weight:900;color:#ea580c;letter-spacing:3px;">${code}</div>
+        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">🍰 POSTRE GRATIS EN TU PEDIDO</p>
       </div>
 
       <p style="color:#374151;font-size:14px;line-height:1.4;margin:0 0 32px;">
@@ -905,7 +910,7 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
         <span style="font-size:12px;color:#9CA3AF;">Válido durante <strong>7 días</strong> a partir de hoy.</span>
       </p>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#DC2626;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(220,38,38,0.2);">CANJEAR MI POSTRE</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">CANJEAR MI POSTRE</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">

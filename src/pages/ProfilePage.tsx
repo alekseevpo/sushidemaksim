@@ -415,7 +415,7 @@ export default function ProfilePage() {
 
                         <div className="flex justify-between items-center">
                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                0 / 4 pedidos
+                                {(user.orderCount || 0) % 5} / 4 pedidos
                             </span>
                             <span className="text-[9px] font-bold text-gray-300 italic">
                                 *Código enviado tras el 4º pedido para usar en el 5º
@@ -513,7 +513,7 @@ export default function ProfilePage() {
 
                         <div className="flex justify-between items-center">
                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                0 / 9 pedidos
+                                {(user.orderCount || 0) % 10} / 9 pedidos
                             </span>
                             <span className="text-[9px] font-bold text-gray-300 italic">
                                 *Regalo enviado tras el 9º pedido para usar en el 10º

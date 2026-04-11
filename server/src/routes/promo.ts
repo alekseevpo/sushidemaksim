@@ -2,7 +2,8 @@ import { Router, Response } from 'express';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate } from '../middleware/validate.js';
+import { validateResource } from '../middleware/validateResource.js';
+import { validatePromoSchema } from '../schemas/promo.schema.js';
 import { promoLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
@@ -11,13 +12,9 @@ router.use(authMiddleware);
 router.post(
     '/validate',
     promoLimiter,
-    validate({
-        code: { required: true, type: 'string' },
-        subtotal: { type: 'number', required: false },
-    }),
+    validateResource(validatePromoSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { code: rawCode, subtotal } = req.body;
-        const code = String(rawCode).trim().toUpperCase();
+        const { code, subtotal } = req.body;
 
         // ─── Hardcoded Test Promos ───
         if (code === 'TEST10') {

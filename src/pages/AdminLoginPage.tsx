@@ -1,13 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, type LoginInput } from '../schemas/auth.schema';
 import { useAuth } from '../hooks/useAuth';
 
 export default function AdminLoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginInput>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+        },
+    });
 
     const { login, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
@@ -23,12 +37,11 @@ export default function AdminLoginPage() {
         }
     }, [isAuthenticated, user, navigate]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: LoginInput) => {
         setError('');
         setIsLoading(true);
 
-        const result = await login(email, password);
+        const result = await login(data.email, data.password);
 
         if (!result.success) {
             setError(result.error || 'Credenciales inválidas');
@@ -59,7 +72,7 @@ export default function AdminLoginPage() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="metallic-card py-8 px-4 sm:rounded-2xl sm:px-10">
-                    <form className="space-y-6" onSubmit={handleSubmit}>
+                    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
                         {error && (
                             <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-md">
                                 <div className="flex">
@@ -85,12 +98,23 @@ export default function AdminLoginPage() {
                                 </div>
                                 <input
                                     type="email"
-                                    required
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                    className="focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
+                                    {...register('email')}
+                                    className={`focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-xl bg-gray-50 border text-gray-900 transition`}
                                     placeholder="admin@sushidemaksim.es"
                                 />
+                                <AnimatePresence>
+                                    {errors.email && (
+                                        <motion.p
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1 ml-1"
+                                        >
+                                            <AlertCircle size={10} />
+                                            {errors.email.message}
+                                        </motion.p>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </div>
 
@@ -104,12 +128,23 @@ export default function AdminLoginPage() {
                                 </div>
                                 <input
                                     type="password"
-                                    required
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    className="focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
+                                    {...register('password')}
+                                    className={`focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-xl bg-gray-50 border text-gray-900 transition`}
                                     placeholder="••••••••"
                                 />
+                                <AnimatePresence>
+                                    {errors.password && (
+                                        <motion.p
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1 ml-1"
+                                        >
+                                            <AlertCircle size={10} />
+                                            {errors.password.message}
+                                        </motion.p>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </div>
 

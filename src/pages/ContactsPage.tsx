@@ -12,8 +12,12 @@ import {
     Calendar,
     Loader2,
     HelpCircle,
+    AlertCircle,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { contactSchema, type ContactInput } from '../schemas/contact.schema';
 import { useSettings } from '../hooks/queries/useSettings';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -82,10 +86,19 @@ const MADRID_HOLIDAYS_2026 = [
 export default function ContactsPage() {
     const { success: showSuccess, error: showError } = useToast();
     const [submitting, setSubmitting] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        message: '',
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<ContactInput>({
+        resolver: zodResolver(contactSchema),
+        defaultValues: {
+            name: '',
+            email: '',
+            message: '',
+        },
     });
 
     const { data: settings } = useSettings();
@@ -128,23 +141,14 @@ export default function ContactsPage() {
         return isCurrentOrFutureMonth && hasNotPassed && isWithinRange;
     }).slice(0, 3); // Max 3 for compactness
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!formData.name || !formData.email || !formData.message) {
-            showError('Por favor, rellena todos los campos.');
-            return;
-        }
-
+    const onSubmit = async (data: ContactInput) => {
         setSubmitting(true);
 
         try {
-            await api.post('/contact', {
-                ...formData,
-            });
+            await api.post('/contact', data);
 
             showSuccess('¡Mensaje enviado con éxito! Te responderemos pronto.');
-            setFormData({ name: '', email: '', message: '' });
+            reset();
         } catch (err: any) {
             showError(err.message || 'Error al enviar el mensaje.');
         } finally {
@@ -395,7 +399,7 @@ export default function ContactsPage() {
                             </p>
 
                             <form
-                                onSubmit={handleSubmit}
+                                onSubmit={handleSubmit(onSubmit)}
                                 noValidate
                                 className="space-y-4 md:space-y-6"
                             >
@@ -406,18 +410,24 @@ export default function ContactsPage() {
                                         </label>
                                         <input
                                             type="text"
-                                            value={formData.name}
-                                            onChange={e =>
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    name: e.target.value,
-                                                }))
-                                            }
-                                            required
+                                            {...register('name')}
                                             disabled={submitting}
                                             placeholder="Nombre completo"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 transition-all font-medium text-base disabled:opacity-50"
+                                            className={`w-full bg-white border ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-medium text-base disabled:opacity-50`}
                                         />
+                                        <AnimatePresence>
+                                            {errors.name && (
+                                                <motion.p
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1 ml-1"
+                                                >
+                                                    <AlertCircle size={10} />
+                                                    {errors.name.message}
+                                                </motion.p>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
@@ -425,18 +435,24 @@ export default function ContactsPage() {
                                         </label>
                                         <input
                                             type="email"
-                                            value={formData.email}
-                                            onChange={e =>
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    email: e.target.value,
-                                                }))
-                                            }
-                                            required
+                                            {...register('email')}
                                             disabled={submitting}
                                             placeholder="tu@email.com"
-                                            className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 transition-all font-medium text-base disabled:opacity-50"
+                                            className={`w-full bg-white border ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-medium text-base disabled:opacity-50`}
                                         />
+                                        <AnimatePresence>
+                                            {errors.email && (
+                                                <motion.p
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1 ml-1"
+                                                >
+                                                    <AlertCircle size={10} />
+                                                    {errors.email.message}
+                                                </motion.p>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
@@ -445,18 +461,24 @@ export default function ContactsPage() {
                                     </label>
                                     <textarea
                                         rows={4}
-                                        value={formData.message}
-                                        onChange={e =>
-                                            setFormData(prev => ({
-                                                ...prev,
-                                                message: e.target.value,
-                                            }))
-                                        }
-                                        required
+                                        {...register('message')}
                                         disabled={submitting}
                                         placeholder="¿En qué podemos ayudarte?"
-                                        className="w-full bg-white border border-gray-200 px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none focus:border-orange-500 transition-all font-medium resize-none text-base disabled:opacity-50"
+                                        className={`w-full bg-white border ${errors.message ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-medium resize-none text-base disabled:opacity-50`}
                                     ></textarea>
+                                    <AnimatePresence>
+                                        {errors.message && (
+                                            <motion.p
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1 ml-1"
+                                            >
+                                                <AlertCircle size={10} />
+                                                {errors.message.message}
+                                            </motion.p>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                                 <button
                                     type="submit"

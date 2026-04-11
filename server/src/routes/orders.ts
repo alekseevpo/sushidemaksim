@@ -3,7 +3,8 @@ import { config } from '../config.js';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { validate } from '../middleware/validate.js';
+import { validateResource } from '../middleware/validateResource.js';
+import { createOrderSchema, inviteOrderSchema, getOrdersSchema } from '../schemas/order.schema.js';
 import { UAParser } from 'ua-parser-js';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
@@ -17,71 +18,61 @@ router.post(
     '/',
     orderLimiter,
     optionalAuthMiddleware,
-    validate({
-        deliveryAddress: { type: 'string', required: true, maxLength: 400 },
-        phoneNumber: { type: 'string', required: true, maxLength: 30 },
-        postalCode: { type: 'string', required: false, maxLength: 10 },
-        email: { type: 'string', required: false, maxLength: 100 },
-        customerName: { type: 'string', required: false, maxLength: 100 },
-    }),
+    validateResource(createOrderSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const {
-            deliveryAddress,
-            phoneNumber,
-            notes: reqNotes,
+            deliveryType = 'delivery',
+            address,
+            house,
+            apartment,
+            postalCode,
+            phone,
+            customerName,
+            guestEmail,
+            paymentMethod = 'cash',
+            isScheduled = false,
+            scheduledDate,
+            scheduledTime,
+            guestsCount = 2,
+            chopsticksCount = 0,
+            customNote = '',
+            deliveryZoneId,
             promoCode,
             guestItems,
-            postalCode,
-            email,
-            customerName,
-            paymentMethod,
         } = req.body;
 
-        let notesToSave = reqNotes?.trim() || '';
+        // Map frontend values to backend DB labels if needed, but we mostly use the structured data now
+        const deliveryAddress =
+            deliveryType === 'pickup' ? 'RECOGIDA' : `${address}, ${house}, ${apartment || ''}`;
+        const phoneNumber = phone;
+        const email = guestEmail;
 
-        // 0. Business Hour Validation
+        let notesToSave = customNote?.trim() || '';
+
+        // 0. Business Hour & Scheduling Validation
         const isOpenNow = isStoreOpen();
         const isStoreClosed = !isOpenNow;
 
         let serverEstimatedTime = '30-60 min';
-        if (isStoreClosed) {
-            const scheduledMatch = notesToSave?.match(
-                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4})\s+(\d{2}:\d{2})\]/
-            );
-            if (!scheduledMatch) {
-                return res.status(400).json({
-                    error: 'Nuestra cocina está descansando ahora. ¡Pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona una "Entrega programada".',
-                });
-            }
-            const timeStr = scheduledMatch[2];
-            let dateStr = scheduledMatch[1];
 
-            // Normalize DD-MM-YYYY to YYYY-MM-DD for reliable Date constructor across environments
-            if (dateStr.match(/^\d{2}-\d{2}-\d{4}$/)) {
-                const [d, m, y] = dateStr.split('-');
-                dateStr = `${y}-${m}-${d}`;
+        if (isScheduled && scheduledDate && scheduledTime) {
+            let normalizedDate = scheduledDate;
+            if (scheduledDate.match(/^\d{2}-\d{2}-\d{4}$/)) {
+                const [d, m, y] = scheduledDate.split('-');
+                normalizedDate = `${y}-${m}-${d}`;
             }
 
-            const scheduledDate = new Date(dateStr);
-            if (!isTimeWithinBusinessHours(scheduledDate, timeStr)) {
+            const dateObj = new Date(normalizedDate);
+            if (!isTimeWithinBusinessHours(dateObj, scheduledTime)) {
                 return res.status(400).json({
-                    error: 'Esa hora está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!',
+                    error: 'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!',
                 });
             }
-            serverEstimatedTime = `${dateStr} ${timeStr}`;
-        } else {
-            // Also check if it's scheduled even if store is open
-            const scheduledMatch = notesToSave?.match(
-                /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4})\s+(\d{2}:\d{2})\]/
-            );
-            if (scheduledMatch) {
-                let dateStr = scheduledMatch[1];
-                if (dateStr.match(/^\d{2}-\d{2}-\d{4}$/)) {
-                    const [d, m, y] = dateStr.split('-');
-                    dateStr = `${y}-${m}-${d}`;
-                }
-                serverEstimatedTime = `${dateStr} ${scheduledMatch[2]}`;
-            }
+            serverEstimatedTime = `${normalizedDate} ${scheduledTime}`;
+        } else if (isStoreClosed) {
+            return res.status(400).json({
+                error: 'Nuestra cocina está descansando теперь. ¡Но мы будем рады подготовить ваш более поздний заказ! Пожалуйста, выберите "Entrega programada".',
+            });
         }
 
         const parser = new UAParser(req.headers['user-agent'] || '');
@@ -193,9 +184,7 @@ router.post(
 
         // 2.5 Dynamic Delivery Fee from Zones
         let deliveryFee = 0;
-        if (notesToSave?.includes('[TIPO: DOMICILIO]')) {
-            const { deliveryZoneId } = req.body;
-
+        if (deliveryType === 'delivery') {
             // Get delivery zones directly from the table
             const { data: zones } = await supabase
                 .from('delivery_zones')
@@ -232,9 +221,7 @@ router.post(
 
             let matchedZone = null;
             if (deliveryZoneId && zones) {
-                matchedZone = zones.find(
-                    z => z.id === deliveryZoneId || z.id === String(deliveryZoneId)
-                );
+                matchedZone = zones.find(z => String(z.id) === String(deliveryZoneId));
             }
 
             if (!matchedZone && postalCode && zones) {
@@ -274,7 +261,7 @@ router.post(
             p_delivery_address: deliveryAddress?.trim() || '',
             p_phone_number: phoneNumber?.trim() || '',
             p_notes: notesToSave,
-            p_payment_method: paymentMethod || 'EFECTIVO',
+            p_payment_method: paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO',
             p_promo_code: promoCode || null,
             p_estimated_delivery_time: serverEstimatedTime,
             p_status: 'pending',
@@ -404,7 +391,7 @@ router.post(
             }
 
             // 7. Generate WhatsApp Link for return (Pointing to Store WhatsApp: +34 641 51 83 90)
-            const isCard = notesToSave?.includes('TARJETA');
+            const isCard = paymentMethod === 'card';
             const paymentMethodText = isCard ? 'Tarjeta' : 'Efectivo';
 
             const itemsSummary = cartItems
@@ -447,9 +434,9 @@ router.post(
 router.get(
     '/',
     authMiddleware,
+    validateResource(getOrdersSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const page = Math.max(1, parseInt(req.query.page as string) || 1);
-        const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 10));
+        const { page, limit } = req.query as any;
         const offset = (page - 1) * limit;
 
         const {
@@ -570,14 +557,28 @@ router.post(
     '/invite',
     orderLimiter,
     authMiddleware,
-    validate({
-        deliveryAddress: { type: 'string', required: true, maxLength: 400 },
-        phoneNumber: { type: 'string', required: true, maxLength: 30 },
-        postalCode: { type: 'string', required: false, maxLength: 10 },
-        senderName: { type: 'string', required: false, maxLength: 100 },
-    }),
+    validateResource(inviteOrderSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { deliveryAddress, phoneNumber, notes, promoCode, senderName, postalCode } = req.body;
+        const {
+            deliveryType = 'delivery',
+            address,
+            house,
+            apartment,
+            postalCode,
+            phone,
+            senderName,
+            customNote = '',
+            promoCode,
+            deliveryZoneId,
+            isScheduled = false,
+            scheduledDate,
+            scheduledTime,
+        } = req.body;
+
+        const deliveryAddress =
+            deliveryType === 'pickup' ? 'RECOGIDA' : `${address}, ${house}, ${apartment || ''}`;
+        const phoneNumber = phone;
+        const notes = customNote;
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
@@ -607,8 +608,7 @@ router.post(
         let deliveryFee = 0;
 
         // Dynamic Delivery Fee / Min Order for Invitations
-        if (notes?.includes('[TIPO: DOMICILIO]')) {
-            const { deliveryZoneId } = req.body;
+        if (deliveryType === 'delivery') {
             const { data: zones } = await supabase
                 .from('delivery_zones')
                 .select('*')
@@ -633,9 +633,7 @@ router.post(
 
             let matchedZone = null;
             if (deliveryZoneId && zones) {
-                matchedZone = zones.find(
-                    z => z.id === deliveryZoneId || z.id === String(deliveryZoneId)
-                );
+                matchedZone = zones.find(z => String(z.id) === String(deliveryZoneId));
             }
             if (!matchedZone && postalCode && zones) {
                 matchedZone = zones.find(
@@ -664,11 +662,13 @@ router.post(
         if (promoCode === 'TEST10') finalTotal *= 0.9;
 
         let serverEstimatedTime = '30-60 min';
-        const scheduledMatch = notes?.match(
-            /\[PROGRAMADO:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\]/
-        );
-        if (scheduledMatch) {
-            serverEstimatedTime = `${scheduledMatch[1]} ${scheduledMatch[2]}`;
+        if (isScheduled && scheduledDate && scheduledTime) {
+            let normalizedDate = scheduledDate;
+            if (scheduledDate.match(/^\d{2}-\d{2}-\d{4}$/)) {
+                const [d, m, y] = scheduledDate.split('-');
+                normalizedDate = `${y}-${m}-${d}`;
+            }
+            serverEstimatedTime = `${normalizedDate} ${scheduledTime}`;
         }
 
         // 3 & 4. Create Order and items atomically via RPC

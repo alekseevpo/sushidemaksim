@@ -62,7 +62,7 @@ export default function CustomDatePicker({
     const formatDateForDisplay = (dateStr: string) => {
         if (!dateStr) return '';
         const [y, m, d] = dateStr.split('-');
-        return `${d}/${m}/${y}`;
+        return `${d}.${m}.${y}`;
     };
 
     const generateDays = () => {
@@ -115,7 +115,7 @@ export default function CustomDatePicker({
                         formatDateForDisplay(value)
                     ) : (
                         <span className="text-gray-400 font-medium text-[14px]">
-                            {placeholder || 'dd/mm/aaaa'}
+                            {placeholder || 'dd.mm.aaaa'}
                         </span>
                     )}
                 </div>

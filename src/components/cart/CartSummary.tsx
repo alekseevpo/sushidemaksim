@@ -1,63 +1,64 @@
 import { motion } from 'framer-motion';
 import { Clock, ArrowRight, X } from 'lucide-react';
-import { CartItem } from '../../types';
+import { useCart } from '../../hooks/useCart';
 import { triggerHaptic, HAPTIC_PATTERNS } from '../../utils/haptics';
 
 interface CartSummaryProps {
-    items: CartItem[];
     total: number;
-    deliveryType: 'delivery' | 'pickup' | 'reservation';
     deliveryCost: number;
-    finalTotal: number;
+    promoCode: string;
+    promoDiscount: number | null;
+    promoError: string | null;
     isStoreClosed: boolean;
+    isScheduled: boolean;
+    onOrder: () => void;
+    onApplyPromo: (code: string) => void;
+    onRemovePromo: () => void;
     isOrdering: boolean;
     isInviting: boolean;
-    isAuthenticated: boolean;
-    hasAddress: boolean;
-    hasHouse: boolean;
-    hasZone: boolean;
-    handleOrder: () => void;
-    handleInvite: () => void;
-    promoCode: string;
-    setPromoCode: (val: string) => void;
-    promoDiscount: number | null;
-    handleApplyPromo: (code: string) => void;
+    onInvite: () => void;
     isApplyingPromo: boolean;
-    promoError: string | null;
-    handleRemovePromo: () => void;
+    setPromoCode: (code: string) => void;
     minOrder?: number;
 }
 
 export default function CartSummary({
-    items,
     total,
-    deliveryType,
     deliveryCost,
-    finalTotal,
+    promoCode,
+    promoDiscount,
+    promoError,
     isStoreClosed,
+    isScheduled,
+    onOrder,
+    onApplyPromo,
+    onRemovePromo,
     isOrdering,
     isInviting,
-    isAuthenticated,
-    hasAddress,
-    hasHouse,
-    hasZone,
-    handleOrder,
-    handleInvite,
-    promoCode,
-    setPromoCode,
-    promoDiscount,
-    handleApplyPromo,
+    onInvite,
     isApplyingPromo,
-    promoError,
-    handleRemovePromo,
+    setPromoCode,
     minOrder = 0,
 }: CartSummaryProps) {
+    const { items, deliveryDetails, updateDeliveryDetails } = useCart();
+    const { deliveryType, address, house, selectedZone, paymentMethod } = deliveryDetails;
     const isMinOrderMet = total >= minOrder;
+    const finalTotal = total - (promoDiscount ? (total * promoDiscount) / 100 : 0) + deliveryCost;
+
+    const hasAddress = !!address;
+    const hasHouse = !!house;
+    const hasZone = !!selectedZone;
+
+    const isAddressMissing = deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasZone);
+    const isPaymentMissing = !paymentMethod;
+    const isDisabled =
+        isOrdering || items.length === 0 || !isMinOrderMet || isAddressMissing || isPaymentMissing;
+
     return (
         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] border-b md:border-none border-gray-50 h-fit">
             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
 
-            {isStoreClosed && (
+            {isStoreClosed && !isScheduled && (
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -65,8 +66,8 @@ export default function CartSummary({
                 >
                     <Clock size={16} className="shrink-0 mt-0.5" />
                     <p className="text-[11px] font-bold leading-tight m-0">
-                        Restaurante cerrado. Puedes realizar tu pedido y nos pondremos en contacto
-                        contigo sin falta.
+                        Restaurante cerrado. Selecciona "Entrega programada" para realizar tu pedido
+                        anticipado.
                     </p>
                 </motion.div>
             )}
@@ -127,14 +128,17 @@ export default function CartSummary({
                             <input
                                 type="text"
                                 value={promoCode}
-                                onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                                onChange={e => {
+                                    triggerHaptic(HAPTIC_PATTERNS.LIGHT);
+                                    setPromoCode(e.target.value.toUpperCase());
+                                }}
                                 placeholder="Introduce tu código"
                                 className="min-w-0 flex-1 px-3 py-2 bg-transparent border-none text-sm focus:outline-none uppercase font-black tracking-tight placeholder:text-gray-300 placeholder:font-bold"
                             />
                             <button
                                 onClick={() => {
                                     triggerHaptic();
-                                    handleApplyPromo(promoCode);
+                                    onApplyPromo(promoCode);
                                 }}
                                 disabled={isApplyingPromo || !promoCode.trim()}
                                 className={`px-4 md:px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider md:tracking-widest transition-all duration-300 border-none cursor-pointer flex items-center gap-2 shadow-sm shrink-0
@@ -158,9 +162,7 @@ export default function CartSummary({
                         animate={{ opacity: 1, scale: 1 }}
                         className="relative overflow-hidden p-4 bg-green-50 rounded-2xl border-2 border-green-200/50 shadow-lg shadow-green-500/5 group"
                     >
-                        {/* Decorative background element */}
                         <div className="absolute top-0 right-0 -mr-4 -mt-4 w-12 h-12 bg-green-500/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
-
                         <div className="relative flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md border border-green-100 shrink-0">
@@ -180,7 +182,7 @@ export default function CartSummary({
                             <button
                                 onClick={() => {
                                     triggerHaptic(HAPTIC_PATTERNS.MEDIUM);
-                                    handleRemovePromo();
+                                    onRemovePromo();
                                 }}
                                 className="w-8 h-8 rounded-full hover:bg-orange-50 text-gray-300 hover:text-orange-500 transition-all duration-300 bg-white shadow-sm border border-gray-100 flex items-center justify-center cursor-pointer group/close"
                             >
@@ -208,21 +210,10 @@ export default function CartSummary({
 
             <button
                 onClick={() => {
-                    if (deliveryType === 'delivery' && !hasHouse) {
-                        triggerHaptic(HAPTIC_PATTERNS.ERROR);
-                        // Optional: scrollToAddressForm
-                        return;
-                    }
                     triggerHaptic(HAPTIC_PATTERNS.SUCCESS);
-                    handleOrder();
+                    onOrder();
                 }}
-                disabled={
-                    isOrdering ||
-                    isInviting ||
-                    items.length === 0 ||
-                    !isMinOrderMet ||
-                    (deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasZone))
-                }
+                disabled={isDisabled}
                 className={`px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base transition disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide
                     ${isMinOrderMet ? 'bg-orange-600 text-white hover:bg-orange-700 shadow-orange-200' : 'bg-gray-200 text-gray-400 shadow-none'}`}
                 data-testid="order-button"
@@ -245,44 +236,50 @@ export default function CartSummary({
 
             <button
                 onClick={() => {
-                    triggerHaptic(HAPTIC_PATTERNS.MEDIUM);
-                    if (isAuthenticated) {
-                        handleInvite();
-                    } else {
-                        document.dispatchEvent(new Event('custom:openLogin'));
-                    }
+                    triggerHaptic(HAPTIC_PATTERNS.LIGHT);
+                    onInvite();
                 }}
-                disabled={isOrdering || isInviting || items.length === 0}
-                className="bg-gray-900 text-white px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full text-sm hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide"
-                data-testid="invite-button"
+                disabled={isInviting || isOrdering || items.length === 0}
+                className="w-full py-4 bg-white border-2 border-orange-100 text-orange-600 rounded-2xl font-black text-base uppercase tracking-wider hover:bg-orange-50 hover:border-orange-200 transition-all flex items-center justify-center gap-2 mb-4 active:scale-95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {isInviting ? 'Generando...' : '¡Que me inviten! 🎁'}
+                {isInviting ? (
+                    <div className="w-5 h-5 border-2 border-orange-200 border-t-orange-600 rounded-full animate-spin" />
+                ) : (
+                    '¡Que me inviten!'
+                )}
             </button>
 
-            {/* Validation Hints for Delivery */}
-            {deliveryType === 'delivery' && !isOrdering && isMinOrderMet && items.length > 0 && (
-                <div className="mt-4 px-2 space-y-1.5">
-                    {!hasAddress && (
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center animate-pulse">
-                            📍 Selecciona una dirección de entrega
-                        </p>
-                    )}
-                    {hasAddress && !hasHouse && (
-                        <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest text-center animate-bounce">
-                            🏠 Indica el número o portal
-                        </p>
-                    )}
-                    {hasAddress && hasHouse && !hasZone && (
-                        <p className="text-[10px] text-red-500 font-black uppercase tracking-widest text-center">
-                            ❌ Lo sentimos, no entregamos en esta zona
-                        </p>
-                    )}
-                </div>
-            )}
+            {(deliveryType === 'delivery' || !paymentMethod) &&
+                !isOrdering &&
+                isMinOrderMet &&
+                items.length > 0 && (
+                    <div className="mt-4 px-2 space-y-1.5 text-center">
+                        {deliveryType === 'delivery' && !hasAddress && (
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest animate-pulse">
+                                📍 Selecciona una dirección de entrega
+                            </p>
+                        )}
+                        {deliveryType === 'delivery' && hasAddress && !hasHouse && (
+                            <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-bounce">
+                                🏠 Indica el número o portal
+                            </p>
+                        )}
+                        {deliveryType === 'delivery' && hasAddress && hasHouse && !hasZone && (
+                            <p className="text-[10px] text-red-500 font-black uppercase tracking-widest">
+                                ❌ Lo sentimos, no entregamos en esta zona
+                            </p>
+                        )}
+                        {!paymentMethod && (
+                            <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-pulse">
+                                💳 Selecciona un método de pago
+                            </p>
+                        )}
+                    </div>
+                )}
 
             {items.length > 0 && (
                 <p className="text-[10px] text-gray-400 mt-4 text-center font-medium px-4">
-                    Al pulsar "Realizar pedido" aceptas nuestras condiciones generales de venta y
+                    Al pulsar "Realizar pedido" aceptas nuestras condiciones generales de venta и
                     política de privacidad.
                 </p>
             )}
