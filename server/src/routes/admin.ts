@@ -82,16 +82,16 @@ router.post(
             // Standardize image: Convert to WebP and Resize
             const optimizedBuffer = await processImage(file.buffer, { type: 'menu' });
 
-            // filename always ends in .webp now
-            const baseName = file.originalname.split('.').slice(0, -1).join('.') || 'image';
             const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.webp`;
             const filePath = `menu/${fileName}`;
 
             // Upload to Supabase Storage 'images' bucket
-            const { error } = await supabase.storage.from('images').upload(filePath, optimizedBuffer, {
-                contentType: 'image/webp',
-                upsert: true,
-            });
+            const { error } = await supabase.storage
+                .from('images')
+                .upload(filePath, optimizedBuffer, {
+                    contentType: 'image/webp',
+                    upsert: true,
+                });
 
             if (error) {
                 console.error('❌ Supabase storage error:', error);
@@ -109,7 +109,10 @@ router.post(
             res.json({ url: publicUrl });
         } catch (procError: any) {
             console.error('❌ Image processing error:', procError);
-            res.status(500).json({ error: 'Error al procesar la imagen', details: procError.message });
+            res.status(500).json({
+                error: 'Error al procesar la imagen',
+                details: procError.message,
+            });
         }
     })
 );

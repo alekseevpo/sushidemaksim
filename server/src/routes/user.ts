@@ -13,7 +13,6 @@ import {
     favoriteSchema,
 } from '../schemas/user.schema.js';
 import { strictLimiter } from '../middleware/rateLimiters.js';
-import { api } from '../utils/api.js';
 import { processImage } from '../utils/imageProcessor.js';
 import { formatUser } from '../utils/helpers.js';
 
@@ -227,7 +226,10 @@ router.post(
             });
         } catch (procError: any) {
             console.error('❌ Avatar processing error:', procError);
-            res.status(500).json({ error: 'Error al procesar el avatar', details: procError.message });
+            res.status(500).json({
+                error: 'Error al procesar el avatar',
+                details: procError.message,
+            });
         }
     })
 );
