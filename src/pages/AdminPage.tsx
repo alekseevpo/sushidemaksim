@@ -570,7 +570,7 @@ export default function AdminPage() {
                             />{' '}
                             {t.ui.by}{' '}
                             <span className="text-gray-700 font-black">
-                                SelenIT / 19fire43@gmail.com
+                                SelenIT / alekseevpo@gmail.com
                             </span>{' '}
                             — 2026. {t.ui.rights}
                         </p>

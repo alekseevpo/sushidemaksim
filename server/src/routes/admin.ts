@@ -49,6 +49,7 @@ import {
     getMadridStartOfDay,
     getMadridYesterdayStartOfDay,
 } from '../utils/helpers.js';
+import { processImage } from '../utils/imageProcessor.js';
 import { invalidateMenuCache } from './menu.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -76,31 +77,40 @@ router.post(
             return res.status(400).json({ error: 'No se subió ninguna imagen' });
         }
 
-        const file = req.file;
-        const fileExt = file.originalname.split('.').pop();
-        const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
-        const filePath = `menu/${fileName}`;
+        try {
+            const file = req.file;
+            // Standardize image: Convert to WebP and Resize
+            const optimizedBuffer = await processImage(file.buffer, { type: 'menu' });
 
-        // Upload to Supabase Storage 'images' bucket
-        const { error } = await supabase.storage.from('images').upload(filePath, file.buffer, {
-            contentType: file.mimetype,
-            upsert: true,
-        });
+            // filename always ends in .webp now
+            const baseName = file.originalname.split('.').slice(0, -1).join('.') || 'image';
+            const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.webp`;
+            const filePath = `menu/${fileName}`;
 
-        if (error) {
-            console.error('❌ Supabase storage error:', error);
-            return res.status(500).json({
-                error: 'Error al subir la imagen a Supabase Storage',
-                details: error.message || JSON.stringify(error),
+            // Upload to Supabase Storage 'images' bucket
+            const { error } = await supabase.storage.from('images').upload(filePath, optimizedBuffer, {
+                contentType: 'image/webp',
+                upsert: true,
             });
+
+            if (error) {
+                console.error('❌ Supabase storage error:', error);
+                return res.status(500).json({
+                    error: 'Error al subir la imagen a Supabase Storage',
+                    details: error.message || JSON.stringify(error),
+                });
+            }
+
+            // Get Public URL
+            const {
+                data: { publicUrl },
+            } = supabase.storage.from('images').getPublicUrl(filePath);
+
+            res.json({ url: publicUrl });
+        } catch (procError: any) {
+            console.error('❌ Image processing error:', procError);
+            res.status(500).json({ error: 'Error al procesar la imagen', details: procError.message });
         }
-
-        // Get Public URL
-        const {
-            data: { publicUrl },
-        } = supabase.storage.from('images').getPublicUrl(filePath);
-
-        res.json({ url: publicUrl });
     })
 );
 

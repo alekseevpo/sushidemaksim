@@ -13,6 +13,8 @@ import {
     favoriteSchema,
 } from '../schemas/user.schema.js';
 import { strictLimiter } from '../middleware/rateLimiters.js';
+import { api } from '../utils/api.js';
+import { processImage } from '../utils/imageProcessor.js';
 import { formatUser } from '../utils/helpers.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -171,57 +173,62 @@ router.post(
         if (!req.file) {
             return res.status(400).json({ error: 'No se subió ninguna imagen' });
         }
+        try {
+            const file = req.file;
+            // Standardize avatar: Convert to WebP and Square Crop (400x400)
+            const optimizedBuffer = await processImage(file.buffer, { type: 'avatar' });
 
-        const file = req.file;
-        const fileExt = file.originalname.split('.').pop();
-        const fileName = `${req.userId}-${Date.now()}.${fileExt}`;
-        const filePath = `avatars/${fileName}`;
+            const fileName = `${Date.now()}-${req.userId}.webp`;
+            const filePath = `avatars/${fileName}`;
 
-        // Upload to Supabase Storage 'images' bucket
-        const { error: uploadError } = await supabase.storage
-            .from('images')
-            .upload(filePath, file.buffer, {
-                contentType: file.mimetype,
-                upsert: true,
+            // Upload to Supabase Storage 'images' bucket
+            const { error: uploadError } = await supabase.storage
+                .from('images')
+                .upload(filePath, optimizedBuffer, {
+                    contentType: 'image/webp',
+                    upsert: true,
+                });
+
+            if (uploadError) {
+                console.error('❌ Supabase storage error:', uploadError);
+                return res.status(500).json({
+                    error: 'Error al subir la imagen. Verifica que el bucket "images" sea público.',
+                    details: uploadError.message,
+                });
+            }
+
+            // Get Public URL
+            const {
+                data: { publicUrl },
+            } = supabase.storage.from('images').getPublicUrl(filePath);
+
+            // Update user profile with new avatar URL
+            const { data: user, error: updateError } = await supabase
+                .from('users')
+                .update({ avatar: publicUrl })
+                .eq('id', req.userId)
+                .select(
+                    'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin, is_verified'
+                )
+                .single();
+
+            if (updateError) throw updateError;
+
+            res.json({
+                url: publicUrl,
+                user: {
+                    ...user,
+                    createdAt: user.created_at,
+                    birthDate: user.birth_date,
+                    isBirthDateVerified: user.birth_date_verified,
+                    lastSeenAt: user.last_seen_at,
+                },
+                message: 'Foto de perfil actualizada correctamente',
             });
-
-        if (uploadError) {
-            console.error('❌ Supabase storage error:', uploadError);
-            return res.status(500).json({
-                error: 'Error al subir la imagen. Verifica que el bucket "images" sea público y el Service Role Key sea correcto.',
-                details: uploadError.message,
-                code: (uploadError as any).code,
-            });
+        } catch (procError: any) {
+            console.error('❌ Avatar processing error:', procError);
+            res.status(500).json({ error: 'Error al procesar el avatar', details: procError.message });
         }
-
-        // Get Public URL
-        const {
-            data: { publicUrl },
-        } = supabase.storage.from('images').getPublicUrl(filePath);
-
-        // Update user profile with new avatar URL
-        const { data: user, error: updateError } = await supabase
-            .from('users')
-            .update({ avatar: publicUrl })
-            .eq('id', req.userId)
-            .select(
-                'id, name, email, phone, avatar, role, created_at, birth_date, birth_date_verified, last_seen_at, is_superadmin, is_verified'
-            )
-            .single();
-
-        if (updateError) throw updateError;
-
-        res.json({
-            url: publicUrl,
-            user: {
-                ...user,
-                createdAt: user.created_at,
-                birthDate: user.birth_date,
-                isBirthDateVerified: user.birth_date_verified,
-                lastSeenAt: user.last_seen_at,
-            },
-            message: 'Foto de perfil actualizada correctamente',
-        });
     })
 );
 
