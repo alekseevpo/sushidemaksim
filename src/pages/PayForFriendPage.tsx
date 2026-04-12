@@ -41,7 +41,7 @@ export default function PayForFriendPage() {
     const origin =
         typeof window !== 'undefined' ? window.location.origin : 'https://sushidemaksim.vercel.app';
     const invitationUrl = `${origin}/pay-for-friend/${id}`;
-    const hungryPandaUrl = `${origin}/hungry-panda.png`;
+    const hungryPandaUrl = `${origin}/hungry-panda.webp`;
 
     useEffect(() => {
         loadOrder();
@@ -231,7 +231,7 @@ export default function PayForFriendPage() {
                                                     className="w-full h-full object-cover"
                                                     onError={e => {
                                                         (e.target as HTMLImageElement).src =
-                                                            '/placeholder-sushi.png';
+                                                            '/placeholder-sushi.webp';
                                                     }}
                                                 />
                                             </div>

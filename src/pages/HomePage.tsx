@@ -119,7 +119,7 @@ export default function HomePage() {
         // Hardcoded mapping for homepage to ensure premium look if DB fallback fails
         const TOP_CATEGORY_FALLBACKS: Record<string, string> = {
             postre: getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.png',
+                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.webp',
                 640
             ),
             'rollos-clasicos': getOptimizedImageUrl(
@@ -127,7 +127,7 @@ export default function HomePage() {
                 640
             ),
             entrantes: getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469716444-139.png',
+                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469716444-139.webp',
                 640
             ),
             'rollos-grandes': getOptimizedImageUrl(
@@ -579,7 +579,7 @@ export default function HomePage() {
                         className="relative h-[300px] md:h-[500px] rounded-[3rem] overflow-hidden order-last lg:order-first"
                     >
                         <SafeImage
-                            src="/blog_post_chef_hands.jpg"
+                            src="/blog_post_chef_hands.webp"
                             getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 1000)}
                             alt="Reserva tu mesa — Sushi de Maksim Madrid"
                             loading="lazy"
@@ -741,7 +741,7 @@ export default function HomePage() {
                     >
                         <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
                             <SafeImage
-                                src="/blog_post_chef_hands.jpg"
+                                src="/blog_post_chef_hands.webp"
                                 getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 800)}
                                 alt="Preparación artesanal de sushi — Sushi de Maksim"
                                 loading="lazy"

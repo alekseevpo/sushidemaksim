@@ -91,12 +91,13 @@ export default function BlogPage() {
             {/* Hero Section */}
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
-                    <img
-                        src={getOptimizedImageUrl('/blog_post_sushi_art.jpg', 1200)}
+                    <SafeImage
+                        src="/blog_post_sushi_art.webp"
                         alt="Mundo Sushi de Maksim"
                         {...({ fetchpriority: 'high' } as any)}
                         decoding="async"
-                        className="w-full h-full object-cover opacity-40 scale-105"
+                        getOptimizedUrl={url => getOptimizedImageUrl(url, 1200)}
+                        className="w-full h-full object-cover opacity-60 scale-105"
                     />
                 </div>
 
