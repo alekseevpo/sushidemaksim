@@ -64,12 +64,7 @@ export default function OrderSuccessModal({
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
 
                     <div className="w-14 h-14 md:w-16 md:h-16 bg-green-50 rounded-[18px] md:rounded-[20px] flex items-center justify-center mx-auto mb-3 md:mb-4 relative shadow-inner border-2 border-white">
-                        <CheckCircle
-                            size={28}
-                            md:size={32}
-                            strokeWidth={1.5}
-                            className="text-green-600"
-                        />
+                        <CheckCircle size={32} strokeWidth={1.5} className="text-green-600" />
                     </div>
 
                     <h1
