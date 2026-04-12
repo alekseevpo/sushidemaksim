@@ -226,7 +226,7 @@ export default function ContactsPage() {
             <section className="relative h-[40vh] overflow-hidden flex items-center justify-center bg-black">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src={getOptimizedImageUrl('/images/promos/promo_hero_bg.png', 1080)}
+                        src={getOptimizedImageUrl('/images/promos/promo_hero_bg.webp', 1080)}
                         alt="Contacto Sushi de Maksim"
                         {...({ fetchpriority: 'high' } as any)}
                         decoding="async"

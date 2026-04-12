@@ -14,11 +14,11 @@ const PROMO_IMAGES: Record<string, string> = {
     '10º Pedido':
         'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773678886624-263.webp',
     Cumpleaños:
-        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469942612-40.png',
+        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469942612-40.webp',
     'Cena familiar':
         'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773678687933-236.webp',
     'Primer pedido':
-        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773465830356-360.png',
+        'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773465830356-360.webp',
 };
 interface PromoItem {
     id: number;
@@ -107,7 +107,7 @@ export default function PromoPage() {
             {/* Hero Header */}
             <section className="relative h-64 md:h-80 flex items-center justify-center overflow-hidden pt-12">
                 <SafeImage
-                    src="/images/promos/promo_hero_bg.png"
+                    src="/images/promos/promo_hero_bg.webp"
                     alt="Ofertas y Promociones background"
                     className="absolute inset-0 w-full h-full object-cover"
                     getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 1080)}

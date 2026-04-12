@@ -19,7 +19,7 @@ const KatanaUnderline = () => (
             mass: 0.5,
         }}
     >
-        <img src="/katana.png" alt="Katana" className="w-[240px] h-24 object-contain" />
+        <img src="/katana.webp" alt="Katana" className="w-[240px] h-24 object-contain" />
     </motion.div>
 );
 

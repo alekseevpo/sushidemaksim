@@ -14,7 +14,7 @@ export default function Footer() {
         {
             id: 'whatsapp',
             name: 'WhatsApp',
-            icon: '/whatsapp.png',
+            icon: '/whatsapp.webp',
             url: `https://wa.me/${cleanPhone.replace('+', '')}`,
             hover: 'hover:bg-green-500/20 hover:border-green-500/30',
         },
@@ -22,21 +22,21 @@ export default function Footer() {
         {
             id: 'instagram',
             name: 'Instagram',
-            icon: '/instagram.png',
+            icon: '/instagram.webp',
             url: 'https://www.instagram.com/sushi_de_maksim/',
             hover: 'hover:bg-pink-500/20 hover:border-pink-500/30',
         },
         {
             id: 'telegram',
             name: 'Telegram',
-            icon: '/telegram.png',
+            icon: '/telegram.webp',
             url: 'https://t.me/sushidemaksim',
             hover: 'hover:bg-blue-500/20 hover:border-blue-500/30',
         },
         {
             id: 'thefork',
             name: 'The Fork',
-            icon: '/fork.png',
+            icon: '/fork.webp',
             url: 'https://www.thefork.es/restaurante/red-de-maksim-r753228',
             hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30',
         },
