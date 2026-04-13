@@ -144,6 +144,10 @@ const ANALYTICS_TRANSLATIONS = {
             insight:
                 'Самый мощный инструмент планирования. Показывает точные окна перегрузок для графика курьеров.',
         },
+        orders: {
+            label: 'Заказы',
+            desc: 'Всего заказов получено',
+        },
     },
     es: {
         title: 'Analítica Avanzada',
@@ -332,9 +336,9 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     },
                     {
                         label: t.orders.label,
-                        value: `${stats?.estimatedMargin || 0}%`,
-                        desc: t.margin.desc,
-                        color: 'text-emerald-600',
+                        value: `${stats?.stats?.totalOrders || 0}`,
+                        desc: t.orders.desc,
+                        color: 'text-indigo-600',
                     },
                 ].map((stat, i) => (
                     <div

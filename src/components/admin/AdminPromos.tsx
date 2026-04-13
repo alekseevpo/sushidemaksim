@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
     Plus,
     Edit2,
@@ -6,13 +6,10 @@ import {
     CheckCircle,
     XCircle,
     RefreshCw,
-    Clock,
     HelpCircle,
     Upload,
-    Image as ImageIcon,
     X,
     PlusCircle,
-    Info,
     Layout,
     ArrowDown,
     UserPlus,
@@ -20,7 +17,6 @@ import {
     Star,
     Gift,
     Sparkles,
-    Tag,
     GripVertical,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -972,7 +968,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     settings.loyalty_registration_bonus_enabled
                                 )
                             }
-                            onChange={val =>
+                            onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('loyalty_registration_bonus_percent', val)
                             }
                         />
@@ -993,7 +989,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     settings.loyalty_birthday_bonus_enabled
                                 )
                             }
-                            onChange={val =>
+                            onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('loyalty_birthday_bonus_percent', val)
                             }
                         />
@@ -1014,7 +1010,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     settings.loyalty_every_5th_bonus_enabled
                                 )
                             }
-                            onChange={val =>
+                            onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('loyalty_every_5th_bonus_percent', val)
                             }
                         />
@@ -1053,7 +1049,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     settings.newsletter_bonus_enabled
                                 )
                             }
-                            onChange={val =>
+                            onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('newsletter_bonus_percent', val)
                             }
                         />

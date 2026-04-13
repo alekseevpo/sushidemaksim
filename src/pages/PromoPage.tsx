@@ -22,7 +22,7 @@ interface PromoItem {
 }
 
 export default function PromoPage() {
-    const { items: cartItems, addItem } = useCart();
+    const { addItem } = useCart();
     const { user } = useAuth();
     const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
 

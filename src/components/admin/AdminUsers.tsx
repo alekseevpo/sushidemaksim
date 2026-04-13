@@ -446,6 +446,7 @@ const UserRow = memo(
 );
 
 export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
+    const { success } = useToast();
     const { user: currentUser } = useAuth();
     const queryClient = useQueryClient();
 
