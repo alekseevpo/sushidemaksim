@@ -214,7 +214,9 @@ const UserRow = memo(
                 .slice(0, 2) || '??';
 
         return (
-            <tr className={`hover:bg-gray-50/50 transition-all group ${user.deletedAt ? 'opacity-50 grayscale bg-gray-50/30' : ''}`}>
+            <tr
+                className={`hover:bg-gray-50/50 transition-all group ${user.deletedAt ? 'opacity-50 grayscale bg-gray-50/30' : ''}`}
+            >
                 <td
                     className="px-4 py-2.5 font-black text-gray-300 text-[9px] tabular-nums group-hover:text-gray-400 transition-colors cursor-pointer active:scale-95"
                     title={user.id}

@@ -301,6 +301,7 @@ export default function AdminPage() {
         }
 
         isFirstLoad.current = false;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pendingOrders, pendingResData, isSoundEnabled]);
 
     const navLinks = useMemo(

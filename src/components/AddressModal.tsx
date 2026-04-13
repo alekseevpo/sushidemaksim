@@ -851,38 +851,38 @@ export default function AddressModal({
                                                         </div>
                                                     </div>
 
-                                                     <div
-                                                         className={`grid ${selectedZone.freeThreshold ? 'grid-cols-3' : 'grid-cols-2'} gap-2.5`}
-                                                     >
-                                                         <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
-                                                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
-                                                                 Envío
-                                                             </p>
-                                                             <p className="text-[17px] font-black text-gray-900 mt-auto leading-none">
-                                                                 {selectedZone.cost === 0
-                                                                     ? 'GRATIS'
-                                                                     : `${selectedZone.cost}€`}
-                                                             </p>
-                                                         </div>
-                                                         <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
-                                                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
-                                                                 Pedido mín.
-                                                             </p>
-                                                             <p className="text-[17px] font-black text-gray-900 mt-auto leading-none">
-                                                                 {selectedZone.minOrder}€
-                                                             </p>
-                                                         </div>
-                                                         {selectedZone.freeThreshold && (
-                                                             <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
-                                                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
-                                                                     Gratis desde
-                                                                 </p>
-                                                                 <p className="text-[17px] font-black text-orange-600 mt-auto leading-none">
-                                                                     {selectedZone.freeThreshold}€
-                                                                 </p>
-                                                             </div>
-                                                         )}
-                                                     </div>
+                                                    <div
+                                                        className={`grid ${selectedZone.freeThreshold ? 'grid-cols-3' : 'grid-cols-2'} gap-2.5`}
+                                                    >
+                                                        <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
+                                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
+                                                                Envío
+                                                            </p>
+                                                            <p className="text-[17px] font-black text-gray-900 mt-auto leading-none">
+                                                                {selectedZone.cost === 0
+                                                                    ? 'GRATIS'
+                                                                    : `${selectedZone.cost}€`}
+                                                            </p>
+                                                        </div>
+                                                        <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
+                                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
+                                                                Pedido mín.
+                                                            </p>
+                                                            <p className="text-[17px] font-black text-gray-900 mt-auto leading-none">
+                                                                {selectedZone.minOrder}€
+                                                            </p>
+                                                        </div>
+                                                        {selectedZone.freeThreshold && (
+                                                            <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
+                                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
+                                                                    Gratis desde
+                                                                </p>
+                                                                <p className="text-[17px] font-black text-orange-600 mt-auto leading-none">
+                                                                    {selectedZone.freeThreshold}€
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         ) : (

@@ -498,7 +498,8 @@ export default function ProfilePage() {
                                         {dessertCode.code}
                                     </span>
                                     <span className="text-[8px] font-bold text-amber-500">
-                                        Expira el: {getExpiryString(dessertCode.code, dessertCode.createdAt)}
+                                        Expira el:{' '}
+                                        {getExpiryString(dessertCode.code, dessertCode.createdAt)}
                                     </span>
                                 </div>
                                 <button

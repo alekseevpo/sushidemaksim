@@ -319,9 +319,7 @@ export default function HomePage() {
             />
             <div className="bg-black">
                 {/* Hero Section */}
-                <section
-                    className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
-                >
+                <section className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
                     {/* Visual context for SEO */}
                     <h2 className="sr-only">Bienvenido a Sushi de Maksim</h2>
 
@@ -566,7 +564,9 @@ export default function HomePage() {
                                             alt={promo.title}
                                             className="w-full h-full object-cover opacity-20"
                                             loading="lazy"
-                                            getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 1080)}
+                                            getOptimizedUrl={(url: string) =>
+                                                getOptimizedImageUrl(url, 1080)
+                                            }
                                         />
                                     </div>
                                 )}
@@ -579,7 +579,9 @@ export default function HomePage() {
                                             </span>
                                         )}
                                         <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
-                                            <span className="text-orange-500">{promo.discount}</span>{' '}
+                                            <span className="text-orange-500">
+                                                {promo.discount}
+                                            </span>{' '}
                                             {!promo.subtitle ? promo.title : ''}
                                         </h2>
                                         <p className="text-gray-400 font-medium max-w-md">
@@ -628,8 +630,8 @@ export default function HomePage() {
                                         <span className="text-orange-500">10%</span> de Descuento
                                     </h2>
                                     <p className="text-gray-400 font-medium max-w-md">
-                                        Válido para todos los nuevos usuarios registrados que realicen
-                                        su primer pedido por un importe superior a 70€.
+                                        Válido para todos los nuevos usuarios registrados que
+                                        realicen su primer pedido por un importe superior a 70€.
                                     </p>
                                 </div>
                                 <Link

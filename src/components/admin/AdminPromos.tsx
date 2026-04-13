@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
     Plus,
     Edit2,
@@ -410,7 +410,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
         queryFn: () => api.get('/admin/promos'),
     });
 
-    const promos = promosData?.promos || [];
+    const promos = useMemo(() => promosData?.promos || [], [promosData]);
 
     const upsertMutation = useMutation({
         mutationFn: (payload: any) => {
@@ -931,18 +931,18 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                                 t={t}
                                             />
                                         ))}
-                                    {promos.length === 0 && (
-                                        <div className="px-8 py-20 text-center">
-                                            <div className="flex flex-col items-center gap-4">
-                                                <div className="w-16 h-16 bg-gray-50 text-gray-200 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
-                                                    <Plus size={32} />
+                                        {promos.length === 0 && (
+                                            <div className="px-8 py-20 text-center">
+                                                <div className="flex flex-col items-center gap-4">
+                                                    <div className="w-16 h-16 bg-gray-50 text-gray-200 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+                                                        <Plus size={32} />
+                                                    </div>
+                                                    <p className="text-gray-400 font-black uppercase tracking-widest text-xs">
+                                                        {t.noPromos}
+                                                    </p>
                                                 </div>
-                                                <p className="text-gray-400 font-black uppercase tracking-widest text-xs">
-                                                    {t.noPromos}
-                                                </p>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
                                     </div>
                                 </SortableContext>
                             </DndContext>
@@ -1063,8 +1063,8 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             Автоматизация лояльности
                         </h3>
                         <p className="max-w-xl text-xs font-bold text-gray-400 uppercase leading-relaxed tracking-widest">
-                            Все изменения вступают в силу мгновенно. Система автоматически
-                            рассылает письма и применяет скидки в корзине пользователей.
+                            Все изменения вступают в силу мгновенно. Система автоматически рассылает
+                            письма и применяет скидки в корзине пользователей.
                         </p>
                     </div>
                 </div>
@@ -1131,38 +1131,52 @@ function LoyaltyCard({
 }: any) {
     return (
         <div className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden flex flex-col h-full">
-            <div className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-[0.03] rounded-bl-[100px] transition-all group-hover:w-36 group-hover:h-36`} />
-            
+            <div
+                className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-[0.03] rounded-bl-[100px] transition-all group-hover:w-36 group-hover:h-36`}
+            />
+
             <div className="flex justify-between items-start mb-8 relative z-10">
-                <div className={`w-14 h-14 rounded-2xl ${color} text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                <div
+                    className={`w-14 h-14 rounded-2xl ${color} text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}
+                >
                     {icon}
                 </div>
-                <button 
+                <button
                     onClick={onToggle}
                     className={`w-12 h-7 rounded-full transition-all relative cursor-pointer ${enabled ? 'bg-green-500' : 'bg-gray-200'}`}
                 >
-                    <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all shadow-md ${enabled ? 'left-6' : 'left-1'}`} />
+                    <div
+                        className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all shadow-md ${enabled ? 'left-6' : 'left-1'}`}
+                    />
                 </button>
             </div>
 
-            <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight mb-2 relative z-10">{title}</h4>
-            <p className="text-[10px] font-bold text-gray-400 uppercase leading-relaxed tracking-wider mb-8 flex-grow relative z-10">{description}</p>
+            <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight mb-2 relative z-10">
+                {title}
+            </h4>
+            <p className="text-[10px] font-bold text-gray-400 uppercase leading-relaxed tracking-wider mb-8 flex-grow relative z-10">
+                {description}
+            </p>
 
             {!isGiftOnly && (
                 <div className="relative z-10 space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100">
                     <div className="flex justify-between items-end">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Величина скидки</span>
-                        <span className="text-xl font-black text-gray-900 tracking-tighter">-{value}%</span>
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                            Величина скидки
+                        </span>
+                        <span className="text-xl font-black text-gray-900 tracking-tighter">
+                            -{value}%
+                        </span>
                     </div>
                     <div className="flex items-center gap-4">
                         <ArrowDown size={14} className="text-gray-300" />
-                        <input 
+                        <input
                             type="range"
                             min="0"
                             max="50"
                             step="1"
                             value={value || 0}
-                            onChange={(e) => onChange?.(e.target.value)}
+                            onChange={e => onChange?.(e.target.value)}
                             className="flex-1 accent-orange-500 h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer"
                         />
                     </div>
@@ -1174,7 +1188,9 @@ function LoyaltyCard({
                     <div className="w-8 h-8 rounded-xl bg-orange-500 text-white flex items-center justify-center shadow-sm">
                         <Gift size={16} />
                     </div>
-                    <span className="text-[9px] font-black text-orange-600 uppercase tracking-widest">Статус: Подарок активно</span>
+                    <span className="text-[9px] font-black text-orange-600 uppercase tracking-widest">
+                        Статус: Подарок активно
+                    </span>
                 </div>
             )}
         </div>

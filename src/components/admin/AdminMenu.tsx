@@ -682,9 +682,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label
-                                            className="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                        >
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                             {t.modal.costPrice}
                                         </label>
                                         <input

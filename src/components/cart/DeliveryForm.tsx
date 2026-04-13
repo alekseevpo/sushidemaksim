@@ -221,9 +221,7 @@ export default function DeliveryForm({
                                                 <span className="opacity-50 uppercase text-[9px] tracking-tight">
                                                     Sáb – Dom
                                                 </span>
-                                                <span className="font-bold">
-                                                    14:00 – 23:00
-                                                </span>
+                                                <span className="font-bold">14:00 – 23:00</span>
                                             </div>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-amber-900/40 uppercase text-[9px] tracking-tight font-black">

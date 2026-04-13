@@ -7,7 +7,6 @@ import Newsletter from '../components/Newsletter';
 import { BlogSkeleton } from '../components/skeletons/BlogSkeleton';
 import { getOptimizedImageUrl } from '../utils/images';
 import { useBlog } from '../hooks/queries/useBlog';
-import EventBanner from '../components/EventBanner';
 import SafeImage from '../components/common/SafeImage';
 
 export default function BlogPage() {

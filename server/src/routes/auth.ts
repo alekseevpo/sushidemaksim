@@ -39,15 +39,22 @@ router.post(
             }
 
             // If the existing user IS archived, PURGE them to allow re-registration
-            console.log(`♻️  [AUTH] Purging archived user #${existing.id} to allow re-registration for ${email}...`);
-            
+            console.log(
+                `♻️  [AUTH] Purging archived user #${existing.id} to allow re-registration for ${email}...`
+            );
+
             // 1. Get all order IDs
-            const { data: orders } = await supabase.from('orders').select('id').eq('user_id', existing.id);
+            const { data: orders } = await supabase
+                .from('orders')
+                .select('id')
+                .eq('user_id', existing.id);
             const orderIds = (orders || []).map(o => o.id);
 
             // 2. Cascade deletion
             await Promise.all([
-                orderIds.length > 0 ? supabase.from('order_items').delete().in('order_id', orderIds) : Promise.resolve(),
+                orderIds.length > 0
+                    ? supabase.from('order_items').delete().in('order_id', orderIds)
+                    : Promise.resolve(),
                 supabase.from('orders').delete().eq('user_id', existing.id),
                 supabase.from('user_addresses').delete().eq('user_id', existing.id),
                 supabase.from('promo_codes').delete().eq('user_id', existing.id),
@@ -87,7 +94,10 @@ router.post(
         const { data: settingsData } = await supabase
             .from('site_settings')
             .select('key, value')
-            .in('key', ['loyalty_registration_bonus_enabled', 'loyalty_registration_bonus_percent']);
+            .in('key', [
+                'loyalty_registration_bonus_enabled',
+                'loyalty_registration_bonus_percent',
+            ]);
 
         const settings: Record<string, string> = {};
         settingsData?.forEach(s => (settings[s.key] = s.value));

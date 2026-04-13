@@ -72,7 +72,10 @@ router.post(
             });
         }
 
-        res.json({ success: true, message: '¡Gracias по подписку! Мы будем держать тебя в курсе.' });
+        res.json({
+            success: true,
+            message: '¡Gracias по подписку! Мы будем держать тебя в курсе.',
+        });
     })
 );
 

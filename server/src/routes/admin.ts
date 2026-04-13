@@ -41,7 +41,6 @@ import {
     promoIdParamSchema,
 } from '../schemas/promo.schema.js';
 import {
-    formatMenuItem,
     formatBlogPost,
     formatOrder,
     formatAdminMenuItem,
@@ -117,7 +116,6 @@ router.post(
         }
     })
 );
-
 
 // POST /api/admin/promos/upload-image (to Supabase Storage)
 router.post(
@@ -195,7 +193,9 @@ router.put(
             value: String(value),
         }));
 
-        const { error } = await supabase.from('site_settings').upsert(entries, { onConflict: 'key' });
+        const { error } = await supabase
+            .from('site_settings')
+            .upsert(entries, { onConflict: 'key' });
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -582,11 +582,16 @@ router.patch(
 
                     // Primary keys from Admin UI, fallback to legacy keys
                     const order5Enabled =
-                        (settings['loyalty_every_5th_bonus_enabled'] ?? settings['loyalty_order5_bonus_enabled']) === 'true';
+                        (settings['loyalty_every_5th_bonus_enabled'] ??
+                            settings['loyalty_order5_bonus_enabled']) === 'true';
                     const order5Percent =
-                        parseInt(settings['loyalty_every_5th_bonus_percent'] ?? settings['loyalty_order5_bonus_percent']) || 5;
+                        parseInt(
+                            settings['loyalty_every_5th_bonus_percent'] ??
+                                settings['loyalty_order5_bonus_percent']
+                        ) || 5;
                     const order10Enabled =
-                        (settings['loyalty_every_10th_gift_enabled'] ?? settings['loyalty_order10_gift_enabled']) === 'true';
+                        (settings['loyalty_every_10th_gift_enabled'] ??
+                            settings['loyalty_order10_gift_enabled']) === 'true';
 
                     // ───── X% DISCOUNT (Triggered after 4th, 9th, 14th... to be used in 5th, 10th, 15th...) ─────
                     if (order5Enabled && deliveredCount % 5 === 4) {
@@ -874,7 +879,7 @@ router.delete(
         if (user.deleted_at) {
             // Already archived -> Perform HARD DELETE
             console.log(`⚠️  [ADMIN] Hard deleting user #${id} and all related data...`);
-            
+
             // 1. Get all order IDs to delete order items
             const { data: orders } = await supabase.from('orders').select('id').eq('user_id', id);
             const orderIds = (orders || []).map(o => o.id);
@@ -882,7 +887,7 @@ router.delete(
             // 2. Cascade deletion (in order of dependencies)
             const cascadePromises = [
                 // Delete order items first
-                orderIds.length > 0 
+                orderIds.length > 0
                     ? supabase.from('order_items').delete().in('order_id', orderIds)
                     : Promise.resolve(),
                 // Delete other direct dependencies
@@ -900,9 +905,9 @@ router.delete(
             const { error: finalError } = await supabase.from('users').delete().eq('id', id);
             if (finalError) throw finalError;
 
-            return res.json({ 
-                success: true, 
-                message: `Usuario #${id} и все связанные данные удалены окончательно` 
+            return res.json({
+                success: true,
+                message: `Usuario #${id} и все связанные данные удалены окончательно`,
             });
         }
 
@@ -1279,7 +1284,10 @@ router.get(
                     promoCount > 0 ? Math.round((totalDiscount / promoCount) * 100) / 100 : 0,
             },
             estimatedMargin: revenue > 0 ? Math.round((totalProfit / revenue) * 100) : 0,
-            estimatedMarkup: revenue - totalProfit > 0 ? Math.round((totalProfit / (revenue - totalProfit)) * 100) : 0,
+            estimatedMarkup:
+                revenue - totalProfit > 0
+                    ? Math.round((totalProfit / (revenue - totalProfit)) * 100)
+                    : 0,
         });
     })
 );
@@ -1357,10 +1365,7 @@ router.put(
         }
 
         for (const item of items) {
-            await supabase
-                .from('promos')
-                .update({ sort_order: item.sort_order })
-                .eq('id', item.id);
+            await supabase.from('promos').update({ sort_order: item.sort_order }).eq('id', item.id);
         }
 
         // Return updated list
