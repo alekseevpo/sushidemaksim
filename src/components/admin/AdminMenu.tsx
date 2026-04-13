@@ -27,6 +27,7 @@ interface MenuItem {
     isChefChoice?: boolean;
     isNew?: boolean;
     allergens?: string[];
+    costPrice?: number;
 }
 
 interface AdminMenuProps {
@@ -44,6 +45,7 @@ const MENU_TRANSLATIONS = {
             name: 'Название',
             category: 'Категория',
             price: 'Цена',
+            costPrice: 'Себест.',
             tags: 'Метки',
             actions: 'Действия',
         },
@@ -54,6 +56,7 @@ const MENU_TRANSLATIONS = {
             name: 'Название *',
             category: 'Категория *',
             price: 'Цена (€) *',
+            costPrice: 'Себестоимость (€) *',
             pieces: 'Кусочков (опц.)',
             description: 'Описание *',
             imageLabel: 'Изображение блюда',
@@ -108,6 +111,7 @@ const MENU_TRANSLATIONS = {
             name: 'Nombre',
             category: 'Categoría',
             price: 'Precio',
+            costPrice: 'Coste',
             tags: 'Etiquetas',
             actions: 'Acciones',
         },
@@ -118,6 +122,7 @@ const MENU_TRANSLATIONS = {
             name: 'Nombre *',
             category: 'Categoría *',
             price: 'Precio (€) *',
+            costPrice: 'Coste Ingredientes (€) *',
             pieces: 'Piezas (opcional)',
             description: 'Descripción *',
             imageLabel: 'Imagen del Plato',
@@ -241,6 +246,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
             isChefChoice: false,
             isNew: false,
             allergens: [],
+            costPrice: 0,
         });
         setFormError('');
         setIsModalOpen(true);
@@ -451,6 +457,9 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right">
                                         {t.table.price}
                                     </th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right">
+                                        {t.table.costPrice}
+                                    </th>
                                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-center">
                                         {t.table.tags}
                                     </th>
@@ -495,6 +504,14 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                         <td className="px-8 py-4 text-right">
                                             <p className="font-black text-orange-600 text-lg tabular-nums whitespace-nowrap">
                                                 {Number(item.price).toFixed(2).replace('.', ',')} €
+                                            </p>
+                                        </td>
+                                        <td className="px-8 py-4 text-right">
+                                            <p className="font-bold text-gray-400 text-sm tabular-nums whitespace-nowrap">
+                                                {Number(item.costPrice || 0)
+                                                    .toFixed(2)
+                                                    .replace('.', ',')}{' '}
+                                                €
                                             </p>
                                         </td>
                                         <td className="px-8 py-4">
@@ -662,6 +679,27 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                 })
                                             }
                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all tabular-nums"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label
+                                            className="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+                                        >
+                                            {t.modal.costPrice}
+                                        </label>
+                                        <input
+                                            required
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={formData.costPrice || 0}
+                                            onChange={e =>
+                                                setFormData({
+                                                    ...formData,
+                                                    costPrice: parseFloat(e.target.value) || 0,
+                                                })
+                                            }
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-emerald-400 transition-all tabular-nums"
                                         />
                                     </div>
                                     <div className="space-y-2">

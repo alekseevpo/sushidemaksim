@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 
 interface ImageOptions {
-    type: 'menu' | 'avatar' | 'blog';
+    type: 'menu' | 'avatar' | 'blog' | 'promo';
     quality?: number;
 }
 

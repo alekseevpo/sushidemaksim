@@ -28,9 +28,17 @@ router.post(
             return res.status(409).json({ error: 'Ya estás suscrito a nuestra newsletter' });
         }
 
-        // 2. Generate promo code
-        const promoSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
-        const promoCode = `NUEVO5-${promoSuffix}`;
+        // 2. Fetch newsletter settings
+        const { data: settingsData } = await supabase
+            .from('site_settings')
+            .select('key, value')
+            .in('key', ['newsletter_bonus_enabled', 'newsletter_bonus_percent']);
+
+        const settings: Record<string, string> = {};
+        settingsData?.forEach(s => (settings[s.key] = s.value));
+
+        const isEnabled = settings['newsletter_bonus_enabled'] === 'true';
+        const discountPercent = parseInt(settings['newsletter_bonus_percent']) || 5;
 
         // 3. Insert subscriber
         const { error: insertError } = await supabase
@@ -39,23 +47,32 @@ router.post(
 
         if (insertError) throw insertError;
 
-        // 4. Create promo code in DB
-        // Note: we don't link user_id here as the person might not have an account yet
-        await supabase.from('promo_codes').insert({
-            code: promoCode,
-            discount_percentage: 5,
-            is_used: false,
-        });
+        // 4. Handle Promo Code (if enabled)
+        if (isEnabled) {
+            const promoSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+            const promoCode = `NUEVO${discountPercent}-${promoSuffix}`;
 
-        // 5. Send email
-        try {
-            await sendNewsletterWelcomeEmail(normalizedEmail, promoCode);
-        } catch (e) {
-            console.error('Newsletter SMTP Error:', e);
-            // We don't fail the request if email fails, but log it
+            // Create promo code in DB
+            await supabase.from('promo_codes').insert({
+                code: promoCode,
+                discount_percentage: discountPercent,
+                is_used: false,
+            });
+
+            // 5. Send email
+            try {
+                await sendNewsletterWelcomeEmail(normalizedEmail, promoCode, discountPercent);
+            } catch (e) {
+                console.error('Newsletter SMTP Error:', e);
+            }
+
+            return res.json({
+                success: true,
+                message: '¡Suscripción confirmada! Revisa tu email para tu regalo.',
+            });
         }
 
-        res.json({ success: true, message: '¡Suscripción confirmada! Revisa tu email.' });
+        res.json({ success: true, message: '¡Gracias по подписку! Мы будем держать тебя в курсе.' });
     })
 );
 

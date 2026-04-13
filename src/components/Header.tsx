@@ -14,6 +14,10 @@ import {
     Phone,
     Star,
     Calendar,
+    Settings,
+    MapPin,
+    Package,
+    Heart,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
@@ -325,9 +329,9 @@ export default function Header() {
                                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                    className="absolute top-[calc(100%+12px)] right-0 bg-white rounded-2xl shadow-2xl p-2 w-[240px] z-[100] border border-gray-100"
+                                                    className="absolute top-[calc(100%+12px)] right-0 bg-white rounded-2xl shadow-2xl p-1.5 w-[240px] z-[100] border border-gray-100"
                                                 >
-                                                    <div className="px-4 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
+                                                    <div className="px-2.5 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
                                                         <div
                                                             className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0 border border-black/10
                                     ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-orange-600'}`}
@@ -362,7 +366,7 @@ export default function Header() {
                                                             <p className="text-sm font-black text-gray-900 mb-0.5 truncate">
                                                                 {user.name}
                                                             </p>
-                                                            <p className="text-[10px] text-gray-500 font-bold truncate tracking-tight uppercase">
+                                                            <p className="text-[10px] text-gray-500 font-bold tracking-tight uppercase whitespace-nowrap">
                                                                 {user.email}
                                                             </p>
                                                         </div>
@@ -380,7 +384,7 @@ export default function Header() {
                                                                 onClick={() =>
                                                                     setShowUserMenu(false)
                                                                 }
-                                                                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 hover:bg-orange-100 transition-colors duration-150"
+                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 hover:bg-orange-100 transition-colors duration-150"
                                                             >
                                                                 <ShieldCheck
                                                                     size={16}
@@ -397,7 +401,7 @@ export default function Header() {
                                                     <Link
                                                         to="/profile"
                                                         onClick={() => setShowUserMenu(false)}
-                                                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
+                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
                                                     >
                                                         <User
                                                             size={16}
@@ -405,6 +409,42 @@ export default function Header() {
                                                             className="text-gray-400"
                                                         />{' '}
                                                         Mi Perfil
+                                                    </Link>
+                                                    <Link
+                                                        to="/profile?tab=orders"
+                                                        onClick={() => setShowUserMenu(false)}
+                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
+                                                    >
+                                                        <Package
+                                                            size={16}
+                                                            strokeWidth={1.5}
+                                                            className="text-gray-400"
+                                                        />{' '}
+                                                        Mis Pedidos
+                                                    </Link>
+                                                    <Link
+                                                        to="/profile?tab=addresses"
+                                                        onClick={() => setShowUserMenu(false)}
+                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
+                                                    >
+                                                        <MapPin
+                                                            size={16}
+                                                            strokeWidth={1.5}
+                                                            className="text-gray-400"
+                                                        />{' '}
+                                                        Mis Direcciones
+                                                    </Link>
+                                                    <Link
+                                                        to="/profile?tab=favorites"
+                                                        onClick={() => setShowUserMenu(false)}
+                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
+                                                    >
+                                                        <Heart
+                                                            size={16}
+                                                            strokeWidth={1.5}
+                                                            className="text-gray-400"
+                                                        />{' '}
+                                                        Favoritos
                                                     </Link>
 
                                                     <div className="h-px bg-gray-50 my-1.5" />
@@ -414,7 +454,7 @@ export default function Header() {
                                                             setShowUserMenu(false);
                                                             logout();
                                                         }}
-                                                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl w-full border-none cursor-pointer text-orange-600 text-[13px] font-bold bg-transparent hover:bg-orange-50 transition-colors duration-150 text-left"
+                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl w-full border-none cursor-pointer text-orange-600 text-[13px] font-bold bg-transparent hover:bg-orange-50 transition-colors duration-150 text-left"
                                                     >
                                                         <LogOut size={16} strokeWidth={1.5} />{' '}
                                                         Cerrar sesión
@@ -548,17 +588,26 @@ export default function Header() {
                                         data-lenis-prevent
                                     >
                                         <div className="px-3 pt-4 pb-2 space-y-1">
-                                            {/* Primary Reservation CTA in Mobile Menu */}
-                                            <div className="px-1 pb-4">
+                                            {/* Primary Reservation CTA in Mobile Menu - Styled as text with shadow */}
+                                            <div className="px-1 pb-2">
                                                 <button
                                                     onClick={() => {
                                                         setShowMobileMenu(false);
                                                         setIsReservationModalOpen(true);
                                                     }}
-                                                    className="w-full py-5 bg-white text-orange-600 rounded-[28px] font-black text-[16px] tracking-[0.1em] flex items-center justify-center gap-3 shadow-xl shadow-orange-600/5 active:scale-[0.98] transition-all border border-orange-50"
+                                                    className="w-full py-2 group flex items-center gap-4 px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
                                                 >
-                                                    <Calendar size={22} strokeWidth={2.5} />
-                                                    RESERVAR MESA
+                                                    <div className="text-orange-600">
+                                                        <Calendar size={22} strokeWidth={2.5} />
+                                                    </div>
+                                                    <span className="flex-1 tracking-tight uppercase">
+                                                        RESERVAR MESA
+                                                    </span>
+                                                    <ChevronRight
+                                                        size={18}
+                                                        strokeWidth={2.5}
+                                                        className="opacity-40"
+                                                    />
                                                 </button>
                                             </div>
 
@@ -571,7 +620,7 @@ export default function Header() {
                                                         : false;
                                                     const isAction = !!link.onClick;
 
-                                                    const commonStyles = `group flex items-center gap-4 px-4 py-4 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left w-full
+                                                    const commonStyles = `group flex items-center gap-4 px-4 py-2 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left w-full
                                                         ${
                                                             isActive
                                                                 ? 'text-orange-600 bg-orange-50/50'
@@ -645,8 +694,8 @@ export default function Header() {
                                                         className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3 no-underline transition-all active:scale-[0.98] hover:bg-gray-100 group border border-gray-100"
                                                     >
                                                         <div
-                                                            className={`w-12 h-12 rounded-[20px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner border border-black/10
-                                                        ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[20px]' : 'bg-orange-600'}`}
+                                                            className={`w-16 h-16 rounded-[24px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner border border-black/10
+                                                        ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[24px]' : 'bg-orange-600'}`}
                                                         >
                                                             {user.avatar ? (
                                                                 user.avatar.startsWith('http') ? (
@@ -682,9 +731,9 @@ export default function Header() {
                                                                 {user.email}
                                                             </p>
                                                         </div>
-                                                        <ChevronRight
-                                                            size={18}
-                                                            className="text-gray-300 group-hover:text-gray-400 transition-colors shrink-0"
+                                                        <Settings
+                                                            size={20}
+                                                            className="text-gray-300 group-hover:text-gray-900 transition-colors shrink-0"
                                                         />
                                                     </Link>
 
@@ -697,7 +746,7 @@ export default function Header() {
                                                                     : '/waiter'
                                                             }
                                                             onClick={() => setShowMobileMenu(false)}
-                                                            className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 border border-orange-100"
+                                                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-2xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 border border-orange-100"
                                                         >
                                                             <ShieldCheck
                                                                 size={18}
@@ -713,7 +762,7 @@ export default function Header() {
                                                             logout();
                                                             setShowMobileMenu(false);
                                                         }}
-                                                        className="flex items-center justify-center gap-3 px-5 py-4 rounded-2xl w-full border-none cursor-pointer text-orange-600 text-[14px] font-black bg-white border border-orange-50 hover:bg-orange-50 transition-colors mb-4"
+                                                        className="flex items-center justify-center gap-3 px-5 py-2 rounded-2xl w-full border-none cursor-pointer text-orange-600 text-[14px] font-black bg-white border border-orange-50 hover:bg-orange-50 transition-colors mb-4"
                                                     >
                                                         <LogOut size={18} strokeWidth={1.5} />{' '}
                                                         Cerrar sesión

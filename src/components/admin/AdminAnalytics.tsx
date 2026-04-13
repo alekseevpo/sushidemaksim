@@ -50,7 +50,11 @@ const ANALYTICS_TRANSLATIONS = {
         },
         margin: {
             label: 'Оц. Маржа',
-            desc: 'Средняя наценка на ингредиенты',
+            desc: 'Какая часть выручки — ваша прибыль',
+        },
+        markup: {
+            label: 'Оц. Наценка',
+            desc: '% прибыли сверх себестоимости',
         },
         devices: {
             title: 'Основные устройства (30д)',
@@ -158,8 +162,16 @@ const ANALYTICS_TRANSLATIONS = {
             desc: 'Clientes recurrentes (30d)',
         },
         margin: {
-            label: 'Margen Estimado',
-            desc: 'Promedio sobre coste ingredientes',
+            label: 'Margen Est.',
+            desc: '% de la venta que es beneficio',
+        },
+        markup: {
+            label: 'Markup Est.',
+            desc: '% añadido sobre el coste',
+        },
+        orders: {
+            label: 'Pedidos',
+            desc: 'Total de pedidos captados',
         },
         devices: {
             title: 'Dispositivo Principal (30d)',
@@ -285,7 +297,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             </div>
 
             {/* Top Insight Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
                 {[
                     {
                         label: t.ltv.label,
@@ -304,11 +316,23 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         label: t.retention.label,
                         value: `${Math.round((stats?.retention?.returning / (stats?.retention?.new + stats?.retention?.returning || 1)) * 100)}%`,
                         desc: t.retention.desc,
-                        color: 'text-gray-900',
+                        color: 'text-emerald-600',
                     },
                     {
                         label: t.margin.label,
-                        value: '65%',
+                        value: `${stats?.estimatedMargin || 0}%`,
+                        desc: t.margin.desc,
+                        color: 'text-emerald-600',
+                    },
+                    {
+                        label: t.markup.label,
+                        value: `${stats?.estimatedMarkup || 0}%`,
+                        desc: t.markup.desc,
+                        color: 'text-blue-600',
+                    },
+                    {
+                        label: t.orders.label,
+                        value: `${stats?.estimatedMargin || 0}%`,
                         desc: t.margin.desc,
                         color: 'text-emerald-600',
                     },

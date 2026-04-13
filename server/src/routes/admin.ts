@@ -42,12 +42,9 @@ import {
 } from '../schemas/promo.schema.js';
 import {
     formatMenuItem,
-    formatOrder,
-    formatUser,
     formatBlogPost,
-    formatDeliveryZone,
-    getMadridStartOfDay,
-    getMadridYesterdayStartOfDay,
+    formatOrder,
+    formatAdminMenuItem,
 } from '../utils/helpers.js';
 import { processImage } from '../utils/imageProcessor.js';
 import { invalidateMenuCache } from './menu.js';
@@ -117,6 +114,93 @@ router.post(
     })
 );
 
+
+// POST /api/admin/promos/upload-image (to Supabase Storage)
+router.post(
+    '/promos/upload-image',
+    upload.single('image'),
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se subió ninguna imagen' });
+        }
+
+        try {
+            const file = req.file;
+            // Optimized for Promos (WebP conversion)
+            const optimizedBuffer = await processImage(file.buffer, { type: 'promo' });
+
+            const fileName = `promo-${Date.now()}-${Math.floor(Math.random() * 1000)}.webp`;
+            const filePath = `menu/${fileName}`;
+
+            const { error } = await supabase.storage
+                .from('images')
+                .upload(filePath, optimizedBuffer, {
+                    contentType: 'image/webp',
+                    upsert: true,
+                });
+
+            if (error) {
+                console.error('❌ Supabase storage error:', error);
+                return res.status(500).json({
+                    error: 'Error al subir la imagen a Supabase Storage',
+                    details: error.message || JSON.stringify(error),
+                });
+            }
+
+            const {
+                data: { publicUrl },
+            } = supabase.storage.from('images').getPublicUrl(filePath);
+
+            res.json({ imageUrl: publicUrl });
+        } catch (err: any) {
+            console.error('❌ Promo upload error:', err);
+            res.status(500).json({ error: 'Error procesando la imagen', details: err.message });
+        }
+    })
+);
+
+// GET /api/admin/settings
+router.get(
+    '/settings',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { data, error } = await supabase.from('site_settings').select('key, value');
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        // Convert array of {key, value} to object { [key]: value }
+        const settings = (data || []).reduce((acc: any, item) => {
+            acc[item.key] = item.value;
+            return acc;
+        }, {});
+
+        res.json(settings);
+    })
+);
+
+// PUT /api/admin/settings
+router.put(
+    '/settings',
+    validateResource(updateSettingsSchema),
+    asyncHandler(async (req: Request, res: Response) => {
+        const settings = req.body; // { key1: value1, key2: value2 }
+
+        const entries = Object.entries(settings).map(([key, value]) => ({
+            key,
+            value: String(value),
+        }));
+
+        const { error } = await supabase.from('site_settings').upsert(entries, { onConflict: 'key' });
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.json({ message: 'Settings updated successfully' });
+    })
+);
+
 // ─── MENU MANAGEMENT ──────────────────────────────────────────────────────────
 
 // GET /api/admin/menu
@@ -130,7 +214,7 @@ router.get(
             .order('id');
 
         if (error) throw error;
-        const formatted = (items || []).map(formatMenuItem);
+        const formatted = (items || []).map(formatAdminMenuItem);
         res.json({ items: formatted, total: formatted.length });
     })
 );
@@ -155,6 +239,7 @@ router.post(
             isChefChoice,
             isNew,
             allergens,
+            costPrice,
         } = req.body;
 
         const { data: item, error } = await supabase
@@ -174,6 +259,7 @@ router.post(
                 is_chef_choice: !!isChefChoice,
                 is_new: !!isNew,
                 allergens: allergens || [],
+                cost_price: costPrice || 0,
             })
             .select()
             .single();
@@ -182,7 +268,7 @@ router.post(
             console.error('❌ Supabase error inserting item:', error);
             throw error;
         }
-        res.status(201).json({ item: formatMenuItem(item) });
+        res.status(201).json({ item: formatAdminMenuItem(item) });
         invalidateMenuCache();
     })
 );
@@ -209,6 +295,7 @@ router.put(
             isChefChoice,
             isNew,
             allergens,
+            costPrice,
         } = req.body;
 
         const updateData: any = {};
@@ -228,6 +315,7 @@ router.put(
         if (isChefChoice !== undefined) updateData.is_chef_choice = Boolean(isChefChoice);
         if (isNew !== undefined) updateData.is_new = Boolean(isNew);
         if (allergens !== undefined) updateData.allergens = allergens;
+        if (costPrice !== undefined) updateData.cost_price = Number(costPrice);
 
         const { data: item, error } = await supabase
             .from('menu_items')
@@ -243,7 +331,7 @@ router.put(
             throw error;
         }
 
-        res.json({ item: formatMenuItem(item) });
+        res.json({ item: formatAdminMenuItem(item) });
         invalidateMenuCache();
     })
 );
@@ -470,27 +558,53 @@ router.patch(
                     const userEmail = (oldOrder as any).users?.email;
                     const userName = (oldOrder as any).users?.name || 'Cliente';
 
-                    // ───── 5% DISCOUNT (Triggered after 4th, 9th, 14th... to be used in 5th, 10th, 15th...) ─────
-                    if (deliveredCount % 5 === 4) {
-                        const code = `LOYALTY5-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+                    // Fetch loyalty settings from DB
+                    // Keys must match the Admin UI (AdminPromos.tsx) — primary keys first, old keys as fallback
+                    const { data: settingsData } = await supabase
+                        .from('site_settings')
+                        .select('key, value')
+                        .in('key', [
+                            'loyalty_every_5th_bonus_enabled',
+                            'loyalty_every_5th_bonus_percent',
+                            'loyalty_every_10th_gift_enabled',
+                            // Legacy fallback keys (from before UI key unification)
+                            'loyalty_order5_bonus_enabled',
+                            'loyalty_order5_bonus_percent',
+                            'loyalty_order10_gift_enabled',
+                        ]);
+
+                    const settings: Record<string, string> = {};
+                    settingsData?.forEach(s => (settings[s.key] = s.value));
+
+                    // Primary keys from Admin UI, fallback to legacy keys
+                    const order5Enabled =
+                        (settings['loyalty_every_5th_bonus_enabled'] ?? settings['loyalty_order5_bonus_enabled']) === 'true';
+                    const order5Percent =
+                        parseInt(settings['loyalty_every_5th_bonus_percent'] ?? settings['loyalty_order5_bonus_percent']) || 5;
+                    const order10Enabled =
+                        (settings['loyalty_every_10th_gift_enabled'] ?? settings['loyalty_order10_gift_enabled']) === 'true';
+
+                    // ───── X% DISCOUNT (Triggered after 4th, 9th, 14th... to be used in 5th, 10th, 15th...) ─────
+                    if (order5Enabled && deliveredCount % 5 === 4) {
+                        const code = `LOYALTY${order5Percent}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
                         await supabase.from('promo_codes').insert({
                             code,
-                            discount_percentage: 5,
+                            discount_percentage: order5Percent,
                             user_id: oldOrder.user_id,
                             is_used: false,
                         });
 
                         if (userEmail) {
                             const { sendLoyaltyGiftEmail } = await import('../utils/email.js');
-                            await sendLoyaltyGiftEmail(userEmail, userName, code);
+                            await sendLoyaltyGiftEmail(userEmail, userName, code, order5Percent);
                             console.log(
-                                `[LOYALTY] Sent 5% promo ${code} to ${userEmail} after their ${deliveredCount}th order (for use in 5th/10th/etc).`
+                                `[LOYALTY] Sent ${order5Percent}% promo ${code} to ${userEmail} after their ${deliveredCount}th order.`
                             );
                         }
                     }
 
                     // ───── FREE DESSERT (Triggered after 9th, 19th... to be used in 10th, 20th...) ─────
-                    if (deliveredCount % 10 === 9) {
+                    if (order10Enabled && deliveredCount % 10 === 9) {
                         const dessertCode = `DESSERT-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
                         // Store dessert code with 0% discount (it's a marker)
@@ -505,7 +619,7 @@ router.patch(
                             const { sendDessertGiftEmail } = await import('../utils/email.js');
                             await sendDessertGiftEmail(userEmail, userName, dessertCode);
                             console.log(
-                                `[LOYALTY] Sent Dessert promo ${dessertCode} to ${userEmail} after their ${deliveredCount}th order (for use in 10th/20th/etc).`
+                                `[LOYALTY] Sent Dessert promo ${dessertCode} to ${userEmail} after their ${deliveredCount}th order.`
                             );
                         }
                     }
@@ -742,11 +856,57 @@ router.delete(
             return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
         }
 
+        // Check current status
+        const { data: user, error: fetchError } = await supabase
+            .from('users')
+            .select('deleted_at')
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        if (user.deleted_at) {
+            // Already archived -> Perform HARD DELETE
+            console.log(`⚠️  [ADMIN] Hard deleting user #${id} and all related data...`);
+            
+            // 1. Get all order IDs to delete order items
+            const { data: orders } = await supabase.from('orders').select('id').eq('user_id', id);
+            const orderIds = (orders || []).map(o => o.id);
+
+            // 2. Cascade deletion (in order of dependencies)
+            const cascadePromises = [
+                // Delete order items first
+                orderIds.length > 0 
+                    ? supabase.from('order_items').delete().in('order_id', orderIds)
+                    : Promise.resolve(),
+                // Delete other direct dependencies
+                supabase.from('orders').delete().eq('user_id', id),
+                supabase.from('user_addresses').delete().eq('user_id', id),
+                supabase.from('promo_codes').delete().eq('user_id', id),
+                supabase.from('cart_items').delete().eq('user_id', id),
+                supabase.from('user_favorites').delete().eq('user_id', id),
+                supabase.from('password_resets').delete().eq('user_id', id),
+            ];
+
+            await Promise.all(cascadePromises);
+
+            // 3. Delete the user itself
+            const { error: finalError } = await supabase.from('users').delete().eq('id', id);
+            if (finalError) throw finalError;
+
+            return res.json({ 
+                success: true, 
+                message: `Usuario #${id} и все связанные данные удалены окончательно` 
+            });
+        }
+
         // Soft Delete (Archive)
         const { error } = await supabase
             .from('users')
             .update({ deleted_at: new Date().toISOString() })
-            .eq('id', req.params.id);
+            .eq('id', id);
 
         if (error) throw error;
         res.json({ success: true, message: `Usuario #${id} archivado correctamente` });
@@ -885,7 +1045,7 @@ router.get(
         if (orderIds90.length > 0) {
             const { data: itemsData } = await supabase
                 .from('order_items')
-                .select('order_id, name, quantity, price_at_time, menu_items(category)')
+                .select('order_id, name, quantity, price_at_time, menu_items(category, cost_price)')
                 .in('order_id', orderIds90);
             items90 = itemsData || [];
         }
@@ -913,6 +1073,7 @@ router.get(
         const areaMap: Record<string, { count: number; revenue: number }> = {};
         const orderSubtotals: Record<string, number> = {};
         const categoryMap: Record<string, { total: number; count: number }> = {};
+        let totalProfit = 0;
 
         // 1. Process Items
         items90.forEach(item => {
@@ -924,6 +1085,10 @@ router.get(
                 itemMap90[item.name] = { name: item.name, sold: 0, revenue: 0 };
             itemMap90[item.name].sold += item.quantity;
             itemMap90[item.name].revenue += rev;
+
+            // Profit Accumulation
+            const cost = (item as any).menu_items?.cost_price || 0;
+            totalProfit += rev - item.quantity * cost;
 
             // Category Accumulation
             const cat = item.menu_items?.category || 'Otros';
@@ -1109,6 +1274,8 @@ router.get(
                 avgDiscount:
                     promoCount > 0 ? Math.round((totalDiscount / promoCount) * 100) / 100 : 0,
             },
+            estimatedMargin: revenue > 0 ? Math.round((totalProfit / revenue) * 100) : 0,
+            estimatedMarkup: revenue - totalProfit > 0 ? Math.round((totalProfit / (revenue - totalProfit)) * 100) : 0,
         });
     })
 );
@@ -1120,9 +1287,10 @@ router.get(
         const { data: promos, error } = await supabase
             .from('promos')
             .select('*')
+            .order('sort_order', { ascending: true })
             .order('created_at', { ascending: false });
         if (error) throw error;
-        res.json(promos);
+        res.json({ promos });
     })
 );
 
@@ -1130,14 +1298,75 @@ router.post(
     '/promos',
     validateResource(createPromoSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { title, description, discount, valid_until, icon, color, bg, is_active } = req.body;
+        const {
+            title,
+            description,
+            discount,
+            valid_until,
+            icon,
+            color,
+            bg,
+            is_active,
+            image_url,
+            type,
+            subtitle,
+            cta_text,
+            cta_link,
+            metadata,
+            sort_order,
+        } = req.body;
+
         const { data: promo, error } = await supabase
             .from('promos')
-            .insert({ title, description, discount, valid_until, icon, color, bg, is_active })
+            .insert({
+                title,
+                description,
+                discount,
+                valid_until,
+                icon,
+                color,
+                bg,
+                is_active,
+                image_url,
+                type,
+                subtitle,
+                cta_text,
+                cta_link,
+                metadata: metadata || {},
+                sort_order: sort_order ?? 0,
+            })
             .select()
             .single();
         if (error) throw error;
         res.json(promo);
+    })
+);
+
+// PUT /admin/promos/reorder — bulk update sort_order for all promos (drag-and-drop)
+router.put(
+    '/promos/reorder',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { items } = req.body; // [{ id: string, sort_order: number }]
+
+        if (!Array.isArray(items)) {
+            return res.status(400).json({ error: 'items must be an array of { id, sort_order }' });
+        }
+
+        for (const item of items) {
+            await supabase
+                .from('promos')
+                .update({ sort_order: item.sort_order })
+                .eq('id', item.id);
+        }
+
+        // Return updated list
+        const { data: promos, error } = await supabase
+            .from('promos')
+            .select('*')
+            .order('sort_order', { ascending: true })
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        res.json({ promos });
     })
 );
 
@@ -1146,10 +1375,45 @@ router.put(
     validateResource(updatePromoSchema),
     asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params as any;
-        const { title, description, discount, valid_until, icon, color, bg, is_active } = req.body;
+        const {
+            title,
+            description,
+            discount,
+            valid_until,
+            icon,
+            color,
+            bg,
+            is_active,
+            image_url,
+            type,
+            subtitle,
+            cta_text,
+            cta_link,
+            metadata,
+            sort_order,
+        } = req.body;
+
+        const updateData: Record<string, any> = {
+            title,
+            description,
+            discount,
+            valid_until,
+            icon,
+            color,
+            bg,
+            is_active,
+            image_url,
+            type,
+            subtitle,
+            cta_text,
+            cta_link,
+            metadata: metadata || {},
+        };
+        if (sort_order !== undefined) updateData.sort_order = sort_order;
+
         const { data: promo, error } = await supabase
             .from('promos')
-            .update({ title, description, discount, valid_until, icon, color, bg, is_active })
+            .update(updateData)
             .eq('id', id)
             .select()
             .single();

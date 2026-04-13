@@ -60,8 +60,7 @@ router.post(
                 normalizedDate = `${y}-${m}-${d}`;
             }
 
-            const dateObj = new Date(normalizedDate);
-            if (!isTimeWithinBusinessHours(dateObj, scheduledTime)) {
+            if (!isTimeWithinBusinessHours(normalizedDate, scheduledTime)) {
                 return res.status(400).json({
                     error: 'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!',
                 });
@@ -78,26 +77,10 @@ router.post(
         const osName = parser.getOS().name || 'Unknown';
         const browserName = parser.getBrowser().name || 'Unknown';
 
-        // 1. Get cart items
+        // 1. Get cart items (Prioritize items sent in the request for robustness)
         let cartItems: any[] = [];
 
-        if (req.userId) {
-            const { data: dbCartItems, error: cartError } = await supabase
-                .from('cart_items')
-                .select('quantity, menu_item_id, menu_items(name, price, image)')
-                .eq('user_id', req.userId); // req.userId is now a UUID string
-
-            if (cartError) throw cartError;
-            cartItems = dbCartItems || [];
-        }
-
-        // Fallback to guest items if DB cart is empty or the user is not authenticated
-        if (
-            cartItems.length === 0 &&
-            guestItems &&
-            Array.isArray(guestItems) &&
-            guestItems.length > 0
-        ) {
+        if (guestItems && Array.isArray(guestItems) && guestItems.length > 0) {
             const itemIds = guestItems.map((i: any) => i.menuItemId);
             const { data: menuData, error: menuErr } = await supabase
                 .from('menu_items')
@@ -117,6 +100,15 @@ router.post(
                     };
                 })
                 .filter((i: any) => i !== null);
+        } else if (req.userId) {
+            // Fallback to DB cart if nothing sent in request
+            const { data: dbCartItems, error: cartError } = await supabase
+                .from('cart_items')
+                .select('quantity, menu_item_id, menu_items(name, price, image)')
+                .eq('user_id', req.userId);
+
+            if (cartError) throw cartError;
+            cartItems = dbCartItems || [];
         }
 
         if (cartItems.length === 0) {
@@ -156,7 +148,7 @@ router.post(
                     if (promo.code.startsWith('NUEVO')) {
                         // 1. Expiry Check (24h)
                         const createdAt = new Date(promo.created_at);
-                        const expiredAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+                        const expiredAt = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000);
                         if (new Date() > expiredAt) {
                             return res
                                 .status(400)

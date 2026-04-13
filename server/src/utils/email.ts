@@ -125,9 +125,14 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
 }
 
 /**
- * Send a birthday gift email with a 10% discount code.
+ * Send a birthday gift email with a dynamic discount code.
  */
-export async function sendBirthdayGiftEmail(to: string, name: string, code: string): Promise<void> {
+export async function sendBirthdayGiftEmail(
+    to: string,
+    name: string,
+    code: string,
+    percent: number = 10
+): Promise<void> {
     const html = `
 <!DOCTYPE html>
 <html lang="es">
@@ -145,10 +150,9 @@ export async function sendBirthdayGiftEmail(to: string, name: string, code: stri
         En este día tan especial, para nosotros es un honor celebrarlo contigo. Te enviamos un regalo exclusivo para que disfrutes de lo que más te gusta:
       </p>
       
-      <div style="background:#FFF7ED;border:2px dashed #f26522;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
         <p style="color:#C2410C;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Descuento</p>
         <div style="font-size:36px;font-weight:900;color:#ea580c;letter-spacing:5px;">${code}</div>
-        <p style="color:#C2410C;font-size:20px;font-weight:bold;margin:12px 0 0;">-10% EN TODO EL MENÚ</p>
+        <p style="color:#C2410C;font-size:20px;font-weight:bold;margin:12px 0 0;">-${percent}% EN TODO EL MENÚ</p>
       </div>
 
       <p style="color:#374151;font-size:15px;margin:0 0 32px;">
@@ -369,7 +373,7 @@ export async function sendOrderReceiptEmail(
               <a href="https://wa.me/34631920312" style="display: block; background-color: #25D366; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">WhatsApp</a>
             </td>
             <td style="width: 33%; padding: 0 4px;">
-              <a href="mailto:info@sushidemaksim.vercel.app" style="display: block; background-color: #ffffff; color: #000000; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Email</a>
+              <a href="mailto:info@sushidemaksim.com" style="display: block; background-color: #ffffff; color: #000000; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Email</a>
             </td>
             <td style="width: 33%; padding: 0 4px;">
               <a href="tel:+34631920312" style="display: block; background-color: #ea580c; color: #ffffff; padding: 10px 0; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 12px; text-align: center;">Llamar</a>
@@ -379,9 +383,8 @@ export async function sendOrderReceiptEmail(
 
         <h4 style="color: #6b7280; margin: 16px 0 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Horario de Atención</h4>
         <table style="width: 100%; color: #9ca3af; font-size: 11px; border-collapse: collapse;">
-          <tr><td style="padding: 2px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">20:00 – 23:00</td></tr>
-          <tr><td style="padding: 2px 0;">Sábado:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00 | 20:00 – 23:00</td></tr>
-          <tr><td style="padding: 2px 0;">Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 17:00</td></tr>
+          <tr><td style="padding: 2px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">19:00 – 23:00</td></tr>
+          <tr><td style="padding: 2px 0;">Sábado – Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 23:00</td></tr>
           <tr><td style="padding: 2px 0;">Lunes – Martes:</td><td style="text-align: right;">Cerrado</td></tr>
         </table>
         
@@ -459,7 +462,8 @@ export async function sendVerificationEmail(
     to: string,
     name: string,
     token: string,
-    promoCode: string
+    promoCode: string,
+    percent: number = 10
 ): Promise<void> {
     const activationUrl = `${config.frontendUrl}/verify?token=${token}`;
     const html = `
@@ -486,13 +490,13 @@ export async function sendVerificationEmail(
 
       <!-- Welcome Gift Section -->
       <div style="background: #FFF7ED; border: 2px dashed #ffedd5; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
-        <p style="color: #c2410c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-10%)</p>
+        <p style="color: #c2410c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-${percent}%)</p>
         <div style="color: #ea580c; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
         <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0 0 4px;">
           * Mínimo de pedido: <strong>70€</strong>
         </p>
         <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0;">
-          ⚠️ Válido solo durante <strong>24 horas</strong>
+          ⚠️ Válido solo durante <strong>7 días</strong>
         </p>
       </div>
 
@@ -582,7 +586,11 @@ export async function sendEmailChangeVerificationEmail(
 /**
  * Send a welcome email to a new newsletter subscriber.
  */
-export async function sendNewsletterWelcomeEmail(to: string, promoCode: string): Promise<void> {
+export async function sendNewsletterWelcomeEmail(
+    to: string,
+    promoCode: string,
+    discountPercent: number = 5
+): Promise<void> {
     const html = `
 <!DOCTYPE html>
 <html lang="es">
@@ -606,11 +614,11 @@ export async function sendNewsletterWelcomeEmail(to: string, promoCode: string):
       <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
         <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Promocional</p>
         <div style="font-size:36px;font-weight:900;color:#ea580c;letter-spacing:5px;">${promoCode}</div>
-        <p style="color:#9a3412;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
+        <p style="color:#9a3412;font-size:20px;font-weight:bold;margin:12px 0 0;">-${discountPercent}% EN TU PRÓXIMO PEDIDO</p>
       </div>
 
       <p style="color:#374151;font-size:15px;margin:0 0 32px;">
-        *Válido durante las próximas 24 horas. Solo tienes que introducir el código al finalizar tu compra en la web.
+        *Válido durante los próximos 7 días. Solo tienes que introducir el código al finalizar tu compra en la web.
       </p>
 
       <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">¡PEDIR AHORA!</a>
@@ -825,7 +833,12 @@ export async function sendReservationEmail(
 /**
  * Send a loyalty gift email (every 5th order).
  */
-export async function sendLoyaltyGiftEmail(to: string, name: string, code: string): Promise<void> {
+export async function sendLoyaltyGiftEmail(
+    to: string,
+    name: string,
+    code: string,
+    percent: number = 5
+): Promise<void> {
     const html = `
 <!DOCTYPE html>
 <html lang="es">
@@ -849,7 +862,7 @@ export async function sendLoyaltyGiftEmail(to: string, name: string, code: strin
       <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
         <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Exclusivo</p>
         <div style="font-size:32px;font-weight:900;color:#ea580c;letter-spacing:3px;">${code}</div>
-        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">-5% EN TU PRÓXIMO PEDIDO</p>
+        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">-${percent}% EN TU PRÓXIMO PEDIDO</p>
       </div>
 
       <p style="color:#374151;font-size:14px;margin:0 0 32px;">
@@ -889,7 +902,7 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
     </div>
     <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
       <div style="font-size:50px;margin-bottom:10px;">🍰</div>
-      <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Tu Postре de Regalo!</h1>
+      <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Tu Postre de Regalo!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">¡Has completado 9 pedidos! ⭐</p>
     </div>
     <div style="padding:24px;text-align:center;">

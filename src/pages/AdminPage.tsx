@@ -179,8 +179,22 @@ export default function AdminPage() {
         localStorage.setItem('admin_sound_enabled', String(isSoundEnabled));
     }, [isSoundEnabled]);
     const pendingReminders = useRef<Map<number, number>>(new Map());
+    const pendingResReminders = useRef<Map<number, number>>(new Map());
     const isFirstLoad = useRef(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const playAlert = async () => {
+        if (!audioRef.current || !isSoundEnabled) return;
+
+        try {
+            // Reset to beginning if already playing
+            audioRef.current.currentTime = 0;
+            await audioRef.current.play();
+        } catch (error: any) {
+            // Log warning, don't crash. Usually due to autoplay policy.
+            console.warn('Admin notification sound blocked or failed:', error?.message);
+        }
+    };
 
     // Stats Query
     const {
@@ -225,7 +239,7 @@ export default function AdminPage() {
         queryKey: ['admin-pending-res-monitor'],
         queryFn: () => api.get('/admin/reservations?status=pending'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 60000,
+        refetchInterval: 30000,
     });
 
     const pendingOrders = useMemo(() => pendingData?.orders || [], [pendingData]);
@@ -233,11 +247,13 @@ export default function AdminPage() {
 
     // Audio Alert Effect
     useEffect(() => {
-        if (!pendingOrders.length) {
-            // Cleanup reminders if no pending orders
-            if (pendingReminders.current.size > 0) {
-                pendingReminders.current.clear();
-            }
+        const currentPendingOrders = pendingOrders || [];
+        const currentPendingRes = pendingResData?.reservations || [];
+
+        if (!currentPendingOrders.length && !currentPendingRes.length) {
+            // Cleanup reminders if no pending items
+            pendingReminders.current.clear();
+            pendingResReminders.current.clear();
             isFirstLoad.current = false;
             return;
         }
@@ -245,7 +261,8 @@ export default function AdminPage() {
         let shouldPlaySound = false;
         const now = Date.now();
 
-        pendingOrders.forEach((order: any) => {
+        // 1. Check Orders
+        currentPendingOrders.forEach((order: any) => {
             const lastNotified = pendingReminders.current.get(order.id);
             if (!lastNotified) {
                 if (!isFirstLoad.current && isSoundEnabled) shouldPlaySound = true;
@@ -256,18 +273,35 @@ export default function AdminPage() {
             }
         });
 
+        // 2. Check Reservations
+        currentPendingRes.forEach((res: any) => {
+            const lastNotified = pendingResReminders.current.get(res.id);
+            if (!lastNotified) {
+                if (!isFirstLoad.current && isSoundEnabled) shouldPlaySound = true;
+                pendingResReminders.current.set(res.id, now);
+            } else if (now - lastNotified >= 120000) {
+                if (isSoundEnabled) shouldPlaySound = true;
+                pendingResReminders.current.set(res.id, now);
+            }
+        });
+
         // Cleanup stale reminders
-        const pendingIds = new Set(pendingOrders.map((o: any) => o.id));
+        const pendingIds = new Set(currentPendingOrders.map((o: any) => o.id));
         for (const id of pendingReminders.current.keys()) {
             if (!pendingIds.has(id)) pendingReminders.current.delete(id);
         }
 
-        if (shouldPlaySound && audioRef.current) {
-            audioRef.current.play().catch(e => console.error('Sound alert failed:', e));
+        const pendingResIds = new Set(currentPendingRes.map((r: any) => r.id));
+        for (const id of pendingResReminders.current.keys()) {
+            if (!pendingResIds.has(id)) pendingResReminders.current.delete(id);
+        }
+
+        if (shouldPlaySound) {
+            playAlert();
         }
 
         isFirstLoad.current = false;
-    }, [pendingOrders, isSoundEnabled]);
+    }, [pendingOrders, pendingResData, isSoundEnabled]);
 
     const navLinks = useMemo(
         () => [
@@ -549,6 +583,7 @@ export default function AdminPage() {
                             <AdminOrders
                                 isGlobalSoundEnabled={isSoundEnabled}
                                 setIsGlobalSoundEnabled={setIsSoundEnabled}
+                                onTestSound={playAlert}
                                 globalPendingCount={pendingCount}
                                 language={language}
                             />

@@ -268,7 +268,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         value: user.birthDate
                             ? (() => {
                                   const [y, m, d] = user.birthDate.split('T')[0].split('-');
-                                  return `${d}/${m}/${y}`;
+                                  return `${d}.${m}.${y}`;
                               })()
                             : 'No añadida',
                         editedValue: editBirthDate,

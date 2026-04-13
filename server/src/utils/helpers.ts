@@ -3,7 +3,7 @@
  * Provides clean camelCase formatting for frontend consumption.
  */
 
-/** Cleanly maps a menu item from DB (snake_case) to Frontend (camelCase) */
+/** Cleanly maps a menu item from DB (snake_case) to Frontend (camelCase) - PUBLIC version */
 export function formatMenuItem(item: any) {
     if (!item) return null;
     return {
@@ -22,6 +22,15 @@ export function formatMenuItem(item: any) {
         isChefChoice: !!item.is_chef_choice,
         isNew: !!item.is_new,
         allergens: Array.isArray(item.allergens) ? item.allergens : [],
+    };
+}
+
+/** Cleanly maps a menu item from DB (snake_case) to Frontend (camelCase) - ADMIN version */
+export function formatAdminMenuItem(item: any) {
+    if (!item) return null;
+    return {
+        ...formatMenuItem(item),
+        costPrice: Number(item.cost_price || 0),
     };
 }
 

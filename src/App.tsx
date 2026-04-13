@@ -74,6 +74,7 @@ const PageWrapper = ({
 }) => {
     const location = useLocation();
     const isProfile = location.pathname === '/profile';
+    const isWaiterRoute = location.pathname.startsWith('/waiter');
 
     useEffect(() => {
         // Scroll to top on pathname change, regardless of search params.
@@ -95,10 +96,20 @@ const PageWrapper = ({
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="flex-1 flex flex-col"
             style={{
-                paddingTop: !isAdmin && !isHome && !isProfile ? 'var(--header-height, 4rem)' : '0',
+                paddingTop: '0',
             }}
         >
-            <Suspense fallback={skeleton}>{children}</Suspense>
+            <div
+                className="flex-1 flex flex-col w-full"
+                style={{
+                    paddingTop:
+                        !isAdmin && !isWaiterRoute && !isHome && !isProfile
+                            ? 'var(--header-height, 4rem)'
+                            : '0',
+                }}
+            >
+                <Suspense fallback={skeleton}>{children}</Suspense>
+            </div>
         </motion.div>
     );
 };

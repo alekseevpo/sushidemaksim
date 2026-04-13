@@ -178,8 +178,14 @@ export default function ProfilePage() {
         if (p.code.startsWith('NUEVO') || p.code.startsWith('NEW')) {
             return now.getTime() < created.getTime() + 24 * 60 * 60 * 1000;
         }
-        if (p.code.startsWith('LOYALTY-')) {
+        if (p.code.startsWith('LOYALTY')) {
             return now.getTime() < created.getTime() + 7 * 24 * 60 * 60 * 1000;
+        }
+        if (p.code.startsWith('BDAY')) {
+            return now.getTime() < created.getTime() + 30 * 24 * 60 * 60 * 1000;
+        }
+        if (p.code.startsWith('DESSERT')) {
+            return now.getTime() < created.getTime() + 30 * 24 * 60 * 60 * 1000;
         }
         return true;
     });
@@ -189,8 +195,12 @@ export default function ProfilePage() {
         let expiryDate: Date;
         if (code.startsWith('NUEVO') || code.startsWith('NEW')) {
             expiryDate = new Date(created.getTime() + 24 * 60 * 60 * 1000);
-        } else if (code.startsWith('LOYALTY-')) {
+        } else if (code.startsWith('LOYALTY')) {
             expiryDate = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
+        } else if (code.startsWith('BDAY')) {
+            expiryDate = new Date(created.getTime() + 30 * 24 * 60 * 60 * 1000);
+        } else if (code.startsWith('DESSERT')) {
+            expiryDate = new Date(created.getTime() + 30 * 24 * 60 * 60 * 1000);
         } else {
             return null;
         }
@@ -203,17 +213,19 @@ export default function ProfilePage() {
         });
     };
 
-    const loyaltyCode = validPromoCodes.find(p => p.code.startsWith('LOYALTY-'));
-    const dessertCode = validPromoCodes.find(p => p.code.startsWith('DESSERT-'));
+    const loyaltyCode = validPromoCodes.find(p => p.code.startsWith('LOYALTY'));
+    const dessertCode = validPromoCodes.find(p => p.code.startsWith('DESSERT'));
     const welcomeCode = validPromoCodes.find(
         p => p.code.startsWith('NUEVO') || p.code.startsWith('NEW')
     );
+    const birthdayCode = validPromoCodes.find(p => p.code.startsWith('BDAY'));
     const otherCodes = validPromoCodes.filter(
         p =>
-            !p.code.startsWith('LOYALTY-') &&
-            !p.code.startsWith('DESSERT-') &&
+            !p.code.startsWith('LOYALTY') &&
+            !p.code.startsWith('DESSERT') &&
             !p.code.startsWith('NUEVO') &&
-            !p.code.startsWith('NEW')
+            !p.code.startsWith('NEW') &&
+            !p.code.startsWith('BDAY')
     );
 
     const copyToClipboard = (text: string) => {
@@ -485,8 +497,8 @@ export default function ProfilePage() {
                                     <span className="text-sm font-black text-amber-600 tracking-wider">
                                         {dessertCode.code}
                                     </span>
-                                    <span className="text-[8px] font-bold text-amber-300">
-                                        Sin caducidad (Regalo permanente)
+                                    <span className="text-[8px] font-bold text-amber-500">
+                                        Expira el: {getExpiryString(dessertCode.code, dessertCode.createdAt)}
                                     </span>
                                 </div>
                                 <button
@@ -523,7 +535,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Additional Active Coupons Section */}
-                {(welcomeCode || (otherCodes && otherCodes.length > 0)) && (
+                {(welcomeCode || birthdayCode || (otherCodes && otherCodes.length > 0)) && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -563,12 +575,47 @@ export default function ProfilePage() {
                                         {welcomeCode.code}
                                     </div>
                                     <p className="text-[10px] text-gray-400 font-medium leading-tight mb-2">
-                                        Válido solo por 24h tras el registro. Úsalo en el Checkout.
+                                        Válido por 7 días tras el registro. Úsalo en el Checkout.
                                     </p>
                                     <div className="flex items-center gap-1.5 text-[9px] font-black text-orange-500 uppercase tracking-tighter">
                                         <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
                                         Expira el:{' '}
                                         {getExpiryString(welcomeCode.code, welcomeCode.createdAt)}
+                                    </div>
+                                </div>
+                            )}
+
+                            {birthdayCode && (
+                                <div className="p-4 bg-gradient-to-br from-pink-50 to-white border border-pink-100 rounded-3xl relative overflow-hidden group">
+                                    <div className="mb-2 flex justify-between items-start">
+                                        <div className="px-2 py-0.5 bg-pink-100 text-pink-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
+                                            Cumpleaños 🎉
+                                        </div>
+                                        <button
+                                            onClick={() => copyToClipboard(birthdayCode.code)}
+                                            className={`p-2 rounded-lg transition-all flex items-center gap-1.5 ${
+                                                copiedCode === birthdayCode.code
+                                                    ? 'bg-green-500 text-white'
+                                                    : 'hover:bg-pink-600 hover:text-white text-pink-600'
+                                            }`}
+                                        >
+                                            {copiedCode === birthdayCode.code ? (
+                                                <ClipboardCheck size={12} strokeWidth={3} />
+                                            ) : (
+                                                <Copy size={12} strokeWidth={3} />
+                                            )}
+                                        </button>
+                                    </div>
+                                    <div className="text-lg font-black text-gray-900 mb-1">
+                                        {birthdayCode.code}
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 font-medium leading-tight mb-2">
+                                        ¡Feliz cumpleaños! Un regalo especial solo para ti.
+                                    </p>
+                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-pink-500 uppercase tracking-tighter">
+                                        <div className="w-1 h-1 rounded-full bg-pink-400 animate-pulse" />
+                                        Expira el:{' '}
+                                        {getExpiryString(birthdayCode.code, birthdayCode.createdAt)}
                                     </div>
                                 </div>
                             )}

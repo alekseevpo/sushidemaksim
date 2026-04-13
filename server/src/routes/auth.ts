@@ -28,12 +28,36 @@ router.post(
 
         const { data: existing } = await supabase
             .from('users')
-            .select('id')
+            .select('*')
             .ilike('email', email)
             .single();
 
         if (existing) {
-            return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
+            // If the existing user is NOT archived, block registration
+            if (!existing.deleted_at) {
+                return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
+            }
+
+            // If the existing user IS archived, PURGE them to allow re-registration
+            console.log(`♻️  [AUTH] Purging archived user #${existing.id} to allow re-registration for ${email}...`);
+            
+            // 1. Get all order IDs
+            const { data: orders } = await supabase.from('orders').select('id').eq('user_id', existing.id);
+            const orderIds = (orders || []).map(o => o.id);
+
+            // 2. Cascade deletion
+            await Promise.all([
+                orderIds.length > 0 ? supabase.from('order_items').delete().in('order_id', orderIds) : Promise.resolve(),
+                supabase.from('orders').delete().eq('user_id', existing.id),
+                supabase.from('user_addresses').delete().eq('user_id', existing.id),
+                supabase.from('promo_codes').delete().eq('user_id', existing.id),
+                supabase.from('cart_items').delete().eq('user_id', existing.id),
+                supabase.from('user_favorites').delete().eq('user_id', existing.id),
+                supabase.from('password_resets').delete().eq('user_id', existing.id),
+            ]);
+
+            // 3. Delete the user itself
+            await supabase.from('users').delete().eq('id', existing.id);
         }
 
         const passwordHash = await bcrypt.hash(password, config.bcryptRounds);
@@ -59,22 +83,42 @@ router.post(
             { expiresIn: '24h' }
         );
 
-        // Create welcome promo code (10% discount, valid for 1 day)
-        // We use a prefix so we can easily check expiration in the promo route
-        const promoSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
-        const promoCode = `NUEVO10-${promoSuffix}`;
+        // Fetch registration settings
+        const { data: settingsData } = await supabase
+            .from('site_settings')
+            .select('key, value')
+            .in('key', ['loyalty_registration_bonus_enabled', 'loyalty_registration_bonus_percent']);
 
-        await supabase.from('promo_codes').insert({
-            code: promoCode,
-            discount_percentage: 10,
-            user_id: newUser.id,
-            is_used: false,
-        });
+        const settings: Record<string, string> = {};
+        settingsData?.forEach(s => (settings[s.key] = s.value));
+
+        const regEnabled = settings['loyalty_registration_bonus_enabled'] === 'true';
+        const regPercent = parseInt(settings['loyalty_registration_bonus_percent']) || 10;
+
+        let promoCode = '';
+        if (regEnabled) {
+            // Create welcome promo code (valid for 1 day)
+            const promoSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+            promoCode = `NUEVO${regPercent}-${promoSuffix}`;
+
+            await supabase.from('promo_codes').insert({
+                code: promoCode,
+                discount_percentage: regPercent,
+                user_id: newUser.id,
+                is_used: false,
+            });
+        }
 
         // Send verification email
         try {
             console.log(`📡 [REGISTER] Attempting to send email to ${newUser.email}...`);
-            await sendVerificationEmail(newUser.email, newUser.name, verificationToken, promoCode);
+            await sendVerificationEmail(
+                newUser.email,
+                newUser.name,
+                verificationToken,
+                promoCode,
+                regPercent
+            );
             console.log(`✅ [REGISTER] Verification email SENT to ${newUser.email}`);
         } catch (e: any) {
             console.error('❌ [REGISTER] SMTP ERROR:', e.message || e);

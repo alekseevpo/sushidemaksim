@@ -16,16 +16,19 @@ export const validatePromoSchema = z.object({
 const promoBase = {
     title: z.string().min(1, 'El título es obligatorio'),
     description: z.string().min(1, 'La descripción es obligatoria'),
-    discount: z.number().min(0).max(100, 'El descuento no может superar el 100%'),
-    valid_until: z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido')
-        .nullable()
-        .optional(),
+    discount: z.string().min(1, 'El texto del descuento es obligatorio'),
+    valid_until: z.string().nullable().optional(),
     is_active: z.boolean().optional().default(true),
     icon: z.string().optional(),
     color: z.string().optional(),
     bg: z.string().optional(),
+    image_url: z.string().url('URL de imagen inválida').nullable().optional(),
+    type: z.enum(['card', 'banner']).optional().default('card'),
+    subtitle: z.string().optional().nullable(),
+    cta_text: z.string().optional().nullable(),
+    cta_link: z.string().optional().nullable(),
+    metadata: z.record(z.any()).optional().nullable(),
+    sort_order: z.number().int().optional().default(0),
 };
 
 export const createPromoSchema = z.object({

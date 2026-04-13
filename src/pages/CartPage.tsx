@@ -544,8 +544,7 @@ export default function CartPage() {
                 }
             }
 
-            const date = new Date(scheduledDate);
-            if (!isTimeWithinBusinessHours(date, scheduledTime)) {
+            if (!isTimeWithinBusinessHours(scheduledDate, scheduledTime)) {
                 return showError(
                     'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!'
                 );
@@ -618,12 +617,10 @@ export default function CartPage() {
                 lon,
             };
 
-            if (!isAuthenticated) {
-                payload.guestItems = items.map(i => ({
-                    menuItemId: parseInt(i.id),
-                    quantity: i.quantity,
-                }));
-            }
+            payload.guestItems = items.map(i => ({
+                menuItemId: parseInt(i.id),
+                quantity: i.quantity,
+            }));
 
             const dataRes = await api.post('/orders', payload);
 
@@ -739,24 +736,18 @@ export default function CartPage() {
                                                 <p className="text-[11px] font-bold text-orange-900/40 uppercase tracking-widest mb-1.5">
                                                     Horario de Servicio:
                                                 </p>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-orange-800/80 font-medium">
-                                                    <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                        <span>Miércoles – Viernes</span>
-                                                        <span className="font-bold">
-                                                            19:00 – 23:00
-                                                        </span>
+                                                <div className="flex flex-col gap-1.5 text-[12px] text-orange-800/80 font-medium max-w-[280px]">
+                                                    <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
+                                                        <span className="opacity-60">Miércoles – Viernes</span>
+                                                        <span className="font-black text-orange-950">19:00 – 23:00</span>
                                                     </div>
-                                                    <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                        <span>Sábado – Domingo</span>
-                                                        <span className="font-bold">
-                                                            14:00 – 23:00
-                                                        </span>
+                                                    <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
+                                                        <span className="opacity-60">Sábado – Domingo</span>
+                                                        <span className="font-black text-orange-950">14:00 – 23:00</span>
                                                     </div>
-                                                    <div className="flex justify-between border-b border-orange-100/30 pb-0.5">
-                                                        <span>Lunes – Martes</span>
-                                                        <span className="font-bold text-orange-600">
-                                                            Cerrado
-                                                        </span>
+                                                    <div className="flex justify-between items-center bg-orange-950/5 px-3 py-1.5 rounded-xl border border-orange-950/5">
+                                                        <span className="opacity-40 uppercase text-[10px] tracking-wider">Lunes – Martes</span>
+                                                        <span className="font-black text-orange-950/30 uppercase text-[10px]">Cerrado</span>
                                                     </div>
                                                 </div>
                                                 <p className="mt-3 text-[11px] bg-orange-100/50 px-2 py-1.5 rounded-lg text-orange-900 font-bold inline-block">

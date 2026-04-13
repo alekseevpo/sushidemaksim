@@ -19,6 +19,22 @@ router.post('/check-birthdays', async (req, res) => {
     }
 
     try {
+        // Fetch birthday settings
+        const { data: settingsData } = await supabase
+            .from('site_settings')
+            .select('key, value')
+            .in('key', ['loyalty_birthday_bonus_enabled', 'loyalty_birthday_bonus_percent']);
+
+        const settings: Record<string, string> = {};
+        settingsData?.forEach(s => (settings[s.key] = s.value));
+
+        const bdayEnabled = settings['loyalty_birthday_bonus_enabled'] === 'true';
+        const bdayPercent = parseInt(settings['loyalty_birthday_bonus_percent']) || 10;
+
+        if (!bdayEnabled) {
+            return res.json({ success: true, message: 'Birthday rewards are disabled' });
+        }
+
         const { data: users } = await supabase
             .from('users')
             .select('id, email, name, birth_date')
@@ -46,8 +62,8 @@ router.post('/check-birthdays', async (req, res) => {
             else if (bMonth === weekMonth && bDay === weekDay) type = 'week-before';
 
             if (type) {
-                // Generate a one-time 10% promo code
-                const code = `BDAY-${user.id.substring(0, 4).toUpperCase()}-${type === 'day-of' ? 'HOY' : 'WEEK'}`;
+                // Generate a one-time promo code
+                const code = `BDAY${bdayPercent}-${user.id.substring(0, 4).toUpperCase()}-${type === 'day-of' ? 'HOY' : 'WEEK'}`;
 
                 // Ensure duplicate code is not created accidentally (simple check)
                 const { data: existing } = await supabase
@@ -59,7 +75,7 @@ router.post('/check-birthdays', async (req, res) => {
                 if (!existing) {
                     await supabase.from('promo_codes').insert({
                         code,
-                        discount_percentage: 10,
+                        discount_percentage: bdayPercent,
                         user_id: user.id,
                         is_used: false,
                     });
@@ -72,9 +88,9 @@ router.post('/check-birthdays', async (req, res) => {
                     });
 
                     try {
-                        await sendBirthdayGiftEmail(user.email, user.name, code);
+                        await sendBirthdayGiftEmail(user.email, user.name, code, bdayPercent);
                         console.log(
-                            `📧 CRON (Birthday): Send email to ${user.email} -> Feliz Cumpleaños! Tu código es ${code}.`
+                            `📧 CRON (Birthday): Send email to ${user.email} -> Feliz Cumpleaños! Tu código es ${code} (${bdayPercent}%).`
                         );
                     } catch (emailErr) {
                         console.error(

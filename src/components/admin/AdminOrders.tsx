@@ -29,6 +29,7 @@ import { AdminOrdersSkeleton } from '../skeletons/AdminOrdersSkeleton';
 interface AdminOrdersProps {
     isGlobalSoundEnabled: boolean;
     setIsGlobalSoundEnabled: (enabled: boolean) => void;
+    onTestSound?: () => void;
     globalPendingCount: number;
     language?: 'ru' | 'es';
 }
@@ -156,6 +157,7 @@ const ORDERS_TRANSLATIONS = {
 export default function AdminOrders({
     isGlobalSoundEnabled,
     setIsGlobalSoundEnabled,
+    onTestSound,
     globalPendingCount,
     language = 'es',
 }: AdminOrdersProps) {
@@ -320,7 +322,13 @@ export default function AdminOrders({
                             )}
                         </div>
                         <button
-                            onClick={() => setIsGlobalSoundEnabled(!isGlobalSoundEnabled)}
+                            onClick={() => {
+                                const newVal = !isGlobalSoundEnabled;
+                                setIsGlobalSoundEnabled(newVal);
+                                if (newVal && onTestSound) {
+                                    onTestSound();
+                                }
+                            }}
                             className={`p-3 rounded-xl transition-all border shadow-sm active:scale-95 ${
                                 isGlobalSoundEnabled
                                     ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-600 hover:text-white'

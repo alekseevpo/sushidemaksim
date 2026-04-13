@@ -48,13 +48,13 @@ router.post(
         // ─── Requirements Check for Registration Promos ───
         // Support both "NUEVO" (default) and "NEW" (old/fallback or from newsletter)
         if (promo.code.startsWith('NUEVO') || promo.code.startsWith('NEW')) {
-            // 1. Expiry Check (24h)
+            // 1. Expiry Check (7 days)
             const createdAt = new Date(promo.created_at);
-            const expiredAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+            const expiredAt = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000);
             if (new Date() > expiredAt) {
                 return res
                     .status(400)
-                    .json({ error: 'Este código de bienvenida ha expirado (válido 24h)' });
+                    .json({ error: 'Este código de bienvenida ha expirado (válido por 7 días)' });
             }
 
             // 2. Min Order Check (70€)
@@ -67,7 +67,7 @@ router.post(
         }
 
         // ─── Requirements Check for Loyalty Promos ───
-        if (promo.code.startsWith('LOYALTY-')) {
+        if (promo.code.startsWith('LOYALTY')) {
             // Expiry Check (7 days)
             const createdAt = new Date(promo.created_at);
             const expiredAt = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
@@ -75,6 +75,30 @@ router.post(
                 return res
                     .status(400)
                     .json({ error: 'El código de fidelidad ha expirado (válido por 7 días)' });
+            }
+        }
+
+        // ─── Requirements Check for Birthday Promos ───
+        if (promo.code.startsWith('BDAY')) {
+            // Expiry Check (30 days)
+            const createdAt = new Date(promo.created_at);
+            const expiredAt = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+            if (new Date() > expiredAt) {
+                return res
+                    .status(400)
+                    .json({ error: 'El código de cumpleaños ha expirado (válido por 30 días)' });
+            }
+        }
+
+        // ─── Requirements Check for Dessert Gift Promos ───
+        if (promo.code.startsWith('DESSERT')) {
+            // Expiry Check (30 days)
+            const createdAt = new Date(promo.created_at);
+            const expiredAt = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+            if (new Date() > expiredAt) {
+                return res
+                    .status(400)
+                    .json({ error: 'El código de postre ha expirado (válido por 30 días)' });
             }
         }
 

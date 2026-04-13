@@ -43,9 +43,9 @@ describe('storeStatus Utility', () => {
 
     describe('isTimeWithinBusinessHours', () => {
         it('validates a time string for a given date', () => {
-            const date = new Date('2026-04-01T00:00:00'); // Wednesday
-            expect(isTimeWithinBusinessHours(date, '20:00')).toBe(true);
-            expect(isTimeWithinBusinessHours(date, '15:00')).toBe(false);
+            const dateStr = '2026-04-01'; // Wednesday
+            expect(isTimeWithinBusinessHours(dateStr, '20:00')).toBe(true);
+            expect(isTimeWithinBusinessHours(dateStr, '15:00')).toBe(false);
         });
     });
 

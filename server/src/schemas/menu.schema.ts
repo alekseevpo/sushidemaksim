@@ -33,6 +33,7 @@ const menuItemBase = {
     isChefChoice: z.boolean().optional().default(false),
     isNew: z.boolean().optional().default(false),
     allergens: z.array(z.string()).optional().default([]),
+    costPrice: z.number().nonnegative().optional().default(0),
 };
 
 export const createMenuItemSchema = z.object({

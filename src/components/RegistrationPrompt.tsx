@@ -99,7 +99,7 @@ export default function RegistrationPrompt() {
 
                         <div className="mt-8 pt-8 border-t border-gray-50 flex items-center justify-center gap-2 text-[10px] text-gray-400 font-black uppercase tracking-widest">
                             <ArrowRight size={12} className="text-orange-500" />
-                            Válido por 24 horas tras el registro
+                            Válido por 7 días tras el registro
                         </div>
                     </div>
                 </motion.div>

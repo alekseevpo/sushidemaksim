@@ -214,7 +214,7 @@ const UserRow = memo(
                 .slice(0, 2) || '??';
 
         return (
-            <tr className="hover:bg-gray-50/50 transition-colors group">
+            <tr className={`hover:bg-gray-50/50 transition-all group ${user.deletedAt ? 'opacity-50 grayscale bg-gray-50/30' : ''}`}>
                 <td
                     className="px-4 py-2.5 font-black text-gray-300 text-[9px] tabular-nums group-hover:text-gray-400 transition-colors cursor-pointer active:scale-95"
                     title={user.id}
@@ -402,13 +402,22 @@ const UserRow = memo(
                     {!user.isSuperadmin && (
                         <div className="flex items-center justify-center gap-1.5">
                             {user.deletedAt ? (
-                                <button
-                                    onClick={() => onRestore(user)}
-                                    className="p-1.5 px-2.5 flex items-center gap-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-green-100 shadow-sm active:scale-95"
-                                    title={t.modals.restore}
-                                >
-                                    <RotateCcw size={12} strokeWidth={3} /> {t.modals.restore}
-                                </button>
+                                <div className="flex items-center gap-1.5">
+                                    <button
+                                        onClick={() => onRestore(user)}
+                                        className="p-1.5 px-2.5 flex items-center gap-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-green-100 shadow-sm active:scale-95"
+                                        title={t.modals.restore}
+                                    >
+                                        <RotateCcw size={12} strokeWidth={3} /> {t.modals.restore}
+                                    </button>
+                                    <button
+                                        onClick={() => onDelete(user)}
+                                        className="p-1.5 text-orange-600 hover:bg-orange-600 hover:text-white bg-orange-50 rounded-lg border border-orange-100 transition-all shadow-sm active:scale-95 animate-pulse-subtle"
+                                        title={t.modals.deleteTitle}
+                                    >
+                                        <Trash2 size={16} strokeWidth={2} />
+                                    </button>
+                                </div>
                             ) : (
                                 <>
                                     {currentUser?.isSuperadmin && (
@@ -494,8 +503,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
     // Mutations
     const deleteMutation = useMutation({
         mutationFn: (userId: number) => api.delete(`/admin/users/${userId}`),
-        onSuccess: () => {
+        onSuccess: (data: any) => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+            if (data?.message) {
+                success(data.message);
+            } else {
+                success(language === 'ru' ? 'Пользователь удален' : 'Usuario eliminado');
+            }
         },
     });
 
@@ -525,8 +539,13 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
 
     const restoreMutation = useMutation({
         mutationFn: (userId: number) => api.patch(`/admin/users/${userId}/restore`),
-        onSuccess: () => {
+        onSuccess: (data: any) => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+            if (data?.message) {
+                success(data.message);
+            } else {
+                success(language === 'ru' ? 'Пользователь восстановлен' : 'Usuario restaurado');
+            }
         },
     });
 

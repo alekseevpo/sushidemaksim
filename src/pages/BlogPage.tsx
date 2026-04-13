@@ -125,9 +125,6 @@ export default function BlogPage() {
                 id="blog-posts-container"
                 className="max-w-7xl mx-auto px-2 md:px-4 -mt-8 md:-mt-14 relative z-20 min-h-[600px]"
             >
-                {/* Promo Event Banner */}
-                <EventBanner />
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {posts.map((post, index) => (
                         <motion.article

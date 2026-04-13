@@ -208,28 +208,22 @@ export default function DeliveryForm({
 
                                     <div className="mt-4 pt-4 border-t border-amber-200/50">
                                         <p className="text-[10px] font-black text-amber-900/60 uppercase tracking-widest mb-2">
-                                            Horario de recogida
+                                            Horario de servicio
                                         </p>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px] font-medium text-amber-800">
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="opacity-50 uppercase text-[9px] tracking-tight">
                                                     Mié – Vie
                                                 </span>
-                                                <span className="font-bold">20:00 – 23:00</span>
+                                                <span className="font-bold">19:00 – 23:00</span>
                                             </div>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="opacity-50 uppercase text-[9px] tracking-tight">
-                                                    Sábado
+                                                    Sáb – Dom
                                                 </span>
-                                                <span className="font-bold leading-tight">
-                                                    14:00 – 17:00 / 20:00 – 23:00
+                                                <span className="font-bold">
+                                                    14:00 – 23:00
                                                 </span>
-                                            </div>
-                                            <div className="flex flex-col gap-0.5">
-                                                <span className="opacity-50 uppercase text-[9px] tracking-tight">
-                                                    Domingo
-                                                </span>
-                                                <span className="font-bold">14:00 – 17:00</span>
                                             </div>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-amber-900/40 uppercase text-[9px] tracking-tight font-black">

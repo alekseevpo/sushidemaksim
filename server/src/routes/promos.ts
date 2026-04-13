@@ -12,6 +12,7 @@ router.get(
             .from('promos')
             .select('*')
             .eq('is_active', true)
+            .order('sort_order', { ascending: true })
             .order('created_at', { ascending: true });
 
         if (error) throw error;
