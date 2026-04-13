@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface BrandedPlaceholderProps {
     className?: string;
     icon?: string;
