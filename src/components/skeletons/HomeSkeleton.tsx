@@ -2,9 +2,7 @@ export const HomeSkeleton = () => (
     <div className="overflow-hidden">
         <div className="bg-black">
             {/* Hero Section */}
-            <section
-                className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
-            >
+            <section className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
                 <div className="absolute inset-0 z-0 bg-gray-900 border-none animate-pulse" />
 
                 <div className="relative z-20 flex flex-col items-center max-w-4xl mx-auto space-y-6 w-full">
@@ -82,7 +80,10 @@ export const HomeSkeleton = () => (
                     </div>
                     <div className="flex-[1.5] grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
                         {[1, 2].map(i => (
-                            <div key={i} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 flex flex-col items-center gap-4 h-[100px]">
+                            <div
+                                key={i}
+                                className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 flex flex-col items-center gap-4 h-[100px]"
+                            >
                                 <div className="flex items-center gap-2">
                                     <div className="w-8 h-8 rounded-lg bg-gray-200 animate-pulse" />
                                     <div className="h-6 w-24 bg-gray-200 rounded-lg animate-pulse" />
@@ -140,7 +141,5 @@ export const HomeSkeleton = () => (
                 </div>
             </div>
         </section>
-
-
     </div>
 );

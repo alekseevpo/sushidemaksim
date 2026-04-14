@@ -35,11 +35,10 @@ export default function CookieConsent() {
                     className="fixed bottom-4 left-4 right-4 z-[9999] max-w-3xl mx-auto"
                 >
                     <div className="relative overflow-hidden bg-white/95 backdrop-blur-2xl border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 md:gap-5">
-                        
                         {/* Logo Background */}
-                        <img 
-                            src="/logo.svg" 
-                            alt="" 
+                        <img
+                            src="/logo.svg"
+                            alt=""
                             className="absolute -right-6 top-1/2 -translate-y-1/2 h-[120%] opacity-[0.04] pointer-events-none z-0 grayscale rotate-12"
                         />
 
@@ -52,8 +51,8 @@ export default function CookieConsent() {
                                 Tu privacidad es importante
                             </h3>
                             <p className="text-gray-500 text-xs md:text-[13px] leading-relaxed max-w-xl">
-                                Utilizamos cookies propias y de terceros para mejorar tu
-                                experiencia y personalizar el contenido de{' '}
+                                Utilizamos cookies propias y de terceros para mejorar tu experiencia
+                                y personalizar el contenido de{' '}
                                 <span className="font-bold text-gray-900 bg-orange-100 px-1 py-0.5 rounded-md">
                                     Sushi de Maksim
                                 </span>

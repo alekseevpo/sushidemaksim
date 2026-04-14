@@ -9,7 +9,6 @@ import {
     Menu,
     X,
     ShieldCheck,
-    ChevronRight,
     BookOpen,
     Phone,
     Star,
@@ -606,7 +605,6 @@ export default function Header() {
                                             {navLinks
                                                 .filter(l => l.label !== 'Reserva')
                                                 .map((link, idx) => {
-                                                    const Icon = link.icon;
                                                     const isActive = link.to
                                                         ? location.pathname === link.to
                                                         : false;

@@ -123,7 +123,7 @@ export default function HomePage() {
         queryFn: () => api.get('/promos'),
         staleTime: 5 * 60 * 1000,
     });
-    
+
     const isLoading = itemsLoading || catsLoading || promosLoading;
 
     const activePromos = ((promosData?.promos ?? []) as any[]).filter(

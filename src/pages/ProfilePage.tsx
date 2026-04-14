@@ -250,23 +250,21 @@ export default function ProfilePage() {
                 style={{ paddingTop: 'calc(var(--header-height, 64px) + 40px)' }}
             >
                 {/* Wallpaper Pattern Overlay (Staggered Checkerboard) */}
-                <div 
-                    className="absolute inset-[-50%] z-0 opacity-10 pointer-events-none flex flex-col justify-center items-center gap-24 md:gap-32 -rotate-12 scale-110"
-                >
+                <div className="absolute inset-[-50%] z-0 opacity-10 pointer-events-none flex flex-col justify-center items-center gap-24 md:gap-32 -rotate-12 scale-110">
                     {Array.from({ length: 12 }).map((_, rowIndex) => (
-                        <div 
-                            key={`row-${rowIndex}`} 
+                        <div
+                            key={`row-${rowIndex}`}
                             className="flex items-center gap-24 md:gap-32"
-                            style={{ 
-                                transform: rowIndex % 2 !== 0 ? 'translateX(200px)' : 'none' 
+                            style={{
+                                transform: rowIndex % 2 !== 0 ? 'translateX(200px)' : 'none',
                             }}
                         >
                             {Array.from({ length: 8 }).map((_, colIndex) => (
-                                <img 
+                                <img
                                     key={`col-${rowIndex}-${colIndex}`}
-                                    src="/logo.svg" 
-                                    alt="" 
-                                    className="h-10 md:h-16 object-contain grayscale brightness-200" 
+                                    src="/logo.svg"
+                                    alt=""
+                                    className="h-10 md:h-16 object-contain grayscale brightness-200"
                                 />
                             ))}
                         </div>
