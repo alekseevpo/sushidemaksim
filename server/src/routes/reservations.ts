@@ -16,12 +16,8 @@ router.post(
     asyncHandler(async (req, res) => {
         const { name, email, phone, date, time, guests, notes, user_id } = req.body;
 
-        // Validate time within business hours
-        // Parse "YYYY-MM-DD" to get the correct day of the week regardless of server TZ
-        const [year, month, day] = date.split('-').map(Number);
-        const resDate = new Date(year, month - 1, day);
-
-        if (!isTimeWithinBusinessHours(resDate, time)) {
+        // Validate time within business hours using the generic string approach
+        if (!isTimeWithinBusinessHours(date, time)) {
             return res
                 .status(400)
                 .json({ error: 'El restaurante está cerrado en el horario seleccionado' });
