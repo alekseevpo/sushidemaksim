@@ -20,8 +20,9 @@ Una plataforma premium de e-commerce gastronómico diseñada para ofrecer la mej
 - **Sistema de Favoritos**: Los usuarios registrados pueden guardar sus platos preferidos para pedirlos rápidamente después.
 - **Gestión de Carrito en Tiempo Real**: Carrito flotante interactivo con cálculos instantáneos de envío y subtotales.
 - **Extras & Quantity Control**: Selección inteligente de complementos (palillos, wasabi, jengibre) con selector de cantidad integrado en el carrito y menú.
+- **Optimización de Carga (Skeletons)**: Transiciones perfectas sin CLS (Cumulative Layout Shift) mediante el uso de Skeletons precisos y Early-return architecture, asegurando una experiencia visual increíblemente fluida en dispositivos móviles.
 - **Blog & Recetas**: Un espacio dedicado a la cultura del sushi, noticias y promociones especiales.
-- **Totalmente Responsivo**: Optimización extrema para móviles y tablets, con botones de acción rápida y navegación táctil intuitiva.
+- **Totalmente Responsivo**: Optimización extrema para móviles y tablets, con botones de acción rápida, menús inferior minimalista centrado y navegación táctil intuitiva.
 
 ### 🛡️ Panel de Administración (Dashboard)
 
