@@ -150,7 +150,9 @@ export default function CartPage() {
         (res: any) => {
             const finalLat = res.coordinates?.[0] ?? res.lat;
             const finalLon = res.coordinates?.[1] ?? res.lon;
-            const computedZone = res.zone || (finalLat && finalLon ? detectZone(finalLat, finalLon, deliveryZones) : null);
+            const computedZone =
+                res.zone ||
+                (finalLat && finalLon ? detectZone(finalLat, finalLon, deliveryZones) : null);
 
             methods.setValue('address', res.address || res.street || '');
             methods.setValue('house', res.house || '');
