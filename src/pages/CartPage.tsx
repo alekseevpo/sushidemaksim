@@ -694,13 +694,20 @@ export default function CartPage() {
 
     const getCategoryEmoji = (category: string) => EMOJI[category] || '🍱';
 
+    if ((cartLoading && items.length === 0) || (items.length > 0 && isLoadingSettings)) {
+        return (
+            <div className="min-h-screen bg-transparent flex flex-col">
+                <SEO title="Tu Cesta" description="Finaliza tu pedido de sushi." />
+                <CartSkeleton />
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-transparent flex flex-col">
             <SEO title="Tu Cesta" description="Finaliza tu pedido de sushi." />
 
-            {(cartLoading && items.length === 0) || (items.length > 0 && isLoadingSettings) ? (
-                <CartSkeleton />
-            ) : items.length === 0 ? (
+            {items.length === 0 ? (
                 <CartEmptyView
                     popularItems={popularItems}
                     isLoadingPopular={isLoadingPopular}

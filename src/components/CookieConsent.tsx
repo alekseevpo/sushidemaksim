@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, X, ChevronRight } from 'lucide-react';
+import { ShieldCheck, X } from 'lucide-react';
 
 export default function CookieConsent() {
     const [isVisible, setIsVisible] = useState(false);
@@ -32,52 +32,55 @@ export default function CookieConsent() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="fixed bottom-6 left-6 right-6 z-[9999] max-w-4xl mx-auto"
+                    className="fixed bottom-4 left-4 right-4 z-[9999] max-w-3xl mx-auto"
                 >
-                    <div className="bg-white/90 backdrop-blur-xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-                        <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0">
-                            <ShieldCheck size={32} strokeWidth={1.5} className="text-orange-600" />
+                    <div className="relative overflow-hidden bg-white/95 backdrop-blur-2xl border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 md:gap-5">
+                        
+                        {/* Logo Background */}
+                        <img 
+                            src="/logo.svg" 
+                            alt="" 
+                            className="absolute -right-6 top-1/2 -translate-y-1/2 h-[120%] opacity-[0.04] pointer-events-none z-0 grayscale rotate-12"
+                        />
+
+                        <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0 shadow-inner relative z-10">
+                            <ShieldCheck size={24} strokeWidth={2} className="text-orange-600" />
                         </div>
 
-                        <div className="flex-1 text-center md:text-left">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        <div className="flex-1 text-center md:text-left relative z-10">
+                            <h3 className="text-base font-black text-gray-900 mb-1">
                                 Tu privacidad es importante
                             </h3>
-                            <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
+                            <p className="text-gray-500 text-xs md:text-[13px] leading-relaxed max-w-xl">
                                 Utilizamos cookies propias y de terceros para mejorar tu
-                                experiencia, analizar el tráfico y personalizar el contenido de{' '}
-                                <span className="font-bold text-gray-900 underline decoration-orange-500/30">
+                                experiencia y personalizar el contenido de{' '}
+                                <span className="font-bold text-gray-900 bg-orange-100 px-1 py-0.5 rounded-md">
                                     Sushi de Maksim
                                 </span>
-                                . Al hacer clic en "Aceptar", consientes su uso.
+                                .
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                        <div className="flex items-center justify-center gap-2 w-full md:w-auto relative z-10 mt-2 md:mt-0">
                             <button
                                 onClick={handleDecline}
-                                className="w-full sm:w-auto px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer"
+                                className="flex-1 md:flex-none px-4 py-2.5 text-xs md:text-[13px] font-bold text-gray-500 hover:text-gray-900 transition-colors bg-gray-50 hover:bg-gray-100 rounded-xl"
                             >
                                 Solo necesarias
                             </button>
                             <button
                                 onClick={handleAccept}
-                                className="w-full sm:w-auto px-8 py-3 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-2 group"
+                                className="flex-1 md:flex-none px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-xs md:text-[13px] font-bold rounded-xl shadow-lg shadow-orange-600/30 transition-all active:scale-95"
                             >
-                                Aceptar todas
-                                <ChevronRight
-                                    size={16}
-                                    strokeWidth={1.5}
-                                    className="group-hover:translate-x-1 transition-transform"
-                                />
+                                Aceptar
                             </button>
                         </div>
 
                         <button
                             onClick={() => setIsVisible(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                            className="absolute top-3 right-3 text-gray-400 hover:text-gray-800 transition-colors p-1 bg-white/50 backdrop-blur-sm rounded-full z-20"
                         >
-                            <X size={20} strokeWidth={1.5} />
+                            <X size={16} strokeWidth={2} />
                         </button>
                     </div>
                 </motion.div>

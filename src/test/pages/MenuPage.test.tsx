@@ -82,7 +82,7 @@ describe('MenuPage (Integration)', () => {
     it('searches for a dish with debounce', async () => {
         renderMenu();
 
-        const searchInput = screen.getByPlaceholderText(/hoy/i);
+        const searchInput = await screen.findByPlaceholderText(/hoy/i);
         fireEvent.change(searchInput, { target: { value: 'Salmon' } });
 
         // Wait for debounce (350ms)
@@ -98,7 +98,7 @@ describe('MenuPage (Integration)', () => {
         (api.get as any).mockResolvedValueOnce({ items: [] });
         renderMenu();
 
-        const searchInput = screen.getByPlaceholderText(/hoy/i);
+        const searchInput = await screen.findByPlaceholderText(/hoy/i);
         fireEvent.change(searchInput, { target: { value: 'Nonexistent' } });
 
         await waitFor(() => {

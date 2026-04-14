@@ -3,8 +3,7 @@ export const HomeSkeleton = () => (
         <div className="bg-black">
             {/* Hero Section */}
             <section
-                className="relative min-h-screen w-full px-4 pt-20 md:pt-0 pb-10 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
-                style={{ contentVisibility: 'auto' }}
+                className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
             >
                 <div className="absolute inset-0 z-0 bg-gray-900 border-none animate-pulse" />
 
@@ -14,14 +13,14 @@ export const HomeSkeleton = () => (
 
                     {/* Title */}
                     <div className="space-y-3 md:space-y-4 w-full flex flex-col items-center">
-                        <div className="h-[42px] md:h-[96px] w-[90%] md:w-[70%] bg-white/10 rounded-2xl animate-pulse" />
-                        <div className="h-[42px] md:h-[96px] w-[80%] md:w-[60%] bg-white/10 rounded-2xl animate-pulse" />
+                        <div className="h-[38px] md:h-[86px] w-[90%] md:w-[70%] bg-white/10 rounded-2xl animate-pulse" />
+                        <div className="h-[38px] md:h-[86px] w-[80%] md:w-[60%] bg-white/10 rounded-2xl animate-pulse" />
                     </div>
 
                     {/* Description */}
-                    <div className="space-y-2 w-full flex flex-col items-center pt-2">
-                        <div className="h-[20px] md:h-[28px] w-[90%] md:w-[60%] bg-white/10 rounded-lg animate-pulse" />
-                        <div className="h-[20px] md:h-[28px] w-[80%] md:w-[50%] bg-white/10 rounded-lg animate-pulse" />
+                    <div className="space-y-2 w-full flex flex-col items-center">
+                        <div className="h-[18px] md:h-[24px] w-[90%] md:w-[60%] bg-white/10 rounded-lg animate-pulse" />
+                        <div className="h-[18px] md:h-[24px] w-[80%] md:w-[50%] bg-white/10 rounded-lg animate-pulse" />
                     </div>
 
                     {/* Buttons */}
@@ -45,17 +44,59 @@ export const HomeSkeleton = () => (
         </div>
 
         {/* Ratings Banner */}
-        <section className="bg-white py-6 border-y border-gray-100 overflow-hidden">
-            <div className="max-w-5xl mx-auto px-4">
-                <div className="flex flex-col md:flex-row gap-6 md:gap-px items-stretch rounded-3xl overflow-hidden p-1 md:p-0 h-[360px] md:h-[135px]">
-                    <div className="flex-1 bg-gray-100/50 animate-pulse rounded-2xl md:rounded-r-none" />
-                    <div className="flex-1 bg-gray-100/50 animate-pulse rounded-2xl md:rounded-l-none" />
+        <section className="bg-white py-4 md:py-6 border-y border-gray-100 overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-px items-stretch md:bg-gray-100/50 rounded-3xl overflow-hidden p-1 md:p-0">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="flex-1 bg-white p-5 flex items-center gap-6">
+                            <div className="shrink-0 w-16 space-y-2">
+                                <div className="h-10 w-12 bg-gray-100 rounded-lg animate-pulse mx-auto" />
+                                <div className="h-2 w-14 bg-gray-100 rounded-full animate-pulse mx-auto" />
+                                <div className="h-2 w-10 bg-gray-50 rounded-full animate-pulse mx-auto" />
+                            </div>
+                            <div className="flex-1 flex flex-col gap-1.5">
+                                {[1, 2, 3, 4, 5].map(j => (
+                                    <div key={j} className="flex items-center gap-2">
+                                        <div className="h-1 flex-1 bg-gray-50 rounded-full animate-pulse" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        {/* Press & Partnerships Section */}
+        <section className="bg-[#fd6e2b]/5 py-10 md:py-20 overflow-hidden border-b border-gray-100">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+                    <div className="flex-1 text-center lg:text-left space-y-6 w-full">
+                        <div className="h-[22px] w-48 bg-orange-200/50 rounded-full mx-auto lg:mx-0 animate-pulse" />
+                        <div className="space-y-3 w-full">
+                            <div className="h-[36px] md:h-[48px] w-3/4 mx-auto lg:mx-0 bg-gray-200 rounded-2xl animate-pulse" />
+                            <div className="h-[36px] md:h-[48px] w-1/2 mx-auto lg:mx-0 bg-gray-200 rounded-2xl animate-pulse" />
+                        </div>
+                        <div className="h-[20px] w-full max-w-xl mx-auto lg:mx-0 bg-gray-100 rounded-lg animate-pulse" />
+                        <div className="h-[20px] w-[90%] max-w-xl mx-auto lg:mx-0 bg-gray-100 rounded-lg animate-pulse" />
+                    </div>
+                    <div className="flex-[1.5] grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                        {[1, 2].map(i => (
+                            <div key={i} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 flex flex-col items-center gap-4 h-[100px]">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-200 animate-pulse" />
+                                    <div className="h-6 w-24 bg-gray-200 rounded-lg animate-pulse" />
+                                </div>
+                                <div className="h-3 w-16 bg-gray-100 rounded-full animate-pulse" />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>
 
         {/* Categories Section */}
-        <section className="py-12 md:py-16 px-2 md:px-6 bg-transparent overflow-hidden">
+        <section className="py-10 md:py-16 px-2 md:px-6 bg-transparent overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div className="max-w-xl text-center md:text-left space-y-4 w-full">
@@ -86,7 +127,7 @@ export const HomeSkeleton = () => (
         </section>
 
         {/* Reservation Section */}
-        <section className="py-12 md:py-20 px-4 bg-white overflow-hidden">
+        <section className="py-10 md:py-20 px-4 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="h-[300px] md:h-[500px] rounded-[3rem] bg-gray-100 animate-pulse order-last lg:order-first" />
                 <div className="text-center lg:text-left space-y-6 w-full">
@@ -100,7 +141,6 @@ export const HomeSkeleton = () => (
             </div>
         </section>
 
-        {/* Placeholder for the rest of the page to match scroll height roughly */}
-        <div className="h-screen bg-transparent" />
+
     </div>
 );

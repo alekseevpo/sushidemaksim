@@ -1,6 +1,6 @@
 export const CartSkeleton = () => (
     <div className="min-h-screen bg-transparent flex flex-col">
-        <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 py-6 sm:py-12">
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-4 sm:py-8">
             {/* Header Title Skeleton */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div className="h-10 w-48 skeleton rounded-2xl" />

@@ -16,6 +16,7 @@ import SafeImage from '../components/common/SafeImage';
 import ReservationModal from '../components/reservations/ReservationModal';
 import { useSettings } from '../hooks/queries/useSettings';
 import { api } from '../utils/api';
+import { HomeSkeleton } from '../components/skeletons/HomeSkeleton';
 
 const Marquee = () => (
     <div className="relative py-4 md:py-6 overflow-hidden bg-black border-y border-white/5 select-none">
@@ -115,14 +116,16 @@ export default function HomePage() {
     const { data: popularItems = [], isLoading: itemsLoading } = usePopularItems(8);
     const { data: categoriesData = [], isLoading: catsLoading } = useCategories();
     const { data: settings } = useSettings();
-    const isLoading = itemsLoading || catsLoading;
 
     // Fetch active promo banners for dynamic display
-    const { data: promosData } = useQuery({
+    const { data: promosData, isLoading: promosLoading } = useQuery({
         queryKey: ['promos'],
         queryFn: () => api.get('/promos'),
         staleTime: 5 * 60 * 1000,
     });
+    
+    const isLoading = itemsLoading || catsLoading || promosLoading;
+
     const activePromos = ((promosData?.promos ?? []) as any[]).filter(
         p => p.code !== 'TEST10' && p.title !== 'TEST10'
     );
@@ -220,6 +223,10 @@ export default function HomePage() {
     const categoryList = useMemo(() => {
         return categoriesWithImages.slice(0, 8);
     }, [categoriesWithImages]);
+
+    if (isLoading) {
+        return <HomeSkeleton />;
+    }
 
     const handleShare = (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -525,21 +532,11 @@ export default function HomePage() {
                                 index={idx}
                             />
                         ))}
-                        {categoriesWithImages.length === 0 && !isLoading && (
+                        {categoriesWithImages.length === 0 && (
                             <div className="col-span-full text-center text-gray-400 py-12">
                                 No se encontraron categorías.
                             </div>
                         )}
-                        {isLoading &&
-                            [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                <div
-                                    key={i}
-                                    className="h-40 md:h-56 bg-gray-100 rounded-[2rem] animate-pulse relative overflow-hidden"
-                                >
-                                    <div className="absolute top-5 left-5 h-6 w-2/3 bg-gray-200/50 rounded-lg" />
-                                    <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent" />
-                                </div>
-                            ))}
                     </div>
                 </div>
             </section>
@@ -723,7 +720,7 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    {!isLoading && popularItems.length > 0 ? (
+                    {popularItems.length > 0 ? (
                         <div className="relative group/slider">
                             {/* Desktop Arrows - Left */}
                             <button
@@ -770,33 +767,9 @@ export default function HomePage() {
                                 </div>
                             </div>
                         </div>
-                    ) : isLoading ? (
-                        <div className="relative -mx-4 px-4 overflow-hidden pb-10">
-                            <div className="flex gap-6 md:gap-8 flex-nowrap overflow-x-auto no-scrollbar">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div
-                                        key={i}
-                                        className="min-w-[260px] md:min-w-[320px] bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full animate-pulse"
-                                    >
-                                        <div className="aspect-[4/3] md:h-56 bg-gray-50" />
-                                        <div className="p-3 md:p-6 flex flex-col flex-1">
-                                            <div className="h-6 md:h-8 w-3/4 bg-gray-100 rounded-xl mb-4" />
-                                            <div className="space-y-2">
-                                                <div className="h-3 w-full bg-gray-50 rounded-md" />
-                                                <div className="h-3 w-5/6 bg-gray-50 rounded-md" />
-                                            </div>
-                                            <div className="mt-8 flex items-center justify-between">
-                                                <div className="h-8 w-1/3 bg-gray-100 rounded-lg" />
-                                                <div className="h-10 w-24 bg-gray-900/10 rounded-2xl" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
                     ) : (
                         <div className="text-center py-12 text-gray-400 font-medium">
-                            Cargando delicias...
+                            No se encontraron productos destacados.
                         </div>
                     )}
                 </div>

@@ -595,19 +595,11 @@ export default function Header() {
                                                         setShowMobileMenu(false);
                                                         setIsReservationModalOpen(true);
                                                     }}
-                                                    className="w-full py-2 group flex items-center gap-4 px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
+                                                    className="w-full py-2 group flex items-center justify-center px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-center drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
                                                 >
-                                                    <div className="text-orange-600">
-                                                        <Calendar size={22} strokeWidth={2.5} />
-                                                    </div>
-                                                    <span className="flex-1 tracking-tight uppercase">
+                                                    <span className="tracking-tight uppercase">
                                                         RESERVAR MESA
                                                     </span>
-                                                    <ChevronRight
-                                                        size={18}
-                                                        strokeWidth={2.5}
-                                                        className="opacity-40"
-                                                    />
                                                 </button>
                                             </div>
 
@@ -620,36 +612,19 @@ export default function Header() {
                                                         : false;
                                                     const isAction = !!link.onClick;
 
-                                                    const commonStyles = `group flex items-center gap-4 px-4 py-2 rounded-[20px] font-black text-[16px] no-underline transition-all active:scale-[0.97] border-none bg-transparent text-left w-full
+                                                    const commonStyles = `group flex items-center justify-center px-4 py-2 rounded-[20px] font-black text-[16px] transition-all active:scale-[0.97] border-none bg-transparent text-center w-full
                                                         ${
                                                             isActive
-                                                                ? 'text-orange-600 bg-orange-50/50'
-                                                                : 'text-gray-600 hover:text-gray-900'
+                                                                ? 'text-orange-600 underline underline-offset-4 decoration-2'
+                                                                : 'text-gray-600 hover:text-gray-900 no-underline'
                                                         }`;
 
                                                     const content = (
-                                                        <>
-                                                            <div
-                                                                className={`transition-colors ${isActive ? 'text-orange-600' : 'text-gray-500'}`}
-                                                            >
-                                                                <Icon
-                                                                    size={22}
-                                                                    strokeWidth={
-                                                                        isActive ? 2.5 : 1.8
-                                                                    }
-                                                                />
-                                                            </div>
-                                                            <span
-                                                                className={`flex-1 tracking-tight ${isActive ? 'text-orange-600' : 'text-gray-900'}`}
-                                                            >
-                                                                {link.label}
-                                                            </span>
-                                                            <ChevronRight
-                                                                size={18}
-                                                                strokeWidth={isActive ? 2.5 : 2}
-                                                                className={`transition-all duration-300 ${isActive ? 'translate-x-0 opacity-100' : 'opacity-0 -translate-x-2'}`}
-                                                            />
-                                                        </>
+                                                        <span
+                                                            className={`tracking-tight uppercase ${isActive ? 'text-orange-600' : 'text-gray-900'}`}
+                                                        >
+                                                            {link.label}
+                                                        </span>
                                                     );
 
                                                     if (isAction) {

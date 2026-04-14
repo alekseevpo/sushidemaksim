@@ -1,16 +1,16 @@
 export const PromoSkeleton = () => (
     <div className="flex-1 bg-transparent">
         {/* Hero Header Skeleton */}
-        <section className="relative bg-orange-600/10 pt-24 pb-32 px-4 border-b border-gray-100">
-            <div className="max-w-4xl mx-auto text-center relative z-10 space-y-4">
-                <div className="h-12 w-3/4 skeleton rounded-2xl mx-auto" />
-                <div className="h-6 w-1/2 skeleton rounded-lg mx-auto opacity-40" />
+        <section className="relative h-72 md:h-80 flex items-center justify-center overflow-hidden pt-12 border-b border-gray-800 bg-black/80">
+            <div className="max-w-4xl mx-auto text-center relative z-10 w-full px-4 space-y-4">
+                <div className="h-12 w-3/4 skeleton rounded-2xl mx-auto opacity-30" />
+                <div className="h-6 w-1/2 skeleton rounded-lg mx-auto opacity-20" />
             </div>
         </section>
 
-        <div className="max-w-7xl mx-auto px-4 -mt-16 md:-mt-20 mb-20 relative z-20">
+        <div className="max-w-7xl mx-auto px-2 md:px-4 -mt-12 md:-mt-20 mb-20 relative z-20">
             {/* Static Promo Cards Skeleton */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-16">
                 {[1, 2, 3, 4].map(i => (
                     <div
                         key={i}
@@ -32,7 +32,7 @@ export const PromoSkeleton = () => (
             {/* Promo Menu Items Skeleton */}
             <div className="max-w-5xl mx-auto space-y-10">
                 <div className="h-8 w-48 skeleton rounded-xl mx-auto" />
-                <div className="grid grid-cols-2 gap-4 md:gap-8">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10">
                     {[1, 2].map(i => (
                         <div
                             key={i}

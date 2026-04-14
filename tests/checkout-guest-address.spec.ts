@@ -31,6 +31,14 @@ test.describe('Guest Checkout - Address Selection', () => {
             })
         );
 
+        // mock categories
+        await page.route('**/api/categories', route =>
+            route.fulfill({
+                status: 200,
+                body: JSON.stringify([]),
+            })
+        );
+
         // mock delivery zones - include a wide zone that covers our mock address
         await page.route('**/api/delivery-zones', route =>
             route.fulfill({

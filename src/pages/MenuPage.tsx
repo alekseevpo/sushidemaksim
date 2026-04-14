@@ -4,7 +4,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import { tracker } from '../analytics/tracker';
-import { MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
+import { MenuSkeleton } from '../components/skeletons/MenuSkeleton';
 import { CATEGORIES, EMOJI } from '../constants/menu';
 import { MenuItem, useMenu, useFavorites, useToggleFavorite } from '../hooks/queries/useMenu';
 import MenuCategoryBar from '../components/menu/MenuCategoryBar';
@@ -244,6 +244,10 @@ export default function MenuPage() {
         }, 1600);
     };
 
+    if (isLoading) {
+        return <MenuSkeleton />;
+    }
+
     const menuSchema = {
         '@context': 'https://schema.org',
         '@type': 'Menu',
@@ -331,11 +335,7 @@ export default function MenuPage() {
                     />
 
                     {/* Items Section */}
-                    {isLoading ? (
-                        <div className="space-y-12">
-                            <MenuItemsSkeleton showHeader={selectedCategory === 'all' && !search} />
-                        </div>
-                    ) : isError ? (
+                    {isError ? (
                         <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[32px] border-2 border-dashed border-gray-100 animate-in fade-in zoom-in-95 duration-500">
                             <span className="text-5xl mb-6 drop-shadow-lg">🍱</span>
                             <h3 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">

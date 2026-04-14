@@ -23,6 +23,9 @@ test.describe('Authentication Flow', () => {
         await page.route('**/api/user/active', route =>
             route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
         );
+        await page.route('**/api/categories', route =>
+            route.fulfill({ status: 200, contentType: 'application/json', body: '[]' })
+        );
 
         await page.goto('/');
     });
@@ -45,7 +48,7 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/tu@email.com/i).fill(`test-${Date.now()}@test.com`);
         await page.getByPlaceholder(/Crea una contraseña segura/i).fill('password123!');
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
-        await expect(page.getByText(/enviado|revisa|email/i).first()).toBeVisible({
+        await expect(page.getByText(/Cuenta creada/i).first()).toBeVisible({
             timeout: 15000,
         });
     });
@@ -92,7 +95,7 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/Tu contraseña/i).fill('password123');
         await page.getByRole('button', { name: /Iniciar sesión/i }).click();
 
-        await expect(page.locator('header')).toContainText('Pavel', { timeout: 20000 });
+        await expect(page.getByRole('banner')).toContainText('Pavel', { timeout: 20000 });
 
         await expect(async () => {
             await page.getByText('Pavel').first().click({ force: true });
@@ -173,6 +176,6 @@ test.describe('Authentication Flow', () => {
         await page.getByRole('button', { name: /Cambiar contraseña/i }).click();
 
         // 6. Should go back to login or show success
-        await expect(page.getByText(/¡Hola de nuevo!|éxito/i).first()).toBeVisible();
+        await expect(page.getByText(/actualizada con éxito/i).first()).toBeVisible();
     });
 });

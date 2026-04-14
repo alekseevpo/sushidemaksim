@@ -249,6 +249,30 @@ export default function ProfilePage() {
                 className="bg-orange-600 pb-28 px-2 md:px-4 relative overflow-hidden"
                 style={{ paddingTop: 'calc(var(--header-height, 64px) + 40px)' }}
             >
+                {/* Wallpaper Pattern Overlay (Staggered Checkerboard) */}
+                <div 
+                    className="absolute inset-[-50%] z-0 opacity-10 pointer-events-none flex flex-col justify-center items-center gap-24 md:gap-32 -rotate-12 scale-110"
+                >
+                    {Array.from({ length: 12 }).map((_, rowIndex) => (
+                        <div 
+                            key={`row-${rowIndex}`} 
+                            className="flex items-center gap-24 md:gap-32"
+                            style={{ 
+                                transform: rowIndex % 2 !== 0 ? 'translateX(200px)' : 'none' 
+                            }}
+                        >
+                            {Array.from({ length: 8 }).map((_, colIndex) => (
+                                <img 
+                                    key={`col-${rowIndex}-${colIndex}`}
+                                    src="/logo.svg" 
+                                    alt="" 
+                                    className="h-10 md:h-16 object-contain grayscale brightness-200" 
+                                />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                         <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white p-1 shadow-xl relative">
@@ -299,7 +323,7 @@ export default function ProfilePage() {
                             <p className="text-orange-100 font-medium opacity-80 m-0 text-sm mb-3">
                                 {user.email}
                             </p>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                                 <span className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-bold text-white border border-white/5">
                                     Miembro desde{' '}
                                     {new Date(user.createdAt || Date.now()).toLocaleDateString(
