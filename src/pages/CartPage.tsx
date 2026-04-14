@@ -6,6 +6,7 @@ import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus';
+import { detectZone } from '../utils/delivery';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -147,15 +148,19 @@ export default function CartPage() {
 
     const handleAddressSelect = useCallback(
         (res: any) => {
-            methods.setValue('address', res.address || '');
+            const finalLat = res.coordinates?.[0] ?? res.lat;
+            const finalLon = res.coordinates?.[1] ?? res.lon;
+            const computedZone = res.zone || (finalLat && finalLon ? detectZone(finalLat, finalLon, deliveryZones) : null);
+
+            methods.setValue('address', res.address || res.street || '');
             methods.setValue('house', res.house || '');
             methods.setValue('apartment', res.apartment || '');
-            methods.setValue('postalCode', res.postalCode || '');
-            methods.setValue('selectedZone', res.zone);
-            methods.setValue('lat', res.coordinates?.[0]);
-            methods.setValue('lon', res.coordinates?.[1]);
+            methods.setValue('postalCode', res.postalCode || res.postal_code || '');
+            methods.setValue('selectedZone', computedZone);
+            methods.setValue('lat', finalLat);
+            methods.setValue('lon', finalLon);
         },
-        [methods]
+        [methods, deliveryZones]
     );
 
     useEffect(() => {
