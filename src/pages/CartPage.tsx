@@ -109,12 +109,12 @@ export default function CartPage() {
                 : (siteSettings?.minOrder ?? 15)
             : 0;
 
+    const freeDeliveryThreshold =
+        selectedZone?.freeThreshold ?? siteSettings?.freeDeliveryThreshold ?? 60;
+
     const deliveryCost =
         deliveryType === 'delivery'
-            ? cartSubtotal >=
-              (selectedZone
-                  ? (selectedZone.freeThreshold ?? siteSettings?.freeDeliveryThreshold ?? 60)
-                  : (siteSettings?.freeDeliveryThreshold ?? 60))
+            ? cartSubtotal >= freeDeliveryThreshold
                 ? 0
                 : selectedZone
                   ? (selectedZone.cost ?? 0)
@@ -871,6 +871,7 @@ export default function CartPage() {
                                     <CartSummary
                                         total={cartSubtotal}
                                         deliveryCost={deliveryCost}
+                                        freeDeliveryThreshold={freeDeliveryThreshold}
                                         promoCode={promoCode}
                                         promoDiscount={promoDiscount}
                                         promoError={promoError}
