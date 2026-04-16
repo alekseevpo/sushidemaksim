@@ -86,9 +86,7 @@ const ProductCard = React.memo(function ProductCard({
                     getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 640)}
                     {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
                     className={`w-full h-full object-cover transition-transform duration-700 ease-out ${
-                        isZoomed
-                            ? 'scale-[1.3] shadow-inner'
-                            : 'group-hover:scale-125'
+                        isZoomed ? 'scale-[1.3] shadow-inner' : 'group-hover:scale-125'
                     }`}
                     fallbackContent={
                         <div className="w-full h-full flex items-center justify-center text-4xl grayscale opacity-30">
