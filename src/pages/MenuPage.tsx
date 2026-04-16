@@ -60,21 +60,21 @@ export default function MenuPage() {
         const menuTop = document.getElementById('menu-content');
         if (menuTop) {
             const isMobile = window.innerWidth < 1024;
-            // Use stable predictive offset (compact header 64px + small buffer)
-            const offset = isMobile ? 80 : 80;
-            const targetTop = Math.max(
-                0,
-                menuTop.getBoundingClientRect().top + window.scrollY - offset
-            );
+            // Total fixed height: Header (64px) + CategoryBar (~55px) + buffer = ~130px
+            const offset = isMobile ? 130 : 80;
 
-            // Using instant scroll avoids the "jump from bottom" visual glitch
-            // that occurs when the DOM drastically shrinks in height (e.g. going from "All" to a small category)
-            // while a long smooth-scroll animation is trying to play.
-            if ((window as any).lenis) {
-                (window as any).lenis.scrollTo(targetTop, { immediate: true });
-            } else {
-                window.scrollTo({ top: targetTop, behavior: 'instant' });
-            }
+            requestAnimationFrame(() => {
+                const targetTop = Math.max(
+                    0,
+                    menuTop.getBoundingClientRect().top + window.scrollY - offset
+                );
+
+                if ((window as any).lenis) {
+                    (window as any).lenis.scrollTo(targetTop, { immediate: true });
+                } else {
+                    window.scrollTo({ top: targetTop, behavior: 'instant' });
+                }
+            });
         }
     }, [selectedCategory, user?.id]);
 
@@ -87,17 +87,20 @@ export default function MenuPage() {
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
                 const isMobile = window.innerWidth < 1024;
-                const offset = isMobile ? 80 : 80;
-                const targetTop = Math.max(
-                    0,
-                    menuTop.getBoundingClientRect().top + window.scrollY - offset
-                );
+                const offset = isMobile ? 130 : 80;
 
-                if ((window as any).lenis) {
-                    (window as any).lenis.scrollTo(targetTop, { immediate: true });
-                } else {
-                    window.scrollTo({ top: targetTop, behavior: 'instant' });
-                }
+                requestAnimationFrame(() => {
+                    const targetTop = Math.max(
+                        0,
+                        menuTop.getBoundingClientRect().top + window.scrollY - offset
+                    );
+
+                    if ((window as any).lenis) {
+                        (window as any).lenis.scrollTo(targetTop, { immediate: true });
+                    } else {
+                        window.scrollTo({ top: targetTop, behavior: 'instant' });
+                    }
+                });
             }
         }
     }, [debouncedSearch, isLoading, items.length]);

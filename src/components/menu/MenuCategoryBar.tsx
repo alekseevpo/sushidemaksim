@@ -1,4 +1,5 @@
 import { motion, LayoutGroup } from 'framer-motion';
+import { useEffect, useCallback } from 'react';
 import { Sparkles } from 'lucide-react';
 import { CATEGORIES } from '../../constants/menu';
 
@@ -28,13 +29,14 @@ export default function MenuCategoryBar({
     setSelectedCategory,
     isMobile = false,
 }: MenuCategoryBarProps) {
-    const handleCategoryClick = (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
-        if (isMobile) {
-            // Manually scroll the container horizontally to avoid vertical layout jumping bugs
-            // caused by native scrollIntoView on fixed elements in mobile Safari/Chrome.
-            const btn = e.currentTarget;
-            const container = btn.closest('.overflow-x-auto');
-            if (container) {
+    const scrollToCategory = useCallback(
+        (id: string, behavior: ScrollBehavior = 'smooth') => {
+            if (!isMobile) return;
+
+            const btn = document.getElementById(`cat-${id}`);
+            const container = btn?.closest('.overflow-x-auto');
+
+            if (btn && container) {
                 const containerRect = container.getBoundingClientRect();
                 const btnRect = btn.getBoundingClientRect();
                 const scrollLeft =
@@ -46,15 +48,26 @@ export default function MenuCategoryBar({
 
                 container.scrollTo({
                     left: scrollLeft,
-                    behavior: 'smooth',
+                    behavior,
                 });
             }
+        },
+        [isMobile]
+    );
 
-            // Small micro-delay for selection update to allow smooth scroll start with higher priority
-            setTimeout(() => setSelectedCategory(id), 10);
-        } else {
-            setSelectedCategory(id);
+    // Center category when it changes from any source (URL, click, etc.)
+    useEffect(() => {
+        if (isMobile) {
+            // Use a small delay to ensure the DOM is ready and any animations have started
+            const timeoutId = setTimeout(() => {
+                scrollToCategory(selectedCategory, 'smooth');
+            }, 100);
+            return () => clearTimeout(timeoutId);
         }
+    }, [selectedCategory, isMobile, scrollToCategory]);
+
+    const handleCategoryClick = (id: string) => {
+        setSelectedCategory(id);
     };
 
     if (isMobile) {
@@ -75,7 +88,7 @@ export default function MenuCategoryBar({
                                 {/* TODOS Button */}
                                 <button
                                     id="cat-all"
-                                    onClick={e => handleCategoryClick('all', e)}
+                                    onClick={() => handleCategoryClick('all')}
                                     className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
                                         selectedCategory === 'all'
                                             ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20 border-transparent z-10'
@@ -90,7 +103,7 @@ export default function MenuCategoryBar({
                                     <button
                                         key={cat.id}
                                         id={`cat-${cat.id}`}
-                                        onClick={e => handleCategoryClick(cat.id, e)}
+                                        onClick={() => handleCategoryClick(cat.id)}
                                         className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
                                             selectedCategory === cat.id
                                                 ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20 border-transparent z-10'
