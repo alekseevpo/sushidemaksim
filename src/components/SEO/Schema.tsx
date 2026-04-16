@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSettings } from '../../hooks/queries/useSettings';
+import { SITE_URL } from '../../constants/config';
 
 /**
  * Component to inject JSON-LD structured data into the document head.
@@ -16,10 +17,10 @@ export default function Schema() {
             '@graph': [
                 {
                     '@type': 'Restaurant',
-                    '@id': 'https://sushidemaksim.vercel.app/#restaurant',
+                    '@id': `${SITE_URL}/#restaurant`,
                     name: 'Sushi de Maksim',
-                    image: 'https://sushidemaksim.vercel.app/og-image.jpg',
-                    url: 'https://sushidemaksim.vercel.app/',
+                    image: `${SITE_URL}/og-image.jpg`,
+                    url: `${SITE_URL}/`,
                     telephone: settings.contactPhone || '+34631920312',
                     priceRange: '€€',
                     servesCuisine: 'Japanese, Sushi',
@@ -60,26 +61,25 @@ export default function Schema() {
                             name: 'The Fork',
                         },
                     },
-                    hasMenu: 'https://sushidemaksim.vercel.app/menu',
+                    hasMenu: `${SITE_URL}/menu`,
                     acceptsReservations: 'true',
                 },
                 {
                     '@type': 'WebSite',
-                    '@id': 'https://sushidemaksim.vercel.app/#website',
-                    url: 'https://sushidemaksim.vercel.app/',
+                    '@id': `${SITE_URL}/#website`,
+                    url: `${SITE_URL}/`,
                     name: 'Sushi de Maksim',
                     description:
                         'Auténtica cocina japonesa con entrega a domicilio en Madrid. Sushi y rollos frescos.',
                     publisher: {
-                        '@id': 'https://sushidemaksim.vercel.app/#restaurant',
+                        '@id': `${SITE_URL}/#restaurant`,
                     },
                     potentialAction: [
                         {
                             '@type': 'SearchAction',
                             target: {
                                 '@type': 'EntryPoint',
-                                urlTemplate:
-                                    'https://sushidemaksim.vercel.app/menu?search={search_term_string}',
+                                urlTemplate: `${SITE_URL}/menu?search={search_term_string}`,
                             },
                             'query-input': 'required name=search_term_string',
                         },

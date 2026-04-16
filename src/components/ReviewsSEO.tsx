@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Star, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SITE_URL } from '../constants/config';
 
 const REVIEWS = [
     {
@@ -113,7 +114,7 @@ export default function ReviewsSEO() {
         itemReviewed: {
             '@type': 'Restaurant',
             name: 'Sushi de Maksim',
-            image: 'https://sushidemaksim.com/sushi-hero.webp',
+            image: `${SITE_URL}/sushi-hero.webp`,
             telephone: '+34 631 920 312',
             priceRange: '$$',
             servesCuisine: ['Japanese', 'Sushi'],

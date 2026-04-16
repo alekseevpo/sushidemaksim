@@ -1,109 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://sushidemaksim.vercel.app</loc>
+        <loc>https://sushidemaksim.com</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu</loc>
+        <loc>https://sushidemaksim.com/menu</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/promo</loc>
+        <loc>https://sushidemaksim.com/promo</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/contacts</loc>
+        <loc>https://sushidemaksim.com/contacts</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/blog</loc>
+        <loc>https://sushidemaksim.com/blog</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/blog/el-origen-del-sushi-en-espana</loc>
+        <loc>https://sushidemaksim.com/blog/el-origen-del-sushi-en-espana</loc>
         <lastmod>2026-04-03</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/blog/5-curiosidades-del-sushi</loc>
+        <loc>https://sushidemaksim.com/blog/5-curiosidades-del-sushi</loc>
         <lastmod>2026-03-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/blog/como-maridar-tu-sushi</loc>
+        <loc>https://sushidemaksim.com/blog/como-maridar-tu-sushi</loc>
         <lastmod>2026-03-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/blog/los-5-tipos-de-sushi-favoritos-en-espana</loc>
+        <loc>https://sushidemaksim.com/blog/los-5-tipos-de-sushi-favoritos-en-espana</loc>
         <lastmod>2026-04-03</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/blog/el-arte-de-preparar-el-arroz-para-sushi</loc>
+        <loc>https://sushidemaksim.com/blog/el-arte-de-preparar-el-arroz-para-sushi</loc>
         <lastmod>2026-03-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=entrantes</loc>
+        <loc>https://sushidemaksim.com/menu?category=entrantes</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=rollos-grandes</loc>
+        <loc>https://sushidemaksim.com/menu?category=rollos-grandes</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=rollos-clasicos</loc>
+        <loc>https://sushidemaksim.com/menu?category=rollos-clasicos</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=rollos-fritos</loc>
+        <loc>https://sushidemaksim.com/menu?category=rollos-fritos</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=sopas</loc>
+        <loc>https://sushidemaksim.com/menu?category=sopas</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=menus</loc>
+        <loc>https://sushidemaksim.com/menu?category=menus</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=extras</loc>
+        <loc>https://sushidemaksim.com/menu?category=extras</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://sushidemaksim.vercel.app/menu?category=postre</loc>
+        <loc>https://sushidemaksim.com/menu?category=postre</loc>
         <lastmod>2026-04-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>

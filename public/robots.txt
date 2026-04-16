@@ -5,4 +5,4 @@ Disallow: /admin-login
 Disallow: /verify
 Disallow: /order-tracking/*
 
-Sitemap: https://sushidemaksim.vercel.app/sitemap.xml
+Sitemap: https://sushidemaksim.com/sitemap.xml

@@ -45,5 +45,5 @@ export const config = {
     },
     frontendUrl:
         env.FRONTEND_URL ||
-        (nodeEnv === 'production' ? 'https://sushidemaksim.vercel.app' : 'http://localhost:5173'),
+        (nodeEnv === 'production' ? 'https://sushidemaksim.com' : 'http://localhost:5173'),
 };

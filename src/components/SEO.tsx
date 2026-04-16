@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '../constants/config';
 
 interface SEOProps {
     title: string;
@@ -15,8 +16,8 @@ export default function SEO({
     title,
     description,
     keywords,
-    image = 'https://sushidemaksim.vercel.app/og-image.jpg',
-    url = 'https://sushidemaksim.vercel.app',
+    image = `${SITE_URL}/og-image.jpg`,
+    url = SITE_URL,
     type = 'website',
     schema,
     robots = 'index, follow',
