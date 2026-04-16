@@ -146,10 +146,7 @@ export default function CartPage() {
         setIsAddressModalOpen(false);
     }, []);
 
-    const [isRecoveringCoords, setIsRecoveringCoords] = useState(false);
-
     const recoverCoordinates = useCallback(async (addr: any) => {
-        setIsRecoveringCoords(true);
         try {
             const query = `${addr.street || addr.address} ${addr.house || ''}, Madrid`.trim();
             const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
@@ -163,8 +160,6 @@ export default function CartPage() {
             }
         } catch (e) {
             console.error('Failed to recover coordinates:', e);
-        } finally {
-            setIsRecoveringCoords(false);
         }
         return null;
     }, []);
@@ -184,8 +179,7 @@ export default function CartPage() {
                 }
             }
 
-            const computedZone =
-                res.zone || detectZone(finalLat, finalLon, deliveryZones, pCode);
+            const computedZone = res.zone || detectZone(finalLat, finalLon, deliveryZones, pCode);
 
             methods.setValue('address', res.address || res.street || '');
             methods.setValue('house', res.house || '');
