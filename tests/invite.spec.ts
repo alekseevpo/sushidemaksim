@@ -19,13 +19,11 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
             const mockDate = new Date('2026-03-21T21:00:00').getTime();
             Date.now = () => mockDate;
             const RealDate = Date;
-            // @ts-expect-error - overriding global Date
             globalThis.Date = class extends RealDate {
                 constructor(...args: any[]) {
                     if (args.length === 0) {
                         super(mockDate);
                     } else {
-                        // @ts-expect-error - spreading args
                         super(...args);
                     }
                 }
