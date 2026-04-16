@@ -73,7 +73,7 @@ jobs:
 
             - name: Install server dependencies
               if: steps.server-cache.outputs.cache-hit != 'true'
-              run: cd server && npm install
+              run: cd server && npm ci
 
             - name: Build frontend for E2E
               run: npm run sitemap && npx vite build
@@ -118,7 +118,7 @@ jobs:
                   node-version: '22'
                   cache: 'npm'
             - name: Install backend dependencies
-              run: cd server && npm install
+              run: cd server && npm ci
             - name: Build backend (check types)
               run: cd server && npm run build
 
