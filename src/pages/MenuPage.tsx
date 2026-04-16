@@ -4,7 +4,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import { tracker } from '../analytics/tracker';
-import { MenuSkeleton, MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
+import { MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
 import { CATEGORIES, EMOJI } from '../constants/menu';
 import { MenuItem, useMenu, useFavorites, useToggleFavorite } from '../hooks/queries/useMenu';
 import MenuCategoryBar from '../components/menu/MenuCategoryBar';

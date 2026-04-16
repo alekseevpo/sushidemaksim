@@ -16,7 +16,7 @@ const KatanaUnderline = () => (
         transition={{
             type: 'spring',
             stiffness: 400, // Increased stiffness for faster movement
-            damping: 35,    // Balanced damping
+            damping: 35, // Balanced damping
             mass: 0.5,
         }}
     >

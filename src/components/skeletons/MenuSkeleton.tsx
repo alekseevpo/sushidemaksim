@@ -64,7 +64,7 @@ export const MenuSkeleton = () => (
         <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
             {/* Desktop Sidebar Skeleton */}
             <aside className="hidden md:block w-[200px] flex-shrink-0 bg-orange-600 relative">
-                <div 
+                <div
                     className="sticky flex flex-col items-stretch pb-10"
                     style={{
                         top: 'var(--header-height, 80px)',
