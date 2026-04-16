@@ -19,6 +19,7 @@ const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_
 async function generateSitemap() {
     console.log('🚀 Starting Sitemap Generation...');
 
+    const today = new Date().toISOString().split('T')[0];
     const staticRoutes = ['', '/menu', '/promo', '/contacts', '/blog'];
 
     let dynamicRoutes = [];
@@ -28,7 +29,7 @@ async function generateSitemap() {
         try {
             const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            // 1. Fetch Blog Posts
+    // 1. Fetch Blog Posts
             const { data: posts, error: postsError } = await supabase
                 .from('blog_posts')
                 .select('slug, updated_at')
@@ -37,22 +38,42 @@ async function generateSitemap() {
             if (postsError) throw postsError;
 
             if (posts) {
-                dynamicRoutes = posts.map(post => ({
+                const blogRoutes = posts.map(post => ({
                     url: `/blog/${post.slug}`,
                     lastmod: post.updated_at
                         ? new Date(post.updated_at).toISOString().split('T')[0]
                         : today,
                 }));
+                dynamicRoutes.push(...blogRoutes);
                 console.log(`✅ Found ${posts.length} published blog posts.`);
             }
+
+            // 2. Add Menu Categories
+            const categories = [
+                'entrantes',
+                'rollos-grandes',
+                'rollos-clasicos',
+                'rollos-fritos',
+                'sopas',
+                'menus',
+                'extras',
+                'postre',
+            ];
+
+            const categoryRoutes = categories.map(cat => ({
+                url: `/menu?category=${cat}`,
+                lastmod: today,
+                priority: 0.7,
+                changefreq: 'weekly',
+            }));
+            dynamicRoutes.push(...categoryRoutes);
+            console.log(`✅ Added ${categories.length} menu categories to sitemap.`);
         } catch (err) {
             console.error('⚠️ Could not fetch dynamic routes:', err.message);
         }
     } else {
         console.log('ℹ️ No Supabase keys found. Generating static sitemap only.');
     }
-
-    const today = new Date().toISOString().split('T')[0];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -71,8 +92,8 @@ ${dynamicRoutes
         route => `    <url>
         <loc>${BASE_URL}${route.url}</loc>
         <lastmod>${route.lastmod}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
+        <changefreq>${route.changefreq || 'monthly'}</changefreq>
+        <priority>${route.priority || '0.6'}</priority>
     </url>`
     )
     .join('\n')}

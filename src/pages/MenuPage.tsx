@@ -254,10 +254,18 @@ export default function MenuPage() {
         '@context': 'https://schema.org',
         '@type': 'Menu',
         name: 'Menú Sushi de Maksim',
-        mainEntityOfPage: 'https://sushidemaksim.com/menu',
-        hasMenuSection: CATEGORIES.map(cat => ({
+        description:
+            'Auténtica comida japonesa y sushi fresco con entrega a domicilio en Madrid. Rolls, nigiris, gyozas y más.',
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': 'https://sushidemaksim.com/menu',
+        },
+        hasMenuSection: CATEGORIES.filter(cat =>
+            selectedCategory === 'all' ? true : cat.id === selectedCategory
+        ).map(cat => ({
             '@type': 'MenuSection',
             name: cat.name,
+            description: cat.description,
             hasMenuItem: items
                 .filter(item => item.category === cat.id)
                 .map(item => ({
@@ -268,6 +276,9 @@ export default function MenuPage() {
                         '@type': 'Offer',
                         price: item.price,
                         priceCurrency: 'EUR',
+                        itemCondition: 'https://schema.org/NewCondition',
+                        availability: 'https://schema.org/InStock',
+                        url: `https://sushidemaksim.com/menu?category=${cat.id}#item-${item.id}`,
                     },
                     image: item.image,
                 })),
@@ -301,13 +312,22 @@ export default function MenuPage() {
                 title={
                     selectedCategory === 'all'
                         ? 'Menú de Sushi a Domicilio en Madrid | Carta Completa'
-                        : `Menú de ${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'} en Madrid`
+                        : `${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'} en Madrid — Menú de Sushi de Maksim`
                 }
-                description="Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi y combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!"
-                keywords="menu sushi madrid, carta sushi, pedir sushi online madrid, sushi a domicilio, nigiri madrid, rolls japoneses"
+                description={
+                    selectedCategory === 'all'
+                        ? 'Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi y combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!'
+                        : `${CATEGORIES.find(c => c.id === selectedCategory)?.description || ''} Pide online con entrega rápida a domicilio en Madrid.`
+                }
+                keywords={`menu sushi madrid, carta sushi, sushi a domicilio madrid, ${selectedCategory === 'all' ? '' : selectedCategory + ' madrid,'} pedir sushi online`}
                 schema={[menuSchema, breadcrumbSchema]}
-                url="https://sushidemaksim.com/menu"
+                url={`https://sushidemaksim.com/menu${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`}
             />
+            <h1 className="sr-only">
+                {selectedCategory === 'all'
+                    ? 'Menú de Sushi a Domicilio en Madrid — Sushi de Maksim'
+                    : `Menú de ${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'} en Madrid`}
+            </h1>
             <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
