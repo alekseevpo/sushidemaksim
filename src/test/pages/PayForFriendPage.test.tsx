@@ -35,7 +35,7 @@ describe('PayForFriendPage (Integration)', () => {
         vi.clearAllMocks();
 
         // Mock window.scrollTo to avoid potential errors in JSDOM
-        window.scrollTo = vi.fn();
+        window.scrollTo = vi.fn() as any;
 
         // Mock navigator.vibrate
         if (typeof navigator !== 'undefined') {
