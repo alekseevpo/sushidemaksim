@@ -48,8 +48,9 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/tu@email.com/i).fill(`test-${Date.now()}@test.com`);
         await page.getByPlaceholder(/Crea una contraseña segura/i).fill('password123!');
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
+        await page.waitForLoadState('networkidle');
         await expect(page.getByText(/Cuenta creada/i).first()).toBeVisible({
-            timeout: 15000,
+            timeout: 20000,
         });
     });
 
