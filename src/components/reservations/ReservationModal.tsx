@@ -299,7 +299,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                             </label>
                                             {!formData.date ? (
                                                 <div className="h-11 flex items-center justify-center bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] text-[11px] font-bold text-gray-400 uppercase tracking-widest px-2 opacity-60">
-                                                    Escoge fecha first
+                                                    Selecciona fecha primero
                                                 </div>
                                             ) : isDayClosed ? (
                                                 <div className="h-11 flex items-center justify-center bg-orange-50/50 border-2 border-transparent rounded-[1.25rem] text-[11px] font-bold text-orange-500 uppercase tracking-widest px-2">
@@ -318,7 +318,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                                         </div>
                                     </div>
 
-                                    {/* 3. Personas и Телефон */}
+                                    {/* 3. Personas y Teléfono */}
                                     <div className="grid grid-cols-[0.8fr,1.2fr] gap-3 min-w-0 overflow-hidden">
                                         <div className="space-y-1">
                                             <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">

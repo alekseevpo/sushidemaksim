@@ -57,7 +57,7 @@ app.use('/api/reservations', reservationsRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────
 // Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them
-app.get(['/invitacion/:id', '/api/orders/share/:id'], async (req, res) => {
+app.get('/invitacion/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { data: order } = await supabase
@@ -72,11 +72,9 @@ app.get(['/invitacion/:id', '/api/orders/share/:id'], async (req, res) => {
 
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
         const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
-        const finalPandaHost = host.includes('localhost')
-            ? `http://${host}`
-            : `https://sushidemaksim.vercel.app`;
-        const pandaImg = `${finalPandaHost}/hungry-panda.png`;
-        const finalDest = `${fullOrigin}/pay-for-friend/${id}`;
+        const fUrl = config.frontendUrl.replace(/\/$/, '');
+        const pandaImg = `${fUrl}/hungry-panda.webp`;
+        const finalDest = `${fUrl}/pay-for-friend/${id}`;
 
         const html = `<!DOCTYPE html>
 <html lang="es" prefix="og: http://ogp.me/ns#">
@@ -92,7 +90,7 @@ app.get(['/invitacion/:id', '/api/orders/share/:id'], async (req, res) => {
     <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
     <meta property="og:image" content="${pandaImg}">
     <meta property="og:image:secure_url" content="${pandaImg}">
-    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:type" content="image/webp">
     <meta property="og:image:width" content="600">
     <meta property="og:image:height" content="600">
     <meta property="og:url" content="${finalDest}">

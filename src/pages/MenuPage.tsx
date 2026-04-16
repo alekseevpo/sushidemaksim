@@ -296,10 +296,10 @@ export default function MenuPage() {
             <SEO
                 title={
                     selectedCategory === 'all'
-                        ? 'Menú de Sushi a Domicilio en Madrid | Carta Compleта'
+                        ? 'Menú de Sushi a Domicilio en Madrid | Carta Completa'
                         : `Menú de ${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'} en Madrid`
                 }
-                description="Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi и combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!"
+                description="Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi y combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!"
                 keywords="menu sushi madrid, carta sushi, pedir sushi online madrid, sushi a domicilio, nigiri madrid, rolls japoneses"
                 schema={[menuSchema, breadcrumbSchema]}
                 url="https://sushidemaksim.com/menu"

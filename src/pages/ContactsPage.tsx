@@ -333,7 +333,7 @@ export default function ContactsPage() {
                                 Conecta con nosotros
                             </h3>
                             <p className="text-gray-500 text-xs md:text-sm mb-8 leading-relaxed font-medium max-w-[240px]">
-                                Respuesta rápida por WhatsApp и Telegram.
+                                Respuesta rápida por WhatsApp y Telegram.
                             </p>
 
                             <div className="flex items-center justify-center gap-6 md:gap-8 mb-8">

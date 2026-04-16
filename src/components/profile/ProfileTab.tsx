@@ -290,18 +290,39 @@ export default function ProfileTab({ user, updateProfile }: Props) {
 
                         {isEditing ? (
                             <div className="flex flex-col gap-1 flex-1">
-                                <input
-                                    type={field.type}
-                                    value={field.editedValue}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                        field.setter(e.target.value)
-                                    }
-                                    disabled={(field as any).disabled}
-                                    min={(field as any).min}
-                                    max={(field as any).max}
-                                    className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 outline-none transition-all shadow-sm h-[42px] ${(field as any).disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}`}
-                                    placeholder={`Introduce tu ${field.label.toLowerCase()}`}
-                                />
+                                {field.label === 'Teléfono' ? (
+                                    <div className="flex items-center bg-white border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-orange-600/20 focus-within:border-orange-600 transition-all shadow-sm overflow-hidden h-[46px]">
+                                        <div className="pl-4 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-100 h-full flex items-center bg-gray-50">
+                                            +34
+                                        </div>
+                                        <input
+                                            type="tel"
+                                            value={field.editedValue.replace(/^\+34/, '')}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const val = e.target.value
+                                                    .replace(/\D/g, '')
+                                                    .slice(0, 9);
+                                                field.setter(val ? `+34${val}` : '');
+                                            }}
+                                            className="w-full bg-transparent border-none px-4 py-3 text-sm font-bold outline-none text-gray-900"
+                                            placeholder="600 000 000"
+                                            maxLength={9}
+                                        />
+                                    </div>
+                                ) : (
+                                    <input
+                                        type={field.type}
+                                        value={field.editedValue}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                            field.setter(e.target.value)
+                                        }
+                                        disabled={(field as any).disabled}
+                                        min={(field as any).min}
+                                        max={(field as any).max}
+                                        className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 outline-none transition-all shadow-sm h-[42px] ${(field as any).disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}`}
+                                        placeholder={`Introduce tu ${field.label.toLowerCase()}`}
+                                    />
+                                )}
                                 {['Nombre Completo', 'Teléfono', 'Fecha de Cumpleaños'].includes(
                                     field.label
                                 ) && (

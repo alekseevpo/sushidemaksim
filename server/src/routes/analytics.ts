@@ -70,7 +70,8 @@ router.post(
         const waiterSessionId = `waiter-${waiterId || 'anonymous'}-${Date.now()}`;
 
         // 1. Create a REAL order in the orders table
-        // We add [ЗАКАЗ В ЗАВЕДЕНИИ] to the notes to make it visible in admin
+        // 1. Create a REAL order in the orders table
+        // We add [PEDIDO EN EL LOCAL] to the notes to make it visible in admin
         const { data: order, error: orderError } = await supabase
             .from('orders')
             .insert({
@@ -79,7 +80,7 @@ router.post(
                 delivery_address: 'Consume en local',
                 phone_number: 'Waiter Interface',
                 status: 'pending',
-                notes: `[ЗАКАЗ В ЗАВЕДЕНИИ] Mesa: ${metadata.table || 'S/N'} | Atendido por: ${waiterId || 'Camarero'}`,
+                notes: `[PEDIDO EN EL LOCAL] Mesa: ${metadata.table || 'S/N'} | Atendido por: ${waiterId || 'Camarero'}`,
                 estimated_delivery_time: 'En sala',
                 device_type: 'mobile',
                 os_name: 'WaiterApp',
@@ -122,7 +123,7 @@ router.post(
                 items_count: itemsCount,
                 items,
                 source: 'waiter_interface',
-                label: 'Заказ в заведении',
+                label: 'Pedido en el local',
             },
             user_id: waiterId || null,
         };

@@ -9,28 +9,33 @@ import { Order } from '../../types';
 
 function getStatusBadge(status: string) {
     const styles: Record<string, { bg: string; color: string; label: string; icon?: string }> = {
-        pending: { bg: 'bg-amber-500', color: 'text-white', label: 'Enviado', icon: '📨' },
-        received: { bg: 'bg-blue-500', color: 'text-white', label: 'Recibido', icon: '👀' },
-        confirmed: {
-            bg: 'bg-indigo-500',
+        pending: { bg: 'bg-green-600', color: 'text-white', label: 'Pedido Realizado', icon: '📨' },
+        received: {
+            bg: 'bg-green-600',
             color: 'text-white',
-            label: 'Aceptado',
+            label: 'Pedido Realizado',
+            icon: '👀',
+        },
+        confirmed: {
+            bg: 'bg-green-700',
+            color: 'text-white',
+            label: 'Pedido Confirmado',
             icon: '✅',
         },
         preparing: {
-            bg: 'bg-purple-500',
-            color: 'text-white',
-            label: 'Preparando',
-            icon: '👨‍🍳',
-        },
-        on_the_way: { bg: 'bg-pink-500', color: 'text-white', label: 'En camino', icon: '🛵' },
-        delivered: {
             bg: 'bg-green-500',
             color: 'text-white',
-            label: 'Entregado',
+            label: 'Entrega',
+            icon: '👨‍🍳',
+        },
+        on_the_way: { bg: 'bg-green-500', color: 'text-white', label: 'Entrega', icon: '🛵' },
+        delivered: {
+            bg: 'bg-emerald-600',
+            color: 'text-white',
+            label: 'Pedido Entregado',
             icon: '🍱',
         },
-        cancelled: { bg: 'bg-gray-500', color: 'text-white', label: 'Cancelado', icon: '❌' },
+        cancelled: { bg: 'bg-gray-400', color: 'text-white', label: 'Cancelado', icon: '❌' },
     };
     const s = styles[status] || styles.pending;
     return (
@@ -159,7 +164,12 @@ export default function OrdersTab() {
                 {orders.map((order: Order) => (
                     <div
                         key={order.id}
-                        className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+                        onClick={() =>
+                            navigate(
+                                `/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`
+                            )
+                        }
+                        className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer group/card"
                     >
                         {/* Header: More compact, no background */}
                         <div className="px-3 md:px-5 pt-4 md:pt-5 pb-2 md:pb-3 flex items-start justify-between">
@@ -195,18 +205,16 @@ export default function OrdersTab() {
                                     })()}
                                 </div>
                             </div>
-                            {(order.status as string) !== 'delivered' &&
-                                (order.status as string) !== 'cancelled' && (
-                                    <div className="flex items-center gap-2">
-                                        <Link
-                                            to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
-                                            className="bg-orange-50 text-orange-600 px-3 py-1.5 rounded-xl border border-orange-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-orange-100 transition-colors no-underline"
-                                        >
-                                            <span>🛵</span>
-                                            Seguir
-                                        </Link>
-                                    </div>
-                                )}
+                            <div className="flex items-center gap-2">
+                                <Link
+                                    to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
+                                    onClick={e => e.stopPropagation()}
+                                    className="bg-gray-50 text-gray-500 px-3 py-1.5 rounded-xl border border-gray-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-orange-50 hover:text-orange-600 hover:border-orange-100 transition-all no-underline"
+                                >
+                                    <span>👁️</span>
+                                    Detalles
+                                </Link>
+                            </div>
                         </div>
 
                         {/* Order Summary */}
@@ -277,7 +285,10 @@ export default function OrdersTab() {
                             )}
 
                             <button
-                                onClick={() => handleRepeatOrder(order)}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    handleRepeatOrder(order);
+                                }}
                                 disabled={isRepeating === order.id}
                                 className={`mt-3 w-full h-10 md:h-11 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all flex items-center justify-center gap-2
                                     ${

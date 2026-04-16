@@ -44,7 +44,7 @@ test.describe('Authentication Flow', () => {
             .click();
         await page.getByRole('button', { name: /Regístrate/i }).click();
         await page.getByPlaceholder(/Nombre completo/i).fill('Pavel Tester');
-        await page.getByPlaceholder(/\+34 600 000 000/i).fill('600111222');
+        await page.getByPlaceholder(/600 000 000/i).fill('600111222');
         await page.getByPlaceholder(/tu@email.com/i).fill(`test-${Date.now()}@test.com`);
         await page.getByPlaceholder(/Crea una contraseña segura/i).fill('password123!');
         await page.getByRole('button', { name: /Crear cuenta/i }).click();

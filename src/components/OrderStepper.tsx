@@ -2,24 +2,23 @@ import { CheckCircle, Clock, Package, Truck, CheckCircle2, XCircle } from 'lucid
 import { motion } from 'framer-motion';
 
 const STEPS = [
-    { status: 'received', label: 'Recibido', icon: Clock, color: 'text-blue-500' },
-    { status: 'confirmed', label: 'Confirmado', icon: CheckCircle, color: 'text-indigo-500' },
+    { status: 'received', label: 'Pedido Realizado', icon: Clock },
+    { status: 'confirmed', label: 'Pedido Confirmado', icon: CheckCircle },
     {
-        status: 'preparing',
-        label: 'En Cocina',
-        icon: Package,
-        iconLabel: '👨‍🍳',
-        color: 'text-purple-500',
+        status: 'preparing', // covers both preparing and on_the_way in this view
+        label: 'Entrega',
+        icon: Truck,
+        iconLabel: '🛵',
     },
-    { status: 'on_the_way', label: 'En Camino', icon: Truck, color: 'text-pink-500' },
-    { status: 'delivered', label: 'Entregado', icon: CheckCircle2, color: 'text-green-500' },
+    { status: 'delivered', label: 'Pedido Entregado', icon: CheckCircle2 },
 ];
 
 interface OrderStepperProps {
     currentStatus: string;
+    estimatedTime?: string;
 }
 
-export default function OrderStepper({ currentStatus }: OrderStepperProps) {
+export default function OrderStepper({ currentStatus, estimatedTime }: OrderStepperProps) {
     if (currentStatus === 'cancelled') {
         return (
             <div className="flex flex-col items-center gap-4 py-8">
@@ -50,16 +49,23 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
         );
     }
 
-    // Handle 'pending' which is equivalent to 'received' or before 'received'
-    const statusIdx = STEPS.findIndex(s => s.status === currentStatus);
-    const normalizedIdx = currentStatus === 'pending' ? 0 : statusIdx;
+    // Mapping technical statuses to the 4 simplified steps
+    const getNormalizedIdx = () => {
+        if (currentStatus === 'pending' || currentStatus === 'received') return 0;
+        if (currentStatus === 'confirmed') return 1;
+        if (currentStatus === 'preparing' || currentStatus === 'on_the_way') return 2;
+        if (currentStatus === 'delivered') return 3;
+        return 0;
+    };
+
+    const normalizedIdx = getNormalizedIdx();
 
     return (
         <div className="relative w-full py-4 md:py-8">
             {/* Connection Lines */}
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -translate-y-1/2 z-0 hidden md:block" />
             <div
-                className="absolute top-1/2 left-0 h-1 bg-orange-600 -translate-y-1/2 z-0 transition-all duration-1000 hidden md:block"
+                className="absolute top-1/2 left-0 h-1 bg-green-600 -translate-y-1/2 z-0 transition-all duration-1000 hidden md:block"
                 style={{ width: `${(normalizedIdx / (STEPS.length - 1)) * 100}%` }}
             />
 
@@ -81,9 +87,9 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                                 transition={isCurrent ? { repeat: Infinity, duration: 2 } : {}}
                                 className={`w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm transition-colors border ${
                                     isCurrent
-                                        ? 'bg-orange-600 text-white border-orange-400'
+                                        ? 'bg-green-600 text-white border-green-400'
                                         : isActive
-                                          ? 'bg-orange-50 text-orange-600 border-orange-100'
+                                          ? 'bg-green-50 text-green-600 border-green-100'
                                           : 'bg-white text-gray-200 border-gray-100'
                                 }`}
                             >
@@ -103,10 +109,12 @@ export default function OrderStepper({ currentStatus }: OrderStepperProps) {
                                         isActive ? 'text-gray-900' : 'text-gray-300'
                                     }`}
                                 >
-                                    {step.label}
+                                    {isCurrent && idx === 2 && estimatedTime
+                                        ? `Entrega ${estimatedTime.split(' ').pop() || estimatedTime}`
+                                        : step.label}
                                 </span>
                                 {isCurrent && (
-                                    <span className="text-[9px] font-black text-orange-600 animate-pulse bg-orange-100 px-2 py-0.5 rounded-full md:mt-1">
+                                    <span className="text-[9px] font-black text-green-600 animate-pulse bg-green-100 px-2 py-0.5 rounded-full md:mt-1">
                                         Ahora
                                     </span>
                                 )}

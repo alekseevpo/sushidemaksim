@@ -14,7 +14,7 @@ export const contactSchema = z.object({
     message: z
         .string()
         .min(1, 'El mensaje es obligatorio')
-        .min(10, 'El mensaje debe иметь не менее 10 символов'),
+        .min(10, 'El mensaje debe tener al menos 10 caracteres'),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;

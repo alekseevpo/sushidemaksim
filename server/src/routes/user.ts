@@ -303,11 +303,17 @@ router.post(
                 .eq('user_id', req.userId);
         }
 
-        // Check for existing duplicate with robust NULL/empty equality
+        // Check for existing addresses to enforce limit (Max 5)
         const { data: userAddresses } = await supabase
             .from('user_addresses')
             .select('id, street, house, apartment, phone, lat, lon')
             .eq('user_id', req.userId);
+
+        if (userAddresses && userAddresses.length >= 5) {
+            return res.status(400).json({
+                error: 'Has alcanzado el límite máximo de 5 direcciones. Por favor, elimina una para añadir una nueva.',
+            });
+        }
 
         const targetStreet = street.trim().toLowerCase();
         const targetHouse = (house?.trim() || '').toLowerCase();

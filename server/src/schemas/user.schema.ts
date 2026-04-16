@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export const phoneRegex = /^\+34[6789]\d{8}$/;
+
 /**
  * Shared base rules to maintain consistency across Auth and User modules.
  */
@@ -32,7 +34,11 @@ export const registerSchema = z.object({
             .max(80, 'El nombre es demasiado largo'),
         email: emailSchema,
         password: passwordSchema,
-        phone: z.string().max(30, 'El teléfono es demasiado largo').optional().or(z.literal('')),
+        phone: z
+            .string()
+            .regex(phoneRegex, 'Formato de teléfono inválido')
+            .optional()
+            .or(z.literal('')),
     }),
 });
 
@@ -68,7 +74,11 @@ export const updateProfileSchema = z.object({
             .min(2, 'El nombre должен быть не менее 2 символов')
             .max(80, 'El nombre es слишком длинный')
             .optional(),
-        phone: z.string().max(30).optional(),
+        phone: z
+            .string()
+            .regex(phoneRegex, 'Formato de teléfono inválido')
+            .optional()
+            .or(z.literal('')),
         avatar: z.string().url('URL de avatar inválida').optional().or(z.literal('')),
         birthDate: z.string().optional().nullable(),
     }),

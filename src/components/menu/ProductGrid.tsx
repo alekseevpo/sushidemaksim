@@ -57,10 +57,11 @@ export default function ProductGrid({
         );
     }
 
-    const categoriesToShow =
-        selectedCategory === 'all' && !search
-            ? CATEGORIES.filter(cat => items.some(item => item.category === cat.id))
-            : [{ id: selectedCategory, name: '', icon: () => null }];
+    const categoriesToShow = search
+        ? CATEGORIES.filter(cat => items.some(item => item.category === cat.id))
+        : selectedCategory === 'all'
+          ? CATEGORIES.filter(cat => items.some(item => item.category === cat.id))
+          : CATEGORIES.filter(cat => cat.id === selectedCategory);
 
     return (
         <div className="space-y-12 pb-32">

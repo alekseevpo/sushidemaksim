@@ -154,15 +154,28 @@ export default function OrderTrackingPage() {
                             <h2 className="text-lg font-black text-gray-900 uppercase tracking-tighter mb-2">
                                 Estado del pedido
                             </h2>
-                            <p className="text-xs text-gray-500 font-medium flex items-center justify-center md:justify-start gap-1.5 opacity-80">
-                                <Info size={14} className="text-orange-500" />
-                                Consulta aquí el progreso de tu sushi en tiempo real.
-                            </p>
+                            <div className="text-xs text-gray-500 font-medium flex-col md:flex-row flex items-center justify-center md:justify-start gap-1.5 opacity-80">
+                                <div className="flex items-center gap-1.5">
+                                    <Info size={14} className="text-green-500" />
+                                    <span>
+                                        Consulta aquí el progreso de tu sushi en tiempo real.
+                                    </span>
+                                </div>
+                                {(order.status === 'received' || order.status === 'pending') && (
+                                    <span className="mt-1 font-bold text-green-600 underline md:mt-0 md:ml-1 underline-offset-4 decoration-green-200">
+                                        Gracias por tu pedido. Un gestor se pondrá en contacto
+                                        contigo en breve para confirmarlo.
+                                    </span>
+                                )}
+                            </div>
                         </div>
 
                         {/* Status Stepper */}
                         <div className="mb-10">
-                            <OrderStepper currentStatus={order.status} />
+                            <OrderStepper
+                                currentStatus={order.status}
+                                estimatedTime={order.estimatedDeliveryTime}
+                            />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">

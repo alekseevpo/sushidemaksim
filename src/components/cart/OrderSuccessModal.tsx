@@ -78,7 +78,7 @@ export default function OrderSuccessModal({
                         <span className="text-gray-900 font-black">
                             #{String(orderId).padStart(5, '0')}
                         </span>{' '}
-                        ha sido recibido и ya estamos preparando tus sushis con amor.
+                        ha sido recibido y ya estamos preparando tus sushis con amor.
                     </p>
 
                     <div className="flex flex-col gap-2.5 md:gap-3 relative z-10 text-left">
@@ -177,7 +177,7 @@ export default function OrderSuccessModal({
                         {!isAuthenticated && (
                             <div className="bg-amber-50 border border-amber-200 p-3.5 md:p-4 rounded-xl md:rounded-2xl flex flex-col items-center">
                                 <p className="text-[10px] md:text-[11px] text-amber-800 font-bold mb-2 md:mb-3 text-center leading-tight px-1">
-                                    🎁 ¡Regístrate ahora и guarda tus direcciones para el próximo
+                                    🎁 ¡Regístrate ahora y guarda tus direcciones para el próximo
                                     pedido!
                                 </p>
                                 <button

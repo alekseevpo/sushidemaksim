@@ -242,8 +242,9 @@ export default function Header() {
                                             key={link.label || idx}
                                             onClick={link.onClick}
                                             type="button"
-                                            className={commonStyles}
+                                            className={`${commonStyles} flex items-center gap-2`}
                                         >
+                                            {link.icon && <link.icon size={16} strokeWidth={2} />}
                                             {link.label}
                                         </button>
                                     );
@@ -253,8 +254,13 @@ export default function Header() {
                                     <Link
                                         key={link.to || idx}
                                         to={link.to!}
-                                        className={commonStyles}
+                                        className={`${commonStyles} flex items-center gap-2`}
                                     >
+                                        {link.icon && (
+                                            <span className="relative z-10 flex items-center justify-center translate-y-[-1px]">
+                                                <link.icon size={16} strokeWidth={2} />
+                                            </span>
+                                        )}
                                         <span className="relative z-10">{link.label}</span>
                                         {isActive && (
                                             <motion.div
@@ -594,8 +600,9 @@ export default function Header() {
                                                         setShowMobileMenu(false);
                                                         setIsReservationModalOpen(true);
                                                     }}
-                                                    className="w-full py-2 group flex items-center justify-center px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-center drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
+                                                    className="w-full py-2 group flex items-center justify-center gap-3 px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-center drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
                                                 >
+                                                    <Calendar size={22} strokeWidth={2.5} />
                                                     <span className="tracking-tight uppercase">
                                                         RESERVAR MESA
                                                     </span>
@@ -618,11 +625,22 @@ export default function Header() {
                                                         }`;
 
                                                     const content = (
-                                                        <span
-                                                            className={`tracking-tight uppercase ${isActive ? 'text-orange-600' : 'text-gray-900'}`}
+                                                        <div
+                                                            className={`flex items-center gap-3 tracking-tight uppercase ${isActive ? 'text-orange-600' : 'text-gray-900'}`}
                                                         >
-                                                            {link.label}
-                                                        </span>
+                                                            {link.icon && (
+                                                                <link.icon
+                                                                    size={20}
+                                                                    strokeWidth={2}
+                                                                    className={
+                                                                        isActive
+                                                                            ? 'text-orange-600'
+                                                                            : 'text-gray-400'
+                                                                    }
+                                                                />
+                                                            )}
+                                                            <span>{link.label}</span>
+                                                        </div>
                                                     );
 
                                                     if (isAction) {

@@ -68,7 +68,7 @@ router.post(
             serverEstimatedTime = `${normalizedDate} ${scheduledTime}`;
         } else if (isStoreClosed) {
             return res.status(400).json({
-                error: 'Nuestra cocina está descansando теперь. ¡Но мы будем рады подготовить ваш более поздний заказ! Пожалуйста, выберите "Entrega programada".',
+                error: 'Nuestra cocina está descansando ahora. ¡Pero estaremos encantados de preparar tu pedido más adelante! Por favor, selecciona "Entrega programada".',
             });
         }
 
@@ -290,6 +290,7 @@ router.post(
         console.log('--- ATOMIC RPC START (V3) ---');
         console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
 
+        console.log('DEBUG: calling RPC create_order_v3', JSON.stringify(rpcArgs, null, 2));
         const { data: rpcData, error: rpcError } = await supabase.rpc('create_order_v3', rpcArgs);
 
         if (rpcError) {
@@ -707,6 +708,8 @@ router.post(
         console.log('--- ATOMIC INVITE RPC START (V3) ---');
         console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
 
+        console.log('DEBUG: invite RPC starting...');
+        console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
         const { data: rpcData, error: rpcError } = await supabase.rpc('create_order_v3', rpcArgs);
 
         if (rpcError) {
@@ -725,12 +728,13 @@ router.post(
         }
 
         try {
-            const origin =
-                (req.headers.origin as string) ||
-                (config.isDev ? 'http://localhost:3000' : 'https://sushidemaksim.com');
+            const fUrl = config.frontendUrl || 'https://sushidemaksim.com';
+            const shareBase = fUrl.replace(/\/$/, '');
+            const apiBase = config.nodeEnv === 'production' ? 'https://sushidemaksim.com' : shareBase;
+            
             res.status(201).json({
                 orderId: orderId,
-                shareUrl: `${origin}/invitacion/${orderId}`,
+                shareUrl: `${apiBase}/api/orders/share/${orderId}`,
             });
         } catch (postRpcError: any) {
             console.error('❌ CRITICAL ERROR IN POST-INVITE-RPC:', postRpcError);
@@ -761,8 +765,9 @@ router.get(
         const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
 
         // Ensure image URL is absolute and uses HTTPS for Telegram
-        const pandaImg = `https://${host}/hungry-panda.png`;
-        const finalDest = `https://${host}/pay-for-friend/${id}`;
+        const fUrl = config.frontendUrl.replace(/\/$/, '');
+        const pandaImg = `${fUrl}/hungry-panda.webp`;
+        const finalDest = `${fUrl}/pay-for-friend/${id}`;
 
         const html = `
 <!DOCTYPE html>
@@ -778,7 +783,7 @@ router.get(
     <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
     <meta property="og:image" content="${pandaImg}">
     <meta property="og:image:secure_url" content="${pandaImg}">
-    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:type" content="image/webp">
     <meta property="og:image:width" content="600">
     <meta property="og:image:height" content="600">
     <meta property="og:type" content="website">

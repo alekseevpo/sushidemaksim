@@ -901,9 +901,20 @@ router.delete(
 
             await Promise.all(cascadePromises);
 
-            // 3. Delete the user itself
+            // 3. Delete the user itself from public schema
             const { error: finalError } = await supabase.from('users').delete().eq('id', id);
             if (finalError) throw finalError;
+
+            // 4. Delete from auth.users (so they can register again)
+            const { error: authError } = await supabase.auth.admin.deleteUser(id);
+            if (authError) {
+                console.warn(
+                    `[ADMIN] Could not delete user #${id} from Auth (maybe already gone):`,
+                    authError.message
+                );
+            } else {
+                console.log(`✅ [ADMIN] User #${id} fully removed from Auth.`);
+            }
 
             return res.json({
                 success: true,

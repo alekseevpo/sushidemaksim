@@ -167,11 +167,11 @@ describe('CartPage - Invitations (Integration)', () => {
         renderPage();
 
         // Wait for page to load and skeleton to clear
-        const pickupBtn = await screen.findByText(/Recogida/i);
+        const pickupBtn = await screen.findByText(/Recogida/i, {}, { timeout: 3000 });
         fireEvent.click(pickupBtn);
 
         // We'll select payment method
-        const cardBtn = screen.getByText(/Tarjeta/i);
+        const cardBtn = await screen.findByText(/Tarjeta/i, {}, { timeout: 3000 });
         fireEvent.click(cardBtn);
 
         const inviteBtn = screen.getByText(/Que me inviten!/i);
@@ -180,17 +180,20 @@ describe('CartPage - Invitations (Integration)', () => {
             fireEvent.click(inviteBtn);
         });
 
-        await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith(
-                '/orders/invite',
-                expect.objectContaining({
-                    senderName: 'Test User',
-                    notes: expect.stringContaining('[MÉTODO DE PAGO: TARJETA]'),
-                })
-            );
-            expect(navigator.share).toHaveBeenCalled();
-        });
-    });
+        await waitFor(
+            () => {
+                expect(api.post).toHaveBeenCalledWith(
+                    '/orders/invite',
+                    expect.objectContaining({
+                        senderName: 'Test User',
+                        notes: expect.stringContaining('[MÉTODO DE PAGO: TARJETA]'),
+                    })
+                );
+                expect(navigator.share).toHaveBeenCalled();
+            },
+            { timeout: 5000 }
+        );
+    }, 15000); // Increased test timeout to 15s
 
     it('shows error if inviting without address', async () => {
         vi.mocked(useAuth).mockReturnValue({

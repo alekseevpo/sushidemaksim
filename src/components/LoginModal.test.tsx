@@ -154,7 +154,7 @@ describe('LoginModal - Registration', () => {
 
         expect(screen.getByText('Crea tu cuenta')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Tu nombre completo')).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('+34 600 000 000')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('600 000 000')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('tu@email.com')).toBeInTheDocument();
         expect(screen.getByText('Crear cuenta')).toBeInTheDocument();
     });
@@ -168,8 +168,8 @@ describe('LoginModal - Registration', () => {
         fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), {
             target: { value: 'John Doe' },
         });
-        fireEvent.change(screen.getByPlaceholderText('+34 600 000 000'), {
-            target: { value: '123456789' },
+        fireEvent.change(screen.getByPlaceholderText('600 000 000'), {
+            target: { value: '612345678' },
         });
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'john@example.com' },
@@ -184,7 +184,7 @@ describe('LoginModal - Registration', () => {
             expect(mockRegister).toHaveBeenCalledWith(
                 'John Doe',
                 'john@example.com',
-                '123456789',
+                '+34612345678',
                 'Password123!'
             );
             expect(mockOnClose).toHaveBeenCalled();
@@ -199,6 +199,9 @@ describe('LoginModal - Registration', () => {
 
         fireEvent.change(screen.getByPlaceholderText('Tu nombre completo'), {
             target: { value: 'John Doe' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('600 000 000'), {
+            target: { value: '612345678' },
         });
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'john@example.com' },

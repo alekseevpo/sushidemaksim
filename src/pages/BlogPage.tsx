@@ -48,7 +48,7 @@ export default function BlogPage() {
         <div className="min-h-screen bg-transparent pb-20">
             <SEO
                 title="Blog de Sushi y Cultura Japonesa — Sushi de Maksim Madrid"
-                description="Descubre los secretos del sushi artesanal, recetas exclusivas и la cultura japonesa en el blog de Sushi de Maksim. ¡Pasión por el detalle en Madrid!"
+                description="Descubre los secretos del sushi artesanal, recetas exclusivas y la cultura japonesa en el blog de Sushi de Maksim. ¡Pasión por el detalle en Madrid!"
                 keywords="blog sushi madrid, cultura japonesa, recetas sushi, secretos del sushi, sushi artesanal madrid"
                 schema={[
                     {

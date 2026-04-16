@@ -280,7 +280,7 @@ export default function CartSummary({
 
             {items.length > 0 && (
                 <p className="text-[10px] text-gray-400 mt-4 text-center font-medium px-4">
-                    Al pulsar "Realizar pedido" aceptas nuestras condiciones generales de venta и
+                    Al pulsar "Realizar pedido" aceptas nuestras condiciones generales de venta y
                     política de privacidad.
                 </p>
             )}

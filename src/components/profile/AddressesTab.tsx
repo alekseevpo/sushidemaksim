@@ -309,23 +309,29 @@ export default function AddressesTab({
     return (
         <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 md:px-0">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
+            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row pb-2">
                 <div>
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">
+                    <h3 className="text-xl md:text-2xl font-black text-gray-900 m-0 tracking-tight">
                         Mis Direcciones
-                    </h2>
-                    <p className="text-gray-500 text-sm mt-1">
-                        Gestiona tus lugares de entrega frecuentes
+                    </h3>
+                    <p className="text-gray-500 text-[11px] md:text-xs mt-0.5 m-0 italic">
+                        Gestiona tus lugares de entrega frecuentes ({addresses.length}/5)
                     </p>
                 </div>
-
-                {!showAddAddress && (
+                {addresses.length < 5 ? (
                     <button
                         onClick={handleAddClick}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-orange-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95"
                     >
-                        <Plus size={16} strokeWidth={1.5} /> Añadir dirección
+                        <Plus size={16} strokeWidth={2} /> AÑADIR DIRECCIÓN
                     </button>
+                ) : (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-xl border border-amber-100/50 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <MapPin size={14} className="text-amber-500" />
+                        <span className="text-[10px] font-black uppercase tracking-tight">
+                            Límite de 5 direcciones alcanzado
+                        </span>
+                    </div>
                 )}
             </div>
 
@@ -367,14 +373,25 @@ export default function AddressesTab({
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
                                 Teléfono de contacto
                             </label>
-                            <input
-                                value={newAddress.phone}
-                                onChange={e =>
-                                    setNewAddress(p => ({ ...p, phone: e.target.value }))
-                                }
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
-                                placeholder="+34 600 000 000"
-                            />
+                            <div className="flex items-center bg-white border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-orange-600/20 focus-within:border-orange-600 transition-all shadow-sm overflow-hidden h-[46px]">
+                                <div className="pl-4 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-100 h-full flex items-center bg-gray-50">
+                                    +34
+                                </div>
+                                <input
+                                    type="tel"
+                                    value={newAddress.phone.replace(/^\+34/, '')}
+                                    onChange={e => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+                                        setNewAddress(p => ({
+                                            ...p,
+                                            phone: val ? `+34${val}` : '',
+                                        }));
+                                    }}
+                                    className="w-full bg-transparent border-none px-4 py-3 text-sm font-bold outline-none text-gray-900"
+                                    placeholder="600 000 000"
+                                    maxLength={9}
+                                />
+                            </div>
                         </div>
 
                         <div className="md:col-span-2 space-y-2 relative" ref={suggestionsRef}>
@@ -637,9 +654,9 @@ export default function AddressesTab({
                                         {addr.label}
                                     </h4>
                                     {addr.isDefault && (
-                                        <div className="bg-green-600 text-white text-[8px] md:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-sm">
-                                            Default
-                                        </div>
+                                        <span className="px-2 py-0.5 bg-green-500 text-white text-[9px] md:text-[10px] uppercase font-black rounded-lg tracking-wide shadow-sm shadow-green-100 animate-in zoom-in-95 duration-300">
+                                            PRINCIPAL
+                                        </span>
                                     )}
                                 </div>
                                 <p className="text-[11px] md:text-[13px] font-bold text-gray-800 m-0 leading-tight">

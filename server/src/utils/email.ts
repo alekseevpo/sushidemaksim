@@ -6,9 +6,7 @@ import { config } from '../config.js';
 const resend = config.resendApiKey ? new Resend(config.resendApiKey) : null;
 
 export const transporter = nodemailer.createTransport({
-    host: config.smtp.host,
-    port: config.smtp.port,
-    secure: false, // STARTTLS on port 587
+    service: 'gmail',
     auth: {
         user: config.smtp.user,
         pass: config.smtp.pass,
@@ -27,7 +25,8 @@ async function sendEmail({
     subject: string;
     html: string;
 }): Promise<void> {
-    const defaultFrom = resend ? config.emailFrom : `Sushi de Maksim <${config.smtp.user}>`;
+    const resendFrom = 'Sushi de Maksim <info@sushidemaksim.com>';
+    const nodemailerFrom = `Sushi de Maksim <${config.smtp.user}>`;
 
     if (resend) {
         try {
@@ -35,27 +34,24 @@ async function sendEmail({
             const recipients = to.includes(',') ? to.split(',').map(e => e.trim()) : [to];
 
             const { error } = await resend.emails.send({
-                from: defaultFrom,
+                from: resendFrom,
                 to: recipients,
                 subject,
                 html,
             });
 
             if (error) {
-                // Handle "Domain not verified" error (403 or specific message)
                 // If it's a verification issue and we're sending to the admin, try the sandbox domain
                 if (
                     (error as any).message?.includes('not verified') ||
                     (error as any).statusCode === 403
                 ) {
-                    console.warn(
-                        '⚠️ Domain sushidemaksim.vercel.app not verified. Retrying via Resend Sandbox...'
-                    );
+                    console.warn('⚠️ Domain not verified on Resend. Retrying via Sandbox...');
                     const sandboxFrom = 'Sushi de Maksim <onboarding@resend.dev>';
 
                     const { error: retryError } = await resend.emails.send({
                         from: sandboxFrom,
-                        to: [to], // Note: Resend sandbox only sends to the account owner's email
+                        to: [to],
                         subject: `[SANDBOX] ${subject}`,
                         html,
                     });
@@ -69,20 +65,20 @@ async function sendEmail({
                     console.error('❌ Resend Error:', error);
                 }
 
-                // Final fallback to Nodemailer
+                // Final fallback to Nodemailer: MUST use nodemailerFrom matching auth user
                 console.log('🔄 Falling back to Nodemailer...');
-                await transporter.sendMail({ from: defaultFrom, to, subject, html });
+                await transporter.sendMail({ from: nodemailerFrom, to, subject, html });
             }
         } catch (err) {
             console.error('❌ Resend Exception:', err);
             try {
-                await transporter.sendMail({ from: defaultFrom, to, subject, html });
+                await transporter.sendMail({ from: nodemailerFrom, to, subject, html });
             } catch (smtpErr) {
                 console.error('❌ Nodemailer Fallback also failed:', smtpErr);
             }
         }
     } else {
-        await transporter.sendMail({ from: defaultFrom, to, subject, html });
+        await transporter.sendMail({ from: nodemailerFrom, to, subject, html });
     }
 }
 

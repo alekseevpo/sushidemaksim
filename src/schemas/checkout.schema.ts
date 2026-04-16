@@ -30,7 +30,7 @@ export const checkoutSchema = z
         customerName: z
             .string()
             .min(1, 'El nombre es obligatorio')
-            .min(2, 'El nombre debe иметь не менее 2 символов'),
+            .min(2, 'El nombre debe tener al menos 2 caracteres'),
         guestEmail: z.string().email('Email inválido').optional().or(z.literal('')),
 
         // Logistic preferences

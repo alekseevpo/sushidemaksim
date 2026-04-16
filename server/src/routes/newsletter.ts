@@ -74,7 +74,7 @@ router.post(
 
         res.json({
             success: true,
-            message: '¡Gracias по подписку! Мы будем держать тебя в курсе.',
+            message: '¡Gracias por suscribirte! Te mantendremos informado.',
         });
     })
 );

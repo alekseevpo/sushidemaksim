@@ -146,23 +146,56 @@ export default function CartPage() {
         setIsAddressModalOpen(false);
     }, []);
 
+    const [isRecoveringCoords, setIsRecoveringCoords] = useState(false);
+
+    const recoverCoordinates = useCallback(async (addr: any) => {
+        setIsRecoveringCoords(true);
+        try {
+            const query = `${addr.street || addr.address} ${addr.house || ''}, Madrid`.trim();
+            const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
+            if (data && data.length > 0) {
+                const best = data[0];
+                const rLat = Number(best.lat);
+                const rLon = Number(best.lon);
+                if (!isNaN(rLat) && !isNaN(rLon)) {
+                    return { lat: rLat, lon: rLon };
+                }
+            }
+        } catch (e) {
+            console.error('Failed to recover coordinates:', e);
+        } finally {
+            setIsRecoveringCoords(false);
+        }
+        return null;
+    }, []);
+
     const handleAddressSelect = useCallback(
-        (res: any) => {
-            const finalLat = res.coordinates?.[0] ?? res.lat;
-            const finalLon = res.coordinates?.[1] ?? res.lon;
+        async (res: any) => {
+            let finalLat = res.coordinates?.[0] ?? res.lat;
+            let finalLon = res.coordinates?.[1] ?? res.lon;
+            const pCode = res.postalCode || res.postal_code || '';
+
+            // RECOVERY: If coords are missing (legacy or manual entry), try to geocode
+            if (!finalLat || !finalLon) {
+                const recovered = await recoverCoordinates(res);
+                if (recovered) {
+                    finalLat = recovered.lat;
+                    finalLon = recovered.lon;
+                }
+            }
+
             const computedZone =
-                res.zone ||
-                (finalLat && finalLon ? detectZone(finalLat, finalLon, deliveryZones) : null);
+                res.zone || detectZone(finalLat, finalLon, deliveryZones, pCode);
 
             methods.setValue('address', res.address || res.street || '');
             methods.setValue('house', res.house || '');
             methods.setValue('apartment', res.apartment || '');
-            methods.setValue('postalCode', res.postalCode || res.postal_code || '');
+            methods.setValue('postalCode', pCode);
             methods.setValue('selectedZone', computedZone);
-            methods.setValue('lat', finalLat);
-            methods.setValue('lon', finalLon);
+            methods.setValue('lat', finalLat ? Number(finalLat) : undefined);
+            methods.setValue('lon', finalLon ? Number(finalLon) : undefined);
         },
-        [methods, deliveryZones]
+        [methods, deliveryZones, recoverCoordinates]
     );
 
     useEffect(() => {
@@ -291,7 +324,7 @@ export default function CartPage() {
                 apartment: aptVal,
                 postalCode:
                     formData.postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
-                phone,
+                phone: `+34${phone}`,
                 senderName: user?.name || formData.customerName || 'Un amigo',
                 notes: notesArray.join(' | '),
                 total: finalTotal,
@@ -306,7 +339,7 @@ export default function CartPage() {
                     deliveryType === 'pickup'
                         ? 'RECOGIDA'
                         : `${streetVal}${houseVal ? `, ${houseVal}` : ''}`,
-                phoneNumber: phone || user?.phone || '',
+                phoneNumber: `+34${phone}`,
                 isScheduled,
                 scheduledDate,
                 scheduledTime,
@@ -320,20 +353,32 @@ export default function CartPage() {
             const inviteData = await api.post('/orders/invite', payload);
 
             if (inviteData?.shareUrl) {
+                const inviteTitle = '¡Paga mi pedido de Sushi de Maksim! 🍣';
+                const inviteText = `${user?.name || formData.customerName || 'Tu amigo'} te ha enviado un link para pagar su pedido.`;
+                const finalShareUrl = inviteData.shareUrl;
+
+                setIsInviting(false);
+
                 if (navigator.share) {
-                    await navigator.share({
-                        title: '¡Paga mi pedido de Sushi de Maksim! 🍣',
-                        text: `${user?.name || formData.customerName || 'Tu amigo'} te ha enviado un link para pagar su pedido.`,
-                        url: inviteData.shareUrl,
-                    });
+                    try {
+                        await navigator.share({
+                            title: inviteTitle,
+                            text: `${inviteText}\n\n${finalShareUrl}`,
+                        });
+                    } catch (shareErr) {
+                        // Usually user cancelled share
+                        console.log('Share error or cancelled', shareErr);
+                    }
                 } else {
-                    await navigator.clipboard.writeText(inviteData.shareUrl);
-                    showSuccess('Enlace de invitación generado');
+                    const fullInviteContent = `${inviteTitle}\n\n${inviteText}\n${finalShareUrl}`;
+                    await navigator.clipboard.writeText(fullInviteContent);
+                    showSuccess('Mensaje de invitación copiado al portapapeles');
                 }
+            } else {
+                setIsInviting(false);
             }
         } catch (err: any) {
             showError(err.message || 'Error al generar invitación');
-        } finally {
             setIsInviting(false);
         }
     };
@@ -600,7 +645,7 @@ export default function CartPage() {
                 house: houseVal,
                 apartment: aptVal,
                 postalCode: data.postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
-                phone,
+                phone: `+34${phone}`,
                 customerName: isAuthenticated ? user?.name || '' : customerNameVal,
                 guestEmail: isAuthenticated ? user?.email || '' : guestEmailVal,
                 paymentMethod,
@@ -616,7 +661,7 @@ export default function CartPage() {
                     deliveryType === 'pickup'
                         ? 'RECOGIDA'
                         : `${streetVal}, ${houseVal}, ${aptVal}, CP: ${data.postalCode || ''}`,
-                phoneNumber: phone,
+                phoneNumber: `+34${phone}`,
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
                 promoCode: promoDiscount ? promoCode : undefined,

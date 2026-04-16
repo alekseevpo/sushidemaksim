@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Heart } from 'lucide-react';
+import { Phone, Heart, Menu, BookOpen, Star, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../hooks/queries/useSettings';
 
@@ -88,17 +88,33 @@ export default function Footer() {
                 </div>
 
                 <div className="flex flex-col items-center md:items-end gap-10">
-                    <div className="flex gap-10 text-[11px] font-black uppercase tracking-[0.15em] text-gray-500">
-                        <Link to="/menu" className="hover:text-white transition-colors">
+                    <div className="flex flex-wrap gap-x-10 gap-y-4 text-[11px] font-black uppercase tracking-[0.15em] text-gray-500 justify-center md:justify-end">
+                        <Link
+                            to="/menu"
+                            className="hover:text-white transition-colors flex items-center gap-2 no-underline"
+                        >
+                            <Menu size={14} strokeWidth={2.5} />
                             Menú
                         </Link>
-                        <Link to="/blog" className="hover:text-white transition-colors">
+                        <Link
+                            to="/blog"
+                            className="hover:text-white transition-colors flex items-center gap-2 no-underline"
+                        >
+                            <BookOpen size={14} strokeWidth={2.5} />
                             Blog
                         </Link>
-                        <Link to="/promo" className="hover:text-white transition-colors">
+                        <Link
+                            to="/promo"
+                            className="hover:text-white transition-colors flex items-center gap-2 no-underline"
+                        >
+                            <Star size={14} strokeWidth={2.5} />
                             Promos
                         </Link>
-                        <Link to="/contacts" className="hover:text-white transition-colors">
+                        <Link
+                            to="/contacts"
+                            className="hover:text-white transition-colors flex items-center gap-2 no-underline"
+                        >
+                            <Info size={14} strokeWidth={2.5} />
                             Contacto
                         </Link>
                     </div>

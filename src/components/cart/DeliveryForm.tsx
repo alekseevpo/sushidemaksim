@@ -258,7 +258,7 @@ export default function DeliveryForm({
                                         Reserva de Mesa
                                     </p>
                                     <p className="text-sm text-orange-800 font-medium">
-                                        Prepararemos tu pedido para que esté listo когда llegues a
+                                        Prepararemos tu pedido para que esté listo cuando llegues a
                                         tu mesa.
                                     </p>
                                     <p className="text-[10px] text-orange-600 font-black uppercase mt-2">

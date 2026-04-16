@@ -119,6 +119,8 @@ router.post(
             });
         }
 
+        const verificationLink = `${config.frontendUrl}/verify?token=${verificationToken}`;
+
         // Send verification email
         try {
             console.log(`📡 [REGISTER] Attempting to send email to ${newUser.email}...`);
@@ -132,11 +134,9 @@ router.post(
             console.log(`✅ [REGISTER] Verification email SENT to ${newUser.email}`);
         } catch (e: any) {
             console.error('❌ [REGISTER] SMTP ERROR:', e.message || e);
-            console.error('SMTP Config check:', {
-                host: config.smtp.host,
-                user: config.smtp.user,
-                hasPass: !!config.smtp.pass,
-            });
+            console.warn(
+                `\n🔑 [TESTING / FALLBACK] Link de activación manual:\n${verificationLink}\n`
+            );
         }
 
         res.status(201).json({

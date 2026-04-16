@@ -167,7 +167,14 @@ export default function AdminPage() {
         setSearchParams({ tab });
     };
 
-    const [showHelp, setShowHelp] = useState(true);
+    const [showHelp, setShowHelp] = useState(() => {
+        const saved = localStorage.getItem('admin_show_help');
+        return saved === null ? false : saved === 'true';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('admin_show_help', String(showHelp));
+    }, [showHelp]);
 
     // Global Sound & Pending Orders Monitoring
     const [isSoundEnabled, setIsSoundEnabled] = useState(() => {

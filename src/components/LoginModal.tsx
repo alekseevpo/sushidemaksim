@@ -175,6 +175,12 @@ const RegisterForm = memo(
     }) => {
         const [showPassword, setShowPassword] = useState(false);
         const [password, setPassword] = useState('');
+        const [phone, setPhone] = useState('');
+
+        const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+            setPhone(val);
+        };
 
         return (
             <form onSubmit={onRegister} data-testid="register-form" className="space-y-3">
@@ -202,17 +208,22 @@ const RegisterForm = memo(
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                             Teléfono
                         </label>
-                        <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
+                        <div className="relative group flex items-center bg-gray-50 border-2 border-transparent rounded-2xl focus-within:bg-white focus-within:border-orange-600 transition-all overflow-hidden">
+                            <div className="pl-4 pr-1.5 flex items-center text-gray-400 group-focus-within:text-orange-500 transition-colors pointer-events-none">
                                 <Phone size={16} strokeWidth={1.5} />
+                                <span className="ml-2 font-bold text-gray-900 text-sm mt-[0.5px]">
+                                    +34
+                                </span>
                             </div>
                             <input
                                 type="tel"
                                 name="phone"
                                 required
                                 autoComplete="tel"
-                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
-                                placeholder="+34 600 000 000"
+                                value={phone}
+                                onChange={handlePhoneChange}
+                                className="w-full bg-transparent pl-1 pr-4 py-3 outline-none font-medium text-sm text-gray-900 placeholder:text-gray-400"
+                                placeholder="600 000 000"
                             />
                         </div>
                     </div>
@@ -652,9 +663,18 @@ export default function LoginModal({
         try {
             const form = e.target as HTMLFormElement;
             const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || '';
-            const phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value || '';
+            let phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value || '';
             const email = (form.elements.namedItem('email') as HTMLInputElement)?.value || '';
             const password = (form.elements.namedItem('password') as HTMLInputElement)?.value || '';
+
+            const cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.length !== 9 || !/^[6789]/.test(cleanPhone)) {
+                showError('El teléfono debe tener 9 dígitos y empezar por 6, 7, 8 o 9');
+                setIsLoading(false);
+                return;
+            }
+
+            phone = `+34${cleanPhone}`;
 
             const res = await register(name, email, phone, password);
             if (res.success) {

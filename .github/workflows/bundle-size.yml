@@ -1,0 +1,32 @@
+name: Bundle Size Check
+
+on:
+    pull_request:
+        branches: [main]
+
+permissions:
+    contents: read
+    pull-requests: write # Required for posting PR comments
+    
+jobs:
+    size:
+        name: Check Bundle Size
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Compare Compressed Size
+              uses: preactjs/compressed-size-action@v2
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  pattern: 'dist/**/*.{js,css,html}'
+                  build-script: 'build'
+                  # Exclude source maps from calculation
+                  exclude: '{**/*.map,**/node_modules/**}'

@@ -301,7 +301,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             </div>
 
             {/* Top Insight Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
                 {[
                     {
                         label: t.ltv.label,
@@ -343,24 +343,26 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 ].map((stat, i) => (
                     <div
                         key={i}
-                        className="bg-white p-6 rounded-[28px] border border-gray-100 shadow-sm hover:shadow-md transition-all group"
+                        className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
                     >
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 group-hover:text-orange-500 transition-colors">
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 group-hover:text-orange-500 transition-colors leading-tight">
                             {stat.label}
                         </p>
-                        <div className="flex items-end gap-2 mb-1">
-                            <span className={`text-2xl font-black ${stat.color} tracking-tight`}>
+                        <div className="flex items-end gap-1.5 mb-1.5">
+                            <span
+                                className={`text-xl sm:text-2xl font-black ${stat.color} tracking-tight leading-none`}
+                            >
                                 {stat.value}
                             </span>
                             {stat.trend && (
                                 <TrendingUp
-                                    size={16}
-                                    className="text-emerald-500 mb-1.5"
+                                    size={14}
+                                    className="text-emerald-500 mb-0.5"
                                     strokeWidth={3}
                                 />
                             )}
                         </div>
-                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">
+                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-tight line-clamp-2">
                             {stat.desc}
                         </p>
                     </div>
