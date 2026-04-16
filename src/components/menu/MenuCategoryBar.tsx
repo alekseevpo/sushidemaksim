@@ -46,10 +46,12 @@ export default function MenuCategoryBar({
                     containerRect.width / 2 +
                     btnRect.width / 2;
 
-                container.scrollTo({
-                    left: scrollLeft,
-                    behavior,
-                });
+                if (container.scrollTo) {
+                    container.scrollTo({
+                        left: scrollLeft,
+                        behavior,
+                    });
+                }
             }
         },
         [isMobile]
