@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Heart, Share2, Sparkles, Check, Plus, Minus } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
+import { slugify } from '../../utils/formatters';
 import SafeImage from '../common/SafeImage';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { EMOJI } from '../../constants/menu';
@@ -80,14 +81,17 @@ const ProductCard = React.memo(function ProductCard({
             <div className="aspect-[4/3] md:h-56 bg-gray-50 overflow-hidden relative group/img">
                 <SafeImage
                     src={item.image}
-                    alt={`Sushi de Maksim: ${item.name} - Madrid`}
                     loading={isPriority ? 'eager' : 'lazy'}
                     decoding="async"
-                    getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 640)}
+                    getOptimizedUrl={(url: string) =>
+                        getOptimizedImageUrl(url, 640, 80, slugify(item.name))
+                    }
                     {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
                     className={`w-full h-full object-cover transition-transform duration-700 ease-out ${
                         isZoomed ? 'scale-[1.3] shadow-inner' : 'group-hover:scale-125'
                     }`}
+                    alt={`${item.name} — ${item.category} | Menú de Sushi de Maksim Madrid`}
+                    title={`${item.name} — ${item.description}`}
                     fallbackContent={
                         <div className="w-full h-full flex items-center justify-center text-4xl grayscale opacity-30">
                             {EMOJI[item.category] || '🍱'}

@@ -1,7 +1,8 @@
 export function getOptimizedImageUrl(
     url: string | null | undefined,
     _width?: number,
-    _quality?: number
+    _quality?: number,
+    seoName?: string
 ): string {
     void _width;
     void _quality;
@@ -24,5 +25,12 @@ export function getOptimizedImageUrl(
     }
 
     // For all other cases (Supabase, external URLs), return the direct URL
-    return baseUrl;
+    // Append seoName as query parameter if provided
+    let finalUrl = baseUrl;
+    if (seoName) {
+        const separator = finalUrl.includes('?') ? '&' : '?';
+        finalUrl += `${separator}name=${encodeURIComponent(seoName)}`;
+    }
+
+    return finalUrl;
 }
