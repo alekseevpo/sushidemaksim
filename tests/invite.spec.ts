@@ -209,8 +209,8 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
         }
 
         // Ждем тост об успехе. Используем regex для большей гибкости.
-        // Теперь мы показываем тост "Enlace de invitación generado" сразу после успеха API.
-        await expect(page.getByText(/Enlace de invitación generado/i).first()).toBeVisible({
+        // Теперь мы всегда показываем тост "¡Invitación preparada! Enlace copiado"
+        await expect(page.getByText(/Invitación preparada/i).first()).toBeVisible({
             timeout: 15000,
         });
 

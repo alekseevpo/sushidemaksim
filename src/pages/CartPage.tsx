@@ -353,6 +353,10 @@ export default function CartPage() {
 
                 setIsInviting(false);
 
+                const fullInviteContent = `${inviteTitle}\n\n${inviteText}\n${finalShareUrl}`;
+                await navigator.clipboard.writeText(fullInviteContent);
+                showSuccess('¡Invitación preparada! Enlace copiado');
+
                 if (navigator.share) {
                     try {
                         await navigator.share({
@@ -363,10 +367,6 @@ export default function CartPage() {
                         // Usually user cancelled share
                         console.log('Share error or cancelled', shareErr);
                     }
-                } else {
-                    const fullInviteContent = `${inviteTitle}\n\n${inviteText}\n${finalShareUrl}`;
-                    await navigator.clipboard.writeText(fullInviteContent);
-                    showSuccess('Mensaje de invitación copiado al portapapeles');
                 }
             } else {
                 setIsInviting(false);
