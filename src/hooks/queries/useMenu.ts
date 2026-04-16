@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 
 export interface MenuItem {
@@ -33,6 +33,7 @@ export const useMenu = (category: string, search: string) => {
             return data.items as MenuItem[];
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
+        placeholderData: keepPreviousData,
     });
 };
 

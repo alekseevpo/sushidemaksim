@@ -15,12 +15,17 @@ const KatanaUnderline = () => (
         className="absolute -bottom-10 left-4 right-0 flex items-center justify-start pointer-events-none z-0"
         transition={{
             type: 'spring',
-            stiffness: 250,
-            damping: 25,
+            stiffness: 400, // Increased stiffness for faster movement
+            damping: 35,    // Balanced damping
             mass: 0.5,
         }}
     >
-        <img src="/katana.webp" alt="Katana" className="w-[240px] h-24 object-contain" />
+        <img
+            src="/katana.webp"
+            alt="Katana"
+            className="w-[240px] h-24 object-contain transform-gpu"
+            style={{ willChange: 'transform' }}
+        />
     </motion.div>
 );
 

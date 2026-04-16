@@ -63,17 +63,25 @@ export const MenuSkeleton = () => (
     <div className="min-h-screen bg-transparent px-0 md:px-4 pb-0 pt-0 flex flex-col">
         <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
             {/* Desktop Sidebar Skeleton */}
-            <aside className="hidden md:block w-64 xl:w-72 flex-shrink-0 bg-transparent relative">
-                <div className="sticky top-[88px] h-[calc(100vh-88px)] pb-10 flex flex-col items-stretch pl-4 pr-6 pt-2">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                        <div
-                            key={i}
-                            className="h-[52px] w-full bg-gray-200/50 skeleton rounded-xl opacity-60 mb-2 flex items-center px-3 gap-3"
-                        >
-                            <div className="w-8 h-8 rounded-xl bg-gray-300 shrink-0 opacity-50 border border-gray-100" />
-                            <div className="h-3.5 w-28 bg-gray-300 rounded-full opacity-50" />
-                        </div>
-                    ))}
+            <aside className="hidden md:block w-[200px] flex-shrink-0 bg-orange-600 relative">
+                <div 
+                    className="sticky flex flex-col items-stretch pb-10"
+                    style={{
+                        top: 'var(--header-height, 80px)',
+                        height: 'calc(100dvh - var(--header-height, 80px))',
+                    }}
+                >
+                    <div className="flex flex-col py-4 px-2">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                            <div
+                                key={i}
+                                className="h-[52px] w-full bg-white/10 skeleton rounded-xl mb-2 flex items-center px-4 gap-3"
+                            >
+                                <div className="w-5 h-5 rounded-lg bg-white/20 shrink-0" />
+                                <div className="h-3 w-24 bg-white/20 rounded-full" />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </aside>
 

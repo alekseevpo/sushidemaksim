@@ -4,7 +4,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import { tracker } from '../analytics/tracker';
-import { MenuSkeleton } from '../components/skeletons/MenuSkeleton';
+import { MenuSkeleton, MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
 import { CATEGORIES, EMOJI } from '../constants/menu';
 import { MenuItem, useMenu, useFavorites, useToggleFavorite } from '../hooks/queries/useMenu';
 import MenuCategoryBar from '../components/menu/MenuCategoryBar';
@@ -28,7 +28,12 @@ export default function MenuPage() {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
     // Queries
-    const { data: items = [], isLoading, isError } = useMenu(selectedCategory, debouncedSearch);
+    const {
+        data: items = [],
+        isLoading,
+        isError,
+        isFetching,
+    } = useMenu(selectedCategory, debouncedSearch);
     const { data: favorites } = useFavorites(user);
     const { mutate: toggleFavorite } = useToggleFavorite();
     const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
@@ -63,18 +68,16 @@ export default function MenuPage() {
             // Total fixed height: Header (64px) + CategoryBar (~55px) + buffer = ~130px
             const offset = isMobile ? 130 : 80;
 
-            requestAnimationFrame(() => {
-                const targetTop = Math.max(
-                    0,
-                    menuTop.getBoundingClientRect().top + window.scrollY - offset
-                );
+            const targetTop = Math.max(
+                0,
+                menuTop.getBoundingClientRect().top + window.scrollY - offset
+            );
 
-                if ((window as any).lenis) {
-                    (window as any).lenis.scrollTo(targetTop, { immediate: true });
-                } else {
-                    window.scrollTo({ top: targetTop, behavior: 'instant' });
-                }
-            });
+            if ((window as any).lenis) {
+                (window as any).lenis.scrollTo(targetTop, { immediate: true });
+            } else {
+                window.scrollTo({ top: targetTop, behavior: 'instant' });
+            }
         }
     }, [selectedCategory, user?.id]);
 
@@ -247,10 +250,6 @@ export default function MenuPage() {
         }, 1600);
     };
 
-    if (isLoading) {
-        return <MenuSkeleton />;
-    }
-
     const menuSchema = {
         '@context': 'https://schema.org',
         '@type': 'Menu',
@@ -293,6 +292,8 @@ export default function MenuPage() {
             },
         ],
     };
+
+    const isLoadingInitial = isLoading && items.length === 0;
 
     return (
         <div className="min-h-screen bg-transparent pb-0 pt-0 flex flex-col">
@@ -338,7 +339,11 @@ export default function MenuPage() {
                     />
 
                     {/* Items Section */}
-                    {isError ? (
+                    {isLoadingInitial ? (
+                        <div className="pt-4 animate-in fade-in duration-300">
+                            <MenuItemsSkeleton showHeader />
+                        </div>
+                    ) : isError ? (
                         <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[32px] border-2 border-dashed border-gray-100 animate-in fade-in zoom-in-95 duration-500">
                             <span className="text-5xl mb-6 drop-shadow-lg">🍱</span>
                             <h3 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">
@@ -356,20 +361,24 @@ export default function MenuPage() {
                             </button>
                         </div>
                     ) : (
-                        <ProductGrid
-                            items={items}
-                            selectedCategory={selectedCategory}
-                            search={search}
-                            setSearch={setSearch}
-                            setSelectedCategory={setSelectedCategory}
-                            user={user}
-                            favorites={favorites as Set<number>}
-                            onToggleFavorite={toggleFavorite}
-                            onShare={handleShare}
-                            onAddToCart={handleAddToCart}
-                            addedItems={addedItems}
-                            highlightedItemId={highlightedItemId}
-                        />
+                        <div
+                            className={`transition-opacity duration-300 ${isFetching ? 'opacity-50' : 'opacity-100'}`}
+                        >
+                            <ProductGrid
+                                items={items}
+                                selectedCategory={selectedCategory}
+                                search={search}
+                                setSearch={setSearch}
+                                setSelectedCategory={setSelectedCategory}
+                                user={user}
+                                favorites={favorites as Set<number>}
+                                onToggleFavorite={toggleFavorite}
+                                onShare={handleShare}
+                                onAddToCart={handleAddToCart}
+                                addedItems={addedItems}
+                                highlightedItemId={highlightedItemId}
+                            />
+                        </div>
                     )}
                 </div>
             </div>
