@@ -602,7 +602,6 @@ export default function Header() {
                                                     }}
                                                     className="w-full py-2 group flex items-center justify-center gap-3 px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-center drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
                                                 >
-                                                    <Calendar size={22} strokeWidth={2.5} />
                                                     <span className="tracking-tight uppercase">
                                                         RESERVAR MESA
                                                     </span>
@@ -628,17 +627,6 @@ export default function Header() {
                                                         <div
                                                             className={`flex items-center gap-3 tracking-tight uppercase ${isActive ? 'text-orange-600' : 'text-gray-900'}`}
                                                         >
-                                                            {link.icon && (
-                                                                <link.icon
-                                                                    size={20}
-                                                                    strokeWidth={2}
-                                                                    className={
-                                                                        isActive
-                                                                            ? 'text-orange-600'
-                                                                            : 'text-gray-400'
-                                                                    }
-                                                                />
-                                                            )}
                                                             <span>{link.label}</span>
                                                         </div>
                                                     );
