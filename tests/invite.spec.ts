@@ -24,6 +24,7 @@ test.describe('Feature: Invite a Friend (Invitaciones)', () => {
                     if (args.length === 0) {
                         super(mockDate);
                     } else {
+                        // @ts-expect-error - spreading any[] into super
                         super(...args);
                     }
                 }
