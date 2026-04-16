@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Package, MapPin, Phone, Info, ChevronLeft, ArrowRight } from 'lucide-react';
+import { Package, MapPin, Phone, ChevronLeft, ArrowRight } from 'lucide-react';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import { TrackSkeleton } from '../components/skeletons/TrackSkeleton';
