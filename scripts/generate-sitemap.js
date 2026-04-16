@@ -1,3 +1,4 @@
+/* eslint-env node */
 import fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
@@ -29,7 +30,7 @@ async function generateSitemap() {
         try {
             const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Fetch Blog Posts
+            // 1. Fetch Blog Posts
             const { data: posts, error: postsError } = await supabase
                 .from('blog_posts')
                 .select('slug, updated_at')
