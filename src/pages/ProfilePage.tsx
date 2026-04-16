@@ -598,8 +598,7 @@ export default function ProfilePage() {
                                         {welcomeCode.code}
                                     </div>
                                     <p className="text-[10px] text-gray-400 font-medium leading-tight mb-2">
-                                        Válido por 7 días tras el registro. Úsalo al finalizar tu
-                                        pedido.
+                                        {'Válido por 7 días tras el registro. Úsalo al finalizar tu pedido.'}
                                     </p>
                                     <div className="flex items-center gap-1.5 text-[9px] font-black text-orange-500 uppercase tracking-tighter">
                                         <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
