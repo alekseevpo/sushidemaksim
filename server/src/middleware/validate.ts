@@ -101,5 +101,6 @@ export const passwordRule: Rule = {
     minLength: 9,
     maxLength: 100,
     match: /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>_+-])/,
-    message: 'La contraseña debe tener al menos 9 caracteres y contener un número y un símbolo especial',
+    message:
+        'La contraseña debe tener al menos 9 caracteres y contener un número y un símbolo especial',
 };

@@ -730,8 +730,9 @@ router.post(
         try {
             const fUrl = config.frontendUrl || 'https://sushidemaksim.com';
             const shareBase = fUrl.replace(/\/$/, '');
-            const apiBase = config.nodeEnv === 'production' ? 'https://sushidemaksim.com' : shareBase;
-            
+            const apiBase =
+                config.nodeEnv === 'production' ? 'https://sushidemaksim.com' : shareBase;
+
             res.status(201).json({
                 orderId: orderId,
                 shareUrl: `${apiBase}/api/orders/share/${orderId}`,
@@ -757,8 +758,6 @@ router.get(
             .select('notes, total')
             .eq('id', id)
             .single();
-
-        const host = req.get('host');
 
         // Extract sender name from notes [De parte de: Name]
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);

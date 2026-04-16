@@ -66,10 +66,6 @@ app.get('/invitacion/:id', async (req, res) => {
             .eq('id', id)
             .single();
 
-        const host = req.get('host') || 'sushidemaksim.vercel.app';
-        const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
-        const fullOrigin = `${protocol}://${host}`;
-
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
         const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
         const fUrl = config.frontendUrl.replace(/\/$/, '');

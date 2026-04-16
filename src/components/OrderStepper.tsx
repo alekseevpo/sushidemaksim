@@ -1,4 +1,4 @@
-import { CheckCircle, Clock, Package, Truck, CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, Truck, CheckCircle2, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const STEPS = [
