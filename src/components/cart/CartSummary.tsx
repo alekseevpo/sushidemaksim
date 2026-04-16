@@ -68,7 +68,7 @@ export default function CartSummary({
                         >
                             {total >= freeDeliveryThreshold
                                 ? '¡Enhorabuena! Tienes ENVÍO GRATIS 🚚💨'
-                                : `¡Te faltan ${(freeDeliveryThreshold - total).toFixed(2).replace('.', ',')}€ для доставки GRATIS! 🍣`}
+                                : `¡Te faltan ${(freeDeliveryThreshold - total).toFixed(2).replace('.', ',')}€ para el envío GRATIS! 🍣`}
                         </span>
                         <span className="text-[10px] font-black text-gray-400">
                             {freeDeliveryThreshold}€
