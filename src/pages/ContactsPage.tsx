@@ -107,12 +107,12 @@ export default function ContactsPage() {
     const addressLine2 = settings?.contactAddressLine2 || '28007 Madrid España';
     const currentPhone = settings?.contactPhone || '+34 631 920 312';
     const currentEmail = settings?.contactEmail || 'info@sushidemaksim.com';
-    const contactSchedule =
+                const contactSchedule =
         settings?.contactSchedule && settings.contactSchedule.length > 0
             ? settings.contactSchedule
             : [
-                  { days: 'Miércoles - Viernes', hours: '19:00 - 23:00' },
-                  { days: 'Sábado - Domingo', hours: '14:00 - 23:00' },
+                  { days: 'Miércoles - Jueves', hours: '19:00 - 23:00' },
+                  { days: 'Viernes - Domingo', hours: '14:00 - 23:00' },
                   { days: 'Lunes - Martes', hours: 'Cerrado', closed: true },
               ];
 
@@ -188,13 +188,13 @@ export default function ContactsPage() {
                         openingHoursSpecification: [
                             {
                                 '@type': 'OpeningHoursSpecification',
-                                dayOfWeek: [
-                                    'Wednesday',
-                                    'Thursday',
-                                    'Friday',
-                                    'Saturday',
-                                    'Sunday',
-                                ],
+                                dayOfWeek: ['Wednesday', 'Thursday'],
+                                opens: '19:00',
+                                closes: '23:00',
+                            },
+                            {
+                                '@type': 'OpeningHoursSpecification',
+                                dayOfWeek: ['Friday', 'Saturday', 'Sunday'],
                                 opens: '14:00',
                                 closes: '23:00',
                             },

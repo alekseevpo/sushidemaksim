@@ -379,8 +379,8 @@ export async function sendOrderReceiptEmail(
 
         <h4 style="color: #6b7280; margin: 16px 0 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Horario de Atención</h4>
         <table style="width: 100%; color: #9ca3af; font-size: 11px; border-collapse: collapse;">
-          <tr><td style="padding: 2px 0;">Miércoles – Viernes:</td><td style="text-align: right; color: #ffffff;">19:00 – 23:00</td></tr>
-          <tr><td style="padding: 2px 0;">Sábado – Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 23:00</td></tr>
+          <tr><td style="padding: 2px 0;">Miércoles – Jueves:</td><td style="text-align: right; color: #ffffff;">19:00 – 23:00</td></tr>
+          <tr><td style="padding: 2px 0;">Viernes – Domingo:</td><td style="text-align: right; color: #ffffff;">14:00 – 23:00</td></tr>
           <tr><td style="padding: 2px 0;">Lunes – Martes:</td><td style="text-align: right;">Cerrado</td></tr>
         </table>
         

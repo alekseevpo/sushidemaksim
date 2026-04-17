@@ -39,13 +39,13 @@ export default function Schema() {
                     openingHoursSpecification: [
                         {
                             '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: ['Wednesday', 'Thursday', 'Friday'],
+                            dayOfWeek: ['Wednesday', 'Thursday'],
                             opens: '19:00',
                             closes: '23:00',
                         },
                         {
                             '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: ['Saturday', 'Sunday'],
+                            dayOfWeek: ['Friday', 'Saturday', 'Sunday'],
                             opens: '14:00',
                             closes: '23:00',
                         },
