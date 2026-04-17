@@ -111,10 +111,10 @@ export default function ContactsPage() {
         settings?.contactSchedule && settings.contactSchedule.length > 0
             ? settings.contactSchedule
             : [
-                { days: 'Miércoles - Jueves', hours: '19:00 - 23:00' },
-                { days: 'Viernes - Domingo', hours: '14:00 - 23:00' },
-                { days: 'Lunes - Martes', hours: 'Cerrado', closed: true },
-            ];
+                  { days: 'Miércoles - Jueves', hours: '19:00 - 23:00' },
+                  { days: 'Viernes - Domingo', hours: '14:00 - 23:00' },
+                  { days: 'Lunes - Martes', hours: 'Cerrado', closed: true },
+              ];
 
     const fullAddress = `${addressLine1} ${addressLine2}`.trim();
     const mapsUrl =
