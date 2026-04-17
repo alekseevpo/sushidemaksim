@@ -107,7 +107,7 @@ export default function ContactsPage() {
     const addressLine2 = settings?.contactAddressLine2 || '28007 Madrid España';
     const currentPhone = settings?.contactPhone || '+34 631 920 312';
     const currentEmail = settings?.contactEmail || 'info@sushidemaksim.com';
-                const contactSchedule =
+    const contactSchedule =
         settings?.contactSchedule && settings.contactSchedule.length > 0
             ? settings.contactSchedule
             : [
