@@ -790,22 +790,22 @@ export default function CartPage() {
                                                     Horario de Servicio:
                                                 </p>
                                                 <div className="flex flex-col gap-1.5 text-[12px] text-orange-800/80 font-medium max-w-[280px]">
-                                                <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
-                                                    <span className="opacity-60">
-                                                        Miércoles – Jueves
-                                                    </span>
-                                                    <span className="font-black text-orange-950">
-                                                        19:00 – 23:00
-                                                    </span>
-                                                </div>
-                                                <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
-                                                    <span className="opacity-60">
-                                                        Viernes – Domingo
-                                                    </span>
-                                                    <span className="font-black text-orange-950">
-                                                        14:00 – 23:00
-                                                    </span>
-                                                </div>
+                                                    <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
+                                                        <span className="opacity-60">
+                                                            Miércoles – Jueves
+                                                        </span>
+                                                        <span className="font-black text-orange-950">
+                                                            19:00 – 23:00
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
+                                                        <span className="opacity-60">
+                                                            Viernes – Domingo
+                                                        </span>
+                                                        <span className="font-black text-orange-950">
+                                                            14:00 – 23:00
+                                                        </span>
+                                                    </div>
                                                     <div className="flex justify-between items-center bg-orange-950/5 px-3 py-1.5 rounded-xl border border-orange-950/5">
                                                         <span className="opacity-40 uppercase text-[10px] tracking-wider">
                                                             Lunes – Martes
