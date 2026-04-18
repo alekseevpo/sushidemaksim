@@ -141,20 +141,13 @@ export default function WaiterOrderPage() {
                 </div>
 
                 <div className="relative">
-                    <MessageSquare
-                        className="absolute left-3.5 top-3 text-gray-400"
-                        size={16}
-                    />
+                    <MessageSquare className="absolute left-3.5 top-3 text-gray-400" size={16} />
                     <textarea
                         placeholder="Instrucciones o cambios en el pedido... (Ej: Sin cebolla, extra picante)"
                         value={orderComment}
                         onChange={e => setOrderComment(e.target.value)}
                         rows={2}
-                        className={
-                            'w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2.5 ' +
-                            'text-xs font-bold focus:ring-2 ring-orange-500/20 ' +
-                            'transition-all outline-none resize-none'
-                        }
+                        className="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold focus:ring-2 ring-orange-500/20 transition-all outline-none resize-none"
                     />
                 </div>
             </div>
