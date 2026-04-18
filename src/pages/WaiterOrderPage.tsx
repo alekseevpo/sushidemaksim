@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useMenu } from '../hooks/queries/useMenu';
-import { useMenu } from '../hooks/queries/useMenu';
 import { Plus, Minus, Check, ShoppingBag, Loader2, LogOut, MessageSquare, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../utils/api';
@@ -74,9 +73,11 @@ export default function WaiterOrderPage() {
                 items: Object.entries(selectedItems).map(([id, qty]) => {
                     const item = menuItems.find(i => i.id === Number(id));
                     return {
-                        id: Number(id),
-                        name: item?.name,
-                        price: item?.price,
+                        id: id,
+                        menuItemId: id,
+                        name: item?.name || 'Producto',
+                        price: item?.price || 0,
+                        priceAtTime: item?.price || 0,
                         quantity: qty,
                         image: item?.image || '',
                     };
