@@ -6,8 +6,13 @@ import { triggerHaptic } from '../../utils/haptics';
 
 interface CartItemListProps {
     items: CartItem[];
-    updateQuantity: (id: string, quantity: number) => void;
-    removeItem: (id: string) => void;
+    updateQuantity: (
+        id: string,
+        quantity: number,
+        cartItemId?: number,
+        selectedOption?: string
+    ) => void;
+    removeItem: (id: string, cartItemId?: number) => void;
     clearCart: () => void;
     getCategoryEmoji: (category: string) => string;
     chopsticksCount: number;

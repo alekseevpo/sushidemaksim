@@ -28,6 +28,8 @@ export interface SushiItem {
 export interface CartItem extends SushiItem {
     quantity: number;
     selectedOption?: string;
+    cartItemId?: number;
+    menuItemId?: number;
 }
 
 export interface UserAddress {
