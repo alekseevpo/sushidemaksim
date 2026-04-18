@@ -98,7 +98,9 @@ export default function ProductGrid({
                                         </span>
                                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter italic leading-none">
                                             {cat.name ||
-                                                CATEGORIES.find(c => c.id === cat.id)?.name}
+                                                (Array.isArray(CATEGORIES)
+                                                    ? CATEGORIES.find(c => c.id === cat.id)?.name
+                                                    : '')}
                                         </h2>
                                     </div>
                                 </div>

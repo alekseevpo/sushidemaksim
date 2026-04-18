@@ -312,12 +312,12 @@ export default function MenuPage() {
                 title={
                     selectedCategory === 'all'
                         ? 'Menú de Sushi a Domicilio en Madrid | Carta Completa'
-                        : `${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'} en Madrid — Menú de Sushi de Maksim`
+                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi' : 'Sushi'} en Madrid — Menú de Sushi de Maksim`
                 }
                 description={
                     selectedCategory === 'all'
                         ? 'Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi y combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!'
-                        : `${CATEGORIES.find(c => c.id === selectedCategory)?.description || ''} Pide online con entrega rápida a domicilio en Madrid.`
+                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === selectedCategory)?.description || '' : ''} Pide online con entrega rápida a domicilio en Madrid.`
                 }
                 keywords={`menu sushi madrid, carta sushi, sushi a domicilio madrid, ${selectedCategory === 'all' ? '' : selectedCategory + ' madrid,'} pedir sushi online`}
                 schema={[menuSchema, breadcrumbSchema]}
@@ -326,7 +326,7 @@ export default function MenuPage() {
             <h1 className="sr-only">
                 {selectedCategory === 'all'
                     ? 'Menú de Sushi a Domicilio en Madrid — Sushi de Maksim'
-                    : `Menú de ${CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi'} en Madrid`}
+                    : `Menú de ${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi' : 'Sushi'} en Madrid`}
             </h1>
             <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
                 {/* Desktop Sidebar Sidebar */}

@@ -53,8 +53,9 @@ export default function StoreStatusBanner() {
     }
 
     const todayDay = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
-    const schedule = settings?.contactSchedule || settings?.contact_schedule || [];
-    const todaySchedule = schedule.find((s: any) => s.days.toLowerCase().includes(todayDay));
+    const rawSchedule = settings?.contactSchedule || settings?.contact_schedule;
+    const schedule = Array.isArray(rawSchedule) ? rawSchedule : [];
+    const todaySchedule = schedule.find((s: any) => s?.days?.toLowerCase().includes(todayDay));
 
     return (
         <AnimatePresence>

@@ -50,9 +50,12 @@ export default function Footer() {
 
     // Priority: Settings URL > Static Config Default URL
     const getUrl = (platformId: string, defaultUrl: string) => {
-        const found = settings?.socialLinks?.find((l: any) =>
-            l.platform.toLowerCase().includes(platformId.toLowerCase())
-        );
+        const socialLinksData = settings?.socialLinks;
+        const found = Array.isArray(socialLinksData)
+            ? socialLinksData.find((l: any) =>
+                  l.platform.toLowerCase().includes(platformId.toLowerCase())
+              )
+            : null;
         return found?.url && found.url !== '#' ? found.url : defaultUrl;
     };
 
