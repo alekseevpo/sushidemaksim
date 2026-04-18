@@ -1,22 +1,9 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "dist"
-            }
-        },
-        {
-            "src": "server/src/index.ts",
-            "use": "@vercel/node"
-        }
-    ],
     "rewrites": [
         {
             "source": "/sitemap.xml",
-            "destination": "server/src/index.ts"
+            "destination": "/api/index"
         },
         {
             "source": "/robots.txt",
@@ -28,11 +15,11 @@
         },
         {
             "source": "/invitacion/(.*)",
-            "destination": "server/src/index.ts"
+            "destination": "/api/index"
         },
         {
             "source": "/api/(.*)",
-            "destination": "server/src/index.ts"
+            "destination": "/api/index"
         },
         {
             "source": "/(.*)",
