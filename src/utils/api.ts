@@ -99,6 +99,11 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
         }
 
         if (!response.ok) {
+            // Add a small delay on errors to prevent flooding the server/WAF
+            if (response.status === 404 || response.status === 403) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+
             throw new ApiError(
                 data?.error || `Error ${response.status}: Ha ocurrido un problema con el servidor.`,
                 response.status

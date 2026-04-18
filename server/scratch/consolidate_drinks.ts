@@ -22,6 +22,7 @@ async function consolidateDrinks() {
             name: 'Coca-Cola / Fanta / Sprite',
             description:
                 'Refresco de 33cl. Elige tu favorito: Coca-Cola, Fanta o Sprite (indícalo en los comentarios del pedido).',
+            image: '/placeholder-sushi.webp',
         })
         .eq('id', 116);
 
