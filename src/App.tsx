@@ -24,22 +24,24 @@ import { BlogSkeleton } from './components/skeletons/BlogSkeleton';
 import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 import { usePageTracking } from './hooks/usePageTracking';
+import { safeReload } from './utils/reload';
 
 // Lazy-loaded pages with retry logic
 const lazyRetry = (componentImport: () => Promise<{ default: React.ComponentType<any> }>) => {
     return lazy(async () => {
-        const hasRetried = window.sessionStorage.getItem('retry-lazy');
         try {
             const component = await componentImport();
-            window.sessionStorage.removeItem('retry-lazy');
             return component;
-        } catch (error) {
-            if (!hasRetried) {
-                window.sessionStorage.setItem('retry-lazy', 'true');
-                window.location.reload();
-                return { default: () => null } as any;
+        } catch (error: any) {
+            console.error('[LazyRetry] Loading failed:', error);
+
+            // Attempt safe reload
+            const reloaded = safeReload(`LazyLoad: ${error.message || 'ChunkError'}`);
+            if (!reloaded) {
+                // If limit reached, rethrow to be caught by ErrorBoundary
+                throw error;
             }
-            throw error;
+            return { default: () => null } as any;
         }
     });
 };

@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { safeReload } from '../utils/reload';
 
 interface Props {
     children: ReactNode;
@@ -28,8 +29,12 @@ export default class ErrorBoundary extends Component<Props, State> {
 
         // Auto-refresh on chunk errors – often fixes issues after a new deployment
         if (error.name === 'ChunkLoadError' || error.message.includes('Loading chunk')) {
-            console.warn('ChunkLoadError detected. Attempting to refresh page...');
-            window.location.reload();
+            console.warn('ChunkLoadError detected. Attempting to refresh page via safeReload...');
+            const reloaded = safeReload(`ChunkLoadError: ${error.message}`);
+            if (!reloaded) {
+                // If safeReload decided not to reload (limit reached), we show the error UI
+                this.setState({ hasError: true });
+            }
         }
     }
 
