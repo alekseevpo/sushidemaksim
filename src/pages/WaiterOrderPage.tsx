@@ -73,11 +73,9 @@ export default function WaiterOrderPage() {
                 items: Object.entries(selectedItems).map(([id, qty]) => {
                     const item = menuItems.find(i => i.id === Number(id));
                     return {
-                        id: id,
-                        menuItemId: id,
+                        id: Number(id),
                         name: item?.name || 'Producto',
                         price: item?.price || 0,
-                        priceAtTime: item?.price || 0,
                         quantity: qty,
                         image: item?.image || '',
                     };
@@ -86,11 +84,9 @@ export default function WaiterOrderPage() {
                 itemsCount: totalCount,
                 waiterId: user?.name || 'Camarero',
                 metadata: {
-                    timestamp: new Date().toISOString(),
-                    location: 'restaurant-floor',
                     table: 'S/N', // Could be dynamic later
+                    comment: orderComment, // Comment passed within metadata
                 },
-                notes: orderComment, // Send the comment to the backend
             };
 
             await api.post('/analytics/waiter-order', orderData);

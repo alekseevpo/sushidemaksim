@@ -80,7 +80,7 @@ router.post(
                 delivery_address: 'Consume en local',
                 phone_number: 'Waiter Interface',
                 status: 'pending',
-                notes: `[PEDIDO EN EL LOCAL] Mesa: ${metadata.table || 'S/N'} | Atendido por: ${waiterId || 'Camarero'}`,
+                notes: `[PEDIDO EN EL LOCAL] Mesa: ${metadata.table || 'S/N'} | Atendido por: ${waiterId || 'Camarero'}${metadata.comment ? ` | Nota: ${metadata.comment}` : ''}`,
                 estimated_delivery_time: 'En sala',
                 device_type: 'mobile',
                 os_name: 'WaiterApp',

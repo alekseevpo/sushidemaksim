@@ -35,6 +35,7 @@ export const waiterOrderSchema = z.object({
         metadata: z
             .object({
                 table: z.string().optional().nullable(),
+                comment: z.string().optional().nullable(),
             })
             .optional()
             .default({}),
