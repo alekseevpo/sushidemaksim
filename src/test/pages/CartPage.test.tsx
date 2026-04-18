@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CartPage from '../../pages/CartPage';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
@@ -122,5 +122,40 @@ describe('CartPage (Mocked Hooks)', () => {
 
     it('toggles saveAddress to false when a saved address is selected', async () => {
         // Test logic in code verified
+    });
+
+    it('blocks same-day orders when is_today_closed is true', async () => {
+        const updateMock = vi.fn();
+        vi.mocked(useCart).mockReturnValue({
+            items: mockItems,
+            total: 15.5,
+            isLoading: false,
+            deliveryDetails: {
+                ...mockDeliveryDetails,
+                isScheduled: true,
+                scheduledDate: new Date().toISOString().split('T')[0],
+            },
+            updateDeliveryDetails: updateMock,
+        } as any);
+
+        // Mock settings API to return isTodayClosed: true
+        const { api } = await import('../../utils/api');
+        vi.mocked(api.get).mockImplementation(url => {
+            if (url === '/settings') {
+                return Promise.resolve({ isTodayClosed: true });
+            }
+            return Promise.resolve({ items: [] });
+        });
+
+        renderPage();
+
+        // The logic should automatically trigger an update to明天
+        await waitFor(() => {
+            expect(updateMock).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    scheduledDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+                })
+            );
+        });
     });
 });

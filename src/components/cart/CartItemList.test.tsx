@@ -118,4 +118,24 @@ describe('CartItemList', () => {
         fireEvent.error(img);
         // SafeImage handles this internally - it should stay resilient
     });
+
+    it('renders the flavor selector for beverages (ID 116)', () => {
+        const beverageItem = {
+            id: '116',
+            name: 'Coca-Cola',
+            price: 2.5,
+            quantity: 1,
+            category: 'bebidas' as any,
+            image: '',
+            description: '',
+        };
+        render(<CartItemList {...defaultProps} items={[beverageItem]} />);
+
+        const select = screen.getByRole('combobox');
+        expect(select).toBeInTheDocument();
+        expect(screen.getByText(/Elegir sabor/i)).toBeInTheDocument();
+
+        fireEvent.change(select, { target: { value: 'Sprite' } });
+        expect(defaultProps.updateQuantity).toHaveBeenCalledWith('116', 1, undefined, 'Sprite');
+    });
 });

@@ -220,4 +220,50 @@ describe('useCart Hook (Integration)', () => {
         expect(result.current.deliveryDetails.customNote).toBe('');
         expect(result.current.deliveryDetails.isScheduled).toBe(false);
     });
+
+    it('should add an item with selectedOption', async () => {
+        const { result } = renderHook(() => useCart(), { wrapper });
+        const testItem = {
+            id: '116',
+            name: 'Coca-Cola',
+            price: 2.5,
+            category: 'bebidas' as any,
+            image: '',
+            description: '',
+        };
+
+        await act(async () => {
+            await result.current.addItem(testItem, 1, 'Fanta');
+        });
+
+        await waitFor(() => {
+            expect(result.current.items).toHaveLength(1);
+            expect(result.current.items[0].selectedOption).toBe('Fanta');
+        });
+    });
+
+    it('should update selectedOption via updateQuantity', async () => {
+        const { result } = renderHook(() => useCart(), { wrapper });
+        const testItem = {
+            id: '116',
+            name: 'Coca-Cola',
+            price: 2.5,
+            category: 'bebidas' as any,
+            image: '',
+            description: '',
+        };
+
+        await act(async () => {
+            await result.current.addItem(testItem, 1, 'Coca-Cola');
+        });
+
+        await act(async () => {
+            await result.current.updateQuantity('116', 2, undefined, 'Sprite');
+        });
+
+        await waitFor(() => {
+            expect(result.current.items[0].quantity).toBe(2);
+            expect(result.current.items[0].selectedOption).toBe('Sprite');
+        });
+    });
 });
