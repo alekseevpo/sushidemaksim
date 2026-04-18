@@ -76,7 +76,9 @@ describe('DeliveryForm', () => {
         user: null,
         isAuthenticated: false,
         todayStr: '2026-03-30',
+        tomorrowStr: '2026-03-31',
         isStoreClosed: false,
+        isTodayClosed: false,
     };
 
     it('renders initial state correctly (delivery mode)', () => {
