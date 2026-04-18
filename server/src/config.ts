@@ -20,11 +20,22 @@ export const config = {
     jwtSecret,
     jwtExpiresIn: '7d' as const,
     bcryptRounds: 10,
-    corsOrigin: env.CORS_ORIGIN || [
-        'http://localhost:5173',
-        'https://sushidemaksim.vercel.app',
-        'https://sushidemaksim.com',
-    ],
+    corsOrigin: env.CORS_ORIGIN
+        ? [
+              ...new Set([
+                  ...env.CORS_ORIGIN,
+                  'http://localhost:5173',
+                  'https://sushidemaksim.vercel.app',
+                  'https://sushidemaksim.com',
+                  'https://www.sushidemaksim.com',
+              ]),
+          ]
+        : [
+              'http://localhost:5173',
+              'https://sushidemaksim.vercel.app',
+              'https://sushidemaksim.com',
+              'https://www.sushidemaksim.com',
+          ],
     nodeEnv,
     isDev: nodeEnv === 'development',
     isProd: nodeEnv === 'production',
