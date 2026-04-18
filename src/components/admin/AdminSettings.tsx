@@ -52,6 +52,9 @@ const SETTINGS_TRANSLATIONS = {
         ratingTheFork: 'Рейтинг The Fork',
         ratingGoogle: 'Рейтинг Google',
         ratingReviewsCount: 'Количество отзывов (всего)',
+        isTodayClosed: 'Закрыть заказы на сегодня',
+        isTodayClosedDesc:
+            'Если включено, клиенты смогут заказывать только на завтра или другие будущие даты.',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -96,6 +99,9 @@ const SETTINGS_TRANSLATIONS = {
         ratingTheFork: 'Puntuación The Fork',
         ratingGoogle: 'Puntuación Google',
         ratingReviewsCount: 'Total de reseñas',
+        isTodayClosed: 'Cerrar pedidos para hoy',
+        isTodayClosedDesc:
+            'Si se activa, los clientes solo podrán pedir para mañana o días posteriores.',
     },
 } as const;
 
@@ -126,6 +132,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 ratingTheFork: data.ratingTheFork || 9.1,
                 ratingGoogle: data.ratingGoogle || 4.8,
                 ratingReviewsCount: data.ratingReviewsCount || 1000,
+                isTodayClosed: data.isTodayClosed === 'true',
             };
         },
     });
@@ -227,6 +234,33 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         {t.generalInfo}
                     </h3>
                 </div>
+                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-8">
+                    <div className="flex-1">
+                        <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
+                            {t.isTodayClosed}
+                        </h4>
+                        <p className="text-[11px] text-orange-800/80 font-medium">
+                            {t.isTodayClosedDesc}
+                        </p>
+                    </div>
+                    <div className="flex items-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={localSettings.isTodayClosed}
+                                onChange={e =>
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        isTodayClosed: e.target.checked,
+                                    })
+                                }
+                                className="sr-only peer"
+                            />
+                            <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-orange-600"></div>
+                        </label>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-pretty">
                     <div className="space-y-2">
                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">

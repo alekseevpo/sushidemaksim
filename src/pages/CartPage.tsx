@@ -80,7 +80,12 @@ export default function CartPage() {
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
     const todayStr = new Date().toLocaleDateString('sv-SE'); // Local date in YYYY-MM-DD format
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString('sv-SE');
+
     const isManualClosed = !!siteSettings?.is_store_closed;
+    const isTodayClosed = siteSettings?.isTodayClosed === true; // siteSettings conversion already handles JSON.parse
     const isOpenNow = isStoreOpen();
     const isStoreClosed = isManualClosed || !isOpenNow;
 
@@ -572,6 +577,12 @@ export default function CartPage() {
             );
         }
 
+        if (isTodayClosed && (!isScheduled || scheduledDate === todayStr)) {
+            return showError(
+                'Lo sentimos, ya no aceptamos más pedidos para hoy. ¡Pero puedes programar tu pedido para mañana o cualquier otro día!'
+            );
+        }
+
         if (isScheduled && scheduledDate && scheduledTime) {
             if (scheduledDate < todayStr) {
                 return showError('Por favor, selecciona una fecha a partir de hoy.');
@@ -855,7 +866,9 @@ export default function CartPage() {
                                     user={user}
                                     isAuthenticated={isAuthenticated}
                                     todayStr={todayStr}
+                                    tomorrowStr={tomorrowStr}
                                     isStoreClosed={isStoreClosed}
+                                    isTodayClosed={isTodayClosed}
                                 />
 
                                 <CartSuggestions

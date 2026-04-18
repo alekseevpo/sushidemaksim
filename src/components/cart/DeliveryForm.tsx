@@ -23,7 +23,9 @@ interface DeliveryFormProps {
     user: any;
     isAuthenticated: boolean;
     todayStr: string;
+    tomorrowStr: string;
     isStoreClosed: boolean;
+    isTodayClosed: boolean;
 }
 
 export default function DeliveryForm({
@@ -31,7 +33,9 @@ export default function DeliveryForm({
     user,
     isAuthenticated,
     todayStr,
+    tomorrowStr,
     isStoreClosed,
+    isTodayClosed,
 }: DeliveryFormProps) {
     const {
         register,
@@ -568,19 +572,21 @@ export default function DeliveryForm({
                         </label>
                     )}
 
-                    {isStoreClosed && deliveryType !== 'reservation' && !isScheduled && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="p-3 bg-orange-50 border border-orange-100 rounded-xl mt-2"
-                        >
-                            <p className="text-[11px] font-bold text-orange-600 m-0">
-                                🏪 El restaurante está cerrado. Por favor, selecciona la opción
-                                "Entrega programada" para recibir tu pedido en el próximo horario de
-                                apertura.
-                            </p>
-                        </motion.div>
-                    )}
+                    {(isStoreClosed || isTodayClosed) &&
+                        deliveryType !== 'reservation' &&
+                        !isScheduled && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="p-3 bg-orange-50 border border-orange-100 rounded-xl mt-2"
+                            >
+                                <p className="text-[11px] font-bold text-orange-600 m-0">
+                                    {isTodayClosed
+                                        ? '🏪 Hoy no aceptamos más pedidos. Por favor, selecciona la opción "Entrega programada" para mañana u otro día.'
+                                        : '🏪 El restaurante está cerrado. Por favor, selecciona la opción "Entrega programada" para recibir tu pedido en el próximo horario de apertura.'}
+                                </p>
+                            </motion.div>
+                        )}
 
                     {(isScheduled || deliveryType === 'reservation') && (
                         <motion.div
@@ -600,7 +606,7 @@ export default function DeliveryForm({
                                             <CustomDatePicker
                                                 value={field.value || ''}
                                                 onChange={field.onChange}
-                                                min={todayStr}
+                                                min={isTodayClosed ? tomorrowStr : todayStr}
                                                 placeholder="dd/mm/aaaa"
                                             />
                                         )}
