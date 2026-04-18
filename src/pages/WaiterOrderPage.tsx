@@ -7,6 +7,7 @@ import { useToast } from '../context/ToastContext';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { EMOJI } from '../constants/menu';
 
 export default function WaiterOrderPage() {
     const [orderComment, setOrderComment] = useState('');
@@ -197,16 +198,31 @@ export default function WaiterOrderPage() {
                                     : 'border-gray-50'
                             }`}
                         >
-                            <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-50">
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover"
-                                    onError={e =>
-                                        (e.currentTarget.src =
-                                            'https://sushidemaksim.com/logo192.png')
-                                    }
-                                />
+                            <div
+                                onClick={() => {
+                                    const current = selectedItems[item.id] || 0;
+                                    const next = current > 0 ? current + 1 : 1;
+                                    setSelectedItems(prev => ({ ...prev, [item.id]: next }));
+                                }}
+                                className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-50 flex items-center justify-center cursor-pointer"
+                            >
+                                {item.image ? (
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover"
+                                        onError={e => {
+                                            const parent = e.currentTarget.parentElement;
+                                            if (parent) {
+                                                parent.innerHTML = `<span class="text-2xl grayscale opacity-30">${EMOJI[item.category as keyof typeof EMOJI] || '🍱'}</span>`;
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    <span className="text-2xl grayscale opacity-30">
+                                        {EMOJI[item.category as keyof typeof EMOJI] || '🍱'}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="flex-1 min-w-0">
