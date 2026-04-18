@@ -30,7 +30,11 @@ export default function WaiterOrderPage() {
         return menuItems.filter(item => {
             if (selectedCategory === 'all') return true;
             // Filter by drinks category (assuming 'bebidas' or similar)
-            return item.category === 'bebidas' || item.category === 'drink' || item.category === 'drinks';
+            return (
+                item.category === 'bebidas' ||
+                item.category === 'drink' ||
+                item.category === 'drinks'
+            );
         });
     }, [menuItems, selectedCategory]);
 
@@ -146,7 +150,11 @@ export default function WaiterOrderPage() {
                         value={orderComment}
                         onChange={e => setOrderComment(e.target.value)}
                         rows={2}
-                        className="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold focus:ring-2 ring-orange-500/20 transition-all outline-none resize-none"
+                        className={
+                            'w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2.5 ' +
+                            'text-xs font-bold focus:ring-2 ring-orange-500/20 ' +
+                            'transition-all outline-none resize-none'
+                        }
                     />
                 </div>
             </div>
