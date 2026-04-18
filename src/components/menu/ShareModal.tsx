@@ -1,5 +1,7 @@
 import { X, Copy, Check, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import SafeImage from '../common/SafeImage';
+import { EMOJI } from '../../constants/menu';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { api } from '../../utils/api';
 
@@ -21,7 +23,9 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
         }
     };
 
-    const shareUrl = `${import.meta.env.VITE_FRONTEND_URL || window.location.origin}/menu#item-${item.id}`;
+    const shareUrl = `${
+        import.meta.env.VITE_FRONTEND_URL || window.location.origin
+    }/menu#item-${item.id}`;
     const shareText = `¡Mira este ${item.name} en Sushi de Maksim! 🍣\n\n${item.description}\n\nPídelo aquí: ${shareUrl}`;
 
     return (
@@ -51,12 +55,19 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
                             </button>
                         </div>
 
-                        <div className="flex gap-4 p-4 bg-gray-50 rounded-2xl mb-6 border border-gray-100">
-                            <img
-                                src={item.image}
-                                alt={item.name}
-                                className="w-16 h-16 rounded-xl object-cover"
-                            />
+                        <div className="flex gap-4 p-4 bg-gray-50 rounded-2xl mb-6 border border-gray-100 items-center">
+                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-white border border-gray-100 flex-shrink-0 flex items-center justify-center">
+                                <SafeImage
+                                    src={item.image}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                    fallbackContent={
+                                        <span className="text-3xl grayscale opacity-30">
+                                            {EMOJI[item.category] || '🍱'}
+                                        </span>
+                                    }
+                                />
+                            </div>
                             <div className="flex-1 min-w-0">
                                 <p className="font-black text-gray-900 truncate mb-1">
                                     {item.name}
