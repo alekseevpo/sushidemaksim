@@ -1,4 +1,4 @@
-import { Waves, Fish, Flame, Soup, Gift, Droplets, Cake } from 'lucide-react';
+import { Waves, Fish, Flame, Soup, Gift, Droplets, Cake, Beer } from 'lucide-react';
 
 export const CATEGORIES = [
     {
@@ -51,6 +51,13 @@ export const CATEGORIES = [
             'Salsas caseras (soja, teriyaki, picante) y complementos para personalizar tu pedido al máximo.',
     },
     {
+        id: 'bebidas',
+        name: 'Bebidas',
+        icon: Beer,
+        description:
+            'Nuestra selección de bebidas refrescantes, cervezas artesanas y vinos para acompañar tu sushi.',
+    },
+    {
         id: 'postre',
         name: 'Postre',
         icon: Cake,
@@ -67,5 +74,6 @@ export const EMOJI: Record<string, string> = {
     sopas: '🍜',
     menus: '🎁',
     extras: '🧴',
+    bebidas: '🥤',
     postre: '🍰',
 };

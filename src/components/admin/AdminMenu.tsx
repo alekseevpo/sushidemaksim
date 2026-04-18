@@ -76,6 +76,7 @@ const MENU_TRANSLATIONS = {
             sopas: 'Супы',
             menus: 'Сеты / Меню',
             extras: 'Добавки',
+            bebidas: 'Напитки',
             postre: 'Десерты',
         },
         tags: {
@@ -142,6 +143,7 @@ const MENU_TRANSLATIONS = {
             sopas: 'Sopas',
             menus: 'Menús',
             extras: 'Extras',
+            bebidas: 'Bebidas',
             postre: 'Postre',
         },
         tags: {

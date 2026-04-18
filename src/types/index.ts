@@ -12,6 +12,7 @@ export interface SushiItem {
         | 'sopas'
         | 'menus'
         | 'extras'
+        | 'bebidas'
         | 'postre';
     weight?: string;
     pieces?: number;
