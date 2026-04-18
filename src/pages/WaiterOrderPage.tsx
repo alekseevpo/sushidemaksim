@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useMenu } from '../hooks/queries/useMenu';
-import { CATEGORIES, EMOJI } from '../constants/menu';
-import { Search, Plus, Minus, Check, ShoppingBag, Loader2, LogOut, MessageSquare, X } from 'lucide-react';
+import { useMenu } from '../hooks/queries/useMenu';
+import { Plus, Minus, Check, ShoppingBag, Loader2, LogOut, MessageSquare, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 
 export default function WaiterOrderPage() {
-    const [search, setSearch] = useState('');
     const [orderComment, setOrderComment] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedItems, setSelectedItems] = useState<Record<number, number>>({});
