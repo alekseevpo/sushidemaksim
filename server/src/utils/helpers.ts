@@ -95,6 +95,7 @@ export function formatOrder(o: any, userStats: any = null) {
         image: item.image,
         description: item.description,
         category: item.category,
+        selectedOption: item.selected_option,
     }));
 
     // Extract the special delivery item (id: -1 or by name)

@@ -48,9 +48,14 @@ interface CartContextType {
     items: CartItem[];
     total: number;
     isLoading: boolean;
-    addItem: (item: SushiItem, quantity?: number) => Promise<void>;
+    addItem: (item: SushiItem, quantity?: number, selectedOption?: string) => Promise<void>;
     removeItem: (id: string, cartItemId?: number) => Promise<void>;
-    updateQuantity: (id: string, quantity: number, cartItemId?: number) => Promise<void>;
+    updateQuantity: (
+        id: string,
+        quantity: number,
+        cartItemId?: number,
+        selectedOption?: string
+    ) => Promise<void>;
     clearCart: () => Promise<void>;
     syncGuestItems: () => Promise<void>;
     itemCount: number;
@@ -196,12 +201,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (!localCart || !user) return;
 
         try {
-            const guestItems = JSON.parse(localCart);
+            const guestCart = JSON.parse(localCart);
+            const guestItems = Array.isArray(guestCart) ? guestCart : guestCart.items || [];
             localStorage.removeItem('guest_cart');
 
             const itemsToSync = guestItems.map((item: any) => ({
                 menuItemId: parseInt(item.id),
                 quantity: item.quantity,
+                selectedOption: item.selectedOption || '',
             }));
 
             await api.post('/cart/bulk', { items: itemsToSync });
@@ -220,9 +227,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [user, syncGuestItems]);
 
     const addItem = useCallback(
-        async (item: SushiItem, quantity: number = 1) => {
+        async (item: SushiItem, quantity: number = 1, selectedOption: string = '') => {
             if ('vibrate' in navigator) navigator.vibrate(50);
-            await addToCart({ item, quantity });
+            await addToCart({ item, quantity, selectedOption });
         },
         [addToCart]
     );
@@ -235,8 +242,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
 
     const updateQuantity = useCallback(
-        async (id: string, quantity: number, cartItemId?: number) => {
-            await updateQty({ id, quantity, cartItemId });
+        async (id: string, quantity: number, cartItemId?: number, selectedOption?: string) => {
+            await updateQty({ id, quantity, cartItemId, selectedOption });
         },
         [updateQty]
     );

@@ -73,6 +73,30 @@ export default function CartItemList({
                                         {item.description}
                                     </p>
                                 )}
+
+                                {/* Drink Option Selector */}
+                                {(item.id === '116' || item.menuItemId === 116) && (
+                                    <div className="mt-2">
+                                        <select
+                                            value={item.selectedOption || ''}
+                                            onChange={e => {
+                                                triggerHaptic();
+                                                updateQuantity(
+                                                    item.id,
+                                                    item.quantity,
+                                                    item.cartItemId,
+                                                    e.target.value
+                                                );
+                                            }}
+                                            className="text-[11px] font-bold bg-white border border-gray-200 rounded-md px-3 py-1.5 outline-none text-gray-700 focus:border-orange-200 shadow-sm transition-all cursor-pointer hover:bg-gray-50 active:scale-95"
+                                        >
+                                            <option value="">Elegir sabor...</option>
+                                            <option value="Coca-Cola">🥤 Coca-Cola</option>
+                                            <option value="Fanta">🍊 Fanta</option>
+                                            <option value="Sprite">🍋 Sprite</option>
+                                        </select>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex items-center justify-between gap-4">
                                 <div className="flex items-center bg-gray-50 rounded-lg p-0.5 border border-gray-100">

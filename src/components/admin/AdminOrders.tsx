@@ -891,9 +891,18 @@ export default function AdminOrders({
                                                                         <span className="text-[13px] font-black w-8 h-8 flex items-center justify-center rounded-xl shadow-sm transition-all text-orange-600 bg-orange-50 group-hover/item:bg-orange-600 group-hover/item:text-white">
                                                                             {item.quantity}
                                                                         </span>
-                                                                        <span className="text-[13px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
-                                                                            {item.name}
-                                                                        </span>
+                                                                        <div className="flex flex-col min-w-0">
+                                                                            <span className="text-[13px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
+                                                                                {item.name}
+                                                                            </span>
+                                                                            {item.selectedOption && (
+                                                                                <span className="text-[10px] font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-lg w-fit border border-orange-100 uppercase mt-0.5">
+                                                                                    {
+                                                                                        item.selectedOption
+                                                                                    }
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                     <span className="text-[12px] font-black tabular-nums text-gray-400">
                                                                         {formatCurrency(

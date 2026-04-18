@@ -24,11 +24,16 @@ export function useCartQuery(user: any, isAuthLoading: boolean = false) {
                         return { items: [], total: 0 };
                     }
 
-                    const total = items.reduce(
+                    const formattedItems = items.map((item: any) => ({
+                        ...item,
+                        selectedOption: item.selectedOption || '',
+                    }));
+
+                    const total = formattedItems.reduce(
                         (sum: number, item: any) => sum + item.price * item.quantity,
                         0
                     );
-                    return { items, total };
+                    return { items: formattedItems, total };
                 } catch (e) {
                     return { items: [], total: 0 };
                 }
@@ -43,6 +48,7 @@ export function useCartQuery(user: any, isAuthLoading: boolean = false) {
                 image: item.image,
                 category: item.category,
                 quantity: item.quantity,
+                selectedOption: item.selectedOption || '',
                 cartItemId: item.id, // ID from the cart join table
             }));
 
@@ -57,18 +63,35 @@ export function useAddToCartMutation(user: any) {
     const queryKey = [...CART_QUERY_KEY, user?.id || 'guest'];
 
     return useMutation({
-        mutationFn: async ({ item, quantity = 1 }: { item: SushiItem; quantity?: number }) => {
+        mutationFn: async ({
+            item,
+            quantity = 1,
+            selectedOption = '',
+        }: {
+            item: SushiItem;
+            quantity?: number;
+            selectedOption?: string;
+        }) => {
             if (!user) {
-                // Logic already handled in onMutate for guest, but we repeat for safety
                 const localCart = localStorage.getItem('guest_cart');
                 const parsed = localCart ? JSON.parse(localCart) : null;
                 const items = (Array.isArray(parsed) ? parsed : parsed?.items) || [];
-                const existing = items.find((i: any) => i.id === item.id);
-                const newItems = existing
-                    ? items.map((i: any) =>
-                          i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
-                      )
-                    : [...items, { ...item, quantity }];
+
+                // For guest, merge if same ID AND same option
+                const existingIndex = items.findIndex(
+                    (i: any) => i.id === item.id && (i.selectedOption || '') === selectedOption
+                );
+
+                let newItems;
+                if (existingIndex !== -1) {
+                    newItems = [...items];
+                    newItems[existingIndex] = {
+                        ...newItems[existingIndex],
+                        quantity: newItems[existingIndex].quantity + quantity,
+                    };
+                } else {
+                    newItems = [...items, { ...item, quantity, selectedOption }];
+                }
 
                 localStorage.setItem(
                     'guest_cart',
@@ -80,21 +103,32 @@ export function useAddToCartMutation(user: any) {
                 return { items: newItems };
             }
 
-            return api.post('/cart', { menuItemId: parseInt(item.id), quantity });
+            return api.post('/cart', { menuItemId: parseInt(item.id), quantity, selectedOption });
         },
-        onMutate: async ({ item: newItem, quantity = 1 }) => {
+        onMutate: async ({ item: newItem, quantity = 1, selectedOption = '' }) => {
             await queryClient.cancelQueries({ queryKey });
             const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
                 queryKey
             );
 
             if (previousCart) {
-                const existing = previousCart.items.find(i => i.id === newItem.id);
-                const updatedItems = existing
-                    ? previousCart.items.map(i =>
-                          i.id === newItem.id ? { ...i, quantity: i.quantity + quantity } : i
-                      )
-                    : [...previousCart.items, { ...newItem, quantity } as CartItem];
+                const existingIndex = previousCart.items.findIndex(
+                    i => i.id === newItem.id && (i.selectedOption || '') === selectedOption
+                );
+
+                let updatedItems;
+                if (existingIndex !== -1) {
+                    updatedItems = [...previousCart.items];
+                    updatedItems[existingIndex] = {
+                        ...updatedItems[existingIndex],
+                        quantity: updatedItems[existingIndex].quantity + quantity,
+                    };
+                } else {
+                    updatedItems = [
+                        ...previousCart.items,
+                        { ...newItem, quantity, selectedOption } as CartItem,
+                    ];
+                }
 
                 const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
@@ -122,17 +156,27 @@ export function useUpdateQuantityMutation(user: any) {
         mutationFn: async ({
             id,
             quantity,
+            selectedOption,
             cartItemId,
         }: {
             id: string;
             quantity: number;
+            selectedOption?: string;
             cartItemId?: number;
         }) => {
             if (!user) {
                 const localCart = localStorage.getItem('guest_cart');
                 const parsed = localCart ? JSON.parse(localCart) : null;
                 const items = (Array.isArray(parsed) ? parsed : parsed?.items) || [];
-                const newItems = items.map((i: any) => (i.id === id ? { ...i, quantity } : i));
+                // For updates, we need both id and existing selectedOption to find the right item
+                // However, since we don't pass 'previousOption', we assume the ID is unique for the update call
+                // OR we just use the index if it was passed.
+                // For simplicity, we assume 'id' here is unique in the list being updated.
+                const newItems = items.map((i: any) =>
+                    i.id === id
+                        ? { ...i, quantity, selectedOption: selectedOption ?? i.selectedOption }
+                        : i
+                );
 
                 localStorage.setItem(
                     'guest_cart',
@@ -147,12 +191,12 @@ export function useUpdateQuantityMutation(user: any) {
             if (!cartItemId) {
                 const data = await api.get('/cart');
                 const realItem = data.items.find((i: any) => i.menuItemId.toString() === id);
-                if (realItem) return api.put(`/cart/${realItem.id}`, { quantity });
+                if (realItem) return api.put(`/cart/${realItem.id}`, { quantity, selectedOption });
                 return;
             }
-            return api.put(`/cart/${cartItemId}`, { quantity });
+            return api.put(`/cart/${cartItemId}`, { quantity, selectedOption });
         },
-        onMutate: async ({ id, quantity }) => {
+        onMutate: async ({ id, quantity, selectedOption }) => {
             await queryClient.cancelQueries({ queryKey });
             const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
                 queryKey
@@ -160,7 +204,9 @@ export function useUpdateQuantityMutation(user: any) {
 
             if (previousCart) {
                 const updatedItems = previousCart.items.map(i =>
-                    i.id === id ? { ...i, quantity } : i
+                    i.id === id
+                        ? { ...i, quantity, selectedOption: selectedOption ?? i.selectedOption }
+                        : i
                 );
                 const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
                 queryClient.setQueryData(queryKey, { items: updatedItems, total: updatedTotal });

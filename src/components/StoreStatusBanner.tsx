@@ -47,8 +47,9 @@ export default function StoreStatusBanner() {
     }, []);
 
     const isStoreClosed = !!settings?.is_store_closed || !!settings?.isStoreClosed;
+    const isTodayClosed = !!settings?.is_today_closed || !!settings?.isTodayClosed;
 
-    if (isAdminRoute || !isStoreClosed || !isVisible) {
+    if (isAdminRoute || (!isStoreClosed && !isTodayClosed) || !isVisible) {
         return null;
     }
 
@@ -56,6 +57,19 @@ export default function StoreStatusBanner() {
     const rawSchedule = settings?.contactSchedule || settings?.contact_schedule;
     const schedule = Array.isArray(rawSchedule) ? rawSchedule : [];
     const todaySchedule = schedule.find((s: any) => s?.days?.toLowerCase().includes(todayDay));
+
+    const statusTitle = isStoreClosed
+        ? settings?.is_store_closed
+            ? 'Restaurante Cerrado'
+            : 'Fuera de Horario'
+        : 'Cerrado para hoy';
+
+    const statusSubtitle =
+        isTodayClosed && !isStoreClosed
+            ? 'Solo aceptamos pedidos para mañana u otros días.'
+            : todaySchedule?.hours
+              ? `Hoy: ${todaySchedule.hours}`
+              : 'Cerrado hoy';
 
     return (
         <AnimatePresence>
@@ -75,9 +89,7 @@ export default function StoreStatusBanner() {
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
                                     <p className="text-white font-black text-[10px] md:text-sm uppercase tracking-tight">
-                                        {settings?.is_store_closed
-                                            ? 'Restaurante Cerrado'
-                                            : 'Fuera de Horario'}
+                                        {statusTitle}
                                     </p>
                                     <span className="px-1.5 py-0.5 bg-orange-600/20 text-orange-500 text-[7px] md:text-[8px] font-black rounded-full border border-orange-500/20">
                                         PRE-ORDEN
@@ -86,14 +98,11 @@ export default function StoreStatusBanner() {
                                 <div className="flex items-center gap-2 mt-0">
                                     <span className="text-gray-400 text-[9px] md:text-xs font-bold leading-none flex items-center gap-1">
                                         <Calendar size={9} className="text-gray-500" />
-                                        {todaySchedule?.hours
-                                            ? `Hoy: ${todaySchedule.hours}`
-                                            : 'Cerrado hoy'}
+                                        {statusSubtitle}
                                     </span>
                                 </div>
                             </div>
                         </div>
-
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             {timeLeftDisplay && (
                                 <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 decoration-orange-500">

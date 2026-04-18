@@ -48,6 +48,11 @@ router.post(
         let notesToSave = customNote?.trim() || '';
 
         // 0. Business Hour & Scheduling Validation
+        const { data: settings } = await supabase.from('site_settings').select('key, value');
+        const isTodayClosed =
+            settings?.find(s => s.key === 'isTodayClosed')?.value === 'true' ||
+            settings?.find(s => s.key === 'is_today_closed')?.value === 'true';
+
         const isOpenNow = isStoreOpen();
         const isStoreClosed = !isOpenNow;
 
@@ -62,13 +67,18 @@ router.post(
 
             if (!isTimeWithinBusinessHours(normalizedDate, scheduledTime)) {
                 return res.status(400).json({
-                    error: 'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!',
+                    error: 'La hora seleccionada está fuera de nuestro horario de servicio. ¡Пожалуйста, выберите время, когда наши шеф-повара на кухне!',
                 });
             }
             serverEstimatedTime = `${normalizedDate} ${scheduledTime}`;
         } else if (isStoreClosed) {
             return res.status(400).json({
-                error: 'Nuestra cocina está descansando ahora. ¡Pero estaremos encantados de preparar tu pedido más adelante! Por favor, selecciona "Entrega programada".',
+                error: 'Nuestra cocina está descansando ahora. ¡Но мы будем рады подготовить ваш заказ позже! Пожалуйста, выберите "Программируемая доставка".',
+            });
+        } else if (isTodayClosed) {
+            // Block non-scheduled orders if today is closed
+            return res.status(400).json({
+                error: 'Сегодня мы принимаем заказы только на будущие даты. Пожалуйста, выберите время "Программируемая доставка" на завтра или позже.',
             });
         }
 
@@ -97,6 +107,7 @@ router.post(
                         quantity: gi.quantity,
                         menu_item_id: gi.menuItemId,
                         menu_items: menuItem,
+                        selected_option: gi.selectedOption || '',
                     };
                 })
                 .filter((i: any) => i !== null);
@@ -104,11 +115,14 @@ router.post(
             // Fallback to DB cart if nothing sent in request
             const { data: dbCartItems, error: cartError } = await supabase
                 .from('cart_items')
-                .select('quantity, menu_item_id, menu_items(name, price, image)')
+                .select('quantity, menu_item_id, selected_option, menu_items(name, price, image)')
                 .eq('user_id', req.userId);
 
             if (cartError) throw cartError;
-            cartItems = dbCartItems || [];
+            cartItems = (dbCartItems || []).map((item: any) => ({
+                ...item,
+                selected_option: item.selected_option || '',
+            }));
         }
 
         if (cartItems.length === 0) {
@@ -269,6 +283,7 @@ router.post(
                     image: item.menu_items.image,
                     description: item.menu_items.description || '',
                     category: item.menu_items.category || '',
+                    selected_option: item.selected_option || '',
                 }))
                 .concat(
                     deliveryFee > 0
@@ -281,6 +296,7 @@ router.post(
                                   image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png',
                                   description: '',
                                   category: 'extras',
+                                  selected_option: '',
                               },
                           ]
                         : []
@@ -579,10 +595,13 @@ router.post(
         // 1. Get items from user's cart in DB
         const { data: dbItems } = await supabase
             .from('cart_items')
-            .select('quantity, menu_item_id, menu_items(name, price, image)')
+            .select('quantity, menu_item_id, selected_option, menu_items(name, price, image)')
             .eq('user_id', req.userId);
 
-        const cartItems = dbItems || [];
+        const cartItems = (dbItems || []).map((item: any) => ({
+            ...item,
+            selected_option: item.selected_option || '',
+        }));
 
         if (cartItems.length === 0) {
             return res
@@ -687,6 +706,7 @@ router.post(
                     image: item.menu_items.image,
                     description: item.menu_items.description || '',
                     category: item.menu_items.category || '',
+                    selected_option: item.selected_option || '',
                 }))
                 .concat(
                     deliveryFee > 0
@@ -699,6 +719,7 @@ router.post(
                                   image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png',
                                   description: '',
                                   category: 'extras',
+                                  selected_option: '',
                               },
                           ]
                         : []

@@ -87,7 +87,7 @@ export default function CartPage() {
     const isManualClosed = !!siteSettings?.is_store_closed;
     const isTodayClosed = siteSettings?.isTodayClosed === true; // siteSettings conversion already handles JSON.parse
     const isOpenNow = isStoreOpen();
-    const isStoreClosed = isManualClosed || !isOpenNow;
+    const isStoreClosed = isManualClosed || !isOpenNow || isTodayClosed;
 
     const methods = useForm<CheckoutInput>({
         resolver: zodResolver(checkoutSchema) as any,
@@ -236,11 +236,16 @@ export default function CartPage() {
 
     // Schedule integrity sync
     useEffect(() => {
-        if (isScheduled && scheduledDate && scheduledDate < todayStr) {
-            methods.setValue('scheduledDate', todayStr);
+        const isSelectedToday = scheduledDate === todayStr;
+        if (
+            isScheduled &&
+            scheduledDate &&
+            (scheduledDate < todayStr || (isTodayClosed && isSelectedToday))
+        ) {
+            methods.setValue('scheduledDate', isTodayClosed ? tomorrowStr : todayStr);
             methods.setValue('scheduledTime', '');
         }
-    }, [todayStr, isScheduled, scheduledDate, methods]);
+    }, [todayStr, tomorrowStr, isScheduled, scheduledDate, isTodayClosed, methods]);
 
     const loadSuggestions = useCallback(async () => {
         if (suggestions.length > 0) return;
@@ -640,6 +645,14 @@ export default function CartPage() {
         if (noCall) notesArray.push('[SIN CONFIRMACIÓN LLAMADA]');
         if (noBuzzer) notesArray.push('[NO LLAMAR TIMBRE]');
         if (data.chopsticksCount > 0) notesArray.push(`[PALILLOS: ${data.chopsticksCount}]`);
+
+        // Add beverage options to notes
+        items.forEach(item => {
+            if (item.selectedOption) {
+                notesArray.push(`[${item.name}: ${item.selectedOption}]`);
+            }
+        });
+
         if (customNote.trim()) notesArray.push(customNote.trim());
 
         try {
@@ -677,6 +690,7 @@ export default function CartPage() {
             payload.guestItems = items.map(i => ({
                 menuItemId: parseInt(i.id),
                 quantity: i.quantity,
+                selectedOption: i.selectedOption || '',
             }));
 
             const dataRes = await api.post('/orders', payload);

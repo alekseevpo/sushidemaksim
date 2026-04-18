@@ -27,6 +27,7 @@ export interface SushiItem {
 
 export interface CartItem extends SushiItem {
     quantity: number;
+    selectedOption?: string;
 }
 
 export interface UserAddress {
@@ -64,6 +65,7 @@ export interface OrderItem {
     image: string;
     description?: string;
     category?: SushiItem['category'];
+    selectedOption?: string;
 }
 
 export interface UserStats {

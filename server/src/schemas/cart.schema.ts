@@ -9,6 +9,7 @@ const cartItemInput = z.object({
         .number()
         .min(1, 'La cantidad debe ser al menos 1')
         .max(99, 'Cantidad máxima excedida (99)'),
+    selectedOption: z.string().optional(),
 });
 
 /**
@@ -27,6 +28,7 @@ export const updateCartItemSchema = z.object({
     }),
     body: z.object({
         quantity: z.number().min(0, 'La cantidad не может быть отрицательной').max(99),
+        selectedOption: z.string().optional(),
     }),
 });
 
@@ -50,6 +52,7 @@ export const bulkCartSchema = z.object({
                     id: z.union([z.number(), z.string()]).optional(),
                     menuItemId: z.union([z.number(), z.string()]).optional(),
                     quantity: z.union([z.number(), z.string()]).optional().default(1),
+                    selectedOption: z.string().optional(),
                 })
             )
             .min(1, 'El carrito no может быть пустым при синхронизации'),

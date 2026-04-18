@@ -250,6 +250,7 @@ export async function sendOrderReceiptEmail(
     <tr style="border-bottom: 1px solid #f3f4f6;">
       <td style="padding: 12px 0;">
         <div style="font-weight: 600; color: #111827; font-size: 15px;">${item.name} ${item.quantity > 1 ? `<span style="color:#ea580c;">x${item.quantity}</span>` : ''}</div>
+        ${item.selected_option ? `<div style="color: #ea580c; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 2px;">🍬 Opción: ${item.selected_option}</div>` : ''}
         <div style="color: #6b7280; font-size: 13px;">Precio unitario: ${item.price_at_time.toFixed(2).replace('.', ',')} €</div>
       </td>
       <td style="padding: 12px 0; text-align: right; vertical-align: top; font-weight: 700; color: #111827; font-size: 15px;">

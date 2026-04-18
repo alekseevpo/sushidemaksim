@@ -23,7 +23,7 @@ router.get(
             .from('cart_items')
             .select(
                 `
-                id, quantity, menu_item_id,
+                id, quantity, menu_item_id, selected_option,
                 menu_items(*)
             `
             )
@@ -41,6 +41,7 @@ router.get(
                     id: item.id, // ID of the cart record
                     menuItemId: item.menu_item_id,
                     quantity: item.quantity,
+                    selectedOption: item.selected_option,
                 };
             })
             .filter((i): i is any => i !== null);
@@ -58,13 +59,15 @@ router.post(
     '/',
     validateResource(addToCartSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { menuItemId, quantity } = req.body;
+        const { menuItemId, quantity, selectedOption } = req.body;
 
         const { data: existing, error: findError } = await supabase
             .from('cart_items')
             .select('id, quantity')
             .eq('user_id', req.userId)
             .eq('menu_item_id', menuItemId)
+            // Only merge if it's the same option
+            .eq('selected_option', selectedOption || '')
             .maybeSingle();
 
         if (findError) throw findError;
@@ -75,9 +78,12 @@ router.post(
                 .update({ quantity: existing.quantity + quantity })
                 .eq('id', existing.id);
         } else {
-            await supabase
-                .from('cart_items')
-                .insert({ user_id: req.userId, menu_item_id: menuItemId, quantity });
+            await supabase.from('cart_items').insert({
+                user_id: req.userId,
+                menu_item_id: menuItemId,
+                quantity,
+                selected_option: selectedOption || '',
+            });
         }
 
         res.status(201).json({ success: true, message: 'Producto añadido a la cesta' });
@@ -89,15 +95,20 @@ router.put(
     '/:itemId',
     validateResource(updateCartItemSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { quantity } = req.body;
+        const { quantity, selectedOption } = req.body;
         const { itemId } = req.params as any;
 
         if (quantity === 0) {
             await supabase.from('cart_items').delete().eq('id', itemId).eq('user_id', req.userId);
         } else {
+            const updateData: any = { quantity };
+            if (selectedOption !== undefined) {
+                updateData.selected_option = selectedOption;
+            }
+
             const { error } = await supabase
                 .from('cart_items')
-                .update({ quantity })
+                .update(updateData)
                 .eq('id', itemId)
                 .eq('user_id', req.userId);
 
@@ -144,29 +155,40 @@ router.post(
 
         if (fetchError) throw fetchError;
 
-        // 2. Merge logic
+        // 2. Merge logic (Key is menuItemId + selectedOption)
         const cartMap = new Map();
         // Pack existing into map
         (existing || []).forEach(item => {
-            cartMap.set(item.menu_item_id, item.quantity);
+            const key = `${item.menu_item_id}:${item.selected_option || ''}`;
+            cartMap.set(key, {
+                menu_item_id: item.menu_item_id,
+                quantity: item.quantity,
+                selected_option: item.selected_option || '',
+            });
         });
 
         // Add incoming
         incomingItems.forEach((item: any) => {
             const mid = parseInt(item.menuItemId || item.id);
             const qty = parseInt(item.quantity || 1);
+            const opt = item.selectedOption || '';
             if (!isNaN(mid)) {
-                cartMap.set(mid, (cartMap.get(mid) || 0) + qty);
+                const key = `${mid}:${opt}`;
+                const existing = cartMap.get(key);
+                if (existing) {
+                    existing.quantity += qty;
+                } else {
+                    cartMap.set(key, { menu_item_id: mid, quantity: qty, selected_option: opt });
+                }
             }
         });
 
-        // 3. Re-sync (Delete all and re-insert is the safest way to "merge" without complex upserts)
+        // 3. Re-sync
         await supabase.from('cart_items').delete().eq('user_id', req.userId);
 
-        const toInsert = Array.from(cartMap.entries()).map(([menu_item_id, quantity]) => ({
+        const toInsert = Array.from(cartMap.values()).map(item => ({
             user_id: req.userId,
-            menu_item_id,
-            quantity,
+            ...item,
         }));
 
         if (toInsert.length > 0) {
