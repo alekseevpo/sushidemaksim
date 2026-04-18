@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useMenu } from '../hooks/queries/useMenu';
 import { CATEGORIES, EMOJI } from '../constants/menu';
-import { Search, Plus, Minus, Check, ShoppingBag, Loader2, LogOut } from 'lucide-react';
+import { Search, Plus, Minus, Check, ShoppingBag, Loader2, LogOut, MessageSquare, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
@@ -11,8 +11,10 @@ import SEO from '../components/SEO';
 
 export default function WaiterOrderPage() {
     const [search, setSearch] = useState('');
+    const [orderComment, setOrderComment] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedItems, setSelectedItems] = useState<Record<number, number>>({});
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const toast = useToast();
     const { user, isLoading: authLoading, logout } = useAuth();
@@ -28,14 +30,11 @@ export default function WaiterOrderPage() {
 
     const filteredItems = useMemo(() => {
         return menuItems.filter(item => {
-            const matchesCategory =
-                selectedCategory === 'all' || item.category === selectedCategory;
-            const matchesSearch =
-                item.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.description.toLowerCase().includes(search.toLowerCase());
-            return matchesCategory && matchesSearch;
+            if (selectedCategory === 'all') return true;
+            // Filter by drinks category (assuming 'bebidas' or similar)
+            return item.category === 'bebidas' || item.category === 'drink' || item.category === 'drinks';
         });
-    }, [menuItems, selectedCategory, search]);
+    }, [menuItems, selectedCategory]);
 
     if (authLoading) {
         return (
@@ -64,9 +63,12 @@ export default function WaiterOrderPage() {
         return sum + (item?.price || 0) * qty;
     }, 0);
 
-    const handleSubmitOrder = async () => {
+    const handleConfirmOrder = () => {
         if (totalCount === 0) return;
+        setShowConfirmModal(true);
+    };
 
+    const finalizeOrder = async () => {
         setIsSubmitting(true);
         try {
             const orderData = {
@@ -77,27 +79,29 @@ export default function WaiterOrderPage() {
                         name: item?.name,
                         price: item?.price,
                         quantity: qty,
-                        image: item?.image || '', // Ensure image is passed for the admin view
+                        image: item?.image || '',
                     };
                 }),
                 totalValue: totalPrice,
                 itemsCount: totalCount,
-                waiterId: 'local-waiter', // Could be dynamic later
+                waiterId: user?.name || 'Camarero',
                 metadata: {
                     timestamp: new Date().toISOString(),
                     location: 'restaurant-floor',
+                    table: 'S/N', // Could be dynamic later
                 },
+                notes: orderComment, // Send the comment to the backend
             };
 
             await api.post('/analytics/waiter-order', orderData);
 
-            toast.success('¡Pedido enviado al sistema!');
+            toast.success('¡Pedido enviado a cocina!');
 
-            // Success Haptic
             if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
 
             setSelectedItems({});
-            setSearch('');
+            setOrderComment('');
+            setShowConfirmModal(false);
         } catch (error) {
             console.error('Submit error:', error);
             toast.error('Error al enviar el pedido');
@@ -137,26 +141,26 @@ export default function WaiterOrderPage() {
                 </div>
 
                 <div className="relative">
-                    <Search
-                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    <MessageSquare
+                        className="absolute left-3.5 top-3 text-gray-400"
                         size={16}
                     />
-                    <input
-                        type="text"
-                        placeholder="Buscar sushi... "
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        className="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:ring-2 ring-orange-500/20 transition-all outline-none"
+                    <textarea
+                        placeholder="Instrucciones o cambios en el pedido... (Ej: Sin cebolla, extra picante)"
+                        value={orderComment}
+                        onChange={e => setOrderComment(e.target.value)}
+                        rows={2}
+                        className="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold focus:ring-2 ring-orange-500/20 transition-all outline-none resize-none"
                     />
                 </div>
             </div>
 
             {/* Horizontal Category Bar */}
-            <div className="sticky top-[88px] z-20 bg-white/50 backdrop-blur-sm border-b border-gray-100/50 py-2 mb-1 overflow-x-auto scrollbar-hide">
-                <div className="flex px-3 gap-1.5 whitespace-nowrap">
+            <div className="sticky top-[108px] z-20 bg-white/50 backdrop-blur-sm border-b border-gray-100/50 py-2 mb-1 overflow-x-auto scrollbar-hide">
+                <div className="flex px-3 gap-2 whitespace-nowrap">
                     <button
                         onClick={() => setSelectedCategory('all')}
-                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                        className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${
                             selectedCategory === 'all'
                                 ? 'bg-gray-900 text-white shadow-lg shadow-gray-200'
                                 : 'bg-white text-gray-500 border border-gray-100'
@@ -164,20 +168,17 @@ export default function WaiterOrderPage() {
                     >
                         Todos
                     </button>
-                    {CATEGORIES.map(cat => (
-                        <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                                selectedCategory === cat.id
-                                    ? 'bg-gray-900 text-white shadow-lg shadow-gray-200'
-                                    : 'bg-white text-gray-500 border border-gray-100'
-                            }`}
-                        >
-                            <span className="text-xs">{EMOJI[cat.id] || '🍣'}</span>
-                            {cat.name}
-                        </button>
-                    ))}
+                    <button
+                        onClick={() => setSelectedCategory('bebidas')}
+                        className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${
+                            selectedCategory === 'bebidas'
+                                ? 'bg-gray-900 text-white shadow-lg shadow-gray-200'
+                                : 'bg-white text-gray-500 border border-gray-100'
+                        }`}
+                    >
+                        <span className="text-xs">🥤</span>
+                        Bebidas
+                    </button>
                 </div>
             </div>
 
@@ -285,7 +286,7 @@ export default function WaiterOrderPage() {
                             </div>
 
                             <button
-                                onClick={handleSubmitOrder}
+                                onClick={handleConfirmOrder}
                                 disabled={isSubmitting}
                                 className={`h-10 px-4 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 ${
                                     isSubmitting
@@ -304,6 +305,107 @@ export default function WaiterOrderPage() {
                             </button>
                         </div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Order Confirmation Modal */}
+            <AnimatePresence>
+                {showConfirmModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowConfirmModal(false)}
+                            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-white w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl relative z-10 border border-gray-100"
+                        >
+                            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                                <div>
+                                    <h2 className="text-sm font-black text-gray-900">
+                                        Revisar Comanda
+                                    </h2>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        Mesa S/N
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setShowConfirmModal(false)}
+                                    className="p-2 text-gray-400 hover:text-gray-900 transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="p-5 max-h-[60vh] overflow-y-auto no-scrollbar">
+                                <div className="space-y-3 mb-6">
+                                    {Object.entries(selectedItems).map(([id, qty]) => {
+                                        const item = menuItems.find(i => i.id === Number(id));
+                                        return (
+                                            <div
+                                                key={id}
+                                                className="flex items-center justify-between"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-black">
+                                                        {qty}x
+                                                    </div>
+                                                    <span className="text-xs font-bold text-gray-800">
+                                                        {item?.name}
+                                                    </span>
+                                                </div>
+                                                <span className="text-xs font-black text-gray-900">
+                                                    {((item?.price || 0) * qty).toFixed(2)}€
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {orderComment && (
+                                    <div className="bg-orange-50/50 border border-orange-100 p-3 rounded-2xl mb-6">
+                                        <p className="text-[10px] font-black text-orange-800 uppercase tracking-wider mb-1">
+                                            Instrucciones especialies:
+                                        </p>
+                                        <p className="text-xs font-bold text-orange-900 italic">
+                                            "{orderComment}"
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-between items-center py-3 border-t border-gray-100">
+                                    <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                                        Total a pagar
+                                    </span>
+                                    <span className="text-2xl font-black text-gray-900">
+                                        {totalPrice.toFixed(2)}€
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="p-5 bg-gray-50/50 border-t border-gray-100">
+                                <button
+                                    onClick={finalizeOrder}
+                                    disabled={isSubmitting}
+                                    className="w-full h-12 bg-orange-600 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-orange-700 active:scale-95 transition-all shadow-xl shadow-orange-500/20 disabled:opacity-50"
+                                >
+                                    {isSubmitting ? (
+                                        <Loader2 className="animate-spin" size={18} />
+                                    ) : (
+                                        <>
+                                            Aceptar Pedido
+                                            <Check size={18} strokeWidth={3} />
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
         </div>
