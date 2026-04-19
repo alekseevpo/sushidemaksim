@@ -37,11 +37,22 @@ export default function AdminLoginPage() {
         }
     }, [isAuthenticated, user, navigate]);
 
-    const onSubmit = async (data: LoginInput) => {
+    const onSubmit = async (data: LoginInput, e?: React.BaseSyntheticEvent) => {
         setError('');
         setIsLoading(true);
 
-        const result = await login(data.email, data.password);
+        let emailVal = data.email;
+        let passwordVal = data.password;
+
+        // On mobile Safari, react-hook-form state might be empty on autofill.
+        // We use FormData as a more reliable source.
+        if (e) {
+            const formData = new FormData(e.target);
+            emailVal = (formData.get('email') as string) || emailVal;
+            passwordVal = (formData.get('password') as string) || passwordVal;
+        }
+
+        const result = await login(emailVal, passwordVal);
 
         if (!result.success) {
             setError(result.error || 'Credenciales inválidas');

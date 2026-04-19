@@ -32,13 +32,16 @@ const LoginForm = memo(
         onSwitchForgot: () => void;
         isLoading: boolean;
     }) => {
+        const [showPassword, setShowPassword] = useState(false);
         const [email, setEmail] = useState('');
         const [password, setPassword] = useState('');
-        const [showPassword, setShowPassword] = useState(false);
 
-        const handleSubmit = (e: React.FormEvent) => {
+        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            onLogin({ email, password });
+            const formData = new FormData(e.currentTarget);
+            const emailVal = formData.get('email') as string;
+            const passwordVal = formData.get('password') as string;
+            onLogin({ email: emailVal, password: passwordVal });
         };
 
         return (
@@ -86,7 +89,7 @@ const LoginForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            value={password}
+                            defaultValue={password}
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="current-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -189,9 +192,19 @@ const RegisterForm = memo(
             setPhone(val);
         };
 
-        const handleSubmit = (e: React.FormEvent) => {
+        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            onRegister({ name, phone, email, password });
+            const formData = new FormData(e.currentTarget);
+            const nameVal = formData.get('name') as string;
+            const emailVal = formData.get('email') as string;
+            const phoneVal = formData.get('phone') as string;
+            const passwordVal = formData.get('password') as string;
+            onRegister({
+                name: nameVal,
+                phone: phoneVal,
+                email: emailVal,
+                password: passwordVal,
+            });
         };
 
         return (
@@ -209,7 +222,7 @@ const RegisterForm = memo(
                                 type="text"
                                 name="name"
                                 required
-                                value={name}
+                                defaultValue={name}
                                 onChange={e => setName(e.target.value)}
                                 autoComplete="name"
                                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -276,7 +289,7 @@ const RegisterForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            value={password}
+                            defaultValue={password}
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -340,9 +353,11 @@ const ForgotPasswordForm = memo(
     }) => {
         const [email, setEmail] = useState('');
 
-        const handleSubmit = (e: React.FormEvent) => {
+        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            onForgot(email);
+            const formData = new FormData(e.currentTarget);
+            const emailVal = formData.get('email') as string;
+            onForgot(emailVal);
         };
 
         return (
@@ -502,10 +517,17 @@ const ResetPasswordForm = memo(
         onReset,
         isLoading,
         token,
+        recoveryEmail,
     }: {
-        onReset: (data: { password: string; confirmPassword: string; code: string }) => void;
+        onReset: (data: {
+            password: string;
+            confirmPassword: string;
+            code: string;
+            email: string;
+        }) => void;
         isLoading: boolean;
         token: string;
+        recoveryEmail: string;
     }) => {
         const [showPassword, setShowPassword] = useState(false);
         const [codeValue, setCodeValue] = useState(token || '');
@@ -517,13 +539,45 @@ const ResetPasswordForm = memo(
             /\d/.test(password) &&
             /[!@#$%^&*(),.?":{}|<>_+-]/.test(password);
 
-        const handleSubmit = (e: React.FormEvent) => {
+        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            onReset({ password, confirmPassword, code: codeValue });
+            const formData = new FormData(e.currentTarget);
+            const passwordVal = formData.get('password') as string;
+            const confirmPasswordVal = formData.get('confirmPassword') as string;
+            const codeVal = formData.get('code') as string;
+            const emailVal = (formData.get('email') as string) || recoveryEmail;
+
+            onReset({
+                password: passwordVal,
+                confirmPassword: confirmPasswordVal,
+                code: codeVal,
+                email: emailVal,
+            });
         };
 
         return (
             <form onSubmit={handleSubmit} className="space-y-3">
+                {!recoveryEmail && !token && (
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                            Tu Email
+                        </label>
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
+                                <Mail size={16} strokeWidth={1.5} />
+                            </div>
+                            <input
+                                type="email"
+                                name="email"
+                                required
+                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
+                                placeholder="tu@email.com"
+                            />
+                        </div>
+                    </div>
+                )}
+                {recoveryEmail && <input type="hidden" name="email" value={recoveryEmail} />}
+
                 {token ? (
                     <input type="hidden" name="code" value={token} />
                 ) : (
@@ -550,7 +604,7 @@ const ResetPasswordForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            value={password}
+                            defaultValue={password}
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -584,7 +638,7 @@ const ResetPasswordForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="confirmPassword"
                             required
-                            value={confirmPassword}
+                            defaultValue={confirmPassword}
                             onChange={e => setConfirmPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -754,9 +808,10 @@ export default function LoginModal({
         password: string;
         confirmPassword: string;
         code: string;
+        email: string;
     }) => {
         setIsLoading(true);
-        const { password, confirmPassword, code } = data;
+        const { password, confirmPassword, code, email } = data;
 
         if (password !== confirmPassword) {
             showError('Las contraseñas no coinciden');
@@ -765,7 +820,7 @@ export default function LoginModal({
         }
 
         try {
-            const res = await resetPassword(recoveryEmail, code, password);
+            const res = await resetPassword(email, code, password);
             if (res.success) {
                 setMode('login');
                 showSuccess('Contraseña actualizada con éxito. Ya puedes iniciar sesión.');
@@ -905,6 +960,7 @@ export default function LoginModal({
                                         onReset={handleReset}
                                         isLoading={isLoading}
                                         token={resetToken}
+                                        recoveryEmail={recoveryEmail}
                                     />
                                 </div>
                             )}

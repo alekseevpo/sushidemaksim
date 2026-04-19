@@ -111,26 +111,46 @@ export default function ProfileTab({ user, updateProfile }: Props) {
         setIsEditing(true);
     };
 
-    const saveProfile = async () => {
-        if (editBirthDate) {
-            const birthYear = new Date(editBirthDate).getFullYear();
+    const saveProfile = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+
+        const dataToSave = {
+            name: editName,
+            phone: editPhone,
+            email: editEmail,
+            avatar: editAvatar,
+            birthDate: editBirthDate,
+        };
+
+        // On mobile, state might not be up-to-date due to autofill
+        const form = document.getElementById('profile-form') as HTMLFormElement | null;
+        if (form) {
+            const formData = new FormData(form);
+            const nameVal = formData.get('name') as string;
+            const phoneVal = formData.get('phone') as string;
+            const birthDateVal = formData.get('birthDate') as string;
+
+            if (nameVal) dataToSave.name = nameVal;
+            if (phoneVal) {
+                const cleanPhone = phoneVal.replace(/\D/g, '').slice(0, 9);
+                dataToSave.phone = cleanPhone ? `+34${cleanPhone}` : '';
+            }
+            if (birthDateVal) dataToSave.birthDate = birthDateVal;
+        }
+
+        if (dataToSave.birthDate) {
+            const birthYear = new Date(dataToSave.birthDate).getFullYear();
             if (birthYear < 1945) {
                 error('El año de nacimiento no puede ser inferior a 1945');
                 return;
             }
-            if (new Date(editBirthDate) > new Date()) {
+            if (new Date(dataToSave.birthDate) > new Date()) {
                 error('La fecha de nacimiento no puede ser en el futuro');
                 return;
             }
         }
         try {
-            const res = (await updateProfile({
-                name: editName,
-                phone: editPhone,
-                email: editEmail,
-                avatar: editAvatar,
-                birthDate: editBirthDate,
-            })) as any;
+            const res = (await updateProfile(dataToSave)) as any;
             setIsEditing(false);
             success(res?.message || '¡Perfil actualizado con éxito! 🍣');
         } catch (err: any) {
@@ -138,18 +158,35 @@ export default function ProfileTab({ user, updateProfile }: Props) {
         }
     };
 
-    const handleChangePassword = async () => {
-        if (newPassword.length < 6) {
+    const handleChangePassword = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+
+        let currentPwd = currentPassword;
+        let newPwd = newPassword;
+        let confirmPwd = confirmNewPassword;
+
+        const form = document.getElementById('password-form') as HTMLFormElement | null;
+        if (form) {
+            const formData = new FormData(form);
+            currentPwd = (formData.get('currentPassword') as string) || currentPwd;
+            newPwd = (formData.get('newPassword') as string) || newPwd;
+            confirmPwd = (formData.get('confirmNewPassword') as string) || confirmPwd;
+        }
+
+        if (newPwd.length < 6) {
             error('La contraseña debe tener al menos 6 caracteres');
             return;
         }
-        if (newPassword !== confirmNewPassword) {
+        if (newPwd !== confirmPwd) {
             error('Las contraseñas no coinciden');
             return;
         }
         try {
             const { api } = await import('../../utils/api');
-            await api.put('/user/change-password', { currentPassword, newPassword });
+            await api.put('/user/change-password', {
+                currentPassword: currentPwd,
+                newPassword: newPwd,
+            });
             success('¡Contraseña actualizada correctamente! 🔐');
             setCurrentPassword('');
             setNewPassword('');
@@ -225,7 +262,8 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 <X size={14} strokeWidth={1.5} /> <span>CANCELAR</span>
                             </button>
                             <button
-                                onClick={saveProfile}
+                                type="submit"
+                                form="profile-form"
                                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-orange-600 text-white rounded-xl font-black text-[10px] md:text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95"
                             >
                                 <Save size={14} strokeWidth={1.5} /> GUARDAR
@@ -235,8 +273,12 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                 </div>
             </div>
 
-            {/* Information Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Information Grid Wrapped in Form */}
+            <form
+                id="profile-form"
+                onSubmit={saveProfile}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
                 {[
                     {
                         label: 'Nombre Completo',
@@ -297,6 +339,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                         </div>
                                         <input
                                             type="tel"
+                                            name="phone"
                                             value={field.editedValue.replace(/^\+34/, '')}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 const val = e.target.value
@@ -312,6 +355,13 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 ) : (
                                     <input
                                         type={field.type}
+                                        name={
+                                            field.label === 'Nombre Completo'
+                                                ? 'name'
+                                                : field.label === 'Correo Electrónico'
+                                                  ? 'email'
+                                                  : 'birthDate'
+                                        }
                                         value={field.editedValue}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             field.setter(e.target.value)
@@ -377,7 +427,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         )}
                     </div>
                 ))}
-            </div>
+            </form>
 
             {/* Avatar Selection (Only when editing) */}
             {isEditing && (
@@ -531,7 +581,11 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         </button>
                     </div>
                 ) : (
-                    <div className="bg-gray-50 rounded-[32px] p-8 border border-gray-100">
+                    <form
+                        id="password-form"
+                        onSubmit={handleChangePassword}
+                        className="bg-gray-50 rounded-[32px] p-8 border border-gray-100"
+                    >
                         <div className="flex items-center justify-between mb-8">
                             <h4 className="text-lg font-black text-gray-900 m-0">
                                 Cambio de Contraseña
@@ -575,6 +629,13 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     <div className="relative">
                                         <input
                                             type={f.show ? 'text' : 'password'}
+                                            name={
+                                                f.label === 'Contraseña Actual'
+                                                    ? 'currentPassword'
+                                                    : f.label === 'Nueva Contraseña'
+                                                      ? 'newPassword'
+                                                      : 'confirmNewPassword'
+                                            }
                                             value={f.value}
                                             onChange={e => f.setter(e.target.value)}
                                             className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
@@ -599,7 +660,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
 
                         <div className="flex flex-col sm:flex-row gap-3 mt-8">
                             <button
-                                onClick={handleChangePassword}
+                                type="submit"
                                 className="flex-1 sm:flex-none px-8 py-3.5 bg-orange-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 active:scale-95"
                             >
                                 ACTUALIZAR
@@ -611,7 +672,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 CANCELAR
                             </button>
                         </div>
-                    </div>
+                    </form>
                 )}
             </div>
 
