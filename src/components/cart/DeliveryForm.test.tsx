@@ -79,6 +79,7 @@ describe('DeliveryForm', () => {
         tomorrowStr: '2026-03-31',
         isStoreClosed: false,
         isTodayClosed: false,
+        isPickupOnly: false,
     };
 
     it('renders initial state correctly (delivery mode)', () => {

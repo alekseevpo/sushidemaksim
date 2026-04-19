@@ -66,14 +66,15 @@ test.describe('Order Checkout Flow', () => {
             })
         );
 
-        // Mock settings
         await page.route('**/api/settings', route =>
             route.fulfill({
                 status: 200,
                 body: JSON.stringify({
                     minOrder: 0,
-                    is_store_closed: false,
-                    free_delivery_threshold: 60,
+                    isStoreClosed: false,
+                    isTodayClosed: false,
+                    isPickupOnly: false,
+                    freeDeliveryThreshold: 60,
                 }),
             })
         );

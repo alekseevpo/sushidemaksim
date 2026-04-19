@@ -84,7 +84,7 @@ export default function CartPage() {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString('sv-SE');
 
-    const isManualClosed = !!siteSettings?.is_store_closed;
+    const isManualClosed = siteSettings?.isStoreClosed === true;
     const isTodayClosed = siteSettings?.isTodayClosed === true;
     const isPickupOnly = siteSettings?.isPickupOnly === true;
     const isOpenNow = isStoreOpen();

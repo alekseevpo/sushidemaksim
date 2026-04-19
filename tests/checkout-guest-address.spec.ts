@@ -25,8 +25,10 @@ test.describe('Guest Checkout - Address Selection', () => {
                 status: 200,
                 body: JSON.stringify({
                     minOrder: 10,
-                    is_store_closed: false,
-                    free_delivery_threshold: 60,
+                    isStoreClosed: false,
+                    isTodayClosed: false,
+                    isPickupOnly: false,
+                    freeDeliveryThreshold: 60,
                 }),
             })
         );

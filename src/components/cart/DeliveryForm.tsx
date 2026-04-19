@@ -131,7 +131,11 @@ export default function DeliveryForm({
                         deliveryType === 'delivery'
                             ? 'text-orange-600'
                             : 'text-gray-400 hover:text-gray-500'
-                    } ${isPickupOnly && (!isScheduled || scheduledDate === todayStr) ? 'opacity-30 grayscale cursor-not-allowed' : ''}`}
+                    } ${
+                        isPickupOnly && (!isScheduled || scheduledDate === todayStr)
+                            ? 'opacity-30 grayscale cursor-not-allowed'
+                            : ''
+                    }`}
                 >
                     {deliveryType === 'delivery' && (
                         <motion.div
