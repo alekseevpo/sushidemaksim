@@ -48,8 +48,9 @@ export default function StoreStatusBanner() {
 
     const isStoreClosed = !!settings?.is_store_closed || !!settings?.isStoreClosed;
     const isTodayClosed = !!settings?.is_today_closed || !!settings?.isTodayClosed;
+    const isPickupOnly = !!settings?.isPickupOnly;
 
-    if (isAdminRoute || (!isStoreClosed && !isTodayClosed) || !isVisible) {
+    if (isAdminRoute || (!isStoreClosed && !isTodayClosed && !isPickupOnly) || !isVisible) {
         return null;
     }
 
@@ -62,14 +63,18 @@ export default function StoreStatusBanner() {
         ? settings?.is_store_closed
             ? 'Restaurante Cerrado'
             : 'Fuera de Horario'
-        : 'Cerrado para hoy';
+        : isPickupOnly && !isTodayClosed
+          ? 'Solo Recogida'
+          : 'Cerrado para hoy';
 
     const statusSubtitle =
         isTodayClosed && !isStoreClosed
             ? 'Solo aceptamos pedidos para mañana u otros días.'
-            : todaySchedule?.hours
-              ? `Hoy: ${todaySchedule.hours}`
-              : 'Cerrado hoy';
+            : isPickupOnly && !isTodayClosed && !isStoreClosed
+              ? 'Aceptamos pedidos para hoy, pero no podemos realizar entregas a domicilio. Puedes recoger tu pedido en nuestro local.'
+              : todaySchedule?.hours
+                ? `Hoy: ${todaySchedule.hours}`
+                : 'Cerrado hoy';
 
     return (
         <AnimatePresence>

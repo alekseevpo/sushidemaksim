@@ -85,7 +85,8 @@ export default function CartPage() {
     const tomorrowStr = tomorrow.toLocaleDateString('sv-SE');
 
     const isManualClosed = !!siteSettings?.is_store_closed;
-    const isTodayClosed = siteSettings?.isTodayClosed === true; // siteSettings conversion already handles JSON.parse
+    const isTodayClosed = siteSettings?.isTodayClosed === true;
+    const isPickupOnly = siteSettings?.isPickupOnly === true;
     const isOpenNow = isStoreOpen();
     const isStoreClosed = isManualClosed || !isOpenNow || isTodayClosed;
 
@@ -579,12 +580,16 @@ export default function CartPage() {
         if (isStoreClosed && !isScheduled) {
             return showError(
                 'Nuestra cocina está descansando en este momento, ¡pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona "Entrega programada".'
-            );
-        }
 
         if (isTodayClosed && (!isScheduled || scheduledDate === todayStr)) {
             return showError(
                 'Lo sentimos, ya no aceptamos más pedidos para hoy. ¡Pero puedes programar tu pedido para mañana o cualquier otro día!'
+            );
+        }
+
+        if (isPickupOnly && deliveryType === 'delivery' && (!isScheduled || scheduledDate === todayStr)) {
+            return showError(
+                'Lo sentimos, actualmente no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
             );
         }
 
@@ -883,6 +888,7 @@ export default function CartPage() {
                                     tomorrowStr={tomorrowStr}
                                     isStoreClosed={isStoreClosed}
                                     isTodayClosed={isTodayClosed}
+                                    isPickupOnly={isPickupOnly}
                                 />
 
                                 <CartSuggestions

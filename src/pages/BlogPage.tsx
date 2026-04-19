@@ -56,13 +56,13 @@ export default function BlogPage() {
                         '@type': 'Blog',
                         name: 'Blog de Sushi de Maksim',
                         description: 'Historias, recetas y secretos del mundo del sushi artesanal.',
-                        url: 'https://sushidemaksim.com/blog',
+                        url: 'https://www.sushidemaksim.com/blog',
                         publisher: {
                             '@type': 'Organization',
                             name: 'Sushi de Maksim',
                             logo: {
                                 '@type': 'ImageObject',
-                                url: 'https://sushidemaksim.com/logo.svg',
+                                url: 'https://www.sushidemaksim.com/logo.svg',
                             },
                         },
                     },
@@ -74,18 +74,18 @@ export default function BlogPage() {
                                 '@type': 'ListItem',
                                 position: 1,
                                 name: 'Inicio',
-                                item: 'https://sushidemaksim.com/',
+                                item: 'https://www.sushidemaksim.com/',
                             },
                             {
                                 '@type': 'ListItem',
                                 position: 2,
                                 name: 'Blog',
-                                item: 'https://sushidemaksim.com/blog',
+                                item: 'https://www.sushidemaksim.com/blog',
                             },
                         ],
                     },
                 ]}
-                url="https://sushidemaksim.com/blog"
+                url="https://www.sushidemaksim.com/blog"
             />
 
             {/* Hero Section */}

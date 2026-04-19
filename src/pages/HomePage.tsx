@@ -17,6 +17,7 @@ import ReservationModal from '../components/reservations/ReservationModal';
 import { useSettings } from '../hooks/queries/useSettings';
 import { api } from '../utils/api';
 import { HomeSkeleton } from '../components/skeletons/HomeSkeleton';
+import { SITE_URL } from '../constants/config';
 
 const Marquee = () => (
     <div className="relative py-4 md:py-6 overflow-hidden bg-black border-y border-white/5 select-none">
@@ -269,9 +270,9 @@ export default function HomePage() {
                     '@context': 'https://schema.org',
                     '@type': 'Restaurant',
                     name: 'Sushi de Maksim',
-                    image: 'https://sushidemaksim.com/sushi-hero.webp',
-                    '@id': 'https://sushidemaksim.com',
-                    url: 'https://sushidemaksim.com',
+                    image: `${SITE_URL}/sushi-hero.webp`,
+                    '@id': SITE_URL,
+                    url: SITE_URL,
                     telephone: '+34 631 920 312',
                     priceRange: '$$',
                     servesCuisine: ['Japanese', 'Sushi'],
@@ -313,7 +314,7 @@ export default function HomePage() {
                         '@type': 'OrderAction',
                         target: {
                             '@type': 'EntryPoint',
-                            urlTemplate: 'https://sushidemaksim.com/menu',
+                            urlTemplate: `${SITE_URL}/menu`,
                             inLanguage: 'es',
                             actionPlatform: [
                                 'http://schema.org/DesktopWebPlatform',

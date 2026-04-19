@@ -167,7 +167,7 @@ export default function ContactsPage() {
                         '@context': 'https://schema.org',
                         '@type': 'Restaurant',
                         name: 'Sushi de Maksim',
-                        image: 'https://sushidemaksim.com/sushi-hero.webp',
+                        image: 'https://www.sushidemaksim.com/sushi-hero.webp',
                         telephone: '+34 631 920 312',
                         email: currentEmail,
                         priceRange: '$$',
@@ -184,7 +184,7 @@ export default function ContactsPage() {
                             latitude: 40.397042,
                             longitude: -3.672449,
                         },
-                        url: 'https://sushidemaksim.com/contacts',
+                        url: 'https://www.sushidemaksim.com/contacts',
                         openingHoursSpecification: [
                             {
                                 '@type': 'OpeningHoursSpecification',
@@ -208,18 +208,18 @@ export default function ContactsPage() {
                                 '@type': 'ListItem',
                                 position: 1,
                                 name: 'Inicio',
-                                item: 'https://sushidemaksim.com/',
+                                item: 'https://www.sushidemaksim.com/',
                             },
                             {
                                 '@type': 'ListItem',
                                 position: 2,
                                 name: 'Contacto',
-                                item: 'https://sushidemaksim.com/contacts',
+                                item: 'https://www.sushidemaksim.com/contacts',
                             },
                         ],
                     },
                 ]}
-                url="https://sushidemaksim.com/contacts"
+                url="https://www.sushidemaksim.com/contacts"
             />
 
             {/* Hero Section styled like BlogPage */}

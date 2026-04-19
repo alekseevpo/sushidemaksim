@@ -55,6 +55,9 @@ const SETTINGS_TRANSLATIONS = {
         isTodayClosed: 'Закрыть заказы на сегодня',
         isTodayClosedDesc:
             'Если включено, клиенты смогут заказывать только на завтра или другие будущие даты.',
+        isPickupOnly: 'Только самовывоз на сегодня',
+        isPickupOnlyDesc:
+            'Если включено, клиенты смогут сделать заказ на сегодня, но только с забором из ресторана. Доставка будет отключена.',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -102,6 +105,9 @@ const SETTINGS_TRANSLATIONS = {
         isTodayClosed: 'Cerrar pedidos para hoy',
         isTodayClosedDesc:
             'Si se activa, los clientes solo podrán pedir para mañana o días posteriores.',
+        isPickupOnly: 'Sólo recogida hoy',
+        isPickupOnlyDesc:
+            'Si se activa, los clientes podrán pedir para hoy pero solo para recoger en el local. El reparto a domicilio quedará desactivado.',
     },
 } as const;
 
@@ -133,6 +139,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 ratingGoogle: data.ratingGoogle || 4.8,
                 ratingReviewsCount: data.ratingReviewsCount || 1000,
                 isTodayClosed: data.isTodayClosed === 'true',
+                isPickupOnly: data.isPickupOnly === 'true',
             };
         },
     });
@@ -234,7 +241,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         {t.generalInfo}
                     </h3>
                 </div>
-                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-8">
+                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-4">
                     <div className="flex-1">
                         <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
                             {t.isTodayClosed}
@@ -252,6 +259,33 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     setLocalSettings({
                                         ...localSettings,
                                         isTodayClosed: e.target.checked,
+                                    })
+                                }
+                                className="sr-only peer"
+                            />
+                            <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-orange-600"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-8">
+                    <div className="flex-1">
+                        <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
+                            {t.isPickupOnly}
+                        </h4>
+                        <p className="text-[11px] text-orange-800/80 font-medium">
+                            {t.isPickupOnlyDesc}
+                        </p>
+                    </div>
+                    <div className="flex items-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={localSettings.isPickupOnly}
+                                onChange={e =>
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        isPickupOnly: e.target.checked,
                                     })
                                 }
                                 className="sr-only peer"

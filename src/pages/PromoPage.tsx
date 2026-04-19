@@ -104,18 +104,18 @@ export default function PromoPage() {
                                 '@type': 'ListItem',
                                 position: 1,
                                 name: 'Inicio',
-                                item: 'https://sushidemaksim.com/',
+                                item: 'https://www.sushidemaksim.com/',
                             },
                             {
                                 '@type': 'ListItem',
                                 position: 2,
                                 name: 'Promociones',
-                                item: 'https://sushidemaksim.com/promos',
+                                item: 'https://www.sushidemaksim.com/promos',
                             },
                         ],
                     },
                 ]}
-                url="https://sushidemaksim.com/promos"
+                url="https://www.sushidemaksim.com/promos"
             />
 
             {/* Hero Header */}

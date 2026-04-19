@@ -26,6 +26,7 @@ interface DeliveryFormProps {
     tomorrowStr: string;
     isStoreClosed: boolean;
     isTodayClosed: boolean;
+    isPickupOnly: boolean;
 }
 
 export default function DeliveryForm({
@@ -36,6 +37,7 @@ export default function DeliveryForm({
     tomorrowStr,
     isStoreClosed,
     isTodayClosed,
+    isPickupOnly,
 }: DeliveryFormProps) {
     const {
         register,
@@ -120,6 +122,7 @@ export default function DeliveryForm({
             <div className="flex bg-gray-100/50 p-1.5 rounded-[22px] mb-6 border border-gray-100 relative">
                 <button
                     type="button"
+                    disabled={isPickupOnly && (!isScheduled || scheduledDate === todayStr)}
                     onClick={() => {
                         triggerHaptic();
                         setValue('deliveryType', 'delivery');
@@ -128,7 +131,7 @@ export default function DeliveryForm({
                         deliveryType === 'delivery'
                             ? 'text-orange-600'
                             : 'text-gray-400 hover:text-gray-500'
-                    }`}
+                    } ${isPickupOnly && (!isScheduled || scheduledDate === todayStr) ? 'opacity-30 grayscale cursor-not-allowed' : ''}`}
                 >
                     {deliveryType === 'delivery' && (
                         <motion.div
@@ -572,7 +575,7 @@ export default function DeliveryForm({
                         </label>
                     )}
 
-                    {(isStoreClosed || isTodayClosed) &&
+                    {(isStoreClosed || isTodayClosed || (isPickupOnly && (!isScheduled || scheduledDate === todayStr))) &&
                         deliveryType !== 'reservation' &&
                         !isScheduled && (
                             <motion.div
@@ -583,7 +586,9 @@ export default function DeliveryForm({
                                 <p className="text-[11px] font-bold text-orange-600 m-0">
                                     {isTodayClosed
                                         ? '🏪 Hoy no aceptamos más pedidos. Por favor, selecciona la opción "Entrega programada" para mañana u otro día.'
-                                        : '🏪 El restaurante está cerrado. Por favor, selecciona la opción "Entrega programada" para recibir tu pedido en el próximo horario de apertura.'}
+                                        : isPickupOnly && (!isScheduled || scheduledDate === todayStr)
+                                          ? '🏪 Hoy no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
+                                          : '🏪 El restaurante está cerrado. Por favor, selecciona la opción "Entrega programada" para recibir tu pedido en el próximo horario de apertura.'}
                                 </p>
                             </motion.div>
                         )}

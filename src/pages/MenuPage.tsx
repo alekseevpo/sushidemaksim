@@ -258,7 +258,7 @@ export default function MenuPage() {
             'Auténtica comida japonesa y sushi fresco con entrega a domicilio en Madrid. Rolls, nigiris, gyozas y más.',
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': 'https://sushidemaksim.com/menu',
+            '@id': 'https://www.sushidemaksim.com/menu',
         },
         hasMenuSection: CATEGORIES.filter(cat =>
             selectedCategory === 'all' ? true : cat.id === selectedCategory
@@ -278,7 +278,7 @@ export default function MenuPage() {
                         priceCurrency: 'EUR',
                         itemCondition: 'https://schema.org/NewCondition',
                         availability: 'https://schema.org/InStock',
-                        url: `https://sushidemaksim.com/menu?category=${cat.id}#item-${item.id}`,
+                        url: `https://www.sushidemaksim.com/menu?category=${cat.id}#item-${item.id}`,
                     },
                     image: item.image,
                 })),
@@ -293,13 +293,13 @@ export default function MenuPage() {
                 '@type': 'ListItem',
                 position: 1,
                 name: 'Inicio',
-                item: 'https://sushidemaksim.com/',
+                item: 'https://www.sushidemaksim.com/',
             },
             {
                 '@type': 'ListItem',
                 position: 2,
                 name: 'Carta',
-                item: 'https://sushidemaksim.com/menu',
+                item: 'https://www.sushidemaksim.com/menu',
             },
         ],
     };
@@ -321,7 +321,7 @@ export default function MenuPage() {
                 }
                 keywords={`menu sushi madrid, carta sushi, sushi a domicilio madrid, ${selectedCategory === 'all' ? '' : selectedCategory + ' madrid,'} pedir sushi online`}
                 schema={[menuSchema, breadcrumbSchema]}
-                url={`https://sushidemaksim.com/menu${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`}
+                url={`https://www.sushidemaksim.com/menu${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`}
             />
             <h1 className="sr-only">
                 {selectedCategory === 'all'
