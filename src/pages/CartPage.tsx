@@ -580,6 +580,8 @@ export default function CartPage() {
         if (isStoreClosed && !isScheduled) {
             return showError(
                 'Nuestra cocina está descansando en este momento, ¡pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona "Entrega programada".'
+            );
+        }
 
         if (isTodayClosed && (!isScheduled || scheduledDate === todayStr)) {
             return showError(

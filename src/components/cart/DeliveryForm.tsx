@@ -579,7 +579,9 @@ export default function DeliveryForm({
                         </label>
                     )}
 
-                    {(isStoreClosed || isTodayClosed || (isPickupOnly && (!isScheduled || scheduledDate === todayStr))) &&
+                    {(isStoreClosed ||
+                        isTodayClosed ||
+                        (isPickupOnly && (!isScheduled || scheduledDate === todayStr))) &&
                         deliveryType !== 'reservation' &&
                         !isScheduled && (
                             <motion.div

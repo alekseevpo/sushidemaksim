@@ -687,7 +687,8 @@ export default function LoginModal({
         setIsLoading(true);
 
         try {
-            let { name, phone, email, password } = data;
+            const { name, email, password } = data;
+            let { phone } = data;
 
             const cleanPhone = phone.replace(/\D/g, '');
             if (cleanPhone.length !== 9 || !/^[6789]/.test(cleanPhone)) {
