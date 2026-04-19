@@ -244,6 +244,22 @@ export async function sendOrderReceiptEmail(
     const regularItems = orderData.items.filter((item: any) => Number(item.menu_item_id) !== -1);
     const deliveryItem = orderData.items.find((item: any) => Number(item.menu_item_id) === -1);
 
+    // Prepare WhatsApp message for admin
+    let waUrl = '';
+    if (isAdminCopy) {
+        const itemsListText = regularItems
+            .map((item: any) => {
+                const opt = item.selected_option ? ` (${item.selected_option})` : '';
+                return `${item.name}${opt} x${item.quantity}`;
+            })
+            .join('\n');
+
+        const waMessage = `ваш заказ ${String(orderData.orderId).padStart(5, '0')}\n${itemsListText}\nподтверждён`;
+        const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
+        // wa.me doesn't like '+' prefix usually, digits only is safest
+        waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
+    }
+
     const itemsHtml = regularItems
         .map(
             (item: any) => `
@@ -292,6 +308,18 @@ export async function sendOrderReceiptEmail(
       <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0 0 16px;">
         El pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> ha sido recibido con éxito.
       </p>
+
+      ${
+          isAdminCopy
+              ? `
+      <div style="margin-bottom: 24px; text-align: center;">
+        <a href="${waUrl}" style="display: block; background-color: #25D366; color: #ffffff; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 900; font-size: 16px; text-align: center; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
+          ПОДТВЕРДИТЬ В WHATSAPP
+        </a>
+      </div>
+      `
+              : ''
+      }
 
       <!-- Order Summary Card -->
       <div style="background-color: #f9fafb; border-radius: 16px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #f1f5f9;">
