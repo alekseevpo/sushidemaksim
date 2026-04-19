@@ -97,6 +97,7 @@ export default function DeliveryForm({
     };
 
     const availableSlots = getTimeSlots();
+    const isDayClosedSelect = Boolean(scheduledDate && availableSlots.length === 0);
     const showStatusMessage =
         (isStoreClosed ||
             isTodayClosed ||
