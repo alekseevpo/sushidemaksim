@@ -3,7 +3,7 @@
     "rewrites": [
         {
             "source": "/sitemap.xml",
-            "destination": "/api/index"
+            "destination": "/api/[...path]"
         },
         {
             "source": "/robots.txt",
@@ -15,11 +15,11 @@
         },
         {
             "source": "/invitacion/(.*)",
-            "destination": "/api/index"
+            "destination": "/api/[...path]"
         },
         {
             "source": "/api/(.*)",
-            "destination": "/api/index"
+            "destination": "/api/[...path]"
         },
         {
             "source": "/(.*)",
