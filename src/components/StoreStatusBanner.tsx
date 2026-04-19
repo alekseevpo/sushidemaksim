@@ -71,7 +71,7 @@ export default function StoreStatusBanner() {
         isTodayClosed && !isStoreClosed
             ? 'Solo aceptamos pedidos para mañana u otros días.'
             : isPickupOnly && !isTodayClosed && !isStoreClosed
-              ? 'Aceptamos pedidos para hoy, pero no podemos realizar entregas a domicilio. Puedes recoger tu pedido en nuestro local.'
+              ? 'Aceptamos pedidos para hoy, pero no podemos realizar entregas a domicilio. Puedes recoger tu pedido en C. de Barrilero, 20.'
               : todaySchedule?.hours
                 ? `Hoy: ${todaySchedule.hours}`
                 : 'Cerrado hoy';

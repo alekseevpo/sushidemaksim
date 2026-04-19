@@ -108,7 +108,7 @@ export default function DeliveryForm({
     const statusMessage = isTodayClosed
         ? '🏪 Hoy no aceptamos más pedidos. Por favor, selecciona la opción "Entrega programada" para mañana u otro día.'
         : isPickupOnly && (!isScheduled || scheduledDate === todayStr)
-          ? '🏪 Hoy no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
+          ? '🏪 Hoy no disponemos de reparto a domicilio. ¡Pero puedes recoger tu pedido en nuestra dirección: C. de Barrilero, 20!'
           : '🏪 El restaurante está cerrado. Por favor, selecciona la opción "Entrega programada" para recibir tu pedido en el próximo horario de apertura.';
 
     const ErrorMessage = ({ name }: { name: keyof CheckoutInput }) => {
