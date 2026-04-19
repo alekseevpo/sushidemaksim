@@ -27,15 +27,16 @@ export default function WaiterOrderPage() {
 
     const { data: menuItems = [], isLoading: menuLoading } = useMenu('all', '');
 
+    const isBeverage = (category: string) =>
+        category === 'bebidas' || category === 'drink' || category === 'drinks';
+
     const filteredItems = useMemo(() => {
         return menuItems.filter(item => {
-            if (selectedCategory === 'all') return true;
-            // Filter by drinks category (assuming 'bebidas' or similar)
-            return (
-                item.category === 'bebidas' ||
-                item.category === 'drink' ||
-                item.category === 'drinks'
-            );
+            if (selectedCategory === 'all') {
+                // Exclude beverages from "Todos" — they only appear in "Bebidas"
+                return !isBeverage(item.category);
+            }
+            return isBeverage(item.category);
         });
     }, [menuItems, selectedCategory]);
 
