@@ -898,29 +898,29 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
       <h1 style="color:#fff;margin:0;font-size:22px;">🍣 Sushi de Maksim</h1>
     </div>
     <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
-      <div style="font-size:50px;margin-bottom:10px;">🍰</div>
-      <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Tu Postre de Regalo!</h1>
+      <div style="font-size:50px;margin-bottom:10px;">🍣</div>
+      <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Tu Roll Dulce de Regalo!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">¡Has completado 9 pedidos! ⭐</p>
     </div>
     <div style="padding:24px;text-align:center;">
       <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Felicidades ${name}!</p>
       <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
-        Eres un verdadero embajador de Sushi de Maksim. Para celebrar tus 9 pedidos con nosotros, te invitamos a un postre delicioso en tu <strong>10º pedido</strong>:
+        Eres un verdadero embajador de Sushi de Maksim. Para celebrar tus 9 pedidos con nosotros, te invitamos a un <strong>Roll Dulce</strong> en tu <strong>10º pedido</strong>:
       </p>
       
       <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
         <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Regalo</p>
         <div style="font-size:32px;font-weight:900;color:#ea580c;letter-spacing:3px;">${code}</div>
-        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">🍰 POSTRE GRATIS EN TU PEDIDO</p>
+        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">🍣 ROLL DULCE GRATIS EN TU PEDIDO</p>
       </div>
 
       <p style="color:#374151;font-size:14px;line-height:1.4;margin:0 0 32px;">
-        *Añade el postre que prefieras a tu cesta e introduce este código al finalizar tu compra. ¡Nosotros nos encargamos del resto!
+        *Introduce este código al finalizar tu compra y recibirás tu Roll Dulce de regalo. ¡Nosotros nos encargamos del resto!
         <br><br>
         <span style="font-size:12px;color:#9CA3AF;">Válido durante <strong>7 días</strong> a partir de hoy.</span>
       </p>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">CANJEAR MI POSTRE</a>
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">CANJEAR MI ROLL DULCE</a>
     </div>
     
     <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
@@ -933,7 +933,7 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
 
     await sendEmail({
         to,
-        subject: '🍰 ¡Felicidades! Tienes un postre de regalo por tu 9º pedido',
+        subject: '🍣 ¡Felicidades! Tienes un Roll Dulce de regalo por tu 9º pedido',
         html,
     });
 }

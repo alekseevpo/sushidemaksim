@@ -479,7 +479,7 @@ export default function ProfilePage() {
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
-                                    Postre de Regalo 🍰
+                                    Roll Dulce de Regalo 🍣
                                 </h3>
                                 <p className="text-[11px] text-gray-400 font-medium m-0">
                                     Cada 10 pedidos
@@ -514,7 +514,7 @@ export default function ProfilePage() {
                             <div className="mb-4 p-3 bg-amber-50 border border-amber-100 rounded-2xl flex items-center justify-between">
                                 <div className="flex flex-col">
                                     <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-0.5">
-                                        Tu Código Postre 🍰
+                                        Tu Código Roll Dulce 🍣
                                     </span>
                                     <span className="text-sm font-black text-amber-600 tracking-wider">
                                         {dessertCode.code}
@@ -551,7 +551,7 @@ export default function ProfilePage() {
                                 {(user.orderCount || 0) % 10} / 9 pedidos
                             </span>
                             <span className="text-[9px] font-bold text-gray-300 italic">
-                                *Regalo enviado tras el 9º pedido para usar en el 10º
+                                *Roll dulce enviado tras el 9º pedido para usar en el 10º
                             </span>
                         </div>
                     </motion.div>
