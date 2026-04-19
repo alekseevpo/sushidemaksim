@@ -98,6 +98,13 @@ export default function DeliveryForm({
 
     const availableSlots = getTimeSlots();
     const isDayClosedSelect = Boolean(scheduledDate && availableSlots.length === 0);
+    const showStatusMessage = (isStoreClosed || isTodayClosed || (isPickupOnly && (!isScheduled || scheduledDate === todayStr))) && deliveryType !== 'reservation' && !isScheduled;
+
+    const statusMessage = isTodayClosed
+        ? '🏪 Hoy no aceptamos más pedidos. Por favor, selecciona la opción "Entrega programada" para mañana u otro día.'
+        : isPickupOnly && (!isScheduled || scheduledDate === todayStr)
+          ? '🏪 Hoy no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
+          : '🏪 El restaurante está cerrado. Por favor, selecciona la opción "Entrega programada" para recibir tu pedido en el próximo horario de apertura.';
 
     const ErrorMessage = ({ name }: { name: keyof CheckoutInput }) => {
         const error = errors[name];
@@ -579,29 +586,17 @@ export default function DeliveryForm({
                         </label>
                     )}
 
-                    {(isStoreClosed ||
-                        isTodayClosed ||
-                        (isPickupOnly && (!isScheduled || scheduledDate === todayStr))) &&
-                        deliveryType !== 'reservation' &&
-                        !isScheduled && (() => {
-                            const statusMessage = isTodayClosed
-                                ? '🏪 Hoy no aceptamos más pedidos. Por favor, selecciona la opción "Entrega programada" para mañana u otro día.'
-                                : isPickupOnly && (!isScheduled || scheduledDate === todayStr)
-                                  ? '🏪 Hoy no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
-                                  : '🏪 El restaurante está cerrado. Por favor, selecciona la opción "Entrega programada" para recibir tu pedido en el próximo horario de apertura.';
-
-                            return (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    className="p-3 bg-orange-50 border border-orange-100 rounded-xl mt-2"
-                                >
-                                    <p className="text-[11px] font-bold text-orange-600 m-0">
-                                        {statusMessage}
-                                    </p>
-                                </motion.div>
-                            );
-                        })()}
+                    {showStatusMessage && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="p-3 bg-orange-50 border border-orange-100 rounded-xl mt-2"
+                        >
+                            <p className="text-[11px] font-bold text-orange-600 m-0">
+                                {statusMessage}
+                            </p>
+                        </motion.div>
+                    )}
 
                     {(isScheduled || deliveryType === 'reservation') && (
                         <motion.div
