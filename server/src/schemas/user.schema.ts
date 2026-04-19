@@ -45,7 +45,9 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
     body: z.object({
         email: emailSchema,
-        password: z.string({ required_error: 'La contraseña es obligatoria' }).min(1, 'La contraseña es obligatoria'),
+        password: z
+            .string({ required_error: 'La contraseña es obligatoria' })
+            .min(1, 'La contraseña es obligatoria'),
     }),
 });
 

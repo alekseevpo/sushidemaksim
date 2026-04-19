@@ -184,7 +184,7 @@ const RegisterForm = memo(
 
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            const form = e.currentTarget;
+            const form = e.currentTarget as HTMLFormElement;
             const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || '';
             const email = (form.elements.namedItem('email') as HTMLInputElement)?.value || '';
             onRegister({ name, phone, email, password });
@@ -332,7 +332,7 @@ const ForgotPasswordForm = memo(
     }) => {
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            const form = e.currentTarget;
+            const form = e.currentTarget as HTMLFormElement;
             const email = (form.elements.namedItem('email') as HTMLInputElement).value;
             onForgot(email);
         };
@@ -508,7 +508,7 @@ const ResetPasswordForm = memo(
 
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            const form = e.currentTarget;
+            const form = e.currentTarget as HTMLFormElement;
             const confirmPassword = (
                 form.elements.namedItem('confirmPassword') as HTMLInputElement
             ).value;
@@ -610,7 +610,14 @@ export default function LoginModal({
     initialMode?: 'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password';
 }) {
     const [mode, setMode] = useState<
-        'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'
+        | 'login'
+        | 'register'
+        | 'forgot'
+        | 'verify-sent'
+        | 'verify-code'
+        | 'reset-password'
+        | 'success'
+        | 'loading'
     >(initialMode);
     const [isLoading, setIsLoading] = useState(false);
     const [resetToken, setResetToken] = useState('');

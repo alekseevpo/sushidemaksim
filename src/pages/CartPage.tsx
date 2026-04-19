@@ -589,7 +589,11 @@ export default function CartPage() {
             );
         }
 
-        if (isPickupOnly && deliveryType === 'delivery' && (!isScheduled || scheduledDate === todayStr)) {
+        if (
+            isPickupOnly &&
+            deliveryType === 'delivery' &&
+            (!isScheduled || scheduledDate === todayStr)
+        ) {
             return showError(
                 'Lo sentimos, actualmente no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
             );

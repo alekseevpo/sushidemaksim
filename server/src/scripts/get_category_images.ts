@@ -11,7 +11,6 @@ const supabase = createClient(
 
 async function getCategoryImages() {
     console.log('Fetching category images...');
-    
     // Get distinct categories
     const { data: categories, error: catError } = await supabase
         .from('menu_items')
