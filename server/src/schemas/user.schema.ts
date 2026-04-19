@@ -6,20 +6,20 @@ export const phoneRegex = /^\+34[6789]\d{8}$/;
  * Shared base rules to maintain consistency across Auth and User modules.
  */
 export const emailSchema = z
-    .string()
+    .string({ required_error: 'El email es obligatorio' })
     .min(1, 'El email es obligatorio')
     .email('Email inválido')
     .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Email inválido')
     .max(100, 'El email es demasiado largo');
 
 export const passwordSchema = z
-    .string()
+    .string({ required_error: 'La contraseña es obligatoria' })
     .min(1, 'La contraseña es obligatoria')
     .min(9, 'La contraseña debe tener al menos 9 caracteres')
-    .max(100, 'La contraseña no puede superar los 100 caracteres')
+    .max(100, 'La contraseña no может превышать 100 символов')
     .regex(
         /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>_+-])/,
-        'La contraseña должен содержать хотя бы одну цифру и один спецсимвол'
+        'La contraseña debe tener al menos un número и un símbolo especial'
     );
 
 /**
@@ -29,8 +29,8 @@ export const passwordSchema = z
 export const registerSchema = z.object({
     body: z.object({
         name: z
-            .string()
-            .min(2, 'El nombre debe иметь не менее 2 символов')
+            .string({ required_error: 'El nombre es obligatorio' })
+            .min(2, 'El nombre debe tener al menos 2 caracteres')
             .max(80, 'El nombre es demasiado largo'),
         email: emailSchema,
         password: passwordSchema,
@@ -45,7 +45,7 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
     body: z.object({
         email: emailSchema,
-        password: z.string().min(1, 'La contraseña es obligatoria'),
+        password: z.string({ required_error: 'La contraseña es obligatoria' }).min(1, 'La contraseña es obligatoria'),
     }),
 });
 

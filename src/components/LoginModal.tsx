@@ -27,7 +27,7 @@ const LoginForm = memo(
         onSwitchForgot,
         isLoading,
     }: {
-        onLogin: (e: React.FormEvent) => void;
+        onLogin: (data: { email: string; password: string }) => void;
         onSwitchRegister: () => void;
         onSwitchForgot: () => void;
         isLoading: boolean;
@@ -38,7 +38,7 @@ const LoginForm = memo(
 
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            onLogin(e);
+            onLogin({ email, password });
         };
 
         return (
@@ -169,7 +169,7 @@ const RegisterForm = memo(
         onSwitchLogin,
         isLoading,
     }: {
-        onRegister: (e: React.FormEvent) => void;
+        onRegister: (data: { name: string; phone: string; email: string; password: string }) => void;
         onSwitchLogin: () => void;
         isLoading: boolean;
     }) => {
@@ -182,8 +182,16 @@ const RegisterForm = memo(
             setPhone(val);
         };
 
+        const handleSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || '';
+            const email = (form.elements.namedItem('email') as HTMLInputElement)?.value || '';
+            onRegister({ name, phone, email, password });
+        };
+
         return (
-            <form onSubmit={onRegister} data-testid="register-form" className="space-y-3">
+            <form onSubmit={handleSubmit} data-testid="register-form" className="space-y-3">
                 <div className="space-y-3">
                     <div className="space-y-1">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
@@ -318,12 +326,19 @@ const ForgotPasswordForm = memo(
         onBack,
         isLoading,
     }: {
-        onForgot: (e: React.FormEvent) => void;
+        onForgot: (email: string) => void;
         onBack: () => void;
         isLoading: boolean;
     }) => {
+        const handleSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+            onForgot(email);
+        };
+
         return (
-            <form onSubmit={onForgot} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl mb-2">
                     <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
                         Introduce tu email y te enviaremos las instrucciones.
@@ -478,7 +493,7 @@ const ResetPasswordForm = memo(
         isLoading,
         token,
     }: {
-        onReset: (e: React.FormEvent) => void;
+        onReset: (data: { password: string; confirmPassword: string; code: string }) => void;
         isLoading: boolean;
         token: string;
     }) => {
@@ -491,8 +506,18 @@ const ResetPasswordForm = memo(
             /\d/.test(password) &&
             /[!@#$%^&*(),.?":{}|<>_+-]/.test(password);
 
+        const handleSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const confirmPassword = (
+                form.elements.namedItem('confirmPassword') as HTMLInputElement
+            ).value;
+            const code = (form.elements.namedItem('code') as HTMLInputElement).value;
+            onReset({ password, confirmPassword, code });
+        };
+
         return (
-            <form onSubmit={onReset} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-3">
                 {token ? (
                     <input type="hidden" name="code" value={token} />
                 ) : (
@@ -633,13 +658,10 @@ export default function LoginModal({
         };
     }, [isOpen, initialMode]);
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleLogin = async (data: { email: string; password: string }) => {
         setIsLoading(true);
         try {
-            const form = e.target as HTMLFormElement;
-            const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-            const password = (form.elements.namedItem('password') as HTMLInputElement).value;
+            const { email, password } = data;
             const res = await login(email, password);
             if (res.success) {
                 onClose();
@@ -656,16 +678,16 @@ export default function LoginModal({
         }
     };
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleRegister = async (data: {
+        name: string;
+        phone: string;
+        email: string;
+        password: string;
+    }) => {
         setIsLoading(true);
 
         try {
-            const form = e.target as HTMLFormElement;
-            const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || '';
-            let phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value || '';
-            const email = (form.elements.namedItem('email') as HTMLInputElement)?.value || '';
-            const password = (form.elements.namedItem('password') as HTMLInputElement)?.value || '';
+            let { name, phone, email, password } = data;
 
             const cleanPhone = phone.replace(/\D/g, '');
             if (cleanPhone.length !== 9 || !/^[6789]/.test(cleanPhone)) {
@@ -692,11 +714,8 @@ export default function LoginModal({
         }
     };
 
-    const handleForgot = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleForgot = async (email: string) => {
         setIsLoading(true);
-        const form = e.target as HTMLFormElement;
-        const email = (form.elements.namedItem('email') as HTMLInputElement).value;
 
         try {
             const res = await forgotPassword(email);
@@ -715,14 +734,13 @@ export default function LoginModal({
         }
     };
 
-    const handleReset = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleReset = async (data: {
+        password: string;
+        confirmPassword: string;
+        code: string;
+    }) => {
         setIsLoading(true);
-        const form = e.target as HTMLFormElement;
-        const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-        const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement)
-            .value;
-        const code = (form.elements.namedItem('code') as HTMLInputElement).value;
+        const { password, confirmPassword, code } = data;
 
         if (password !== confirmPassword) {
             showError('Las contraseñas no coinciden');
