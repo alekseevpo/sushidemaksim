@@ -9,9 +9,11 @@
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com)
 [![CI](https://github.com/alekseevpo/sushidemaksim/actions/workflows/ci.yml/badge.svg)](https://github.com/alekseevpo/sushidemaksim/actions)
 
-Plataforma premium de e-commerce gastronómico con pedidos a domicilio, panel de administración en tiempo real y programa de fidelización integrado.
+Plataforma premium de e-commerce gastronómico con pedidos a domicilio, panel de administración en
+tiempo real и программа de fidelización integrado.
 
-[**🌐 Ver sitio web**](https://www.sushidemaksim.com) · [**📱 Menú**](https://www.sushidemaksim.com/menu) · [**📝 Blog**](https://www.sushidemaksim.com/blog)
+[**🌐 Ver sitio web**](https://www.sushidemaksim.com) ·
+[**📱 Menú**](https://www.sushidemaksim.com/menu) · [**📝 Blog**](https://www.sushidemaksim.com/blog)
 
 ---
 
@@ -19,45 +21,50 @@ Plataforma premium de e-commerce gastronómico con pedidos a domicilio, panel de
 
 ### 🍱 E-commerce & Cliente
 
-- **Menú interactivo** — 58+ platos por categorías (Rolls, Nigiri, Entrantes, Sopas, Postres, Bebidas) con navegación "sticky" y búsqueda
-- **Carrito en tiempo real** — Cálculo instantáneo con extras (palillos, wasabi, jengibre), selector de cantidad y validación Zod
-- **Sistema de favoritos** — Guardar platos preferidos para pedidos rápidos
-- **Tracking de pedidos** — Seguimiento en tiempo real con estados y notificaciones por email
-- **Zona de reparto** — Mapa interactivo Leaflet con verificación de dirección y cálculo de envío
-- **Blog & Recetas** — Espacio dedicado a la cultura del sushi y promociones
-- **PWA** — Instalable como app nativa con Service Worker y cache offline
-- **SEO optimizado** — Meta tags dinámicos, JSON-LD (Restaurant + Menu), sitemap automático
+-   **Menú interactivo** — 58+ platos por categorías (Rolls, Nigiri, Entrantes, Sopas, Postres,
+    Bebidas) con navegación "sticky" y búsqueda
+-   **Carrito en tiempo real** — Cálculo instantáneo con extras (palillos, wasabi, jengibre), selector
+    de cantidad y validación Zod
+-   **Sistema de favoritos** — Guardar platos preferidos para pedidos rápidos
+-   **Tracking de pedidos** — Seguimiento en tiempo real con estados y notificaciones por email
+-   **Zona de reparto** — Mapa interactivo Leaflet con verificación de dirección y cálculo de envío
+-   **Blog & Recetas** — Espacio dedicado a la cultura del sushi y promociones
+-   **PWA** — Instalable como app nativa con Service Worker y cache offline
+-   **SEO optimizado** — Meta tags dinámicos, JSON-LD (Restaurant + Menu), sitemap automático
 
 ### 🎁 Programa de Fidelización
 
-- **Descuento cada 5° pedido** — Código -5% automático enviado por email
-- **Roll Dulce de regalo cada 10° pedido** — Código promocional exclusivo
-- **Bonus de cumpleaños** — Descuento especial personalizado
-- **Descuento de bienvenida** — Cupón tras el registro y verificación de email
-- **Newsletter bonus** — Descuento por suscripción
+-   **Descuento cada 5° pedido** — Código -5% automático enviado por email
+-   **Roll Dulce de regalo cada 10° pedido** — Código promocional exclusivo
+-   **Bonus de cumpleaños** — Descuento especial personalizado
+-   **Descuento de bienvenida** — Cupón tras el registro y verificación de email
+-   **Newsletter bonus** — Descuento por suscripción
 
 ### 🛡️ Panel de Administración
 
-- **Dashboard analítico** — Ventas, pedidos diarios, ticket medio, tendencias y dispositivos (Recharts)
-- **Gestión de menú** — CRUD completo con subida de imágenes, optimización automática a WebP (Sharp), etiquetas (Picante, Veggie, Chef, Nuevo)
-- **Gestión de pedidos** — Estados en tiempo real con alertas sonoras para nuevas comandas
-- **Promociones dinámicas** — Banners y tarjetas promocionales con soporte de imágenes, drag & drop para reordenar
-- **Programa de lealtad** — Toggles y configuración de todos los bonos desde el panel
-- **Gestión de usuarios** — Roles (admin, waiter, user), historial y promociones por cliente
+-   **Dashboard аналитический** — Ventas, pedidos diarios, ticket medio, tendencias и dispositivos
+    (Recharts)
+-   **Gestión de menú** — CRUD completo con subida de imágenes, optimización automática a WebP
+    (Sharp), etiquetas (Picante, Veggie, Chef, Nuevo)
+-   **Gestión de pedidos** — Estados en tiempo real con alertas sonoras para nuevas comandas
+-   **Promociones dinámicas** — Banners и tarjetas promocionales con soporte de imágenes, drag & drop
+    para reordenar
+-   **Programa de lealtad** — Toggles и configuración de todos los bonos desde el panel
+-   **Gestión de usuarios** — Roles (admin, waiter, user), historial и promociones por cliente
 
 ### 👨‍🍳 Panel de Camarero
 
-- **Comanda rápida** — Interfaz móvil optimizada para tomar pedidos en sala
-- **Separación Comida/Bebidas** — Tabs dedicados para agilizar el servicio
-- **Envío a cocina** — Registro automático del pedido con nombre del camarero
+-   **Comanda rápida** — Interfaz móvil optimizada para tomar pedidos en sala
+-   **Separación Comida/Bebidas** — Tabs dedicados para agilizar el servicio
+-   **Envío a cocina** — Registro automático del pedido con nombre del camarero
 
 ### 🚀 Rendimiento
 
-- **Core Web Vitals** — LCP < 2.5s, CLS < 0.1, INP < 200ms
-- **Lazy loading** — Todas las páginas cargadas con `React.lazy()` + Suspense
-- **Skeletons** — Transiciones sin CLS con estados de carga precisos
-- **Imágenes WebP** — Compresión automática a 80% calidad, max 800px (Sharp)
-- **Leaflet dinámico** — Mapa cargado sólo cuando se necesita (dynamic import)
+-   **Core Web Vitals** — LCP < 2.5s, CLS < 0.1, INP < 200ms
+-   **Lazy loading** — Todas las páginas cargadas con `React.lazy()` + Suspense
+-   **Skeletons** — Transiciones sin CLS con estados de carga precisos
+-   **Imágenes WebP** — Compresión automática a 80% calidad, max 800px (Sharp)
+-   **Leaflet dinámico** — Mapa cargado sólo cuando se necesita (dynamic import)
 
 ---
 
@@ -98,26 +105,26 @@ sushidemaksim/
 
 ## 🛠️ Tech Stack
 
-| Capa | Tecnología |
-|---|---|
-| **Frontend** | React 18, TypeScript 5, Vite 4 |
-| **Estilos** | Tailwind CSS 3 (mobile-first) |
-| **Animaciones** | Framer Motion 12 |
-| **State** | React Context + TanStack Query 5 |
-| **Validación** | Zod |
-| **Routing** | React Router 6 |
-| **Mapas** | Leaflet (dynamic import) |
-| **Backend** | Node.js, Express 4 |
-| **Base de datos** | PostgreSQL (Supabase) |
-| **Storage** | Supabase Storage (WebP images) |
-| **Auth** | JWT + bcrypt |
-| **Email** | Nodemailer (HTML templates) |
-| **Imágenes** | Sharp (resize + WebP) |
-| **Seguridad** | Helmet, CORS, reCAPTCHA v3, RLS |
-| **Deploy** | Vercel (serverless) |
-| **CI/CD** | GitHub Actions (lint + test + build) |
-| **Tests** | Vitest (unit) + Playwright (E2E) |
-| **PWA** | vite-plugin-pwa + Service Worker |
+| Capa              | Tecnología                            |
+| ----------------- | ------------------------------------- |
+| **Frontend**      | React 18, TypeScript 5, Vite 4        |
+| **Estilos**       | Tailwind CSS 3 (mobile-first)         |
+| **Animaciones**   | Framer Motion 12                      |
+| **State**         | React Context + TanStack Query 5      |
+| **Validación**    | Zod                                   |
+| **Routing**       | React Router 6                        |
+| **Mapas**         | Leaflet (dynamic import)              |
+| **Backend**       | Node.js, Express 4                    |
+| **Base de datos** | PostgreSQL (Supabase)                 |
+| **Storage**       | Supabase Storage (WebP images)        |
+| **Auth**          | JWT + bcrypt                          |
+| **Email**         | Nodemailer (HTML templates)           |
+| **Imágenes**      | Sharp (resize + WebP)                 |
+| **Seguridad**     | Helmet, CORS, reCAPTCHA v3, RLS       |
+| **Deploy**        | Vercel (serverless)                   |
+| **CI/CD**         | GitHub Actions (lint + test + build)  |
+| **Tests**         | Vitest (unit) + Playwright (E2E)      |
+| **PWA**           | vite-plugin-pwa + Service Worker      |
 
 ---
 
@@ -125,9 +132,9 @@ sushidemaksim/
 
 ### Requisitos
 
-- Node.js ≥ 18
-- npm ≥ 9
-- Cuenta en [Supabase](https://supabase.com) (para DB + Storage)
+-   Node.js ≥ 18
+-   npm ≥ 9
+-   Cuenta en [Supabase](https://supabase.com) (para DB + Storage)
 
 ### Setup
 
@@ -177,12 +184,12 @@ npm run preview        # Preview del build de producción
 
 ## 🧪 Testing
 
-| Tipo | Herramienta | Directorio | Comando |
-|---|---|---|---|
-| Unit tests | Vitest | `src/test/` | `npm run test:unit` |
-| E2E tests | Playwright | `tests/` | `npm run test:e2e` |
-| Lint | ESLint | — | `npm run lint` |
-| Format | Prettier | — | `npm run format:check` |
+| Tipo        | Herramienta | Directorio  | Comando             |
+| ----------- | ----------- | ----------- | ------------------- |
+| Unit tests  | Vitest      | `src/test/` | `npm run test:unit` |
+| E2E tests   | Playwright  | `tests/`     | `npm run test:e2e`  |
+| Lint        | ESLint      | —           | `npm run lint`      |
+| Format      | Prettier    | —           | `npm run format:check` |
 
 CI/CD pipeline ejecuta automáticamente lint + unit tests + build en cada push a `main`.
 
@@ -192,10 +199,10 @@ CI/CD pipeline ejecuta automáticamente lint + unit tests + build en cada push a
 
 El proyecto se despliega automáticamente en **Vercel** al hacer push a la rama `main`.
 
-- **Frontend**: Se construye como SPA estática (Vite)
-- **Backend**: Se ejecuta como Serverless Function (`api/[...path].ts` → Express)
-- **Dominio**: [www.sushidemaksim.com](https://www.sushidemaksim.com)
-- **DNS**: Vercel Nameservers (`ns1.vercel-dns.com`)
+-   **Frontend**: Se construye como SPA estática (Vite)
+-   **Backend**: Se ejecuta como Serverless Function (`api/[...path].ts` → Express)
+-   **Dominio**: [www.sushidemaksim.com](https://www.sushidemaksim.com)
+-   **DNS**: Vercel Nameservers (`ns1.vercel-dns.com`)
 
 ### Arquitectura del deploy
 
