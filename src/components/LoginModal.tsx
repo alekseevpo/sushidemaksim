@@ -181,6 +181,8 @@ const RegisterForm = memo(
         const [showPassword, setShowPassword] = useState(false);
         const [password, setPassword] = useState('');
         const [phone, setPhone] = useState('');
+        const [name, setName] = useState('');
+        const [email, setEmail] = useState('');
 
         const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const val = e.target.value.replace(/\D/g, '').slice(0, 9);
@@ -189,9 +191,6 @@ const RegisterForm = memo(
 
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            const form = e.currentTarget as HTMLFormElement;
-            const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || '';
-            const email = (form.elements.namedItem('email') as HTMLInputElement)?.value || '';
             onRegister({ name, phone, email, password });
         };
 
@@ -210,6 +209,8 @@ const RegisterForm = memo(
                                 type="text"
                                 name="name"
                                 required
+                                value={name}
+                                onChange={e => setName(e.target.value)}
                                 autoComplete="name"
                                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="Tu nombre completo"
@@ -254,6 +255,8 @@ const RegisterForm = memo(
                             type="email"
                             name="email"
                             required
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
@@ -335,10 +338,10 @@ const ForgotPasswordForm = memo(
         onBack: () => void;
         isLoading: boolean;
     }) => {
+        const [email, setEmail] = useState('');
+
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            const form = e.currentTarget as HTMLFormElement;
-            const email = (form.elements.namedItem('email') as HTMLInputElement).value;
             onForgot(email);
         };
 
@@ -361,6 +364,8 @@ const ForgotPasswordForm = memo(
                             type="email"
                             name="email"
                             required
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
@@ -505,6 +510,7 @@ const ResetPasswordForm = memo(
         const [showPassword, setShowPassword] = useState(false);
         const [codeValue, setCodeValue] = useState(token || '');
         const [password, setPassword] = useState('');
+        const [confirmPassword, setConfirmPassword] = useState('');
 
         const isPasswordValid =
             password.length >= 9 &&
@@ -513,11 +519,7 @@ const ResetPasswordForm = memo(
 
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            const form = e.currentTarget as HTMLFormElement;
-            const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement)
-                .value;
-            const code = (form.elements.namedItem('code') as HTMLInputElement).value;
-            onReset({ password, confirmPassword, code });
+            onReset({ password, confirmPassword, code: codeValue });
         };
 
         return (
@@ -582,6 +584,8 @@ const ResetPasswordForm = memo(
                             type={showPassword ? 'text' : 'password'}
                             name="confirmPassword"
                             required
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Repite la contraseña"
