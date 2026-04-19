@@ -97,8 +97,12 @@ export default function DeliveryForm({
     };
 
     const availableSlots = getTimeSlots();
-    const isDayClosedSelect = Boolean(scheduledDate && availableSlots.length === 0);
-    const showStatusMessage = (isStoreClosed || isTodayClosed || (isPickupOnly && (!isScheduled || scheduledDate === todayStr))) && deliveryType !== 'reservation' && !isScheduled;
+    const showStatusMessage =
+        (isStoreClosed ||
+            isTodayClosed ||
+            (isPickupOnly && (!isScheduled || scheduledDate === todayStr))) &&
+        deliveryType !== 'reservation' &&
+        !isScheduled;
 
     const statusMessage = isTodayClosed
         ? '🏪 Hoy no aceptamos más pedidos. Por favor, selecciona la opción "Entrega programada" para mañana u otro día.'
