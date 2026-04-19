@@ -4,10 +4,7 @@ import * as path from 'path';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 async function getCategoryImages() {
     console.log('Fetching category images...');

@@ -169,7 +169,12 @@ const RegisterForm = memo(
         onSwitchLogin,
         isLoading,
     }: {
-        onRegister: (data: { name: string; phone: string; email: string; password: string }) => void;
+        onRegister: (data: {
+            name: string;
+            phone: string;
+            email: string;
+            password: string;
+        }) => void;
         onSwitchLogin: () => void;
         isLoading: boolean;
     }) => {
@@ -509,9 +514,8 @@ const ResetPasswordForm = memo(
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
             const form = e.currentTarget as HTMLFormElement;
-            const confirmPassword = (
-                form.elements.namedItem('confirmPassword') as HTMLInputElement
-            ).value;
+            const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement)
+                .value;
             const code = (form.elements.namedItem('code') as HTMLInputElement).value;
             onReset({ password, confirmPassword, code });
         };
