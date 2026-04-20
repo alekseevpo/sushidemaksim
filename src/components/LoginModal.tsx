@@ -58,7 +58,7 @@ const LoginForm = memo(
                             type="email"
                             name="email"
                             required
-                            value={email}
+                            defaultValue={email}
                             onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -247,7 +247,7 @@ const RegisterForm = memo(
                                 name="phone"
                                 required
                                 autoComplete="tel"
-                                value={phone}
+                                defaultValue={phone}
                                 onChange={handlePhoneChange}
                                 className="w-full bg-transparent pl-1 pr-4 py-3 outline-none font-medium text-sm text-gray-900 placeholder:text-gray-400"
                                 placeholder="600 000 000"
@@ -268,7 +268,7 @@ const RegisterForm = memo(
                             type="email"
                             name="email"
                             required
-                            value={email}
+                            defaultValue={email}
                             onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -379,7 +379,7 @@ const ForgotPasswordForm = memo(
                             type="email"
                             name="email"
                             required
-                            value={email}
+                            defaultValue={email}
                             onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"

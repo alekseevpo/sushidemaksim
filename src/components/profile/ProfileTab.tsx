@@ -340,7 +340,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                         <input
                                             type="tel"
                                             name="phone"
-                                            value={field.editedValue.replace(/^\+34/, '')}
+                                            defaultValue={field.editedValue.replace(/^\+34/, '')}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 const val = e.target.value
                                                     .replace(/\D/g, '')
@@ -362,7 +362,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                                   ? 'email'
                                                   : 'birthDate'
                                         }
-                                        value={field.editedValue}
+                                        defaultValue={field.editedValue}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             field.setter(e.target.value)
                                         }
@@ -636,7 +636,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                                       ? 'newPassword'
                                                       : 'confirmNewPassword'
                                             }
-                                            value={f.value}
+                                            defaultValue={f.value}
                                             onChange={e => f.setter(e.target.value)}
                                             className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                         />
