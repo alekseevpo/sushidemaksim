@@ -3,13 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Clock, Info } from 'lucide-react';
 import { SushiItem } from '../../types';
 import SafeImage from '../common/SafeImage';
+import { cn } from '../../utils/cn';
 
 interface TableBottomSheetProps {
     item: SushiItem | null;
     isOpen: boolean;
     onClose: () => void;
-    onAddToCart: (item: SushiItem) => void;
+    onAddToCart: (item: SushiItem, e?: React.MouseEvent, selectedOption?: string) => void;
 }
+
+const ITEM_OPTIONS: Record<string, string[]> = {
+    '113': ['Mahou Clásica', 'Mahou 0.0', 'Alhambra', 'Heineken', 'Estrella Galicia'],
+    '116': ['Coca-Cola', 'Coca-Cola Zero', 'Fanta Naranja', 'Fanta Limón', 'Sprite'],
+};
 
 export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
     item,
@@ -17,6 +23,18 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
     onClose,
     onAddToCart,
 }) => {
+    const options = item ? ITEM_OPTIONS[item.id] : null;
+    const [selectedOption, setSelectedOption] = React.useState('');
+
+    // Reset selected option when item changes
+    React.useEffect(() => {
+        if (options) {
+            setSelectedOption(options[0]);
+        } else {
+            setSelectedOption('');
+        }
+    }, [item, options]);
+
     if (!item) return null;
 
     return (
@@ -101,6 +119,31 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                                 {item.description}
                             </p>
 
+                            {/* Options Selector in Bottom Sheet */}
+                            {options && (
+                                <div className="mb-8">
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">
+                                        Selecciona sabor / marca
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {options.map(opt => (
+                                            <button
+                                                key={opt}
+                                                onClick={() => setSelectedOption(opt)}
+                                                className={cn(
+                                                    'h-12 rounded-2xl border text-[10px] font-black uppercase tracking-tighter transition-all px-2',
+                                                    selectedOption === opt
+                                                        ? 'bg-orange-600 border-orange-500 text-white shadow-lg shadow-orange-600/20'
+                                                        : 'bg-white/5 border-white/10 text-gray-400'
+                                                )}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Info Badges */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-4 bg-[#141414] border border-white/5 rounded-2xl flex items-center gap-3">
@@ -136,7 +179,7 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                         <div className="absolute bottom-0 left-0 right-0 p-6 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5">
                             <button
                                 onClick={() => {
-                                    onAddToCart(item);
+                                    onAddToCart(item, undefined, selectedOption);
                                     onClose();
                                 }}
                                 className="w-full h-16 bg-orange-600 text-white rounded-[24px] font-black text-lg tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3"

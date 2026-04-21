@@ -148,9 +148,9 @@ export default function TableMenuPage() {
         }
     };
 
-    const handleAddToCart = (item: SushiItem, e?: React.MouseEvent) => {
+    const handleAddToCart = (item: SushiItem, e?: React.MouseEvent, selectedOption?: string) => {
         if (e) e.stopPropagation();
-        addItem(item);
+        addItem(item, 1, selectedOption);
     };
 
     const handleRegisterClick = () => {

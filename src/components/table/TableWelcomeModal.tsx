@@ -56,11 +56,11 @@ export const TableWelcomeModal: React.FC<TableWelcomeModalProps> = ({
                                 initial={{ rotate: -15, scale: 0 }}
                                 animate={{ rotate: 0, scale: 1 }}
                                 transition={{ type: 'spring', delay: 0.2 }}
-                                className="w-20 h-20 bg-orange-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-orange-600/30 mb-6"
+                                className="flex items-center justify-center text-orange-600 mb-6"
                             >
-                                <div className="flex flex-col items-center leading-none">
-                                    <span className="text-2xl font-black italic">-10%</span>
-                                </div>
+                                <span className="text-7xl font-black italic tracking-tighter drop-shadow-[0_0_20px_rgba(234,88,12,0.4)]">
+                                    -10%
+                                </span>
                             </motion.div>
 
                             <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-3 leading-tight">

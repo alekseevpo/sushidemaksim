@@ -188,12 +188,17 @@ export default function Header() {
             >
                 <StoreStatusBanner />
                 <div className="max-w-[1440px] mx-auto px-3 md:px-6">
-                    <div className="flex items-center justify-between h-16 md:h-20 gap-4">
+                    <div
+                        className={`flex items-center justify-between h-16 md:h-20 gap-4 ${isTable ? 'flex-row-reverse' : ''}`}
+                    >
                         {/* Logo Area: Fixed 200px to match sidebar below, wrapped in flex-1 for centering balance */}
-                        <div className="flex-1 flex justify-start items-center h-full">
+                        <div className={`flex-1 flex items-center h-full ${isTable ? 'justify-end' : 'justify-start'}`}>
                             <Link
-                                to="/"
-                                onClick={() => {
+                                to={isTable ? '/table' : '/'}
+                                onClick={e => {
+                                    if (isTable) {
+                                        e.preventDefault();
+                                    }
                                     setShowMobileMenu(false);
                                     if ((window as any).lenis) {
                                         (window as any).lenis.scrollTo(0);
@@ -292,7 +297,7 @@ export default function Header() {
                         )}
 
                         {/* Right side Area: Symmetry with logo area (200px) to ensure nav block is centered */}
-                        <div className="flex-1 flex items-center justify-end gap-3 h-full md:min-w-[200px]">
+                        <div className={`flex-1 flex items-center gap-3 h-full md:min-w-[200px] ${isTable ? 'justify-start' : 'justify-end'}`}>
                             {isTable ? (
                                 <button
                                     onClick={() => {

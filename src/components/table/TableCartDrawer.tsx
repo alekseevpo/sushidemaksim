@@ -177,7 +177,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                     ) : (
                                         items.map(item => (
                                             <motion.div
-                                                key={item.id}
+                                                key={`${item.id}-${item.selectedOption || 'default'}`}
                                                 layout
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
@@ -195,13 +195,19 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                     <h4 className="text-xs font-black text-white uppercase italic truncate">
                                                         {item.name}
                                                     </h4>
+                                                    {item.selectedOption && (
+                                                        <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mt-0.5">
+                                                            {item.selectedOption}
+                                                        </p>
+                                                    )}
                                                     <div className="flex items-center gap-3 mt-2">
                                                         <div className="flex items-center bg-black rounded-lg p-0.5 border border-white/5">
                                                             <button
                                                                 onClick={() =>
                                                                     updateQuantity(
                                                                         item.id,
-                                                                        item.quantity - 1
+                                                                        item.quantity - 1,
+                                                                        item.selectedOption
                                                                     )
                                                                 }
                                                                 className="p-1 hover:text-orange-500 text-gray-400"
@@ -215,7 +221,8 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                                 onClick={() =>
                                                                     updateQuantity(
                                                                         item.id,
-                                                                        item.quantity + 1
+                                                                        item.quantity + 1,
+                                                                        item.selectedOption
                                                                     )
                                                                 }
                                                                 className="p-1 hover:text-orange-500 text-gray-400"
@@ -224,7 +231,12 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                             </button>
                                                         </div>
                                                         <button
-                                                            onClick={() => removeItem(item.id)}
+                                                            onClick={() =>
+                                                                removeItem(
+                                                                    item.id,
+                                                                    item.selectedOption
+                                                                )
+                                                            }
                                                             className="p-1.5 text-gray-500 hover:text-red-500 transition-colors"
                                                         >
                                                             <Trash2 size={14} />
@@ -318,6 +330,13 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                 Escanee el código QR de su mesa para pedir
                                             </p>
                                         )}
+
+                                        <button
+                                            onClick={onClose}
+                                            className="w-full mt-6 py-2 text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] hover:text-white transition-colors text-center italic"
+                                        >
+                                            ← Volver al menú
+                                        </button>
                                     </div>
                                 )}
                             </>

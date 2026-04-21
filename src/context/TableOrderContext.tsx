@@ -3,9 +3,9 @@ import { CartItem, SushiItem } from '../types';
 
 interface TableOrderContextType {
     items: CartItem[];
-    addItem: (item: SushiItem, quantity?: number) => void;
-    removeItem: (id: string | number) => void;
-    updateQuantity: (id: string | number, quantity: number) => void;
+    addItem: (item: SushiItem, quantity?: number, selectedOption?: string) => void;
+    removeItem: (id: string | number, selectedOption?: string) => void;
+    updateQuantity: (id: string | number, quantity: number, selectedOption?: string) => void;
     clearCart: () => void;
     total: number;
     itemCount: number;
@@ -45,41 +45,54 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
     }, []);
 
-    const addItem = useCallback((item: SushiItem, quantity: number = 1) => {
-        setItems(prev => {
-            const existingId = String(item.id);
-            const existingIndex = prev.findIndex(i => String(i.id) === existingId);
+    const addItem = useCallback(
+        (item: SushiItem, quantity: number = 1, selectedOption: string = '') => {
+            setItems(prev => {
+                const existingId = String(item.id);
+                const existingIndex = prev.findIndex(
+                    i => String(i.id) === existingId && (i.selectedOption || '') === selectedOption
+                );
 
-            if (existingIndex > -1) {
-                const updated = [...prev];
-                updated[existingIndex] = {
-                    ...updated[existingIndex],
-                    quantity: updated[existingIndex].quantity + quantity,
-                };
-                return updated;
-            }
+                if (existingIndex > -1) {
+                    const updated = [...prev];
+                    updated[existingIndex] = {
+                        ...updated[existingIndex],
+                        quantity: updated[existingIndex].quantity + quantity,
+                    };
+                    return updated;
+                }
 
-            return [...prev, { ...item, quantity }];
-        });
+                return [...prev, { ...item, quantity, selectedOption }];
+            });
 
-        // Haptic feedback
-        if ('vibrate' in navigator) navigator.vibrate(10);
-    }, []);
+            // Haptic feedback
+            if ('vibrate' in navigator) navigator.vibrate(10);
+        },
+        []
+    );
 
-    const removeItem = useCallback((id: string | number) => {
+    const removeItem = useCallback((id: string | number, selectedOption: string = '') => {
         const stringId = String(id);
-        setItems(prev => prev.filter(item => String(item.id) !== stringId));
+        setItems(prev =>
+            prev.filter(
+                item => String(item.id) !== stringId || item.selectedOption !== selectedOption
+            )
+        );
     }, []);
 
     const updateQuantity = useCallback(
-        (id: string | number, quantity: number) => {
+        (id: string | number, quantity: number, selectedOption: string = '') => {
             const stringId = String(id);
             if (quantity <= 0) {
-                removeItem(id);
+                removeItem(id, selectedOption);
                 return;
             }
             setItems(prev =>
-                prev.map(item => (String(item.id) === stringId ? { ...item, quantity } : item))
+                prev.map(item =>
+                    String(item.id) === stringId && (item.selectedOption || '') === selectedOption
+                        ? { ...item, quantity }
+                        : item
+                )
             );
         },
         [removeItem]
@@ -99,6 +112,7 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                     guestItems: items.map(item => ({
                         menuItemId: item.id,
                         quantity: item.quantity,
+                        selectedOption: item.selectedOption,
                     })),
                 }),
             });

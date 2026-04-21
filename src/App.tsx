@@ -136,6 +136,15 @@ function App() {
         }
     }, []);
 
+    useEffect(() => {
+        const isTable = location.pathname === '/table';
+        if (isTable) {
+            document.documentElement.classList.add('is-table-route');
+        } else {
+            document.documentElement.classList.remove('is-table-route');
+        }
+    }, [location.pathname]);
+
     return (
         <ErrorBoundary>
             <ToastProvider>
