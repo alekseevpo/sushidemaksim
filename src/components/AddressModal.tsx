@@ -211,6 +211,37 @@ export default function AddressModal({
         const detected = detectZone(markerPosition[0], markerPosition[1], deliveryZones);
         setSelectedZone(detected);
     }, [markerPosition, deliveryZones]);
+    const handleContinueWithValues = useCallback(
+        (
+            finalAddress: string,
+            finalHouse: string,
+            finalApartment: string,
+            finalPostalCode: string,
+            finalZone: any,
+            finalCoords: [number, number]
+        ) => {
+            // Safari Sync Hack
+            [houseInputRef, apartmentInputRef].forEach(ref => {
+                if (ref.current) {
+                    ref.current.focus();
+                    ref.current.blur();
+                }
+            });
+
+            if (!finalZone) return;
+
+            onSelect({
+                address: finalAddress,
+                house: finalHouse,
+                apartment: finalApartment,
+                postalCode: finalPostalCode,
+                zone: finalZone,
+                coordinates: finalCoords,
+            });
+            onClose();
+        },
+        [onSelect, onClose]
+    );
 
     const performReverseGeocode = useCallback(
         async (lat?: number, lon?: number) => {
@@ -456,38 +487,6 @@ export default function AddressModal({
 
         return () => clearTimeout(timer);
     }, [markerPosition, performReverseGeocode, isOpen]);
-
-    const handleContinueWithValues = useCallback(
-        (
-            finalAddress: string,
-            finalHouse: string,
-            finalApartment: string,
-            finalPostalCode: string,
-            finalZone: any,
-            finalCoords: [number, number]
-        ) => {
-            // Safari Sync Hack
-            [houseInputRef, apartmentInputRef].forEach(ref => {
-                if (ref.current) {
-                    ref.current.focus();
-                    ref.current.blur();
-                }
-            });
-
-            if (!finalZone) return;
-
-            onSelect({
-                address: finalAddress,
-                house: finalHouse,
-                apartment: finalApartment,
-                postalCode: finalPostalCode,
-                zone: finalZone,
-                coordinates: finalCoords,
-            });
-            onClose();
-        },
-        [onSelect, onClose]
-    );
 
     const handleContinue = () => {
         const finalHouse = (houseInputRef.current?.value || house).trim();
