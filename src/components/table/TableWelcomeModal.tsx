@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, UserPlus, Gift } from 'lucide-react';
+import { Sparkles, X, UserPlus } from 'lucide-react';
 import { useTableI18n } from '../../utils/tableI18n';
 
 interface TableWelcomeModalProps {

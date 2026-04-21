@@ -171,18 +171,18 @@ export default function Header() {
                     isTable
                         ? 'bg-black border-b border-white/5'
                         : isScrolled
-                        ? `bg-[#FBF7F0] ${
-                              isMenu
-                                  ? 'md:shadow-sm md:border-b md:border-gray-200 border-b-0 shadow-none'
-                                  : 'shadow-sm border-b border-gray-200'
-                          }`
-                        : isTransparentHeaderPage
-                          ? 'bg-transparent border-b border-transparent'
-                          : `bg-[#FBF7F0] ${
+                          ? `bg-[#FBF7F0] ${
                                 isMenu
-                                    ? 'md:border-b md:border-gray-100 border-b-0 shadow-none'
-                                    : 'border-b border-gray-100'
+                                    ? 'md:shadow-sm md:border-b md:border-gray-200 border-b-0 shadow-none'
+                                    : 'shadow-sm border-b border-gray-200'
                             }`
+                          : isTransparentHeaderPage
+                            ? 'bg-transparent border-b border-transparent'
+                            : `bg-[#FBF7F0] ${
+                                  isMenu
+                                      ? 'md:border-b md:border-gray-100 border-b-0 shadow-none'
+                                      : 'border-b border-gray-100'
+                              }`
                 }
             `}
             >
