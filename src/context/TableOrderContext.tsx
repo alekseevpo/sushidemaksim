@@ -75,7 +75,9 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const stringId = String(id);
         setItems(prev =>
             prev.filter(
-                item => String(item.id) !== stringId || item.selectedOption !== selectedOption
+                item =>
+                    String(item.id) !== stringId ||
+                    (item.selectedOption || '') !== (selectedOption || '')
             )
         );
     }, []);
