@@ -9,10 +9,10 @@ interface TableWelcomeModalProps {
     onRegister: () => void;
 }
 
-export const TableWelcomeModal: React.FC<TableWelcomeModalProps> = ({ 
-    isOpen, 
-    onClose, 
-    onRegister 
+export const TableWelcomeModal: React.FC<TableWelcomeModalProps> = ({
+    isOpen,
+    onClose,
+    onRegister,
 }) => {
     const { t } = useTableI18n();
 
@@ -79,7 +79,7 @@ export const TableWelcomeModal: React.FC<TableWelcomeModalProps> = ({
                                     <UserPlus size={18} strokeWidth={2.5} />
                                     {t('register_btn')}
                                 </button>
-                                
+
                                 <button
                                     onClick={onClose}
                                     className="w-full h-12 text-gray-500 font-bold text-[10px] uppercase tracking-widest hover:text-white transition-colors"

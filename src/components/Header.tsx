@@ -232,7 +232,9 @@ export default function Header() {
                         {!isTable && (
                             <nav className="hidden md:flex items-center justify-center gap-2 lg:gap-4 xl:gap-8 mx-auto">
                                 {navLinks.map((link, idx) => {
-                                    const isActive = link.to ? location.pathname === link.to : false;
+                                    const isActive = link.to
+                                        ? location.pathname === link.to
+                                        : false;
                                     const isAction = !!link.onClick;
 
                                     const commonStyles = `relative no-underline font-bold px-3 lg:px-4 py-2 transition-all duration-300 rounded-xl text-[13px] lg:text-sm border-none bg-transparent cursor-pointer whitespace-nowrap
@@ -252,7 +254,9 @@ export default function Header() {
                                                 type="button"
                                                 className={`${commonStyles} flex items-center gap-2`}
                                             >
-                                                {link.icon && <link.icon size={16} strokeWidth={2} />}
+                                                {link.icon && (
+                                                    <link.icon size={16} strokeWidth={2} />
+                                                )}
                                                 {link.label}
                                             </button>
                                         );
