@@ -100,6 +100,15 @@ router.post(
                     .status(400)
                     .json({ error: 'El código de postre ha expirado (válido por 30 días)' });
             }
+
+            // Return the gift info
+            return res.json({
+                percentage: promo.discount_percentage,
+                gift: {
+                    name: 'Roll dulce',
+                    label: 'Regalo por tu 10º pedido',
+                },
+            });
         }
 
         res.json({ percentage: promo.discount_percentage });

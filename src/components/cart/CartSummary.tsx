@@ -67,7 +67,7 @@ export default function CartSummary({
                             className={`text-[10px] font-black uppercase tracking-widest ${total >= freeDeliveryThreshold ? 'text-green-600' : 'text-orange-600'}`}
                         >
                             {total >= freeDeliveryThreshold
-                                ? '¡Enhorabuena! Tienes ENVÍO GRATIS 🚚💨'
+                                ? '¡Genial! Tienes ENVÍO GRATIS 🚚💨'
                                 : `¡Te faltan ${(freeDeliveryThreshold - total).toFixed(2).replace('.', ',')}€ para el envío GRATIS! 🍣`}
                         </span>
                         <span className="text-[10px] font-black text-gray-400">
@@ -110,17 +110,26 @@ export default function CartSummary({
                 </div>
                 {deliveryType === 'delivery' && (
                     <div className="flex justify-between text-gray-500 text-sm animate-in fade-in duration-300">
-                        <span>Envío</span>
+                        <div className="flex flex-col">
+                            <span>Envío</span>
+                            {hasZone && (
+                                <span className="text-[10px] font-black text-orange-600/60 uppercase tracking-widest leading-none mt-1">
+                                    {selectedZone.name}
+                                </span>
+                            )}
+                        </div>
                         {!hasAddress ? (
                             <span className="text-gray-400 italic">A determinar</span>
                         ) : (
-                            <span
-                                className={`font-bold ${deliveryCost <= 0 ? 'text-green-600' : 'text-gray-900'}`}
-                            >
-                                {deliveryCost <= 0
-                                    ? 'GRATIS'
-                                    : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
-                            </span>
+                            <div className="text-right">
+                                <span
+                                    className={`font-bold block ${deliveryCost <= 0 ? 'text-green-600' : 'text-gray-900'}`}
+                                >
+                                    {deliveryCost <= 0
+                                        ? 'ENVÍO GRATIS'
+                                        : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
+                                </span>
+                            </div>
                         )}
                     </div>
                 )}

@@ -123,6 +123,8 @@ router.post(
                         menu_item_id: gi.menuItemId,
                         menu_items: menuItem,
                         selected_option: gi.selectedOption || '',
+                        is_gift: !!gi.isGift,
+                        gift_label: gi.giftLabel || null,
                     };
                 })
                 .filter((i: any) => i !== null);
@@ -130,7 +132,9 @@ router.post(
             // Fallback to DB cart if nothing sent in request
             const { data: dbCartItems, error: cartError } = await supabase
                 .from('cart_items')
-                .select('quantity, menu_item_id, selected_option, menu_items(name, price, image)')
+                .select(
+                    'quantity, menu_item_id, selected_option, is_gift, gift_label, menu_items(name, price, image)'
+                )
                 .eq('user_id', req.userId);
 
             if (cartError) throw cartError;
@@ -299,6 +303,8 @@ router.post(
                     description: item.menu_items.description || '',
                     category: item.menu_items.category || '',
                     selected_option: item.selected_option || '',
+                    is_gift: !!item.is_gift,
+                    gift_label: item.gift_label || null,
                 }))
                 .concat(
                     deliveryFee > 0
@@ -312,6 +318,8 @@ router.post(
                                   description: '',
                                   category: 'extras',
                                   selected_option: '',
+                                  is_gift: false,
+                                  gift_label: null,
                               },
                           ]
                         : []
@@ -348,9 +356,7 @@ router.post(
             }));
 
             // Add Delivery Time to receipt data
-            const receiptNotes = isScheduled
-                ? `[ENTREGA PROGRAMADA: ${serverEstimatedTime}]\n${notesToSave}`
-                : notesToSave;
+            const receiptNotes = notesToSave;
 
             if (deliveryFee > 0) {
                 itemsForReceipt.push({
@@ -393,6 +399,8 @@ router.post(
                         deliveryAddress,
                         phoneNumber,
                         notes: receiptNotes,
+                        estimatedDeliveryTime:
+                            (fullOrder as any).estimated_delivery_time || serverEstimatedTime,
                     },
                     true
                 );
@@ -412,6 +420,8 @@ router.post(
                         deliveryAddress,
                         phoneNumber,
                         notes: receiptNotes,
+                        estimatedDeliveryTime:
+                            (fullOrder as any).estimated_delivery_time || serverEstimatedTime,
                     });
                 } catch (customerEmailErr) {
                     console.error('Failed to send customer receipt email:', customerEmailErr);

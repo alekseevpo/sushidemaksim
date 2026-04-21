@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Plus, Star, Trash2, Pencil, X, Loader2, ArrowRight } from 'lucide-react';
+import { MapPin, Plus, Star, Trash2, Pencil, X, Loader2, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 import { UserAddress } from '../../types';
 import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import { detectZone } from '../../utils/delivery';
 import DeleteConfirmationModal from '../admin/DeleteConfirmationModal';
 
 interface AddressSuggestion {
@@ -25,6 +26,7 @@ interface AddressSuggestion {
 
 interface Props {
     addresses: UserAddress[];
+    deliveryZones: any[];
     addAddress: (data: any) => Promise<void>;
     editAddress?: (id: string, data: any) => Promise<void>;
     removeAddress: (id: string) => Promise<void>;
@@ -33,6 +35,7 @@ interface Props {
 
 export default function AddressesTab({
     addresses,
+    deliveryZones,
     addAddress,
     editAddress,
     removeAddress,
@@ -121,7 +124,11 @@ export default function AddressesTab({
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const handleSelectSuggestion = (s: AddressSuggestion, queryHint?: string) => {
+    const handleSelectSuggestion = (
+        s: AddressSuggestion,
+        queryHint?: string,
+        autoConfirm = false
+    ) => {
         let street = s.address?.road || s.display_name.split(',')[0] || '';
         let houseNum = s.address?.house_number || '';
 
@@ -158,6 +165,12 @@ export default function AddressesTab({
             'Comunidad de Madrid';
         const postalCode = s.address?.postcode || s.display_name?.match(/\b\d{5}\b/)?.[0] || '';
 
+        const lat = s.lat ? parseFloat(s.lat) : undefined;
+        const lon = s.lon ? parseFloat(s.lon) : undefined;
+
+        // Detect Zone
+        const zone = detectZone(lat, lon, deliveryZones, postalCode);
+
         setNewAddress(p => ({
             ...p,
             street,
@@ -165,17 +178,83 @@ export default function AddressesTab({
             city,
             postalCode,
             apartment: '',
-            lat: s.lat ? parseFloat(s.lat) : undefined,
-            lon: s.lon ? parseFloat(s.lon) : undefined,
+            lat,
+            lon,
         }));
         ignoreNextSearchRef.current = true;
         setSearchQuery(street);
         wasSelectedViaSearchRef.current = true;
         setShowSuggestions(false);
         setSuggestions([]);
+
+        // Sync refs immediately
+        setTimeout(() => {
+            if (houseRef.current) houseRef.current.value = houseNum;
+        }, 0);
+
+        if (autoConfirm) {
+            if (zone) {
+                // Short delay to allow state to settle then save
+                setTimeout(() => {
+                    handleQuickSave(street, houseNum, postalCode, city, lat, lon);
+                }, 100);
+            } else {
+                error('Lo sentimos, esta dirección está fuera de nuestra zona de reparto 📍');
+            }
+        }
     };
 
-    const performSearch = async (query: string, selectFirst = false) => {
+    const handleQuickSave = async (
+        street: string,
+        house: string,
+        pCode: string,
+        city: string,
+        lat?: number,
+        lon?: number
+    ) => {
+        if (isSubmitting.current) return;
+
+        // Capture phone from ref since it's most reliable
+        const phoneVal = (phoneRef.current?.value || '').trim();
+        const labelVal = (labelRef.current?.value || '').trim();
+
+        if (!phoneVal) {
+            error('Por favor, indica un teléfono de contacto antes de continuar');
+            // Focus phone
+            phoneRef.current?.focus();
+            return;
+        }
+
+        const dataToSave = {
+            ...newAddress,
+            label: labelVal || 'Casa',
+            street,
+            house,
+            postalCode: pCode,
+            city,
+            lat,
+            lon,
+            phone: `+34${phoneVal}`,
+        };
+
+        try {
+            isSubmitting.current = true;
+            if (editId && editAddress) {
+                await editAddress(editId, dataToSave);
+                success('¡Dirección actualizada con éxito! 📍');
+            } else {
+                await addAddress(dataToSave);
+                success('¡Dirección añadida сon éxito! 🏠');
+            }
+            resetForm();
+        } catch (err: any) {
+            error(err.message || 'Error al guardar la dirección');
+        } finally {
+            isSubmitting.current = false;
+        }
+    };
+
+    const performSearch = async (query: string, autoConfirm = false) => {
         if (query.trim().length < 3) {
             setSuggestions([]);
             return;
@@ -184,11 +263,16 @@ export default function AddressesTab({
         setIsSearching(true);
         try {
             const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(query)}`);
-            setSuggestions(data || []);
-            setShowSuggestions((data || []).length > 0);
+            const results = data || [];
+            setSuggestions(results);
+            setShowSuggestions(results.length > 0);
 
-            if (selectFirst && data && data.length > 0) {
-                handleSelectSuggestion(data[0], query);
+            if (autoConfirm && results.length > 0) {
+                // Check if the query has a number
+                const hasNumber = /\d/.test(query);
+                if (hasNumber) {
+                    handleSelectSuggestion(results[0], query, true);
+                }
             }
         } catch (err) {
             console.error('Search failed', err);
@@ -442,7 +526,7 @@ export default function AddressesTab({
                             <div className="relative">
                                 <input
                                     ref={streetRef}
-                                    defaultValue={searchQuery || newAddress.street}
+                                    value={searchQuery}
                                     onChange={e => handleStreetChange(e.target.value)}
                                     className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all ${newAddress.street && 'border-green-100 bg-green-50/10'}`}
                                     placeholder="Introduce tu calle y número..."
@@ -467,42 +551,50 @@ export default function AddressesTab({
                                 (suggestions.length > 0 ||
                                     (searchQuery.trim().length >= 3 && /\d/.test(searchQuery))) && (
                                     <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-y-auto max-h-[320px] animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50 scrollbar-thin scrollbar-thumb-gray-200">
-                                        {/* Virtual Result */}
+                                        {/* Sticky LOCALIZAR Button */}
                                         {searchQuery.trim().length >= 3 &&
-                                            /\d/.test(searchQuery) &&
-                                            !suggestions.some(r =>
-                                                r.display_name
-                                                    .toLowerCase()
-                                                    .includes(searchQuery.toLowerCase())
-                                            ) && (
+                                            /\d/.test(searchQuery) && (
                                                 <button
                                                     type="button"
-                                                    onClick={() =>
-                                                        performSearch(searchQuery.trim(), true)
-                                                    }
-                                                    className="w-full px-4 py-4 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600"
+                                                    disabled={isSearching}
+                                                    onPointerDown={(e) => {
+                                                        e.preventDefault();
+                                                        performSearch(searchQuery.trim(), true);
+                                                    }}
+                                                    className="sticky top-0 z-10 w-full px-4 py-5 text-left bg-green-600 hover:bg-green-700 transition flex items-center gap-4 text-white shadow-lg overflow-hidden group/loc"
                                                 >
-                                                    <div className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-green-200">
-                                                        <MapPin
-                                                            size={16}
-                                                            className="text-green-600"
-                                                        />
+                                                    <div className="absolute top-0 right-0 w-24 h-full bg-white/10 -skew-x-12 translate-x-12 group-hover/loc:translate-x-0 transition-transform duration-700" />
+                                                    <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/30">
+                                                        {isSearching ? (
+                                                            <Loader2
+                                                                size={20}
+                                                                className="animate-spin text-white"
+                                                            />
+                                                        ) : (
+                                                            <MapPin
+                                                                size={20}
+                                                                className="text-white fill-white/20"
+                                                            />
+                                                        )}
                                                     </div>
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="text-xs font-black text-gray-900 truncate">
-                                                            ¿Es esta tu ubicación exacta?
+                                                        <span className="text-xs font-black uppercase tracking-widest">
+                                                            {isSearching
+                                                                ? 'Localizando...'
+                                                                : 'Localizar & Confirmar'}
                                                         </span>
-                                                        <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
-                                                            Localizar: "{searchQuery}"
+                                                        <span className="text-[10px] font-bold opacity-80 truncate mt-0.5">
+                                                            {searchQuery}
                                                         </span>
                                                     </div>
-                                                    <ArrowRight
-                                                        size={14}
-                                                        className="text-green-600 ml-auto shrink-0"
-                                                    />
+                                                    {!isSearching && (
+                                                        <ArrowRight
+                                                            size={18}
+                                                            className="text-white ml-auto shrink-0 group-hover/loc:translate-x-1 transition-transform"
+                                                        />
+                                                    )}
                                                 </button>
                                             )}
-
                                         {suggestions.map((s, i) => {
                                             const queryNum =
                                                 searchQuery.match(/\b(\d+[a-zA-Z]?)\s*$/)?.[1] ||
@@ -517,9 +609,10 @@ export default function AddressesTab({
                                                 <button
                                                     key={i}
                                                     type="button"
-                                                    onClick={() =>
-                                                        handleSelectSuggestion(s, searchQuery)
-                                                    }
+                                                    onPointerDown={(e) => {
+                                                        e.preventDefault();
+                                                        handleSelectSuggestion(s, searchQuery);
+                                                    }}
                                                     className="flex items-start gap-3 w-full p-4 text-left hover:bg-orange-50 transition-colors group"
                                                 >
                                                     <MapPin
@@ -702,10 +795,37 @@ export default function AddressesTab({
                                     {addr.house && `, ${addr.house}`}
                                     {addr.apartment && `, ${addr.apartment}`}
                                 </p>
-                                <p className="text-[10px] md:text-xs font-medium text-gray-500 m-0">
-                                    {addr.postalCode} • {addr.city} •{' '}
-                                    <span className="opacity-70 font-bold">{addr.phone}</span>
-                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <p className="text-[10px] md:text-xs font-medium text-gray-500 m-0">
+                                        {addr.postalCode} • {addr.city} •{' '}
+                                        <span className="opacity-70 font-bold">{addr.phone}</span>
+                                    </p>
+
+                                    {/* Zone Info Highlights */}
+                                    {(() => {
+                                        const zone = detectZone(
+                                            (addr as any).lat,
+                                            (addr as any).lon,
+                                            deliveryZones,
+                                            addr.postalCode
+                                        );
+                                        if (!zone) return null;
+                                        return (
+                                            <div className="flex items-center gap-1 bg-gray-50/80 px-2 py-0.5 rounded-lg border border-gray-100 shadow-sm animate-in fade-in slide-in-from-left-2 duration-300">
+                                                <div
+                                                    className="w-1.5 h-1.5 rounded-full"
+                                                    style={{ backgroundColor: zone.color }}
+                                                />
+                                                <span className="text-[9px] font-black text-gray-900 uppercase tracking-tighter">
+                                                    {zone.name}
+                                                </span>
+                                                <span className="text-[8px] font-bold text-gray-400 ml-0.5">
+                                                    • {zone.cost.toFixed(2)}€
+                                                </span>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-1 shrink-0">

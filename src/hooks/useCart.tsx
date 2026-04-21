@@ -48,7 +48,13 @@ interface CartContextType {
     items: CartItem[];
     total: number;
     isLoading: boolean;
-    addItem: (item: SushiItem, quantity?: number, selectedOption?: string) => Promise<void>;
+    addItem: (
+        item: SushiItem,
+        quantity?: number,
+        selectedOption?: string,
+        isGift?: boolean,
+        giftLabel?: string
+    ) => Promise<void>;
     removeItem: (id: string, cartItemId?: number) => Promise<void>;
     updateQuantity: (
         id: string,
@@ -227,9 +233,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [user, syncGuestItems]);
 
     const addItem = useCallback(
-        async (item: SushiItem, quantity: number = 1, selectedOption: string = '') => {
+        async (
+            item: SushiItem,
+            quantity: number = 1,
+            selectedOption: string = '',
+            isGift: boolean = false,
+            giftLabel: string = ''
+        ) => {
             if ('vibrate' in navigator) navigator.vibrate(50);
-            await addToCart({ item, quantity, selectedOption });
+            await addToCart({ item, quantity, selectedOption, isGift, giftLabel });
         },
         [addToCart]
     );

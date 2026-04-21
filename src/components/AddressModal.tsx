@@ -263,7 +263,7 @@ export default function AddressModal({
     );
 
     const selectResult = useCallback(
-        async (res: any, queryHint?: string) => {
+        async (res: any, queryHint?: string, autoConfirm = false) => {
             const lat = parseFloat(res.lat);
             const lon = parseFloat(res.lon);
 
@@ -272,7 +272,8 @@ export default function AddressModal({
             skipNextReverseGeocodeRef.current = true;
             skipNextSearchRef.current = true;
 
-            setMarkerPosition([lat, lon]);
+            const newPos: [number, number] = [lat, lon];
+            setMarkerPosition(newPos);
             wasSelectedViaSearchRef.current = true;
 
             let street =
@@ -318,23 +319,48 @@ export default function AddressModal({
             if (pc) setPostalCode(pc);
             setMapZoom(18);
 
+            // DETECT ZONE IMMEDIATELY for autoConfirm logic
+            const currentZone = detectZone(lat, lon, deliveryZones, pc);
+            setSelectedZone(currentZone);
+
             // REFINEMENT: If the house number we found/hinted is different from the original search result,
             // we must re-geocode to move the marker to the EXACT house.
             if (houseNum && (houseNum !== originalResultHouseNum || !originalResultHouseNum)) {
                 const fullQuery = `${street} ${houseNum}, ${pc || 'Madrid'}`.trim();
-                api.get(`/delivery-zones/search?q=${encodeURIComponent(fullQuery)}`)
-                    .then(data => {
-                        if (data && data.length > 0) {
-                            const best = data[0];
-                            const rLat = parseFloat(best.lat);
-                            const rLon = parseFloat(best.lon);
-                            if (!isNaN(rLat) && !isNaN(rLon)) {
-                                skipNextReverseGeocodeRef.current = true;
-                                setMarkerPosition([rLat, rLon]);
+                try {
+                    const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(fullQuery)}`);
+                    if (data && data.length > 0) {
+                        const best = data[0];
+                        const rLat = parseFloat(best.lat);
+                        const rLon = parseFloat(best.lon);
+                        if (!isNaN(rLat) && !isNaN(rLon)) {
+                            skipNextReverseGeocodeRef.current = true;
+                            setMarkerPosition([rLat, rLon]);
+                            
+                            // Re-detect zone with refined coordinates
+                            const refinedZone = detectZone(rLat, rLon, deliveryZones, pc);
+                            setSelectedZone(refinedZone);
+
+                            if (autoConfirm && refinedZone) {
+                                // Short delay to allow state to settle visually
+                                setTimeout(() => {
+                                    handleContinueWithValues(street, houseNum, '', pc, refinedZone, [rLat, rLon]);
+                                }, 300);
                             }
+                        } else if (autoConfirm && currentZone) {
+                            handleContinueWithValues(street, houseNum, '', pc, currentZone, newPos);
                         }
-                    })
-                    .catch(e => console.error('Refinement failed', e));
+                    } else if (autoConfirm && currentZone) {
+                        handleContinueWithValues(street, houseNum, '', pc, currentZone, newPos);
+                    }
+                } catch (e) {
+                    console.error('Refinement failed', e);
+                    if (autoConfirm && currentZone) {
+                        handleContinueWithValues(street, houseNum, '', pc, currentZone, newPos);
+                    }
+                }
+            } else if (autoConfirm && currentZone) {
+                handleContinueWithValues(street, houseNum, '', pc, currentZone, newPos);
             }
 
             setSearchResults([]);
@@ -345,11 +371,11 @@ export default function AddressModal({
                 setSearchQuery(street);
             }
         },
-        [searchQuery]
+        [searchQuery, deliveryZones]
     );
 
     const performSearch = useCallback(
-        async (query: string, selectFirst = false) => {
+        async (query: string, selectFirst = false, autoConfirm = false) => {
             if (query.trim().length < 3) {
                 setSearchResults([]);
                 return;
@@ -362,7 +388,7 @@ export default function AddressModal({
                 setSearchResults(data || []);
 
                 if (selectFirst && data && data.length > 0) {
-                    selectResult(data[0], query);
+                    selectResult(data[0], query, autoConfirm);
                 }
             } catch (err) {
                 console.error('Search failed', err);
@@ -422,7 +448,14 @@ export default function AddressModal({
         return () => clearTimeout(timer);
     }, [markerPosition, performReverseGeocode, isOpen]);
 
-    const handleContinue = () => {
+    const handleContinueWithValues = (
+        finalAddress: string,
+        finalHouse: string,
+        finalApartment: string,
+        finalPostalCode: string,
+        finalZone: any,
+        finalCoords: [number, number]
+    ) => {
         // Safari Sync Hack
         [houseInputRef, apartmentInputRef].forEach(ref => {
             if (ref.current) {
@@ -431,18 +464,31 @@ export default function AddressModal({
             }
         });
 
+        if (!finalZone) return;
+
+        onSelect({
+            address: finalAddress,
+            house: finalHouse,
+            apartment: finalApartment,
+            postalCode: finalPostalCode,
+            zone: finalZone,
+            coordinates: finalCoords,
+        });
+        onClose();
+    };
+
+    const handleContinue = () => {
         const finalHouse = (houseInputRef.current?.value || house).trim();
         const finalApartment = (apartmentInputRef.current?.value || apartment).trim();
 
-        onSelect({
-            address: address,
-            house: finalHouse,
-            apartment: finalApartment,
+        handleContinueWithValues(
+            address,
+            finalHouse,
+            finalApartment,
             postalCode,
-            zone: selectedZone,
-            coordinates: markerPosition,
-        });
-        onClose();
+            selectedZone,
+            markerPosition
+        );
     };
 
     const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -639,22 +685,20 @@ export default function AddressModal({
                                                     className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[320px] md:max-h-[440px] divide-y divide-gray-50 animate-in fade-in slide-in-from-top-2 duration-200 z-[1001] custom-scrollbar"
                                                 >
                                                     {isSearching && <SearchSkeleton count={3} />}
-                                                    {/* Virtual Result for exact typed address with a number */}
+                                                    
+                                                    {/* Virtual Result for exact typed address - NOW PRIORITY & ALWAYS SHOWN IF HAS NUMBER */}
                                                     {searchQuery.trim().length >= 3 &&
-                                                        /\d/.test(searchQuery) &&
-                                                        !searchResults.some(r =>
-                                                            r.display_name
-                                                                .toLowerCase()
-                                                                .includes(searchQuery.toLowerCase())
-                                                        ) && (
+                                                        /\d/.test(searchQuery) && (
                                                             <button
-                                                                onClick={() =>
+                                                                onPointerDown={(e) => {
+                                                                    e.preventDefault();
                                                                     performSearch(
                                                                         searchQuery.trim(),
+                                                                        true,
                                                                         true
-                                                                    )
-                                                                }
-                                                                className="w-full px-5 py-5 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600"
+                                                                    );
+                                                                }}
+                                                                className="w-full px-5 py-5 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600 sticky top-0 z-10"
                                                             >
                                                                 <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-green-200">
                                                                     <MapPin
@@ -663,12 +707,14 @@ export default function AddressModal({
                                                                     />
                                                                 </div>
                                                                 <div className="flex flex-col min-w-0">
-                                                                    <span className="text-sm font-black text-gray-900 truncate">
-                                                                        ¿Es esta tu ubicación
-                                                                        exacta?
-                                                                    </span>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-sm font-black text-gray-900 truncate">
+                                                                            ¿Confirmar ubicación?
+                                                                        </span>
+                                                                        {isSearching && <Loader2 size={12} className="animate-spin text-green-600" />}
+                                                                    </div>
                                                                     <span className="text-[11px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
-                                                                        Localizar: "{searchQuery}"
+                                                                        LOCALIZAR: "{searchQuery}"
                                                                     </span>
                                                                 </div>
                                                                 <ArrowRight
@@ -679,6 +725,10 @@ export default function AddressModal({
                                                         )}
 
                                                     {searchResults.map((res, i) => {
+                                                        // Filter out duplicates if the virtual result is basically the first result
+                                                        if (i === 0 && res.display_name.toLowerCase().includes(searchQuery.toLowerCase())) {
+                                                            return null;
+                                                        }
                                                         // Extract house number from query to show alongside street results that lack one
                                                         const queryNum =
                                                             searchQuery.match(
@@ -697,9 +747,10 @@ export default function AddressModal({
                                                         return (
                                                             <button
                                                                 key={i}
-                                                                onClick={() =>
-                                                                    selectResult(res, searchQuery)
-                                                                }
+                                                                onPointerDown={(e) => {
+                                                                    e.preventDefault();
+                                                                    selectResult(res, searchQuery);
+                                                                }}
                                                                 className="w-full px-5 py-4 text-left hover:bg-orange-50 transition flex items-start gap-3"
                                                             >
                                                                 <MapPin

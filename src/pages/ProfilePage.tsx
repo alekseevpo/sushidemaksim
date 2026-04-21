@@ -54,6 +54,23 @@ export default function ProfilePage() {
     };
 
     const [activeTab, setActiveTab] = useState<TabId>(getInitialTab());
+    const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
+
+    // Load delivery zones for address cost calculation
+    useEffect(() => {
+        const loadZones = async () => {
+            try {
+                const res = await fetch('/api/delivery-zones');
+                if (res.ok) {
+                    const zonesData = await res.json();
+                    setDeliveryZones(zonesData.zones || []);
+                }
+            } catch (err) {
+                console.error('Failed to load delivery zones in profile', err);
+            }
+        };
+        loadZones();
+    }, []);
 
     // Sync tab with URL when it changes (e.g. back button)
     useEffect(() => {
@@ -757,6 +774,7 @@ export default function ProfilePage() {
                                         {activeTab === 'addresses' && (
                                             <AddressesTab
                                                 addresses={user.addresses}
+                                                deliveryZones={deliveryZones}
                                                 addAddress={addAddress}
                                                 editAddress={editAddress}
                                                 removeAddress={removeAddress}

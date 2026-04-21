@@ -530,6 +530,27 @@ export default function AdminOrders({
                                     let noBuzzer = false;
                                     let actualNote = '';
 
+                                    // NEW: Strongly prefer DB field for scheduled time
+                                    if (
+                                        order.estimatedDeliveryTime &&
+                                        !order.estimatedDeliveryTime.includes('min') &&
+                                        order.estimatedDeliveryTime.match(/\d{4}-\d{2}-\d{2}/)
+                                    ) {
+                                        const rawDate = order.estimatedDeliveryTime;
+                                        const dateParts = rawDate.split(' ');
+                                        if (dateParts.length === 2) {
+                                            const [dPart, tPart] = dateParts;
+                                            const components = dPart.split('-');
+                                            if (components.length === 3 && components[0].length === 4) {
+                                                scheduled = `${components[2]}-${components[1]}-${components[0]} ${tPart}`;
+                                            } else {
+                                                scheduled = rawDate;
+                                            }
+                                        } else {
+                                            scheduled = rawDate;
+                                        }
+                                    }
+
                                     const parts = notes.split(' | ');
                                     parts.forEach((part: string) => {
                                         if (
@@ -551,29 +572,31 @@ export default function AdminOrders({
                                             part.includes('[ENTREGA PROGRAMADA:') ||
                                             part.includes('[PROGRAMADO:')
                                         ) {
-                                            const rawDate = part
-                                                .replace('[ENTREGA PROGRAMADA: ', '')
-                                                .replace('[ENTREGA PROGRAMADA:', '')
-                                                .replace('[PROGRAMADO: ', '')
-                                                .replace('[PROGRAMADO:', '')
-                                                .replace(']', '');
+                                            if (!scheduled) {
+                                                const rawDate = part
+                                                    .replace('[ENTREGA PROGRAMADA: ', '')
+                                                    .replace('[ENTREGA PROGRAMADA:', '')
+                                                    .replace('[PROGRAMADO: ', '')
+                                                    .replace('[PROGRAMADO:', '')
+                                                    .replace(']', '');
 
-                                            const dateParts = rawDate.split(' ');
-                                            if (dateParts.length === 2) {
-                                                const [dPart, tPart] = dateParts;
-                                                const components = dPart.split('-');
-                                                if (components.length === 3) {
-                                                    const [c1, c2, c3] = components;
-                                                    if (c1.length === 4) {
-                                                        scheduled = `${c3}-${c2}-${c1} ${tPart}`;
+                                                const dateParts = rawDate.split(' ');
+                                                if (dateParts.length === 2) {
+                                                    const [dPart, tPart] = dateParts;
+                                                    const components = dPart.split('-');
+                                                    if (components.length === 3) {
+                                                        const [c1, c2, c3] = components;
+                                                        if (c1.length === 4) {
+                                                            scheduled = `${c3}-${c2}-${c1} ${tPart}`;
+                                                        } else {
+                                                            scheduled = rawDate;
+                                                        }
                                                     } else {
                                                         scheduled = rawDate;
                                                     }
                                                 } else {
                                                     scheduled = rawDate;
                                                 }
-                                            } else {
-                                                scheduled = rawDate;
                                             }
                                         } else if (
                                             part.includes('[NO LLAMAR PARA CONFIRMACIÓN]') ||
@@ -591,16 +614,6 @@ export default function AdminOrders({
                                             actualNote += (actualNote ? ' | ' : '') + part;
                                         }
                                     });
-
-                                    // NEW: Robust check from estimatedDeliveryTime if notes parsing failed
-                                    if (
-                                        !scheduled &&
-                                        order.estimatedDeliveryTime &&
-                                        !order.estimatedDeliveryTime.includes('min') &&
-                                        order.estimatedDeliveryTime.match(/\d{4}-\d{2}-\d{2}/)
-                                    ) {
-                                        scheduled = order.estimatedDeliveryTime;
-                                    }
 
                                     const isPickup =
                                         deliveryType === 'RECOGIDA EN LOCAL' ||
@@ -917,38 +930,51 @@ export default function AdminOrders({
                                                                 !(item as any).menuItemId;
                                                             return !isDeliveryFee;
                                                         })
-                                                        .map((item: OrderItem, idx: number) => {
-                                                            return (
-                                                                <div
-                                                                    key={idx}
-                                                                    className="flex items-center justify-between gap-3 py-3 border-b border-gray-100 last:border-0 px-4 rounded-2xl transition-all group/item shadow-sm hover:bg-white"
-                                                                >
-                                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                                        <span className="text-[13px] font-black w-8 h-8 flex items-center justify-center rounded-xl shadow-sm transition-all text-orange-600 bg-orange-50 group-hover/item:bg-orange-600 group-hover/item:text-white">
-                                                                            {item.quantity}
-                                                                        </span>
-                                                                        <div className="flex flex-col min-w-0">
+                                                        .map((item: OrderItem) => (
+                                                            <div
+                                                                key={item.id || item.name}
+                                                                className="flex items-center justify-between gap-3 py-3 border-b border-gray-100 last:border-0 px-4 rounded-2xl transition-all group/item shadow-sm hover:bg-white"
+                                                            >
+                                                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                                    <span
+                                                                        className={`text-[13px] font-black w-8 h-8 flex items-center justify-center rounded-xl shadow-sm transition-all ${item.isGift ? 'bg-green-100 text-green-600' : 'bg-orange-50 text-orange-600 group-hover/item:bg-orange-600 group-hover/item:text-white'}`}
+                                                                    >
+                                                                        {item.quantity}
+                                                                    </span>
+                                                                    <div className="flex flex-col min-w-0">
+                                                                        <div className="flex items-center gap-2">
                                                                             <span className="text-[13px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
                                                                                 {item.name}
                                                                             </span>
-                                                                            {item.selectedOption && (
-                                                                                <span className="text-[10px] font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-lg w-fit border border-orange-100 uppercase mt-0.5">
-                                                                                    {
-                                                                                        item.selectedOption
-                                                                                    }
+                                                                            {item.isGift && (
+                                                                                <span className="bg-green-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-lg uppercase tracking-tighter shadow-sm animate-pulse">
+                                                                                    🎁{' '}
+                                                                                    {item.giftLabel ||
+                                                                                        'Regalo'}
                                                                                 </span>
                                                                             )}
                                                                         </div>
-                                                                    </div>
-                                                                    <span className="text-[12px] font-black tabular-nums text-gray-400">
-                                                                        {formatCurrency(
-                                                                            item.priceAtTime *
-                                                                                item.quantity
+                                                                        {item.selectedOption && (
+                                                                            <span className="text-[10px] font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-lg w-fit border border-orange-100 uppercase mt-0.5">
+                                                                                {
+                                                                                    item.selectedOption
+                                                                                }
+                                                                            </span>
                                                                         )}
-                                                                    </span>
+                                                                    </div>
                                                                 </div>
-                                                            );
-                                                        })}
+                                                                <span
+                                                                    className={`text-[12px] font-black tabular-nums ${item.isGift ? 'text-green-600' : 'text-gray-400'}`}
+                                                                >
+                                                                    {item.isGift
+                                                                        ? 'GRATIS'
+                                                                        : formatCurrency(
+                                                                              item.priceAtTime *
+                                                                                  item.quantity
+                                                                          )}
+                                                                </span>
+                                                            </div>
+                                                        ))}
 
                                                     {order.deliveryFee && order.deliveryFee > 0 ? (
                                                         <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3">

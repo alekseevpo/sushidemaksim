@@ -113,7 +113,7 @@ export default function CartPage() {
         formState: { isSubmitting: isOrderingForm },
     } = methods;
 
-    const cartSubtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const cartSubtotal = items.reduce((sum, i) => sum + (i.isGift ? 0 : i.price * i.quantity), 0);
     const discountAmount = promoDiscount ? (cartSubtotal * promoDiscount) / 100 : 0;
 
     const { deliveryType, selectedZone, isScheduled, scheduledDate } = watch();
@@ -354,8 +354,10 @@ export default function CartPage() {
                     id: i.id,
                     name: i.name,
                     quantity: i.quantity,
-                    price: i.price,
+                    price: i.isGift ? 0 : i.price,
                     image: i.image,
+                    isGift: i.isGift,
+                    giftLabel: i.giftLabel,
                 })),
                 deliveryAddress:
                     deliveryType === 'pickup'
@@ -534,6 +536,33 @@ export default function CartPage() {
             setPromoDiscount(data.percentage);
             setPromoCode(code.trim().toUpperCase());
             showSuccess(`¡Código aplicado! -${data.percentage}%`);
+
+            // Handle Gift Addition
+            if (data.gift) {
+                try {
+                    // Fetch desserts to find the Roll Dolce
+                    const menuRes = await api.get('/menu?category=postre');
+                    const rollDulce = (menuRes.items || []).find((i: any) =>
+                        i.name.toLowerCase().includes('roll dulce')
+                    );
+
+                    if (rollDulce) {
+                        const sushiItem = {
+                            id: String(rollDulce.id),
+                            name: rollDulce.name,
+                            description: rollDulce.description || '',
+                            price: rollDulce.price,
+                            image: rollDulce.image,
+                            category: rollDulce.category as any,
+                        };
+                        // Add as gift
+                        await addItem(sushiItem, 1, '', true, data.gift.label);
+                        showSuccess(`¡Regalo añadido: ${rollDulce.name}! 🍣`);
+                    }
+                } catch (giftErr) {
+                    console.error('Failed to add gift item:', giftErr);
+                }
+            }
 
             tracker.track('promo_apply', {
                 metadata: {
@@ -762,6 +791,8 @@ export default function CartPage() {
                 menuItemId: parseInt(i.id),
                 quantity: i.quantity,
                 selectedOption: i.selectedOption || '',
+                isGift: !!i.isGift,
+                giftLabel: i.giftLabel || null,
             }));
 
             const dataRes = await api.post('/orders', payload);
@@ -950,6 +981,7 @@ export default function CartPage() {
                                 <DeliveryForm
                                     onSavedAddressSelect={handleAddressSelect}
                                     user={user}
+                                    deliveryZones={deliveryZones}
                                     isAuthenticated={isAuthenticated}
                                     todayStr={todayStr}
                                     tomorrowStr={tomorrowStr}

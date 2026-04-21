@@ -23,7 +23,7 @@ router.get(
             .from('cart_items')
             .select(
                 `
-                id, quantity, menu_item_id, selected_option,
+                id, quantity, menu_item_id, selected_option, is_gift, gift_label,
                 menu_items(*)
             `
             )
@@ -42,12 +42,14 @@ router.get(
                     menuItemId: item.menu_item_id,
                     quantity: item.quantity,
                     selectedOption: item.selected_option,
+                    isGift: item.is_gift,
+                    giftLabel: item.gift_label,
                 };
             })
             .filter((i): i is any => i !== null);
 
         const total = formattedItems.reduce(
-            (sum, item) => sum + (item.price || 0) * item.quantity,
+            (sum, item) => sum + (item.isGift ? 0 : (item.price || 0) * item.quantity),
             0
         );
         res.json({ items: formattedItems, total: Math.round(total * 100) / 100 });
@@ -59,15 +61,16 @@ router.post(
     '/',
     validateResource(addToCartSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { menuItemId, quantity, selectedOption } = req.body;
+        const { menuItemId, quantity, selectedOption, isGift, giftLabel } = req.body;
 
         const { data: existing, error: findError } = await supabase
             .from('cart_items')
             .select('id, quantity')
             .eq('user_id', req.userId)
             .eq('menu_item_id', menuItemId)
-            // Only merge if it's the same option
+            // Only merge if it's the same option AND same gift status
             .eq('selected_option', selectedOption || '')
+            .eq('is_gift', !!isGift)
             .maybeSingle();
 
         if (findError) throw findError;
@@ -83,6 +86,8 @@ router.post(
                 menu_item_id: menuItemId,
                 quantity,
                 selected_option: selectedOption || '',
+                is_gift: !!isGift,
+                gift_label: giftLabel || null,
             });
         }
 
@@ -159,11 +164,13 @@ router.post(
         const cartMap = new Map();
         // Pack existing into map
         (existing || []).forEach(item => {
-            const key = `${item.menu_item_id}:${item.selected_option || ''}`;
+            const key = `${item.menu_item_id}:${item.selected_option || ''}:${!!item.is_gift}`;
             cartMap.set(key, {
                 menu_item_id: item.menu_item_id,
                 quantity: item.quantity,
                 selected_option: item.selected_option || '',
+                is_gift: !!item.is_gift,
+                gift_label: item.gift_label || null,
             });
         });
 
@@ -172,13 +179,22 @@ router.post(
             const mid = parseInt(item.menuItemId || item.id);
             const qty = parseInt(item.quantity || 1);
             const opt = item.selectedOption || '';
+            const isGift = !!item.isGift;
+            const gLabel = item.giftLabel || null;
+
             if (!isNaN(mid)) {
-                const key = `${mid}:${opt}`;
+                const key = `${mid}:${opt}:${isGift}`;
                 const existing = cartMap.get(key);
                 if (existing) {
                     existing.quantity += qty;
                 } else {
-                    cartMap.set(key, { menu_item_id: mid, quantity: qty, selected_option: opt });
+                    cartMap.set(key, {
+                        menu_item_id: mid,
+                        quantity: qty,
+                        selected_option: opt,
+                        is_gift: isGift,
+                        gift_label: gLabel,
+                    });
                 }
             }
         });

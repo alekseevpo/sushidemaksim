@@ -73,6 +73,7 @@ const TestWrapper = ({
 describe('DeliveryForm', () => {
     const defaultProps = {
         setIsAddressModalOpen: vi.fn(),
+        deliveryZones: [],
         user: null,
         isAuthenticated: false,
         todayStr: '2026-03-30',

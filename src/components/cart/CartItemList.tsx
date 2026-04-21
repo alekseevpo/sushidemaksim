@@ -112,7 +112,8 @@ export default function CartItemList({
                                                 ? updateQuantity(item.id, item.quantity - 1)
                                                 : removeItem(item.id);
                                         }}
-                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold"
+                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                                        disabled={item.isGift}
                                     >
                                         <Minus size={12} strokeWidth={2.5} />
                                     </button>
@@ -124,16 +125,30 @@ export default function CartItemList({
                                             triggerHaptic();
                                             updateQuantity(item.id, item.quantity + 1);
                                         }}
-                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold"
+                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                                        disabled={item.isGift}
                                     >
                                         <Plus size={12} strokeWidth={2.5} />
                                     </button>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-[15px] md:text-base font-black text-gray-900">
-                                        {(item.price * item.quantity).toFixed(2).replace('.', ',')}{' '}
-                                        €
-                                    </span>
+                                    {item.isGift ? (
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-[10px] font-black text-orange-500 uppercase tracking-tight leading-none mb-1">
+                                                🎁 {item.giftLabel || 'Regalo'}
+                                            </span>
+                                            <span className="text-[15px] md:text-base font-black text-green-600 leading-none">
+                                                GRATIS
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-[15px] md:text-base font-black text-gray-900">
+                                            {(item.price * item.quantity)
+                                                .toFixed(2)
+                                                .replace('.', ',')}{' '}
+                                            €
+                                        </span>
+                                    )}
                                     <button
                                         onClick={() => {
                                             triggerHaptic(40); // HEAVY

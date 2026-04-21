@@ -10,6 +10,8 @@ const cartItemInput = z.object({
         .min(1, 'La cantidad debe ser al menos 1')
         .max(99, 'Cantidad máxima excedida (99)'),
     selectedOption: z.string().optional(),
+    isGift: z.boolean().optional(),
+    giftLabel: z.string().optional(),
 });
 
 /**

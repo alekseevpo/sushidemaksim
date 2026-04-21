@@ -30,6 +30,8 @@ export interface CartItem extends SushiItem {
     selectedOption?: string;
     cartItemId?: number;
     menuItemId?: number;
+    isGift?: boolean;
+    giftLabel?: string;
 }
 
 export interface UserAddress {
@@ -68,6 +70,8 @@ export interface OrderItem {
     description?: string;
     category?: SushiItem['category'];
     selectedOption?: string;
+    isGift?: boolean;
+    giftLabel?: string;
 }
 
 export interface UserStats {

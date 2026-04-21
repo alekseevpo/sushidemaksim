@@ -9,9 +9,11 @@ import {
     Users,
     Minus,
     Plus,
+    CheckCircle2,
 } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 import { tracker } from '../../analytics/tracker';
+import { detectZone } from '../../utils/delivery';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
 import CustomDatePicker from '../ui/CustomDatePicker';
 import CustomTimePicker from '../ui/CustomTimePicker';
@@ -21,6 +23,7 @@ import type { CheckoutInput } from '../../schemas/checkout.schema';
 interface DeliveryFormProps {
     onSavedAddressSelect?: (addr: any) => void;
     user: any;
+    deliveryZones: any[];
     isAuthenticated: boolean;
     todayStr: string;
     tomorrowStr: string;
@@ -41,6 +44,7 @@ interface DeliveryFormProps {
 export default function DeliveryForm({
     onSavedAddressSelect,
     user,
+    deliveryZones,
     isAuthenticated,
     todayStr,
     tomorrowStr,
@@ -320,29 +324,89 @@ export default function DeliveryForm({
                             </div>
 
                             {user?.addresses && user.addresses.length > 0 && (
-                                <div className="grid grid-cols-1 gap-2 mb-2">
-                                    {user.addresses.map((addr: any) => (
-                                        <button
-                                            key={addr.id}
-                                            onClick={() => {
-                                                if (onSavedAddressSelect) {
-                                                    onSavedAddressSelect(addr);
-                                                }
-                                            }}
-                                            type="button"
-                                            className="flex items-center gap-2 text-sm bg-orange-50 text-orange-700 border border-orange-200 rounded-xl px-3 py-3 cursor-pointer hover:bg-orange-100 transition font-medium text-left w-full truncate"
-                                        >
-                                            <MapPin
-                                                size={16}
-                                                strokeWidth={1.5}
-                                                className="shrink-0"
-                                            />
-                                            <span className="truncate">
-                                                Usar "{addr.label || 'Mi dirección'}": {addr.street}{' '}
-                                                {addr.house && `, ${addr.house}`}
-                                            </span>
-                                        </button>
-                                    ))}
+                                <div className="space-y-3 mb-6">
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
+                                        Selección Rápida
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {user.addresses.map((addr: any) => {
+                                            const zone = detectZone(
+                                                addr.lat,
+                                                addr.lon,
+                                                deliveryZones,
+                                                addr.postalCode
+                                            );
+                                            const isSelected =
+                                                address === addr.street && house === addr.house;
+
+                                            return (
+                                                <button
+                                                    key={addr.id}
+                                                    onClick={() => {
+                                                        triggerHaptic();
+                                                        if (onSavedAddressSelect) {
+                                                            onSavedAddressSelect(addr);
+                                                        }
+                                                    }}
+                                                    type="button"
+                                                    className={`group relative flex items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden ${
+                                                        isSelected
+                                                            ? 'border-orange-600 bg-orange-50/30'
+                                                            : 'border-gray-100 bg-white hover:border-orange-200 hover:bg-gray-50/50'
+                                                    }`}
+                                                >
+                                                    {isSelected && (
+                                                        <div className="absolute top-0 right-0 w-8 h-8 bg-orange-600 rounded-bl-2xl flex items-center justify-center text-white animate-in slide-in-from-top-2 slide-in-from-right-2 duration-300">
+                                                            <CheckCircle2 size={12} strokeWidth={3} />
+                                                        </div>
+                                                    )}
+
+                                                    <div
+                                                        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                                                            isSelected
+                                                                ? 'bg-orange-600 text-white'
+                                                                : 'bg-gray-100 text-gray-400 group-hover:bg-orange-100 group-hover:text-orange-600'
+                                                        }`}
+                                                    >
+                                                        <MapPin size={18} strokeWidth={1.5} />
+                                                    </div>
+
+                                                    <div className="flex-1 min-w-0 pr-2">
+                                                        <p
+                                                            className={`text-xs font-black uppercase tracking-tight truncate ${
+                                                                isSelected
+                                                                    ? 'text-orange-900'
+                                                                    : 'text-gray-900'
+                                                            }`}
+                                                        >
+                                                            {addr.label || 'Dirección'}
+                                                        </p>
+                                                        <p className="text-[11px] font-medium text-gray-500 truncate leading-tight mt-0.5">
+                                                            {addr.street} {addr.house}
+                                                        </p>
+
+                                                        {/* Zone Highlight Badge */}
+                                                        {zone && (
+                                                            <div className="flex items-center gap-1.5 mt-2">
+                                                                <div
+                                                                    className="w-1.5 h-1.5 rounded-full"
+                                                                    style={{
+                                                                        backgroundColor: zone.color,
+                                                                    }}
+                                                                />
+                                                                <span className="text-[9px] font-black text-gray-800 uppercase tracking-tighter">
+                                                                    {zone.name}
+                                                                </span>
+                                                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
+                                                                    • {zone.cost.toFixed(2)}€
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
 

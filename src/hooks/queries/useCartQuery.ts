@@ -30,7 +30,8 @@ export function useCartQuery(user: any, isAuthLoading: boolean = false) {
                     }));
 
                     const total = formattedItems.reduce(
-                        (sum: number, item: any) => sum + item.price * item.quantity,
+                        (sum: number, item: any) =>
+                            sum + (item.isGift ? 0 : item.price * item.quantity),
                         0
                     );
                     return { items: formattedItems, total };
@@ -50,6 +51,8 @@ export function useCartQuery(user: any, isAuthLoading: boolean = false) {
                 quantity: item.quantity,
                 selectedOption: item.selectedOption || '',
                 cartItemId: item.id, // ID from the cart join table
+                isGift: item.isGift,
+                giftLabel: item.giftLabel,
             }));
 
             return { items: mappedItems, total: data.total };
@@ -67,10 +70,14 @@ export function useAddToCartMutation(user: any) {
             item,
             quantity = 1,
             selectedOption = '',
+            isGift = false,
+            giftLabel = '',
         }: {
             item: SushiItem;
             quantity?: number;
             selectedOption?: string;
+            isGift?: boolean;
+            giftLabel?: string;
         }) => {
             if (!user) {
                 const localCart = localStorage.getItem('guest_cart');
@@ -90,7 +97,7 @@ export function useAddToCartMutation(user: any) {
                         quantity: newItems[existingIndex].quantity + quantity,
                     };
                 } else {
-                    newItems = [...items, { ...item, quantity, selectedOption }];
+                    newItems = [...items, { ...item, quantity, selectedOption, isGift, giftLabel }];
                 }
 
                 localStorage.setItem(
@@ -103,9 +110,21 @@ export function useAddToCartMutation(user: any) {
                 return { items: newItems };
             }
 
-            return api.post('/cart', { menuItemId: parseInt(item.id), quantity, selectedOption });
+            return api.post('/cart', {
+                menuItemId: parseInt(item.id),
+                quantity,
+                selectedOption,
+                isGift,
+                giftLabel,
+            });
         },
-        onMutate: async ({ item: newItem, quantity = 1, selectedOption = '' }) => {
+        onMutate: async ({
+            item: newItem,
+            quantity = 1,
+            selectedOption = '',
+            isGift = false,
+            giftLabel = '',
+        }) => {
             await queryClient.cancelQueries({ queryKey });
             const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
                 queryKey
@@ -113,7 +132,10 @@ export function useAddToCartMutation(user: any) {
 
             if (previousCart) {
                 const existingIndex = previousCart.items.findIndex(
-                    i => i.id === newItem.id && (i.selectedOption || '') === selectedOption
+                    i =>
+                        i.id === newItem.id &&
+                        (i.selectedOption || '') === selectedOption &&
+                        !!i.isGift === !!isGift
                 );
 
                 let updatedItems;
@@ -126,11 +148,14 @@ export function useAddToCartMutation(user: any) {
                 } else {
                     updatedItems = [
                         ...previousCart.items,
-                        { ...newItem, quantity, selectedOption } as CartItem,
+                        { ...newItem, quantity, selectedOption, isGift, giftLabel } as CartItem,
                     ];
                 }
 
-                const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+                const updatedTotal = updatedItems.reduce(
+                    (sum, i) => sum + (i.isGift ? 0 : i.price * i.quantity),
+                    0
+                );
 
                 queryClient.setQueryData(queryKey, { items: updatedItems, total: updatedTotal });
             }
@@ -208,7 +233,10 @@ export function useUpdateQuantityMutation(user: any) {
                         ? { ...i, quantity, selectedOption: selectedOption ?? i.selectedOption }
                         : i
                 );
-                const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+                const updatedTotal = updatedItems.reduce(
+                    (sum, i) => sum + (i.isGift ? 0 : i.price * i.quantity),
+                    0
+                );
                 queryClient.setQueryData(queryKey, { items: updatedItems, total: updatedTotal });
             }
 
@@ -263,7 +291,10 @@ export function useRemoveItemMutation(user: any) {
 
             if (previousCart) {
                 const updatedItems = previousCart.items.filter(i => i.id !== id);
-                const updatedTotal = updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+                const updatedTotal = updatedItems.reduce(
+                    (sum, i) => sum + (i.isGift ? 0 : i.price * i.quantity),
+                    0
+                );
                 queryClient.setQueryData(queryKey, { items: updatedItems, total: updatedTotal });
             }
 

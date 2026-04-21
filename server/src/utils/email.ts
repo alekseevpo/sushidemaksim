@@ -196,6 +196,21 @@ export async function sendOrderReceiptEmail(
     let scheduledTime = '';
     let customerNote = '';
 
+    // NEW: Robustly extract scheduled time from the DB column natively
+    if (
+        orderData.estimatedDeliveryTime &&
+        !orderData.estimatedDeliveryTime.includes('min') &&
+        orderData.estimatedDeliveryTime.match(/^\d{4}-\d{2}-\d{2}/)
+    ) {
+        const rawDate = orderData.estimatedDeliveryTime;
+        const isoMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})(.*)$/);
+        if (isoMatch) {
+            scheduledTime = `${isoMatch[3]}-${isoMatch[2]}-${isoMatch[1]}${isoMatch[4]}`;
+        } else {
+            scheduledTime = rawDate;
+        }
+    }
+
     const parts = notes.split(' | ');
     let deliveryType = 'DOMICILIO';
     parts.forEach((part: string) => {
@@ -209,17 +224,19 @@ export async function sendOrderReceiptEmail(
                 .replace('[PAGO:', '')
                 .replace(']', '');
         } else if (part.includes('[ENTREGA PROGRAMADA:') || part.includes('[PROGRAMADO:')) {
-            scheduledTime = part
-                .replace('[ENTREGA PROGRAMADA: ', '')
-                .replace('[ENTREGA PROGRAMADA:', '')
-                .replace('[PROGRAMADO: ', '')
-                .replace('[PROGRAMADO:', '')
-                .replace(']', '');
+            if (!scheduledTime) {
+                scheduledTime = part
+                    .replace('[ENTREGA PROGRAMADA: ', '')
+                    .replace('[ENTREGA PROGRAMADA:', '')
+                    .replace('[PROGRAMADO: ', '')
+                    .replace('[PROGRAMADO:', '')
+                    .replace(']', '');
 
-            // Reformat ISO 2026-04-04 14:00 to 04-04-2026 14:00
-            const isoMatch = scheduledTime.match(/^(\d{4})-(\d{2})-(\d{2})(.*)$/);
-            if (isoMatch) {
-                scheduledTime = `${isoMatch[3]}-${isoMatch[2]}-${isoMatch[1]}${isoMatch[4]}`;
+                // Reformat ISO 2026-04-04 14:00 to 04-04-2026 14:00
+                const isoMatch = scheduledTime.match(/^(\d{4})-(\d{2})-(\d{2})(.*)$/);
+                if (isoMatch) {
+                    scheduledTime = `${isoMatch[3]}-${isoMatch[2]}-${isoMatch[1]}${isoMatch[4]}`;
+                }
             }
         } else if (
             part.includes('[NO LLAMAR PARA CONFIRMACIÓN]') ||
