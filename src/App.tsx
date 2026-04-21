@@ -143,7 +143,7 @@ function App() {
                     <CartProvider>
                         <Schema />
                         <PageTracker />
-                        <div className="min-h-[100svh] bg-[#FBF7F0] flex flex-col">
+                    <div className={`min-h-[100svh] flex flex-col transition-colors duration-500 ${isTableRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'}`}>
                             <Analytics />
                             <SpeedInsights />
                             <SmoothScroll />
