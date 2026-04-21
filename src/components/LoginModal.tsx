@@ -45,23 +45,41 @@ const LoginForm = memo(
             if (isSubmitting.current || isLoading) return;
 
             // Critical fix for Mobile Safari Autofill:
-            // Ensure values are synced from Safari's internal buffer to the DOM property.
+            // 1. Force values from Safari internal buffer to DOM
             [emailRef, passwordRef].forEach(ref => {
                 if (ref.current) {
                     ref.current.focus();
+                    // Dispatch events to wake up any listeners (including browser's own)
+                    ref.current.dispatchEvent(new Event('input', { bubbles: true }));
+                    ref.current.dispatchEvent(new Event('change', { bubbles: true }));
                     ref.current.blur();
                 }
             });
 
-            const emailVal = (emailRef.current?.value || '').trim();
-            const passwordVal = passwordRef.current?.value || '';
+            // 2. Use FormData as the ultimate source of truth for WebKit (Safari)
+            const formData = new FormData(e.currentTarget);
+            const emailVal = ((formData.get('email') as string) || '').trim();
+            const passwordVal = (formData.get('password') as string) || '';
 
-            if (!emailVal) return;
+            if (!emailVal || !passwordVal) {
+                // If we still don't have values, we must inform the user
+                // instead of silently failing.
+                if (!emailVal) {
+                    // Try one last fallback to ref just in case
+                    const fallbackEmail = (emailRef.current?.value || '').trim();
+                    if (!fallbackEmail) {
+                        return; // Let browser validation handle it via 'required'
+                    }
+                    // If we found it via ref, continue
+                } else {
+                    return; // Let browser validation handle it
+                }
+            }
 
             isSubmitting.current = true;
             onLogin({ email: emailVal, password: passwordVal });
 
-            // Reset submission lock after a delay to account for network/state transition
+            // Reset submission lock after a delay
             setTimeout(() => {
                 isSubmitting.current = false;
             }, 1000);
@@ -226,14 +244,18 @@ const RegisterForm = memo(
             [nameRef, phoneRef, emailRef, passwordRef].forEach(ref => {
                 if (ref.current) {
                     ref.current.focus();
+                    ref.current.dispatchEvent(new Event('input', { bubbles: true }));
+                    ref.current.dispatchEvent(new Event('change', { bubbles: true }));
                     ref.current.blur();
                 }
             });
 
-            const nameVal = (nameRef.current?.value || '').trim();
-            const emailVal = (emailRef.current?.value || '').trim();
-            const phoneVal = (phoneRef.current?.value || '').trim();
-            const passwordVal = passwordRef.current?.value || '';
+            // Use FormData for reliability on Mobile Safari
+            const formData = new FormData(e.currentTarget);
+            const nameVal = ((formData.get('name') as string) || '').trim();
+            const emailVal = ((formData.get('email') as string) || '').trim();
+            const phoneVal = ((formData.get('phone') as string) || '').trim();
+            const passwordVal = (formData.get('password') as string) || '';
 
             if (!emailVal || !passwordVal || !nameVal || !phoneVal) {
                 return;
@@ -406,10 +428,13 @@ const ForgotPasswordForm = memo(
             // Safari Sync
             if (emailRef.current) {
                 emailRef.current.focus();
+                emailRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+                emailRef.current.dispatchEvent(new Event('change', { bubbles: true }));
                 emailRef.current.blur();
             }
 
-            const emailVal = (emailRef.current?.value || '').trim();
+            const formData = new FormData(e.currentTarget);
+            const emailVal = ((formData.get('email') as string) || '').trim();
 
             if (!emailVal) return;
 
@@ -614,13 +639,16 @@ const ResetPasswordForm = memo(
             [passwordRef, confirmPasswordRef, emailRef].forEach(ref => {
                 if (ref.current) {
                     ref.current.focus();
+                    ref.current.dispatchEvent(new Event('input', { bubbles: true }));
+                    ref.current.dispatchEvent(new Event('change', { bubbles: true }));
                     ref.current.blur();
                 }
             });
 
-            const passwordVal = passwordRef.current?.value || '';
-            const confirmPasswordVal = confirmPasswordRef.current?.value || '';
-            const emailVal = (emailRef.current?.value || '').trim() || recoveryEmail;
+            const formData = new FormData(e.currentTarget);
+            const passwordVal = (formData.get('password') as string) || '';
+            const confirmPasswordVal = (formData.get('confirmPassword') as string) || '';
+            const emailVal = ((formData.get('email') as string) || '').trim() || recoveryEmail;
             const codeVal = token || codeValue;
 
             if (!passwordVal || !confirmPasswordVal || !codeVal || !emailVal) return;

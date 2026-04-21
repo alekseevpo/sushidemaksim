@@ -37,12 +37,16 @@ export default function AdminLoginPage() {
         [emailRef, passwordRef].forEach(ref => {
             if (ref.current) {
                 ref.current.focus();
+                ref.current.dispatchEvent(new Event('input', { bubbles: true }));
+                ref.current.dispatchEvent(new Event('change', { bubbles: true }));
                 ref.current.blur();
             }
         });
 
-        const emailVal = (emailRef.current?.value || '').trim();
-        const passwordVal = passwordRef.current?.value || '';
+        // Use FormData for ultimate reliability on WebKit
+        const formData = new FormData(e.currentTarget);
+        const emailVal = ((formData.get('email') as string) || '').trim();
+        const passwordVal = (formData.get('password') as string) || '';
 
         if (!emailVal || !passwordVal) {
             setError('Por favor, introduce tu email и contraseña');
