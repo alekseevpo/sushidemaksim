@@ -233,9 +233,6 @@ export default function TableMenuPage() {
                                                 key={item.id}
                                                 item={item}
                                                 onAddToCart={handleAddToCart}
-                                                isAdded={cartItems.some(
-                                                    i => String(i.id) === String(item.id)
-                                                )}
                                                 onClick={() => {
                                                     setSelectedItem(item);
                                                     setIsSheetOpen(true);
