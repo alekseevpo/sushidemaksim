@@ -174,7 +174,7 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/Repite la contraseña/i).fill('NewPassword123!');
 
         // 5. Submit reset
-        await page.getByRole('button', { name: /Cambiar contraseña/i }).click();
+        await page.getByRole('button', { name: /Actualizar contraseña/i }).click();
 
         // 6. Should go back to login or show success
         await expect(page.getByText(/actualizada con éxito/i).first()).toBeVisible();
