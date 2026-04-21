@@ -192,7 +192,9 @@ export default function Header() {
                         className={`flex items-center justify-between h-16 md:h-20 gap-4 ${isTable ? 'flex-row-reverse' : ''}`}
                     >
                         {/* Logo Area: Fixed 200px to match sidebar below, wrapped in flex-1 for centering balance */}
-                        <div className={`flex-1 flex items-center h-full ${isTable ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                            className={`flex-1 flex items-center h-full ${isTable ? 'justify-end' : 'justify-start'}`}
+                        >
                             <Link
                                 to={isTable ? '/table' : '/'}
                                 onClick={e => {
@@ -297,7 +299,9 @@ export default function Header() {
                         )}
 
                         {/* Right side Area: Symmetry with logo area (200px) to ensure nav block is centered */}
-                        <div className={`flex-1 flex items-center gap-3 h-full md:min-w-[200px] ${isTable ? 'justify-start' : 'justify-end'}`}>
+                        <div
+                            className={`flex-1 flex items-center gap-3 h-full md:min-w-[200px] ${isTable ? 'justify-start' : 'justify-end'}`}
+                        >
                             {isTable ? (
                                 <button
                                     onClick={() => {

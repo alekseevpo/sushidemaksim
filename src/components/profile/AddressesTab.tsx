@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Plus, Star, Trash2, Pencil, X, Loader2, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { MapPin, Plus, Star, Trash2, Pencil, X, Loader2, ArrowRight } from 'lucide-react';
 
 import { UserAddress } from '../../types';
 import { api } from '../../utils/api';
@@ -557,7 +557,7 @@ export default function AddressesTab({
                                                 <button
                                                     type="button"
                                                     disabled={isSearching}
-                                                    onPointerDown={(e) => {
+                                                    onPointerDown={e => {
                                                         e.preventDefault();
                                                         performSearch(searchQuery.trim(), true);
                                                     }}
@@ -609,7 +609,7 @@ export default function AddressesTab({
                                                 <button
                                                     key={i}
                                                     type="button"
-                                                    onPointerDown={(e) => {
+                                                    onPointerDown={e => {
                                                         e.preventDefault();
                                                         handleSelectSuggestion(s, searchQuery);
                                                     }}

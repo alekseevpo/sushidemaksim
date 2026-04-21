@@ -357,7 +357,10 @@ export default function DeliveryForm({
                                                 >
                                                     {isSelected && (
                                                         <div className="absolute top-0 right-0 w-8 h-8 bg-orange-600 rounded-bl-2xl flex items-center justify-center text-white animate-in slide-in-from-top-2 slide-in-from-right-2 duration-300">
-                                                            <CheckCircle2 size={12} strokeWidth={3} />
+                                                            <CheckCircle2
+                                                                size={12}
+                                                                strokeWidth={3}
+                                                            />
                                                         </div>
                                                     )}
 

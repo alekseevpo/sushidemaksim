@@ -328,7 +328,9 @@ export default function AddressModal({
             if (houseNum && (houseNum !== originalResultHouseNum || !originalResultHouseNum)) {
                 const fullQuery = `${street} ${houseNum}, ${pc || 'Madrid'}`.trim();
                 try {
-                    const data = await api.get(`/delivery-zones/search?q=${encodeURIComponent(fullQuery)}`);
+                    const data = await api.get(
+                        `/delivery-zones/search?q=${encodeURIComponent(fullQuery)}`
+                    );
                     if (data && data.length > 0) {
                         const best = data[0];
                         const rLat = parseFloat(best.lat);
@@ -336,7 +338,7 @@ export default function AddressModal({
                         if (!isNaN(rLat) && !isNaN(rLon)) {
                             skipNextReverseGeocodeRef.current = true;
                             setMarkerPosition([rLat, rLon]);
-                            
+
                             // Re-detect zone with refined coordinates
                             const refinedZone = detectZone(rLat, rLon, deliveryZones, pc);
                             setSelectedZone(refinedZone);
@@ -344,7 +346,14 @@ export default function AddressModal({
                             if (autoConfirm && refinedZone) {
                                 // Short delay to allow state to settle visually
                                 setTimeout(() => {
-                                    handleContinueWithValues(street, houseNum, '', pc, refinedZone, [rLat, rLon]);
+                                    handleContinueWithValues(
+                                        street,
+                                        houseNum,
+                                        '',
+                                        pc,
+                                        refinedZone,
+                                        [rLat, rLon]
+                                    );
                                 }, 300);
                             }
                         } else if (autoConfirm && currentZone) {
@@ -371,7 +380,7 @@ export default function AddressModal({
                 setSearchQuery(street);
             }
         },
-        [searchQuery, deliveryZones]
+        [searchQuery, deliveryZones, handleContinueWithValues]
     );
 
     const performSearch = useCallback(
@@ -448,34 +457,37 @@ export default function AddressModal({
         return () => clearTimeout(timer);
     }, [markerPosition, performReverseGeocode, isOpen]);
 
-    const handleContinueWithValues = (
-        finalAddress: string,
-        finalHouse: string,
-        finalApartment: string,
-        finalPostalCode: string,
-        finalZone: any,
-        finalCoords: [number, number]
-    ) => {
-        // Safari Sync Hack
-        [houseInputRef, apartmentInputRef].forEach(ref => {
-            if (ref.current) {
-                ref.current.focus();
-                ref.current.blur();
-            }
-        });
+    const handleContinueWithValues = useCallback(
+        (
+            finalAddress: string,
+            finalHouse: string,
+            finalApartment: string,
+            finalPostalCode: string,
+            finalZone: any,
+            finalCoords: [number, number]
+        ) => {
+            // Safari Sync Hack
+            [houseInputRef, apartmentInputRef].forEach(ref => {
+                if (ref.current) {
+                    ref.current.focus();
+                    ref.current.blur();
+                }
+            });
 
-        if (!finalZone) return;
+            if (!finalZone) return;
 
-        onSelect({
-            address: finalAddress,
-            house: finalHouse,
-            apartment: finalApartment,
-            postalCode: finalPostalCode,
-            zone: finalZone,
-            coordinates: finalCoords,
-        });
-        onClose();
-    };
+            onSelect({
+                address: finalAddress,
+                house: finalHouse,
+                apartment: finalApartment,
+                postalCode: finalPostalCode,
+                zone: finalZone,
+                coordinates: finalCoords,
+            });
+            onClose();
+        },
+        [onSelect, onClose]
+    );
 
     const handleContinue = () => {
         const finalHouse = (houseInputRef.current?.value || house).trim();
@@ -685,12 +697,12 @@ export default function AddressModal({
                                                     className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[320px] md:max-h-[440px] divide-y divide-gray-50 animate-in fade-in slide-in-from-top-2 duration-200 z-[1001] custom-scrollbar"
                                                 >
                                                     {isSearching && <SearchSkeleton count={3} />}
-                                                    
+
                                                     {/* Virtual Result for exact typed address - NOW PRIORITY & ALWAYS SHOWN IF HAS NUMBER */}
                                                     {searchQuery.trim().length >= 3 &&
                                                         /\d/.test(searchQuery) && (
                                                             <button
-                                                                onPointerDown={(e) => {
+                                                                onPointerDown={e => {
                                                                     e.preventDefault();
                                                                     performSearch(
                                                                         searchQuery.trim(),
@@ -711,7 +723,12 @@ export default function AddressModal({
                                                                         <span className="text-sm font-black text-gray-900 truncate">
                                                                             ¿Confirmar ubicación?
                                                                         </span>
-                                                                        {isSearching && <Loader2 size={12} className="animate-spin text-green-600" />}
+                                                                        {isSearching && (
+                                                                            <Loader2
+                                                                                size={12}
+                                                                                className="animate-spin text-green-600"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                     <span className="text-[11px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
                                                                         LOCALIZAR: "{searchQuery}"
@@ -726,7 +743,12 @@ export default function AddressModal({
 
                                                     {searchResults.map((res, i) => {
                                                         // Filter out duplicates if the virtual result is basically the first result
-                                                        if (i === 0 && res.display_name.toLowerCase().includes(searchQuery.toLowerCase())) {
+                                                        if (
+                                                            i === 0 &&
+                                                            res.display_name
+                                                                .toLowerCase()
+                                                                .includes(searchQuery.toLowerCase())
+                                                        ) {
                                                             return null;
                                                         }
                                                         // Extract house number from query to show alongside street results that lack one
@@ -747,7 +769,7 @@ export default function AddressModal({
                                                         return (
                                                             <button
                                                                 key={i}
-                                                                onPointerDown={(e) => {
+                                                                onPointerDown={e => {
                                                                     e.preventDefault();
                                                                     selectResult(res, searchQuery);
                                                                 }}

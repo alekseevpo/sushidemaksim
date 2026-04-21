@@ -541,7 +541,10 @@ export default function AdminOrders({
                                         if (dateParts.length === 2) {
                                             const [dPart, tPart] = dateParts;
                                             const components = dPart.split('-');
-                                            if (components.length === 3 && components[0].length === 4) {
+                                            if (
+                                                components.length === 3 &&
+                                                components[0].length === 4
+                                            ) {
                                                 scheduled = `${components[2]}-${components[1]}-${components[0]} ${tPart}`;
                                             } else {
                                                 scheduled = rawDate;
