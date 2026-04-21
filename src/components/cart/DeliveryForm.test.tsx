@@ -80,6 +80,15 @@ describe('DeliveryForm', () => {
         isStoreClosed: false,
         isTodayClosed: false,
         isPickupOnly: false,
+        refs: {
+            customerName: { current: null } as any,
+            guestEmail: { current: null } as any,
+            phone: { current: null } as any,
+            address: { current: null } as any,
+            house: { current: null } as any,
+            apartment: { current: null } as any,
+            customNote: { current: null } as any,
+        },
     };
 
     it('renders initial state correctly (delivery mode)', () => {

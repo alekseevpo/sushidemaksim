@@ -291,7 +291,7 @@ describe('LoginModal - Password Recovery', () => {
         });
 
         // 5. Submit Reset
-        fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
+        fireEvent.submit(screen.getByText('Actualizar contraseña').closest('form')!);
 
         await waitFor(() => {
             expect(mockPost).toHaveBeenCalledWith('/auth/reset-password', {
@@ -333,7 +333,7 @@ describe('LoginModal - Password Recovery', () => {
             target: { value: 'different' },
         });
 
-        fireEvent.submit(screen.getByText('Cambiar contraseña').closest('form')!);
+        fireEvent.submit(screen.getByText('Actualizar contraseña').closest('form')!);
 
         expect(mockError).toHaveBeenCalledWith('Las contraseñas no coinciden');
     });

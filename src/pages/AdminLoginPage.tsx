@@ -1,10 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, type LoginInput } from '../schemas/auth.schema';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export default function AdminLoginPage() {
