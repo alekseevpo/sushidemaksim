@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
         if (form) {
             const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
             const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
-            
+
             if (emailInput?.value) emailVal = emailInput.value.trim();
             if (passwordInput?.value) passwordVal = passwordInput.value;
         }

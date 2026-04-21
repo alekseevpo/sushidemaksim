@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '../../utils/cn';
+import { cn } from '../../utils/cn.js';
 import { CATEGORIES } from '../../constants/menu';
 import { Beer, UtensilsCrossed } from 'lucide-react';
 import { useTableI18n } from '../../utils/tableI18n';

@@ -25,7 +25,7 @@ export const TableDesktopRestriction: React.FC = () => {
                 <div className="relative mb-8">
                     <motion.div
                         animate={{ y: [0, -8, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     >
                         <Smartphone size={110} strokeWidth={1} className="text-gray-600" />
                     </motion.div>
@@ -61,7 +61,7 @@ export const TableDesktopRestriction: React.FC = () => {
                 <p className="mt-12 text-[10px] font-black uppercase tracking-[0.5em] text-gray-700">
                     {t('scan_to_order')}
                 </p>
-                
+
                 <div className="mt-14 h-1.5 w-14 bg-orange-600 rounded-full" />
             </motion.div>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageOff } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { cn } from '../../utils/cn.js';
 
 interface ProductPlaceholderProps {
     className?: string;

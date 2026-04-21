@@ -2,20 +2,18 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check } from 'lucide-react';
 import { SushiItem } from '../../types';
-import { cn } from '../../utils/cn';
+import { cn } from '../../utils/cn.js';
 import SafeImage from '../common/SafeImage';
 
 interface TableProductCardProps {
     item: SushiItem;
     onAddToCart: (item: SushiItem, e: React.MouseEvent) => void;
-    isAdded?: boolean;
     onClick?: () => void;
 }
 
 export const TableProductCard: React.FC<TableProductCardProps> = ({
     item,
     onAddToCart,
-    isAdded,
     onClick,
 }) => {
     const [showCheck, setShowCheck] = React.useState(false);

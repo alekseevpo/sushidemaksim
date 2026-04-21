@@ -173,9 +173,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                 <button
                                     onClick={() => {
                                         // TODO: Real order submission logic
-                                        alert(
-                                            t('fast_easy')
-                                        );
+                                        alert(t('fast_easy'));
                                         clearCart();
                                         onClose();
                                     }}

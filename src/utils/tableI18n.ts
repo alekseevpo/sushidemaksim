@@ -22,7 +22,8 @@ export const translations = {
         digital_menu: 'Цифровое меню',
         fast_easy: 'Быстро и удобно в Sushi de Maksim.',
         selection: 'Наше меню',
-        desktop_restriction: 'Пожалуйста, откройте это меню на мобильном телефоне для удобного заказа за столом.',
+        desktop_restriction:
+            'Пожалуйста, откройте это меню на мобильном телефоне для удобного заказа за столом.',
         scan_to_order: 'Сканируйте QR-код на столе',
         join_club: 'Вступить в клуб',
         hey: 'Эй!',
@@ -41,7 +42,8 @@ export const translations = {
     },
     es: {
         welcome_title: 'Oferta Especial',
-        welcome_text: '¡Regístrate en nuestra web y recibe un 10% de descuento en tu primer pedido!',
+        welcome_text:
+            '¡Regístrate en nuestra web y recibe un 10% de descuento en tu primer pedido!',
         register_btn: 'Registrarse',
         skip_btn: 'Más tarde',
         view_cart: 'VER CARRITO',
@@ -58,7 +60,8 @@ export const translations = {
         digital_menu: 'Menú Digital',
         fast_easy: 'Rápido y fácil en Sushi de Maksim.',
         selection: 'Nuestro Menú',
-        desktop_restriction: 'Por favor, abre este menú en tu móvil para realizar el pedido de forma cómoda.',
+        desktop_restriction:
+            'Por favor, abre este menú en tu móvil para realizar el pedido de forma cómoda.',
         scan_to_order: 'Escanea el código QR de tu mesa',
         join_club: 'Únete al club',
         hey: '¡Hola!',
@@ -94,7 +97,8 @@ export const translations = {
         digital_menu: 'Digital Menu',
         fast_easy: 'Fast and easy at Sushi de Maksim.',
         selection: 'Our Menu',
-        desktop_restriction: 'Please open this menu on your mobile for a better ordering experience.',
+        desktop_restriction:
+            'Please open this menu on your mobile for a better ordering experience.',
         scan_to_order: 'Scan the QR code on your table',
         join_club: 'Join the club',
         hey: 'Hey!',

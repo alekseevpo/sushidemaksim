@@ -84,7 +84,7 @@ export default function TableMenuPage() {
 
     // ScrollSpy Logic
     useEffect(() => {
-        // Use a more reliable detection area: 
+        // Use a more reliable detection area:
         // From the bottom of the nav (approx 220px) to the middle of the screen.
         const observerOptions = {
             root: null,
@@ -97,10 +97,12 @@ export default function TableMenuPage() {
             if (isScrollingRef.current) return;
 
             const intersecting = entries.filter(entry => entry.isIntersecting);
-            
+
             if (intersecting.length > 0) {
                 // With a narrow strip, the topmost intersecting element is our target
-                const first = intersecting.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+                const first = intersecting.sort(
+                    (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
+                )[0];
 
                 if (first.target.id !== activeCategoryRef.current) {
                     activeCategoryRef.current = first.target.id;
@@ -154,8 +156,8 @@ export default function TableMenuPage() {
     const handleRegisterClick = () => {
         setIsWelcomeModalOpen(false);
         document.dispatchEvent(
-            new CustomEvent('custom:openLogin', { 
-                detail: { mode: 'register' } 
+            new CustomEvent('custom:openLogin', {
+                detail: { mode: 'register' },
             })
         );
     };
@@ -213,15 +215,15 @@ export default function TableMenuPage() {
                                 ref={el => (sectionRefs.current[cat.id] = el)}
                                 className="mb-12 scroll-mt-56"
                             >
-                                    <div className="mb-8 flex flex-col">
-                                        <span className="text-[10px] md:text-xs font-black text-orange-600 uppercase tracking-[0.3em] mb-1">
-                                            {t('selection')}
-                                        </span>
-                                        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter italic leading-none">
-                                            {t(`cat_${cat.id}` as any)}
-                                        </h2>
-                                        <div className="h-[2px] w-full max-w-[100px] bg-gradient-to-r from-orange-500 to-transparent mt-6 md:mt-8"></div>
-                                    </div>
+                                <div className="mb-8 flex flex-col">
+                                    <span className="text-[10px] md:text-xs font-black text-orange-600 uppercase tracking-[0.3em] mb-1">
+                                        {t('selection')}
+                                    </span>
+                                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter italic leading-none">
+                                        {t(`cat_${cat.id}` as any)}
+                                    </h2>
+                                    <div className="h-[2px] w-full max-w-[100px] bg-gradient-to-r from-orange-500 to-transparent mt-6 md:mt-8"></div>
+                                </div>
 
                                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                                     {activeItems
@@ -257,7 +259,7 @@ export default function TableMenuPage() {
                         className="fixed bottom-6 left-4 right-4 z-50"
                     >
                         <button
-                             onClick={() => setIsCartDrawerOpen(true)}
+                            onClick={() => setIsCartDrawerOpen(true)}
                             className="w-full h-16 bg-black border-2 border-white/10 text-white rounded-3xl flex items-center justify-between px-6 active:scale-95 transition-transform overflow-hidden relative shadow-2xl shadow-black/50"
                         >
                             <div className="flex items-center gap-4">
@@ -295,9 +297,9 @@ export default function TableMenuPage() {
             />
 
             <TableCartDrawer isOpen={isCartDrawerOpen} onClose={() => setIsCartDrawerOpen(false)} />
-            
-            <TableWelcomeModal 
-                isOpen={isWelcomeModalOpen} 
+
+            <TableWelcomeModal
+                isOpen={isWelcomeModalOpen}
                 onClose={() => setIsWelcomeModalOpen(false)}
                 onRegister={handleRegisterClick}
             />
