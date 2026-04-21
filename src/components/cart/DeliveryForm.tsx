@@ -312,6 +312,13 @@ export default function DeliveryForm({
                         transition={{ duration: 0.3 }}
                     >
                         <div className="flex flex-col gap-3">
+                            {/* Hidden inputs to keep Refs attached even when visual inputs are not rendered */}
+                            <div className="hidden" aria-hidden="true">
+                                <input type="hidden" ref={refs.address} />
+                                <input type="hidden" ref={refs.house} />
+                                <input type="hidden" ref={refs.apartment} />
+                            </div>
+
                             {user?.addresses && user.addresses.length > 0 && (
                                 <div className="grid grid-cols-1 gap-2 mb-2">
                                     {user.addresses.map((addr: any) => (

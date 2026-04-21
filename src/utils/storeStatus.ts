@@ -23,10 +23,30 @@ export function getDayOfWeekFromDateString(dateStr: string): number {
 }
 
 export function isStoreOpen(date: Date = new Date()): boolean {
-    const day = date.getDay();
-    const h = date.getHours().toString().padStart(2, '0');
-    const m = date.getMinutes().toString().padStart(2, '0');
+    // Force evaluation in Europe/Madrid timezone
+    const madridTime = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Madrid',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        weekday: 'short',
+    }).formatToParts(date);
+
+    const h = madridTime.find(p => p.type === 'hour')?.value || '00';
+    const m = madridTime.find(p => p.type === 'minute')?.value || '00';
     const timeStr = `${h}:${m}`;
+
+    const dayMap: Record<string, number> = {
+        Sun: 0,
+        Mon: 1,
+        Tue: 2,
+        Wed: 3,
+        Thu: 4,
+        Fri: 5,
+        Sat: 6,
+    };
+    const weekdayName = madridTime.find(p => p.type === 'weekday')?.value || 'Sun';
+    const day = dayMap[weekdayName] ?? date.getDay();
 
     const todayIntervals = BUSINESS_HOURS[day] || [];
     return todayIntervals.some(interval => timeStr >= interval.start && timeStr < interval.end);

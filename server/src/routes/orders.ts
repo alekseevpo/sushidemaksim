@@ -80,6 +80,12 @@ router.post(
                 });
             }
             serverEstimatedTime = `${normalizedDate} ${scheduledTime}`;
+
+            // Force add [PROGRAMADO] tag to notes if not present
+            const progTag = `[PROGRAMADO: ${normalizedDate} ${scheduledTime}]`;
+            if (!notesToSave.includes('[PROGRAMADO:')) {
+                notesToSave = `${progTag}${notesToSave ? ' | ' : ''}${notesToSave}`;
+            }
         } else if (isStoreClosed) {
             return res.status(400).json({
                 error: 'Nuestra cocina está descansando ahora. ¡Но мы будем рады подготовить ваш заказ позже! Пожалуйста, выберите "Программируемая доставка".',
@@ -340,6 +346,12 @@ router.post(
                 quantity: item.quantity,
                 price_at_time: item.menu_items.price,
             }));
+
+            // Add Delivery Time to receipt data
+            const receiptNotes = isScheduled
+                ? `[ENTREGA PROGRAMADA: ${serverEstimatedTime}]\n${notesToSave}`
+                : notesToSave;
+
             if (deliveryFee > 0) {
                 itemsForReceipt.push({
                     name: 'Gastos de Envío',
@@ -380,7 +392,7 @@ router.post(
                         total: finalTotal,
                         deliveryAddress,
                         phoneNumber,
-                        notes: notesToSave,
+                        notes: receiptNotes,
                     },
                     true
                 );
@@ -399,7 +411,7 @@ router.post(
                         total: finalTotal,
                         deliveryAddress,
                         phoneNumber,
-                        notes: notesToSave,
+                        notes: receiptNotes,
                     });
                 } catch (customerEmailErr) {
                     console.error('Failed to send customer receipt email:', customerEmailErr);
@@ -416,8 +428,13 @@ router.post(
 
             const waTextParts = [
                 `¡Hola Sushi de Maksim! Mi pedido #${String(orderId).padStart(5, '0')} ha sido realizado con éxito.`,
-                `PRODUCTOS:\n${itemsSummary}`,
             ];
+
+            if (isScheduled) {
+                waTextParts.push(`📅 *ENTREGA PROGRAMADA: ${serverEstimatedTime}*`);
+            }
+
+            waTextParts.push(`PRODUCTOS:\n${itemsSummary}`);
 
             if (deliveryFee > 0) {
                 waTextParts.push(`Gastos de Envío: ${deliveryFee.toFixed(2)}€`);

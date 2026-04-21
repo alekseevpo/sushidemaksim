@@ -592,6 +592,16 @@ export default function AdminOrders({
                                         }
                                     });
 
+                                    // NEW: Robust check from estimatedDeliveryTime if notes parsing failed
+                                    if (
+                                        !scheduled &&
+                                        order.estimatedDeliveryTime &&
+                                        !order.estimatedDeliveryTime.includes('min') &&
+                                        order.estimatedDeliveryTime.match(/\d{4}-\d{2}-\d{2}/)
+                                    ) {
+                                        scheduled = order.estimatedDeliveryTime;
+                                    }
+
                                     const isPickup =
                                         deliveryType === 'RECOGIDA EN LOCAL' ||
                                         order.deliveryAddress === 'RECOGIDA';
