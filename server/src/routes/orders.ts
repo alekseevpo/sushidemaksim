@@ -790,10 +790,10 @@ router.post(
         }
 
         try {
-            const fUrl = config.frontendUrl || 'https://sushidemaksim.com';
+            const fUrl = config.frontendUrl || 'https://www.sushidemaksim.com';
             const shareBase = fUrl.replace(/\/$/, '');
             const apiBase =
-                config.nodeEnv === 'production' ? 'https://sushidemaksim.com' : shareBase;
+                config.nodeEnv === 'production' ? 'https://www.sushidemaksim.com' : shareBase;
 
             res.status(201).json({
                 orderId: orderId,
