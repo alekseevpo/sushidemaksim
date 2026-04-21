@@ -5,7 +5,6 @@ import { getOptimizedImageUrl } from '../../utils/images';
 import { slugify } from '../../utils/formatters';
 import SafeImage from '../common/SafeImage';
 import { MenuItem } from '../../hooks/queries/useMenu';
-import { EMOJI } from '../../constants/menu';
 import { User } from '../../types';
 
 interface ProductCardProps {
@@ -92,11 +91,7 @@ const ProductCard = React.memo(function ProductCard({
                     }`}
                     alt={`${item.name} — ${item.category} | Menú de Sushi de Maksim Madrid`}
                     title={`${item.name} — ${item.description}`}
-                    fallbackContent={
-                        <div className="w-full h-full flex items-center justify-center text-4xl grayscale opacity-30">
-                            {EMOJI[item.category] || '🍱'}
-                        </div>
-                    }
+                    fallbackContent={null}
                 />
 
                 {/* Badges Lowered */}

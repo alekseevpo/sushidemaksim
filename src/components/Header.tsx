@@ -27,8 +27,10 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import ReservationModal from './reservations/ReservationModal';
 import { getSharpAvatar } from '../utils/avatar';
 import SafeImage from './common/SafeImage';
+import { useTableI18n } from '../utils/tableI18n';
 
 export default function Header() {
+    const { t } = useTableI18n();
     const { itemCount, total, isLoading: cartLoading } = useCart();
     const { user, isAuthenticated, logout, isLoading: authLoading } = useAuth();
     const location = useLocation();
@@ -155,7 +157,8 @@ export default function Header() {
     const isHome = location.pathname === '/';
     const isProfile = location.pathname === '/profile';
     const isMenu = location.pathname === '/menu' || location.pathname.startsWith('/menu/');
-    const isTransparentHeaderPage = isHome || isProfile;
+    const isTable = location.pathname === '/table';
+    const isTransparentHeaderPage = (isHome || isProfile) && !isTable;
     const hasToken = !!localStorage.getItem('sushi_token');
     const showSkeleton = authLoading || (hasToken && !user);
 
@@ -165,7 +168,9 @@ export default function Header() {
                 ref={headerRef}
                 className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
                 ${
-                    isScrolled
+                    isTable
+                        ? 'bg-black border-b border-white/5'
+                        : isScrolled
                         ? `bg-[#FBF7F0] ${
                               isMenu
                                   ? 'md:shadow-sm md:border-b md:border-gray-200 border-b-0 shadow-none'
@@ -211,9 +216,11 @@ export default function Header() {
                                         className={`
                                             h-10 md:h-14 w-auto object-contain transition-all duration-500
                                             ${
-                                                isScrolled || !isTransparentHeaderPage
-                                                    ? 'brightness-0 md:invert'
-                                                    : 'brightness-0 invert'
+                                                isTable
+                                                    ? 'brightness-0 invert'
+                                                    : isScrolled || !isTransparentHeaderPage
+                                                      ? 'brightness-0 md:invert'
+                                                      : 'brightness-0 invert'
                                             }
                                         `}
                                     />
@@ -221,334 +228,372 @@ export default function Header() {
                             </Link>
                         </div>
 
-                        {/* Desktop Navigation - Hidden on mobile, centered on md+ */}
-                        <nav className="hidden md:flex items-center justify-center gap-2 lg:gap-4 xl:gap-8 mx-auto">
-                            {navLinks.map((link, idx) => {
-                                const isActive = link.to ? location.pathname === link.to : false;
-                                const isAction = !!link.onClick;
+                        {/* Desktop Navigation - Hidden on mobile or table route */}
+                        {!isTable && (
+                            <nav className="hidden md:flex items-center justify-center gap-2 lg:gap-4 xl:gap-8 mx-auto">
+                                {navLinks.map((link, idx) => {
+                                    const isActive = link.to ? location.pathname === link.to : false;
+                                    const isAction = !!link.onClick;
 
-                                const commonStyles = `relative no-underline font-bold px-3 lg:px-4 py-2 transition-all duration-300 rounded-xl text-[13px] lg:text-sm border-none bg-transparent cursor-pointer whitespace-nowrap
-                                    ${
-                                        isActive
-                                            ? 'text-white shadow-inner'
-                                            : isScrolled || !isTransparentHeaderPage
-                                              ? 'text-gray-600 hover:text-gray-900'
-                                              : 'text-white/80 hover:text-white'
-                                    }`;
+                                    const commonStyles = `relative no-underline font-bold px-3 lg:px-4 py-2 transition-all duration-300 rounded-xl text-[13px] lg:text-sm border-none bg-transparent cursor-pointer whitespace-nowrap
+                                        ${
+                                            isActive
+                                                ? 'text-white shadow-inner'
+                                                : isScrolled || !isTransparentHeaderPage
+                                                  ? 'text-gray-600 hover:text-gray-900'
+                                                  : 'text-white/80 hover:text-white'
+                                        }`;
 
-                                if (isAction) {
+                                    if (isAction) {
+                                        return (
+                                            <button
+                                                key={link.label || idx}
+                                                onClick={link.onClick}
+                                                type="button"
+                                                className={`${commonStyles} flex items-center gap-2`}
+                                            >
+                                                {link.icon && <link.icon size={16} strokeWidth={2} />}
+                                                {link.label}
+                                            </button>
+                                        );
+                                    }
+
                                     return (
-                                        <button
-                                            key={link.label || idx}
-                                            onClick={link.onClick}
-                                            type="button"
+                                        <Link
+                                            key={link.to || idx}
+                                            to={link.to!}
                                             className={`${commonStyles} flex items-center gap-2`}
                                         >
-                                            {link.icon && <link.icon size={16} strokeWidth={2} />}
-                                            {link.label}
-                                        </button>
+                                            {link.icon && (
+                                                <span className="relative z-10 flex items-center justify-center translate-y-[-1px]">
+                                                    <link.icon size={16} strokeWidth={2} />
+                                                </span>
+                                            )}
+                                            <span className="relative z-10">{link.label}</span>
+                                            {isActive && (
+                                                <motion.div
+                                                    layoutId="active-nav"
+                                                    className="absolute inset-0 bg-orange-600 rounded-xl"
+                                                    transition={{
+                                                        type: 'spring',
+                                                        stiffness: 380,
+                                                        damping: 30,
+                                                    }}
+                                                />
+                                            )}
+                                        </Link>
                                     );
-                                }
-
-                                return (
-                                    <Link
-                                        key={link.to || idx}
-                                        to={link.to!}
-                                        className={`${commonStyles} flex items-center gap-2`}
-                                    >
-                                        {link.icon && (
-                                            <span className="relative z-10 flex items-center justify-center translate-y-[-1px]">
-                                                <link.icon size={16} strokeWidth={2} />
-                                            </span>
-                                        )}
-                                        <span className="relative z-10">{link.label}</span>
-                                        {isActive && (
-                                            <motion.div
-                                                layoutId="active-nav"
-                                                className="absolute inset-0 bg-orange-600 rounded-xl"
-                                                transition={{
-                                                    type: 'spring',
-                                                    stiffness: 380,
-                                                    damping: 30,
-                                                }}
-                                            />
-                                        )}
-                                    </Link>
-                                );
-                            })}
-                        </nav>
+                                })}
+                            </nav>
+                        )}
 
                         {/* Right side Area: Symmetry with logo area (200px) to ensure nav block is centered */}
                         <div className="flex-1 flex items-center justify-end gap-3 h-full md:min-w-[200px]">
-                            {/* Desktop: User button or login */}
-                            <div className="hidden md:block">
-                                {showSkeleton ? (
-                                    <div className="w-24 h-10 bg-gray-100 skeleton rounded-xl" />
-                                ) : isAuthenticated && user ? (
-                                    <div ref={userMenuRef} className="relative">
-                                        <button
-                                            onClick={() => setShowUserMenu(!showUserMenu)}
-                                            className={`flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 pl-1 pr-3 py-1 rounded-2xl cursor-pointer transition-all duration-200
-                        ${showUserMenu ? 'ring-2 ring-orange-600/20 bg-white' : ''}`}
-                                        >
-                                            <div
-                                                className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden shrink-0 border border-black/5
-                                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-orange-600'}`}
-                                            >
-                                                {user.avatar ? (
-                                                    user.avatar.startsWith('http') ? (
-                                                        <SafeImage
-                                                            src={user.avatar}
-                                                            getOptimizedUrl={getSharpAvatar}
-                                                            alt={user.name}
-                                                            className="w-full h-full object-cover"
-                                                            fallbackContent={
-                                                                <span className="select-none text-[16px] text-gray-900">
-                                                                    {initials}
-                                                                </span>
-                                                            }
-                                                        />
-                                                    ) : (
-                                                        <span className="select-none">
-                                                            {user.avatar}
-                                                        </span>
-                                                    )
-                                                ) : (
-                                                    <span className="select-none">{initials}</span>
-                                                )}
-                                            </div>
-                                            <span className="text-sm font-bold text-gray-700 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                                {user.name.split(' ')[0]}
-                                            </span>
-                                            <ChevronDown
-                                                size={14}
-                                                strokeWidth={1.5}
-                                                className={`text-gray-400 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}
-                                            />
-                                        </button>
-
-                                        {/* Dropdown */}
-                                        <AnimatePresence>
-                                            {showUserMenu && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                    className="absolute top-[calc(100%+12px)] right-0 bg-white rounded-2xl shadow-2xl p-1.5 w-[240px] z-[100] border border-gray-100"
+                            {isTable ? (
+                                <button
+                                    onClick={() => {
+                                        setLoginModalMode('register');
+                                        setIsLoginModalOpen(true);
+                                    }}
+                                    className="bg-white text-black px-4 py-2 md:px-6 md:py-2.5 rounded-xl font-black text-[12px] md:text-[13px] cursor-pointer active:scale-95 transition-all hover:bg-orange-600 hover:text-white uppercase tracking-tighter border border-white/20 whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                                >
+                                    {t('join_club')}
+                                </button>
+                            ) : (
+                                <>
+                                    {/* Desktop: User button or login */}
+                                    <div className="hidden md:block">
+                                        {showSkeleton ? (
+                                            <div className="w-24 h-10 bg-gray-100 skeleton rounded-xl" />
+                                        ) : isAuthenticated && user ? (
+                                            <div ref={userMenuRef} className="relative">
+                                                <button
+                                                    onClick={() => setShowUserMenu(!showUserMenu)}
+                                                    className={`flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 pl-1 pr-3 py-1 rounded-2xl cursor-pointer transition-all duration-200
+                                ${showUserMenu ? 'ring-2 ring-orange-600/20 bg-white' : ''}`}
                                                 >
-                                                    <div className="px-2.5 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
-                                                        <div
-                                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0 border border-black/10
-                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-orange-600'}`}
-                                                        >
-                                                            {user.avatar ? (
-                                                                user.avatar.startsWith('http') ? (
-                                                                    <SafeImage
-                                                                        src={user.avatar}
-                                                                        getOptimizedUrl={
-                                                                            getSharpAvatar
-                                                                        }
-                                                                        alt={user.name}
-                                                                        className="w-full h-full object-cover"
-                                                                        fallbackContent={
-                                                                            <span className="select-none text-xl text-gray-900">
-                                                                                {initials}
-                                                                            </span>
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <span className="select-none">
-                                                                        {user.avatar}
-                                                                    </span>
-                                                                )
+                                                    <div
+                                                        className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden shrink-0 border border-black/5
+                                                            ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-orange-600'}`}
+                                                    >
+                                                        {user.avatar ? (
+                                                            user.avatar.startsWith('http') ? (
+                                                                <SafeImage
+                                                                    src={user.avatar}
+                                                                    getOptimizedUrl={getSharpAvatar}
+                                                                    alt={user.name}
+                                                                    className="w-full h-full object-cover"
+                                                                    fallbackContent={
+                                                                        <span className="select-none text-[16px] text-gray-900">
+                                                                            {initials}
+                                                                        </span>
+                                                                    }
+                                                                />
                                                             ) : (
                                                                 <span className="select-none">
-                                                                    {initials}
+                                                                    {user.avatar}
                                                                 </span>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-black text-gray-900 mb-0.5 truncate">
-                                                                {user.name}
-                                                            </p>
-                                                            <p className="text-[10px] text-gray-500 font-bold tracking-tight uppercase whitespace-nowrap">
-                                                                {user.email}
-                                                            </p>
-                                                        </div>
+                                                            )
+                                                        ) : (
+                                                            <span className="select-none">
+                                                                {initials}
+                                                            </span>
+                                                        )}
                                                     </div>
+                                                    <span className="text-sm font-bold text-gray-700 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
+                                                        {user.name.split(' ')[0]}
+                                                    </span>
+                                                    <ChevronDown
+                                                        size={14}
+                                                        strokeWidth={1.5}
+                                                        className={`text-gray-400 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}
+                                                    />
+                                                </button>
 
-                                                    {(user.role === 'admin' ||
-                                                        user.role === 'waiter') && (
-                                                        <>
+                                                {/* Dropdown */}
+                                                <AnimatePresence>
+                                                    {showUserMenu && (
+                                                        <motion.div
+                                                            initial={{
+                                                                opacity: 0,
+                                                                y: 10,
+                                                                scale: 0.95,
+                                                            }}
+                                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                            className="absolute top-[calc(100%+12px)] right-0 bg-white rounded-2xl shadow-2xl p-1.5 w-[240px] z-[100] border border-gray-100"
+                                                        >
+                                                            <div className="px-2.5 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
+                                                                <div
+                                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0 border border-black/10
+                                            ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-orange-600'}`}
+                                                                >
+                                                                    {user.avatar ? (
+                                                                        user.avatar.startsWith(
+                                                                            'http'
+                                                                        ) ? (
+                                                                            <SafeImage
+                                                                                src={user.avatar}
+                                                                                getOptimizedUrl={
+                                                                                    getSharpAvatar
+                                                                                }
+                                                                                alt={user.name}
+                                                                                className="w-full h-full object-cover"
+                                                                                fallbackContent={
+                                                                                    <span className="select-none text-xl text-gray-900">
+                                                                                        {initials}
+                                                                                    </span>
+                                                                                }
+                                                                            />
+                                                                        ) : (
+                                                                            <span className="select-none">
+                                                                                {user.avatar}
+                                                                            </span>
+                                                                        )
+                                                                    ) : (
+                                                                        <span className="select-none">
+                                                                            {initials}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-sm font-black text-gray-900 mb-0.5 truncate">
+                                                                        {user.name}
+                                                                    </p>
+                                                                    <p className="text-[10px] text-gray-500 font-bold tracking-tight uppercase whitespace-nowrap">
+                                                                        {user.email}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            {(user.role === 'admin' ||
+                                                                user.role === 'waiter') && (
+                                                                <>
+                                                                    <Link
+                                                                        to={
+                                                                            user.role === 'admin'
+                                                                                ? '/admin'
+                                                                                : '/waiter'
+                                                                        }
+                                                                        onClick={() =>
+                                                                            setShowUserMenu(false)
+                                                                        }
+                                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 hover:bg-orange-100 transition-colors duration-150"
+                                                                    >
+                                                                        <ShieldCheck
+                                                                            size={16}
+                                                                            strokeWidth={1.5}
+                                                                        />{' '}
+                                                                        {user.role === 'admin'
+                                                                            ? 'PANEL ADMIN'
+                                                                            : 'TERMINAL CAMARERO'}
+                                                                    </Link>
+                                                                    <div className="h-px bg-gray-50 my-1.5" />
+                                                                </>
+                                                            )}
+
                                                             <Link
-                                                                to={
-                                                                    user.role === 'admin'
-                                                                        ? '/admin'
-                                                                        : '/waiter'
-                                                                }
+                                                                to="/profile"
                                                                 onClick={() =>
                                                                     setShowUserMenu(false)
                                                                 }
-                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 hover:bg-orange-100 transition-colors duration-150"
+                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
                                                             >
-                                                                <ShieldCheck
+                                                                <User
+                                                                    size={16}
+                                                                    strokeWidth={1.5}
+                                                                    className="text-gray-400"
+                                                                />{' '}
+                                                                Mi Perfil
+                                                            </Link>
+                                                            <Link
+                                                                to="/profile?tab=orders"
+                                                                onClick={() =>
+                                                                    setShowUserMenu(false)
+                                                                }
+                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
+                                                            >
+                                                                <Package
+                                                                    size={16}
+                                                                    strokeWidth={1.5}
+                                                                    className="text-gray-400"
+                                                                />{' '}
+                                                                Mis Pedidos
+                                                            </Link>
+                                                            <Link
+                                                                to="/profile?tab=addresses"
+                                                                onClick={() =>
+                                                                    setShowUserMenu(false)
+                                                                }
+                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
+                                                            >
+                                                                <MapPin
+                                                                    size={16}
+                                                                    strokeWidth={1.5}
+                                                                    className="text-gray-400"
+                                                                />{' '}
+                                                                Mis Direcciones
+                                                            </Link>
+                                                            <Link
+                                                                to="/profile?tab=favorites"
+                                                                onClick={() =>
+                                                                    setShowUserMenu(false)
+                                                                }
+                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
+                                                            >
+                                                                <Heart
+                                                                    size={16}
+                                                                    strokeWidth={1.5}
+                                                                    className="text-gray-400"
+                                                                />{' '}
+                                                                Favoritos
+                                                            </Link>
+
+                                                            <div className="h-px bg-gray-50 my-1.5" />
+
+                                                            <button
+                                                                onClick={() => {
+                                                                    setShowUserMenu(false);
+                                                                    logout();
+                                                                }}
+                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl w-full border-none cursor-pointer text-orange-600 text-[13px] font-bold bg-transparent hover:bg-orange-50 transition-colors duration-150 text-left"
+                                                            >
+                                                                <LogOut
                                                                     size={16}
                                                                     strokeWidth={1.5}
                                                                 />{' '}
-                                                                {user.role === 'admin'
-                                                                    ? 'PANEL ADMIN'
-                                                                    : 'TERMINAL CAMARERO'}
-                                                            </Link>
-                                                            <div className="h-px bg-gray-50 my-1.5" />
-                                                        </>
+                                                                Cerrar sesión
+                                                            </button>
+                                                        </motion.div>
                                                     )}
-
-                                                    <Link
-                                                        to="/profile"
-                                                        onClick={() => setShowUserMenu(false)}
-                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                    >
-                                                        <User
-                                                            size={16}
-                                                            strokeWidth={1.5}
-                                                            className="text-gray-400"
-                                                        />{' '}
-                                                        Mi Perfil
-                                                    </Link>
-                                                    <Link
-                                                        to="/profile?tab=orders"
-                                                        onClick={() => setShowUserMenu(false)}
-                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                    >
-                                                        <Package
-                                                            size={16}
-                                                            strokeWidth={1.5}
-                                                            className="text-gray-400"
-                                                        />{' '}
-                                                        Mis Pedidos
-                                                    </Link>
-                                                    <Link
-                                                        to="/profile?tab=addresses"
-                                                        onClick={() => setShowUserMenu(false)}
-                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                    >
-                                                        <MapPin
-                                                            size={16}
-                                                            strokeWidth={1.5}
-                                                            className="text-gray-400"
-                                                        />{' '}
-                                                        Mis Direcciones
-                                                    </Link>
-                                                    <Link
-                                                        to="/profile?tab=favorites"
-                                                        onClick={() => setShowUserMenu(false)}
-                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                    >
-                                                        <Heart
-                                                            size={16}
-                                                            strokeWidth={1.5}
-                                                            className="text-gray-400"
-                                                        />{' '}
-                                                        Favoritos
-                                                    </Link>
-
-                                                    <div className="h-px bg-gray-50 my-1.5" />
-
-                                                    <button
-                                                        onClick={() => {
-                                                            setShowUserMenu(false);
-                                                            logout();
-                                                        }}
-                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl w-full border-none cursor-pointer text-orange-600 text-[13px] font-bold bg-transparent hover:bg-orange-50 transition-colors duration-150 text-left"
-                                                    >
-                                                        <LogOut size={16} strokeWidth={1.5} />{' '}
-                                                        Cerrar sesión
-                                                    </button>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => {
-                                                setLoginModalMode('login');
-                                                setIsLoginModalOpen(true);
-                                            }}
-                                            className="bg-gray-900 text-white border-2 border-transparent px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 transition-all hover:bg-black"
-                                        >
-                                            ACCEDER
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setLoginModalMode('register');
-                                                setIsLoginModalOpen(true);
-                                            }}
-                                            className="bg-white text-gray-900 border-2 border-gray-900 px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-sm active:scale-95 transition-all hover:bg-gray-50"
-                                        >
-                                            REGISTRO
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            <motion.div
-                                animate={
-                                    isCartBumping
-                                        ? {
-                                              scale: [1, 1.3, 0.95, 1],
-                                              rotate: [0, -8, 8, 0],
-                                          }
-                                        : {}
-                                }
-                                transition={{ duration: 0.4, ease: 'easeInOut' }}
-                            >
-                                <Link
-                                    id="cart-icon"
-                                    to="/cart"
-                                    className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] text-white bg-orange-600 shadow-lg shadow-orange-600/20 active:scale-95`}
-                                >
-                                    <ShoppingCart size={20} strokeWidth={2.5} />
-                                    {!cartLoading && total > 0 && (
-                                        <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap text-white">
-                                            {total.toFixed(2)} €
-                                        </span>
-                                    )}
-                                    <AnimatePresence>
-                                        {!cartLoading && itemCount > 0 && (
-                                            <motion.span
-                                                key={itemCount} // Re-trigger animation on every count change
-                                                initial={{ scale: 0.5, opacity: 0 }}
-                                                animate={{ scale: [0.5, 1.3, 1], opacity: 1 }}
-                                                exit={{ scale: 0, opacity: 0 }}
-                                                transition={{
-                                                    type: 'spring',
-                                                    stiffness: 500,
-                                                    damping: 15,
-                                                }}
-                                                className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
-                                            >
-                                                {itemCount}
-                                            </motion.span>
+                                                </AnimatePresence>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setLoginModalMode('login');
+                                                        setIsLoginModalOpen(true);
+                                                    }}
+                                                    className="bg-gray-900 text-white border-2 border-transparent px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 transition-all hover:bg-black"
+                                                >
+                                                    ACCEDER
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setLoginModalMode('register');
+                                                        setIsLoginModalOpen(true);
+                                                    }}
+                                                    className="bg-white text-gray-900 border-2 border-gray-900 px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-sm active:scale-95 transition-all hover:bg-gray-50"
+                                                >
+                                                    REGISTRO
+                                                </button>
+                                            </div>
                                         )}
-                                    </AnimatePresence>
-                                </Link>
-                            </motion.div>
+                                    </div>
 
-                            <button
-                                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
-                                    isScrolled || !isHome
-                                        ? 'bg-gray-50 text-gray-800 shadow-sm hover:shadow-md'
-                                        : 'bg-white/15 text-white border border-white/20 backdrop-blur-md shadow-lg'
-                                }`}
-                            >
-                                {showMobileMenu ? (
-                                    <X size={22} strokeWidth={1.5} />
-                                ) : (
-                                    <Menu size={22} strokeWidth={1.5} />
-                                )}
-                            </button>
+                                    <motion.div
+                                        animate={
+                                            isCartBumping
+                                                ? {
+                                                      scale: [1, 1.3, 0.95, 1],
+                                                      rotate: [0, -8, 8, 0],
+                                                  }
+                                                : {}
+                                        }
+                                        transition={{ duration: 0.4, ease: 'easeInOut' }}
+                                    >
+                                        <Link
+                                            id="cart-icon"
+                                            to="/cart"
+                                            className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] text-white bg-orange-600 shadow-lg shadow-orange-600/20 active:scale-95`}
+                                        >
+                                            <ShoppingCart size={20} strokeWidth={2.5} />
+                                            {!cartLoading && total > 0 && (
+                                                <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap text-white">
+                                                    {total.toFixed(2)} €
+                                                </span>
+                                            )}
+                                            <AnimatePresence>
+                                                {!cartLoading && itemCount > 0 && (
+                                                    <motion.span
+                                                        key={itemCount} // Re-trigger animation on every count change
+                                                        initial={{ scale: 0.5, opacity: 0 }}
+                                                        animate={{
+                                                            scale: [0.5, 1.3, 1],
+                                                            opacity: 1,
+                                                        }}
+                                                        exit={{ scale: 0, opacity: 0 }}
+                                                        transition={{
+                                                            type: 'spring',
+                                                            stiffness: 500,
+                                                            damping: 15,
+                                                        }}
+                                                        className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
+                                                    >
+                                                        {itemCount}
+                                                    </motion.span>
+                                                )}
+                                            </AnimatePresence>
+                                        </Link>
+                                    </motion.div>
+
+                                    <button
+                                        onClick={() => setShowMobileMenu(!showMobileMenu)}
+                                        className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
+                                            isScrolled || !isHome
+                                                ? 'bg-gray-50 text-gray-800 shadow-sm hover:shadow-md'
+                                                : 'bg-white/15 text-white border border-white/20 backdrop-blur-md shadow-lg'
+                                        }`}
+                                    >
+                                        {showMobileMenu ? (
+                                            <X size={22} strokeWidth={1.5} />
+                                        ) : (
+                                            <Menu size={22} strokeWidth={1.5} />
+                                        )}
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

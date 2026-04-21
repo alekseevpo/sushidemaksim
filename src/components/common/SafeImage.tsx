@@ -1,4 +1,5 @@
 import { useState, useEffect, forwardRef, memo } from 'react';
+import { ProductPlaceholder } from './ProductPlaceholder';
 
 interface Props extends React.ImgHTMLAttributes<HTMLImageElement> {
     src: string;
@@ -34,7 +35,7 @@ const SafeImage = memo(
             }, [src]);
 
             if (!src || hasError) {
-                return <>{fallbackContent}</>;
+                return <>{fallbackContent || <ProductPlaceholder className={className} />}</>;
             }
 
             const optimizedUrl =

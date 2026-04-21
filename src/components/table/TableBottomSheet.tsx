@@ -1,0 +1,153 @@
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Plus, Clock, Info } from 'lucide-react';
+import { SushiItem } from '../../types';
+import SafeImage from '../common/SafeImage';
+
+interface TableBottomSheetProps {
+    item: SushiItem | null;
+    isOpen: boolean;
+    onClose: () => void;
+    onAddToCart: (item: SushiItem) => void;
+}
+
+export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
+    item,
+    isOpen,
+    onClose,
+    onAddToCart,
+}) => {
+    if (!item) return null;
+
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    {/* Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 bg-black/40 z-[100] backdrop-blur-sm"
+                    />
+
+                    {/* Bottom Sheet */}
+                    <motion.div
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="fixed bottom-0 left-0 right-0 z-[101] bg-[#0A0A0A] rounded-t-[40px] max-h-[92vh] overflow-hidden flex flex-col shadow-2xl"
+                    >
+                        {/* Drag Handle */}
+                        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full z-10" />
+
+                        {/* Banner Image */}
+                        <div className="relative h-64 md:h-80 w-full bg-gray-100 overflow-hidden">
+                            <SafeImage
+                                src={item.image}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                            />
+                            <button
+                                onClick={onClose}
+                                className="absolute top-4 right-4 p-2.5 bg-black rounded-full text-white shadow-2xl active:scale-95 transition-transform border border-white/10"
+                            >
+                                <X size={20} strokeWidth={2.5} />
+                            </button>
+
+                            {/* Tags on Image */}
+                            <div className="absolute bottom-6 left-6 flex gap-2">
+                                {item.isPopular && (
+                                    <span className="px-3 py-1.5 bg-white/10 backdrop-blur-sm text-white text-[10px] font-black rounded-xl tracking-widest uppercase border border-white/10">
+                                        🔥 POPULAR
+                                    </span>
+                                )}
+                                {item.isChefChoice && (
+                                    <span className="px-3 py-1.5 bg-orange-600 text-white text-[10px] font-black rounded-xl tracking-widest uppercase shadow-lg shadow-orange-200">
+                                        👨‍🍳 CHEF CHOICE
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-8 pb-32 overflow-y-auto">
+                            <div className="flex justify-between items-start mb-6">
+                                <div>
+                                    <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none mb-2">
+                                        {item.name}
+                                    </h2>
+                                    <div className="flex items-center gap-4 text-gray-400 text-sm font-bold">
+                                        {item.pieces && (
+                                            <span className="flex items-center gap-1.5">
+                                                <Clock size={16} /> {item.pieces} PIECES
+                                            </span>
+                                        )}
+                                        {item.vegetarian && (
+                                            <span className="flex items-center gap-1.5 text-green-600">
+                                                <Info size={16} /> VEGETARIAN
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="text-3xl font-black text-orange-600">
+                                    {item.price.toFixed(2)}€
+                                </div>
+                            </div>
+
+                            <p className="text-gray-400 text-lg leading-relaxed font-normal mb-8">
+                                {item.description}
+                            </p>
+
+                            {/* Info Badges */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-[#141414] border border-white/5 rounded-2xl flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-orange-950 flex items-center justify-center text-orange-500">
+                                        <Info size={20} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                            Category
+                                        </span>
+                                        <span className="text-xs font-black text-white uppercase">
+                                            {item.category.replace('-', ' ')}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-[#141414] border border-white/5 rounded-2xl flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-yellow-950 flex items-center justify-center text-yellow-500">
+                                        <span className="text-xl">🌶️</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                            Spiciness
+                                        </span>
+                                        <span className="text-xs font-black text-white uppercase">
+                                            {item.spicy ? 'Spicy AF' : 'Mild'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Add to Order Button */}
+                        <div className="absolute bottom-0 left-0 right-0 p-6 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5">
+                            <button
+                                onClick={() => {
+                                    onAddToCart(item);
+                                    onClose();
+                                }}
+                                className="w-full h-16 bg-orange-600 text-white rounded-[24px] font-black text-lg tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3"
+                            >
+                                <Plus size={24} strokeWidth={3} />
+                                ADD TO ORDER — {item.price.toFixed(2)}€
+                            </button>
+                        </div>
+                    </motion.div>
+                </>
+            )}
+        </AnimatePresence>
+    );
+};

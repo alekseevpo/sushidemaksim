@@ -14,7 +14,7 @@ export default function Footer() {
         {
             id: 'whatsapp',
             name: 'WhatsApp',
-            icon: '/whatsapp.webp',
+            icon: '/whatsapp.png',
             url: `https://wa.me/${cleanPhone.replace('+', '')}`,
             hover: 'hover:bg-green-500/20 hover:border-green-500/30',
         },
@@ -22,14 +22,14 @@ export default function Footer() {
         {
             id: 'instagram',
             name: 'Instagram',
-            icon: '/instagram.webp',
+            icon: '/instagram.png',
             url: 'https://www.instagram.com/sushi_de_maksim/',
             hover: 'hover:bg-pink-500/20 hover:border-pink-500/30',
         },
         {
             id: 'telegram',
             name: 'Telegram',
-            icon: '/telegram.webp',
+            icon: '/telegram.png',
             url: 'https://t.me/sushidemaksim',
             hover: 'hover:bg-blue-500/20 hover:border-blue-500/30',
         },
@@ -39,6 +39,13 @@ export default function Footer() {
             icon: '/fork.webp',
             url: 'https://www.thefork.es/restaurante/red-de-maksim-r753228',
             hover: 'hover:bg-emerald-600/20 hover:border-emerald-600/30',
+        },
+        {
+            id: 'threads',
+            name: 'Threads',
+            icon: '/threads.png',
+            url: 'https://www.threads.net/@sushi_de_maksim',
+            hover: 'hover:bg-white/10 hover:border-white/20',
         },
     ];
 
@@ -132,13 +139,13 @@ export default function Footer() {
                                     href={url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-10 h-10 md:w-11 md:h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-orange-500/20 overflow-hidden group`}
+                                    className={`w-10 h-10 md:w-11 md:h-11 flex items-center justify-center transition-all duration-300 ${social.hover} hover:-translate-y-1.5 hover:shadow-xl hover:shadow-orange-500/20 overflow-hidden group`}
                                     title={social.name}
                                 >
                                     <img
                                         src={social.icon}
                                         alt={social.name}
-                                        className={`w-5 h-5 md:w-6 md:h-6 object-contain transition-all duration-300 group-hover:scale-110 opacity-80 group-hover:opacity-100 ${social.id !== 'threads' ? 'brightness-0 invert' : ''}`}
+                                        className="w-full h-full object-contain invert brightness-110 opacity-90 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110"
                                     />
                                 </a>
                             );

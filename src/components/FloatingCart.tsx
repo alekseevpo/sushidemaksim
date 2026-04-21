@@ -7,8 +7,9 @@ export default function FloatingCart() {
     const { itemCount, total } = useCart();
     const location = useLocation();
 
-    // Don't show on cart page or if empty
-    if (location.pathname === '/cart' || itemCount === 0) return null;
+    // Don't show on cart page, table ordering page, or if empty
+    if (location.pathname === '/cart' || location.pathname === '/table' || itemCount === 0)
+        return null;
 
     return (
         <AnimatePresence>

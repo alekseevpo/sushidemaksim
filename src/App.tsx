@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CartProvider } from './hooks/useCart';
 import { AuthProvider } from './hooks/useAuth';
+import { TableOrderProvider } from './context/TableOrderContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
@@ -60,6 +61,7 @@ const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 const WaiterOrderPage = lazyRetry(() => import('./pages/WaiterOrderPage'));
+const TableMenuPage = lazyRetry(() => import('./pages/TableMenuPage'));
 const NotFoundPage = lazyRetry(() => import('./pages/NotFoundPage'));
 
 // Page Wrapper for consistent transitions
@@ -125,6 +127,7 @@ function App() {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
     const isWaiterRoute = location.pathname.startsWith('/waiter');
+    const isTableRoute = location.pathname === '/table';
 
     useEffect(() => {
         // Disable automatic scroll restoration on mount
@@ -145,7 +148,7 @@ function App() {
                             <SpeedInsights />
                             <SmoothScroll />
                             <CookieConsent />
-                            <RegistrationPrompt />
+                            {!isTableRoute && <RegistrationPrompt />}
                             <FloatingCart />
 
                             {!isAdminRoute && !isWaiterRoute && <Header />}
@@ -276,6 +279,16 @@ function App() {
                                             }
                                         />
                                         <Route
+                                            path="/table"
+                                            element={
+                                                <TableOrderProvider>
+                                                    <PageWrapper skeleton={<MenuSkeleton />}>
+                                                        <TableMenuPage />
+                                                    </PageWrapper>
+                                                </TableOrderProvider>
+                                            }
+                                        />
+                                        <Route
                                             path="*"
                                             element={
                                                 <PageWrapper skeleton={<GenericSkeleton />}>
@@ -286,7 +299,7 @@ function App() {
                                     </Routes>
                                 </AnimatePresence>
                             </main>
-                            {!isAdminRoute && !isWaiterRoute && <Footer />}
+                            {!isAdminRoute && !isWaiterRoute && !isTableRoute && <Footer />}
                         </div>
                     </CartProvider>
                 </AuthProvider>
