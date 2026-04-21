@@ -33,30 +33,38 @@ const LoginForm = memo(
         isLoading: boolean;
     }) => {
         const [showPassword, setShowPassword] = useState(false);
-        const [email, setEmail] = useState('');
-        const [password, setPassword] = useState('');
+        const emailRef = useRef<HTMLInputElement>(null);
+        const passwordRef = useRef<HTMLInputElement>(null);
+        const isSubmitting = useRef(false);
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const form = e.currentTarget;
+            e.stopPropagation();
+
+            // Prevent double submission
+            if (isSubmitting.current || isLoading) return;
 
             // Critical fix for Mobile Safari Autofill:
-            // FormData can sometimes miss autofilled values if they haven't triggered a change event.
-            // We reach directly into the DOM elements to be sure.
-            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
-            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+            // Ensure values are synced from Safari's internal buffer to the DOM property.
+            [emailRef, passwordRef].forEach(ref => {
+                if (ref.current) {
+                    ref.current.focus();
+                    ref.current.blur();
+                }
+            });
 
-            const emailVal = (emailInput?.value || '').trim();
-            const passwordVal = passwordInput?.value || '';
+            const emailVal = (emailRef.current?.value || '').trim();
+            const passwordVal = passwordRef.current?.value || '';
 
-            if (!emailVal) {
-                // Flash focus to potentially trigger Safari sync
-                emailInput?.focus();
-                emailInput?.blur();
-                return;
-            }
+            if (!emailVal) return;
 
+            isSubmitting.current = true;
             onLogin({ email: emailVal, password: passwordVal });
+
+            // Reset submission lock after a delay to account for network/state transition
+            setTimeout(() => {
+                isSubmitting.current = false;
+            }, 1000);
         };
 
         return (
@@ -70,11 +78,10 @@ const LoginForm = memo(
                             <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
+                            ref={emailRef}
                             type="email"
                             name="email"
                             required
-                            defaultValue={email}
-                            onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
@@ -101,11 +108,10 @@ const LoginForm = memo(
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
+                            ref={passwordRef}
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            defaultValue={password}
-                            onChange={e => setPassword(e.target.value)}
                             autoComplete="current-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Tu contraseña"
@@ -198,39 +204,52 @@ const RegisterForm = memo(
     }) => {
         const [showPassword, setShowPassword] = useState(false);
         const [password, setPassword] = useState('');
-        const [phone, setPhone] = useState('');
-        const [name, setName] = useState('');
-        const [email, setEmail] = useState('');
+
+        const nameRef = useRef<HTMLInputElement>(null);
+        const phoneRef = useRef<HTMLInputElement>(null);
+        const emailRef = useRef<HTMLInputElement>(null);
+        const passwordRef = useRef<HTMLInputElement>(null);
+        const isSubmitting = useRef(false);
 
         const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const val = e.target.value.replace(/\D/g, '').slice(0, 9);
-            setPhone(val);
+            e.target.value = val;
         };
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const form = e.currentTarget;
+            e.stopPropagation();
 
-            const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement;
-            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
-            const phoneInput = form.querySelector('input[name="phone"]') as HTMLInputElement;
-            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+            if (isSubmitting.current || isLoading) return;
 
-            const nameVal = (nameInput?.value || '').trim();
-            const emailVal = (emailInput?.value || '').trim();
-            const phoneVal = (phoneInput?.value || '').trim();
-            const passwordVal = passwordInput?.value || '';
+            // Safari Sync Hack
+            [nameRef, phoneRef, emailRef, passwordRef].forEach(ref => {
+                if (ref.current) {
+                    ref.current.focus();
+                    ref.current.blur();
+                }
+            });
+
+            const nameVal = (nameRef.current?.value || '').trim();
+            const emailVal = (emailRef.current?.value || '').trim();
+            const phoneVal = (phoneRef.current?.value || '').trim();
+            const passwordVal = passwordRef.current?.value || '';
 
             if (!emailVal || !passwordVal || !nameVal || !phoneVal) {
                 return;
             }
 
+            isSubmitting.current = true;
             onRegister({
                 name: nameVal,
                 phone: phoneVal,
                 email: emailVal,
                 password: passwordVal,
             });
+
+            setTimeout(() => {
+                isSubmitting.current = false;
+            }, 1000);
         };
 
         return (
@@ -245,11 +264,10 @@ const RegisterForm = memo(
                                 <User size={16} strokeWidth={1.5} />
                             </div>
                             <input
+                                ref={nameRef}
                                 type="text"
                                 name="name"
                                 required
-                                defaultValue={name}
-                                onChange={e => setName(e.target.value)}
                                 autoComplete="name"
                                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="Tu nombre completo"
@@ -269,11 +287,11 @@ const RegisterForm = memo(
                                 </span>
                             </div>
                             <input
+                                ref={phoneRef}
                                 type="tel"
                                 name="phone"
                                 required
                                 autoComplete="tel"
-                                defaultValue={phone}
                                 onChange={handlePhoneChange}
                                 className="w-full bg-transparent pl-1 pr-4 py-3 outline-none font-medium text-sm text-gray-900 placeholder:text-gray-400"
                                 placeholder="600 000 000"
@@ -291,11 +309,10 @@ const RegisterForm = memo(
                             <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
+                            ref={emailRef}
                             type="email"
                             name="email"
                             required
-                            defaultValue={email}
-                            onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
@@ -312,10 +329,10 @@ const RegisterForm = memo(
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
+                            ref={passwordRef}
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            defaultValue={password}
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -377,16 +394,31 @@ const ForgotPasswordForm = memo(
         onBack: () => void;
         isLoading: boolean;
     }) => {
-        const [email, setEmail] = useState('');
+        const emailRef = useRef<HTMLInputElement>(null);
+        const isSubmitting = useRef(false);
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const form = e.currentTarget;
-            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
-            const emailVal = (emailInput?.value || '').trim();
+            e.stopPropagation();
+
+            if (isSubmitting.current || isLoading) return;
+
+            // Safari Sync
+            if (emailRef.current) {
+                emailRef.current.focus();
+                emailRef.current.blur();
+            }
+
+            const emailVal = (emailRef.current?.value || '').trim();
 
             if (!emailVal) return;
+
+            isSubmitting.current = true;
             onForgot(emailVal);
+
+            setTimeout(() => {
+                isSubmitting.current = false;
+            }, 1000);
         };
 
         return (
@@ -405,11 +437,10 @@ const ForgotPasswordForm = memo(
                             <Mail size={16} strokeWidth={1.5} />
                         </div>
                         <input
+                            ref={emailRef}
                             type="email"
                             name="email"
                             required
-                            defaultValue={email}
-                            onChange={e => setEmail(e.target.value)}
                             autoComplete="email"
                             className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
@@ -563,6 +594,11 @@ const ResetPasswordForm = memo(
         const [password, setPassword] = useState('');
         const [confirmPassword, setConfirmPassword] = useState('');
 
+        const passwordRef = useRef<HTMLInputElement>(null);
+        const confirmPasswordRef = useRef<HTMLInputElement>(null);
+        const emailRef = useRef<HTMLInputElement>(null);
+        const isSubmitting = useRef(false);
+
         const isPasswordValid =
             password.length >= 9 &&
             /\d/.test(password) &&
@@ -570,26 +606,36 @@ const ResetPasswordForm = memo(
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const form = e.currentTarget;
+            e.stopPropagation();
 
-            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
-            const confirmPasswordInput = form.querySelector(
-                'input[name="confirmPassword"]'
-            ) as HTMLInputElement;
-            const codeInput = form.querySelector('input[name="code"]') as HTMLInputElement;
-            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+            if (isSubmitting.current || isLoading) return;
 
-            const passwordVal = passwordInput?.value || '';
-            const confirmPasswordVal = confirmPasswordInput?.value || '';
-            const codeVal = codeInput?.value || '';
-            const emailVal = (emailInput?.value || '').trim() || recoveryEmail;
+            // Safari Sync Hack
+            [passwordRef, confirmPasswordRef, emailRef].forEach(ref => {
+                if (ref.current) {
+                    ref.current.focus();
+                    ref.current.blur();
+                }
+            });
 
+            const passwordVal = passwordRef.current?.value || '';
+            const confirmPasswordVal = confirmPasswordRef.current?.value || '';
+            const emailVal = (emailRef.current?.value || '').trim() || recoveryEmail;
+            const codeVal = token || codeValue;
+
+            if (!passwordVal || !confirmPasswordVal || !codeVal || !emailVal) return;
+
+            isSubmitting.current = true;
             onReset({
                 password: passwordVal,
                 confirmPassword: confirmPasswordVal,
                 code: codeVal,
                 email: emailVal,
             });
+
+            setTimeout(() => {
+                isSubmitting.current = false;
+            }, 1000);
         };
 
         return (
@@ -604,16 +650,20 @@ const ResetPasswordForm = memo(
                                 <Mail size={16} strokeWidth={1.5} />
                             </div>
                             <input
+                                ref={emailRef}
                                 type="email"
                                 name="email"
                                 required
+                                autoComplete="email"
                                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="tu@email.com"
                             />
                         </div>
                     </div>
                 )}
-                {recoveryEmail && <input type="hidden" name="email" value={recoveryEmail} />}
+                {recoveryEmail && (
+                    <input type="hidden" ref={emailRef} name="email" value={recoveryEmail} />
+                )}
 
                 {token ? (
                     <input type="hidden" name="code" value={token} />
@@ -638,10 +688,10 @@ const ResetPasswordForm = memo(
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
+                            ref={passwordRef}
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
-                            defaultValue={password}
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -672,10 +722,10 @@ const ResetPasswordForm = memo(
                             <Lock size={16} strokeWidth={1.5} />
                         </div>
                         <input
+                            ref={confirmPasswordRef}
                             type={showPassword ? 'text' : 'password'}
                             name="confirmPassword"
                             required
-                            defaultValue={confirmPassword}
                             onChange={e => setConfirmPassword(e.target.value)}
                             autoComplete="new-password"
                             className="w-full pl-11 pr-12 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
@@ -686,10 +736,15 @@ const ResetPasswordForm = memo(
 
                 <button
                     type="submit"
-                    disabled={isLoading || (!token && codeValue.length < 6) || !isPasswordValid}
-                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 mt-2 h-12"
+                    disabled={
+                        isLoading ||
+                        (!token && codeValue.length < 6) ||
+                        !isPasswordValid ||
+                        password !== confirmPassword
+                    }
+                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
                 >
-                    {isLoading ? 'Cambiando...' : 'Cambiar contraseña'}
+                    {isLoading ? 'Actualizando...' : 'Actualizar contraseña'}
                 </button>
             </form>
         );

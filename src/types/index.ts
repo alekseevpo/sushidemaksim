@@ -88,6 +88,8 @@ export interface Order {
     deliveryAddress: string;
     phoneNumber: string;
     status: OrderStatus;
+    deliveryType?: 'delivery' | 'pickup' | 'reservation' | 'table';
+    tableNumber?: number;
     notes?: string;
     createdAt: string;
     updatedAt?: string;

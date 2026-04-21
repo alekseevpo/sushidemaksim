@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
     User,
@@ -75,13 +75,19 @@ export default function ProfileTab({ user, updateProfile }: Props) {
 
     // Change password state
     const [showChangePassword, setShowChangePassword] = useState(false);
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [showCurrPwd, setShowCurrPwd] = useState(false);
     const [showNewPwd, setShowNewPwd] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+
+    // Form Refs for reliable Safari capture
+    const nameRef = useRef<HTMLInputElement>(null);
+    const phoneRef = useRef<HTMLInputElement>(null);
+    const birthDateRef = useRef<HTMLInputElement>(null);
+    const currentPasswordRef = useRef<HTMLInputElement>(null);
+    const newPasswordRef = useRef<HTMLInputElement>(null);
+    const confirmNewPasswordRef = useRef<HTMLInputElement>(null);
+    const isSubmitting = useRef(false);
     const queryClient = useQueryClient();
     const { deleteAccount } = useAuth();
     const { success, error } = useToast();
@@ -112,30 +118,38 @@ export default function ProfileTab({ user, updateProfile }: Props) {
     };
 
     const saveProfile = async (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
-        const dataToSave = {
-            name: editName,
-            phone: editPhone,
-            email: editEmail,
+        if (isSubmitting.current) return;
+
+        // Safari Sync Hack
+        [nameRef, phoneRef, birthDateRef].forEach(ref => {
+            if (ref.current) {
+                ref.current.focus();
+                ref.current.blur();
+            }
+        });
+
+        const nameVal = (nameRef.current?.value || '').trim();
+        const phoneVal = (phoneRef.current?.value || '').trim();
+        const birthDateVal = birthDateRef.current?.value || '';
+
+        const dataToSave: Partial<
+            Pick<UserType, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>
+        > = {
             avatar: editAvatar,
-            birthDate: editBirthDate,
+            name: nameVal || user.name,
+            birthDate: birthDateVal,
         };
 
-        // On mobile, state might not be up-to-date due to autofill
-        const form = document.getElementById('profile-form') as HTMLFormElement | null;
-        if (form) {
-            const formData = new FormData(form);
-            const nameVal = formData.get('name') as string;
-            const phoneVal = formData.get('phone') as string;
-            const birthDateVal = formData.get('birthDate') as string;
-
-            if (nameVal) dataToSave.name = nameVal;
-            if (phoneVal) {
-                const cleanPhone = phoneVal.replace(/\D/g, '').slice(0, 9);
-                dataToSave.phone = cleanPhone ? `+34${cleanPhone}` : '';
-            }
-            if (birthDateVal) dataToSave.birthDate = birthDateVal;
+        if (phoneVal) {
+            const cleanPhone = phoneVal.replace(/\D/g, '').slice(0, 9);
+            dataToSave.phone = cleanPhone ? `+34${cleanPhone}` : '';
+        } else {
+            dataToSave.phone = '';
         }
 
         if (dataToSave.birthDate) {
@@ -149,51 +163,66 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                 return;
             }
         }
+
         try {
+            isSubmitting.current = true;
             const res = (await updateProfile(dataToSave)) as any;
             setIsEditing(false);
             success(res?.message || '¡Perfil actualizado con éxito! 🍣');
         } catch (err: any) {
             error(err.message || 'Error al actualizar el perfil');
+        } finally {
+            isSubmitting.current = false;
         }
     };
 
     const handleChangePassword = async (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
-
-        let currentPwd = currentPassword;
-        let newPwd = newPassword;
-        let confirmPwd = confirmNewPassword;
-
-        const form = document.getElementById('password-form') as HTMLFormElement | null;
-        if (form) {
-            const formData = new FormData(form);
-            currentPwd = (formData.get('currentPassword') as string) || currentPwd;
-            newPwd = (formData.get('newPassword') as string) || newPwd;
-            confirmPwd = (formData.get('confirmNewPassword') as string) || confirmPwd;
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        if (newPwd.length < 6) {
+        if (isSubmitting.current) return;
+
+        // Safari Sync Hack
+        [currentPasswordRef, newPasswordRef, confirmNewPasswordRef].forEach(ref => {
+            if (ref.current) {
+                ref.current.focus();
+                ref.current.blur();
+            }
+        });
+
+        const currentPwdVal = currentPasswordRef.current?.value || '';
+        const newPwdVal = newPasswordRef.current?.value || '';
+        const confirmPwdVal = confirmNewPasswordRef.current?.value || '';
+
+        if (!currentPwdVal || !newPwdVal || !confirmPwdVal) {
+            error('Por favor, rellena todos los campos de contraseña');
+            return;
+        }
+
+        if (newPwdVal.length < 6) {
             error('La contraseña debe tener al menos 6 caracteres');
             return;
         }
-        if (newPwd !== confirmPwd) {
+        if (newPwdVal !== confirmPwdVal) {
             error('Las contraseñas no coinciden');
             return;
         }
+
         try {
+            isSubmitting.current = true;
             const { api } = await import('../../utils/api');
             await api.put('/user/change-password', {
-                currentPassword: currentPwd,
-                newPassword: newPwd,
+                currentPassword: currentPwdVal,
+                newPassword: newPwdVal,
             });
             success('¡Contraseña actualizada correctamente! 🔐');
-            setCurrentPassword('');
-            setNewPassword('');
-            setConfirmNewPassword('');
             setShowChangePassword(false);
         } catch (err: any) {
             error(err.message || 'Error al cambiar la contraseña');
+        } finally {
+            isSubmitting.current = false;
         }
     };
 
@@ -338,6 +367,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                             +34
                                         </div>
                                         <input
+                                            ref={phoneRef}
                                             type="tel"
                                             name="phone"
                                             defaultValue={field.editedValue.replace(/^\+34/, '')}
@@ -354,6 +384,13 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     </div>
                                 ) : (
                                     <input
+                                        ref={
+                                            field.label === 'Nombre Completo'
+                                                ? nameRef
+                                                : field.label === 'Fecha de Cumpleaños'
+                                                  ? birthDateRef
+                                                  : undefined
+                                        }
                                         type={field.type}
                                         name={
                                             field.label === 'Nombre Completo'
@@ -628,6 +665,13 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     </label>
                                     <div className="relative">
                                         <input
+                                            ref={
+                                                f.label === 'Contraseña Actual'
+                                                    ? currentPasswordRef
+                                                    : f.label === 'Nueva Contraseña'
+                                                      ? newPasswordRef
+                                                      : confirmNewPasswordRef
+                                            }
                                             type={f.show ? 'text' : 'password'}
                                             name={
                                                 f.label === 'Contraseña Actual'

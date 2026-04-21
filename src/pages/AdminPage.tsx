@@ -189,17 +189,19 @@ export default function AdminPage() {
     const pendingResReminders = useRef<Map<number, number>>(new Map());
     const isFirstLoad = useRef(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioMesaRef = useRef<HTMLAudioElement | null>(null);
 
-    const playAlert = async () => {
-        if (!audioRef.current || !isSoundEnabled) return;
+    const playAlert = async (type: 'delivery' | 'mesa' = 'delivery') => {
+        const targetAudio = type === 'mesa' ? audioMesaRef.current : audioRef.current;
+        if (!targetAudio || !isSoundEnabled) return;
 
         try {
             // Reset to beginning if already playing
-            audioRef.current.currentTime = 0;
-            await audioRef.current.play();
+            targetAudio.currentTime = 0;
+            await targetAudio.play();
         } catch (error: any) {
             // Log warning, don't crash. Usually due to autoplay policy.
-            console.warn('Admin notification sound blocked or failed:', error?.message);
+            console.warn(`Admin ${type} notification sound blocked or failed:`, error?.message);
         }
     };
 
@@ -265,29 +267,38 @@ export default function AdminPage() {
             return;
         }
 
-        let shouldPlaySound = false;
+        let shouldPlayDelivery = false;
+        let shouldPlayMesa = false;
         const now = Date.now();
 
         // 1. Check Orders
         currentPendingOrders.forEach((order: any) => {
             const lastNotified = pendingReminders.current.get(order.id);
+            const isMesa = order.deliveryAddress?.toUpperCase().includes('MESA');
+
             if (!lastNotified) {
-                if (!isFirstLoad.current && isSoundEnabled) shouldPlaySound = true;
+                if (!isFirstLoad.current && isSoundEnabled) {
+                    if (isMesa) shouldPlayMesa = true;
+                    else shouldPlayDelivery = true;
+                }
                 pendingReminders.current.set(order.id, now);
             } else if (now - lastNotified >= 120000) {
-                if (isSoundEnabled) shouldPlaySound = true;
+                if (isSoundEnabled) {
+                    if (isMesa) shouldPlayMesa = true;
+                    else shouldPlayDelivery = true;
+                }
                 pendingReminders.current.set(order.id, now);
             }
         });
 
-        // 2. Check Reservations
+        // 2. Check Reservations (Standard Delivery sound or specific later)
         currentPendingRes.forEach((res: any) => {
             const lastNotified = pendingResReminders.current.get(res.id);
             if (!lastNotified) {
-                if (!isFirstLoad.current && isSoundEnabled) shouldPlaySound = true;
+                if (!isFirstLoad.current && isSoundEnabled) shouldPlayDelivery = true;
                 pendingResReminders.current.set(res.id, now);
             } else if (now - lastNotified >= 120000) {
-                if (isSoundEnabled) shouldPlaySound = true;
+                if (isSoundEnabled) shouldPlayDelivery = true;
                 pendingResReminders.current.set(res.id, now);
             }
         });
@@ -303,8 +314,10 @@ export default function AdminPage() {
             if (!pendingResIds.has(id)) pendingResReminders.current.delete(id);
         }
 
-        if (shouldPlaySound) {
-            playAlert();
+        if (shouldPlayMesa) {
+            playAlert('mesa');
+        } else if (shouldPlayDelivery) {
+            playAlert('delivery');
         }
 
         isFirstLoad.current = false;
@@ -404,6 +417,11 @@ export default function AdminPage() {
             <audio
                 ref={audioRef}
                 src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+                preload="auto"
+            />
+            <audio
+                ref={audioMesaRef}
+                src="https://assets.mixkit.co/active_storage/sfx/1017/1017-preview.mp3"
                 preload="auto"
             />
             {/* Sidebar */}

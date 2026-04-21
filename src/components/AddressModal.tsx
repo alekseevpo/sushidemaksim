@@ -145,6 +145,8 @@ export default function AddressModal({
     const wasSelectedViaSearchRef = useRef(false);
     const prevOpenRef = useRef(isOpen);
     const [isLocatingAddress, setIsLocatingAddress] = useState(false);
+    const houseInputRef = useRef<HTMLInputElement>(null);
+    const apartmentInputRef = useRef<HTMLInputElement>(null);
 
     // Lock body scroll when modal is open
     useBodyScrollLock(isOpen);
@@ -421,10 +423,21 @@ export default function AddressModal({
     }, [markerPosition, performReverseGeocode, isOpen]);
 
     const handleContinue = () => {
+        // Safari Sync Hack
+        [houseInputRef, apartmentInputRef].forEach(ref => {
+            if (ref.current) {
+                ref.current.focus();
+                ref.current.blur();
+            }
+        });
+
+        const finalHouse = (houseInputRef.current?.value || house).trim();
+        const finalApartment = (apartmentInputRef.current?.value || apartment).trim();
+
         onSelect({
             address: address,
-            house,
-            apartment,
+            house: finalHouse,
+            apartment: finalApartment,
             postalCode,
             zone: selectedZone,
             coordinates: markerPosition,
@@ -746,6 +759,7 @@ export default function AddressModal({
                                             <input
                                                 type="text"
                                                 value={house}
+                                                ref={houseInputRef}
                                                 onChange={e => setHouse(e.target.value)}
                                                 className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
                                                 placeholder="Ej: 20"
@@ -762,6 +776,7 @@ export default function AddressModal({
                                             </label>
                                             <input
                                                 value={apartment}
+                                                ref={apartmentInputRef}
                                                 onChange={e => setApartment(e.target.value)}
                                                 className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-orange-500/10 transition outline-none"
                                                 placeholder="Ej: 1B"

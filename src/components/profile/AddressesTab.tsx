@@ -67,6 +67,14 @@ export default function AddressesTab({
     const ignoreNextSearchRef = useRef(false);
     const wasSelectedViaSearchRef = useRef(false);
 
+    // Form Refs for reliable Safari capture
+    const labelRef = useRef<HTMLInputElement>(null);
+    const streetRef = useRef<HTMLInputElement>(null);
+    const houseRef = useRef<HTMLInputElement>(null);
+    const apartmentRef = useRef<HTMLInputElement>(null);
+    const phoneRef = useRef<HTMLInputElement>(null);
+    const isSubmitting = useRef(false);
+
     // Debounced Nominatim search
     useEffect(() => {
         if (ignoreNextSearchRef.current) {
@@ -231,6 +239,16 @@ export default function AddressesTab({
             lat: (addr as any).lat,
             lon: (addr as any).lon,
         });
+
+        // Sync refs with edited values
+        setTimeout(() => {
+            if (labelRef.current) labelRef.current.value = addr.label;
+            if (streetRef.current) streetRef.current.value = addr.street;
+            if (houseRef.current) houseRef.current.value = addr.house || '';
+            if (apartmentRef.current) apartmentRef.current.value = addr.apartment || '';
+            if (phoneRef.current) phoneRef.current.value = (addr.phone || '').replace(/^\+34/, '');
+        }, 0);
+
         ignoreNextSearchRef.current = true;
         setSearchQuery(addr.street);
         setShowAddAddress(true);
@@ -276,19 +294,50 @@ export default function AddressesTab({
     };
 
     const handleSaveAddress = async () => {
-        if (!newAddress.label || !newAddress.street || !newAddress.postalCode || !newAddress.phone)
+        if (isSubmitting.current) return;
+
+        // Safari Sync Hack
+        [labelRef, streetRef, houseRef, apartmentRef, phoneRef].forEach(ref => {
+            if (ref.current) {
+                ref.current.focus();
+                ref.current.blur();
+            }
+        });
+
+        const labelVal = (labelRef.current?.value || '').trim();
+        const streetVal = (streetRef.current?.value || '').trim();
+        const houseVal = (houseRef.current?.value || '').trim();
+        const apartmentVal = (apartmentRef.current?.value || '').trim();
+        const phoneVal = (phoneRef.current?.value || '').trim();
+
+        if (!labelVal || !streetVal || !newAddress.postalCode || !phoneVal) {
+            error('Por favor, rellena todos los campos obligatorios');
             return;
+        }
+
+        const dataToSave = {
+            ...newAddress,
+            label: labelVal,
+            street: streetVal,
+            house: houseVal,
+            apartment: apartmentVal,
+            phone: phoneVal ? `+34${phoneVal}` : '',
+        };
+
         try {
+            isSubmitting.current = true;
             if (editId && editAddress) {
-                await editAddress(editId, newAddress);
+                await editAddress(editId, dataToSave);
                 success('¡Dirección actualizada con éxito! 📍');
             } else {
-                await addAddress(newAddress);
+                await addAddress(dataToSave);
                 success('¡Dirección añadida con éxito! 🏠');
             }
             resetForm();
         } catch (err: any) {
             error(err.message || 'Error al guardar la dirección');
+        } finally {
+            isSubmitting.current = false;
         }
     };
 
@@ -361,10 +410,8 @@ export default function AddressesTab({
                                 Etiqueta (ej: Casa, Oficina)
                             </label>
                             <input
-                                value={newAddress.label}
-                                onChange={e =>
-                                    setNewAddress(p => ({ ...p, label: e.target.value }))
-                                }
+                                ref={labelRef}
+                                defaultValue={newAddress.label}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                 placeholder="Casa"
                             />
@@ -378,15 +425,9 @@ export default function AddressesTab({
                                     +34
                                 </div>
                                 <input
+                                    ref={phoneRef}
                                     type="tel"
-                                    value={newAddress.phone.replace(/^\+34/, '')}
-                                    onChange={e => {
-                                        const val = e.target.value.replace(/\D/g, '').slice(0, 9);
-                                        setNewAddress(p => ({
-                                            ...p,
-                                            phone: val ? `+34${val}` : '',
-                                        }));
-                                    }}
+                                    defaultValue={newAddress.phone.replace(/^\+34/, '')}
                                     className="w-full bg-transparent border-none px-4 py-3 text-sm font-bold outline-none text-gray-900"
                                     placeholder="600 000 000"
                                     maxLength={9}
@@ -400,7 +441,8 @@ export default function AddressesTab({
                             </label>
                             <div className="relative">
                                 <input
-                                    value={searchQuery || newAddress.street}
+                                    ref={streetRef}
+                                    defaultValue={searchQuery || newAddress.street}
                                     onChange={e => handleStreetChange(e.target.value)}
                                     className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all ${newAddress.street && 'border-green-100 bg-green-50/10'}`}
                                     placeholder="Introduce tu calle y número..."
@@ -513,10 +555,8 @@ export default function AddressesTab({
                                 Número *
                             </label>
                             <input
-                                value={newAddress.house}
-                                onChange={e =>
-                                    setNewAddress(p => ({ ...p, house: e.target.value }))
-                                }
+                                ref={houseRef}
+                                defaultValue={newAddress.house}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                 placeholder="Ej: 20"
                             />
@@ -531,10 +571,8 @@ export default function AddressesTab({
                                 Piso, Escalera, Puerta
                             </label>
                             <input
-                                value={newAddress.apartment}
-                                onChange={e =>
-                                    setNewAddress(p => ({ ...p, apartment: e.target.value }))
-                                }
+                                ref={apartmentRef}
+                                defaultValue={newAddress.apartment}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                 placeholder="Piso 3, Puerta A..."
                             />

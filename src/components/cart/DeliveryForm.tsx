@@ -27,6 +27,15 @@ interface DeliveryFormProps {
     isStoreClosed: boolean;
     isTodayClosed: boolean;
     isPickupOnly: boolean;
+    refs: {
+        customerName: React.RefObject<HTMLInputElement>;
+        guestEmail: React.RefObject<HTMLInputElement>;
+        phone: React.RefObject<HTMLInputElement>;
+        address: React.RefObject<HTMLInputElement>;
+        house: React.RefObject<HTMLInputElement>;
+        apartment: React.RefObject<HTMLInputElement>;
+        customNote: React.RefObject<HTMLTextAreaElement>;
+    };
 }
 
 export default function DeliveryForm({
@@ -38,6 +47,7 @@ export default function DeliveryForm({
     isStoreClosed,
     isTodayClosed,
     isPickupOnly,
+    refs,
 }: DeliveryFormProps) {
     const {
         register,
@@ -496,6 +506,10 @@ export default function DeliveryForm({
                             <input
                                 type="text"
                                 {...register('customerName')}
+                                ref={e => {
+                                    register('customerName').ref(e);
+                                    (refs.customerName as any).current = e;
+                                }}
                                 onFocus={trackFormFocus}
                                 placeholder="Ej: Juan Pérez"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
@@ -509,6 +523,10 @@ export default function DeliveryForm({
                             <input
                                 type="email"
                                 {...register('guestEmail')}
+                                ref={e => {
+                                    register('guestEmail').ref(e);
+                                    (refs.guestEmail as any).current = e;
+                                }}
                                 onFocus={trackFormFocus}
                                 placeholder="tu@email.com"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
@@ -529,6 +547,7 @@ export default function DeliveryForm({
                                 <input
                                     type="tel"
                                     value={value || ''}
+                                    ref={refs.phone}
                                     onChange={e => {
                                         const val = e.target.value.replace(/\D/g, '').slice(0, 9);
                                         onChange(val);
@@ -723,6 +742,10 @@ export default function DeliveryForm({
                     </label>
                     <textarea
                         {...register('customNote')}
+                        ref={e => {
+                            register('customNote').ref(e);
+                            (refs.customNote as any).current = e;
+                        }}
                         placeholder="Ej. Quitar pepino del rollo California..."
                         rows={2}
                         className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white resize-none"

@@ -4,8 +4,8 @@ export type SupportedLanguage = 'ru' | 'es' | 'en';
 
 export const translations = {
     ru: {
-        welcome_title: 'Специальное предложение',
-        welcome_text: 'Зарегистрируйтесь на сайте и получите скидку 10% на ваш первый заказ!',
+        welcome_title: 'СПЕЦИАЛЬНОЕ ПРЕДЛОЖЕНИЕ',
+        welcome_text: 'Зарегистрируйтесь и получите скидку 10% на заказ',
         register_btn: 'Зарегистрироваться',
         skip_btn: 'Позже',
         view_cart: 'В КОРЗИНУ',

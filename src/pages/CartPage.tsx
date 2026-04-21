@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -79,6 +79,16 @@ export default function CartPage() {
 
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
+    // Form Refs for reliable Safari capture
+    const customerNameRef = useRef<HTMLInputElement>(null);
+    const guestEmailRef = useRef<HTMLInputElement>(null);
+    const phoneRef = useRef<HTMLInputElement>(null);
+    const addressRef = useRef<HTMLInputElement>(null);
+    const houseRef = useRef<HTMLInputElement>(null);
+    const apartmentRef = useRef<HTMLInputElement>(null);
+    const customNoteRef = useRef<HTMLTextAreaElement>(null);
+    const isSubmittingRef = useRef(false);
+
     const todayStr = new Date().toLocaleDateString('sv-SE'); // Local date in YYYY-MM-DD format
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -140,9 +150,11 @@ export default function CartPage() {
     useEffect(() => {
         if (user && !methods.getValues('customerName')) {
             methods.setValue('customerName', user.name || '');
+            if (customerNameRef.current) customerNameRef.current.value = user.name || '';
         }
         if (user && !methods.getValues('guestEmail')) {
             methods.setValue('guestEmail', user.email || '');
+            if (guestEmailRef.current) guestEmailRef.current.value = user.email || '';
         }
     }, [user, methods]);
 
@@ -194,6 +206,11 @@ export default function CartPage() {
             methods.setValue('selectedZone', computedZone);
             methods.setValue('lat', finalLat ? Number(finalLat) : undefined);
             methods.setValue('lon', finalLon ? Number(finalLon) : undefined);
+
+            // Sync refs
+            if (addressRef.current) addressRef.current.value = res.address || res.street || '';
+            if (houseRef.current) houseRef.current.value = res.house || '';
+            if (apartmentRef.current) apartmentRef.current.value = res.apartment || '';
         },
         [methods, deliveryZones, recoverCoordinates]
     );
@@ -624,6 +641,44 @@ export default function CartPage() {
             }
         }
 
+        if (isSubmittingRef.current) return;
+
+        // Safari Sync Hack
+        [
+            customerNameRef,
+            guestEmailRef,
+            phoneRef,
+            addressRef,
+            houseRef,
+            apartmentRef,
+            customNoteRef,
+        ].forEach(ref => {
+            if (ref.current) {
+                ref.current.focus();
+                ref.current.blur();
+            }
+        });
+
+        // Capture values from Refs instead of only trusting state/data
+        const finalCustomerName = (customerNameRef.current?.value || '').trim();
+        const finalGuestEmail = (guestEmailRef.current?.value || '').trim();
+        const finalPhone = (phoneRef.current?.value || '').trim();
+        const finalAddress = (addressRef.current?.value || '').trim();
+        const finalHouse = (houseRef.current?.value || '').trim();
+        const finalApartment = (apartmentRef.current?.value || '').trim();
+        const finalCustomNote = (customNoteRef.current?.value || '').trim();
+
+        // Validate captured values if they were meant to be present
+        if (!isAuthenticated && !finalCustomerName) {
+            return showError('Por favor, introduce tu nombre');
+        }
+        if (!finalPhone) {
+            return showError('Por favor, introduce tu teléfono de contacto');
+        }
+        if (deliveryType === 'delivery' && !finalAddress) {
+            return showError('Por favor, indica tu calle para el envío');
+        }
+
         tracker.track('checkout_start', {
             metadata: {
                 totalValue: cartSubtotal,
@@ -633,8 +688,6 @@ export default function CartPage() {
             },
             userId: user?.id,
         });
-
-        setIsOrdering(true);
 
         const notesArray = [];
         const typeLabel =
@@ -664,19 +717,26 @@ export default function CartPage() {
             }
         });
 
-        if (customNote.trim()) notesArray.push(customNote.trim());
+        if (finalCustomNote || customNote.trim()) {
+            notesArray.push((finalCustomNote || customNote).trim());
+        }
 
         try {
+            isSubmittingRef.current = true;
+            setIsOrdering(true);
+
             const { lat, lon } = data;
             const payload: any = {
                 deliveryType,
-                address: streetVal,
-                house: houseVal,
-                apartment: aptVal,
+                address: finalAddress || streetVal,
+                house: finalHouse || houseVal,
+                apartment: finalApartment || aptVal,
                 postalCode: data.postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
-                phone: `+34${phone}`,
-                customerName: isAuthenticated ? user?.name || '' : customerNameVal,
-                guestEmail: isAuthenticated ? user?.email || '' : guestEmailVal,
+                phone: `+34${finalPhone || phone}`,
+                customerName: isAuthenticated
+                    ? user?.name || ''
+                    : finalCustomerName || customerNameVal,
+                guestEmail: isAuthenticated ? user?.email || '' : finalGuestEmail || guestEmailVal,
                 paymentMethod,
                 guestsCount: data.guestsCount,
                 chopsticksCount: data.chopsticksCount,
@@ -685,12 +745,12 @@ export default function CartPage() {
                 scheduledTime: data.scheduledTime,
                 noCall: data.noCall,
                 noBuzzer: data.noBuzzer,
-                customNote: data.customNote,
+                customNote: finalCustomNote || data.customNote,
                 deliveryAddress:
                     deliveryType === 'pickup'
                         ? 'RECOGIDA'
-                        : `${streetVal}, ${houseVal}, ${aptVal}, CP: ${data.postalCode || ''}`,
-                phoneNumber: `+34${phone}`,
+                        : `${finalAddress || streetVal}, ${finalHouse || houseVal}, ${finalApartment || aptVal}, CP: ${data.postalCode || ''}`,
+                phoneNumber: `+34${finalPhone || phone}`,
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
                 promoCode: promoDiscount ? promoCode : undefined,
@@ -754,6 +814,7 @@ export default function CartPage() {
             showError(err.message || 'Error al realizar el pedido');
         } finally {
             setIsOrdering(false);
+            isSubmittingRef.current = false;
         }
     };
 
@@ -895,6 +956,15 @@ export default function CartPage() {
                                     isStoreClosed={isStoreClosed}
                                     isTodayClosed={isTodayClosed}
                                     isPickupOnly={isPickupOnly}
+                                    refs={{
+                                        customerName: customerNameRef,
+                                        guestEmail: guestEmailRef,
+                                        phone: phoneRef,
+                                        address: addressRef,
+                                        house: houseRef,
+                                        apartment: apartmentRef,
+                                        customNote: customNoteRef,
+                                    }}
                                 />
 
                                 <CartSuggestions

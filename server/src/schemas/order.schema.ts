@@ -30,7 +30,8 @@ const phoneRegex = /^\+34[6789]\d{8}$/;
 export const createOrderSchema = z.object({
     body: z
         .object({
-            deliveryType: z.enum(['delivery', 'pickup', 'reservation']),
+            deliveryType: z.enum(['delivery', 'pickup', 'reservation', 'table']),
+            mesaNumber: z.number().min(1).max(100).optional().nullable(),
 
             // Address fields (now optional and validated via superRefine)
             address: z.string().max(400).optional().nullable(),
@@ -145,7 +146,10 @@ export const createOrderSchema = z.object({
 export const inviteOrderSchema = z.object({
     body: z
         .object({
-            deliveryType: z.enum(['delivery', 'pickup', 'reservation']).default('delivery'),
+            deliveryType: z
+                .enum(['delivery', 'pickup', 'reservation', 'table'])
+                .default('delivery'),
+            mesaNumber: z.number().min(1).max(100).optional().nullable(),
             address: z.string().max(400).optional().nullable(),
             house: z.string().max(50).optional().nullable(),
             apartment: z.string().max(50).optional().nullable(),

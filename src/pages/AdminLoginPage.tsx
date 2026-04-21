@@ -11,17 +11,9 @@ export default function AdminLoginPage() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginInput>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: '',
-            password: '',
-        },
-    });
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+    const isSubmitting = useRef(false);
 
     const { login, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
@@ -37,31 +29,43 @@ export default function AdminLoginPage() {
         }
     }, [isAuthenticated, user, navigate]);
 
-    const onSubmit = async (data: LoginInput, e?: React.BaseSyntheticEvent) => {
+    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isSubmitting.current || isLoading) return;
+
         setError('');
+
+        // Safari Sync Hack
+        [emailRef, passwordRef].forEach(ref => {
+            if (ref.current) {
+                ref.current.focus();
+                ref.current.blur();
+            }
+        });
+
+        const emailVal = (emailRef.current?.value || '').trim();
+        const passwordVal = passwordRef.current?.value || '';
+
+        if (!emailVal || !passwordVal) {
+            setError('Por favor, introduce tu email и contraseña');
+            return;
+        }
+
         setIsLoading(true);
+        isSubmitting.current = true;
 
-        const form = e?.target as HTMLFormElement;
-        let emailVal = data.email;
-        let passwordVal = data.password;
+        try {
+            const result = await login(emailVal, passwordVal);
 
-        // On mobile Safari, react-hook-form state might be empty on autofill.
-        // We use direct DOM access as a more reliable source.
-        if (form) {
-            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
-            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
-
-            if (emailInput?.value) emailVal = emailInput.value.trim();
-            if (passwordInput?.value) passwordVal = passwordInput.value;
-        }
-
-        const result = await login(emailVal, passwordVal);
-
-        if (!result.success) {
-            setError(result.error || 'Credenciales inválidas');
+            if (!result.success) {
+                setError(result.error || 'Credenciales inválidas');
+            }
+        } finally {
             setIsLoading(false);
+            isSubmitting.current = false;
         }
-        // If successful, the useEffect hook will handle the redirect once user state updates
     };
 
     return (
@@ -86,7 +90,7 @@ export default function AdminLoginPage() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="metallic-card py-8 px-4 sm:rounded-2xl sm:px-10">
-                    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+                    <form className="space-y-6" onSubmit={handleFormSubmit} noValidate>
                         {error && (
                             <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-md">
                                 <div className="flex">
@@ -111,24 +115,13 @@ export default function AdminLoginPage() {
                                     <Mail size={20} strokeWidth={1.5} className="text-gray-400" />
                                 </div>
                                 <input
+                                    ref={emailRef}
                                     type="email"
-                                    {...register('email')}
-                                    className={`focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-xl bg-gray-50 border text-gray-900 transition`}
+                                    name="email"
+                                    required
+                                    className="focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
                                     placeholder="admin@sushidemaksim.es"
                                 />
-                                <AnimatePresence>
-                                    {errors.email && (
-                                        <motion.p
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1 ml-1"
-                                        >
-                                            <AlertCircle size={10} />
-                                            {errors.email.message}
-                                        </motion.p>
-                                    )}
-                                </AnimatePresence>
                             </div>
                         </div>
 
@@ -141,24 +134,13 @@ export default function AdminLoginPage() {
                                     <Lock size={20} strokeWidth={1.5} className="text-gray-400" />
                                 </div>
                                 <input
+                                    ref={passwordRef}
                                     type="password"
-                                    {...register('password')}
-                                    className={`focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-xl bg-gray-50 border text-gray-900 transition`}
+                                    name="password"
+                                    required
+                                    className="focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-xl bg-gray-50 border text-gray-900 transition"
                                     placeholder="••••••••"
                                 />
-                                <AnimatePresence>
-                                    {errors.password && (
-                                        <motion.p
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1 ml-1"
-                                        >
-                                            <AlertCircle size={10} />
-                                            {errors.password.message}
-                                        </motion.p>
-                                    )}
-                                </AnimatePresence>
                             </div>
                         </div>
 

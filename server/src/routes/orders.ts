@@ -22,6 +22,7 @@ router.post(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const {
             deliveryType = 'delivery',
+            mesaNumber,
             address,
             house,
             apartment,
@@ -41,11 +42,19 @@ router.post(
 
         // Map frontend values to backend DB labels if needed, but we mostly use the structured data now
         const deliveryAddress =
-            deliveryType === 'pickup' ? 'RECOGIDA' : `${address}, ${house}, ${apartment || ''}`;
+            deliveryType === 'table'
+                ? `MESA ${mesaNumber || req.body.tableNumber || '?'}`
+                : deliveryType === 'pickup'
+                  ? 'RECOGIDA'
+                  : `${address}, ${house}, ${apartment || ''}`;
         const phoneNumber = phone;
         const email = guestEmail;
 
         let notesToSave = customNote?.trim() || '';
+        if (deliveryType === 'table') {
+            notesToSave =
+                `[MESA: ${mesaNumber || req.body.tableNumber || '?'}] ${notesToSave}`.trim();
+        }
 
         // 0. Business Hour & Scheduling Validation
         const { data: settings } = await supabase.from('site_settings').select('key, value');
@@ -568,6 +577,7 @@ router.post(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const {
             deliveryType = 'delivery',
+            mesaNumber,
             address,
             house,
             apartment,
@@ -583,7 +593,11 @@ router.post(
         } = req.body;
 
         const deliveryAddress =
-            deliveryType === 'pickup' ? 'RECOGIDA' : `${address}, ${house}, ${apartment || ''}`;
+            deliveryType === 'table'
+                ? `MESA ${mesaNumber || req.body.tableNumber || '?'}`
+                : deliveryType === 'pickup'
+                  ? 'RECOGIDA'
+                  : `${address}, ${house}, ${apartment || ''}`;
         const phoneNumber = phone;
         const notes = customNote;
 

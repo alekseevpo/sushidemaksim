@@ -73,6 +73,7 @@ const ORDERS_TRANSLATIONS = {
             scheduled: 'ЗАКАЗ КО ВРЕМЕНИ',
             noCall: 'БЕЗ ЗВОНКА',
             noBuzzer: 'В ТЕЛЕФОН (НЕ ЗВОНОК)',
+            mesa: 'СТОЛ',
         },
         clientMessage: 'Сообщение от клиента',
         products: 'Товары',
@@ -131,6 +132,7 @@ const ORDERS_TRANSLATIONS = {
             scheduled: 'ENTREGA PROGRAMADA',
             noCall: 'SIN LLAMADA',
             noBuzzer: 'MÓVIL (NO TIMBRE)',
+            mesa: 'MESA',
         },
         clientMessage: 'Mensaje del Cliente',
         products: 'Productos',
@@ -478,6 +480,19 @@ export default function AdminOrders({
                                                         />
                                                     </div>
                                                 )}
+                                                {order.deliveryAddress
+                                                    ?.toUpperCase()
+                                                    .includes('MESA') && (
+                                                    <div
+                                                        className="bg-red-600 text-white px-3 py-1.5 rounded-xl border border-red-700 shadow-lg flex items-center gap-2 animate-pulse"
+                                                        title="Pedido en MESA"
+                                                    >
+                                                        <Activity size={16} strokeWidth={3} />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">
+                                                            {order.deliveryAddress}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                             <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">
                                                 {new Date(order.createdAt).toLocaleString(
@@ -790,6 +805,17 @@ export default function AdminOrders({
                                                                 ? t.types.recogida
                                                                 : t.types.domicilio}
                                                         </div>
+                                                        {order.deliveryAddress
+                                                            ?.toUpperCase()
+                                                            .includes('MESA') && (
+                                                            <div className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border bg-red-50 text-red-700 border-red-200">
+                                                                <Activity
+                                                                    size={14}
+                                                                    strokeWidth={2.5}
+                                                                />
+                                                                {order.deliveryAddress}
+                                                            </div>
+                                                        )}
                                                         {paymentMethod && (
                                                             <div
                                                                 className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${paymentMethod.includes('TARJETA') ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}

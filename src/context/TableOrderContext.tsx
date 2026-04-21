@@ -9,6 +9,10 @@ interface TableOrderContextType {
     clearCart: () => void;
     total: number;
     itemCount: number;
+    tableNumber: number | null;
+    isOrderConfirmed: boolean;
+    setOrderConfirmed: (val: boolean) => void;
+    submitOrder: (paymentMethod: 'EFECTIVO' | 'TARJETA') => Promise<void>;
 }
 
 const TableOrderContext = createContext<TableOrderContextType | undefined>(undefined);
@@ -26,10 +30,20 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             return [];
         }
     });
+    const [tableNumber, setTableNumber] = useState<number | null>(null);
+    const [isOrderConfirmed, setOrderConfirmed] = useState(false);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }, [items]);
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tableParam = params.get('table');
+        if (tableParam) {
+            setTableNumber(parseInt(tableParam, 10));
+        }
+    }, []);
 
     const addItem = useCallback((item: SushiItem, quantity: number = 1) => {
         setItems(prev => {
@@ -71,6 +85,34 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         [removeItem]
     );
 
+    const submitOrder = async (paymentMethod: 'EFECTIVO' | 'TARJETA') => {
+        if (!tableNumber || items.length === 0) return;
+
+        try {
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    deliveryType: 'table',
+                    mesaNumber: tableNumber,
+                    paymentMethod,
+                    guestItems: items.map(item => ({
+                        menuItemId: item.id,
+                        quantity: item.quantity,
+                    })),
+                }),
+            });
+
+            if (!response.ok) throw new Error('Order failed');
+
+            setOrderConfirmed(true);
+            setItems([]);
+        } catch (error) {
+            console.error('Submit order error:', error);
+            throw error;
+        }
+    };
+
     const clearCart = useCallback(() => {
         setItems([]);
     }, []);
@@ -92,6 +134,10 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 clearCart,
                 total,
                 itemCount,
+                tableNumber,
+                isOrderConfirmed,
+                setOrderConfirmed,
+                submitOrder,
             }}
         >
             {children}

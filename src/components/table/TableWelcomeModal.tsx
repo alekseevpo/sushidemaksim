@@ -19,14 +19,14 @@ export const TableWelcomeModal: React.FC<TableWelcomeModalProps> = ({
     return (
         <AnimatePresence>
             {isOpen && (
-                <>
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 overflow-hidden pointer-events-none">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/80 z-[200] backdrop-blur-md"
+                        className="absolute inset-0 bg-black/80 backdrop-blur-md pointer-events-auto"
                     />
 
                     {/* Modal */}
@@ -34,7 +34,7 @@ export const TableWelcomeModal: React.FC<TableWelcomeModalProps> = ({
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-[#141414] rounded-[40px] z-[201] overflow-hidden border border-white/10 shadow-2xl"
+                        className="relative w-full max-w-sm bg-[#141414] rounded-[40px] shadow-2xl overflow-hidden border border-white/10 pointer-events-auto"
                     >
                         {/* Decorative Background */}
                         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -97,7 +97,7 @@ export const TableWelcomeModal: React.FC<TableWelcomeModalProps> = ({
                             </div>
                         </div>
                     </motion.div>
-                </>
+                </div>
             )}
         </AnimatePresence>
     );

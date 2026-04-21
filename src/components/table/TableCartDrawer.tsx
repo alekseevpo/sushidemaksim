@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import {
+    X,
+    Minus,
+    Plus,
+    Trash2,
+    ShoppingCart,
+    CreditCard,
+    Banknote,
+    CheckCircle2,
+    Gift,
+} from 'lucide-react';
 import { useTableOrder } from '../../context/TableOrderContext';
-import { useTableI18n } from '../../utils/tableI18n';
 import SafeImage from '../common/SafeImage';
+import { cn } from '../../utils/cn';
 
 interface TableCartDrawerProps {
     isOpen: boolean;
@@ -11,8 +21,42 @@ interface TableCartDrawerProps {
 }
 
 export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClose }) => {
-    const { items, total, itemCount, updateQuantity, removeItem, clearCart } = useTableOrder();
-    const { t } = useTableI18n();
+    const {
+        items,
+        total,
+        itemCount,
+        updateQuantity,
+        removeItem,
+        tableNumber,
+        isOrderConfirmed,
+        setOrderConfirmed,
+        submitOrder,
+    } = useTableOrder();
+    const [paymentMethod, setPaymentMethod] = useState<'EFECTIVO' | 'TARJETA'>('EFECTIVO');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const isSubmittingRef = useRef(false);
+
+    const handlePlaceOrder = async () => {
+        if (isSubmittingRef.current) return;
+
+        setIsSubmitting(true);
+        isSubmittingRef.current = true;
+
+        try {
+            await submitOrder(paymentMethod);
+        } catch (error) {
+            console.error('Failed to place order:', error);
+            alert('Error al realizar el pedido. Por favor, avise al camarero.');
+        } finally {
+            setIsSubmitting(false);
+            isSubmittingRef.current = false;
+        }
+    };
+
+    const handleClose = () => {
+        setOrderConfirmed(false);
+        onClose();
+    };
 
     return (
         <AnimatePresence>
@@ -23,8 +67,8 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={onClose}
-                        className="fixed inset-0 bg-black/40 z-[100] backdrop-blur-sm"
+                        onClick={handleClose}
+                        className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-md"
                     />
 
                     {/* Drawer */}
@@ -32,163 +76,251 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#0A0A0A] z-[101] shadow-2xl flex flex-col"
+                        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                        className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#0A0A0A] z-[101] shadow-2xl flex flex-col border-l border-white/5"
                     >
-                        {/* Header */}
-                        <div className="p-6 flex items-center justify-between border-b border-white/5 bg-[#141414]">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
-                                    <ShoppingCart size={20} />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-black text-white italic tracking-tighter uppercase leading-none">
-                                        {t('your_order')}
-                                    </h2>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
-                                        {itemCount} {itemCount === 1 ? t('item') : t('items')}
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={onClose}
-                                className="p-2.5 bg-black text-white rounded-xl active:scale-90 transition-all border border-white/5"
-                            >
-                                <X size={20} strokeWidth={2.5} />
-                            </button>
-                        </div>
+                        {isOrderConfirmed ? (
+                            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-orange-600/10 to-transparent">
+                                <motion.div
+                                    initial={{ scale: 0.5, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    className="w-24 h-24 bg-orange-600 rounded-full flex items-center justify-center text-white mb-6 shadow-lg shadow-orange-600/30"
+                                >
+                                    <CheckCircle2 size={48} strokeWidth={2.5} />
+                                </motion.div>
 
-                        {/* Items List */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                            {items.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center px-6">
-                                    <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center text-gray-700 mb-4">
-                                        <ShoppingCart size={40} />
+                                <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">
+                                    ¡Gracias!
+                                </h2>
+                                <p className="text-gray-400 font-bold mb-8">
+                                    Su pedido ya se está preparando en cocina.
+                                </p>
+
+                                {/* Loyalty Club Offer Card */}
+                                <motion.div
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.2 }}
+                                    className="w-full bg-[#141414] border border-orange-600/30 rounded-[32px] p-6 relative overflow-hidden group"
+                                >
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-orange-600/20 transition-colors" />
+                                    <div className="relative z-10">
+                                        <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center text-white mb-4 shadow-md">
+                                            <Gift size={24} />
+                                        </div>
+                                        <h3 className="text-xl font-black text-white italic uppercase tracking-tighter mb-2">
+                                            Club Sushi de Maksim
+                                        </h3>
+                                        <p className="text-sm text-gray-400 font-medium mb-6 leading-relaxed">
+                                            ¡Regístrate ahora y obtén un{' '}
+                                            <strong>10% de descuento</strong> en tu próximo pedido!
+                                        </p>
+                                        <a
+                                            href="/profile?register=true"
+                                            className="block w-full py-4 bg-white text-black rounded-2xl font-black text-xs tracking-widest uppercase hover:bg-gray-200 transition-colors"
+                                        >
+                                            Unirme al Club
+                                        </a>
                                     </div>
-                                    <h3 className="text-lg font-black text-white uppercase italic">
-                                        {t('empty_cart')}
-                                    </h3>
-                                    <p className="text-gray-400 text-sm mt-2">
-                                        {t('empty_cart')}...
-                                    </p>
+                                </motion.div>
+
+                                <button
+                                    onClick={handleClose}
+                                    className="mt-8 text-gray-500 font-black text-xs uppercase tracking-widest hover:text-white transition-colors"
+                                >
+                                    Cerrar y ver el menú
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Header */}
+                                <div className="p-6 flex items-center justify-between border-b border-white/5 bg-[#141414]">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-orange-600/10 flex items-center justify-center text-orange-500">
+                                            <ShoppingCart size={20} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-black text-white italic tracking-tighter uppercase leading-none">
+                                                Mesa {tableNumber || '?'}
+                                            </h2>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
+                                                {itemCount}{' '}
+                                                {itemCount === 1 ? 'producto' : 'productos'}
+                                            </p>
+                                        </div>
+                                    </div>
                                     <button
                                         onClick={onClose}
-                                        className="mt-6 px-8 py-3 bg-white text-black rounded-2xl font-black text-xs tracking-widest uppercase"
+                                        className="p-2.5 bg-black text-white rounded-xl active:scale-90 transition-all border border-white/5"
                                     >
-                                        {t('continue_adding')}
+                                        <X size={20} strokeWidth={2.5} />
                                     </button>
                                 </div>
-                            ) : (
-                                items.map(item => (
-                                    <motion.div
-                                        key={item.id}
-                                        layout
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.95 }}
-                                        className="flex items-center gap-4 bg-[#141414] p-3 rounded-2xl border border-white/5 shadow-sm"
-                                    >
-                                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
-                                            <SafeImage
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="text-xs font-black text-white uppercase italic truncate">
-                                                {item.name}
-                                            </h4>
-                                            <p className="text-[10px] text-orange-500 font-bold mt-0.5">
-                                                {item.price.toFixed(2)}€ / unit
-                                            </p>
 
-                                            {/* Quantity Controls */}
-                                            <div className="flex items-center gap-3 mt-2">
-                                                <div className="flex items-center bg-black rounded-lg p-0.5 border border-white/5">
-                                                    <button
-                                                        onClick={() =>
-                                                            updateQuantity(
-                                                                item.id,
-                                                                item.quantity - 1
-                                                            )
-                                                        }
-                                                        className="p-1 hover:text-orange-500 text-gray-400"
-                                                    >
-                                                        <Minus size={14} strokeWidth={3} />
-                                                    </button>
-                                                    <span className="w-6 text-center text-xs font-black text-white">
-                                                        {item.quantity}
-                                                    </span>
-                                                    <button
-                                                        onClick={() =>
-                                                            updateQuantity(
-                                                                item.id,
-                                                                item.quantity + 1
-                                                            )
-                                                        }
-                                                        className="p-1 hover:text-orange-500 text-gray-400"
-                                                    >
-                                                        <Plus size={14} strokeWidth={3} />
-                                                    </button>
+                                {/* Items List */}
+                                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                                    {items.length === 0 ? (
+                                        <div className="h-full flex flex-col items-center justify-center text-center px-6">
+                                            <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center text-gray-800 mb-4">
+                                                <ShoppingCart size={40} />
+                                            </div>
+                                            <h3 className="text-lg font-black text-white uppercase italic">
+                                                Tu cesta está vacía
+                                            </h3>
+                                            <button
+                                                onClick={onClose}
+                                                className="mt-6 px-8 py-3 bg-white text-black rounded-2xl font-black text-xs tracking-widest uppercase"
+                                            >
+                                                Volver al menú
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        items.map(item => (
+                                            <motion.div
+                                                key={item.id}
+                                                layout
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.95 }}
+                                                className="flex items-center gap-4 bg-[#141414] p-3 rounded-2xl border border-white/5 shadow-sm"
+                                            >
+                                                <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
+                                                    <SafeImage
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
                                                 </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-xs font-black text-white uppercase italic truncate">
+                                                        {item.name}
+                                                    </h4>
+                                                    <div className="flex items-center gap-3 mt-2">
+                                                        <div className="flex items-center bg-black rounded-lg p-0.5 border border-white/5">
+                                                            <button
+                                                                onClick={() =>
+                                                                    updateQuantity(
+                                                                        item.id,
+                                                                        item.quantity - 1
+                                                                    )
+                                                                }
+                                                                className="p-1 hover:text-orange-500 text-gray-400"
+                                                            >
+                                                                <Minus size={14} strokeWidth={3} />
+                                                            </button>
+                                                            <span className="w-6 text-center text-xs font-black text-white">
+                                                                {item.quantity}
+                                                            </span>
+                                                            <button
+                                                                onClick={() =>
+                                                                    updateQuantity(
+                                                                        item.id,
+                                                                        item.quantity + 1
+                                                                    )
+                                                                }
+                                                                className="p-1 hover:text-orange-500 text-gray-400"
+                                                            >
+                                                                <Plus size={14} strokeWidth={3} />
+                                                            </button>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => removeItem(item.id)}
+                                                            className="p-1.5 text-gray-500 hover:text-red-500 transition-colors"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="text-sm font-black text-white">
+                                                    {(item.price * item.quantity).toFixed(2)}€
+                                                </div>
+                                            </motion.div>
+                                        ))
+                                    )}
+                                </div>
+
+                                {/* Footer Summary */}
+                                {items.length > 0 && (
+                                    <div className="p-6 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                                        {/* Payment Method Selector */}
+                                        <div className="mb-6">
+                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">
+                                                Método de pago
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-3">
                                                 <button
-                                                    onClick={() => removeItem(item.id)}
-                                                    className="p-1.5 text-gray-300 hover:text-red-500 transition-colors"
+                                                    onClick={() => setPaymentMethod('EFECTIVO')}
+                                                    className={cn(
+                                                        'h-14 rounded-2xl border flex items-center justify-center gap-2 transition-all',
+                                                        paymentMethod === 'EFECTIVO'
+                                                            ? 'bg-orange-600 border-orange-500 text-white shadow-lg shadow-orange-600/20'
+                                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                    )}
                                                 >
-                                                    <Trash2 size={14} />
+                                                    <Banknote size={18} />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">
+                                                        Efectivo
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    onClick={() => setPaymentMethod('TARJETA')}
+                                                    className={cn(
+                                                        'h-14 rounded-2xl border flex items-center justify-center gap-2 transition-all',
+                                                        paymentMethod === 'TARJETA'
+                                                            ? 'bg-orange-600 border-orange-500 text-white shadow-lg shadow-orange-600/20'
+                                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                    )}
+                                                >
+                                                    <CreditCard size={18} />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">
+                                                        Tarjeta
+                                                    </span>
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className="text-sm font-black text-white">
-                                            {(item.price * item.quantity).toFixed(2)}€
+
+                                        <div className="pt-3 border-t border-white/5 flex justify-between items-baseline mb-6">
+                                            <span className="text-sm font-black uppercase tracking-widest text-gray-400 italic">
+                                                Total
+                                            </span>
+                                            <span className="text-4xl font-black text-white italic tracking-tighter">
+                                                {total.toFixed(2)}€
+                                            </span>
                                         </div>
-                                    </motion.div>
-                                ))
-                            )}
-                        </div>
 
-                        {/* Footer Summary */}
-                        {items.length > 0 && (
-                            <div className="p-6 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
-                                <div className="space-y-3 mb-6">
-                                    <div className="flex justify-between text-gray-500 text-[10px] font-black uppercase tracking-widest">
-                                        <span>Subtotal</span>
-                                        <span className="text-white">{total.toFixed(2)}€</span>
-                                    </div>
-                                    <div className="flex justify-between text-gray-500 text-[10px] font-black uppercase tracking-widest">
-                                        <span>Table Fee</span>
-                                        <span className="text-green-500">FREE</span>
-                                    </div>
-                                    <div className="pt-3 border-t border-white/5 flex justify-between items-baseline">
-                                        <span className="text-sm font-black uppercase tracking-widest text-gray-400">
-                                            {t('total')}
-                                        </span>
-                                        <span className="text-3xl font-black text-orange-600">
-                                            {total.toFixed(2)}€
-                                        </span>
-                                    </div>
-                                </div>
+                                        <button
+                                            onClick={handlePlaceOrder}
+                                            disabled={isSubmitting || !tableNumber}
+                                            className={cn(
+                                                'w-full h-16 rounded-[24px] font-black text-lg tracking-widest uppercase transition-all flex items-center justify-center gap-3 active:scale-95',
+                                                isSubmitting || !tableNumber
+                                                    ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                                                    : 'bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20'
+                                            )}
+                                        >
+                                            {isSubmitting ? (
+                                                <motion.div
+                                                    animate={{ rotate: 360 }}
+                                                    transition={{
+                                                        repeat: Infinity,
+                                                        duration: 1,
+                                                        ease: 'linear',
+                                                    }}
+                                                    className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full"
+                                                />
+                                            ) : (
+                                                'Confirmar pedido'
+                                            )}
+                                        </button>
 
-                                <button
-                                    onClick={() => {
-                                        // TODO: Real order submission logic
-                                        alert(t('fast_easy'));
-                                        clearCart();
-                                        onClose();
-                                    }}
-                                    className="w-full h-16 bg-orange-600 text-white rounded-[24px] font-black text-lg tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3"
-                                >
-                                    {t('place_order')}
-                                </button>
-
-                                <button
-                                    onClick={onClose}
-                                    className="w-full mt-3 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
-                                >
-                                    {t('continue_adding')}
-                                </button>
-                            </div>
+                                        {!tableNumber && (
+                                            <p className="text-[9px] text-red-500 font-bold text-center mt-3 uppercase tracking-wider">
+                                                Escanee el código QR de su mesa para pedir
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </>
                         )}
                     </motion.div>
                 </>
