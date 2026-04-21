@@ -639,22 +639,22 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                             {[
                                 {
                                     label: 'Contraseña Actual',
-                                    value: currentPassword,
-                                    setter: setCurrentPassword,
+                                    ref: currentPasswordRef,
+                                    name: 'currentPassword',
                                     show: showCurrPwd,
                                     toggle: setShowCurrPwd,
                                 },
                                 {
                                     label: 'Nueva Contraseña',
-                                    value: newPassword,
-                                    setter: setNewPassword,
+                                    ref: newPasswordRef,
+                                    name: 'newPassword',
                                     show: showNewPwd,
                                     toggle: setShowNewPwd,
                                 },
                                 {
                                     label: 'Confirmar Nueva Contraseña',
-                                    value: confirmNewPassword,
-                                    setter: setConfirmNewPassword,
+                                    ref: confirmNewPasswordRef,
+                                    name: 'confirmNewPassword',
                                     show: showNewPwd,
                                     toggle: () => {},
                                 },
@@ -665,23 +665,9 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     </label>
                                     <div className="relative">
                                         <input
-                                            ref={
-                                                f.label === 'Contraseña Actual'
-                                                    ? currentPasswordRef
-                                                    : f.label === 'Nueva Contraseña'
-                                                      ? newPasswordRef
-                                                      : confirmNewPasswordRef
-                                            }
+                                            ref={f.ref}
                                             type={f.show ? 'text' : 'password'}
-                                            name={
-                                                f.label === 'Contraseña Actual'
-                                                    ? 'currentPassword'
-                                                    : f.label === 'Nueva Contraseña'
-                                                      ? 'newPassword'
-                                                      : 'confirmNewPassword'
-                                            }
-                                            defaultValue={f.value}
-                                            onChange={e => f.setter(e.target.value)}
+                                            name={f.name}
                                             className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
                                         />
                                         {f.label !== 'Confirmar Nueva Contraseña' && (
