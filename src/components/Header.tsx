@@ -363,8 +363,16 @@ export default function Header() {
                                                                 y: 10,
                                                                 scale: 0.95,
                                                             }}
-                                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                            animate={{
+                                                                opacity: 1,
+                                                                y: 0,
+                                                                scale: 1,
+                                                            }}
+                                                            exit={{
+                                                                opacity: 0,
+                                                                y: 10,
+                                                                scale: 0.95,
+                                                            }}
                                                             className="absolute top-[calc(100%+12px)] right-0 bg-white rounded-2xl shadow-2xl p-1.5 w-[240px] z-[100] border border-gray-100"
                                                         >
                                                             <div className="px-2.5 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
