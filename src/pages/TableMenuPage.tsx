@@ -20,7 +20,7 @@ import { UAParser } from 'ua-parser-js';
 
 export default function TableMenuPage() {
     const { data: allItems = [], isLoading } = useMenu('all', '');
-    const { items: cartItems, addItem, total, itemCount } = useTableOrder();
+    const { addItem, total, itemCount } = useTableOrder();
     const { isAuthenticated } = useAuth();
     const { t } = useTableI18n();
 
