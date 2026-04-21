@@ -792,6 +792,27 @@ export async function sendReservationEmail(
                 }
             </p>
 
+            ${
+                isAdminCopy
+                    ? (() => {
+                          const dateStr = new Date(
+                              reservationData.reservation_date
+                          ).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+                          const waMessage = `Hola ${reservationData.name}, confirmo tu reserva para el ${dateStr} a las ${reservationData.reservation_time} (${reservationData.guests} personas). ¡Te esperamos!`;
+                          const cleanPhone = reservationData.phone.replace(/\D/g, '');
+                          const waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
+
+                          return `
+                <div style="margin-bottom: 24px; text-align: center;">
+                    <a href="${waUrl}" style="display: block; background-color: #25D366; color: #ffffff; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 900; font-size: 16px; text-align: center; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
+                        ПОДТВЕРДИТЬ В WHATSAPP
+                    </a>
+                </div>
+                `;
+                      })()
+                    : ''
+            }
+
             <!-- Reservation Details Card -->
             <div style="background-color: #f9fafb; border-radius: 20px; padding: 24px; margin-bottom: 32px; border: 1px solid #f1f5f9;">
                 <h3 style="color: #9ca3af; margin: 0 0 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Detalles de la Reserva</h3>
