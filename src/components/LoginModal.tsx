@@ -38,9 +38,24 @@ const LoginForm = memo(
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const emailVal = formData.get('email') as string;
-            const passwordVal = formData.get('password') as string;
+            const form = e.currentTarget;
+
+            // Critical fix for Mobile Safari Autofill:
+            // FormData can sometimes miss autofilled values if they haven't triggered a change event.
+            // We reach directly into the DOM elements to be sure.
+            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+
+            const emailVal = (emailInput?.value || '').trim();
+            const passwordVal = passwordInput?.value || '';
+
+            if (!emailVal) {
+                // Flash focus to potentially trigger Safari sync
+                emailInput?.focus();
+                emailInput?.blur();
+                return;
+            }
+
             onLogin({ email: emailVal, password: passwordVal });
         };
 
@@ -194,11 +209,22 @@ const RegisterForm = memo(
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const nameVal = formData.get('name') as string;
-            const emailVal = formData.get('email') as string;
-            const phoneVal = formData.get('phone') as string;
-            const passwordVal = formData.get('password') as string;
+            const form = e.currentTarget;
+
+            const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement;
+            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+            const phoneInput = form.querySelector('input[name="phone"]') as HTMLInputElement;
+            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+
+            const nameVal = (nameInput?.value || '').trim();
+            const emailVal = (emailInput?.value || '').trim();
+            const phoneVal = (phoneInput?.value || '').trim();
+            const passwordVal = passwordInput?.value || '';
+
+            if (!emailVal || !passwordVal || !nameVal || !phoneVal) {
+                return;
+            }
+
             onRegister({
                 name: nameVal,
                 phone: phoneVal,
@@ -355,8 +381,11 @@ const ForgotPasswordForm = memo(
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const emailVal = formData.get('email') as string;
+            const form = e.currentTarget;
+            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+            const emailVal = (emailInput?.value || '').trim();
+
+            if (!emailVal) return;
             onForgot(emailVal);
         };
 
@@ -541,11 +570,19 @@ const ResetPasswordForm = memo(
 
         const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const passwordVal = formData.get('password') as string;
-            const confirmPasswordVal = formData.get('confirmPassword') as string;
-            const codeVal = formData.get('code') as string;
-            const emailVal = (formData.get('email') as string) || recoveryEmail;
+            const form = e.currentTarget;
+
+            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+            const confirmPasswordInput = form.querySelector(
+                'input[name="confirmPassword"]'
+            ) as HTMLInputElement;
+            const codeInput = form.querySelector('input[name="code"]') as HTMLInputElement;
+            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+
+            const passwordVal = passwordInput?.value || '';
+            const confirmPasswordVal = confirmPasswordInput?.value || '';
+            const codeVal = codeInput?.value || '';
+            const emailVal = (emailInput?.value || '').trim() || recoveryEmail;
 
             onReset({
                 password: passwordVal,

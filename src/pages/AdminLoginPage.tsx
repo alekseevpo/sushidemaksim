@@ -41,15 +41,18 @@ export default function AdminLoginPage() {
         setError('');
         setIsLoading(true);
 
+        const form = e?.target as HTMLFormElement;
         let emailVal = data.email;
         let passwordVal = data.password;
 
         // On mobile Safari, react-hook-form state might be empty on autofill.
-        // We use FormData as a more reliable source.
-        if (e) {
-            const formData = new FormData(e.target);
-            emailVal = (formData.get('email') as string) || emailVal;
-            passwordVal = (formData.get('password') as string) || passwordVal;
+        // We use direct DOM access as a more reliable source.
+        if (form) {
+            const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+            const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+            
+            if (emailInput?.value) emailVal = emailInput.value.trim();
+            if (passwordInput?.value) passwordVal = passwordInput.value;
         }
 
         const result = await login(emailVal, passwordVal);
