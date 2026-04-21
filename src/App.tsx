@@ -61,7 +61,7 @@ const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 const WaiterOrderPage = lazyRetry(() => import('./pages/WaiterOrderPage'));
-const TableMenuPage = lazyRetry(() => import('./pages/TableMenuPage'));
+const TableMenuPage = lazyRetry(() => import('./pages/HallMenuPage'));
 const NotFoundPage = lazyRetry(() => import('./pages/NotFoundPage'));
 
 // Page Wrapper for consistent transitions
@@ -143,7 +143,11 @@ function App() {
                     <CartProvider>
                         <Schema />
                         <PageTracker />
-                    <div className={`min-h-[100svh] flex flex-col transition-colors duration-500 ${isTableRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'}`}>
+                        <div
+                            className={`min-h-[100svh] flex flex-col transition-colors duration-500 ${
+                                isTableRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'
+                            }`}
+                        >
                             <Analytics />
                             <SpeedInsights />
                             <SmoothScroll />
