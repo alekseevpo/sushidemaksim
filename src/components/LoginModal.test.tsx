@@ -72,7 +72,7 @@ describe('LoginModal - General & Events', () => {
         act(() => {
             document.dispatchEvent(new CustomEvent('custom:forceOpenLogin'));
         });
-        expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
+        expect(screen.getByText(/¡Hola de nuevo!/)).toBeInTheDocument();
     });
 
     it('toggles password visibility in login form', () => {
@@ -95,7 +95,7 @@ describe('LoginModal - General & Events', () => {
         expect(screen.getByText('Crea tu cuenta')).toBeInTheDocument();
 
         fireEvent.click(screen.getByText('Inicia sesión'));
-        expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
+        expect(screen.getByText(/¡Hola de nuevo!/)).toBeInTheDocument();
     });
 });
 
@@ -256,7 +256,7 @@ describe('LoginModal - Password Recovery', () => {
         unmount();
         render(<LoginModal isOpen={true} onClose={() => {}} initialMode="verify-sent" />);
         fireEvent.click(screen.getByText('Volver al login'));
-        expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
+        expect(screen.getByText(/¡Hola de nuevo!/)).toBeInTheDocument();
     });
 
     it('handles password reset successfully', async () => {
@@ -299,7 +299,7 @@ describe('LoginModal - Password Recovery', () => {
                 code: '123456',
                 newPassword: 'NewPassword123!',
             });
-            expect(screen.getByText('¡Hola de nuevo!')).toBeInTheDocument();
+            expect(screen.getByText(/¡Hola de nuevo!/)).toBeInTheDocument();
         });
     });
 
