@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="es">
     <head>
+        <script>
+            // Force WWW subdomain in production
+            if (window.location.hostname === 'sushidemaksim.com') {
+                window.location.href = window.location.href.replace('sushidemaksim.com', 'www.sushidemaksim.com');
+            }
+        </script>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
