@@ -33,6 +33,40 @@ router.post(
             .single();
 
         if (existing) {
+            // If the user is unverified, resend the verification email
+            if (!existing.is_verified && !existing.deleted_at) {
+                console.log(`📧 [REGISTER] Resending verification email to ${email}...`);
+                const verificationToken = jwt.sign(
+                    { userId: existing.id, purpose: 'email_verification' },
+                    config.jwtSecret,
+                    { expiresIn: '24h' }
+                );
+
+                // Fetch registration settings for the promo code
+                const { data: promo } = await supabase
+                    .from('promo_codes')
+                    .select('code, discount_percentage')
+                    .eq('user_id', existing.id)
+                    .eq('is_used', false)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                await sendVerificationEmail(
+                    existing.email,
+                    existing.name,
+                    verificationToken,
+                    promo?.code || '',
+                    promo?.discount_percentage || 10
+                );
+
+                return res.status(200).json({
+                    success: true,
+                    message:
+                        'Ya existe una cuenta con este email. Hemos reenviado el enlace de activación.',
+                });
+            }
+
             // If the existing user is NOT archived, block registration
             if (!existing.deleted_at) {
                 return res.status(409).json({ error: 'Ya existe una cuenta con este email' });
