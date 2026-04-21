@@ -1,5 +1,18 @@
 {
     "version": 2,
+    "redirects": [
+        {
+            "source": "/(.*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "sushidemaksim.com"
+                }
+            ],
+            "destination": "https://www.sushidemaksim.com/$1",
+            "permanent": true
+        }
+    ],
     "rewrites": [
         {
             "source": "/sitemap.xml",
