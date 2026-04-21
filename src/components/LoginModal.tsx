@@ -995,7 +995,7 @@ export default function LoginModal({
                                     className="h-9 w-auto object-contain brightness-0 mx-auto mb-3"
                                 />
                                 <h2 className="text-xl font-black text-gray-900 tracking-tight leading-tight">
-                                    {mode === 'login' && '¡Hola de nuevo!'}
+                                    {mode === 'login' && '¡Hola de nuevo! ✨'}
                                     {mode === 'register' && 'Crea tu cuenta'}
                                     {mode === 'forgot' && 'Recuperar acceso'}
                                     {mode === 'verify-sent' && 'Verifica tu email'}
