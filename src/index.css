@@ -9,7 +9,7 @@ html {
     transition: background-color 0.5s ease;
 }
 
-html.is-table-route, 
+html.is-table-route,
 html.is-table-route body {
     background-color: #0d0d0d !important;
 }
