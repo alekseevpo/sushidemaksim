@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, AlertCircle } from 'lucide-react';
 import { api } from '../utils/api';
 import SEO from '../components/SEO';
 import { getOptimizedImageUrl } from '../utils/images';
+import { SITE_URL } from '../constants/config';
 
 import { PostSkeleton } from '../components/skeletons/PostSkeleton';
 
