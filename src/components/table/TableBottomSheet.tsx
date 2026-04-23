@@ -112,7 +112,7 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                         </div>
 
                         {/* Content */}
-                        <div className="p-8 pb-32 overflow-y-auto">
+                        <div className="p-6 pb-24 overflow-y-auto">
                             <div className="flex justify-between items-start mb-6">
                                 <div>
                                     <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none mb-2">
@@ -197,15 +197,15 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                         </div>
 
                         {/* Add to Order Button */}
-                        <div className="absolute bottom-0 left-0 right-0 p-6 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5">
+                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5">
                             <button
                                 onClick={() => {
                                     onAddToCart(item, undefined, selectedOption);
                                     onClose();
                                 }}
-                                className="w-full h-16 bg-orange-600 text-white rounded-[24px] font-black text-lg tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3"
+                                className="w-full h-13 bg-orange-600 text-white rounded-xl font-black text-base tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3"
                             >
-                                <Plus size={24} strokeWidth={3} />
+                                <Plus size={20} strokeWidth={3} />
                                 ADD TO ORDER — {item.price.toFixed(2)}€
                             </button>
                         </div>

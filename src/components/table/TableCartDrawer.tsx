@@ -279,23 +279,23 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
 
                                 {/* Footer Summary */}
                                 {items.length > 0 && (
-                                    <div className="p-6 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                                    <div className="p-4 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
                                         {/* Payment Method Selector */}
                                         <div className="mb-6">
-                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">
+                                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-2">
                                                 Método de pago
                                             </p>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <button
                                                     onClick={() => setPaymentMethod('EFECTIVO')}
                                                     className={cn(
-                                                        'h-14 rounded-2xl border flex items-center justify-center gap-2 transition-all',
+                                                        'h-11 rounded-xl border flex items-center justify-center gap-2 transition-all',
                                                         paymentMethod === 'EFECTIVO'
                                                             ? 'bg-orange-600 border-orange-500 text-white shadow-lg shadow-orange-600/20'
                                                             : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                                                     )}
                                                 >
-                                                    <Banknote size={18} />
+                                                    <Banknote size={16} />
                                                     <span className="text-[10px] font-black uppercase tracking-widest">
                                                         Efectivo
                                                     </span>
@@ -303,13 +303,13 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                 <button
                                                     onClick={() => setPaymentMethod('TARJETA')}
                                                     className={cn(
-                                                        'h-14 rounded-2xl border flex items-center justify-center gap-2 transition-all',
+                                                        'h-11 rounded-xl border flex items-center justify-center gap-2 transition-all',
                                                         paymentMethod === 'TARJETA'
                                                             ? 'bg-orange-600 border-orange-500 text-white shadow-lg shadow-orange-600/20'
                                                             : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                                                     )}
                                                 >
-                                                    <CreditCard size={18} />
+                                                    <CreditCard size={16} />
                                                     <span className="text-[10px] font-black uppercase tracking-widest">
                                                         Tarjeta
                                                     </span>
@@ -317,11 +317,11 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                             </div>
                                         </div>
 
-                                        <div className="pt-3 border-t border-white/5 flex justify-between items-baseline mb-6">
-                                            <span className="text-sm font-black uppercase tracking-widest text-gray-400 italic">
+                                        <div className="pt-2 border-t border-white/5 flex justify-between items-baseline mb-3">
+                                            <span className="text-xs font-black uppercase tracking-widest text-gray-400 italic">
                                                 Total
                                             </span>
-                                            <span className="text-4xl font-black text-white italic tracking-tighter">
+                                            <span className="text-2xl font-black text-white italic tracking-tighter">
                                                 {total.toFixed(2)}€
                                             </span>
                                         </div>
@@ -330,7 +330,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                             onClick={handlePlaceOrder}
                                             disabled={isSubmitting || !tableNumber}
                                             className={cn(
-                                                'w-full h-16 rounded-[24px] font-black text-lg tracking-widest uppercase transition-all flex items-center justify-center gap-3 active:scale-95',
+                                                'w-full h-13 rounded-xl font-black text-base tracking-widest uppercase transition-all flex items-center justify-center gap-3 active:scale-95',
                                                 isSubmitting || !tableNumber
                                                     ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                                                     : 'bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20'
@@ -353,7 +353,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
 
                                         <button
                                             onClick={onClose}
-                                            className="w-full mt-6 py-2 text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] hover:text-white transition-colors text-center italic"
+                                            className="w-full mt-3 py-1 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] hover:text-white transition-colors text-center italic"
                                         >
                                             ← Volver al menú
                                         </button>
