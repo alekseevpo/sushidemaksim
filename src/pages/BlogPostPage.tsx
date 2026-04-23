@@ -86,19 +86,19 @@ export default function BlogPostPage() {
                 '@type': 'ListItem',
                 position: 1,
                 name: 'Inicio',
-                item: 'https://sushidemaksim.vercel.app/',
+                item: SITE_URL,
             },
             {
                 '@type': 'ListItem',
                 position: 2,
                 name: 'Blog',
-                item: 'https://sushidemaksim.vercel.app/blog',
+                item: `${SITE_URL}/blog`,
             },
             {
                 '@type': 'ListItem',
                 position: 3,
                 name: post.title,
-                item: `https://sushidemaksim.vercel.app/blog/${post.slug}`,
+                item: `${SITE_URL}/blog/${post.slug}`,
             },
         ],
     };

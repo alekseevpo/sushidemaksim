@@ -190,6 +190,7 @@ export default function TableMenuPage() {
             <SEO
                 title={`${t('digital_menu')} | ${t('table_ordering')}`}
                 description={t('fast_easy')}
+                robots="noindex, follow"
             />
 
             <TableNav

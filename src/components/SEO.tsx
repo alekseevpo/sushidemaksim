@@ -22,7 +22,8 @@ export default function SEO({
     schema,
     robots = 'index, follow',
 }: SEOProps) {
-    const fullTitle = `${title} | Sushi de Maksim`;
+    const brandSuffix = ' | Sushi de Maksim';
+    const fullTitle = title.includes('Sushi de Maksim') ? title : `${title}${brandSuffix}`;
     const canonicalURL = url.endsWith('/') ? url : `${url}/`;
 
     return (
@@ -31,6 +32,9 @@ export default function SEO({
             <meta name="description" content={description} />
             {keywords && <meta name="keywords" content={keywords} />}
             <meta name="robots" content={robots} />
+            <meta name="theme-color" content="#fd6e2b" />
+            <meta name="apple-mobile-web-app-title" content="Sushi Maksim" />
+            <meta name="application-name" content="Sushi de Maksim" />
 
             {/* Open Graph / Facebook / WhatsApp */}
             <meta property="og:type" content={type} />

@@ -329,7 +329,10 @@ export default function HomePage() {
                 {/* Hero Section */}
                 <section className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
                     {/* Visual context for SEO */}
-                    <h2 className="sr-only">Bienvenido a Sushi de Maksim</h2>
+                    <h1 className="sr-only">
+                        Sushi de Maksim: El mejor sushi artesanal a domicilio en Madrid
+                    </h1>
+                    <h2 className="sr-only">Bienvenido a nuestro restaurante japonés premium</h2>
 
                     {/* Background Image with optimized loading */}
                     <div className="absolute inset-0 z-0">
@@ -362,10 +365,10 @@ export default function HomePage() {
                                 Artesanía japonesa en tu mesa
                             </span>
 
-                            <h1 className="text-[42px] leading-[0.9] md:text-8xl font-black text-white tracking-tighter">
+                            <h2 className="text-[42px] leading-[0.9] md:text-8xl font-black text-white tracking-tighter">
                                 Sabor que <br />
                                 <span className="text-orange-600 italic">Despierta</span> Sentidos
-                            </h1>
+                            </h2>
 
                             <p className="text-sm md:text-lg text-gray-300 max-w-md mx-auto leading-relaxed font-medium">
                                 Descubre la perfección en cada bocado. Sushi artesanal preparado con
