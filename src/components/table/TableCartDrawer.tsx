@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useTableOrder } from '../../context/TableOrderContext';
 import { useTableI18n } from '../../utils/tableI18n';
+import { TABLE_IMAGE_OVERRIDES } from '../../constants/tableOverrides';
 import SafeImage from '../common/SafeImage';
 import { cn } from '../../utils/cn';
 
@@ -38,6 +39,23 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
     const [paymentMethod, setPaymentMethod] = useState<'EFECTIVO' | 'TARJETA'>('EFECTIVO');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isSubmittingRef = useRef(false);
+
+    // Lock body scroll when drawer is open
+    React.useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
+    const getDisplayImage = (item: any) => {
+        const override = TABLE_IMAGE_OVERRIDES[String(item.id)];
+        return override || item.image;
+    };
 
     const handlePlaceOrder = async () => {
         if (isSubmittingRef.current) return;
@@ -194,7 +212,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                             >
                                                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
                                                     <SafeImage
-                                                        src={item.image}
+                                                        src={getDisplayImage(item)}
                                                         alt={item.name}
                                                         className="w-full h-full object-cover"
                                                     />

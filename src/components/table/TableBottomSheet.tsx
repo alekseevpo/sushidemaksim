@@ -44,6 +44,18 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
         }
     }, [item, options]);
 
+    // Lock body scroll when drawer is open
+    React.useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
     if (!item) return null;
 
     return (
