@@ -326,10 +326,10 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                             </span>
                                         </div>
 
-                                        <div className="flex gap-3">
+                                        <div className="grid grid-cols-2 gap-3">
                                             <button
                                                 onClick={onClose}
-                                                className="flex-1 h-13 rounded-xl bg-white/5 border border-white/10 text-gray-400 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center"
+                                                className="h-11 rounded-xl bg-white/5 border border-white/10 text-gray-400 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center"
                                             >
                                                 Menú
                                             </button>
@@ -337,7 +337,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                 onClick={handlePlaceOrder}
                                                 disabled={isSubmitting || !tableNumber}
                                                 className={cn(
-                                                    'flex-[2] h-13 rounded-xl font-black text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-95',
+                                                    'h-11 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-95',
                                                     isSubmitting || !tableNumber
                                                         ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                                                         : 'bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20'
@@ -351,7 +351,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                             duration: 1,
                                                             ease: 'linear',
                                                         }}
-                                                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                                                        className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                                                     />
                                                 ) : (
                                                     'Confirmar'
