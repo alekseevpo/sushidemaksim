@@ -85,8 +85,9 @@ export const createOrderSchema = z.object({
             guestItems: z
                 .array(
                     z.object({
-                        menuItemId: z.number(),
+                        menuItemId: z.union([z.number(), z.string()]).transform(v => Number(v)),
                         quantity: z.number().min(1),
+                        selectedOption: z.string().optional().nullable(),
                     })
                 )
                 .optional(),
@@ -111,8 +112,18 @@ export const createOrderSchema = z.object({
                 }
             }
 
+            // 1.5 If table, mesaNumber is mandatory
+            if (data.deliveryType === 'table' && !data.mesaNumber) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: 'El número de mesa es obligatorio',
+                    path: ['mesaNumber'],
+                });
+            }
+
             // 2. Phone validation (prefer modern 'phone', fallback to 'phoneNumber')
-            if (!data.phone && !data.phoneNumber) {
+            // Mandatory for delivery/pickup/reservation, optional for 'table'
+            if (data.deliveryType !== 'table' && !data.phone && !data.phoneNumber) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: 'El teléfono es obligatorio',

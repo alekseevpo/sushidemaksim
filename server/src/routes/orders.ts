@@ -284,7 +284,8 @@ router.post(
             p_delivery_address: deliveryAddress?.trim() || '',
             p_phone_number: phoneNumber?.trim() || '',
             p_notes: notesToSave,
-            p_payment_method: paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO',
+            p_payment_method:
+                paymentMethod === 'card' || paymentMethod === 'TARJETA' ? 'TARJETA' : 'EFECTIVO',
             p_promo_code: promoCode || null,
             p_estimated_delivery_time: serverEstimatedTime,
             p_status: 'pending',

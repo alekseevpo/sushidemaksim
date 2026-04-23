@@ -65,9 +65,9 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
 
         try {
             await submitOrder(paymentMethod);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to place order:', error);
-            alert('Error al realizar el pedido. Por favor, avise al camarero.');
+            alert(error.message || 'Error al realizar el pedido. Por favor, avise al camarero.');
         } finally {
             setIsSubmitting(false);
             isSubmittingRef.current = false;

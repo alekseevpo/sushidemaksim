@@ -121,7 +121,10 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 }),
             });
 
-            if (!response.ok) throw new Error('Order failed');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Order failed');
+            }
 
             const data = await response.json();
             const orderId = data.order?.id;
