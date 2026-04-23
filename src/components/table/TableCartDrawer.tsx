@@ -326,37 +326,38 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                             </span>
                                         </div>
 
-                                        <button
-                                            onClick={handlePlaceOrder}
-                                            disabled={isSubmitting || !tableNumber}
-                                            className={cn(
-                                                'w-full h-13 rounded-xl font-black text-base tracking-widest uppercase transition-all flex items-center justify-center gap-3 active:scale-95',
-                                                isSubmitting || !tableNumber
-                                                    ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                                                    : 'bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20'
-                                            )}
-                                        >
-                                            {isSubmitting ? (
-                                                <motion.div
-                                                    animate={{ rotate: 360 }}
-                                                    transition={{
-                                                        repeat: Infinity,
-                                                        duration: 1,
-                                                        ease: 'linear',
-                                                    }}
-                                                    className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full"
-                                                />
-                                            ) : (
-                                                'Confirmar pedido'
-                                            )}
-                                        </button>
-
-                                        <button
-                                            onClick={onClose}
-                                            className="w-full mt-3 py-1 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] hover:text-white transition-colors text-center italic"
-                                        >
-                                            ← Volver al menú
-                                        </button>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={onClose}
+                                                className="flex-1 h-13 rounded-xl bg-white/5 border border-white/10 text-gray-400 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center"
+                                            >
+                                                Menú
+                                            </button>
+                                            <button
+                                                onClick={handlePlaceOrder}
+                                                disabled={isSubmitting || !tableNumber}
+                                                className={cn(
+                                                    'flex-[2] h-13 rounded-xl font-black text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-95',
+                                                    isSubmitting || !tableNumber
+                                                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                                                        : 'bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20'
+                                                )}
+                                            >
+                                                {isSubmitting ? (
+                                                    <motion.div
+                                                        animate={{ rotate: 360 }}
+                                                        transition={{
+                                                            repeat: Infinity,
+                                                            duration: 1,
+                                                            ease: 'linear',
+                                                        }}
+                                                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                                                    />
+                                                ) : (
+                                                    'Confirmar'
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </>
