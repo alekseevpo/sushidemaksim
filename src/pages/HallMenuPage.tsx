@@ -15,6 +15,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useTableI18n } from '../utils/tableI18n';
 import { SushiItem } from '../types';
 import SEO from '../components/SEO';
+import { SITE_URL } from '../constants/config';
 import { MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
 import { UAParser } from 'ua-parser-js';
 
@@ -188,9 +189,10 @@ export default function TableMenuPage() {
             </div>
 
             <SEO
-                title={`${t('digital_menu')} | ${t('table_ordering')}`}
-                description={t('fast_easy')}
-                robots="noindex, follow"
+                title="Carta Digital y Pedidos en Mesa — Sushi de Maksim Madrid"
+                description="Accede a nuestra carta digital, consulta todos los platos y haz tu pedido directamente desde la mesa. La forma más rápida y cómoda de disfrutar del mejor sushi en nuestro restaurante."
+                keywords="carta digital sushi madrid, menu qr madrid, pedir en mesa sushi, sushi de maksim madrid carta"
+                url={`${SITE_URL}/table`}
             />
 
             <TableNav

@@ -19,6 +19,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://sushidemaksim.com/table</loc>
+        <lastmod>2026-04-21</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
         <loc>https://sushidemaksim.com/contacts</loc>
         <lastmod>2026-04-21</lastmod>
         <changefreq>weekly</changefreq>
