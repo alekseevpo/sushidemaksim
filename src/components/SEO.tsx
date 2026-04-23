@@ -24,7 +24,7 @@ export default function SEO({
 }: SEOProps) {
     const brandSuffix = ' | Sushi de Maksim';
     const fullTitle = title.includes('Sushi de Maksim') ? title : `${title}${brandSuffix}`;
-    const canonicalURL = url.endsWith('/') ? url : `${url}/`;
+    const canonicalURL = url;
 
     return (
         <Helmet>
