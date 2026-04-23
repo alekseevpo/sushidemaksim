@@ -12,6 +12,7 @@ import {
     Gift,
 } from 'lucide-react';
 import { useTableOrder } from '../../context/TableOrderContext';
+import { useTableI18n } from '../../utils/tableI18n';
 import SafeImage from '../common/SafeImage';
 import { cn } from '../../utils/cn';
 
@@ -29,9 +30,11 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
         removeItem,
         tableNumber,
         isOrderConfirmed,
+        lastOrderId,
         setOrderConfirmed,
         submitOrder,
     } = useTableOrder();
+    const { t } = useTableI18n();
     const [paymentMethod, setPaymentMethod] = useState<'EFECTIVO' | 'TARJETA'>('EFECTIVO');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isSubmittingRef = useRef(false);
@@ -90,10 +93,15 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                 </motion.div>
 
                                 <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">
-                                    ¡Gracias!
+                                    {t('order_received' as any)}
                                 </h2>
+                                <div className="px-4 py-2 bg-orange-600/20 border border-orange-600/30 rounded-xl mb-4">
+                                    <span className="text-orange-500 font-black text-lg">
+                                        #{String(lastOrderId).padStart(5, '0')}
+                                    </span>
+                                </div>
                                 <p className="text-gray-400 font-bold mb-8">
-                                    Su pedido ya se está preparando en cocina.
+                                    {t('order_confirmed_msg' as any)}
                                 </p>
 
                                 {/* Loyalty Club Offer Card */}
@@ -324,12 +332,6 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                 'Confirmar pedido'
                                             )}
                                         </button>
-
-                                        {!tableNumber && (
-                                            <p className="text-[9px] text-red-500 font-bold text-center mt-3 uppercase tracking-wider">
-                                                Escanee el código QR de su mesa para pedir
-                                            </p>
-                                        )}
 
                                         <button
                                             onClick={onClose}

@@ -88,7 +88,7 @@ export default function TableMenuPage() {
         // From the bottom of the nav (approx 220px) to the middle of the screen.
         const observerOptions = {
             root: null,
-            rootMargin: '-220px 0px -79% 0px',
+            rootMargin: '-220px 0px -40% 0px',
             threshold: 0,
         };
 
@@ -120,7 +120,7 @@ export default function TableMenuPage() {
         });
 
         return () => observer.disconnect();
-    }, [activeType, activeItems, activeCategories]);
+    }, [activeType, activeItems, activeCategories, isWelcomeModalOpen]);
 
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id);
@@ -155,6 +155,10 @@ export default function TableMenuPage() {
 
     const handleRegisterClick = () => {
         setIsWelcomeModalOpen(false);
+        // Small delay to let the modal close and trigger observer
+        setTimeout(() => {
+            window.dispatchEvent(new Event('scroll'));
+        }, 100);
         document.dispatchEvent(
             new CustomEvent('custom:openLogin', {
                 detail: { mode: 'register' },
@@ -199,7 +203,42 @@ export default function TableMenuPage() {
                 categories={activeCategories}
             />
 
-            <main className="relative z-10 pt-56 px-4 max-w-2xl mx-auto">
+            <main className="relative z-10 pt-40 px-4 max-w-2xl mx-auto">
+                {/* Partners / Franchise Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mb-8"
+                >
+                    <button
+                        onClick={() => (window.location.href = '/partners')}
+                        className="w-full group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-white/5 p-5 text-left active:scale-[0.98] transition-transform"
+                    >
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,115,22,0.1)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="relative flex items-center justify-between">
+                            <div>
+                                <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em] mb-1 block">
+                                    {t('collab' as any) || 'Socio & Expansión'}
+                                </span>
+                                <h3 className="text-xl font-black text-white italic tracking-tight">
+                                    {t('partners_franchise' as any) || 'Partners / Франчайзи'}
+                                </h3>
+                                <p className="text-xs text-gray-400 mt-1 font-medium max-w-[200px]">
+                                    {t('open_business' as any) ||
+                                        'Únete a la familia de Sushi de Maksim'}
+                                </p>
+                            </div>
+                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-orange-600 group-hover:border-orange-500 transition-all duration-300">
+                                <ChevronRight
+                                    size={20}
+                                    className="text-gray-400 group-hover:text-white transition-colors"
+                                />
+                            </div>
+                        </div>
+                    </button>
+                </motion.div>
+
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeType}
@@ -297,7 +336,13 @@ export default function TableMenuPage() {
 
             <TableWelcomeModal
                 isOpen={isWelcomeModalOpen}
-                onClose={() => setIsWelcomeModalOpen(false)}
+                onClose={() => {
+                    setIsWelcomeModalOpen(false);
+                    // Small delay to let the modal close and trigger observer
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('scroll'));
+                    }, 100);
+                }}
                 onRegister={handleRegisterClick}
             />
 

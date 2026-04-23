@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Clock, Info } from 'lucide-react';
 import { SushiItem } from '../../types';
+import { TABLE_IMAGE_OVERRIDES } from '../../constants/tableOverrides';
 import SafeImage from '../common/SafeImage';
 import { cn } from '../../utils/cn';
 
@@ -17,12 +18,20 @@ const ITEM_OPTIONS: Record<string, string[]> = {
     '116': ['Coca-Cola', 'Coca-Cola Zero', 'Fanta Naranja', 'Fanta Limón', 'Sprite'],
 };
 
+// Removed local IMAGE_OVERRIDES in favor of centralized src/constants/tableOverrides.ts
+
 export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
     item,
     isOpen,
     onClose,
     onAddToCart,
 }) => {
+    // Use the new centralized overrides from public/sushidemaksim_black_style_photos
+    const getDisplayImage = (itm: SushiItem) => {
+        const override = TABLE_IMAGE_OVERRIDES[String(itm.id)];
+        return override || itm.image;
+    };
+
     const options = item ? ITEM_OPTIONS[item.id] : null;
     const [selectedOption, setSelectedOption] = React.useState('');
 
@@ -62,11 +71,11 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                         <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full z-10" />
 
                         {/* Banner Image */}
-                        <div className="relative h-64 md:h-80 w-full bg-gray-100 overflow-hidden">
+                        <div className="relative h-72 md:h-96 w-full bg-black overflow-hidden flex items-center justify-center p-0">
                             <SafeImage
-                                src={item.image}
+                                src={getDisplayImage(item)}
                                 alt={item.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-700 scale-[1.12]"
                             />
                             <button
                                 onClick={onClose}

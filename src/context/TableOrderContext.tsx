@@ -11,6 +11,7 @@ interface TableOrderContextType {
     itemCount: number;
     tableNumber: number | null;
     isOrderConfirmed: boolean;
+    lastOrderId: string | number | null;
     setOrderConfirmed: (val: boolean) => void;
     submitOrder: (paymentMethod: 'EFECTIVO' | 'TARJETA') => Promise<void>;
 }
@@ -32,6 +33,7 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
     const [tableNumber, setTableNumber] = useState<number | null>(null);
     const [isOrderConfirmed, setOrderConfirmed] = useState(false);
+    const [lastOrderId, setLastOrderId] = useState<string | number | null>(null);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -121,6 +123,10 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
             if (!response.ok) throw new Error('Order failed');
 
+            const data = await response.json();
+            const orderId = data.order?.id;
+
+            setLastOrderId(orderId || null);
             setOrderConfirmed(true);
             setItems([]);
         } catch (error) {
@@ -152,6 +158,7 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 itemCount,
                 tableNumber,
                 isOrderConfirmed,
+                lastOrderId,
                 setOrderConfirmed,
                 submitOrder,
             }}

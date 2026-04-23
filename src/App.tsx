@@ -62,6 +62,7 @@ const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangeP
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 const WaiterOrderPage = lazyRetry(() => import('./pages/WaiterOrderPage'));
 const TableMenuPage = lazyRetry(() => import('./pages/HallMenuPage'));
+const PartnersPage = lazyRetry(() => import('./pages/PartnersPage'));
 const NotFoundPage = lazyRetry(() => import('./pages/NotFoundPage'));
 
 // Page Wrapper for consistent transitions
@@ -299,6 +300,14 @@ function App() {
                                                         <TableMenuPage />
                                                     </PageWrapper>
                                                 </TableOrderProvider>
+                                            }
+                                        />
+                                        <Route
+                                            path="/partners"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <PartnersPage />
+                                                </PageWrapper>
                                             }
                                         />
                                         <Route

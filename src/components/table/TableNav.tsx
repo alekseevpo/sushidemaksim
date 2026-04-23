@@ -42,7 +42,7 @@ export const TableNav: React.FC<TableNavProps> = ({
     }, [activeCategory]);
 
     return (
-        <div className="fixed top-[var(--header-height,64px)] left-0 right-0 z-50 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/5 flex flex-col pt-4 overflow-hidden">
+        <div className="fixed top-[calc(var(--header-height,64px)-1px)] left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/5 flex flex-col pt-4 overflow-hidden">
             {/* Food / Drinks Toggle */}
             <div className="px-4 mb-4">
                 <div className="relative flex p-1 bg-white/5 rounded-2xl w-full max-w-sm mx-auto">

@@ -59,7 +59,7 @@ export default function Header() {
 
         const updateHeight = () => {
             if (headerRef.current) {
-                const height = headerRef.current.offsetHeight;
+                const height = headerRef.current.getBoundingClientRect().height;
                 document.documentElement.style.setProperty('--header-height', `${height}px`);
             }
         };
@@ -169,7 +169,7 @@ export default function Header() {
                 className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
                 ${
                     isTable
-                        ? 'bg-black border-b border-white/5'
+                        ? 'bg-[#0A0A0A] border-b border-white/5'
                         : isScrolled
                           ? `bg-[#FBF7F0] ${
                                 isMenu

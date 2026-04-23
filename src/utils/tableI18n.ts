@@ -39,6 +39,8 @@ export const translations = {
         cat_postre: 'Десерты',
         made_with: 'Сделано с',
         in_madrid: 'в Мадриде',
+        order_received: 'ЗАКАЗ ПОЛУЧЕН!',
+        order_confirmed_msg: 'Ваш заказ принят и уже готовится.',
     },
     es: {
         welcome_title: 'Oferta Especial',
@@ -77,6 +79,8 @@ export const translations = {
         cat_postre: 'Postre',
         made_with: 'Hecho con',
         in_madrid: 'en Madrid',
+        order_received: '¡PEDIDO RECIBIDO!',
+        order_confirmed_msg: 'Tu pedido ha sido recibido y ya se está preparando.',
     },
     en: {
         welcome_title: 'Special Offer',
@@ -114,6 +118,8 @@ export const translations = {
         cat_postre: 'Dessert',
         made_with: 'Made with',
         in_madrid: 'in Madrid',
+        order_received: 'ORDER RECEIVED!',
+        order_confirmed_msg: 'Your order has been received and is already being prepared.',
     },
 };
 

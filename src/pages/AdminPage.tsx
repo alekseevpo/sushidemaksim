@@ -240,7 +240,7 @@ export default function AdminPage() {
         queryKey: ['admin-pending-monitor'],
         queryFn: () => api.get('/admin/orders?status=pending&limit=100'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 30000,
+        refetchInterval: 15000,
     });
 
     // Pending Reservations Query
@@ -248,7 +248,7 @@ export default function AdminPage() {
         queryKey: ['admin-pending-res-monitor'],
         queryFn: () => api.get('/admin/reservations?status=pending'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 30000,
+        refetchInterval: 15000,
     });
 
     const pendingOrders = useMemo(() => pendingData?.orders || [], [pendingData]);
