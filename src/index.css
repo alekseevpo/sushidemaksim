@@ -464,9 +464,9 @@ input[type='time'] {
 /* --- Print Styles --- */
 @media print {
     /* Hide specific UI components instead of the whole root */
-    nav, 
-    aside, 
-    footer, 
+    nav,
+    aside,
+    footer,
     header,
     button,
     .no-print {
@@ -474,7 +474,8 @@ input[type='time'] {
     }
 
     /* Ensure body doesn't have any padding/margin that shifts the receipt */
-    body, html {
+    body,
+    html {
         background: white !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -498,7 +499,9 @@ input[type='time'] {
     }
 
     /* Reset potential layout containers that might hide the receipt */
-    #root, main, div {
+    #root,
+    main,
+    div {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
