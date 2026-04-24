@@ -115,7 +115,7 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                         <div className="p-6 pb-24 overflow-y-auto">
                             <div className="flex justify-between items-start mb-6">
                                 <div>
-                                    <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none mb-2">
+                                    <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none mb-2">
                                         {item.name}
                                     </h2>
                                     <div className="flex items-center gap-4 text-gray-400 text-sm font-bold">
@@ -165,31 +165,30 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                                 </div>
                             )}
 
-                            {/* Info Badges */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-[#141414] border border-white/5 rounded-2xl flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-orange-950 flex items-center justify-center text-orange-500">
-                                        <Info size={20} />
+                            <div className="flex items-center gap-8 border-t border-white/5 pt-6 mt-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
+                                        <Info size={16} />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">
                                             Category
                                         </span>
-                                        <span className="text-xs font-black text-white uppercase">
+                                        <span className="text-[11px] font-black text-white uppercase leading-none">
                                             {item.category.replace('-', ' ')}
                                         </span>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-[#141414] border border-white/5 rounded-2xl flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-yellow-950 flex items-center justify-center text-yellow-500">
-                                        <span className="text-xl">🌶️</span>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                        <span className="text-sm">🌶️</span>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">
                                             Spiciness
                                         </span>
-                                        <span className="text-xs font-black text-white uppercase">
-                                            {item.spicy ? 'Spicy AF' : 'Mild'}
+                                        <span className="text-[11px] font-black text-white uppercase leading-none">
+                                            {item.spicy ? 'Spicy' : 'Mild'}
                                         </span>
                                     </div>
                                 </div>
@@ -203,9 +202,9 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                                     onAddToCart(item, undefined, selectedOption);
                                     onClose();
                                 }}
-                                className="w-full h-13 bg-orange-600 text-white rounded-xl font-black text-base tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3"
+                                className="w-full h-16 bg-orange-600 text-white rounded-[20px] font-black text-lg tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl shadow-orange-950/20"
                             >
-                                <Plus size={20} strokeWidth={3} />
+                                <Plus size={24} strokeWidth={3} />
                                 ADD TO ORDER — {item.price.toFixed(2)}€
                             </button>
                         </div>
