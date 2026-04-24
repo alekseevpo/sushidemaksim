@@ -114,7 +114,7 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                     mesaNumber: tableNumber,
                     paymentMethod,
                     guestItems: items.map(item => ({
-                        menuItemId: item.id,
+                        menuItemId: Number(item.id),
                         quantity: item.quantity,
                         selectedOption: item.selectedOption,
                     })),

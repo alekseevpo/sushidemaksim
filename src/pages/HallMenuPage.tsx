@@ -16,7 +16,7 @@ import { useTableI18n } from '../utils/tableI18n';
 import { SushiItem } from '../types';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../constants/config';
-import { MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
+import { TableMenuSkeleton } from '../components/skeletons/TableMenuSkeleton';
 import { UAParser } from 'ua-parser-js';
 
 export default function TableMenuPage() {
@@ -89,26 +89,19 @@ export default function TableMenuPage() {
         // From the bottom of the nav (approx 220px) to the middle of the screen.
         const observerOptions = {
             root: null,
-            rootMargin: '-220px 0px -40% 0px',
-            threshold: 0,
+            rootMargin: '-180px 0px -60% 0px',
+            threshold: [0, 0.1],
         };
 
         const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-            // Ignore observer while we are programmatically scrolling after a click
             if (isScrollingRef.current) return;
 
-            const intersecting = entries.filter(entry => entry.isIntersecting);
+            // We want the category that is most prominent in the top-middle of the screen
+            const visible = entries.find(entry => entry.isIntersecting);
 
-            if (intersecting.length > 0) {
-                // With a narrow strip, the topmost intersecting element is our target
-                const first = intersecting.sort(
-                    (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
-                )[0];
-
-                if (first.target.id !== activeCategoryRef.current) {
-                    activeCategoryRef.current = first.target.id;
-                    setActiveCategory(first.target.id);
-                }
+            if (visible && visible.target.id !== activeCategoryRef.current) {
+                activeCategoryRef.current = visible.target.id;
+                setActiveCategory(visible.target.id);
             }
         };
 
@@ -145,7 +138,7 @@ export default function TableMenuPage() {
             // Unlock after animation finishes (approx 800ms)
             setTimeout(() => {
                 isScrollingRef.current = false;
-            }, 800);
+            }, 500);
         }
     };
 
@@ -168,11 +161,7 @@ export default function TableMenuPage() {
     };
 
     if (isLoading || isMobileDevice === null) {
-        return (
-            <div className="pt-48 px-4">
-                <MenuItemsSkeleton showHeader={false} />
-            </div>
-        );
+        return <TableMenuSkeleton />;
     }
 
     if (!isMobileDevice) {

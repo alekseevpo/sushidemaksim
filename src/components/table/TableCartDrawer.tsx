@@ -38,6 +38,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
     const { t } = useTableI18n();
     const [paymentMethod, setPaymentMethod] = useState<'EFECTIVO' | 'TARJETA'>('EFECTIVO');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const isSubmittingRef = useRef(false);
 
     // Lock body scroll when drawer is open
@@ -65,9 +66,11 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
 
         try {
             await submitOrder(paymentMethod);
+            setShowConfirmModal(false);
         } catch (error: any) {
             console.error('Failed to place order:', error);
             alert(error.message || 'Error al realizar el pedido. Por favor, avise al camarero.');
+            setShowConfirmModal(false);
         } finally {
             setIsSubmitting(false);
             isSubmittingRef.current = false;
@@ -334,7 +337,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                 Menú
                                             </button>
                                             <button
-                                                onClick={handlePlaceOrder}
+                                                onClick={() => setShowConfirmModal(true)}
                                                 disabled={isSubmitting || !tableNumber}
                                                 className={cn(
                                                     'h-11 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-95',
@@ -342,6 +345,51 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                         ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                                                         : 'bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20'
                                                 )}
+                                            >
+                                                Confirmar
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </motion.div>
+
+                    {/* Confirmation Modal */}
+                    <AnimatePresence>
+                        {showConfirmModal && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
+                            >
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                    className="w-full max-w-sm bg-[#141414] rounded-[32px] border border-white/10 p-8 shadow-2xl"
+                                >
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-orange-600/20 text-orange-500 rounded-2xl flex items-center justify-center mb-6">
+                                            <ShoppingCart size={32} strokeWidth={2.5} />
+                                        </div>
+                                        <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">
+                                            ¿Confirmar pedido?
+                                        </h3>
+                                        <p className="text-gray-400 font-bold mb-6">
+                                            Se enviará tu pedido de{' '}
+                                            <span className="text-white italic">
+                                                {total.toFixed(2)}€
+                                            </span>{' '}
+                                            a la cocina.
+                                        </p>
+
+                                        <div className="grid grid-cols-1 w-full gap-3">
+                                            <button
+                                                onClick={handlePlaceOrder}
+                                                disabled={isSubmitting}
+                                                className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-xs tracking-widest uppercase hover:bg-orange-700 transition-all active:scale-95 shadow-lg shadow-orange-600/20 flex items-center justify-center gap-3"
                                             >
                                                 {isSubmitting ? (
                                                     <motion.div
@@ -354,15 +402,25 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                         className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                                                     />
                                                 ) : (
-                                                    'Confirmar'
+                                                    <>
+                                                        Confirmar y Enviar
+                                                        <CheckCircle2 size={16} />
+                                                    </>
                                                 )}
+                                            </button>
+                                            <button
+                                                onClick={() => setShowConfirmModal(false)}
+                                                disabled={isSubmitting}
+                                                className="w-full py-4 bg-white/5 text-gray-400 rounded-2xl font-black text-xs tracking-widest uppercase hover:bg-white/10 transition-colors"
+                                            >
+                                                Cancelar
                                             </button>
                                         </div>
                                     </div>
-                                )}
-                            </>
+                                </motion.div>
+                            </motion.div>
                         )}
-                    </motion.div>
+                    </AnimatePresence>
                 </>
             )}
         </AnimatePresence>

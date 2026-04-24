@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import {
     Package,
     Search,
@@ -20,8 +21,10 @@ import {
     Store,
     Truck,
     Activity,
+    ChefHat,
 } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
+import { cn } from '../../utils/cn';
 import { useToast } from '../../context/ToastContext';
 import { Order, OrderItem } from '../../types';
 import { AdminOrdersSkeleton } from '../skeletons/AdminOrdersSkeleton';
@@ -29,7 +32,7 @@ import { AdminOrdersSkeleton } from '../skeletons/AdminOrdersSkeleton';
 interface AdminOrdersProps {
     isGlobalSoundEnabled: boolean;
     setIsGlobalSoundEnabled: (enabled: boolean) => void;
-    onTestSound?: () => void;
+    onTestSound?: (type?: 'delivery' | 'mesa') => void;
     globalPendingCount: number;
     language?: 'ru' | 'es';
 }
@@ -40,6 +43,7 @@ const ORDERS_TRANSLATIONS = {
         soundOn: 'Выключить звук',
         soundOff: 'Включить звук',
         refresh: 'Обновить',
+        testSound: 'Проверить звук (Зал)',
         filters: {
             active: 'ВСЕ АКТИВНЫЕ',
             unpaid: 'Ожидание оплаты',
@@ -99,6 +103,7 @@ const ORDERS_TRANSLATIONS = {
         soundOn: 'Desactivar sonido',
         soundOff: 'Activar sonido',
         refresh: 'Actualizar',
+        testSound: 'Probar sonido (Sala)',
         filters: {
             active: 'TODO ACTIVO',
             unpaid: 'Por Pagar',
@@ -344,6 +349,13 @@ export default function AdminOrders({
                                 <VolumeX size={20} strokeWidth={2} />
                             )}
                         </button>
+                        <button
+                            onClick={() => onTestSound?.('mesa')}
+                            className="px-4 py-3 bg-orange-50 text-orange-600 border border-orange-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
+                            title="Test: Mesa (3 dings)"
+                        >
+                            {t.testSound}
+                        </button>
                     </div>
                     <button
                         onClick={() => refetch()}
@@ -427,7 +439,12 @@ export default function AdminOrders({
                         orders.map((order: Order) => (
                             <div
                                 key={order.id}
-                                className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group border-b-4 border-b-gray-100"
+                                className={cn(
+                                    'bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group border-b-4',
+                                    order.deliveryAddress?.toUpperCase().includes('MESA')
+                                        ? 'border-b-red-600 ring-2 ring-red-600/5 shadow-red-100/50'
+                                        : 'border-b-gray-100'
+                                )}
                             >
                                 {/* Header del pedido */}
                                 <div className="p-5 sm:p-6 border-b border-gray-50 bg-gray-50/20 flex flex-wrap items-center justify-between gap-6 transition-colors">
@@ -1019,6 +1036,36 @@ export default function AdminOrders({
                                                         {t.orderStatus}
                                                     </span>
                                                 </div>
+
+                                                {/* Quick Action: Pass to Kitchen */}
+                                                {(order.status === 'pending' ||
+                                                    order.status === 'received' ||
+                                                    order.status === 'confirmed') && (
+                                                    <motion.button
+                                                        initial={{ scale: 0.95, opacity: 0 }}
+                                                        animate={{ scale: 1, opacity: 1 }}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={() =>
+                                                            handleUpdateStatus(
+                                                                order.id,
+                                                                'preparing'
+                                                            )
+                                                        }
+                                                        className={cn(
+                                                            'w-full mb-3 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg transition-all flex items-center justify-center gap-3 border-2',
+                                                            order.deliveryAddress
+                                                                ?.toUpperCase()
+                                                                .includes('MESA')
+                                                                ? 'bg-orange-600 text-white border-orange-500 shadow-orange-600/30 animate-pulse'
+                                                                : 'bg-slate-900 text-white border-slate-800 shadow-slate-900/30'
+                                                        )}
+                                                    >
+                                                        <ChefHat size={18} strokeWidth={2.5} />A LA
+                                                        COCINA
+                                                    </motion.button>
+                                                )}
+
                                                 <div className="relative group/status">
                                                     <select
                                                         data-testid="order-status-select"

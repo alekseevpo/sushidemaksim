@@ -134,8 +134,7 @@ export const useTableI18n = () => {
 
         const browserLang = navigator.language.split('-')[0].toLowerCase();
         if (browserLang === 'ru') return 'ru';
-        if (browserLang === 'es') return 'es';
-        return 'en'; // Default to English
+        return 'es'; // Default to Spanish (es) for everyone else
     }, []);
 
     const t = (key: keyof typeof translations.en) => {

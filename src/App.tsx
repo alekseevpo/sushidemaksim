@@ -23,6 +23,7 @@ import { ProfileSkeleton } from './components/skeletons/ProfileSkeleton';
 import { PromoSkeleton } from './components/skeletons/PromoSkeleton';
 import { BlogSkeleton } from './components/skeletons/BlogSkeleton';
 import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
+import { TableMenuSkeleton } from './components/skeletons/TableMenuSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 import { usePageTracking } from './hooks/usePageTracking';
 import { safeReload } from './utils/reload';
@@ -161,7 +162,7 @@ function App() {
                             <Analytics />
                             <SpeedInsights />
                             <SmoothScroll />
-                            <CookieConsent />
+                            {!isAdminRoute && !isWaiterRoute && !isTableRoute && <CookieConsent />}
                             {!isTableRoute && <RegistrationPrompt />}
                             <FloatingCart />
 
@@ -296,7 +297,7 @@ function App() {
                                             path="/table"
                                             element={
                                                 <TableOrderProvider>
-                                                    <PageWrapper skeleton={<MenuSkeleton />}>
+                                                    <PageWrapper skeleton={<TableMenuSkeleton />}>
                                                         <TableMenuPage />
                                                     </PageWrapper>
                                                 </TableOrderProvider>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useMemo, lazy, Suspense, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -17,6 +17,7 @@ import {
     Heart,
     CalendarDays,
     Map as MapIcon,
+    Bell,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -32,6 +33,8 @@ const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
 const AdminDeliveryZones = lazy(() => import('../components/admin/AdminDeliveryZones'));
 const AdminReservations = lazy(() => import('../components/admin/AdminReservations'));
 import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
+import { supabase } from '../utils/supabase';
+import { useQueryClient } from '@tanstack/react-query';
 
 type TabId =
     | 'dashboard'
@@ -148,6 +151,7 @@ export const ADMIN_TRANSLATIONS = {
 export default function AdminPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [searchParams, setSearchParams] = useSearchParams();
     const activeTab = (searchParams.get('tab') as TabId) || 'dashboard';
 
@@ -187,23 +191,81 @@ export default function AdminPage() {
     }, [isSoundEnabled]);
     const pendingReminders = useRef<Map<number, number>>(new Map());
     const pendingResReminders = useRef<Map<number, number>>(new Map());
-    const isFirstLoad = useRef(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioMesaRef = useRef<HTMLAudioElement | null>(null);
+    const [audioBlocked, setAudioBlocked] = useState(false);
+    const hasInteracted = useRef(false);
+    const isFirstLoad = useRef(true);
 
-    const playAlert = async (type: 'delivery' | 'mesa' = 'delivery') => {
-        const targetAudio = type === 'mesa' ? audioMesaRef.current : audioRef.current;
-        if (!targetAudio || !isSoundEnabled) return;
+    // Prime audio on first interaction
+    useEffect(() => {
+        const primeAudio = async () => {
+            if (hasInteracted.current) return;
+            hasInteracted.current = true;
 
-        try {
-            // Reset to beginning if already playing
-            targetAudio.currentTime = 0;
-            await targetAudio.play();
-        } catch (error: any) {
-            // Log warning, don't crash. Usually due to autoplay policy.
-            console.warn(`Admin ${type} notification sound blocked or failed:`, error?.message);
-        }
-    };
+            try {
+                if (audioRef.current) {
+                    audioRef.current.muted = true;
+                    await audioRef.current.play();
+                    audioRef.current.pause();
+                    audioRef.current.muted = false;
+                }
+                if (audioMesaRef.current) {
+                    audioMesaRef.current.muted = true;
+                    await audioMesaRef.current.play();
+                    audioMesaRef.current.pause();
+                    audioMesaRef.current.muted = false;
+                }
+                setAudioBlocked(false);
+                console.log('🔊 Admin audio notifications primed successfully');
+            } catch (e) {
+                console.warn('🔇 Audio priming failed:', e);
+                setAudioBlocked(true);
+            }
+        };
+
+        window.addEventListener('mousedown', primeAudio, { once: true });
+        window.addEventListener('touchstart', primeAudio, { once: true });
+        window.addEventListener('keydown', primeAudio, { once: true });
+
+        return () => {
+            window.removeEventListener('mousedown', primeAudio);
+            window.removeEventListener('touchstart', primeAudio);
+            window.removeEventListener('keydown', primeAudio);
+        };
+    }, []);
+
+    const playAlert = useCallback(
+        async (type: 'delivery' | 'mesa' = 'delivery') => {
+            const targetAudio = type === 'mesa' ? audioMesaRef.current : audioRef.current;
+            if (!targetAudio || !isSoundEnabled) return;
+
+            try {
+                targetAudio.volume = 1.0;
+
+                // Triple chirp for ALL orders (natural bird whistle)
+                const gap = type === 'mesa' ? 700 : 900;
+
+                for (let i = 0; i < 3; i++) {
+                    targetAudio.currentTime = 0;
+                    try {
+                        await targetAudio.play();
+                    } catch (e) {
+                        /* ignore */
+                    }
+                    await new Promise(resolve => setTimeout(resolve, gap));
+                }
+
+                setAudioBlocked(false);
+            } catch (error: any) {
+                console.warn(`Admin ${type} notification sound blocked or failed:`, error?.message);
+                if (error.name === 'NotAllowedError') {
+                    setAudioBlocked(true);
+                }
+            }
+        },
+        [isSoundEnabled]
+    );
 
     // Stats Query
     const {
@@ -251,6 +313,42 @@ export default function AdminPage() {
         refetchInterval: 15000,
     });
 
+    // Realtime Order Monitoring
+    useEffect(() => {
+        if (!isAuthenticated || (user?.role !== 'admin' && !user?.isSuperadmin)) return;
+
+        const channel = supabase
+            .channel('admin-orders-monitor')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'orders',
+                },
+                payload => {
+                    const newOrder = payload.new;
+                    const address = newOrder.delivery_address || newOrder.deliveryAddress || '';
+                    const isMesa = address.toUpperCase().includes('MESA');
+
+                    // If it's a mesa order or just any new order, play alert and refresh
+                    if (isSoundEnabled) {
+                        playAlert(isMesa ? 'mesa' : 'delivery');
+                    }
+
+                    // Refresh both stats and order lists
+                    queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+                    queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
+                    queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [isAuthenticated, user, isSoundEnabled, queryClient, playAlert]);
+
     const pendingOrders = useMemo(() => pendingData?.orders || [], [pendingData]);
     const pendingCount = pendingData?.pagination?.total || pendingOrders.length;
 
@@ -282,7 +380,7 @@ export default function AdminPage() {
                     else shouldPlayDelivery = true;
                 }
                 pendingReminders.current.set(order.id, now);
-            } else if (now - lastNotified >= 120000) {
+            } else if (now - lastNotified >= 300000) {
                 if (isSoundEnabled) {
                     if (isMesa) shouldPlayMesa = true;
                     else shouldPlayDelivery = true;
@@ -297,7 +395,7 @@ export default function AdminPage() {
             if (!lastNotified) {
                 if (!isFirstLoad.current && isSoundEnabled) shouldPlayDelivery = true;
                 pendingResReminders.current.set(res.id, now);
-            } else if (now - lastNotified >= 120000) {
+            } else if (now - lastNotified >= 300000) {
                 if (isSoundEnabled) shouldPlayDelivery = true;
                 pendingResReminders.current.set(res.id, now);
             }
@@ -321,8 +419,7 @@ export default function AdminPage() {
         }
 
         isFirstLoad.current = false;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pendingOrders, pendingResData, isSoundEnabled]);
+    }, [pendingOrders, pendingResData, isSoundEnabled, playAlert]);
 
     const navLinks = useMemo(
         () => [
@@ -416,12 +513,12 @@ export default function AdminPage() {
             />
             <audio
                 ref={audioRef}
-                src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+                src="https://assets.mixkit.co/active_storage/sfx/22/22-preview.mp3"
                 preload="auto"
             />
             <audio
                 ref={audioMesaRef}
-                src="https://assets.mixkit.co/active_storage/sfx/1017/1017-preview.mp3"
+                src="https://assets.mixkit.co/active_storage/sfx/22/22-preview.mp3"
                 preload="auto"
             />
             {/* Sidebar */}
@@ -575,6 +672,40 @@ export default function AdminPage() {
                                             {(t.help as any)[activeTab]}
                                         </p>
                                     </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Audio Blocked Warning */}
+                    <AnimatePresence>
+                        {audioBlocked && isSoundEnabled && (
+                            <motion.div
+                                initial={{ y: -100, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: -100, opacity: 0 }}
+                                className="fixed top-20 left-1/2 -translate-x-1/2 z-[200] w-full max-w-sm px-4"
+                            >
+                                <div className="bg-orange-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4 border border-orange-500/50 backdrop-blur-md">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-white/20 p-2 rounded-xl">
+                                            <Bell className="animate-bounce" size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black uppercase tracking-widest">
+                                                Sonido Bloqueado
+                                            </p>
+                                            <p className="text-[10px] opacity-90 font-bold">
+                                                Haz clic en cualquier lugar para activar avisos
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setAudioBlocked(false)}
+                                        className="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-colors"
+                                    >
+                                        <X size={16} />
+                                    </button>
                                 </div>
                             </motion.div>
                         )}
