@@ -16,6 +16,7 @@ import {
     RefreshCw,
 } from 'lucide-react';
 import { api } from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
 import { format } from 'date-fns';
 import { ru, es } from 'date-fns/locale';
 
@@ -109,6 +110,7 @@ const RESERVATIONS_TRANSLATIONS = {
 
 export default function AdminReservations({ language = 'es' }: AdminReservationsProps) {
     const queryClient = useQueryClient();
+    const { success: showSuccess, error: showError } = useToast();
     const t = RESERVATIONS_TRANSLATIONS[language];
     const dateLocale = language === 'ru' ? ru : es;
 
@@ -127,6 +129,14 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
             api.patch(`/admin/reservations/${id}`, { status, notes }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-reservations'] });
+            showSuccess(language === 'ru' ? 'Обновлено успешно' : 'Actualizado con éxito');
+        },
+        onError: (err: any) => {
+            console.error('Update error:', err);
+            showError(
+                err.response?.data?.error ||
+                    (language === 'ru' ? 'Ошибка обновления' : 'Error al actualizar')
+            );
         },
     });
 
@@ -135,6 +145,14 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-reservations'] });
             setReservationToDelete(null);
+            showSuccess(language === 'ru' ? 'Удалено успешно' : 'Eliminado con éxito');
+        },
+        onError: (err: any) => {
+            console.error('Delete error:', err);
+            showError(
+                err.response?.data?.error ||
+                    (language === 'ru' ? 'Ошибка удаления' : 'Error al eliminar')
+            );
         },
     });
 

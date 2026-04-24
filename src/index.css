@@ -460,3 +460,56 @@ input[type='time'] {
     -webkit-text-fill-color: transparent;
     font-weight: 900;
 }
+
+/* --- Print Styles --- */
+@media print {
+    /* Hide specific UI components instead of the whole root */
+    nav, 
+    aside, 
+    footer, 
+    header,
+    button,
+    .no-print {
+        display: none !important;
+    }
+
+    /* Ensure body doesn't have any padding/margin that shifts the receipt */
+    body, html {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 80mm !important;
+    }
+
+    /* Force the receipt to show up at the top left */
+    .receipt-container {
+        display: block !important;
+        visibility: visible !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 80mm !important;
+        margin: 0 !important;
+        padding: 4mm !important;
+        z-index: 999999 !important;
+        background: white !important;
+        color: black !important;
+        font-family: monospace !important;
+    }
+
+    /* Reset potential layout containers that might hide the receipt */
+    #root, main, div {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* Remove browser headers and footers */
+    @page {
+        margin: 0;
+        size: 80mm auto;
+    }
+}

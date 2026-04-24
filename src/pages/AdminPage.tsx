@@ -35,6 +35,8 @@ const AdminReservations = lazy(() => import('../components/admin/AdminReservatio
 import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
 import { supabase } from '../utils/supabase';
 import { useQueryClient } from '@tanstack/react-query';
+import { Order } from '../types';
+import { OrderReceipt } from '../components/admin/OrderReceipt';
 
 type TabId =
     | 'dashboard'
@@ -185,6 +187,7 @@ export default function AdminPage() {
         const saved = localStorage.getItem('admin_sound_enabled');
         return saved === null ? true : saved === 'true';
     });
+    const [printingOrder, setPrintingOrder] = useState<Order | null>(null);
 
     useEffect(() => {
         localStorage.setItem('admin_sound_enabled', String(isSoundEnabled));
@@ -266,6 +269,16 @@ export default function AdminPage() {
         },
         [isSoundEnabled]
     );
+
+    const handlePrintOrder = useCallback((order: Order) => {
+        setPrintingOrder(order);
+        // Small delay to ensure the receipt is rendered before printing
+        setTimeout(() => {
+            window.print();
+            // Clear after print dialog closes
+            setTimeout(() => setPrintingOrder(null), 1000);
+        }, 100);
+    }, []);
 
     // Stats Query
     const {
@@ -741,6 +754,7 @@ export default function AdminPage() {
                                 isGlobalSoundEnabled={isSoundEnabled}
                                 setIsGlobalSoundEnabled={setIsSoundEnabled}
                                 onTestSound={playAlert}
+                                onPrintOrder={handlePrintOrder}
                                 globalPendingCount={pendingCount}
                                 language={language}
                             />
@@ -769,6 +783,7 @@ export default function AdminPage() {
                     </footer>
                 </div>
             </main>
+            {printingOrder && <OrderReceipt order={printingOrder} />}
         </div>
     );
 }

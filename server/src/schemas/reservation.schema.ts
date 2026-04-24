@@ -10,7 +10,7 @@ export const reservationStatusSchema = z.enum(['pending', 'confirmed', 'cancelle
  */
 export const reservationIdParamSchema = z.object({
     params: z.object({
-        id: z.string().transform(val => parseInt(val, 10)),
+        id: z.string().min(1, 'ID de reserva requerido'),
     }),
 });
 
@@ -43,7 +43,7 @@ export const createReservationSchema = z.object({
  */
 export const updateReservationSchema = z.object({
     params: z.object({
-        id: z.string().transform(val => parseInt(val, 10)),
+        id: z.string().min(1, 'ID de reserva requerido'),
     }),
     body: z
         .object({

@@ -22,6 +22,7 @@ import {
     Truck,
     Activity,
     ChefHat,
+    Printer,
 } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
 import { cn } from '../../utils/cn';
@@ -35,6 +36,7 @@ interface AdminOrdersProps {
     onTestSound?: (type?: 'delivery' | 'mesa') => void;
     globalPendingCount: number;
     language?: 'ru' | 'es';
+    onPrintOrder?: (order: Order) => void;
 }
 
 const ORDERS_TRANSLATIONS = {
@@ -56,6 +58,7 @@ const ORDERS_TRANSLATIONS = {
         errorLoading: 'Ошибка при загрузке заказов',
         noOrders: 'Заказы не найдены.',
         loadingOrders: 'Загрузка заказов...',
+        printReceipt: 'Печать чека',
         orderId: 'Заказ #',
         total: 'Итого',
         clientContact: 'Клиент и контакт',
@@ -116,6 +119,7 @@ const ORDERS_TRANSLATIONS = {
         errorLoading: 'Error al cargar los pedidos',
         noOrders: 'No se encontraron pedidos.',
         loadingOrders: 'Cargando pedidos...',
+        printReceipt: 'Imprimir Ticket',
         orderId: 'Pedido #',
         total: 'Total',
         clientContact: 'Cliente y Contacto',
@@ -167,6 +171,7 @@ export default function AdminOrders({
     onTestSound,
     globalPendingCount,
     language = 'es',
+    onPrintOrder,
 }: AdminOrdersProps) {
     const queryClient = useQueryClient();
     const { success } = useToast();
@@ -1106,6 +1111,17 @@ export default function AdminOrders({
                                                         />
                                                     </div>
                                                 </div>
+
+                                                {/* Print Receipt Button */}
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    onClick={() => onPrintOrder?.(order)}
+                                                    className="w-full mt-3 py-4 bg-white border-2 border-gray-100 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-sm hover:shadow-md hover:border-orange-200 hover:text-orange-600 transition-all flex items-center justify-center gap-3 text-gray-500 no-print"
+                                                >
+                                                    <Printer size={18} strokeWidth={2.5} />
+                                                    {t.printReceipt}
+                                                </motion.button>
 
                                                 <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
                                                     <div className="flex items-center gap-3">
