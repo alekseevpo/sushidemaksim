@@ -69,7 +69,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
         // Restaurant Info from Settings or Defaults
         const restAddr1 = settings?.contactAddressLine1 || 'Calle Barrilero, 20';
         const restAddr2 = settings?.contactAddressLine2 || '28007 Madrid';
-        const restPhone = settings?.contactPhone || '—';
+        const restPhone = settings?.contactPhone || '631 920 312';
 
         return (
             <div className="receipt-container fixed top-0 left-0 right-0 z-[999999] bg-white text-black p-8 font-mono text-[12px] leading-tight w-[80mm] mx-auto print:block hidden">

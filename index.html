@@ -6,6 +6,27 @@
             if (window.location.hostname === 'sushidemaksim.com') {
                 window.location.href = window.location.href.replace('sushidemaksim.com', 'www.sushidemaksim.com');
             }
+
+            // --- IMMEDIATE THEME SETUP ---
+            // Fix white flash on refresh by setting background color immediately
+            (function() {
+                const isTable = window.location.pathname.startsWith('/table');
+                const isDark = isTable;
+                const bgColor = isDark ? '#0d0d0d' : '#fbf7f0';
+                const themeColor = isDark ? '#000000' : '#ea580c';
+                
+                document.documentElement.style.backgroundColor = bgColor;
+                if (isDark) {
+                    document.documentElement.style.colorScheme = 'dark';
+                    document.documentElement.classList.add('is-table-route');
+                }
+                
+                // Update theme-color meta tag if it exists
+                document.addEventListener('DOMContentLoaded', function() {
+                    const meta = document.querySelector('meta[name="theme-color"]');
+                    if (meta) meta.setAttribute('content', themeColor);
+                });
+            })();
         </script>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -61,6 +82,26 @@
 
         <!-- Theme -->
         <meta name="theme-color" content="#ea580c" />
+        
+        <style>
+            /* Initial critical CSS to support the script above */
+            html {
+                background-color: #fbf7f0; /* Default beige for main site */
+            }
+            html.is-table-route {
+                background-color: #0d0d0d !important;
+                color-scheme: dark;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: inherit;
+            }
+            #root:empty {
+                min-height: 100vh;
+                background-color: inherit;
+            }
+        </style>
     </head>
 
     <body>
