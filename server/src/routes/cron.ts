@@ -374,5 +374,56 @@ router.post('/check-late-orders', async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
+// Monthly archival (to be called on the 1st of each month at ~0:10 AM)
+router.post('/monthly-archival', async (req, res) => {
+    const cronSecret = req.headers['x-cron-secret'];
+    const authHeader = req.headers['authorization'];
+    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+        return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
+    }
+
+    try {
+        const now = new Date();
+        // Archive the PREVIOUS month
+        const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const year = prevMonth.getFullYear();
+        const month = prevMonth.getMonth() + 1;
+
+        console.log(`📊 CRON (Archival): Starting monthly archival for ${month}/${year}...`);
+
+        // 1. Archive Orders for that month
+        const startDate = new Date(year, month - 1, 1).toISOString();
+        const endDate = new Date(year, month, 1).toISOString();
+
+        const { error: archOrderErr } = await supabase
+            .from('orders')
+            .update({ is_archived: true })
+            .neq('id', 513)
+            .gte('created_at', startDate)
+            .lt('created_at', endDate);
+
+        if (archOrderErr) throw archOrderErr;
+
+        // 2. Clear Daily Reports for that month
+        const startDateStr = startDate.split('T')[0];
+        const endDateStr = new Date(year, month, 0).toISOString().split('T')[0];
+
+        const { error: archDailyErr } = await supabase
+            .from('daily_reports')
+            .delete()
+            .gte('date', startDateStr)
+            .lte('date', endDateStr);
+
+        if (archDailyErr) throw archDailyErr;
+
+        console.log(`✅ CRON (Archival): Finished archival for ${month}/${year}.`);
+        res.json({ success: true, archived: `${month}/${year}` });
+    } catch (e: any) {
+        console.error('❌ Monthly archival cron error:', e);
+        res.status(500).json({ error: e.message });
+    }
+});
 
 export default router;

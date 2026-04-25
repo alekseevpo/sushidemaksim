@@ -162,8 +162,6 @@ router.post(
 
         if (saveErr) throw saveErr;
 
-        // 5. ARCHIVE OLD DATA
-        // Archive everything EXCEPT Order #513
         const { error: archOrderErr } = await supabase
             .from('orders')
             .update({ is_archived: true })
@@ -171,6 +169,20 @@ router.post(
             .eq('is_archived', false);
 
         if (archOrderErr) throw archOrderErr;
+        
+        // 6. CLEAR DAILY REPORTS for that period (Archiving)
+        const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+        const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+        
+        const { error: archDailyErr } = await supabase
+            .from('daily_reports')
+            .delete()
+            .gte('date', startDate)
+            .lte('date', endDate);
+
+        if (archDailyErr) {
+            console.error('📊 Error clearing daily reports during archival:', archDailyErr.message);
+        }
 
         res.json({ success: true, report: reportData });
     })
