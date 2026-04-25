@@ -144,15 +144,6 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
         },
     });
 
-    // Update local state when remote data changes
-    useEffect(() => {
-        if (remoteSettings && (!localSettings || !updateMutation.isPending)) {
-            // Only update if we don't have local settings or we just finished a save
-            // to avoid losing unsaved changes, but sync after success
-            setLocalSettings(remoteSettings);
-        }
-    }, [remoteSettings]);
-
     const updateMutation = useMutation({
         mutationFn: (payload: any) => api.put('/admin/settings', payload),
         onSuccess: () => {
@@ -165,6 +156,15 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
             setTimeout(() => setSaveStatus(null), 4000);
         },
     });
+
+    // Update local state when remote data changes
+    useEffect(() => {
+        if (remoteSettings && (!localSettings || !updateMutation.isPending)) {
+            // Only update if we don't have local settings or we just finished a save
+            // to avoid losing unsaved changes, but sync after success
+            setLocalSettings(remoteSettings);
+        }
+    }, [remoteSettings, localSettings, updateMutation.isPending]);
 
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
@@ -491,66 +491,66 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {Array.isArray(localSettings.socialLinks) &&
                         localSettings.socialLinks.map((link: any, idx: number) => (
-                        <div
-                            key={idx}
-                            className="flex flex-col gap-4 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 relative group animate-in zoom-in-95 duration-200"
-                        >
-                            <button
-                                type="button"
-                                onClick={() => setSocialToRemove(idx)}
-                                className="absolute top-4 right-4 text-gray-300 hover:text-orange-600 p-2 transition-colors bg-white rounded-xl shadow-sm opacity-0 group-hover:opacity-100"
-                                title="Eliminar"
+                            <div
+                                key={idx}
+                                className="flex flex-col gap-4 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 relative group animate-in zoom-in-95 duration-200"
                             >
-                                <Trash2 size={16} strokeWidth={2} />
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setSocialToRemove(idx)}
+                                    className="absolute top-4 right-4 text-gray-300 hover:text-orange-600 p-2 transition-colors bg-white rounded-xl shadow-sm opacity-0 group-hover:opacity-100"
+                                    title="Eliminar"
+                                >
+                                    <Trash2 size={16} strokeWidth={2} />
+                                </button>
 
-                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                            {t.platform}
+                                        </label>
+                                        <input
+                                            value={link.platform}
+                                            onChange={e =>
+                                                handleUpdateSocial(idx, 'platform', e.target.value)
+                                            }
+                                            className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
+                                            {t.icon}
+                                        </label>
+                                        <select
+                                            value={link.icon}
+                                            onChange={e =>
+                                                handleUpdateSocial(idx, 'icon', e.target.value)
+                                            }
+                                            className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm appearance-none cursor-pointer"
+                                        >
+                                            <option value="whatsapp">WhatsApp</option>
+                                            <option value="instagram">Instagram</option>
+                                            <option value="facebook">Facebook</option>
+                                            <option value="tiktok">TikTok</option>
+                                            <option value="twitter">Twitter</option>
+                                            <option value="thefork">The Fork</option>
+                                            <option value="threads">Threads</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div className="space-y-1">
                                     <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                        {t.platform}
+                                        {t.urlLink}
                                     </label>
                                     <input
-                                        value={link.platform}
-                                        onChange={e =>
-                                            handleUpdateSocial(idx, 'platform', e.target.value)
-                                        }
+                                        value={link.url}
+                                        onChange={e => handleUpdateSocial(idx, 'url', e.target.value)}
                                         className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm"
+                                        placeholder="https://"
                                     />
                                 </div>
-                                <div className="space-y-1">
-                                    <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                        {t.icon}
-                                    </label>
-                                    <select
-                                        value={link.icon}
-                                        onChange={e =>
-                                            handleUpdateSocial(idx, 'icon', e.target.value)
-                                        }
-                                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm appearance-none cursor-pointer"
-                                    >
-                                        <option value="whatsapp">WhatsApp</option>
-                                        <option value="instagram">Instagram</option>
-                                        <option value="facebook">Facebook</option>
-                                        <option value="tiktok">TikTok</option>
-                                        <option value="twitter">Twitter</option>
-                                        <option value="thefork">The Fork</option>
-                                        <option value="threads">Threads</option>
-                                    </select>
-                                </div>
                             </div>
-                            <div className="space-y-1">
-                                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">
-                                    {t.urlLink}
-                                </label>
-                                <input
-                                    value={link.url}
-                                    onChange={e => handleUpdateSocial(idx, 'url', e.target.value)}
-                                    className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm"
-                                    placeholder="https://"
-                                />
-                            </div>
-                        </div>
-                    ))}
+                        ))}
                     {(!Array.isArray(localSettings.socialLinks) ||
                         localSettings.socialLinks.length === 0) && (
                         <div className="md:col-span-2 py-10 text-center bg-gray-50 rounded-[32px] border border-dashed border-gray-200">

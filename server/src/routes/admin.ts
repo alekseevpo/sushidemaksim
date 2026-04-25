@@ -1591,7 +1591,6 @@ router.patch(
     })
 );
 
-
 // GET /api/admin/reports
 router.get(
     '/reports',
