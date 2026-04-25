@@ -164,16 +164,21 @@ router.post(
 // GET /api/admin/settings
 router.get(
     '/settings',
-    asyncHandler(async (req: Request, res: Response) => {
+    asyncHandler(async (_req: Request, res: Response) => {
         const { data, error } = await supabase.from('site_settings').select('key, value');
+        if (error) throw error;
 
-        if (error) {
-            return res.status(500).json({ error: error.message });
-        }
-
-        // Convert array of {key, value} to object { [key]: value }
         const settings = (data || []).reduce((acc: any, item) => {
-            acc[item.key] = item.value;
+            // Try to parse JSON values (arrays/objects)
+            try {
+                const val = item.value;
+                acc[item.key] =
+                    typeof val === 'string' && (val.startsWith('{') || val.startsWith('['))
+                        ? JSON.parse(val)
+                        : val;
+            } catch {
+                acc[item.key] = item.value;
+            }
             return acc;
         }, {});
 
@@ -186,11 +191,11 @@ router.put(
     '/settings',
     validateResource(updateSettingsSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const settings = req.body; // { key1: value1, key2: value2 }
+        const settings = req.body;
 
         const entries = Object.entries(settings).map(([key, value]) => ({
             key,
-            value: String(value),
+            value: typeof value === 'object' ? JSON.stringify(value) : String(value),
         }));
 
         const { error } = await supabase
@@ -1586,51 +1591,6 @@ router.patch(
     })
 );
 
-// ─── SITE SETTINGS MANAGEMENT ─────────────────────────────────────────────────
-router.get(
-    '/settings',
-    asyncHandler(async (_req: Request, res: Response) => {
-        const { data: settings, error } = await supabase.from('site_settings').select('*');
-        if (error) throw error;
-
-        const settingsMap = settings.reduce((acc: any, curr: any) => {
-            const camelKey = curr.key.replace(/_([a-z0-9])/g, (g: any) => g[1].toUpperCase());
-            try {
-                acc[camelKey] =
-                    typeof curr.value === 'string' ? JSON.parse(curr.value) : curr.value;
-            } catch {
-                acc[camelKey] = curr.value;
-            }
-            return acc;
-        }, {});
-
-        res.json(settingsMap);
-    })
-);
-
-router.put(
-    '/settings',
-    validateResource(updateSettingsSchema),
-    asyncHandler(async (req: Request, res: Response) => {
-        const updates = Object.keys(req.body).map(key => {
-            const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-            return {
-                key: snakeKey,
-                value:
-                    typeof req.body[key] === 'object'
-                        ? JSON.stringify(req.body[key])
-                        : req.body[key],
-            };
-        });
-
-        const { error } = await supabase
-            .from('site_settings')
-            .upsert(updates, { onConflict: 'key' });
-        if (error) throw error;
-
-        res.json({ success: true });
-    })
-);
 
 // GET /api/admin/reports
 router.get(

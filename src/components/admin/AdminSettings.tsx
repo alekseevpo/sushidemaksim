@@ -146,10 +146,12 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
 
     // Update local state when remote data changes
     useEffect(() => {
-        if (remoteSettings && !localSettings) {
+        if (remoteSettings && (!localSettings || !updateMutation.isPending)) {
+            // Only update if we don't have local settings or we just finished a save
+            // to avoid losing unsaved changes, but sync after success
             setLocalSettings(remoteSettings);
         }
-    }, [remoteSettings, localSettings]);
+    }, [remoteSettings]);
 
     const updateMutation = useMutation({
         mutationFn: (payload: any) => api.put('/admin/settings', payload),
@@ -487,7 +489,8 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {localSettings.socialLinks.map((link: any, idx: number) => (
+                    {Array.isArray(localSettings.socialLinks) &&
+                        localSettings.socialLinks.map((link: any, idx: number) => (
                         <div
                             key={idx}
                             className="flex flex-col gap-4 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 relative group animate-in zoom-in-95 duration-200"
@@ -548,7 +551,8 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             </div>
                         </div>
                     ))}
-                    {localSettings.socialLinks.length === 0 && (
+                    {(!Array.isArray(localSettings.socialLinks) ||
+                        localSettings.socialLinks.length === 0) && (
                         <div className="md:col-span-2 py-10 text-center bg-gray-50 rounded-[32px] border border-dashed border-gray-200">
                             <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
                                 {t.noSocials}
