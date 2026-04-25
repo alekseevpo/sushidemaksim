@@ -169,11 +169,11 @@ router.post(
             .eq('is_archived', false);
 
         if (archOrderErr) throw archOrderErr;
-        
+
         // 6. CLEAR DAILY REPORTS for that period (Archiving)
         const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
         const endDate = new Date(year, month, 0).toISOString().split('T')[0];
-        
+
         const { error: archDailyErr } = await supabase
             .from('daily_reports')
             .delete()
