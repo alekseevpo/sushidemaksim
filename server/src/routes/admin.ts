@@ -380,7 +380,8 @@ router.get(
 
         let query = supabase
             .from('orders')
-            .select('*, users(name, email, avatar), items:order_items(*)', { count: 'exact' });
+            .select('*, users(name, email, avatar), items:order_items(*)', { count: 'exact' })
+            .eq('is_archived', false);
 
         if (status) {
             if (status.includes(',')) {
@@ -978,8 +979,15 @@ router.get(
             { count: menuItems },
         ] = await Promise.all([
             supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'user'),
-            supabase.from('orders').select('*', { count: 'exact', head: true }),
-            supabase.from('orders').select('total').neq('status', 'cancelled'),
+            supabase
+                .from('orders')
+                .select('*', { count: 'exact', head: true })
+                .eq('is_archived', false),
+            supabase
+                .from('orders')
+                .select('total')
+                .neq('status', 'cancelled')
+                .eq('is_archived', false),
             supabase.from('menu_items').select('*', { count: 'exact', head: true }),
         ]);
 
@@ -1001,14 +1009,17 @@ router.get(
                 .from('orders')
                 .select('total')
                 .neq('status', 'cancelled')
+                .eq('is_archived', false)
                 .gte('created_at', todayISO),
             supabase
                 .from('orders')
                 .select('*', { count: 'exact', head: true })
+                .eq('is_archived', false)
                 .gte('created_at', todayISO),
             supabase
                 .from('orders')
                 .select('*', { count: 'exact', head: true })
+                .eq('is_archived', false)
                 .in('status', ['pending', 'received']), // Count both as pending attention
             supabase
                 .from('users')
@@ -1029,7 +1040,10 @@ router.get(
             Math.round(Number(missedRevData?.missed_revenue || 0) * 100) / 100;
 
         // 3. Status breakdown
-        const { data: statusData } = await supabase.from('orders').select('status');
+        const { data: statusData } = await supabase
+            .from('orders')
+            .select('status')
+            .eq('is_archived', false);
         const ordersByStatus: Record<string, number> = {};
         statusData?.forEach(o => {
             ordersByStatus[o.status] = (ordersByStatus[o.status] || 0) + 1;
@@ -1039,6 +1053,7 @@ router.get(
         const { data: recentOrders } = await supabase
             .from('orders')
             .select('id, total, status, created_at, users(name, avatar)')
+            .eq('is_archived', false)
             .order('created_at', { ascending: false })
             .limit(5);
 
@@ -1057,6 +1072,7 @@ router.get(
             .select(
                 'id, total, status, created_at, user_id, device_type, os_name, browser_name, delivery_address'
             )
+            .eq('is_archived', false)
             .gte('created_at', ninetyDaysAgo);
 
         const orderIds90 = (orders90 || []).filter(o => o.status !== 'cancelled').map(o => o.id);
@@ -1849,7 +1865,7 @@ router.get(
         let query = supabase
             .from('reservations')
             .select('*')
-            .order('reservation_date', { ascending: true });
+            .order('reservation_date', { ascending: false });
 
         if (status) query = query.eq('status', status);
         if (date) query = query.eq('reservation_date', date);

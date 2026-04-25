@@ -9,6 +9,7 @@ import SEO from '../components/SEO';
 import { PromoSkeleton } from '../components/skeletons/PromoSkeleton';
 import { useQuery } from '@tanstack/react-query';
 import { getOptimizedImageUrl } from '../utils/images';
+import { SITE_URL } from '../constants/config';
 import SafeImage from '../components/common/SafeImage';
 import BrandedPlaceholder from '../components/common/BrandedPlaceholder';
 
@@ -104,18 +105,18 @@ export default function PromoPage() {
                                 '@type': 'ListItem',
                                 position: 1,
                                 name: 'Inicio',
-                                item: 'https://www.sushidemaksim.com/',
+                                item: `${SITE_URL}/`,
                             },
                             {
                                 '@type': 'ListItem',
                                 position: 2,
                                 name: 'Promociones',
-                                item: 'https://www.sushidemaksim.com/promos',
+                                item: `${SITE_URL}/promos`,
                             },
                         ],
                     },
                 ]}
-                url="https://www.sushidemaksim.com/promos"
+                url={`${SITE_URL}/promos`}
             />
 
             {/* Hero Header */}

@@ -4,6 +4,7 @@ import SafeImage from '../common/SafeImage';
 import { EMOJI } from '../../constants/menu';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { api } from '../../utils/api';
+import { SITE_URL } from '../../constants/config';
 
 interface ShareModalProps {
     item: MenuItem | null;
@@ -23,9 +24,7 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
         }
     };
 
-    const shareUrl = `${
-        import.meta.env.VITE_FRONTEND_URL || window.location.origin
-    }/menu#item-${item.id}`;
+    const shareUrl = `${SITE_URL}/compartir/item/${item.id}`;
     const shareText = `¡Mira este ${item.name} en Sushi de Maksim! 🍣\n\n${item.description}\n\nPídelo aquí: ${shareUrl}`;
 
     return (

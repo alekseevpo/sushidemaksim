@@ -400,21 +400,21 @@ const UserRow = memo(
                         )}
                     </div>
                 </td>
-                <td className="px-4 py-2.5 text-center">
+                <td className="px-4 py-2.5 text-center sticky right-0 bg-white/95 backdrop-blur-sm shadow-[-10px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-100 group-hover:bg-gray-50/95 transition-colors">
                     {!user.isSuperadmin && (
                         <div className="flex items-center justify-center gap-1.5">
                             {user.deletedAt ? (
                                 <div className="flex items-center gap-1.5">
                                     <button
                                         onClick={() => onRestore(user)}
-                                        className="p-1.5 px-2.5 flex items-center gap-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-green-100 shadow-sm active:scale-95"
+                                        className="p-1.5 px-2.5 flex items-center gap-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-green-100 shadow-sm active:scale-95 whitespace-nowrap"
                                         title={t.modals.restore}
                                     >
                                         <RotateCcw size={12} strokeWidth={3} /> {t.modals.restore}
                                     </button>
                                     <button
                                         onClick={() => onDelete(user)}
-                                        className="p-1.5 text-orange-600 hover:bg-orange-600 hover:text-white bg-orange-50 rounded-lg border border-orange-100 transition-all shadow-sm active:scale-95 animate-pulse-subtle"
+                                        className="p-1.5 text-orange-600 hover:bg-orange-600 hover:text-white bg-orange-50 rounded-lg border border-orange-100 transition-all shadow-sm active:scale-95 animate-pulse-subtle shrink-0"
                                         title={t.modals.deleteTitle}
                                     >
                                         <Trash2 size={16} strokeWidth={2} />
@@ -425,14 +425,14 @@ const UserRow = memo(
                                     {currentUser?.isSuperadmin && (
                                         <button
                                             onClick={() => onToggleRole(user)}
-                                            className="px-3 py-1.5 bg-white text-gray-600 hover:bg-black hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-gray-200 shadow-sm active:scale-95"
+                                            className="px-3 py-1.5 bg-white text-gray-600 hover:bg-black hover:text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all border border-gray-200 shadow-sm active:scale-95 whitespace-nowrap"
                                         >
                                             {t.table.role}
                                         </button>
                                     )}
                                     <button
                                         onClick={() => onDelete(user)}
-                                        className="p-1.5 text-gray-300 hover:text-orange-600 bg-gray-50 hover:bg-white rounded-lg border border-gray-100 transition-all shadow-sm active:scale-95"
+                                        className="p-1.5 text-gray-300 hover:text-orange-600 bg-gray-50 hover:bg-white rounded-lg border border-gray-100 transition-all shadow-sm active:scale-95 shrink-0"
                                         title={t.modals.deleteTitle}
                                     >
                                         <Trash2 size={16} strokeWidth={2} />
@@ -850,7 +850,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center whitespace-nowrap">
+                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center whitespace-nowrap sticky right-0 bg-gray-50/95 backdrop-blur-sm shadow-[-10px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-100 z-10">
                                     {t.table.actions}
                                 </th>
                             </tr>

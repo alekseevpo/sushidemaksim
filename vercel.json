@@ -31,6 +31,10 @@
             "destination": "/api/[...path]"
         },
         {
+            "source": "/compartir/(.*)",
+            "destination": "/api/[...path]"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/[...path]"
         },

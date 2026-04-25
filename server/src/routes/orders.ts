@@ -76,7 +76,7 @@ router.post(
 
             if (!isTimeWithinBusinessHours(normalizedDate, scheduledTime)) {
                 return res.status(400).json({
-                    error: 'La hora seleccionada está fuera de nuestro horario de servicio. ¡Пожалуйста, выберите время, когда наши шеф-повара на кухне!',
+                    error: 'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elija un horario en el que nuestros chefs estén en la cocina!',
                 });
             }
             serverEstimatedTime = `${normalizedDate} ${scheduledTime}`;
@@ -88,12 +88,12 @@ router.post(
             }
         } else if (isStoreClosed) {
             return res.status(400).json({
-                error: 'Nuestra cocina está descansando ahora. ¡Но мы будем рады подготовить ваш заказ позже! Пожалуйста, выберите "Программируемая доставка".',
+                error: 'Nuestra cocina está descansando ahora. ¡Pero estaremos encantados de preparar su pedido más tarde! Por favor, elija "Entrega Programada".',
             });
         } else if (isTodayClosed) {
             // Block non-scheduled orders if today is closed
             return res.status(400).json({
-                error: 'Сегодня мы принимаем заказы только на будущие даты. Пожалуйста, выберите время "Программируемая доставка" на завтра или позже.',
+                error: 'Hoy solo aceptamos pedidos para fechas futuras. Por favor, elija un horario de "Entrega Programada" para mañana o más tarde.',
             });
         }
 

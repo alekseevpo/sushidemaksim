@@ -118,7 +118,7 @@ export default function BlogPostPage() {
             name: 'Sushi de Maksim',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://sushidemaksim.vercel.app/logo.svg',
+                url: `${SITE_URL}/logo.svg`,
             },
         },
         datePublished: post.createdAt,

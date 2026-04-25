@@ -10,7 +10,6 @@ export function useOrdersQuery(page: number = 1, limit: number = 10) {
             const data = await api.get(`/orders?page=${page}&limit=${limit}`);
             return data;
         },
-        staleTime: 1000 * 30, // 30 seconds
-        refetchInterval: 1000 * 30, // Poll every 30s
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 }

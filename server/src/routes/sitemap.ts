@@ -25,7 +25,7 @@ const MENU_CATEGORIES = [
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        const baseUrl = config.frontendUrl || 'https://sushidemaksim.vercel.app';
+        const baseUrl = config.frontendUrl || 'https://www.sushidemaksim.com';
         const today = new Date().toISOString().split('T')[0];
 
         // 1. Static Routes

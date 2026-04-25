@@ -7,6 +7,7 @@ import Newsletter from '../components/Newsletter';
 import { BlogSkeleton } from '../components/skeletons/BlogSkeleton';
 import { getOptimizedImageUrl } from '../utils/images';
 import { useBlog } from '../hooks/queries/useBlog';
+import { SITE_URL } from '../constants/config';
 import SafeImage from '../components/common/SafeImage';
 
 export default function BlogPage() {
@@ -56,13 +57,13 @@ export default function BlogPage() {
                         '@type': 'Blog',
                         name: 'Blog de Sushi de Maksim',
                         description: 'Historias, recetas y secretos del mundo del sushi artesanal.',
-                        url: 'https://www.sushidemaksim.com/blog',
+                        url: `${SITE_URL}/blog`,
                         publisher: {
                             '@type': 'Organization',
                             name: 'Sushi de Maksim',
                             logo: {
                                 '@type': 'ImageObject',
-                                url: 'https://www.sushidemaksim.com/logo.svg',
+                                url: `${SITE_URL}/logo.svg`,
                             },
                         },
                     },
@@ -74,18 +75,18 @@ export default function BlogPage() {
                                 '@type': 'ListItem',
                                 position: 1,
                                 name: 'Inicio',
-                                item: 'https://www.sushidemaksim.com/',
+                                item: `${SITE_URL}/`,
                             },
                             {
                                 '@type': 'ListItem',
                                 position: 2,
                                 name: 'Blog',
-                                item: 'https://www.sushidemaksim.com/blog',
+                                item: `${SITE_URL}/blog`,
                             },
                         ],
                     },
                 ]}
-                url="https://www.sushidemaksim.com/blog"
+                url={`${SITE_URL}/blog`}
             />
 
             {/* Hero Section */}

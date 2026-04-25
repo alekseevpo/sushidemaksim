@@ -23,6 +23,7 @@ import contactRoutes from './routes/contact.js';
 import deliveryZonesRoutes from './routes/deliveryZones.js';
 import analyticsRoutes from './routes/analytics.js';
 import reservationsRoutes from './routes/reservations.js';
+import reportsRoutes from './routes/reports.js';
 import sitemapRoutes from './routes/sitemap.js';
 
 const app = express();
@@ -67,6 +68,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/delivery-zones', deliveryZonesRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/reservations', reservationsRoutes);
+app.use('/api/admin/reports', reportsRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────
 // Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them
@@ -128,6 +130,69 @@ app.get('/invitacion/:id', async (req, res) => {
     } catch (e) {
         // Fallback to home on error
         return res.redirect('/');
+    }
+});
+
+app.get('/compartir/item/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data: item } = await supabase.from('menu_items').select('*').eq('id', id).single();
+
+        if (!item) return res.redirect('/menu');
+
+        const fUrl = config.frontendUrl.replace(/\/$/, '');
+        const finalDest = `${fUrl}/menu#item-${id}`;
+
+        // Format image URL
+        let imageUrl = item.image;
+        if (imageUrl && !imageUrl.startsWith('http')) {
+            const STORAGE_BASE = `${config.supabase.url}/storage/v1/object/public/images`;
+            // If the path already includes 'menu/', don't add it again
+            const cleanPath = imageUrl.startsWith('menu/') ? imageUrl : `menu/${imageUrl}`;
+            imageUrl = `${STORAGE_BASE}/${cleanPath}`;
+        }
+        if (!imageUrl) imageUrl = `${fUrl}/og-image-v18.jpg`;
+
+        const html = `<!DOCTYPE html>
+<html lang="es" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${item.name} — Sushi de Maksim</title>
+    <meta name="description" content="${item.description}">
+    
+    <!-- WhatsApp / Telegram / Facebook Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="¡Mira este ${item.name} en Sushi de Maksim! 🍣">
+    <meta property="og:description" content="${item.description}">
+    <meta property="og:image" content="${imageUrl}">
+    <meta property="og:image:secure_url" content="${imageUrl}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="${finalDest}">
+    <meta property="og:site_name" content="Sushi de Maksim">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="${imageUrl}">
+    <meta name="twitter:title" content="¡Mira este ${item.name} en Sushi de Maksim! 🍣">
+    <meta name="twitter:description" content="${item.description}">
+    
+    <!-- Redirect to React App -->
+    <meta http-equiv="refresh" content="0; url=${finalDest}">
+    <script>window.location.href = "${finalDest}";</script>
+</head>
+<body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #000;">
+    <div style="text-align: center; color: white;">
+        <h1 style="font-size: 60px; margin: 0;">🍣</h1>
+        <p style="opacity: 0.6; font-weight: 500;">Cargando ${item.name}...</p>
+    </div>
+</body>
+</html>`;
+
+        res.set('Content-Type', 'text/html');
+        return res.send(html);
+    } catch (e) {
+        return res.redirect('/menu');
     }
 });
 

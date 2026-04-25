@@ -8,7 +8,13 @@ import {
     Heart,
     Share2,
     RefreshCw,
+    Archive,
+    FileText,
+    ChevronRight,
+    X,
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
     BarChart,
     Bar,
@@ -148,7 +154,28 @@ const ANALYTICS_TRANSLATIONS = {
             label: 'Заказы',
             desc: 'Всего заказов получено',
         },
+        reports: {
+            title: 'Месячные отчеты и Архивация',
+            archiveBtn: 'Создать отчет и архивировать данные',
+            archiveConfirm:
+                'Вы уверены? Все текущие заказы (кроме №513) будут помечены как архивные. Это сбросит текущую статистику дашборда.',
+            history: 'История отчетов',
+            noReports: 'Отчетов пока нет',
+            viewReport: 'Посмотреть отчет',
+            summary: 'Сводка за месяц',
+            revenue: 'Выручка',
+            orders: 'Заказы',
+            avgCheck: 'Ср. чек',
+            discounts: 'Скидки',
+            reservations: 'Резервы',
+            registrations: 'Регистрации',
+            topItems: 'Топ 10 товаров',
+            topClients: 'Лучшие клиенты',
+            qty: 'шт.',
+            total: 'всего',
+        },
     },
+
     es: {
         title: 'Analítica Avanzada',
         period: 'Últimos 90 días',
@@ -266,11 +293,74 @@ const ANALYTICS_TRANSLATIONS = {
             insight:
                 'La herramienta más potente de planificación. Muestra las ventanas exactas de sobrecarga para repartidores.',
         },
+        reports: {
+            title: 'Informes Mensuales y Archivación',
+            archiveBtn: 'Generar Informe y Archivar',
+            archiveConfirm:
+                '¿Estás seguro? Todos los pedidos actuales (excepto #513) se marcarán como archivados. Esto reiniciará las estadísticas actuales.',
+            history: 'Historial de Informes',
+            noReports: 'No hay informes todavía',
+            viewReport: 'Ver Informe',
+            summary: 'Resumen Mensual',
+            revenue: 'Ingresos',
+            orders: 'Pedidos',
+            avgCheck: 'Ticket Medio',
+            discounts: 'Descuentos',
+            reservations: 'Reservas',
+            registrations: 'Registros',
+            topItems: 'Top 10 Productos',
+            topClients: 'Mejores Clientes',
+            qty: 'uds.',
+            total: 'total',
+        },
     },
 } as const;
 
 export default function AdminAnalytics({ stats, loading, language = 'es' }: AdminAnalyticsProps) {
     const t = ANALYTICS_TRANSLATIONS[language];
+    const [reports, setReports] = useState<any[]>([]);
+    const [reportsLoading, setReportsLoading] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [selectedReport, setSelectedReport] = useState<any>(null);
+
+    useEffect(() => {
+        fetchReports();
+    }, []);
+
+    const fetchReports = async () => {
+        try {
+            setReportsLoading(true);
+            const { data } = await axios.get('/api/admin/reports', { withCredentials: true });
+            setReports(data || []);
+        } catch (err) {
+            console.error('❌ Error fetching reports:', err);
+        } finally {
+            setReportsLoading(false);
+        }
+    };
+
+    const handleGenerateReport = async () => {
+        if (!window.confirm(t.reports.archiveConfirm)) return;
+
+        try {
+            setIsGenerating(true);
+            const { data } = await axios.post(
+                '/api/admin/reports/generate',
+                {},
+                { withCredentials: true }
+            );
+            if (data.success) {
+                await fetchReports();
+                alert('Success! Archive created and dashboard reset.');
+                window.location.reload(); // Reload to refresh the main stats
+            }
+        } catch (err) {
+            console.error('❌ Error generating report:', err);
+            alert('Error generating report');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -1071,6 +1161,218 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </p>
                 </div>
             </div>
+            {/* Reports Section */}
+            <div className="mt-12 bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 overflow-hidden">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
+                    <h3 className="font-black text-gray-900 flex items-center gap-4 text-sm uppercase tracking-widest">
+                        <div className="w-10 h-10 flex items-center justify-center bg-orange-50 text-orange-600 rounded-2xl shadow-inner">
+                            <Archive size={24} strokeWidth={2.5} />
+                        </div>
+                        {t.reports.title}
+                    </h3>
+                    <button
+                        onClick={handleGenerateReport}
+                        disabled={isGenerating}
+                        className="px-6 py-3 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center gap-2"
+                    >
+                        {isGenerating ? (
+                            <RefreshCw size={16} className="animate-spin" />
+                        ) : (
+                            <Archive size={16} />
+                        )}
+                        {t.reports.archiveBtn}
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {reportsLoading ? (
+                        <div className="col-span-full py-12 flex justify-center">
+                            <RefreshCw className="animate-spin text-orange-600" size={32} />
+                        </div>
+                    ) : reports.length === 0 ? (
+                        <div className="col-span-full py-12 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]">
+                            {t.reports.noReports}
+                        </div>
+                    ) : (
+                        reports.map(report => (
+                            <button
+                                key={report.id}
+                                onClick={() => setSelectedReport(report)}
+                                className="group flex items-center justify-between p-6 bg-gray-50 hover:bg-white rounded-3xl border border-transparent hover:border-orange-200 transition-all hover:shadow-xl hover:shadow-orange-100/50 text-left"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-white group-hover:bg-orange-600 group-hover:text-white rounded-2xl shadow-sm transition-colors">
+                                        <FileText size={24} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-black text-gray-900 uppercase">
+                                            {new Date(
+                                                report.year,
+                                                report.month - 1
+                                            ).toLocaleDateString(language, {
+                                                month: 'long',
+                                                year: 'numeric',
+                                            })}
+                                        </p>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            {report.report_data.summary.totalRevenue}€ •{' '}
+                                            {report.report_data.summary.totalOrders}{' '}
+                                            {t.reports.orders.toLowerCase()}
+                                        </p>
+                                    </div>
+                                </div>
+                                <ChevronRight
+                                    size={20}
+                                    className="text-gray-300 group-hover:text-orange-600 transition-transform group-hover:translate-x-1"
+                                />
+                            </button>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            {/* Report Detail Modal */}
+            {selectedReport && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-[#fbf7f0] w-full max-w-4xl max-h-[90vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white/50 animate-in zoom-in-95 duration-300">
+                        <div className="p-8 border-b border-gray-200 flex justify-between items-center bg-white">
+                            <div>
+                                <h4 className="text-2xl font-black text-gray-900 uppercase tracking-tight">
+                                    {new Date(
+                                        selectedReport.year,
+                                        selectedReport.month - 1
+                                    ).toLocaleDateString(language, {
+                                        month: 'long',
+                                        year: 'numeric',
+                                    })}
+                                </h4>
+                                <p className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] mt-1">
+                                    {t.reports.summary}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedReport(null)}
+                                className="p-3 hover:bg-gray-100 rounded-2xl transition-colors"
+                            >
+                                <X size={24} className="text-gray-400" />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+                            {/* Summary Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[
+                                    {
+                                        label: t.reports.revenue,
+                                        value: `${selectedReport.report_data.summary.totalRevenue}€`,
+                                        color: 'text-gray-900',
+                                    },
+                                    {
+                                        label: t.reports.orders,
+                                        value: selectedReport.report_data.summary.totalOrders,
+                                        color: 'text-orange-600',
+                                    },
+                                    {
+                                        label: t.reports.avgCheck,
+                                        value: `${selectedReport.report_data.summary.avgTicket}€`,
+                                        color: 'text-gray-900',
+                                    },
+                                    {
+                                        label: t.reports.discounts,
+                                        value: `${selectedReport.report_data.summary.totalDiscounts}€`,
+                                        color: 'text-red-600',
+                                    },
+                                    {
+                                        label: t.reports.reservations,
+                                        value: selectedReport.report_data.summary.totalReservations,
+                                        color: 'text-blue-600',
+                                    },
+                                    {
+                                        label: t.reports.registrations,
+                                        value: selectedReport.report_data.summary.registrations,
+                                        color: 'text-purple-600',
+                                    },
+                                ].map((s, i) => (
+                                    <div
+                                        key={i}
+                                        className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100"
+                                    >
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                                            {s.label}
+                                        </p>
+                                        <p
+                                            className={`text-2xl font-black ${s.color} tracking-tight`}
+                                        >
+                                            {s.value}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Top Items */}
+                                <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                                    <h5 className="text-xs font-black uppercase tracking-widest mb-6 text-gray-900 border-b border-gray-50 pb-4">
+                                        {t.reports.topItems}
+                                    </h5>
+                                    <div className="space-y-4">
+                                        {selectedReport.report_data.topItems.map(
+                                            (item: any, i: number) => (
+                                                <div
+                                                    key={i}
+                                                    className="flex justify-between items-center group"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="w-6 h-6 flex items-center justify-center bg-gray-50 rounded-lg text-[10px] font-black text-gray-400 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                                                            {i + 1}
+                                                        </span>
+                                                        <span className="text-xs font-bold text-gray-700">
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-xs font-black text-orange-600">
+                                                        {item.qty} {t.reports.qty}
+                                                    </span>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Top Clients */}
+                                <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                                    <h5 className="text-xs font-black uppercase tracking-widest mb-6 text-gray-900 border-b border-gray-50 pb-4">
+                                        {t.reports.topClients}
+                                    </h5>
+                                    <div className="space-y-4">
+                                        {selectedReport.report_data.topClients.map(
+                                            (client: any, i: number) => (
+                                                <div
+                                                    key={i}
+                                                    className="flex justify-between items-center group"
+                                                >
+                                                    <div>
+                                                        <p className="text-xs font-bold text-gray-700">
+                                                            {client.name}
+                                                        </p>
+                                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">
+                                                            {client.orders}{' '}
+                                                            {t.reports.orders.toLowerCase()}
+                                                        </p>
+                                                    </div>
+                                                    <span className="text-xs font-black text-emerald-600">
+                                                        {client.total}€ {t.reports.total}
+                                                    </span>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

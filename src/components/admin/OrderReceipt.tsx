@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { Order } from '../../types';
+import QRCode from 'react-qr-code';
+import { SITE_URL } from '../../constants/config';
 
 interface OrderReceiptProps {
     order: Order | null;
@@ -64,7 +66,15 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
 
         const clientName = order.users?.name || 'Invitado';
         const phone = order.phoneNumber || (order as any).phone || '—';
-        const isDelivery = order.deliveryType === 'delivery';
+
+        // Infer delivery type from address since it might not be explicitly provided
+        const addr = order.deliveryAddress || '';
+        const isPickup = addr === 'RECOGIDA';
+        const isTable = addr.startsWith('MESA');
+        const isDelivery = !isPickup && !isTable && addr.length > 0;
+
+        // For tables, use the full addr string (e.g. "MESA 5")
+        const deliveryTypeLabel = isDelivery ? 'DOMICILIO' : isPickup ? 'RECOGIDA' : addr || 'MESA';
 
         // Restaurant Info from Settings or Defaults
         const restAddr1 = settings?.contactAddressLine1 || 'Calle Barrilero, 20';
@@ -72,7 +82,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
         const restPhone = settings?.contactPhone || '631 920 312';
 
         return (
-            <div className="receipt-container fixed top-0 left-0 right-0 z-[999999] bg-white text-black p-8 font-mono text-[12px] leading-tight w-[80mm] mx-auto print:block hidden">
+            <div className="receipt-container fixed top-0 left-0 right-0 z-[999999] bg-white text-black px-4 py-8 font-mono text-[12px] leading-relaxed w-[80mm] mx-auto print:block hidden">
                 <style>{`
                     @media print {
                         @page {
@@ -92,7 +102,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                             position: static !important;
                             display: block !important;
                             width: 100% !important;
-                            padding: 10mm !important;
+                            padding: 4mm !important;
                             visibility: visible !important;
                             margin: 0 !important;
                         }
@@ -107,7 +117,17 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                     <div className="border-b border-dashed border-black my-4" />
                     <h2 className="font-bold text-[12px]">FACTURA SIMPLIFICADA</h2>
                     <p className="mt-1">Nº: {displayId}</p>
-                    <p>Fecha: {displayDate}</p>
+                    <p>Fecha Pedido: {displayDate}</p>
+                    <div className="mt-2 pt-2 border-t border-black/10">
+                        <p className="font-black text-[13px]">{deliveryTypeLabel}</p>
+                        {order.estimatedDeliveryTime && (
+                            <p className="font-bold text-[11px] mt-1">
+                                {order.estimatedDeliveryTime.includes('min')
+                                    ? `Estimado: ${order.estimatedDeliveryTime}`
+                                    : `ENTREGA PROGRAMADA: ${order.estimatedDeliveryTime}`}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 <div className="mb-6">
@@ -134,7 +154,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                         );
                     })}
                     {items.length === 0 && (
-                        <p className="text-center py-4 italic text-[10px]">Sin productos</p>
+                        <p className="text-center py-4 text-[10px]">Sin productos</p>
                     )}
                 </div>
 
@@ -157,18 +177,19 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                 </div>
 
                 <div className="text-[10px] mb-6 border-b border-dashed border-black pb-4">
-                    <div className="flex justify-between italic opacity-80">
+                    <div className="flex justify-between opacity-80">
                         <span>Base Imponible (10%)</span>
                         <span>{baseImponible.toFixed(2)}€</span>
                     </div>
-                    <div className="flex justify-between italic opacity-80">
+                    <div className="flex justify-between opacity-80">
                         <span>IVA (10%)</span>
                         <span>{ivaValue.toFixed(2)}€</span>
                     </div>
                 </div>
 
                 <div className="text-center">
-                    <p className="font-bold mb-2 italic text-[12px]">¡Gracias por su visita!</p>
+                    <p className="font-bold mb-4 text-[12px]">¡Gracias por su visita!</p>
+
                     <div className="mt-6 flex flex-col items-start text-[11px] space-y-2 text-left bg-gray-50 p-4 rounded-lg print:bg-transparent print:p-0 border border-gray-100 print:border-none">
                         <p>
                             <strong>Cliente:</strong> {clientName}
@@ -177,22 +198,40 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                             <strong>Tel:</strong> {phone}
                         </p>
                         <p>
-                            <strong>Tipo:</strong> {isDelivery ? 'DOMICILIO' : 'RECOGIDA'}
+                            <strong>Tipo:</strong> {deliveryTypeLabel}
                         </p>
-                        {order.deliveryAddress && order.deliveryAddress !== 'RECOGIDA' && (
-                            <p className="mt-2 border-t border-dashed border-black/20 pt-2 w-full text-[12px]">
-                                <strong>Dirección de Entrega:</strong>
-                                <span className="block mt-1 font-bold">
-                                    {order.deliveryAddress}
-                                </span>
-                            </p>
-                        )}
+                        {order.deliveryAddress &&
+                            !isPickup &&
+                            !isTable &&
+                            order.deliveryAddress !== 'RECOGIDA' && (
+                                <p className="mt-2 border-t border-dashed border-black/20 pt-2 w-full text-[12px]">
+                                    <strong>Dirección de Entrega:</strong>
+                                    <span className="block mt-1 font-bold">
+                                        {order.deliveryAddress}
+                                    </span>
+                                </p>
+                            )}
                         {order.notes && (
-                            <p className="mt-2 italic text-[10px] text-gray-600">
+                            <p className="mt-2 text-[10px] text-gray-600">
                                 <strong>Notas:</strong> {order.notes}
                             </p>
                         )}
                     </div>
+                </div>
+
+                <div className="flex flex-col items-center mt-8 mb-4 border-t border-dashed border-black/10 pt-6">
+                    <div className="bg-white p-2 border border-black/5 rounded-md mb-2">
+                        <QRCode
+                            value={`${SITE_URL}/menu`}
+                            size={110}
+                            style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                            viewBox={`0 0 256 256`}
+                        />
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider">
+                        Ver Carta Online
+                    </p>
+                    <p className="text-[8px] opacity-60">www.sushidemaksim.com</p>
                 </div>
             </div>
         );

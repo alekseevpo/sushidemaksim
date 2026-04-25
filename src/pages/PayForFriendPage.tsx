@@ -5,6 +5,7 @@ import { CheckCircle, MapPin, ArrowRight, XCircle, CreditCard, Heart } from 'luc
 import { api, ApiError } from '../utils/api';
 import SEO from '../components/SEO';
 import { getOptimizedImageUrl } from '../utils/images';
+import { SITE_URL } from '../constants/config';
 
 import { GenericSkeleton } from '../components/skeletons/GenericSkeleton';
 
@@ -38,8 +39,7 @@ export default function PayForFriendPage() {
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Get current domain for OG tags
-    const origin =
-        typeof window !== 'undefined' ? window.location.origin : 'https://sushidemaksim.vercel.app';
+    const origin = typeof window !== 'undefined' ? window.location.origin : SITE_URL;
     const invitationUrl = `${origin}/pay-for-friend/${id}`;
     const hungryPandaUrl = `${origin}/hungry-panda.webp`;
 

@@ -200,6 +200,9 @@ export default function AdminPage() {
     const hasInteracted = useRef(false);
     const isFirstLoad = useRef(true);
 
+    // New Users Notification State
+    const [newUsersCount, setNewUsersCount] = useState(0);
+
     // Prime audio on first interaction
     useEffect(() => {
         const primeAudio = async () => {
@@ -292,7 +295,7 @@ export default function AdminPage() {
             isAuthenticated &&
             (user?.role === 'admin' || user?.isSuperadmin) &&
             (activeTab === 'dashboard' || activeTab === 'analytics'),
-        refetchInterval: 60000,
+        refetchInterval: 1000 * 60 * 60, // Poll only once per hour as fallback
     });
 
     // Reports Query
@@ -307,7 +310,7 @@ export default function AdminPage() {
             isAuthenticated &&
             (user?.role === 'admin' || user?.isSuperadmin) &&
             activeTab === 'dashboard',
-        refetchInterval: 60000,
+        refetchInterval: 1000 * 60 * 60, // Poll only once per hour as fallback
     });
 
     // Pending Orders Query (Global Monitoring)
@@ -315,7 +318,7 @@ export default function AdminPage() {
         queryKey: ['admin-pending-monitor'],
         queryFn: () => api.get('/admin/orders?status=pending&limit=100'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 15000,
+        refetchInterval: 1000 * 60 * 30, // 30 min fallback
     });
 
     // Pending Reservations Query
@@ -323,44 +326,164 @@ export default function AdminPage() {
         queryKey: ['admin-pending-res-monitor'],
         queryFn: () => api.get('/admin/reservations?status=pending'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 15000,
+        refetchInterval: 1000 * 60 * 30, // 30 min fallback
     });
+
+    // Initial New Users Count
+    useEffect(() => {
+        if (!isAuthenticated || (user?.role !== 'admin' && !user?.isSuperadmin)) return;
+
+        const fetchNewUsersCount = async () => {
+            try {
+                const lastViewed = localStorage.getItem('admin_last_users_view');
+                if (!lastViewed) {
+                    // If never viewed, consider last 24h as "new" for the first time
+                    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+                    const { count } = await supabase
+                        .from('users')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('role', 'user')
+                        .gte('created_at', yesterday);
+                    setNewUsersCount(count || 0);
+                    return;
+                }
+
+                const { count } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('role', 'user')
+                    .gte('created_at', lastViewed);
+                setNewUsersCount(count || 0);
+            } catch (err) {
+                console.error('Error fetching new users count:', err);
+            }
+        };
+
+        fetchNewUsersCount();
+    }, [isAuthenticated, user]);
+
+    // Reset New Users Count when visiting the tab
+    useEffect(() => {
+        if (activeTab === 'users') {
+            setNewUsersCount(0);
+            localStorage.setItem('admin_last_users_view', new Date().toISOString());
+        }
+    }, [activeTab]);
 
     // Realtime Order Monitoring
     useEffect(() => {
         if (!isAuthenticated || (user?.role !== 'admin' && !user?.isSuperadmin)) return;
 
-        const channel = supabase
+        const ordersChannel = supabase
             .channel('admin-orders-monitor')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*', // INSERT, UPDATE, DELETE
+                    schema: 'public',
+                    table: 'orders',
+                },
+                payload => {
+                    const newOrder = payload.new as any;
+                    const address = newOrder?.delivery_address || newOrder?.deliveryAddress || '';
+                    const isMesa = address.toUpperCase().includes('MESA');
+
+                    // If it's a new order (INSERT), play alert
+                    if (payload.eventType === 'INSERT' && isSoundEnabled) {
+                        playAlert(isMesa ? 'mesa' : 'delivery');
+                    }
+
+                    // Refresh relevant data
+                    queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+                    queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
+                    queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+                    queryClient.invalidateQueries({ queryKey: ['orders'] });
+                }
+            )
+            .subscribe();
+
+        const resChannel = supabase
+            .channel('admin-res-monitor')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'reservations',
+                },
+                () => {
+                    // Play general alert for new reservations
+
+                    queryClient.invalidateQueries({ queryKey: ['admin-pending-res-monitor'] });
+                    queryClient.invalidateQueries({ queryKey: ['admin-reservations'] });
+                }
+            )
+            .subscribe();
+
+        const usersChannel = supabase
+            .channel('admin-users-monitor')
             .on(
                 'postgres_changes',
                 {
                     event: 'INSERT',
                     schema: 'public',
-                    table: 'orders',
+                    table: 'users',
                 },
                 payload => {
-                    const newOrder = payload.new;
-                    const address = newOrder.delivery_address || newOrder.deliveryAddress || '';
-                    const isMesa = address.toUpperCase().includes('MESA');
-
-                    // If it's a mesa order or just any new order, play alert and refresh
-                    if (isSoundEnabled) {
-                        playAlert(isMesa ? 'mesa' : 'delivery');
+                    const newUser = payload.new as any;
+                    // Only count if it's a 'user' role (not admin/waiter)
+                    if (newUser.role === 'user' && activeTab !== 'users') {
+                        setNewUsersCount(prev => prev + 1);
                     }
-
-                    // Refresh both stats and order lists
-                    queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
-                    queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
-                    queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
                 }
             )
             .subscribe();
 
         return () => {
-            supabase.removeChannel(channel);
+            supabase.removeChannel(ordersChannel);
+            supabase.removeChannel(resChannel);
+            supabase.removeChannel(usersChannel);
         };
-    }, [isAuthenticated, user, isSoundEnabled, queryClient, playAlert]);
+    }, [isAuthenticated, user, isSoundEnabled, queryClient, playAlert, activeTab]);
+
+    // Screen Wake Lock API to prevent sleep
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        let wakeLock: any = null;
+
+        const requestWakeLock = async () => {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await (navigator as any).wakeLock.request('screen');
+                    console.log('💡 Screen Wake Lock is active');
+                } catch (err: any) {
+                    console.warn(`🔒 Wake Lock failed: ${err.message}`);
+                }
+            }
+        };
+
+        requestWakeLock();
+
+        // Re-request if visibility changes
+        const handleVisibilityChange = () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => {
+                    wakeLock = null;
+                    console.log('💤 Screen Wake Lock released');
+                });
+            }
+        };
+    }, [isAuthenticated]);
 
     const pendingOrders = useMemo(() => pendingData?.orders || [], [pendingData]);
     const pendingCount = pendingData?.pagination?.total || pendingOrders.length;
@@ -446,7 +569,12 @@ export default function AdminPage() {
                 badge: pendingCount > 0 ? pendingCount : null,
             },
             { id: 'menu', label: t.nav.menu, icon: MenuIcon },
-            { id: 'users', label: t.nav.users, icon: Users },
+            {
+                id: 'users',
+                label: t.nav.users,
+                icon: Users,
+                badge: newUsersCount > 0 ? newUsersCount : null,
+            },
             { id: 'promos', label: t.nav.promos, icon: ShoppingBag },
             { id: 'blog', label: t.nav.blog, icon: Activity },
             { id: 'settings', label: t.nav.settings, icon: DollarSign },
@@ -458,7 +586,7 @@ export default function AdminPage() {
             },
             { id: 'delivery', label: t.nav.delivery, icon: MapIcon },
         ],
-        [pendingCount, pendingResData?.total, t]
+        [pendingCount, pendingResData?.total, t, newUsersCount]
     );
 
     // Authorization Check
