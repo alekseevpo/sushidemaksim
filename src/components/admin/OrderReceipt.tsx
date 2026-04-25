@@ -176,12 +176,12 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                     </div>
                 </div>
 
-                <div className="text-[10px] mb-6 border-b border-dashed border-black pb-4">
-                    <div className="flex justify-between opacity-80">
+                <div className="text-[12px] mb-6 border-b border-dashed border-black pb-4">
+                    <div className="flex justify-between">
                         <span>Base Imponible (10%)</span>
                         <span>{baseImponible.toFixed(2)}€</span>
                     </div>
-                    <div className="flex justify-between opacity-80">
+                    <div className="flex justify-between">
                         <span>IVA (10%)</span>
                         <span>{ivaValue.toFixed(2)}€</span>
                     </div>
@@ -212,7 +212,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                                 </p>
                             )}
                         {order.notes && (
-                            <p className="mt-2 text-[10px] text-gray-600">
+                            <p className="mt-2 text-[12px] text-black">
                                 <strong>Notas:</strong> {order.notes}
                             </p>
                         )}
