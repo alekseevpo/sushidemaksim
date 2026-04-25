@@ -544,7 +544,9 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     </label>
                                     <input
                                         value={link.url}
-                                        onChange={e => handleUpdateSocial(idx, 'url', e.target.value)}
+                                        onChange={e =>
+                                            handleUpdateSocial(idx, 'url', e.target.value)
+                                        }
                                         className="w-full border border-gray-100 rounded-xl px-4 py-3 text-xs font-black text-gray-900 outline-none focus:border-orange-400 bg-white transition-all shadow-sm"
                                         placeholder="https://"
                                     />
