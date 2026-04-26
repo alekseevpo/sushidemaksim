@@ -9,9 +9,7 @@ import { TableBottomSheet } from '../components/table/TableBottomSheet';
 import { TableCartDrawer } from '../components/table/TableCartDrawer';
 import { TableFooter } from '../components/table/TableFooter';
 import { TableDesktopRestriction } from '../components/table/TableDesktopRestriction';
-import { TableWelcomeModal } from '../components/table/TableWelcomeModal';
 import { useTableOrder } from '../context/TableOrderContext';
-import { useAuth } from '../hooks/useAuth';
 import { useTableI18n } from '../utils/tableI18n';
 import { SushiItem } from '../types';
 import SEO from '../components/SEO';
@@ -22,7 +20,6 @@ import { UAParser } from 'ua-parser-js';
 export default function TableMenuPage() {
     const { data: allItems = [], isLoading } = useMenu('all', '');
     const { addItem, total, itemCount } = useTableOrder();
-    const { isAuthenticated } = useAuth();
     const { t } = useTableI18n();
 
     const [activeType, setActiveType] = useState<'food' | 'drinks'>('food');
@@ -30,7 +27,6 @@ export default function TableMenuPage() {
     const [selectedItem, setSelectedItem] = useState<SushiItem | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
-    const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
     const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(null);
 
     // Refs for ScrollSpy
@@ -43,17 +39,7 @@ export default function TableMenuPage() {
         const parser = new UAParser(window.navigator.userAgent);
         const deviceType = parser.getDevice().type;
         setIsMobileDevice(deviceType === 'mobile');
-
-        // Show welcome modal if not authenticated and not shown in this session
-        const welcomeShown = sessionStorage.getItem('table_welcome_shown');
-        if (!isAuthenticated && !welcomeShown && deviceType === 'mobile') {
-            const timer = setTimeout(() => {
-                setIsWelcomeModalOpen(true);
-                sessionStorage.setItem('table_welcome_shown', 'true');
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [isAuthenticated]);
+    }, []);
 
     // Categorize data
     const menuData = useMemo(() => {
@@ -114,7 +100,7 @@ export default function TableMenuPage() {
         });
 
         return () => observer.disconnect();
-    }, [activeType, activeItems, activeCategories, isWelcomeModalOpen]);
+    }, [activeType, activeItems, activeCategories]);
 
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id);
@@ -145,19 +131,6 @@ export default function TableMenuPage() {
     const handleAddToCart = (item: SushiItem, e?: React.MouseEvent, selectedOption?: string) => {
         if (e) e.stopPropagation();
         addItem(item, 1, selectedOption);
-    };
-
-    const handleRegisterClick = () => {
-        setIsWelcomeModalOpen(false);
-        // Small delay to let the modal close and trigger observer
-        setTimeout(() => {
-            window.dispatchEvent(new Event('scroll'));
-        }, 100);
-        document.dispatchEvent(
-            new CustomEvent('custom:openLogin', {
-                detail: { mode: 'register' },
-            })
-        );
     };
 
     if (isLoading || isMobileDevice === null) {
@@ -325,18 +298,6 @@ export default function TableMenuPage() {
             />
 
             <TableCartDrawer isOpen={isCartDrawerOpen} onClose={() => setIsCartDrawerOpen(false)} />
-
-            <TableWelcomeModal
-                isOpen={isWelcomeModalOpen}
-                onClose={() => {
-                    setIsWelcomeModalOpen(false);
-                    // Small delay to let the modal close and trigger observer
-                    setTimeout(() => {
-                        window.dispatchEvent(new Event('scroll'));
-                    }, 100);
-                }}
-                onRegister={handleRegisterClick}
-            />
 
             <TableFooter />
         </div>
