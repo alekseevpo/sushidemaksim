@@ -188,10 +188,10 @@ router.post(
                                 .json({ error: 'El código de bienvenida ha expirado' });
                         }
 
-                        // 2. Min Order Check (70€)
-                        if (subtotal < 70) {
+                        // 2. Min Order Check (20€)
+                        if (subtotal < 20) {
                             return res.status(400).json({
-                                error: 'El pedido mínimo para el código de bienvenida es de 70,00€',
+                                error: 'El pedido mínimo para el código de bienvenida es de 20,00€',
                             });
                         }
                     }

@@ -69,7 +69,7 @@ export default function RegistrationPrompt() {
 
                         <p className="text-gray-500 mb-8 font-medium">
                             Únete a la familia Maksim y obtén un 10% de descuento en tu primer
-                            pedido superior a 70€. Recibirás un código promocional en tu email tras
+                            pedido superior a 20€. Recibirás un código promocional en tu email tras
                             registrarte.
                         </p>
 

@@ -632,7 +632,7 @@ export default function HomePage() {
                                     </h2>
                                     <p className="text-gray-400 font-medium max-w-md">
                                         Válido para todos los nuevos usuarios registrados que
-                                        realicen su primer pedido por un importe superior a 70€.
+                                        realicen su primer pedido por un importe superior a 20€.
                                     </p>
                                 </div>
                                 <Link

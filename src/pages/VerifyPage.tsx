@@ -77,35 +77,43 @@ export default function VerifyPage() {
                         <p className="text-gray-500 font-medium mb-4 leading-relaxed italic">
                             {message}
                         </p>
-                        {redirectTo && (
-                            <p className="text-orange-600 font-bold mb-10 animate-pulse">
-                                Redirigiendo a tu mesa en unos segundos...
-                            </p>
+                        {redirectTo ? (
+                            <div className="w-full space-y-6">
+                                <div className="flex justify-center">
+                                    <div className="relative w-12 h-12">
+                                        <div className="absolute inset-0 border-4 border-orange-100 rounded-full"></div>
+                                        <div className="absolute inset-0 border-4 border-orange-600 rounded-full border-t-transparent animate-spin"></div>
+                                    </div>
+                                </div>
+                                <div className="bg-orange-50 rounded-2xl p-4 border border-orange-100">
+                                    <p className="text-orange-900 font-bold text-sm">
+                                        ¡Todo listo! Te estamos llevando de vuelta a tu pedido...
+                                    </p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4 w-full">
+                                <button
+                                    onClick={() => {
+                                        navigate('/menu');
+                                        setTimeout(() => {
+                                            document.dispatchEvent(
+                                                new CustomEvent('custom:openLogin')
+                                            );
+                                        }, 100);
+                                    }}
+                                    className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2"
+                                >
+                                    <LogIn size={18} strokeWidth={1.5} /> Iniciar sesión y Pedir
+                                </button>
+                                <Link
+                                    to="/menu"
+                                    className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-black text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Home size={18} strokeWidth={1.5} /> Explorar Menú
+                                </Link>
+                            </div>
                         )}
-                        {!redirectTo && (
-                            <p className="text-gray-400 text-sm mb-10">
-                                Ya puedes disfrutar de todas las ventajas.
-                            </p>
-                        )}
-                        <div className="grid grid-cols-1 gap-4 w-full">
-                            <button
-                                onClick={() => {
-                                    navigate('/menu');
-                                    setTimeout(() => {
-                                        document.dispatchEvent(new CustomEvent('custom:openLogin'));
-                                    }, 100);
-                                }}
-                                className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2"
-                            >
-                                <LogIn size={18} strokeWidth={1.5} /> Iniciar sesión y Pedir
-                            </button>
-                            <Link
-                                to="/menu"
-                                className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-black text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
-                            >
-                                <Home size={18} strokeWidth={1.5} /> Explorar Menú
-                            </Link>
-                        </div>
                     </div>
                 )}
 

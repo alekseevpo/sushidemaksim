@@ -598,9 +598,9 @@ export default function CartPage() {
 
     useEffect(() => {
         const isWelcomePromo = promoCode.startsWith('NUEVO') || promoCode.startsWith('NEW');
-        if (promoDiscount && isWelcomePromo && cartSubtotal < 70) {
+        if (promoDiscount && isWelcomePromo && cartSubtotal < 20) {
             handleRemovePromo();
-            setPromoError('El código de bienvenida requiere un pedido mínimo de 70,00€');
+            setPromoError('El código de bienvenida requiere un pedido mínimo de 20,00€');
         }
     }, [cartSubtotal, promoCode, promoDiscount]);
 
