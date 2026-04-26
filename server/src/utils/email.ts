@@ -432,7 +432,7 @@ export async function sendOrderReceiptEmail(
         
         <div style="margin-top: 12px; border-top: 1px solid #374151; padding-top: 12px; font-size: 10px; text-align: center; color: #6b7280;">
           <strong>Sushi de Maksim</strong><br>
-          Maksim Nekhaev | NIF: B02761906<br>
+          NIF: B02761906<br>
           Calle Barrilero, 20, 28007 Madrid
         </div>
       </div>
