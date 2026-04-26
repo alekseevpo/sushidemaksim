@@ -41,7 +41,7 @@ export const TableOrderProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const tableParam = params.get('table');
+        const tableParam = params.get('table') || params.get('n');
         if (tableParam) {
             setTableNumber(parseInt(tableParam, 10));
         }

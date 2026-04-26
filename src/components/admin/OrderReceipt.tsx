@@ -110,7 +110,8 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                 `}</style>
 
                 <div className="text-center mb-6">
-                    <h1 className="text-lg font-black uppercase mb-1">Sushi de Maksim</h1>
+                    <h1 className="text-lg font-black uppercase mb-0">Sushi de Maksim</h1>
+                    <p className="text-[10px] font-bold mb-1">NIF: B02761906</p>
                     <p className="text-[11px] font-bold">{restAddr1}</p>
                     <p className="text-[11px] font-bold">{restAddr2}</p>
                     <p className="text-[10px]">Tel: {restPhone}</p>
