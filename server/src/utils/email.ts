@@ -535,7 +535,7 @@ export async function sendVerificationEmail(
         <p style="color: #c2410c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-${percent}%)</p>
         <div style="color: #ea580c; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
         <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0 0 4px;">
-          * Mínimo de pedido: <strong>70€</strong>
+          * Mínimo de pedido: <strong>20€</strong>
         </p>
         <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0;">
           ⚠️ Válido solo durante <strong>7 días</strong>
