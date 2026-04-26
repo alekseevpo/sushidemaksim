@@ -185,7 +185,8 @@ describe('LoginModal - Registration', () => {
                 'John Doe',
                 'john@example.com',
                 '+34612345678',
-                'Password123!'
+                'Password123!',
+                undefined
             );
             expect(mockOnClose).toHaveBeenCalled();
             expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('¡Cuenta creada!'));
