@@ -139,6 +139,18 @@ function App() {
     }, []);
 
     useEffect(() => {
+        // Canonical domain redirect (non-www to www)
+        // This is a safety measure to prevent CORS issues and header loss on redirects
+        const isProduction =
+            window.location.hostname !== 'localhost' &&
+            !window.location.hostname.includes('vercel.app');
+        if (isProduction && window.location.hostname === 'sushidemaksim.com') {
+            const canonicalUrl = `https://www.sushidemaksim.com${window.location.pathname}${window.location.search}${window.location.hash}`;
+            window.location.replace(canonicalUrl);
+        }
+    }, []);
+
+    useEffect(() => {
         const isTable = location.pathname === '/table';
         if (isTable) {
             document.documentElement.classList.add('is-table-route');

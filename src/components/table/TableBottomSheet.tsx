@@ -179,19 +179,23 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                                        <span className="text-sm">🌶️</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">
-                                            Spiciness
-                                        </span>
-                                        <span className="text-[11px] font-black text-white uppercase leading-none">
-                                            {item.spicy ? 'Spicy' : 'Mild'}
-                                        </span>
-                                    </div>
-                                </div>
+                                {item.category !== 'bebidas' &&
+                                    item.category !== 'extras' &&
+                                    item.spicy && (
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                                <span className="text-sm">🌶️</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">
+                                                    Spiciness
+                                                </span>
+                                                <span className="text-[11px] font-black text-white uppercase leading-none">
+                                                    Spicy
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
                             </div>
                         </div>
 
