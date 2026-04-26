@@ -10,6 +10,7 @@ export default function VerifyPage() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = searchParams.get('token');
+    const redirectTo = searchParams.get('redirectTo');
 
     const hasVerified = useRef(false);
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -27,6 +28,20 @@ export default function VerifyPage() {
                 const msg = response.message || '¡Cuenta activada con éxito!';
                 setMessage(msg);
                 showSuccess(msg);
+
+                // Handle automatic login if token is provided
+                if (response.token) {
+                    localStorage.setItem('sushi_token', response.token);
+                    // Dispatch event for components that listen for auth changes
+                    window.dispatchEvent(new CustomEvent('auth:login_success'));
+                }
+
+                // Automatic redirect if redirectTo is present
+                if (redirectTo) {
+                    setTimeout(() => {
+                        navigate(redirectTo);
+                    }, 2000);
+                }
             } catch (err: any) {
                 setStatus('error');
                 const msg = err.message || 'El enlace ha expirado o no es válido.';
@@ -36,7 +51,7 @@ export default function VerifyPage() {
         };
 
         verifyToken();
-    }, [token, showSuccess, showError]);
+    }, [token, showSuccess, showError, navigate, redirectTo]);
 
     if (status === 'loading') {
         return <GenericSkeleton />;
@@ -59,9 +74,19 @@ export default function VerifyPage() {
                         <h1 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">
                             ¡Cuenta Activada!
                         </h1>
-                        <p className="text-gray-500 font-medium mb-10 leading-relaxed italic">
+                        <p className="text-gray-500 font-medium mb-4 leading-relaxed italic">
                             {message}
                         </p>
+                        {redirectTo && (
+                            <p className="text-orange-600 font-bold mb-10 animate-pulse">
+                                Redirigiendo a tu mesa en unos segundos...
+                            </p>
+                        )}
+                        {!redirectTo && (
+                            <p className="text-gray-400 text-sm mb-10">
+                                Ya puedes disfrutar de todas las ventajas.
+                            </p>
+                        )}
                         <div className="grid grid-cols-1 gap-4 w-full">
                             <button
                                 onClick={() => {

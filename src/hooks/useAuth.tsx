@@ -30,7 +30,8 @@ interface AuthContextType {
         name: string,
         email: string,
         phone: string,
-        password: string
+        password: string,
+        redirectTo?: string
     ) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
     updateProfile: (
@@ -97,9 +98,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     const register = useCallback(
-        async (name: string, email: string, phone: string, password: string) => {
+        async (
+            name: string,
+            email: string,
+            phone: string,
+            password: string,
+            redirectTo?: string
+        ) => {
             try {
-                await api.post('/auth/register', { name, email, phone, password });
+                await api.post('/auth/register', { name, email, phone, password, redirectTo });
                 return { success: true };
             } catch (error: unknown) {
                 return {

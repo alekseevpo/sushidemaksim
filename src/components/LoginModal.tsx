@@ -888,11 +888,21 @@ export default function LoginModal({
 
             phone = `+34${cleanPhone}`;
 
-            const res = await register(name, email, phone, password);
+            // If registering from a table, pass the table URL so verification redirects back
+            const isTableRoute = window.location.pathname.startsWith('/table');
+            const tableRedirect = isTableRoute
+                ? `${window.location.pathname}${window.location.search}`
+                : undefined;
+
+            const res = await register(name, email, phone, password, tableRedirect);
             if (res.success) {
                 onClose();
-                showSuccess('¡Cuenta creada! Verifica tu email para tu descuento. 🍣');
-                navigate('/menu');
+                if (isTableRoute) {
+                    showSuccess('¡Cuenta creada! Revisa tu email para activar tu descuento. 🎁');
+                } else {
+                    showSuccess('¡Cuenta creada! Verifica tu email para tu descuento. 🍣');
+                    navigate('/menu');
+                }
             } else {
                 showError(res.error || 'Error al registrarse');
             }

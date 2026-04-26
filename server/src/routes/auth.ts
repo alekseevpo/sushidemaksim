@@ -24,7 +24,7 @@ router.post(
     authLimiter,
     validateResource(registerSchema),
     asyncHandler(async (req, res: Response) => {
-        const { name, email, phone, password } = req.body;
+        const { name, email, phone, password, redirectTo } = req.body;
 
         const { data: existing } = await supabase
             .from('users')
@@ -153,7 +153,7 @@ router.post(
             });
         }
 
-        const verificationLink = `${config.frontendUrl}/verify?token=${verificationToken}`;
+        const verificationLink = `${config.frontendUrl}/verify?token=${verificationToken}${redirectTo ? `&redirectTo=${encodeURIComponent(redirectTo)}` : ''}`;
 
         // Send verification email
         try {
@@ -217,9 +217,23 @@ router.get(
 
             if (updateError) throw updateError;
 
+            // Generate login token immediately after verification
+            const loginToken = jwt.sign({ userId: user.id }, config.jwtSecret, {
+                expiresIn: config.jwtExpiresIn,
+            });
+
+            // Fetch the full user data for formatUser
+            const { data: fullUser } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
             res.json({
                 success: true,
-                message: '¡Cuenta activada con éxito! Ya puedes iniciar sesión.',
+                token: loginToken,
+                user: fullUser ? formatUser(fullUser) : null,
+                message: '¡Cuenta activada con éxito!',
             });
         } catch (err) {
             res.status(400).json({ error: 'El enlace de activación ha expirado o es inválido.' });

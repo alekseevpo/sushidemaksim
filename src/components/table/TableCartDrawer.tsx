@@ -26,6 +26,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
     const {
         items,
         total,
+        finalTotal,
         itemCount,
         updateQuantity,
         removeItem,
@@ -34,6 +35,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
         lastOrderId,
         setOrderConfirmed,
         submitOrder,
+        appliedPromo,
     } = useTableOrder();
     const { t } = useTableI18n();
     const [paymentMethod, setPaymentMethod] = useState<'EFECTIVO' | 'TARJETA'>('EFECTIVO');
@@ -320,13 +322,32 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                             </div>
                                         </div>
 
-                                        <div className="pt-2 border-t border-white/5 flex justify-between items-baseline mb-3">
-                                            <span className="text-xs font-black uppercase tracking-widest text-gray-400 italic">
-                                                Total
-                                            </span>
-                                            <span className="text-2xl font-black text-white italic tracking-tighter">
-                                                {total.toFixed(2)}€
-                                            </span>
+                                        <div className="pt-2 border-t border-white/5 mb-3">
+                                            {appliedPromo && (
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="text-xs font-bold text-green-400 flex items-center gap-1">
+                                                        <Gift size={12} />
+                                                        {appliedPromo.code} (-
+                                                        {appliedPromo.discount}%)
+                                                    </span>
+                                                    <span className="text-xs text-green-400 font-bold">
+                                                        -
+                                                        {(
+                                                            (total * appliedPromo.discount) /
+                                                            100
+                                                        ).toFixed(2)}
+                                                        €
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between items-baseline">
+                                                <span className="text-xs font-black uppercase tracking-widest text-gray-400 italic">
+                                                    Total
+                                                </span>
+                                                <span className="text-2xl font-black text-white italic tracking-tighter">
+                                                    {finalTotal.toFixed(2)}€
+                                                </span>
+                                            </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-3">
