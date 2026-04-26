@@ -57,11 +57,11 @@ router.post(
                     .json({ error: 'Este código de bienvenida ha expirado (válido por 7 días)' });
             }
 
-            // 2. Min Order Check (70€)
-            if (subtotal !== undefined && subtotal < 70) {
+            // 2. Min Order Check (20€)
+            if (subtotal !== undefined && subtotal < 20) {
                 return res.status(400).json({
-                    error: 'El pedido mínimo para este código es de 70,00€',
-                    minOrder: 70,
+                    error: 'El pedido mínimo para este código es de 20,00€',
+                    minOrder: 20,
                 });
             }
         }
