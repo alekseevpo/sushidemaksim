@@ -505,9 +505,10 @@ export async function sendVerificationEmail(
     name: string,
     token: string,
     promoCode: string,
-    percent: number = 10
+    percent: number = 10,
+    redirectTo?: string
 ): Promise<void> {
-    const activationUrl = `${config.frontendUrl}/verify?token=${token}`;
+    const activationUrl = `${config.frontendUrl}/verify?token=${token}${redirectTo ? `&redirectTo=${encodeURIComponent(redirectTo)}` : ''}`;
     const html = `
 <!DOCTYPE html>
 <html lang="es">

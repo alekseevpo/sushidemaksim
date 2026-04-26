@@ -57,7 +57,8 @@ router.post(
                     existing.name,
                     verificationToken,
                     promo?.code || '',
-                    promo?.discount_percentage || 10
+                    promo?.discount_percentage || 10,
+                    redirectTo
                 );
 
                 return res.status(200).json({
@@ -163,7 +164,8 @@ router.post(
                 newUser.name,
                 verificationToken,
                 promoCode,
-                regPercent
+                regPercent,
+                redirectTo
             );
             console.log(`✅ [REGISTER] Verification email SENT to ${newUser.email}`);
         } catch (e: any) {
@@ -207,7 +209,23 @@ router.get(
             }
 
             if (user.is_verified) {
-                return res.json({ success: true, message: 'La cuenta ya estaba verificada.' });
+                // Generate login token even if already verified (magic link login)
+                const loginToken = jwt.sign({ userId: user.id }, config.jwtSecret, {
+                    expiresIn: config.jwtExpiresIn,
+                });
+
+                const { data: fullUser } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                return res.json({
+                    success: true,
+                    token: loginToken,
+                    user: fullUser ? formatUser(fullUser) : null,
+                    message: 'La cuenta ya estaba verificada.',
+                });
             }
 
             const { error: updateError } = await supabase

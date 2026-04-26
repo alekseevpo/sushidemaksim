@@ -40,7 +40,7 @@ export default function VerifyPage() {
                 if (redirectTo) {
                     setTimeout(() => {
                         navigate(redirectTo);
-                    }, 2000);
+                    }, 1500); // Slightly faster redirect
                 }
             } catch (err: any) {
                 setStatus('error');
