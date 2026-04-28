@@ -79,6 +79,28 @@ export default defineConfig({
             },
         }),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vendor-react': [
+                        'react',
+                        'react-dom',
+                        'react-router-dom',
+                        'react-helmet-async',
+                    ],
+                    'vendor-supabase': ['@supabase/supabase-js'],
+                    'vendor-framer': ['framer-motion'],
+                    'vendor-icons': ['lucide-react'],
+                    'vendor-map': ['leaflet', 'react-leaflet', '@turf/turf'],
+                    'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+                    'vendor-query': ['@tanstack/react-query'],
+                    'vendor-charts': ['recharts'],
+                },
+            },
+        },
+        chunkSizeWarningLimit: 800,
+    },
     server: {
         host: '0.0.0.0',
         port: 5173,
