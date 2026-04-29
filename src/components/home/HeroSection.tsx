@@ -37,7 +37,7 @@ const REVIEWS = [
     {
         author: 'Javier Domínguez',
         text: 'Soy muy exigente con el pescado crudo y aquí es espectacular. Súper fresco y delicioso.',
-    }
+    },
 ];
 
 export function HeroSection() {
