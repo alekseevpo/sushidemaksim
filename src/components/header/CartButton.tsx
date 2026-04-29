@@ -42,10 +42,10 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                         exit={{ opacity: 0, x: 10 }}
                         className="flex flex-col items-end justify-center text-right"
                     >
-                        <span className="text-[10px] md:text-[11px] font-black text-orange-600 leading-none mb-[3px]">
+                        <span className="whitespace-nowrap text-[10px] md:text-[11px] font-black text-orange-600 leading-none mb-[3px]">
                             Faltan {remainingToFreeDelivery.toFixed(2)} €
                         </span>
-                        <span className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">
+                        <span className="whitespace-nowrap text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">
                             Envío Gratis
                         </span>
                     </motion.div>
