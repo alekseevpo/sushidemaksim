@@ -536,7 +536,7 @@ export default function AddressModal({
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-modal max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:top-12 md:bottom-12 md:rounded-[32px] shadow-3xl"
+                        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-modal max-h-[82dvh] md:max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:top-12 md:bottom-12 md:rounded-[32px] shadow-3xl"
                     >
                         {/* Header (Desktop only) */}
                         <div className="hidden md:flex px-6 py-4 justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
@@ -563,7 +563,7 @@ export default function AddressModal({
                                 {/* Floating Close Button (Mobile Only) */}
                                 <button
                                     onClick={onClose}
-                                    className="md:hidden absolute top-4 right-4 z-[1001] w-10 h-10 bg-white/90 backdrop-blur shadow-xl rounded-full flex items-center justify-center text-gray-900 active:scale-95 transition"
+                                    className="md:hidden absolute top-6 right-4 z-[1001] w-10 h-10 bg-white/90 backdrop-blur shadow-xl rounded-full flex items-center justify-center text-gray-900 active:scale-95 transition"
                                 >
                                     <X size={20} strokeWidth={3} />
                                 </button>
@@ -668,7 +668,7 @@ export default function AddressModal({
                                 </AnimatePresence>
 
                                 {/* Search Overlay */}
-                                <div className="absolute top-4 left-6 right-16 md:top-4 md:left-4 md:right-4 z-[1000] space-y-2">
+                                <div className="absolute top-6 left-6 right-16 md:top-4 md:left-4 md:right-4 z-[1000] space-y-2">
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500 transition">
                                             {isSearching ? (
