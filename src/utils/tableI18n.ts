@@ -41,6 +41,9 @@ export const translations = {
         in_madrid: 'в Мадриде',
         order_received: 'ЗАКАЗ ПОЛУЧЕН!',
         order_confirmed_msg: 'Ваш заказ принят и уже готовится.',
+        collab: 'Сотрудничество',
+        partners_franchise: 'Партнеры / Франшиза',
+        open_business: 'Присоединяйтесь к семье Sushi de Maksim',
     },
     es: {
         welcome_title: 'Oferta Especial',
@@ -81,6 +84,9 @@ export const translations = {
         in_madrid: 'en Madrid',
         order_received: '¡PEDIDO RECIBIDO!',
         order_confirmed_msg: 'Tu pedido ha sido recibido y ya se está preparando.',
+        collab: 'Socio & Expansión',
+        partners_franchise: 'Partners / Franquicias',
+        open_business: 'Únete a la familia de Sushi de Maksim',
     },
     en: {
         welcome_title: 'Special Offer',
@@ -120,6 +126,9 @@ export const translations = {
         in_madrid: 'in Madrid',
         order_received: 'ORDER RECEIVED!',
         order_confirmed_msg: 'Your order has been received and is already being prepared.',
+        collab: 'Partner & Expansion',
+        partners_franchise: 'Partners / Franchise',
+        open_business: 'Join the Sushi de Maksim family',
     },
 };
 

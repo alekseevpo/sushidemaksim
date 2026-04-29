@@ -187,7 +187,7 @@ export default function TableMenuPage() {
                                     {t('collab' as any) || 'Socio & Expansión'}
                                 </span>
                                 <h3 className="text-xl font-black text-white italic tracking-tight">
-                                    {t('partners_franchise' as any) || 'Partners / Франчайзи'}
+                                    {t('partners_franchise' as any) || 'Partners / Franquicias'}
                                 </h3>
                                 <p className="text-xs text-gray-400 mt-1 font-medium max-w-[200px]">
                                     {t('open_business' as any) ||
