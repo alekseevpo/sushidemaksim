@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { SITE_URL } from '../constants/config';
+import { SITE_URL, CONFIG } from '../constants/config';
 
 interface SEOProps {
     title: string;
@@ -16,7 +16,7 @@ export default function SEO({
     title,
     description,
     keywords,
-    image = `${SITE_URL}/og-image.jpg`,
+    image = CONFIG.DEFAULT_OG_IMAGE,
     url = SITE_URL,
     type = 'website',
     schema,
@@ -45,6 +45,7 @@ export default function SEO({
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
+            <meta property="og:image:secure_url" content={image} />
             <meta property="og:site_name" content="Sushi de Maksim" />
             <meta property="og:locale" content="es_ES" />
 
