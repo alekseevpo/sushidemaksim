@@ -42,16 +42,40 @@ const REVIEWS = [
 
 export function HeroSection() {
     const [currentReview, setCurrentReview] = useState(0);
+    const [heroHeight, setHeroHeight] = useState('100vh');
 
     useEffect(() => {
+        // Fix for iOS Safari / Telegram in-app browser layout jumps
+        const updateHeight = () => {
+            setHeroHeight(`${window.innerHeight}px`);
+        };
+        updateHeight();
+
+        let lastWidth = window.innerWidth;
+        const handleResize = () => {
+            if (window.innerWidth !== lastWidth) {
+                lastWidth = window.innerWidth;
+                updateHeight();
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+
         const timer = setInterval(() => {
             setCurrentReview(prev => (prev + 1) % REVIEWS.length);
         }, 5000);
-        return () => clearInterval(timer);
+
+        return () => {
+            clearInterval(timer);
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     return (
-        <section className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
+        <section
+            style={{ height: heroHeight }}
+            className="relative w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black"
+        >
             {/* Visual context for SEO */}
             <h1 className="sr-only">
                 Sushi de Maksim: El mejor sushi artesanal a domicilio en Madrid
