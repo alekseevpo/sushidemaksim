@@ -193,7 +193,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                         <button
                                             onClick={() => {
                                                 setShowMobileMenu(false);
-                                                window.dispatchEvent(
+                                                document.dispatchEvent(
                                                     new CustomEvent('custom:openLogin', {
                                                         detail: { mode: 'login' },
                                                     })
@@ -206,7 +206,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                         <button
                                             onClick={() => {
                                                 setShowMobileMenu(false);
-                                                window.dispatchEvent(
+                                                document.dispatchEvent(
                                                     new CustomEvent('custom:openLogin', {
                                                         detail: { mode: 'register' },
                                                     })
