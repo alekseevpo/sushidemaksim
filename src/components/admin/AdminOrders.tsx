@@ -310,8 +310,8 @@ export default function AdminOrders({
             {/* Top Controls */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6 space-y-4">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                        <div className="relative flex-1 sm:w-96">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                        <div className="relative w-full sm:w-96 flex-shrink-0">
                             <Search
                                 size={18}
                                 strokeWidth={2}
@@ -333,46 +333,48 @@ export default function AdminOrders({
                                 </button>
                             )}
                         </div>
-                        <button
-                            onClick={() => {
-                                const newVal = !isGlobalSoundEnabled;
-                                setIsGlobalSoundEnabled(newVal);
-                                if (newVal && onTestSound) {
-                                    onTestSound();
-                                }
-                            }}
-                            className={`p-3 rounded-xl transition-all border shadow-sm active:scale-95 ${
-                                isGlobalSoundEnabled
-                                    ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-600 hover:text-white'
-                                    : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-200 hover:text-gray-900'
-                            }`}
-                            title={isGlobalSoundEnabled ? t.soundOn : t.soundOff}
-                        >
-                            {isGlobalSoundEnabled ? (
-                                <Volume2 size={20} strokeWidth={2} />
-                            ) : (
-                                <VolumeX size={20} strokeWidth={2} />
-                            )}
-                        </button>
-                        <button
-                            onClick={() => onTestSound?.('mesa')}
-                            className="px-4 py-3 bg-orange-50 text-orange-600 border border-orange-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
-                            title="Test: Mesa (3 dings)"
-                        >
-                            {t.testSound}
-                        </button>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <button
+                                onClick={() => {
+                                    const newVal = !isGlobalSoundEnabled;
+                                    setIsGlobalSoundEnabled(newVal);
+                                    if (newVal && onTestSound) {
+                                        onTestSound();
+                                    }
+                                }}
+                                className={`flex-1 sm:flex-none flex items-center justify-center p-3 rounded-xl transition-all border shadow-sm active:scale-95 ${
+                                    isGlobalSoundEnabled
+                                        ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-600 hover:text-white'
+                                        : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-200 hover:text-gray-900'
+                                }`}
+                                title={isGlobalSoundEnabled ? t.soundOn : t.soundOff}
+                            >
+                                {isGlobalSoundEnabled ? (
+                                    <Volume2 size={20} strokeWidth={2} />
+                                ) : (
+                                    <VolumeX size={20} strokeWidth={2} />
+                                )}
+                            </button>
+                            <button
+                                onClick={() => onTestSound?.('mesa')}
+                                className="flex-[2] sm:flex-none flex items-center justify-center px-4 py-3 bg-orange-50 text-orange-600 border border-orange-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
+                                title="Test: Mesa (3 dings)"
+                            >
+                                {t.testSound}
+                            </button>
+                            <button
+                                onClick={() => refetch()}
+                                className="flex-1 sm:flex-none flex items-center justify-center p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 rounded-xl transition-all shadow-sm active:scale-95"
+                                title={t.refresh}
+                            >
+                                <RefreshCw
+                                    size={20}
+                                    strokeWidth={2}
+                                    className={isFetching ? 'animate-spin' : ''}
+                                />
+                            </button>
+                        </div>
                     </div>
-                    <button
-                        onClick={() => refetch()}
-                        className="w-full sm:w-auto p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 rounded-xl transition-all shadow-sm active:scale-95"
-                        title={t.refresh}
-                    >
-                        <RefreshCw
-                            size={20}
-                            strokeWidth={2}
-                            className={isFetching ? 'animate-spin' : ''}
-                        />
-                    </button>
                 </div>
 
                 {/* Filter Tabs */}
