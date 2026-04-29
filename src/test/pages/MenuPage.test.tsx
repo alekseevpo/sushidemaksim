@@ -65,18 +65,21 @@ describe('MenuPage (Integration)', () => {
         });
     });
 
-    it('filters by category', async () => {
+    it('scrolls to category section on click', async () => {
+        const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
         renderMenu();
+
+        // Wait for items to be loaded and section rendered
+        await screen.findByText('Salmon Roll');
 
         // Use findByAll to get both sidebar and main content buttons
         const categoryBtns = await screen.findAllByText('Rollos Grandes');
         fireEvent.click(categoryBtns[0]);
 
         await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith(
-                expect.stringContaining('category=rollos-grandes')
-            );
+            expect(scrollToSpy).toHaveBeenCalled();
         });
+        scrollToSpy.mockRestore();
     });
 
     it('searches for a dish with debounce', async () => {

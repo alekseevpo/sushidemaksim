@@ -1,10 +1,55 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowRight, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import SafeImage from '../common/SafeImage';
 import { getOptimizedImageUrl } from '../../utils/images';
 
+const REVIEWS = [
+    {
+        author: 'María García',
+        text: 'El mejor sushi que he probado en Madrid. Los rollos fritos son una auténtica locura, ¡volveremos a pedir seguro!',
+    },
+    {
+        author: 'Alejandro Ruiz',
+        text: 'Sabor increíble y el pescado súper fresco. El empaquetado es muy cuidado y el pedido llegó en perfecto estado.',
+    },
+    {
+        author: 'Laura Martínez',
+        text: 'La calidad-precio es insuperable. Los nigiris de salmón se deshacen en la boca. Muy recomendado para cenar.',
+    },
+    {
+        author: 'Carlos Fernández',
+        text: '¡Espectacular! Se nota que cuidan cada detalle. El arroz estaba en su punto perfecto. Entrega rápida.',
+    },
+    {
+        author: 'Ana López',
+        text: 'Llevo años probando diferentes sitios de sushi, y Maksim se ha convertido en mi favorito absoluto.',
+    },
+    {
+        author: 'David Gómez',
+        text: 'Las porciones son generosas y el sabor te transporta a Japón. Sin duda, 5 estrellas.',
+    },
+    {
+        author: 'Sofía Navarro',
+        text: 'Presentación de 10. Fue una cena sorpresa para mi pareja y quedamos encantados con la calidad.',
+    },
+    {
+        author: 'Javier Domínguez',
+        text: 'Soy muy exigente con el pescado crudo y aquí es espectacular. Súper fresco y delicioso.',
+    }
+];
+
 export function HeroSection() {
+    const [currentReview, setCurrentReview] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentReview(prev => (prev + 1) % REVIEWS.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
+
     return (
         <section className="relative h-[100svh] w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
             {/* Visual context for SEO */}
@@ -45,14 +90,39 @@ export function HeroSection() {
                     </span>
 
                     <h2 className="text-[42px] leading-[0.9] md:text-8xl font-black text-white tracking-tighter">
-                        Sabor que <br />
-                        <span className="text-orange-600 italic">Despierta</span> Sentidos
+                        Reseñas de <br />
+                        <span className="text-orange-600 italic">Google</span> Maps
                     </h2>
 
-                    <p className="text-sm md:text-lg text-gray-300 max-w-md mx-auto leading-relaxed font-medium">
-                        Descubre la perfección en cada bocado. Sushi artesanal preparado con los
-                        ingredientes más frescos del mercado.
-                    </p>
+                    <div className="h-[96px] md:h-[110px] w-full max-w-md mx-auto relative">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentReview}
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                transition={{ duration: 0.4, ease: 'easeOut' }}
+                                className="absolute inset-0 flex flex-col items-center justify-start"
+                            >
+                                <div className="flex items-center gap-0.5 mb-2 text-orange-500">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            size={14}
+                                            fill="currentColor"
+                                            strokeWidth={1}
+                                        />
+                                    ))}
+                                </div>
+                                <p className="text-sm md:text-lg text-gray-300 leading-relaxed font-medium line-clamp-2 px-2">
+                                    "{REVIEWS[currentReview].text}"
+                                </p>
+                                <span className="text-[10px] md:text-xs text-gray-500 mt-2 font-bold uppercase tracking-widest">
+                                    — {REVIEWS[currentReview].author}
+                                </span>
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                         <Link

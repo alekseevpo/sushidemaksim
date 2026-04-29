@@ -1,49 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { Link, useLocation } from 'react-router-dom';
-import {
-    ShoppingCart,
-    User,
-    ChevronDown,
-    LogOut,
-    Menu,
-    X,
-    ShieldCheck,
-    BookOpen,
-    Phone,
-    Star,
-    Calendar,
-    Settings,
-    MapPin,
-    Package,
-    Heart,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
-import { useAuth } from '../hooks/useAuth';
 import StoreStatusBanner from './StoreStatusBanner';
 import LoginModal from './LoginModal';
 import { useScrollLock } from '../hooks/useScrollLock';
 import ReservationModal from './reservations/ReservationModal';
-import { getSharpAvatar } from '../utils/avatar';
-import SafeImage from './common/SafeImage';
-import { useTableI18n } from '../utils/tableI18n';
+
+// Imported Header Subcomponents
+import HeaderLogo from './header/HeaderLogo';
+import DesktopNav from './header/DesktopNav';
+import CartButton from './header/CartButton';
+import UserActions from './header/UserActions';
+import MobileMenu from './header/MobileMenu';
 
 export default function Header() {
-    const { t } = useTableI18n();
     const { itemCount, total, isLoading: cartLoading } = useCart();
-    const { user, isAuthenticated, logout, isLoading: authLoading } = useAuth();
     const location = useLocation();
+
+    // Global Header States
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [loginModalMode, setLoginModalMode] = useState<
         'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'
     >('login');
-    const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
-    const [isCartBumping, setIsCartBumping] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
-    const userMenuRef = useRef<HTMLDivElement>(null);
 
     const headerRef = useRef<HTMLElement>(null);
 
@@ -64,7 +46,6 @@ export default function Header() {
             }
         };
 
-        // Use ResizeObserver for real-time height updates (e.g. when banner closes)
         const resizeObserver = new ResizeObserver(() => {
             updateHeight();
         });
@@ -74,8 +55,6 @@ export default function Header() {
         }
 
         window.addEventListener('scroll', handleScroll, { passive: true });
-
-        // Initial check and after a small delay for banner animations
         handleScroll();
         updateHeight();
         const timeoutId = setTimeout(updateHeight, 500);
@@ -87,17 +66,6 @@ export default function Header() {
         };
     }, []);
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
-                setShowUserMenu(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
     useScrollLock(showMobileMenu || isLoginModalOpen || isReservationModalOpen);
 
     // Close mobile menu on route change
@@ -105,6 +73,7 @@ export default function Header() {
         setShowMobileMenu(false);
     }, [location.pathname]);
 
+    // Handle global modal events
     useEffect(() => {
         const handleOpenLogin = (e: any) => {
             if (e.detail?.mode) setLoginModalMode(e.detail.mode);
@@ -122,45 +91,12 @@ export default function Header() {
         };
     }, []);
 
-    // Cart bump animation trigger
-    const prevCountRef = useRef(itemCount);
-    useEffect(() => {
-        if (itemCount > prevCountRef.current) {
-            setIsCartBumping(true);
-            const timer = setTimeout(() => setIsCartBumping(false), 500);
-            return () => clearTimeout(timer);
-        }
-        prevCountRef.current = itemCount;
-    }, [itemCount]);
-
-    const initials = user
-        ? user.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
-        : '';
-
-    const navLinks = [
-        { to: '/menu', label: 'Menú', icon: Menu },
-        { to: '/blog', label: 'Blog', icon: BookOpen },
-        { to: '/contacts', label: 'Contactos', icon: Phone },
-        { to: '/promo', label: 'Promo', icon: Star },
-        {
-            label: 'Reserva',
-            onClick: () => setIsReservationModalOpen(true),
-            icon: Calendar,
-        },
-    ];
-
+    // Page state identifiers
     const isHome = location.pathname === '/';
     const isProfile = location.pathname === '/profile';
     const isMenu = location.pathname === '/menu' || location.pathname.startsWith('/menu/');
     const isTable = location.pathname === '/table';
     const isTransparentHeaderPage = (isHome || isProfile) && !isTable;
-    const hasToken = !!localStorage.getItem('sushi_token');
-    const showSkeleton = authLoading || (hasToken && !user);
 
     return (
         <>
@@ -191,413 +127,37 @@ export default function Header() {
                     <div
                         className={`flex items-center justify-between h-16 md:h-20 gap-4 ${isTable ? 'flex-row-reverse' : ''}`}
                     >
-                        {/* Logo Area: Fixed 200px to match sidebar below, wrapped in flex-1 for centering balance */}
-                        <div
-                            className={`flex-1 flex items-center h-full ${isTable ? 'justify-end' : 'justify-start'}`}
-                        >
-                            <Link
-                                to={isTable ? '/table' : '/'}
-                                onClick={e => {
-                                    if (isTable) {
-                                        e.preventDefault();
-                                    }
-                                    setShowMobileMenu(false);
-                                    if ((window as any).lenis) {
-                                        (window as any).lenis.scrollTo(0);
-                                    } else {
-                                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                                    }
-                                }}
-                                className="flex items-center no-underline gap-0 group h-full"
-                            >
-                                <div
-                                    className={`
-                                        transition-all duration-500 shrink-0 flex items-center justify-center
-                                        md:bg-orange-600 md:h-full md:w-[200px]
-                                        bg-transparent h-16 w-auto px-1
-                                    `}
-                                >
-                                    <img
-                                        src="/logo.svg"
-                                        alt="Sushi de Maksim"
-                                        className={`
-                                            h-10 md:h-14 w-auto object-contain transition-all duration-500
-                                            ${
-                                                isTable
-                                                    ? 'brightness-0 invert'
-                                                    : isScrolled || !isTransparentHeaderPage
-                                                      ? 'brightness-0 md:invert'
-                                                      : 'brightness-0 invert'
-                                            }
-                                        `}
-                                    />
-                                </div>
-                            </Link>
-                        </div>
+                        <HeaderLogo
+                            isTable={isTable}
+                            isScrolled={isScrolled}
+                            isTransparentHeaderPage={isTransparentHeaderPage}
+                            setShowMobileMenu={setShowMobileMenu}
+                        />
 
-                        {/* Desktop Navigation - Hidden on mobile or table route */}
                         {!isTable && (
-                            <nav className="hidden md:flex items-center justify-center gap-2 lg:gap-4 xl:gap-8 mx-auto">
-                                {navLinks.map((link, idx) => {
-                                    const isActive = link.to
-                                        ? location.pathname === link.to
-                                        : false;
-                                    const isAction = !!link.onClick;
-
-                                    const commonStyles = `relative no-underline font-bold px-3 lg:px-4 py-2 transition-all duration-300 rounded-xl text-[13px] lg:text-sm border-none bg-transparent cursor-pointer whitespace-nowrap
-                                        ${
-                                            isActive
-                                                ? 'text-white shadow-inner'
-                                                : isScrolled || !isTransparentHeaderPage
-                                                  ? 'text-gray-600 hover:text-gray-900'
-                                                  : 'text-white/80 hover:text-white'
-                                        }`;
-
-                                    if (isAction) {
-                                        return (
-                                            <button
-                                                key={link.label || idx}
-                                                onClick={link.onClick}
-                                                type="button"
-                                                className={`${commonStyles} flex items-center gap-2`}
-                                            >
-                                                {link.icon && (
-                                                    <link.icon size={16} strokeWidth={2} />
-                                                )}
-                                                {link.label}
-                                            </button>
-                                        );
-                                    }
-
-                                    return (
-                                        <Link
-                                            key={link.to || idx}
-                                            to={link.to!}
-                                            className={`${commonStyles} flex items-center gap-2`}
-                                        >
-                                            {link.icon && (
-                                                <span className="relative z-10 flex items-center justify-center translate-y-[-1px]">
-                                                    <link.icon size={16} strokeWidth={2} />
-                                                </span>
-                                            )}
-                                            <span className="relative z-10">{link.label}</span>
-                                            {isActive && (
-                                                <motion.div
-                                                    layoutId="active-nav"
-                                                    className="absolute inset-0 bg-orange-600 rounded-xl"
-                                                    transition={{
-                                                        type: 'spring',
-                                                        stiffness: 380,
-                                                        damping: 30,
-                                                    }}
-                                                />
-                                            )}
-                                        </Link>
-                                    );
-                                })}
-                            </nav>
+                            <DesktopNav
+                                isScrolled={isScrolled}
+                                isTransparentHeaderPage={isTransparentHeaderPage}
+                            />
                         )}
 
-                        {/* Right side Area: Symmetry with logo area (200px) to ensure nav block is centered */}
+                        {/* Right side Area */}
                         <div
                             className={`flex-1 flex items-center gap-3 h-full md:min-w-[200px] ${isTable ? 'justify-start' : 'justify-end'}`}
                         >
-                            {isTable ? (
-                                <button
-                                    onClick={() => {
-                                        setLoginModalMode('register');
-                                        setIsLoginModalOpen(true);
-                                    }}
-                                    className="bg-white text-black px-4 py-2 md:px-6 md:py-2.5 rounded-xl font-black text-[12px] md:text-[13px] cursor-pointer active:scale-95 transition-all hover:bg-orange-600 hover:text-white uppercase tracking-tighter border border-white/20 whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-                                >
-                                    {t('join_club')}
-                                </button>
-                            ) : (
+                            <UserActions
+                                isTable={isTable}
+                                setLoginModalMode={setLoginModalMode}
+                                setIsLoginModalOpen={setIsLoginModalOpen}
+                            />
+
+                            {!isTable && (
                                 <>
-                                    {/* Desktop: User button or login */}
-                                    <div className="hidden md:block">
-                                        {showSkeleton ? (
-                                            <div className="w-24 h-10 bg-gray-100 skeleton rounded-xl" />
-                                        ) : isAuthenticated && user ? (
-                                            <div ref={userMenuRef} className="relative">
-                                                <button
-                                                    onClick={() => setShowUserMenu(!showUserMenu)}
-                                                    className={`flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 pl-1 pr-3 py-1 rounded-2xl cursor-pointer transition-all duration-200
-                                ${showUserMenu ? 'ring-2 ring-orange-600/20 bg-white' : ''}`}
-                                                >
-                                                    <div
-                                                        className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-sm overflow-hidden shrink-0 border border-black/5
-                                                            ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[18px]' : 'bg-orange-600'}`}
-                                                    >
-                                                        {user.avatar ? (
-                                                            user.avatar.startsWith('http') ? (
-                                                                <SafeImage
-                                                                    src={user.avatar}
-                                                                    getOptimizedUrl={getSharpAvatar}
-                                                                    alt={user.name}
-                                                                    className="w-full h-full object-cover"
-                                                                    fallbackContent={
-                                                                        <span className="select-none text-[16px] text-gray-900">
-                                                                            {initials}
-                                                                        </span>
-                                                                    }
-                                                                />
-                                                            ) : (
-                                                                <span className="select-none">
-                                                                    {user.avatar}
-                                                                </span>
-                                                            )
-                                                        ) : (
-                                                            <span className="select-none">
-                                                                {initials}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <span className="text-sm font-bold text-gray-700 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                                        {user.name.split(' ')[0]}
-                                                    </span>
-                                                    <ChevronDown
-                                                        size={14}
-                                                        strokeWidth={1.5}
-                                                        className={`text-gray-400 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}
-                                                    />
-                                                </button>
-
-                                                {/* Dropdown */}
-                                                <AnimatePresence>
-                                                    {showUserMenu && (
-                                                        <motion.div
-                                                            initial={{
-                                                                opacity: 0,
-                                                                y: 10,
-                                                                scale: 0.95,
-                                                            }}
-                                                            animate={{
-                                                                opacity: 1,
-                                                                y: 0,
-                                                                scale: 1,
-                                                            }}
-                                                            exit={{
-                                                                opacity: 0,
-                                                                y: 10,
-                                                                scale: 0.95,
-                                                            }}
-                                                            className="absolute top-[calc(100%+12px)] right-0 bg-white rounded-2xl shadow-2xl p-1.5 w-[240px] z-[100] border border-gray-100"
-                                                        >
-                                                            <div className="px-2.5 py-3 border-b border-gray-50 mb-1 flex items-center gap-3">
-                                                                <div
-                                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-inner overflow-hidden shrink-0 border border-black/10
-                                            ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-200 text-xl' : 'bg-orange-600'}`}
-                                                                >
-                                                                    {user.avatar ? (
-                                                                        user.avatar.startsWith(
-                                                                            'http'
-                                                                        ) ? (
-                                                                            <SafeImage
-                                                                                src={user.avatar}
-                                                                                getOptimizedUrl={
-                                                                                    getSharpAvatar
-                                                                                }
-                                                                                alt={user.name}
-                                                                                className="w-full h-full object-cover"
-                                                                                fallbackContent={
-                                                                                    <span className="select-none text-xl text-gray-900">
-                                                                                        {initials}
-                                                                                    </span>
-                                                                                }
-                                                                            />
-                                                                        ) : (
-                                                                            <span className="select-none">
-                                                                                {user.avatar}
-                                                                            </span>
-                                                                        )
-                                                                    ) : (
-                                                                        <span className="select-none">
-                                                                            {initials}
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                                <div className="flex-1 min-w-0">
-                                                                    <p className="text-sm font-black text-gray-900 mb-0.5 truncate">
-                                                                        {user.name}
-                                                                    </p>
-                                                                    <p className="text-[10px] text-gray-500 font-bold tracking-tight uppercase whitespace-nowrap">
-                                                                        {user.email}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-
-                                                            {(user.role === 'admin' ||
-                                                                user.role === 'waiter') && (
-                                                                <>
-                                                                    <Link
-                                                                        to={
-                                                                            user.role === 'admin'
-                                                                                ? '/admin'
-                                                                                : '/waiter'
-                                                                        }
-                                                                        onClick={() =>
-                                                                            setShowUserMenu(false)
-                                                                        }
-                                                                        className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 hover:bg-orange-100 transition-colors duration-150"
-                                                                    >
-                                                                        <ShieldCheck
-                                                                            size={16}
-                                                                            strokeWidth={1.5}
-                                                                        />{' '}
-                                                                        {user.role === 'admin'
-                                                                            ? 'PANEL ADMIN'
-                                                                            : 'TERMINAL CAMARERO'}
-                                                                    </Link>
-                                                                    <div className="h-px bg-gray-50 my-1.5" />
-                                                                </>
-                                                            )}
-
-                                                            <Link
-                                                                to="/profile"
-                                                                onClick={() =>
-                                                                    setShowUserMenu(false)
-                                                                }
-                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                            >
-                                                                <User
-                                                                    size={16}
-                                                                    strokeWidth={1.5}
-                                                                    className="text-gray-400"
-                                                                />{' '}
-                                                                Mi Perfil
-                                                            </Link>
-                                                            <Link
-                                                                to="/profile?tab=orders"
-                                                                onClick={() =>
-                                                                    setShowUserMenu(false)
-                                                                }
-                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                            >
-                                                                <Package
-                                                                    size={16}
-                                                                    strokeWidth={1.5}
-                                                                    className="text-gray-400"
-                                                                />{' '}
-                                                                Mis Pedidos
-                                                            </Link>
-                                                            <Link
-                                                                to="/profile?tab=addresses"
-                                                                onClick={() =>
-                                                                    setShowUserMenu(false)
-                                                                }
-                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                            >
-                                                                <MapPin
-                                                                    size={16}
-                                                                    strokeWidth={1.5}
-                                                                    className="text-gray-400"
-                                                                />{' '}
-                                                                Mis Direcciones
-                                                            </Link>
-                                                            <Link
-                                                                to="/profile?tab=favorites"
-                                                                onClick={() =>
-                                                                    setShowUserMenu(false)
-                                                                }
-                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl no-underline text-gray-700 text-[13px] font-bold hover:bg-gray-50 transition-colors duration-150"
-                                                            >
-                                                                <Heart
-                                                                    size={16}
-                                                                    strokeWidth={1.5}
-                                                                    className="text-gray-400"
-                                                                />{' '}
-                                                                Favoritos
-                                                            </Link>
-
-                                                            <div className="h-px bg-gray-50 my-1.5" />
-
-                                                            <button
-                                                                onClick={() => {
-                                                                    setShowUserMenu(false);
-                                                                    logout();
-                                                                }}
-                                                                className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl w-full border-none cursor-pointer text-orange-600 text-[13px] font-bold bg-transparent hover:bg-orange-50 transition-colors duration-150 text-left"
-                                                            >
-                                                                <LogOut
-                                                                    size={16}
-                                                                    strokeWidth={1.5}
-                                                                />{' '}
-                                                                Cerrar sesión
-                                                            </button>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setLoginModalMode('login');
-                                                        setIsLoginModalOpen(true);
-                                                    }}
-                                                    className="bg-gray-900 text-white border-2 border-transparent px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-lg active:scale-95 transition-all hover:bg-black"
-                                                >
-                                                    ACCEDER
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setLoginModalMode('register');
-                                                        setIsLoginModalOpen(true);
-                                                    }}
-                                                    className="bg-white text-gray-900 border-2 border-gray-900 px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-sm active:scale-95 transition-all hover:bg-gray-50"
-                                                >
-                                                    REGISTRO
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <motion.div
-                                        animate={
-                                            isCartBumping
-                                                ? {
-                                                      scale: [1, 1.3, 0.95, 1],
-                                                      rotate: [0, -8, 8, 0],
-                                                  }
-                                                : {}
-                                        }
-                                        transition={{ duration: 0.4, ease: 'easeInOut' }}
-                                    >
-                                        <Link
-                                            id="cart-icon"
-                                            to="/cart"
-                                            className={`relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] text-white bg-orange-600 shadow-lg shadow-orange-600/20 active:scale-95`}
-                                        >
-                                            <ShoppingCart size={20} strokeWidth={2.5} />
-                                            {!cartLoading && total > 0 && (
-                                                <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap text-white">
-                                                    {total.toFixed(2)} €
-                                                </span>
-                                            )}
-                                            <AnimatePresence>
-                                                {!cartLoading && itemCount > 0 && (
-                                                    <motion.span
-                                                        key={itemCount} // Re-trigger animation on every count change
-                                                        initial={{ scale: 0.5, opacity: 0 }}
-                                                        animate={{
-                                                            scale: [0.5, 1.3, 1],
-                                                            opacity: 1,
-                                                        }}
-                                                        exit={{ scale: 0, opacity: 0 }}
-                                                        transition={{
-                                                            type: 'spring',
-                                                            stiffness: 500,
-                                                            damping: 15,
-                                                        }}
-                                                        className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
-                                                    >
-                                                        {itemCount}
-                                                    </motion.span>
-                                                )}
-                                            </AnimatePresence>
-                                        </Link>
-                                    </motion.div>
+                                    <CartButton
+                                        itemCount={itemCount}
+                                        total={total}
+                                        cartLoading={cartLoading}
+                                    />
 
                                     <button
                                         onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -619,249 +179,20 @@ export default function Header() {
                     </div>
                 </div>
 
-                {/* Mobile Menu Overlay - Rendered in Portal to avoid stacking context issues */}
-                {createPortal(
-                    <AnimatePresence>
-                        {showMobileMenu && (
-                            <>
-                                {/* Backdrop overlay */}
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    onClick={() => setShowMobileMenu(false)}
-                                    className="fixed inset-0 bg-black/50 z-[9998] md:hidden"
-                                    data-lenis-prevent
-                                />
-
-                                {/* Bottom Sheet */}
-                                <motion.div
-                                    initial={{ y: '100%' }}
-                                    animate={{ y: 0 }}
-                                    exit={{ y: '100%' }}
-                                    transition={{
-                                        type: 'spring',
-                                        damping: 30,
-                                        stiffness: 300,
-                                        mass: 0.8,
-                                    }}
-                                    className="fixed inset-x-0 bottom-0 bg-white rounded-t-[40px] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)] z-[9999] md:hidden overflow-hidden border-t border-gray-100 will-change-transform flex flex-col max-h-[92dvh]"
-                                    data-lenis-prevent
-                                >
-                                    {/* Drag Handle Container */}
-                                    <div className="flex justify-center pt-5 pb-2 shrink-0">
-                                        <div className="w-12 h-1.5 bg-gray-200/80 rounded-full" />
-                                    </div>
-
-                                    {/* Scrollable Content Area */}
-                                    <div
-                                        className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar"
-                                        data-lenis-prevent
-                                    >
-                                        <div className="px-3 pt-4 pb-2 space-y-1">
-                                            {/* Primary Reservation CTA in Mobile Menu - Styled as text with shadow */}
-                                            <div className="px-1 pb-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setShowMobileMenu(false);
-                                                        setIsReservationModalOpen(true);
-                                                    }}
-                                                    className="w-full py-2 group flex items-center justify-center gap-3 px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-center drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
-                                                >
-                                                    <span className="tracking-tight uppercase">
-                                                        RESERVAR MESA
-                                                    </span>
-                                                </button>
-                                            </div>
-
-                                            {navLinks
-                                                .filter(l => l.label !== 'Reserva')
-                                                .map((link, idx) => {
-                                                    const isActive = link.to
-                                                        ? location.pathname === link.to
-                                                        : false;
-                                                    const isAction = !!link.onClick;
-
-                                                    const commonStyles = `group flex items-center justify-center px-4 py-2 rounded-[20px] font-black text-[16px] transition-all active:scale-[0.97] border-none bg-transparent text-center w-full
-                                                        ${
-                                                            isActive
-                                                                ? 'text-orange-600 underline underline-offset-4 decoration-2'
-                                                                : 'text-gray-600 hover:text-gray-900 no-underline'
-                                                        }`;
-
-                                                    const content = (
-                                                        <div
-                                                            className={`flex items-center gap-3 tracking-tight uppercase ${isActive ? 'text-orange-600' : 'text-gray-900'}`}
-                                                        >
-                                                            <span>{link.label}</span>
-                                                        </div>
-                                                    );
-
-                                                    if (isAction) {
-                                                        return (
-                                                            <button
-                                                                key={link.label || idx}
-                                                                onClick={() => {
-                                                                    setShowMobileMenu(false);
-                                                                    link.onClick?.();
-                                                                }}
-                                                                type="button"
-                                                                className={commonStyles}
-                                                            >
-                                                                {content}
-                                                            </button>
-                                                        );
-                                                    }
-
-                                                    return (
-                                                        <Link
-                                                            key={link.to || idx}
-                                                            to={link.to!}
-                                                            onClick={() => setShowMobileMenu(false)}
-                                                            className={commonStyles}
-                                                        >
-                                                            {content}
-                                                        </Link>
-                                                    );
-                                                })}
-                                        </div>
-
-                                        <div className="px-3 pb-8 space-y-3">
-                                            <div className="h-px bg-gray-100 my-2 mx-2" />
-
-                                            {showSkeleton ? (
-                                                <div className="w-full h-12 bg-gray-100 skeleton rounded-2xl animate-pulse" />
-                                            ) : isAuthenticated && user ? (
-                                                <div className="space-y-4">
-                                                    <Link
-                                                        to="/profile"
-                                                        onClick={() => setShowMobileMenu(false)}
-                                                        className="px-5 py-4 bg-gray-50 rounded-3xl flex items-center gap-3 no-underline transition-all active:scale-[0.98] hover:bg-gray-100 group border border-gray-100"
-                                                    >
-                                                        <div
-                                                            className={`w-16 h-16 rounded-[24px] flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner border border-black/10
-                                                        ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[24px]' : 'bg-orange-600'}`}
-                                                        >
-                                                            {user.avatar ? (
-                                                                user.avatar.startsWith('http') ? (
-                                                                    <SafeImage
-                                                                        src={user.avatar}
-                                                                        getOptimizedUrl={
-                                                                            getSharpAvatar
-                                                                        }
-                                                                        alt={user.name}
-                                                                        className="w-full h-full object-cover"
-                                                                        fallbackContent={
-                                                                            <span className="select-none text-sm text-gray-900">
-                                                                                {initials}
-                                                                            </span>
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <span className="select-none text-2xl">
-                                                                        {user.avatar}
-                                                                    </span>
-                                                                )
-                                                            ) : (
-                                                                <span className="select-none text-sm">
-                                                                    {initials}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0 text-left">
-                                                            <p className="font-black text-gray-900 text-[14px] leading-none mb-1 truncate">
-                                                                {user.name}
-                                                            </p>
-                                                            <p className="text-[12px] text-gray-400 font-medium leading-none truncate">
-                                                                {user.email}
-                                                            </p>
-                                                        </div>
-                                                        <Settings
-                                                            size={20}
-                                                            className="text-gray-300 group-hover:text-gray-900 transition-colors shrink-0"
-                                                        />
-                                                    </Link>
-
-                                                    {(user.role === 'admin' ||
-                                                        user.role === 'waiter') && (
-                                                        <Link
-                                                            to={
-                                                                user.role === 'admin'
-                                                                    ? '/admin'
-                                                                    : '/waiter'
-                                                            }
-                                                            onClick={() => setShowMobileMenu(false)}
-                                                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-2xl no-underline text-orange-600 text-[13px] font-black bg-orange-50 border border-orange-100"
-                                                        >
-                                                            <ShieldCheck
-                                                                size={18}
-                                                                strokeWidth={1.5}
-                                                            />
-                                                            {user.role === 'admin'
-                                                                ? 'PANEL DE CONTROL'
-                                                                : 'TERMINAL CAMARERO'}
-                                                        </Link>
-                                                    )}
-                                                    <button
-                                                        onClick={() => {
-                                                            logout();
-                                                            setShowMobileMenu(false);
-                                                        }}
-                                                        className="flex items-center justify-center gap-3 px-5 py-2 rounded-2xl w-full border-none cursor-pointer text-orange-600 text-[14px] font-black bg-white border border-orange-50 hover:bg-orange-50 transition-colors mb-4"
-                                                    >
-                                                        <LogOut size={18} strokeWidth={1.5} />{' '}
-                                                        Cerrar sesión
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div className="pb-4 grid grid-cols-2 gap-3">
-                                                    <button
-                                                        onClick={() => {
-                                                            setLoginModalMode('login');
-                                                            setShowMobileMenu(false);
-                                                            setIsLoginModalOpen(true);
-                                                        }}
-                                                        className="w-full py-4 rounded-[20px] bg-gray-900 text-white border-2 border-transparent cursor-pointer font-black text-[14px] shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-2"
-                                                    >
-                                                        <User size={18} />
-                                                        Acceder
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setLoginModalMode('register');
-                                                            setShowMobileMenu(false);
-                                                            setIsLoginModalOpen(true);
-                                                        }}
-                                                        className="w-full py-4 rounded-[20px] bg-white text-gray-900 border-2 border-gray-900 cursor-pointer font-black text-[14px] shadow-lg shadow-gray-100 active:scale-95 flex items-center justify-center gap-2"
-                                                    >
-                                                        Registro
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </>
-                        )}
-                    </AnimatePresence>,
-                    document.body
-                )}
+                <MobileMenu showMobileMenu={showMobileMenu} setShowMobileMenu={setShowMobileMenu} />
             </header>
 
-            {isLoginModalOpen && (
-                <LoginModal
-                    isOpen={isLoginModalOpen}
-                    onClose={() => setIsLoginModalOpen(false)}
-                    initialMode={loginModalMode}
-                />
-            )}
+            {/* Global Modals triggered from Header */}
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setIsLoginModalOpen(false)}
+                initialMode={loginModalMode}
+            />
 
-            {isReservationModalOpen && (
-                <ReservationModal
-                    isOpen={isReservationModalOpen}
-                    onClose={() => setIsReservationModalOpen(false)}
-                />
-            )}
+            <ReservationModal
+                isOpen={isReservationModalOpen}
+                onClose={() => setIsReservationModalOpen(false)}
+            />
         </>
     );
 }

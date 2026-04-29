@@ -4,8 +4,8 @@ import { Sparkles } from 'lucide-react';
 import { CATEGORIES } from '../../constants/menu';
 
 interface MenuCategoryBarProps {
-    selectedCategory: string;
-    setSelectedCategory: (cat: string) => void;
+    activeCategory: string;
+    onCategoryClick: (id: string) => void;
     isMobile?: boolean;
 }
 
@@ -15,8 +15,8 @@ const KatanaUnderline = () => (
         className="absolute -bottom-10 left-4 right-0 flex items-center justify-start pointer-events-none z-0"
         transition={{
             type: 'spring',
-            stiffness: 400, // Increased stiffness for faster movement
-            damping: 35, // Balanced damping
+            stiffness: 400,
+            damping: 35,
             mass: 0.5,
         }}
     >
@@ -30,15 +30,15 @@ const KatanaUnderline = () => (
 );
 
 export default function MenuCategoryBar({
-    selectedCategory,
-    setSelectedCategory,
+    activeCategory,
+    onCategoryClick,
     isMobile = false,
 }: MenuCategoryBarProps) {
-    const scrollToCategory = useCallback(
+    const scrollBarToCategory = useCallback(
         (id: string, behavior: ScrollBehavior = 'smooth') => {
             if (!isMobile) return;
 
-            const btn = document.getElementById(`cat-${id}`);
+            const btn = document.getElementById(`cat-btn-${id}`);
             const container = btn?.closest('.overflow-x-auto');
 
             if (btn && container) {
@@ -62,20 +62,15 @@ export default function MenuCategoryBar({
         [isMobile]
     );
 
-    // Center category when it changes from any source (URL, click, etc.)
+    // Center category when it changes from scroll spy
     useEffect(() => {
-        if (isMobile) {
-            // Use a small delay to ensure the DOM is ready and any animations have started
+        if (isMobile && activeCategory) {
             const timeoutId = setTimeout(() => {
-                scrollToCategory(selectedCategory, 'smooth');
+                scrollBarToCategory(activeCategory, 'smooth');
             }, 100);
             return () => clearTimeout(timeoutId);
         }
-    }, [selectedCategory, isMobile, scrollToCategory]);
-
-    const handleCategoryClick = (id: string) => {
-        setSelectedCategory(id);
-    };
+    }, [activeCategory, isMobile, scrollBarToCategory]);
 
     if (isMobile) {
         return (
@@ -94,10 +89,10 @@ export default function MenuCategoryBar({
                             <div className="flex gap-2 flex-nowrap px-4 w-max relative">
                                 {/* TODOS Button */}
                                 <button
-                                    id="cat-all"
-                                    onClick={() => handleCategoryClick('all')}
+                                    id="cat-btn-all"
+                                    onClick={() => onCategoryClick('all')}
                                     className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
-                                        selectedCategory === 'all'
+                                        activeCategory === 'all'
                                             ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20 border-transparent z-10'
                                             : 'bg-white text-gray-500 border-gray-100'
                                     }`}
@@ -109,10 +104,10 @@ export default function MenuCategoryBar({
                                 {CATEGORIES.map(cat => (
                                     <button
                                         key={cat.id}
-                                        id={`cat-${cat.id}`}
-                                        onClick={() => handleCategoryClick(cat.id)}
+                                        id={`cat-btn-${cat.id}`}
+                                        onClick={() => onCategoryClick(cat.id)}
                                         className={`relative transform-gpu backface-hidden whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
-                                            selectedCategory === cat.id
+                                            activeCategory === cat.id
                                                 ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20 border-transparent z-10'
                                                 : 'bg-white text-gray-500 border-gray-100'
                                         }`}
@@ -147,18 +142,18 @@ export default function MenuCategoryBar({
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-2 relative z-10">
                         <button
-                            onClick={() => setSelectedCategory('all')}
+                            onClick={() => onCategoryClick('all')}
                             className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
-                                selectedCategory === 'all'
+                                activeCategory === 'all'
                                     ? 'text-white'
                                     : 'text-white/40 hover:text-white'
                             }`}
                         >
                             <Sparkles
                                 size={20}
-                                strokeWidth={selectedCategory === 'all' ? 2.5 : 2}
+                                strokeWidth={activeCategory === 'all' ? 2.5 : 2}
                                 className={`relative z-10 transition-transform duration-300 ${
-                                    selectedCategory === 'all'
+                                    activeCategory === 'all'
                                         ? 'stroke-current scale-110'
                                         : 'group-hover:scale-110'
                                 }`}
@@ -166,24 +161,24 @@ export default function MenuCategoryBar({
                             <span className="text-sm relative z-10 font-bold tracking-wide">
                                 Todos
                             </span>
-                            {selectedCategory === 'all' && <KatanaUnderline />}
+                            {activeCategory === 'all' && <KatanaUnderline />}
                         </button>
 
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id)}
+                                onClick={() => onCategoryClick(cat.id)}
                                 className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
-                                    selectedCategory === cat.id
+                                    activeCategory === cat.id
                                         ? 'text-white'
                                         : 'text-white/40 hover:text-white'
                                 }`}
                             >
                                 <cat.icon
                                     size={20}
-                                    strokeWidth={selectedCategory === cat.id ? 2.5 : 2}
+                                    strokeWidth={activeCategory === cat.id ? 2.5 : 2}
                                     className={`relative z-10 transition-transform duration-300 ${
-                                        selectedCategory === cat.id
+                                        activeCategory === cat.id
                                             ? 'scale-110'
                                             : 'group-hover:scale-110'
                                     }`}
@@ -191,7 +186,7 @@ export default function MenuCategoryBar({
                                 <span className="text-sm relative z-10 font-bold tracking-wide">
                                     {cat.name}
                                 </span>
-                                {selectedCategory === cat.id && <KatanaUnderline />}
+                                {activeCategory === cat.id && <KatanaUnderline />}
                             </button>
                         ))}
                     </nav>

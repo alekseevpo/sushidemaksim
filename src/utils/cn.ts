@@ -1,9 +1,9 @@
 import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
- * Utility for conditionally joining class names.
- * Based on project rules to use cn() utility.
+ * Utility for conditionally joining class names and correctly merging conflicting Tailwind classes.
  */
 export function cn(...inputs: ClassValue[]) {
-    return clsx(inputs);
+    return twMerge(clsx(inputs));
 }

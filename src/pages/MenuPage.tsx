@@ -17,7 +17,7 @@ import FlyToCart, { FlyingItem } from '../components/menu/FlyToCart';
 export default function MenuPage() {
     const [searchParams] = useSearchParams();
     const initialCategory = searchParams.get('category') || 'all';
-    const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+    const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState(search);
     const { addItem } = useCart();
@@ -28,13 +28,8 @@ export default function MenuPage() {
     const [copying, setCopying] = useState(false);
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
-    // Queries
-    const {
-        data: items = [],
-        isLoading,
-        isError,
-        isFetching,
-    } = useMenu(selectedCategory, debouncedSearch);
+    // Queries: Always fetch all items to allow scrolling through sections
+    const { data: items = [], isLoading, isError, isFetching } = useMenu('all', debouncedSearch);
     const { data: favorites } = useFavorites(user);
     const { mutate: toggleFavorite } = useToggleFavorite();
     const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
@@ -53,34 +48,68 @@ export default function MenuPage() {
         return () => clearTimeout(handler);
     }, [search, user?.id]);
 
-    const initialCategoryMount = useRef(true);
-    const initialSearchMount = useRef(true);
+    const isScrollingProgrammatically = useRef(false);
 
-    // Scroll to top of menu section when category changes
+    // Scroll Spy implementation
     useEffect(() => {
-        if (initialCategoryMount.current) {
-            initialCategoryMount.current = false;
-            return;
-        }
+        if (isLoading || isError || items.length === 0 || debouncedSearch) return;
 
-        const menuTop = document.getElementById('menu-content');
-        if (menuTop) {
-            const isMobile = window.innerWidth < 1024;
-            // Total fixed height: Header (64px) + CategoryBar (~55px) + buffer = ~130px
-            const offset = isMobile ? 130 : 80;
+        const observerOptions = {
+            root: null,
+            rootMargin: '-100px 0px -60% 0px', // Trigger slightly below the sticky header
+            threshold: 0,
+        };
 
-            const targetTop = Math.max(
-                0,
-                menuTop.getBoundingClientRect().top + window.scrollY - offset
-            );
+        const observerCallback: IntersectionObserverCallback = entries => {
+            if (isScrollingProgrammatically.current) return;
 
-            if ((window as any).lenis) {
-                (window as any).lenis.scrollTo(targetTop, { immediate: true });
-            } else {
-                window.scrollTo({ top: targetTop, behavior: 'instant' });
+            const intersectingEntry = entries.find(entry => entry.isIntersecting);
+            if (intersectingEntry) {
+                const id = intersectingEntry.target.id.replace('section-', '');
+                setActiveCategory(id);
+            }
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+        CATEGORIES.forEach(cat => {
+            const el = document.getElementById(`section-${cat.id}`);
+            if (el) observer.observe(el);
+        });
+
+        const menuTop = document.getElementById('menu-top-sentinel');
+        if (menuTop) observer.observe(menuTop);
+
+        return () => observer.disconnect();
+    }, [isLoading, isError, items.length, debouncedSearch]);
+
+    const handleCategoryClick = (id: string) => {
+        setActiveCategory(id);
+        isScrollingProgrammatically.current = true;
+
+        const offset = window.innerWidth < 1024 ? 130 : 80;
+
+        if (id === 'all') {
+            const el = document.getElementById('menu-content');
+            if (el) {
+                const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset);
+                window.scrollTo({ top, behavior: 'smooth' });
+            }
+        } else {
+            const el = document.getElementById(`section-${id}`);
+            if (el) {
+                const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset);
+                window.scrollTo({ top, behavior: 'smooth' });
             }
         }
-    }, [selectedCategory, user?.id]);
+
+        // Re-enable scroll spy after scrolling finishes
+        setTimeout(() => {
+            isScrollingProgrammatically.current = false;
+        }, 800);
+    };
+
+    const initialSearchMount = useRef(true);
 
     useEffect(() => {
         if (debouncedSearch && !isLoading && items.length > 0) {
@@ -90,20 +119,13 @@ export default function MenuPage() {
             }
             const menuTop = document.getElementById('menu-content');
             if (menuTop) {
-                const isMobile = window.innerWidth < 1024;
-                const offset = isMobile ? 130 : 80;
-
+                const offset = window.innerWidth < 1024 ? 130 : 80;
                 requestAnimationFrame(() => {
-                    const targetTop = Math.max(
+                    const top = Math.max(
                         0,
                         menuTop.getBoundingClientRect().top + window.scrollY - offset
                     );
-
-                    if ((window as any).lenis) {
-                        (window as any).lenis.scrollTo(targetTop, { immediate: true });
-                    } else {
-                        window.scrollTo({ top: targetTop, behavior: 'instant' });
-                    }
+                    window.scrollTo({ top, behavior: 'instant' });
                 });
             }
         }
@@ -262,7 +284,7 @@ export default function MenuPage() {
             '@id': `${SITE_URL}/menu`,
         },
         hasMenuSection: CATEGORIES.filter(cat =>
-            selectedCategory === 'all' ? true : cat.id === selectedCategory
+            activeCategory === 'all' ? true : cat.id === activeCategory
         ).map(cat => ({
             '@type': 'MenuSection',
             name: cat.name,
@@ -311,35 +333,40 @@ export default function MenuPage() {
         <div className="min-h-screen bg-transparent pb-0 pt-0 flex flex-col">
             <SEO
                 title={
-                    selectedCategory === 'all'
+                    activeCategory === 'all'
                         ? 'Menú de Sushi a Domicilio en Madrid | Carta Completa'
-                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi' : 'Sushi'} en Madrid — Menú de Sushi de Maksim`
+                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === activeCategory)?.name || 'Sushi' : 'Sushi'} en Madrid — Menú de Sushi de Maksim`
                 }
                 description={
-                    selectedCategory === 'all'
+                    activeCategory === 'all'
                         ? 'Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi y combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!'
-                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === selectedCategory)?.description || '' : ''} Pide online con entrega rápida a domicilio en Madrid.`
+                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === activeCategory)?.description || '' : ''} Pide online con entrega rápida a domicilio en Madrid.`
                 }
-                keywords={`menu sushi madrid, carta sushi, sushi a domicilio madrid, ${selectedCategory === 'all' ? '' : selectedCategory + ' madrid,'} pedir sushi online`}
+                keywords={`menu sushi madrid, carta sushi, sushi a domicilio madrid, ${activeCategory === 'all' ? '' : activeCategory + ' madrid,'} pedir sushi online`}
                 schema={[menuSchema, breadcrumbSchema]}
-                url={`${SITE_URL}/menu${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`}
+                url={`${SITE_URL}/menu${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`}
             />
             <h1 className="sr-only">
-                {selectedCategory === 'all'
+                {activeCategory === 'all'
                     ? 'Menú de Sushi a Domicilio en Madrid — Sushi de Maksim'
-                    : `Menú de ${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === selectedCategory)?.name || 'Sushi' : 'Sushi'} en Madrid`}
+                    : `Menú de ${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === activeCategory)?.name || 'Sushi' : 'Sushi'} en Madrid`}
             </h1>
             <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
+                    activeCategory={activeCategory}
+                    onCategoryClick={handleCategoryClick}
                 />
 
                 <div
                     className="flex-1 min-w-0 md:pl-8 pt-20 md:pt-4 min-h-[70vh] relative"
                     id="menu-content"
                 >
+                    <div
+                        id="menu-top-sentinel"
+                        className="absolute top-0 left-0 w-full h-[10px] pointer-events-none"
+                    />
+
                     {/* Search Section - Absolute when collapsed to align with title, Relative when expanded to push content */}
                     <div
                         className={`${isSearchExpanded ? 'relative w-full mb-6' : 'absolute top-[68px] right-0 w-auto'} md:relative md:top-0 md:right-0 md:w-full md:mb-4 z-10 transition-all duration-300`}
@@ -354,8 +381,8 @@ export default function MenuPage() {
 
                     {/* Fixed category bar on mobile */}
                     <MenuCategoryBar
-                        selectedCategory={selectedCategory}
-                        setSelectedCategory={setSelectedCategory}
+                        activeCategory={activeCategory}
+                        onCategoryClick={handleCategoryClick}
                         isMobile
                     />
 
@@ -387,10 +414,10 @@ export default function MenuPage() {
                         >
                             <ProductGrid
                                 items={items}
-                                selectedCategory={selectedCategory}
+                                selectedCategory="all"
                                 search={search}
                                 setSearch={setSearch}
-                                setSelectedCategory={setSelectedCategory}
+                                setSelectedCategory={handleCategoryClick}
                                 user={user}
                                 favorites={favorites as Set<number>}
                                 onToggleFavorite={toggleFavorite}
