@@ -53,10 +53,11 @@ export default function CookieConsent() {
                             <p className="text-gray-500 text-xs md:text-[13px] leading-relaxed max-w-xl">
                                 Utilizamos cookies propias y de terceros para mejorar tu experiencia
                                 y personalizar el contenido de{' '}
-                                <span className="font-bold text-gray-900 bg-orange-100 px-1 py-0.5 rounded-md inline-block text-center leading-tight">
-                                    Sushi de
-                                    <br />
-                                    Maksim
+                                <span
+                                    className="font-black text-orange-600 whitespace-nowrap"
+                                    style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.3)' }}
+                                >
+                                    Sushi de Maksim
                                 </span>
                                 .
                             </p>
