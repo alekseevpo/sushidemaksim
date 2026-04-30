@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -117,6 +118,21 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
     const [filter, setFilter] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [reservationToDelete, setReservationToDelete] = useState<Reservation | null>(null);
+
+    // Prevent background scrolling when modal is open
+    useEffect(() => {
+        if (reservationToDelete) {
+            document.body.style.overflow = 'hidden';
+            (window as any).lenis?.stop();
+        } else {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        };
+    }, [reservationToDelete]);
 
     const { data, isLoading } = useQuery({
         queryKey: ['admin-reservations', filter],
@@ -403,48 +419,53 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
             )}
 
             {/* Custom Delete Confirmation Modal */}
-            {reservationToDelete && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {reservationToDelete &&
+                createPortal(
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
-                        onClick={() => setReservationToDelete(null)}
-                    />
-                    <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
-                        <div className="text-center">
-                            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
-                                <Trash2 size={36} strokeWidth={2.5} />
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
-                                {t.modals.deleteTitle}
-                            </h3>
-                            <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
-                                {t.modals.deleteDesc.replace('{name}', '')}
-                                <span className="text-orange-600 font-black block mt-2 text-base">
-                                    "{reservationToDelete?.name}"
-                                </span>
-                            </p>
-                            <div className="flex flex-col gap-3">
-                                <button
-                                    onClick={() => deleteMutation.mutate(reservationToDelete.id)}
-                                    disabled={deleteMutation.isPending}
-                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
-                                >
-                                    {deleteMutation.isPending && (
-                                        <RefreshCw size={16} className="animate-spin" />
-                                    )}
-                                    {t.modals.yesDelete}
-                                </button>
-                                <button
-                                    onClick={() => setReservationToDelete(null)}
-                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
-                                >
-                                    {t.modals.cancel}
-                                </button>
+                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        onClick={e => {
+                            if (e.target === e.currentTarget) setReservationToDelete(null);
+                        }}
+                    >
+                        <div className="relative bg-white rounded-[32px] p-10 max-sm:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                            <div className="text-center">
+                                <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
+                                    <Trash2 size={36} strokeWidth={2.5} />
+                                </div>
+                                <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                    {t.modals.deleteTitle}
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
+                                    {t.modals.deleteDesc.replace('{name}', '')}
+                                    <span className="text-orange-600 font-black block mt-2 text-base">
+                                        "{reservationToDelete?.name}"
+                                    </span>
+                                </p>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={() =>
+                                            deleteMutation.mutate(reservationToDelete.id)
+                                        }
+                                        disabled={deleteMutation.isPending}
+                                        className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
+                                    >
+                                        {deleteMutation.isPending && (
+                                            <RefreshCw size={16} className="animate-spin" />
+                                        )}
+                                        {t.modals.yesDelete}
+                                    </button>
+                                    <button
+                                        onClick={() => setReservationToDelete(null)}
+                                        className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
+                                    >
+                                        {t.modals.cancel}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
         </div>
     );
 }

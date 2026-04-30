@@ -11,7 +11,6 @@ import { getOptimizedImageUrl } from '../utils/images';
 import ReservationModal from '../components/reservations/ReservationModal';
 import { useSettings } from '../hooks/queries/useSettings';
 import { api } from '../utils/api';
-import { HomeSkeleton } from '../components/skeletons/HomeSkeleton';
 import { SITE_URL } from '../constants/config';
 
 // Home page sections
@@ -37,13 +36,11 @@ export default function HomePage() {
     const { data: settings } = useSettings();
 
     // Fetch active promo banners for dynamic display
-    const { data: promosData, isLoading: promosLoading } = useQuery({
+    const { data: promosData } = useQuery({
         queryKey: ['promos'],
         queryFn: () => api.get('/promos'),
         staleTime: 5 * 60 * 1000,
     });
-
-    const isLoading = itemsLoading || catsLoading || promosLoading;
 
     const activePromos = ((promosData?.promos ?? []) as any[]).filter(
         p => p.code !== 'TEST10' && p.title !== 'TEST10'
@@ -143,9 +140,8 @@ export default function HomePage() {
         return categoriesWithImages.slice(0, 8);
     }, [categoriesWithImages]);
 
-    if (isLoading) {
-        return <HomeSkeleton />;
-    }
+    // Remove full-page blocking render to improve LCP
+    // removed isLoading check
 
     const handleShare = (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -257,6 +253,7 @@ export default function HomePage() {
             <CategoriesGrid
                 categoryList={categoryList}
                 hasCategories={categoriesWithImages.length > 0}
+                isLoading={catsLoading}
             />
             <PromosSection activePromos={activePromos} />
             <ReservationSection onOpenModal={() => setIsReservationModalOpen(true)} />
@@ -266,6 +263,7 @@ export default function HomePage() {
                 cartItemIds={cartItemIds}
                 onShare={handleShare}
                 onAddToCart={handleAddToCart}
+                isLoading={itemsLoading}
             />
 
             <ReviewsSEO />

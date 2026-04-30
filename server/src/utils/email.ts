@@ -49,9 +49,12 @@ async function sendEmail({
                     console.warn('⚠️ Domain not verified on Resend. Retrying via Sandbox...');
                     const sandboxFrom = 'Sushi de Maksim <onboarding@resend.dev>';
 
+                    const sandboxRecipients = to.includes(',')
+                        ? to.split(',').map(e => e.trim())
+                        : [to];
                     const { error: retryError } = await resend.emails.send({
                         from: sandboxFrom,
-                        to: [to],
+                        to: sandboxRecipients,
                         subject: `[SANDBOX] ${subject}`,
                         html,
                     });

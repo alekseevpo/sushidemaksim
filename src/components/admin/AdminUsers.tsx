@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     Shield,
@@ -486,6 +487,22 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
     }, [search]);
 
     // Users Query
+    // Prevent background scrolling when modal is open
+    useEffect(() => {
+        const hasOpenModal = userToDelete || userToChangeRole || userToVerify;
+        if (hasOpenModal) {
+            document.body.style.overflow = 'hidden';
+            (window as any).lenis?.stop();
+        } else {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        };
+    }, [userToDelete, userToChangeRole, userToVerify]);
+
     const {
         data,
         isLoading,
@@ -908,194 +925,204 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
             </div>
 
             {/* Permanent Delete Confirmation Modal */}
-            {userToDelete && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
-                        onClick={() => setUserToDelete(null)}
-                    />
-                    <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
-                        <div className="text-center">
-                            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-                                <Trash2 size={40} strokeWidth={2.5} />
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
-                                {t.modals.deleteTitle}
-                            </h3>
-                            <p className="text-[12px] text-gray-400 font-bold mb-8 leading-relaxed uppercase tracking-widest">
-                                {t.modals.deleteConfirm.replace('{name}', '').replace('{id}', '')}
-                                <span className="text-orange-600 font-black block mt-2 text-base">
-                                    {userToDelete.name} (ID: #{userToDelete.id})
-                                </span>
-                            </p>
-                            <div className="p-4 bg-orange-50 border-2 border-orange-100 rounded-2xl mb-10">
-                                <p className="text-orange-700 font-black text-[10px] uppercase tracking-widest leading-relaxed">
-                                    {t.modals.deleteWarning}
+            {userToDelete &&
+                createPortal(
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                        <div
+                            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
+                            onClick={() => setUserToDelete(null)}
+                        />
+                        <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                            <div className="text-center">
+                                <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+                                    <Trash2 size={40} strokeWidth={2.5} />
+                                </div>
+                                <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                    {t.modals.deleteTitle}
+                                </h3>
+                                <p className="text-[12px] text-gray-400 font-bold mb-8 leading-relaxed uppercase tracking-widest">
+                                    {t.modals.deleteConfirm
+                                        .replace('{name}', '')
+                                        .replace('{id}', '')}
+                                    <span className="text-orange-600 font-black block mt-2 text-base">
+                                        {userToDelete.name} (ID: #{userToDelete.id})
+                                    </span>
                                 </p>
-                            </div>
-                            <div className="flex flex-col gap-3">
-                                <button
-                                    onClick={() => {
-                                        deleteMutation.mutate(userToDelete.id);
-                                        setUserToDelete(null);
-                                    }}
-                                    disabled={deleteMutation.isPending}
-                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
-                                >
-                                    {deleteMutation.isPending && (
-                                        <RefreshCw size={16} className="animate-spin" />
-                                    )}
-                                    {t.modals.yesDelete}
-                                </button>
-                                <button
-                                    onClick={() => setUserToDelete(null)}
-                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
-                                >
-                                    {t.modals.cancel}
-                                </button>
+                                <div className="p-4 bg-orange-50 border-2 border-orange-100 rounded-2xl mb-10">
+                                    <p className="text-orange-700 font-black text-[10px] uppercase tracking-widest leading-relaxed">
+                                        {t.modals.deleteWarning}
+                                    </p>
+                                </div>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={() => {
+                                            deleteMutation.mutate(userToDelete.id);
+                                            setUserToDelete(null);
+                                        }}
+                                        disabled={deleteMutation.isPending}
+                                        className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
+                                    >
+                                        {deleteMutation.isPending && (
+                                            <RefreshCw size={16} className="animate-spin" />
+                                        )}
+                                        {t.modals.yesDelete}
+                                    </button>
+                                    <button
+                                        onClick={() => setUserToDelete(null)}
+                                        className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
+                                    >
+                                        {t.modals.cancel}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
 
             {/* Role Change Confirmation Modal */}
-            {userToChangeRole && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {userToChangeRole &&
+                createPortal(
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
-                        onClick={() => setUserToChangeRole(null)}
-                    />
-                    <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
-                        <div className="text-center">
-                            <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-amber-100">
-                                <Shield size={40} strokeWidth={2.5} />
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
-                                {t.modals.changeRoleTitle}
-                            </h3>
-                            <p className="text-[11px] text-gray-400 font-bold mb-8 uppercase tracking-widest leading-relaxed">
-                                {t.modals.changeRoleDesc}
-                                <br />
-                                <span className="block mt-2 font-black text-gray-900 text-lg tracking-tight">
-                                    {userToChangeRole.name}
-                                </span>
-                            </p>
+                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        onClick={e => {
+                            if (e.target === e.currentTarget) setUserToChangeRole(null);
+                        }}
+                    >
+                        <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                            <div className="text-center">
+                                <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-amber-100">
+                                    <Shield size={40} strokeWidth={2.5} />
+                                </div>
+                                <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                    {t.modals.changeRoleTitle}
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-bold mb-8 uppercase tracking-widest leading-relaxed">
+                                    {t.modals.changeRoleDesc}
+                                    <br />
+                                    <span className="block mt-2 font-black text-gray-900 text-lg tracking-tight">
+                                        {userToChangeRole.name}
+                                    </span>
+                                </p>
 
-                            <div className="grid grid-cols-1 gap-3 mb-10">
-                                {[
-                                    {
-                                        id: 'user',
-                                        label: t.roles.user,
-                                        icon: UsersIcon,
-                                        color: 'gray',
-                                    },
-                                    {
-                                        id: 'waiter',
-                                        label: t.roles.waiter,
-                                        icon: Clock,
-                                        color: 'orange',
-                                    },
-                                    {
-                                        id: 'admin',
-                                        label: t.roles.admin,
-                                        icon: Shield,
-                                        color: 'red',
-                                    },
-                                ].map(r => (
-                                    <button
-                                        key={r.id}
-                                        onClick={() => setSelectedNewRole(r.id as any)}
-                                        className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 transition-all text-left group/role ${
-                                            selectedNewRole === r.id
-                                                ? `bg-${r.color}-50 border-${r.color === 'gray' ? 'gray-400' : r.color + '-500'} text-${r.color === 'gray' ? 'gray-900' : r.color + '-900'} shadow-sm scale-[1.02]`
-                                                : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'
-                                        }`}
-                                    >
-                                        <div
-                                            className={`p-2 rounded-xl transition-colors ${selectedNewRole === r.id ? `bg-${r.color === 'gray' ? 'gray-200' : r.color + '-100'}` : 'bg-gray-50'}`}
+                                <div className="grid grid-cols-1 gap-3 mb-10">
+                                    {[
+                                        {
+                                            id: 'user',
+                                            label: t.roles.user,
+                                            icon: UsersIcon,
+                                            color: 'gray',
+                                        },
+                                        {
+                                            id: 'waiter',
+                                            label: t.roles.waiter,
+                                            icon: Clock,
+                                            color: 'orange',
+                                        },
+                                        {
+                                            id: 'admin',
+                                            label: t.roles.admin,
+                                            icon: Shield,
+                                            color: 'red',
+                                        },
+                                    ].map(r => (
+                                        <button
+                                            key={r.id}
+                                            onClick={() => setSelectedNewRole(r.id as any)}
+                                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 transition-all text-left group/role ${
+                                                selectedNewRole === r.id
+                                                    ? `bg-${r.color}-50 border-${r.color === 'gray' ? 'gray-400' : r.color + '-500'} text-${r.color === 'gray' ? 'gray-900' : r.color + '-900'} shadow-sm scale-[1.02]`
+                                                    : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'
+                                            }`}
                                         >
-                                            <r.icon size={20} strokeWidth={2.5} />
-                                        </div>
-                                        <span className="font-black text-xs uppercase tracking-widest">
-                                            {r.label}
-                                        </span>
-                                        {selectedNewRole === r.id && (
-                                            <div className="ml-auto bg-white rounded-full p-1 shadow-sm border border-current/20">
-                                                <CheckCircle size={16} strokeWidth={3} />
+                                            <div
+                                                className={`p-2 rounded-xl transition-colors ${selectedNewRole === r.id ? `bg-${r.color === 'gray' ? 'gray-200' : r.color + '-100'}` : 'bg-gray-50'}`}
+                                            >
+                                                <r.icon size={20} strokeWidth={2.5} />
                                             </div>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
+                                            <span className="font-black text-xs uppercase tracking-widest">
+                                                {r.label}
+                                            </span>
+                                            {selectedNewRole === r.id && (
+                                                <div className="ml-auto bg-white rounded-full p-1 shadow-sm border border-current/20">
+                                                    <CheckCircle size={16} strokeWidth={3} />
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
 
-                            <div className="flex flex-col gap-3">
-                                <button
-                                    onClick={confirmRoleChange}
-                                    disabled={roleMutation.isPending}
-                                    className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
-                                >
-                                    {roleMutation.isPending && (
-                                        <RefreshCw size={16} className="animate-spin" />
-                                    )}
-                                    {t.modals.confirmRole}
-                                </button>
-                                <button
-                                    onClick={() => setUserToChangeRole(null)}
-                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
-                                >
-                                    {t.modals.cancel}
-                                </button>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={confirmRoleChange}
+                                        disabled={roleMutation.isPending}
+                                        className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 active:scale-95 flex items-center justify-center gap-3"
+                                    >
+                                        {roleMutation.isPending && (
+                                            <RefreshCw size={16} className="animate-spin" />
+                                        )}
+                                        {t.modals.confirmRole}
+                                    </button>
+                                    <button
+                                        onClick={() => setUserToChangeRole(null)}
+                                        className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
+                                    >
+                                        {t.modals.cancel}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
 
             {/* Email Verify Confirmation Modal */}
-            {userToVerify && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {userToVerify &&
+                createPortal(
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
-                        onClick={() => setUserToVerify(null)}
-                    />
-                    <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
-                        <div className="text-center">
-                            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-blue-100">
-                                <CheckCircle size={40} strokeWidth={2.5} />
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
-                                {t.modals.verifyEmailTitle}
-                            </h3>
-                            <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
-                                {t.modals.verifyEmailDesc.replace('{email}', '')}
-                                <br />
-                                <span className="text-blue-600 font-black block mt-2 text-base italic">
-                                    {userToVerify.email}
-                                </span>
-                            </p>
-                            <div className="flex flex-col gap-3">
-                                <button
-                                    onClick={confirmVerifyEmail}
-                                    disabled={verifyEmailMutation.isPending}
-                                    className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-blue-100 active:scale-95 flex items-center justify-center gap-3"
-                                >
-                                    {verifyEmailMutation.isPending && (
-                                        <RefreshCw size={16} className="animate-spin" />
-                                    )}
-                                    {t.modals.confirm}
-                                </button>
-                                <button
-                                    onClick={() => setUserToVerify(null)}
-                                    className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
-                                >
-                                    {t.modals.cancel}
-                                </button>
+                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        onClick={e => {
+                            if (e.target === e.currentTarget) setUserToVerify(null);
+                        }}
+                    >
+                        <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                            <div className="text-center">
+                                <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-blue-100">
+                                    <CheckCircle size={40} strokeWidth={2.5} />
+                                </div>
+                                <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                    {t.modals.verifyEmailTitle}
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-bold mb-10 leading-relaxed uppercase tracking-widest">
+                                    {t.modals.verifyEmailDesc.replace('{email}', '')}
+                                    <br />
+                                    <span className="text-blue-600 font-black block mt-2 text-base italic">
+                                        {userToVerify.email}
+                                    </span>
+                                </p>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={confirmVerifyEmail}
+                                        disabled={verifyEmailMutation.isPending}
+                                        className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-[10px] tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-blue-100 active:scale-95 flex items-center justify-center gap-3"
+                                    >
+                                        {verifyEmailMutation.isPending && (
+                                            <RefreshCw size={16} className="animate-spin" />
+                                        )}
+                                        {t.modals.confirm}
+                                    </button>
+                                    <button
+                                        onClick={() => setUserToVerify(null)}
+                                        className="w-full py-5 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all active:scale-95"
+                                    >
+                                        {t.modals.cancel}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
         </div>
     );
 }

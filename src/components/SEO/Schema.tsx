@@ -19,7 +19,7 @@ export default function Schema() {
                     '@type': 'Restaurant',
                     '@id': `${SITE_URL}/#restaurant`,
                     name: 'Sushi de Maksim',
-                    image: `${SITE_URL}/og-image.jpg`,
+                    image: `${SITE_URL}/og-image-v20.jpg`,
                     logo: `${SITE_URL}/logo.svg`,
                     url: `${SITE_URL}/`,
                     telephone: settings.contactPhone || '+34631920312',

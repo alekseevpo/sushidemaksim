@@ -99,6 +99,14 @@ const PROMOS_TRANSLATIONS = {
             errorDeleting: 'Ошибка удаления',
         },
         refresh: 'Обновить',
+        promoCodesTab: 'Промокоды',
+        promoCodes: {
+            generateTitle: 'Генератор спец-кодов',
+            generateDesc: 'Создает код на -10% со сроком действия 14 дней',
+            generateBtn: 'Сгенерировать код',
+            copySuccess: 'Скопировано!',
+            lastGenerated: 'Последний созданный код:',
+        },
         hints: {
             title: 'Название акции',
             discount: '-20%, Подарок, Тест...',
@@ -171,6 +179,14 @@ const PROMOS_TRANSLATIONS = {
             errorDeleting: 'Error al borrar',
         },
         refresh: 'Actualizar',
+        promoCodesTab: 'Códigos Promo',
+        promoCodes: {
+            generateTitle: 'Generador de códigos especiales',
+            generateDesc: 'Crea un código de -10% con validez de 14 días',
+            generateBtn: 'Generar código',
+            copySuccess: '¡Copiado!',
+            lastGenerated: 'Último código generado:',
+        },
         hints: {
             title: 'Nombre de la promoción',
             discount: '-20%, Regalo...',
@@ -355,7 +371,9 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
     const queryClient = useQueryClient();
     const t = PROMOS_TRANSLATIONS[language];
 
-    const [activeTab, setActiveTab] = useState<'banners' | 'loyalty'>('banners');
+    const [activeTab, setActiveTab] = useState<'banners' | 'loyalty' | 'promoCodes'>('banners');
+    const [generatedCode, setGeneratedCode] = useState<string | null>(null);
+    const [isCopying, setIsCopying] = useState(false);
     const [isEditing, setIsEditing] = useState<any>(null);
     const [form, setForm] = useState({
         title: '',
@@ -550,6 +568,16 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         }`}
                     >
                         Лояльность
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('promoCodes')}
+                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === 'promoCodes'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                    >
+                        {t.promoCodesTab}
                     </button>
                     <div className="w-px h-6 bg-gray-200 mx-2" />
                     <button
@@ -949,8 +977,113 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : activeTab === 'promoCodes' ? (
                 <div className="animate-in fade-in zoom-in-95 duration-300">
+                    <div className="max-w-2xl mx-auto bg-white rounded-[40px] p-12 border border-gray-100 shadow-sm text-center">
+                        <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
+                            <Sparkles size={40} strokeWidth={2.5} />
+                        </div>
+
+                        <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tight mb-4">
+                            {t.promoCodes.generateTitle}
+                        </h3>
+                        <p className="text-xs font-bold text-gray-400 uppercase leading-relaxed tracking-widest mb-10 max-w-sm mx-auto">
+                            {t.promoCodes.generateDesc}
+                        </p>
+
+                        <div className="space-y-6">
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        const res = await api.post(
+                                            '/admin/promo-codes/generate-special',
+                                            {}
+                                        );
+                                        setGeneratedCode(res.code);
+                                    } catch (err) {
+                                        alert(t.alerts.errorSaving);
+                                    }
+                                }}
+                                className="w-full py-6 bg-gray-900 text-white rounded-3xl font-black text-sm tracking-[0.2em] hover:bg-orange-600 transition-all shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-4 uppercase"
+                            >
+                                <Plus size={20} strokeWidth={3} />
+                                {t.promoCodes.generateBtn}
+                            </button>
+
+                            <AnimatePresence>
+                                {generatedCode && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="mt-12 p-8 bg-gray-50 rounded-[32px] border border-gray-100 relative overflow-hidden"
+                                    >
+                                        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                                            <Sparkles size={80} />
+                                        </div>
+
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">
+                                            {t.promoCodes.lastGenerated}
+                                        </p>
+
+                                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                                            <div className="flex-1 w-full bg-white px-8 py-5 rounded-2xl border border-gray-100 text-2xl font-black tracking-widest text-orange-600 shadow-sm flex items-center justify-center">
+                                                {generatedCode}
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    if (generatedCode)
+                                                        navigator.clipboard.writeText(
+                                                            generatedCode
+                                                        );
+                                                    setIsCopying(true);
+                                                    setTimeout(() => setIsCopying(false), 2000);
+                                                }}
+                                                className={`px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 flex items-center gap-3 w-full sm:w-auto shrink-0 ${
+                                                    isCopying
+                                                        ? 'bg-green-500 text-white shadow-lg shadow-green-100'
+                                                        : 'bg-black text-white hover:bg-orange-600 shadow-lg shadow-gray-200'
+                                                }`}
+                                            >
+                                                {isCopying ? (
+                                                    <CheckCircle size={16} strokeWidth={3} />
+                                                ) : (
+                                                    <Upload
+                                                        size={16}
+                                                        strokeWidth={3}
+                                                        className="rotate-90"
+                                                    />
+                                                )}
+                                                {isCopying
+                                                    ? t.promoCodes.copySuccess
+                                                    : language === 'ru'
+                                                      ? 'КОПИРОВАТЬ'
+                                                      : 'COPIAR'}
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+
+                    <div className="mt-12 max-w-2xl mx-auto bg-orange-50/50 rounded-[32px] p-8 border border-orange-100/50 flex items-start gap-6">
+                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                            <HelpCircle className="text-orange-500" size={24} />
+                        </div>
+                        <div className="space-y-2">
+                            <h4 className="text-xs font-black text-gray-900 uppercase tracking-widest">
+                                {language === 'ru' ? 'Информация' : 'Información'}
+                            </h4>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase leading-relaxed tracking-wider">
+                                {language === 'ru'
+                                    ? 'Коды создаются с префиксом SPECIAL10- и автоматически ограничиваются 14 днями с момента создания. Гость может использовать такой код только один раз.'
+                                    : 'Los códigos se crean con el prefijo SPECIAL10- y se limitan automáticamente a 14 días desde su creación. El cliente solo puede usar el código una vez.'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="animate-in fade-in duration-500">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <LoyaltyCard
                             title="Скидка за регистрацию"
@@ -1072,11 +1205,12 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
 
             {/* Delete Confirmation Modal */}
             {promoToDelete && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
-                        onClick={() => setPromoToDelete(null)}
-                    />
+                <div
+                    className="fixed inset-0 z-[100] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                    onClick={e => {
+                        if (e.target === e.currentTarget) setPromoToDelete(null);
+                    }}
+                >
                     <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
                             <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">

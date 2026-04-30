@@ -50,7 +50,7 @@ export default function StoreStatusBanner() {
     const isTodayClosed = !!settings?.is_today_closed || !!settings?.isTodayClosed;
     const isPickupOnly = !!settings?.isPickupOnly;
 
-    if (isAdminRoute || (!isStoreClosed && !isTodayClosed && !isPickupOnly) || !isVisible) {
+    if (isAdminRoute || (!isStoreClosed && !isTodayClosed && !isPickupOnly)) {
         return null;
     }
 
@@ -78,79 +78,82 @@ export default function StoreStatusBanner() {
 
     return (
         <AnimatePresence>
-            <motion.div
-                key="store-closed-banner"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="bg-gray-950 border-b border-white/5 relative z-[101] overflow-hidden"
-            >
-                <div className="max-w-7xl mx-auto px-4 py-2 md:py-2.5">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            <div className="w-8 h-8 rounded-xl bg-orange-600/10 flex items-center justify-center shrink-0 border border-orange-500/20 shadow-inner">
-                                <Clock size={16} className="text-orange-500" />
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="flex items-center gap-2">
-                                    <p className="text-white font-black text-[10px] md:text-sm uppercase tracking-tight">
-                                        {statusTitle}
-                                    </p>
-                                    <span className="px-1.5 py-0.5 bg-orange-600/20 text-orange-500 text-[7px] md:text-[8px] font-black rounded-full border border-orange-500/20">
-                                        PRE-ORDEN
-                                    </span>
+            {isVisible && (
+                <motion.div
+                    key="store-closed-banner"
+                    initial={false}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="bg-gray-950 border-b border-white/5 relative z-[101] overflow-hidden"
+                >
+                    <div className="max-w-7xl mx-auto px-4 py-2 md:py-2.5">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
+                            <div className="flex items-center gap-3 w-full md:w-auto">
+                                <div className="w-8 h-8 rounded-xl bg-orange-600/10 flex items-center justify-center shrink-0 border border-orange-500/20 shadow-inner">
+                                    <Clock size={16} className="text-orange-500" />
                                 </div>
-                                <div className="flex items-center gap-2 mt-0">
-                                    <span className="text-gray-400 text-[9px] md:text-xs font-bold leading-none flex items-center gap-1">
-                                        <Calendar size={9} className="text-gray-500" />
-                                        {statusSubtitle}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            {timeLeftDisplay && (
-                                <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 decoration-orange-500">
-                                    <Timer size={14} className="text-orange-500" />
-                                    <span className="text-[10px] uppercase font-black text-gray-400 tracking-wider">
-                                        Abrimos en:
-                                    </span>
-                                    <span className="text-[12px] font-black text-white tabular-nums">
-                                        {timeLeftDisplay}
-                                    </span>
-                                </div>
-                            )}
-
-                            <div className="flex-1 md:flex-none flex items-center gap-2.5 bg-white/10 rounded-xl px-3 py-1.5 border border-white/10">
-                                <Info size={12} className="text-amber-400 shrink-0" />
-                                <div className="flex flex-col justify-center">
-                                    <p className="text-[9px] md:text-[11px] text-gray-200 font-medium leading-tight">
-                                        Realiza tu pedido y te contactaremos.
-                                    </p>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <p className="text-[8px] md:text-[10px] text-gray-400 leading-none">
-                                            Se procesarán al abrir.
+                                <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-white font-black text-[10px] md:text-sm uppercase tracking-tight">
+                                            {statusTitle}
                                         </p>
-                                        {timeLeftDisplay && (
-                                            <p className="lg:hidden text-[8px] text-orange-400 font-black leading-none">
-                                                ● {timeLeftDisplay}
-                                            </p>
-                                        )}
+                                        <span className="px-1.5 py-0.5 bg-orange-600/20 text-orange-500 text-[7px] md:text-[8px] font-black rounded-full border border-orange-500/20">
+                                            PRE-ORDEN
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-0">
+                                        <span className="text-gray-400 text-[9px] md:text-xs font-bold leading-none flex items-center gap-1">
+                                            <Calendar size={9} className="text-gray-500" />
+                                            {statusSubtitle}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
+                            <div className="flex items-center gap-3 w-full md:w-auto">
+                                {timeLeftDisplay && (
+                                    <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 decoration-orange-500">
+                                        <Timer size={14} className="text-orange-500" />
+                                        <span className="text-[10px] uppercase font-black text-gray-400 tracking-wider">
+                                            Abrimos en:
+                                        </span>
+                                        <span className="text-[12px] font-black text-white tabular-nums">
+                                            {timeLeftDisplay}
+                                        </span>
+                                    </div>
+                                )}
 
-                            <button
-                                onClick={() => setIsVisible(false)}
-                                className="p-1.5 text-gray-500 hover:text-white transition-colors shrink-0"
-                                aria-label="Cerrar"
-                            >
-                                <X size={18} />
-                            </button>
+                                <div className="flex-1 md:flex-none flex items-center gap-2.5 bg-white/10 rounded-xl px-3 py-1.5 border border-white/10">
+                                    <Info size={12} className="text-amber-400 shrink-0" />
+                                    <div className="flex flex-col justify-center">
+                                        <p className="text-[9px] md:text-[11px] text-gray-200 font-medium leading-tight">
+                                            Realiza tu pedido y te contactaremos.
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <p className="text-[8px] md:text-[10px] text-gray-400 leading-none">
+                                                Se procesarán al abrir.
+                                            </p>
+                                            {timeLeftDisplay && (
+                                                <p className="lg:hidden text-[8px] text-orange-400 font-black leading-none">
+                                                    ● {timeLeftDisplay}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => setIsVisible(false)}
+                                    className="p-1.5 text-gray-500 hover:text-white transition-colors shrink-0"
+                                    aria-label="Cerrar"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
+            )}
         </AnimatePresence>
     );
 }

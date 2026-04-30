@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { Trash2, RefreshCw } from 'lucide-react';
@@ -38,17 +39,29 @@ export default function DeleteConfirmationModal({
 }: DeleteConfirmationModalProps) {
     const t = TRANSLATIONS[language];
 
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+            (window as any).lenis?.stop();
+        } else {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        };
+    }, [isOpen]);
+
     const modal = (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-toast flex items-center justify-center p-4">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-                        onClick={onClose}
-                    />
+                <div
+                    className="fixed inset-0 z-[200] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                    onClick={e => {
+                        if (e.target === e.currentTarget) onClose();
+                    }}
+                >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}

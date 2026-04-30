@@ -55,9 +55,10 @@ const CategoryCard = memo(({ id, name, image, index }: CategoryCardProps) => {
 interface CategoriesGridProps {
     categoryList: Array<{ id: string; name: string; image: string | null }>;
     hasCategories: boolean;
+    isLoading?: boolean;
 }
 
-export function CategoriesGrid({ categoryList, hasCategories }: CategoriesGridProps) {
+export function CategoriesGrid({ categoryList, hasCategories, isLoading }: CategoriesGridProps) {
     return (
         <section className="py-10 md:py-16 px-2 md:px-6 bg-transparent overflow-hidden">
             <div className="max-w-7xl mx-auto">
@@ -86,19 +87,30 @@ export function CategoriesGrid({ categoryList, hasCategories }: CategoriesGridPr
                 </div>
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-8">
-                    {categoryList.map((cat: any, idx: number) => (
-                        <CategoryCard
-                            key={cat.id}
-                            id={cat.id}
-                            name={cat.name}
-                            image={cat.image}
-                            index={idx}
-                        />
-                    ))}
-                    {!hasCategories && (
-                        <div className="col-span-full text-center text-gray-400 py-12">
-                            No se encontraron categorías.
-                        </div>
+                    {isLoading ? (
+                        Array.from({ length: 8 }).map((_, idx) => (
+                            <div
+                                key={idx}
+                                className="h-40 md:h-56 rounded-[2rem] bg-[#1a1a1a] animate-pulse skeleton"
+                            />
+                        ))
+                    ) : (
+                        <>
+                            {categoryList.map((cat: any, idx: number) => (
+                                <CategoryCard
+                                    key={cat.id}
+                                    id={cat.id}
+                                    name={cat.name}
+                                    image={cat.image}
+                                    index={idx}
+                                />
+                            ))}
+                            {!hasCategories && (
+                                <div className="col-span-full text-center text-gray-400 py-12">
+                                    No se encontraron categorías.
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

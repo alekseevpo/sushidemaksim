@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     MapPin,
@@ -14,7 +15,7 @@ import {
 import { triggerHaptic } from '../../utils/haptics';
 import { tracker } from '../../analytics/tracker';
 import { detectZone } from '../../utils/delivery';
-import { BUSINESS_HOURS } from '../../utils/storeStatus';
+import { BUSINESS_HOURS, getClosedDays } from '../../utils/storeStatus';
 import CustomDatePicker from '../ui/CustomDatePicker';
 import CustomTimePicker from '../ui/CustomTimePicker';
 import { useFormContext, Controller } from 'react-hook-form';
@@ -61,6 +62,8 @@ export default function DeliveryForm({
         formState: { errors },
     } = useFormContext<CheckoutInput>();
 
+    const closedDays = getClosedDays();
+
     const deliveryType = watch('deliveryType');
     const address = watch('address');
     const house = watch('house');
@@ -70,6 +73,19 @@ export default function DeliveryForm({
     const scheduledDate = watch('scheduledDate');
     const guestsCount = watch('guestsCount') || 2;
     const selectedZone = watch('selectedZone');
+
+    // Effect to clear time if date changes or becomes invalid
+    React.useEffect(() => {
+        if (scheduledDate) {
+            const [y, m, d] = scheduledDate.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d);
+            const day = dateObj.getDay();
+            const intervals = BUSINESS_HOURS[day] || [];
+            if (intervals.length === 0) {
+                setValue('scheduledTime', '');
+            }
+        }
+    }, [scheduledDate, setValue]);
 
     const handleAddressClick = () => {
         triggerHaptic();
@@ -715,6 +731,7 @@ export default function DeliveryForm({
                                                 value={field.value || ''}
                                                 onChange={field.onChange}
                                                 min={isTodayClosed ? tomorrowStr : todayStr}
+                                                disabledDays={closedDays}
                                                 placeholder="dd/mm/aaaa"
                                             />
                                         )}

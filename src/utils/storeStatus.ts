@@ -96,6 +96,12 @@ export function getNextOpeningTime(now: Date = new Date()): Date | null {
     return null;
 }
 
+export function getClosedDays(): number[] {
+    return Object.entries(BUSINESS_HOURS)
+        .filter(([_, intervals]) => intervals.length === 0)
+        .map(([day, _]) => Number(day));
+}
+
 export function formatTimeLeft(diff: number): string {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));

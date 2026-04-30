@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import StoreStatusBanner from './StoreStatusBanner';
-import LoginModal from './LoginModal';
+const LoginModal = lazy(() => import('./LoginModal'));
 import { useScrollLock } from '../hooks/useScrollLock';
-import ReservationModal from './reservations/ReservationModal';
+const ReservationModal = lazy(() => import('./reservations/ReservationModal'));
 
 // Imported Header Subcomponents
 import HeaderLogo from './header/HeaderLogo';
@@ -183,16 +183,18 @@ export default function Header() {
             </header>
 
             {/* Global Modals triggered from Header */}
-            <LoginModal
-                isOpen={isLoginModalOpen}
-                onClose={() => setIsLoginModalOpen(false)}
-                initialMode={loginModalMode}
-            />
+            <Suspense fallback={null}>
+                <LoginModal
+                    isOpen={isLoginModalOpen}
+                    onClose={() => setIsLoginModalOpen(false)}
+                    initialMode={loginModalMode}
+                />
 
-            <ReservationModal
-                isOpen={isReservationModalOpen}
-                onClose={() => setIsReservationModalOpen(false)}
-            />
+                <ReservationModal
+                    isOpen={isReservationModalOpen}
+                    onClose={() => setIsReservationModalOpen(false)}
+                />
+            </Suspense>
         </>
     );
 }

@@ -6,6 +6,7 @@ interface CustomDatePickerProps {
     value: string; // YYYY-MM-DD
     onChange: (date: string) => void;
     min?: string;
+    disabledDays?: number[]; // [0, 1, 2, ...]
     placeholder?: string;
 }
 
@@ -30,6 +31,7 @@ export default function CustomDatePicker({
     value,
     onChange,
     min,
+    disabledDays,
     placeholder,
 }: CustomDatePickerProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -87,16 +89,20 @@ export default function CustomDatePicker({
         // Days of current month
         for (let d = 1; d <= lastDayOfMonth; d++) {
             const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+            const dateObj = new Date(year, month, d);
+            const dayOfWeek = dateObj.getDay();
+
             const isToday = new Date().toISOString().split('T')[0] === dateStr;
             const isSelected = value === dateStr;
             const isMin = min ? dateStr < min : false;
+            const isDayDisabled = disabledDays?.includes(dayOfWeek);
 
             days.push({
                 day: d,
                 dateStr,
                 isToday,
                 isSelected,
-                isDisabled: isMin,
+                isDisabled: isMin || isDayDisabled,
             });
         }
 

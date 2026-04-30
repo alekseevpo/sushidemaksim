@@ -10,6 +10,7 @@ interface PopularItemsProps {
     cartItemIds: Set<string>;
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
     onAddToCart: (item: any, e?: any, quantity?: number) => void;
+    isLoading?: boolean;
 }
 
 export function PopularItems({
@@ -17,6 +18,7 @@ export function PopularItems({
     cartItemIds,
     onShare,
     onAddToCart,
+    isLoading,
 }: PopularItemsProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +62,18 @@ export function PopularItems({
                     </div>
                 </div>
 
-                {popularItems.length > 0 ? (
+                {isLoading ? (
+                    <div className="relative -mx-4 px-4 overflow-hidden pb-10">
+                        <div className="flex gap-2.5 md:gap-8 flex-nowrap w-max min-w-full">
+                            {Array.from({ length: 4 }).map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className="w-[260px] md:w-[320px] h-[380px] bg-[#1a1a1a] animate-pulse skeleton rounded-3xl shrink-0"
+                                />
+                            ))}
+                        </div>
+                    </div>
+                ) : popularItems.length > 0 ? (
                     <div className="relative group/slider">
                         {/* Desktop Arrows - Left */}
                         <button

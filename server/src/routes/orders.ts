@@ -196,6 +196,17 @@ router.post(
                         }
                     }
 
+                    // Check if Special 14-day promo
+                    if (promo.code.startsWith('SPECIAL')) {
+                        const createdAt = new Date(promo.created_at);
+                        const expiredAt = new Date(createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+                        if (new Date() > expiredAt) {
+                            return res
+                                .status(400)
+                                .json({ error: 'Este código ha expirado (válido por 14 días)' });
+                        }
+                    }
+
                     finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
                     usedPromoId = promo.id;
                     notesToSave += notesToSave

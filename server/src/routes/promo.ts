@@ -111,6 +111,17 @@ router.post(
             });
         }
 
+        // ─── Requirements Check for Special 14-day Promos ───
+        if (promo.code.startsWith('SPECIAL')) {
+            const createdAt = new Date(promo.created_at);
+            const expiredAt = new Date(createdAt.getTime() + 14 * 24 * 60 * 60 * 1000); // 14 days
+            if (new Date() > expiredAt) {
+                return res
+                    .status(400)
+                    .json({ error: 'Este código ha expirado (válido por 14 días)' });
+            }
+        }
+
         res.json({ percentage: promo.discount_percentage });
     })
 );

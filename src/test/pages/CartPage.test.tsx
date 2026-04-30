@@ -20,6 +20,7 @@ vi.mock('../../utils/storeStatus', () => ({
     isStoreOpen: vi.fn(() => true),
     isTimeWithinBusinessHours: vi.fn(() => true),
     BUSINESS_HOURS: {},
+    getClosedDays: vi.fn(() => []),
 }));
 
 // Mock API

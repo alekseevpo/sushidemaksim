@@ -5,7 +5,12 @@ import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
-import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus';
+import {
+    isStoreOpen,
+    isTimeWithinBusinessHours,
+    BUSINESS_HOURS,
+    getDayOfWeekFromDateString,
+} from '../utils/storeStatus';
 import { detectZone } from '../utils/delivery';
 import { CartSkeleton } from '../components/skeletons/CartSkeleton';
 import AddressModal from '../components/AddressModal';
@@ -605,6 +610,10 @@ export default function CartPage() {
     }, [cartSubtotal, promoCode, promoDiscount]);
 
     const onSubmit = async (data: CheckoutInput) => {
+        if (isSubmittingRef.current) return;
+        isSubmittingRef.current = true;
+        setIsOrdering(true);
+
         const {
             deliveryType,
             address: streetVal = '',
@@ -668,9 +677,15 @@ export default function CartPage() {
                     'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!'
                 );
             }
-        }
 
-        if (isSubmittingRef.current) return;
+            // Explicit safety check for closed days (e.g. Tuesday)
+            const dayOfWeek = getDayOfWeekFromDateString(scheduledDate);
+            if (BUSINESS_HOURS[dayOfWeek].length === 0) {
+                return showError(
+                    'Lo sentimos, estamos cerrados el día seleccionado. Por favor, elige otro día.'
+                );
+            }
+        }
 
         // Safari Sync Hack
         [
@@ -751,9 +766,6 @@ export default function CartPage() {
         }
 
         try {
-            isSubmittingRef.current = true;
-            setIsOrdering(true);
-
             const { lat, lon } = data;
             const payload: any = {
                 deliveryType,

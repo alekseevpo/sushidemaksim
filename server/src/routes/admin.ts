@@ -2011,4 +2011,39 @@ router.get(
     })
 );
 
+// POST /api/admin/promo-codes/generate-special
+router.post(
+    '/promo-codes/generate-special',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const generateCode = () => {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, O, 0, 1 for clarity
+            let result = '';
+            for (let i = 0; i < 4; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return `SPECIAL10-${result}`;
+        };
+
+        const code = generateCode();
+
+        const { data, error } = await supabase
+            .from('promo_codes')
+            .insert({
+                code,
+                discount_percentage: 10,
+                is_used: false,
+                created_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('❌ Error generating promo code:', error);
+            return res.status(500).json({ error: 'Error al generar el código' });
+        }
+
+        res.json({ code: data.code });
+    })
+);
+
 export default router;

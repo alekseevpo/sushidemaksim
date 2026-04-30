@@ -122,7 +122,7 @@ describe('MenuPage (Integration)', () => {
     it('adds an item to cart when clicking the add button', async () => {
         renderMenu();
 
-        const addBtn = await screen.findAllByText(/Añadir/i);
+        const addBtn = await screen.findAllByLabelText(/Añadir/i);
         fireEvent.click(addBtn[0]);
 
         expect(mockAddItem).toHaveBeenCalledWith(

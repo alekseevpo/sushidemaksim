@@ -71,6 +71,7 @@ vi.mock('../../utils/storeStatus', () => ({
     isTimeWithinBusinessHours: vi.fn(() => true),
     getNextOpeningTime: vi.fn(() => null),
     formatTimeLeft: vi.fn(() => ''),
+    getClosedDays: vi.fn(() => []),
     BUSINESS_HOURS: {
         1: [],
         2: [],

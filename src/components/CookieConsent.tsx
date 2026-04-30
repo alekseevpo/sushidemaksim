@@ -34,7 +34,7 @@ export default function CookieConsent() {
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className="fixed bottom-4 left-4 right-4 z-[9999] max-w-3xl mx-auto"
                 >
-                    <div className="relative overflow-hidden bg-white/95 backdrop-blur-2xl border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 md:gap-5">
+                    <div className="relative overflow-hidden bg-white border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 md:gap-5">
                         {/* Logo Background */}
                         <img
                             src="/logo.svg"
@@ -53,8 +53,10 @@ export default function CookieConsent() {
                             <p className="text-gray-500 text-xs md:text-[13px] leading-relaxed max-w-xl">
                                 Utilizamos cookies propias y de terceros para mejorar tu experiencia
                                 y personalizar el contenido de{' '}
-                                <span className="font-bold text-gray-900 bg-orange-100 px-1 py-0.5 rounded-md">
-                                    Sushi de Maksim
+                                <span className="font-bold text-gray-900 bg-orange-100 px-1 py-0.5 rounded-md inline-block text-center leading-tight">
+                                    Sushi de
+                                    <br />
+                                    Maksim
                                 </span>
                                 .
                             </p>

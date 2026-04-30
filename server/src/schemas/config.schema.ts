@@ -30,7 +30,9 @@ export const envSchema = z
         // External APIs
         RESEND_API_KEY: z.string().optional().default(''),
         EMAIL_FROM: z.string().default('Sushi de Maksim <info@sushidemaksim.com>'),
-        ADMIN_EMAIL: z.string().default('19fire43@gmail.com,maksimsushimadrid@gmail.com'),
+        ADMIN_EMAIL: z
+            .string()
+            .default('19fire43@gmail.com,maksimsushimadrid@gmail.com,alekseevpo@gmail.com'),
 
         // Supabase
         SUPABASE_URL: z.string().url('SUPABASE_URL must be a valid URL'),

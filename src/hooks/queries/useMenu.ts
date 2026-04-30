@@ -30,7 +30,13 @@ export const useMenu = (category: string, search: string) => {
                 qs.append('search', search);
             }
             const data = await api.get(`/menu?${qs.toString()}`);
-            return data.items as MenuItem[];
+            return (data.items || []).map((item: any) => ({
+                ...item,
+                isPromo: item.isPromo ?? item.is_promo,
+                isPopular: item.isPopular ?? item.is_popular,
+                isChefChoice: item.isChefChoice ?? item.is_chef_choice,
+                isNew: item.isNew ?? item.is_new,
+            })) as MenuItem[];
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
         placeholderData: keepPreviousData,
@@ -100,7 +106,13 @@ export const usePopularItems = (limit: number = 8) => {
         queryKey: ['menu', 'popular', limit],
         queryFn: async () => {
             const data = await api.get(`/menu?is_popular=true&limit=${limit}`);
-            return data.items as MenuItem[];
+            return (data.items || []).map((item: any) => ({
+                ...item,
+                isPromo: item.isPromo ?? item.is_promo,
+                isPopular: item.isPopular ?? item.is_popular,
+                isChefChoice: item.isChefChoice ?? item.is_chef_choice,
+                isNew: item.isNew ?? item.is_new,
+            })) as MenuItem[];
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
     });

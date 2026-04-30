@@ -7,5 +7,5 @@ export const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://www.sushidemak
 export const CONFIG = {
     SITE_URL,
     BRAND_NAME: 'Sushi de Maksim',
-    DEFAULT_OG_IMAGE: `${SITE_URL}/og-image-v19.jpg`,
+    DEFAULT_OG_IMAGE: `${SITE_URL}/og-image-v20.jpg`,
 };

@@ -7,6 +7,8 @@ import SafeImage from '../common/SafeImage';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { User } from '../../types';
 
+import { getAllergenInfo } from '../../utils/allergens';
+
 interface ProductCardProps {
     item: MenuItem;
     user: User | null;
@@ -95,18 +97,61 @@ const ProductCard = React.memo(function ProductCard({
                 />
 
                 {/* Badges Lowered */}
-                <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1">
+                <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1.5 max-w-[90%]">
                     {item.isPopular && (
-                        <span className="bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black tracking-wider shadow-sm flex items-center gap-1">
-                            <Sparkles size={8} className="md:size-[10px]" />
-                            Popular
-                        </span>
+                        <div
+                            className="h-7 w-7 md:h-8 md:w-8 bg-amber-400 text-amber-950 rounded-full flex items-center justify-center shadow-lg"
+                            title="Popular"
+                        >
+                            <Sparkles size={14} className="flex-shrink-0" />
+                        </div>
                     )}
                     {item.isNew && (
-                        <span className="bg-white text-gray-900 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] font-black tracking-wider shadow-sm">
-                            ✨ Nuevo
-                        </span>
+                        <div
+                            className="h-7 w-7 md:h-8 md:w-8 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center justify-center shadow-lg"
+                            title="Nuevo"
+                        >
+                            <span className="text-[14px] flex-shrink-0">✨</span>
+                        </div>
                     )}
+                    {item.isChefChoice && (
+                        <div
+                            className="h-7 w-7 md:h-8 md:w-8 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center justify-center shadow-lg"
+                            title="Sugerencia del Chef"
+                        >
+                            <span className="text-[14px] flex-shrink-0">👨‍🍳</span>
+                        </div>
+                    )}
+                    {item.spicy && (
+                        <div
+                            className="h-7 w-7 md:h-8 md:w-8 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center justify-center shadow-lg"
+                            title="Picante"
+                        >
+                            <span className="text-[14px]">🌶️</span>
+                        </div>
+                    )}
+                    {item.vegetarian && (
+                        <div
+                            className="h-7 w-7 md:h-8 md:w-8 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center justify-center shadow-lg"
+                            title="Vegetariano"
+                        >
+                            <span className="text-[14px]">🥬</span>
+                        </div>
+                    )}
+                    {item.allergens &&
+                        item.allergens.length > 0 &&
+                        item.allergens.map(allergen => {
+                            const info = getAllergenInfo(allergen);
+                            return (
+                                <div
+                                    key={allergen}
+                                    className={`h-7 w-7 md:h-8 md:w-8 ${info.bg} ${info.text} border ${info.border} rounded-full flex items-center justify-center shadow-lg`}
+                                    title={`Alérgeno: ${allergen}`}
+                                >
+                                    <span className="text-[14px] flex-shrink-0">{info.icon}</span>
+                                </div>
+                            );
+                        })}
                 </div>
             </div>
 
@@ -123,7 +168,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                 </div>
 
-                <p className="text-gray-500 text-xs md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-2 md:line-clamp-3 min-h-[2.5rem] md:min-h-[3.5rem] font-medium overflow-hidden">
+                <p className="text-gray-500 text-xs md:text-sm leading-tight md:leading-relaxed mb-3 md:mb-6 line-clamp-3 min-h-[2.8rem] md:min-h-[4.5rem] font-medium overflow-hidden">
                     {item.description}
                 </p>
                 <div className="mt-auto flex items-center justify-between gap-1">
@@ -158,7 +203,7 @@ const ProductCard = React.memo(function ProductCard({
                         data-testid="add-to-cart-button"
                         disabled={isAdded}
                         onClick={e => onAddToCart(item, e, quantity)}
-                        className={`h-8 w-8 md:h-10 md:w-10 xl:h-11 xl:w-[140px] xl:px-6 rounded-lg md:rounded-xl xl:rounded-2xl font-black text-xs md:text-sm transition-all duration-500 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
+                        className={`h-9 w-9 md:h-10 md:w-10 rounded-xl md:rounded-2xl font-black transition-all duration-500 flex items-center justify-center border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
                             isAdded
                                 ? 'bg-green-500 text-white cursor-default'
                                 : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95'
@@ -168,26 +213,24 @@ const ProductCard = React.memo(function ProductCard({
                             {isAdded ? (
                                 <motion.div
                                     key="added"
-                                    initial={{ opacity: 0, y: 15 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -15 }}
+                                    initial={{ opacity: 0, scale: 0.5 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.5 }}
                                     transition={{ duration: 0.3, ease: 'easeOut' }}
-                                    className="flex items-center justify-center gap-2 w-full"
+                                    className="flex items-center justify-center w-full"
                                 >
-                                    <Check size={16} strokeWidth={3} />
-                                    <span className="hidden xl:inline">Añadido</span>
+                                    <Check size={18} strokeWidth={3} />
                                 </motion.div>
                             ) : (
                                 <motion.div
                                     key="add"
-                                    initial={{ opacity: 0, y: 15 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -15 }}
+                                    initial={{ opacity: 0, scale: 0.5 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.5 }}
                                     transition={{ duration: 0.3, ease: 'easeOut' }}
-                                    className="flex items-center justify-center gap-2 w-full"
+                                    className="flex items-center justify-center w-full"
                                 >
-                                    <Plus size={16} strokeWidth={3} />
-                                    <span className="hidden xl:inline">Añadir</span>
+                                    <Plus size={18} strokeWidth={3} />
                                 </motion.div>
                             )}
                         </AnimatePresence>

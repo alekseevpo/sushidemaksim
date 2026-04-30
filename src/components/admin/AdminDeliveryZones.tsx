@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     MapContainer,
     TileLayer,
@@ -141,6 +142,21 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
     const [editingZone, setEditingZone] = useState<Partial<DeliveryZone> | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [zoneToDelete, setZoneToDelete] = useState<DeliveryZone | null>(null);
+
+    // Prevent background scrolling when modal is open
+    useEffect(() => {
+        if (isModalOpen) {
+            document.body.style.overflow = 'hidden';
+            (window as any).lenis?.stop();
+        } else {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
+        };
+    }, [isModalOpen]);
 
     const {
         data: zones = [],
@@ -464,203 +480,214 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
             </div>
 
             {/* Modal de Configuración de Zona */}
-            {isModalOpen && editingZone && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <h2 className="text-xl font-bold text-gray-900">{t.modal.title}</h2>
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <div className="p-6 space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">
-                                        {t.modal.type}
-                                    </label>
-                                    <select
-                                        value={editingZone.type || 'polygon'}
-                                        onChange={e =>
-                                            setEditingZone({
-                                                ...editingZone,
-                                                type: e.target.value as any,
-                                            })
-                                        }
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
-                                    >
-                                        <option value="polygon">{t.modal.polygon}</option>
-                                        <option value="radius">{t.modal.radius}</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">
-                                        {t.modal.name}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={editingZone.name || ''}
-                                        onChange={e =>
-                                            setEditingZone({ ...editingZone, name: e.target.value })
-                                        }
-                                        placeholder="Ej: Retiro Norte"
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
-                                    />
-                                </div>
+            {isModalOpen &&
+                editingZone &&
+                createPortal(
+                    <div
+                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        onClick={e => {
+                            if (e.target === e.currentTarget) setIsModalOpen(false);
+                        }}
+                    >
+                        <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-white">
+                            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                                <h2 className="text-xl font-bold text-gray-900">{t.modal.title}</h2>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <X size={20} />
+                                </button>
                             </div>
+                            <div className="p-6 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">
+                                            {t.modal.type}
+                                        </label>
+                                        <select
+                                            value={editingZone.type || 'polygon'}
+                                            onChange={e =>
+                                                setEditingZone({
+                                                    ...editingZone,
+                                                    type: e.target.value as any,
+                                                })
+                                            }
+                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
+                                        >
+                                            <option value="polygon">{t.modal.polygon}</option>
+                                            <option value="radius">{t.modal.radius}</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">
+                                            {t.modal.name}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editingZone.name || ''}
+                                            onChange={e =>
+                                                setEditingZone({
+                                                    ...editingZone,
+                                                    name: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Ej: Retiro Norte"
+                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
+                                        />
+                                    </div>
+                                </div>
 
-                            {editingZone.type === 'radius' && (
-                                <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2">
+                                {editingZone.type === 'radius' && (
+                                    <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2">
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-bold text-gray-500 uppercase">
+                                                {t.modal.minRadius}
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                value={editingZone.minRadius || 0}
+                                                onChange={e =>
+                                                    setEditingZone({
+                                                        ...editingZone,
+                                                        minRadius: parseFloat(e.target.value),
+                                                    })
+                                                }
+                                                className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-bold text-gray-500 uppercase">
+                                                {t.modal.maxRadius}
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                value={editingZone.maxRadius || 0}
+                                                onChange={e =>
+                                                    setEditingZone({
+                                                        ...editingZone,
+                                                        maxRadius: parseFloat(e.target.value),
+                                                    })
+                                                }
+                                                className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase">
-                                            {t.modal.minRadius}
+                                            {t.modal.cost}
                                         </label>
                                         <input
                                             type="number"
-                                            step="0.1"
-                                            value={editingZone.minRadius || 0}
+                                            value={editingZone.cost || 0}
                                             onChange={e =>
                                                 setEditingZone({
                                                     ...editingZone,
-                                                    minRadius: parseFloat(e.target.value),
+                                                    cost: parseFloat(e.target.value),
                                                 })
                                             }
-                                            className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
+                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
                                         />
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase">
-                                            {t.modal.maxRadius}
+                                            {t.modal.minOrder}
                                         </label>
                                         <input
                                             type="number"
-                                            step="0.1"
-                                            value={editingZone.maxRadius || 0}
+                                            value={editingZone.minOrder || 0}
                                             onChange={e =>
                                                 setEditingZone({
                                                     ...editingZone,
-                                                    maxRadius: parseFloat(e.target.value),
+                                                    minOrder: parseFloat(e.target.value),
                                                 })
                                             }
-                                            className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
+                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
                                         />
                                     </div>
                                 </div>
-                            )}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">
-                                        {t.modal.cost}
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={editingZone.cost || 0}
-                                        onChange={e =>
-                                            setEditingZone({
-                                                ...editingZone,
-                                                cost: parseFloat(e.target.value),
-                                            })
-                                        }
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
-                                    />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">
+                                            {t.modal.freeFrom}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            placeholder="P. ej. 60"
+                                            value={editingZone.freeThreshold || ''}
+                                            onChange={e =>
+                                                setEditingZone({
+                                                    ...editingZone,
+                                                    freeThreshold: e.target.value
+                                                        ? parseFloat(e.target.value)
+                                                        : null,
+                                                })
+                                            }
+                                            className="w-full px-4 py-2 bg-green-50/30 border border-green-100 rounded-lg focus:outline-none focus:border-green-400 transition"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">
-                                        {t.modal.minOrder}
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={editingZone.minOrder || 0}
-                                        onChange={e =>
-                                            setEditingZone({
-                                                ...editingZone,
-                                                minOrder: parseFloat(e.target.value),
-                                            })
-                                        }
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
-                                    />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">
+                                            {t.modal.color}
+                                        </label>
+                                        <input
+                                            type="color"
+                                            value={editingZone.color || '#EF4444'}
+                                            onChange={e =>
+                                                setEditingZone({
+                                                    ...editingZone,
+                                                    color: e.target.value,
+                                                })
+                                            }
+                                            className="w-full h-10 p-1 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">
+                                            {t.modal.opacity}
+                                        </label>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="1"
+                                            step="0.1"
+                                            value={editingZone.opacity || 0.3}
+                                            onChange={e =>
+                                                setEditingZone({
+                                                    ...editingZone,
+                                                    opacity: parseFloat(e.target.value),
+                                                })
+                                            }
+                                            className="w-full mt-2"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">
-                                        {t.modal.freeFrom}
-                                    </label>
-                                    <input
-                                        type="number"
-                                        placeholder="P. ej. 60"
-                                        value={editingZone.freeThreshold || ''}
-                                        onChange={e =>
-                                            setEditingZone({
-                                                ...editingZone,
-                                                freeThreshold: e.target.value
-                                                    ? parseFloat(e.target.value)
-                                                    : null,
-                                            })
-                                        }
-                                        className="w-full px-4 py-2 bg-green-50/30 border border-green-100 rounded-lg focus:outline-none focus:border-green-400 transition"
-                                    />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">
-                                        {t.modal.color}
-                                    </label>
-                                    <input
-                                        type="color"
-                                        value={editingZone.color || '#EF4444'}
-                                        onChange={e =>
-                                            setEditingZone({
-                                                ...editingZone,
-                                                color: e.target.value,
-                                            })
-                                        }
-                                        className="w-full h-10 p-1 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">
-                                        {t.modal.opacity}
-                                    </label>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="1"
-                                        step="0.1"
-                                        value={editingZone.opacity || 0.3}
-                                        onChange={e =>
-                                            setEditingZone({
-                                                ...editingZone,
-                                                opacity: parseFloat(e.target.value),
-                                            })
-                                        }
-                                        className="w-full mt-2"
-                                    />
-                                </div>
+                            <div className="p-4 bg-gray-50 flex justify-end gap-3">
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="px-5 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition"
+                                >
+                                    {t.modal.cancel}
+                                </button>
+                                <button
+                                    onClick={() => upsertMutation.mutate(editingZone)}
+                                    disabled={upsertMutation.isPending || !editingZone.name}
+                                    className="px-6 py-2 text-sm font-bold bg-orange-600 text-white hover:bg-orange-700 rounded-lg transition disabled:bg-gray-300"
+                                >
+                                    {upsertMutation.isPending ? t.modal.saving : t.modal.save}
+                                </button>
                             </div>
                         </div>
-                        <div className="p-4 bg-gray-50 flex justify-end gap-3">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="px-5 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition"
-                            >
-                                {t.modal.cancel}
-                            </button>
-                            <button
-                                onClick={() => upsertMutation.mutate(editingZone)}
-                                disabled={upsertMutation.isPending || !editingZone.name}
-                                className="px-6 py-2 text-sm font-bold bg-orange-600 text-white hover:bg-orange-700 rounded-lg transition disabled:bg-gray-300"
-                            >
-                                {upsertMutation.isPending ? t.modal.saving : t.modal.save}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
 
             {/* Modal de Confirmación de Eliminación */}
             <DeleteConfirmationModal

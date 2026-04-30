@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import SafeImage from '../common/SafeImage';
-import { getOptimizedImageUrl } from '../../utils/images';
 
 const REVIEWS = [
     {
@@ -62,23 +60,18 @@ export function HeroSection() {
             <h2 className="sr-only">Bienvenido a nuestro restaurante japonés premium</h2>
 
             {/* Background Image with optimized loading */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 bg-[#0d0d0d]">
                 <div className="absolute inset-0 bg-black/60 z-10" />
-                <motion.div
-                    initial={{ scale: 1, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 0.4 }}
-                    transition={{ duration: 1.5, ease: 'easeOut' }}
-                    className="w-full h-full"
-                >
-                    <SafeImage
-                        src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&auto=format&fit=crop"
+                <div className="absolute inset-0 opacity-40">
+                    <img
+                        src="/sushidemaksim_black_style_photos/Chef%20Gourmet%20XL_sushidemaksim_black.webp"
                         alt="Premium Sushi Background"
-                        className="w-full h-full object-cover sm:object-center object-[65%_center]"
+                        className="absolute inset-0 w-full h-full object-cover sm:object-center object-[65%_center]"
                         loading="eager"
-                        getOptimizedUrl={url => getOptimizedImageUrl(url, 1080)}
                         {...({ fetchpriority: 'high' } as any)}
+                        decoding="sync"
                     />
-                </motion.div>
+                </div>
             </div>
 
             <div className="relative z-20 flex flex-col items-center max-w-4xl mx-auto">
