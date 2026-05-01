@@ -63,7 +63,7 @@ router.post(
                 ),
                 sendReservationEmail(dataForEmails, true).catch(err =>
                     console.error('Error sending admin reservation email:', err)
-                )
+                ),
             ]);
         } catch (emailErr) {
             console.error('Email error (swallowed):', emailErr);
