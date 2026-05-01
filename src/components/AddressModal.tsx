@@ -816,9 +816,9 @@ export default function AddressModal({
                                         </label>
                                         <input
                                             value={address}
-                                            readOnly
-                                            className="w-full bg-gray-100 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none outline-none cursor-not-allowed text-gray-500"
-                                            placeholder="Busca arriba tu calle..."
+                                            onChange={e => setAddress(e.target.value)}
+                                            className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
+                                            placeholder="Introduce tu calle..."
                                         />
                                     </div>
 
@@ -862,9 +862,9 @@ export default function AddressModal({
                                         </label>
                                         <input
                                             value={postalCode}
-                                            readOnly
-                                            className="w-full bg-gray-100 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none outline-none cursor-not-allowed text-gray-500"
-                                            placeholder="28001"
+                                            onChange={e => setPostalCode(e.target.value)}
+                                            className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
+                                            placeholder="Ej: 28001"
                                         />
                                     </div>
 
