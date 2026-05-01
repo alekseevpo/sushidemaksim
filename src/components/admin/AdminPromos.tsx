@@ -124,6 +124,29 @@ const PROMOS_TRANSLATIONS = {
             secondaryImages:
                 'URL дополнительных фото для сетки баннера. Добавьте 3-4 фото для лучшего вида.',
         },
+        tabs: {
+            promos: 'Акции',
+            loyalty: 'Лояльность',
+        },
+        subtitle: 'управление контентом и бонусами',
+        loyalty: {
+            registration: 'Скидка за регистрацию',
+            registrationDesc:
+                'Автоматически применяется к первому заказу после подтверждения почты',
+            birthday: 'С днём рождения',
+            birthdayDesc: 'Скидка действует 3 дня до и 3 дня после праздника',
+            fifthOrder: 'Каждый 5-й заказ',
+            fifthOrderDesc: 'Бонусная скидка на каждый пятый заказ клиента',
+            tenthOrder: 'Каждый 10-й заказ',
+            tenthOrderDesc: 'Особый подарок или повышенная скидка',
+            newsletter: 'Newsletter Подписка',
+            newsletterDesc: 'Скидка за подписку на новости в футере',
+            discountAmount: 'Величина скидки',
+            giftActive: 'Статус: Подарок активно',
+            automationTitle: 'Автоматизация лояльности',
+            automationDesc:
+                'Все изменения вступают в силу мгновенно. Система автоматически рассылает письма и применяет скидки в корзине пользователей.',
+        },
     },
     es: {
         title: 'Gestión de Promos',
@@ -202,6 +225,28 @@ const PROMOS_TRANSLATIONS = {
             ctaLink: 'A dónde lleva el botón (URL). Ej: "/menu", "/cart" o link externo',
             secondaryImages:
                 'Vínculos de fotos extra para el grid del banner. Se recomiendan 3-4 fotos.',
+        },
+        tabs: {
+            promos: 'Promociones',
+            loyalty: 'Fidelidad',
+        },
+        subtitle: 'gestión de contenido y bonificaciones',
+        loyalty: {
+            registration: 'Descuento por registro',
+            registrationDesc: 'Se aplica automáticamente al primer pedido tras confirmar el correo',
+            birthday: 'Feliz Cumpleaños',
+            birthdayDesc: 'El descuento es válido 3 días antes y 3 días después',
+            fifthOrder: 'Cada 5º pedido',
+            fifthOrderDesc: 'Descuento de bonificación en cada quinto pedido',
+            tenthOrder: 'Cada 10º pedido',
+            tenthOrderDesc: 'Regalo especial o mayor descuento',
+            newsletter: 'Suscripción Newsletter',
+            newsletterDesc: 'Descuento por suscribirse a las noticias',
+            discountAmount: 'Valor del descuento',
+            giftActive: 'Estado: Regalo activo',
+            automationTitle: 'Automatización de fidelidad',
+            automationDesc:
+                'Todos los cambios surten efecto al instante. El sistema envía correos y aplica descuentos automáticamente.',
         },
     },
 };
@@ -430,6 +475,14 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
 
     const promos = useMemo(() => promosData?.promos || [], [promosData]);
 
+    const { data: promoCodesData, refetch: refetchPromoCodes } = useQuery({
+        queryKey: ['admin-promo-codes'],
+        queryFn: () => api.get('/admin/promo-codes'),
+        enabled: activeTab === 'promoCodes',
+    });
+
+    const allPromoCodes = useMemo(() => promoCodesData?.promoCodes || [], [promoCodesData]);
+
     const upsertMutation = useMutation({
         mutationFn: (payload: any) => {
             if (isEditing) {
@@ -544,7 +597,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         {t.title}
                     </h2>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] pl-9">
-                        управление контентом и бонусами
+                        {t.subtitle}
                     </p>
                 </div>
 
@@ -557,7 +610,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                 : 'text-gray-400 hover:text-gray-600'
                         }`}
                     >
-                        Акции
+                        {t.tabs.promos}
                     </button>
                     <button
                         onClick={() => setActiveTab('loyalty')}
@@ -567,7 +620,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                 : 'text-gray-400 hover:text-gray-600'
                         }`}
                     >
-                        Лояльность
+                        {t.tabs.loyalty}
                     </button>
                     <button
                         onClick={() => setActiveTab('promoCodes')}
@@ -1000,6 +1053,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                             {}
                                         );
                                         setGeneratedCode(res.code);
+                                        refetchPromoCodes();
                                     } catch (err) {
                                         alert(t.alerts.errorSaving);
                                     }
@@ -1081,13 +1135,63 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             </p>
                         </div>
                     </div>
+
+                    {allPromoCodes.length > 0 && (
+                        <div className="mt-12 max-w-2xl mx-auto bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+                            <div className="bg-gray-50/50 border-b border-gray-100 px-8 py-5">
+                                <h4 className="text-xs font-black text-gray-900 uppercase tracking-widest">
+                                    {language === 'ru' ? 'Все промокоды' : 'Todos los códigos'}
+                                </h4>
+                            </div>
+                            <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
+                                {allPromoCodes.map((pc: any) => (
+                                    <div
+                                        key={pc.id}
+                                        className="px-8 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            <span className="font-black text-gray-900 tracking-wider">
+                                                {pc.code}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                {new Date(pc.created_at).toLocaleDateString(
+                                                    language === 'ru' ? 'ru-RU' : 'es-ES',
+                                                    {
+                                                        day: '2-digit',
+                                                        month: 'short',
+                                                        year: 'numeric',
+                                                    }
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-xs font-black text-orange-600 bg-orange-50 px-3 py-1 rounded-xl uppercase tracking-widest">
+                                                -{pc.discount_percentage}%
+                                            </span>
+                                            {pc.is_used ? (
+                                                <span className="flex items-center gap-1 text-[10px] font-black text-gray-400 bg-gray-100 px-3 py-1.5 rounded-xl uppercase tracking-widest">
+                                                    <XCircle size={12} strokeWidth={3} />{' '}
+                                                    {language === 'ru' ? 'Использован' : 'Usado'}
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-1 text-[10px] font-black text-green-600 bg-green-50 px-3 py-1.5 rounded-xl uppercase tracking-widest">
+                                                    <CheckCircle size={12} strokeWidth={3} />{' '}
+                                                    {language === 'ru' ? 'Доступен' : 'Disponible'}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="animate-in fade-in duration-500">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <LoyaltyCard
-                            title="Скидка за регистрацию"
-                            description="Автоматически применяется к первому заказу после подтверждения почты"
+                            title={t.loyalty.registration}
+                            description={t.loyalty.registrationDesc}
                             icon={<UserPlus size={24} />}
                             color="bg-purple-500"
                             value={settings.loyalty_registration_bonus_percent || '0'}
@@ -1104,11 +1208,12 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('loyalty_registration_bonus_percent', val)
                             }
+                            t={t}
                         />
 
                         <LoyaltyCard
-                            title="С днём рождения"
-                            description="Скидка действует 3 дня до и 3 дня после праздника"
+                            title={t.loyalty.birthday}
+                            description={t.loyalty.birthdayDesc}
                             icon={<Cake size={24} />}
                             color="bg-pink-500"
                             value={settings.loyalty_birthday_bonus_percent || '0'}
@@ -1125,11 +1230,12 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('loyalty_birthday_bonus_percent', val)
                             }
+                            t={t}
                         />
 
                         <LoyaltyCard
-                            title="Каждый 5-й заказ"
-                            description="Бонусная скидка на каждый пятый заказ клиента"
+                            title={t.loyalty.fifthOrder}
+                            description={t.loyalty.fifthOrderDesc}
                             icon={<Star size={24} />}
                             color="bg-amber-500"
                             value={settings.loyalty_every_5th_bonus_percent || '0'}
@@ -1146,11 +1252,12 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('loyalty_every_5th_bonus_percent', val)
                             }
+                            t={t}
                         />
 
                         <LoyaltyCard
-                            title="Каждый 10-й заказ"
-                            description="Особый подарок или повышенная скидка"
+                            title={t.loyalty.tenthOrder}
+                            description={t.loyalty.tenthOrderDesc}
                             icon={<Gift size={24} />}
                             color="bg-emerald-500"
                             isGiftOnly={true}
@@ -1164,11 +1271,12 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     settings.loyalty_every_10th_gift_enabled
                                 )
                             }
+                            t={t}
                         />
 
                         <LoyaltyCard
-                            title="Newsletter Подписка"
-                            description="Скидка за подписку на новости в футере"
+                            title={t.loyalty.newsletter}
+                            description={t.loyalty.newsletterDesc}
                             icon={<Sparkles size={24} />}
                             color="bg-blue-500"
                             value={settings.newsletter_bonus_percent || '0'}
@@ -1185,6 +1293,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             onChange={(val: string | number) =>
                                 handleUpdateLoyaltyValue('newsletter_bonus_percent', val)
                             }
+                            t={t}
                         />
                     </div>
 
@@ -1193,11 +1302,10 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                             <Sparkles className="text-orange-500" size={32} />
                         </div>
                         <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight mb-2">
-                            Автоматизация лояльности
+                            {t.loyalty.automationTitle}
                         </h3>
                         <p className="max-w-xl text-xs font-bold text-gray-400 uppercase leading-relaxed tracking-widest">
-                            Все изменения вступают в силу мгновенно. Система автоматически рассылает
-                            письма и применяет скидки в корзине пользователей.
+                            {t.loyalty.automationDesc}
                         </p>
                     </div>
                 </div>
@@ -1262,6 +1370,7 @@ function LoyaltyCard({
     onToggle,
     onChange,
     isGiftOnly = false,
+    t,
 }: any) {
     return (
         <div className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden flex flex-col h-full">
@@ -1296,7 +1405,7 @@ function LoyaltyCard({
                 <div className="relative z-10 space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100">
                     <div className="flex justify-between items-end">
                         <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
-                            Величина скидки
+                            {t?.loyalty?.discountAmount || 'Величина скидки'}
                         </span>
                         <span className="text-xl font-black text-gray-900 tracking-tighter">
                             -{value}%
@@ -1323,7 +1432,7 @@ function LoyaltyCard({
                         <Gift size={16} />
                     </div>
                     <span className="text-[9px] font-black text-orange-600 uppercase tracking-widest">
-                        Статус: Подарок активно
+                        {t?.loyalty?.giftActive || 'Статус: Подарок активно'}
                     </span>
                 </div>
             )}
