@@ -138,7 +138,7 @@ test.describe('Guest Checkout - Address Selection', () => {
         await result.click();
 
         // Check if values are filled in address modal form
-        await expect(page.getByPlaceholder(/Busca arriba tu calle/i)).toHaveValue(/Gran Vía/i);
+        await expect(page.getByPlaceholder(/^Introduce tu calle\.\.\.$/i)).toHaveValue(/Gran Vía/i);
 
         await page.getByPlaceholder(/Ej: 20/i).fill('1');
         await page.getByPlaceholder(/Ej: 1B/i).fill('3A');
