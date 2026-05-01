@@ -167,6 +167,27 @@ export default function MenuPage() {
         }
     }, [isLoading, items.length]);
 
+    // Handle initial category scroll from query param
+    const hasScrolledToCategory = useRef(false);
+    useEffect(() => {
+        if (
+            !isLoading &&
+            items.length > 0 &&
+            !hasScrolledToCategory.current &&
+            initialCategory !== 'all'
+        ) {
+            hasScrolledToCategory.current = true;
+            setTimeout(() => {
+                const el = document.getElementById(`section-${initialCategory}`);
+                if (el) {
+                    const offset = window.innerWidth < 1024 ? 130 : 80;
+                    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
+            }, 600);
+        }
+    }, [isLoading, items.length, initialCategory]);
+
     const handleShare = (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
         setSharingItem(item);

@@ -21,7 +21,7 @@ const CategoryCard = memo(({ id, name, image, index }: CategoryCardProps) => {
             transition={{ delay: index * 0.1 }}
             className="group relative h-40 md:h-56 rounded-[2rem] overflow-hidden cursor-pointer bg-gray-100"
         >
-            <Link to={`/menu#section-${id}`} className="absolute inset-0 z-10" />
+            <Link to={`/menu?category=${id}`} className="absolute inset-0 z-10" />
 
             <SafeImage
                 src={image || ''}
