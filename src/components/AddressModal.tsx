@@ -137,6 +137,7 @@ export default function AddressModal({
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [isAddressManuallyEdited, setIsAddressManuallyEdited] = useState(false);
 
     const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
     const [mapZoom, setMapZoom] = useState(window.innerWidth < 768 ? 14 : 15);
@@ -306,6 +307,7 @@ export default function AddressModal({
             const newPos: [number, number] = [lat, lon];
             setMarkerPosition(newPos);
             wasSelectedViaSearchRef.current = true;
+            setIsAddressManuallyEdited(false);
 
             let street =
                 res.address?.road ||
@@ -598,6 +600,7 @@ export default function AddressModal({
                                             // Clear street/house so reverse geocode fills them
                                             setAddress('');
                                             setHouse('');
+                                            setIsAddressManuallyEdited(false);
                                         }}
                                     />
 
@@ -816,7 +819,10 @@ export default function AddressModal({
                                         </label>
                                         <input
                                             value={address}
-                                            onChange={e => setAddress(e.target.value)}
+                                            onChange={e => {
+                                                setAddress(e.target.value);
+                                                setIsAddressManuallyEdited(true);
+                                            }}
                                             className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
                                             placeholder="Introduce tu calle..."
                                         />
@@ -862,7 +868,10 @@ export default function AddressModal({
                                         </label>
                                         <input
                                             value={postalCode}
-                                            onChange={e => setPostalCode(e.target.value)}
+                                            onChange={e => {
+                                                setPostalCode(e.target.value);
+                                                setIsAddressManuallyEdited(true);
+                                            }}
                                             className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
                                             placeholder="Ej: 28001"
                                         />
@@ -993,6 +1002,30 @@ export default function AddressModal({
                                 {/* Sticky Footer with Gradient */}
                                 <div className="p-3 md:p-5 bg-white border-t border-gray-50 relative pb-4 md:pb-6 shrink-0">
                                     <div className="absolute bottom-full left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+
+                                    {/* Manual Edit Warning */}
+                                    <AnimatePresence>
+                                        {isAddressManuallyEdited && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.95 }}
+                                                className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3 shadow-sm"
+                                            >
+                                                <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center shrink-0 shadow-sm animate-pulse">
+                                                    <MapPin size={18} className="text-white" />
+                                                </div>
+                                                <p className="text-[11px] font-black text-amber-900 leading-tight">
+                                                    CALLE EDITADA:{' '}
+                                                    <span className="opacity-70 font-bold block uppercase tracking-tighter mt-0.5">
+                                                        El envío se basa en el mapa. ¡Asegúrate de
+                                                        colocar el PIN correctamente!
+                                                    </span>
+                                                </p>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+
                                     <button
                                         onClick={handleContinue}
                                         disabled={
