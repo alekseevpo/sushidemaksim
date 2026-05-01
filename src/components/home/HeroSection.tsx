@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const REVIEWS = [
     {
@@ -59,19 +59,29 @@ export function HeroSection() {
             </h1>
             <h2 className="sr-only">Bienvenido a nuestro restaurante japonés premium</h2>
 
-            {/* Background Image with optimized loading */}
+            {/* Background Video with tinted overlay */}
             <div className="absolute inset-0 z-0 bg-[#0d0d0d]">
-                <div className="absolute inset-0 bg-black/60 z-10" />
-                <div className="absolute inset-0 opacity-40">
-                    <img
-                        src="/sushidemaksim_black_style_photos/Chef%20Gourmet%20XL_sushidemaksim_black.webp"
-                        alt="Premium Sushi Background"
-                        className="absolute inset-0 w-full h-full object-cover sm:object-center object-[65%_center]"
-                        loading="eager"
-                        {...({ fetchpriority: 'high' } as any)}
-                        decoding="sync"
-                    />
-                </div>
+                <div
+                    className="absolute inset-0 z-10"
+                    style={{
+                        background:
+                            'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.75) 100%)',
+                    }}
+                />
+                <video
+                    ref={useCallback((el: HTMLVideoElement | null) => {
+                        if (el) el.playbackRate = 0.5;
+                    }, [])}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    poster="/sushidemaksim_black_style_photos/Chef%20Gourmet%20XL_sushidemaksim_black.webp"
+                    className="absolute inset-0 w-full h-full object-cover"
+                >
+                    <source src="/hero-video.mp4" type="video/mp4" />
+                </video>
             </div>
 
             <div className="relative z-20 flex flex-col items-center max-w-4xl mx-auto">
