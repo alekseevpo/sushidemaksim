@@ -7,10 +7,17 @@ interface DesktopNavProps {
     isTransparentHeaderPage: boolean;
 }
 
+interface NavLink {
+    to?: string;
+    label: string;
+    icon: any;
+    onClick?: () => void;
+}
+
 export default function DesktopNav({ isScrolled, isTransparentHeaderPage }: DesktopNavProps) {
     const location = useLocation();
 
-    const navLinks = [
+    const navLinks: NavLink[] = [
         { to: '/menu', label: 'Menú', icon: Menu },
         { to: '/blog', label: 'Blog', icon: BookOpen },
         { to: '/contacts', label: 'Contactos', icon: Phone },
