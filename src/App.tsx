@@ -59,6 +59,7 @@ const BlogPage = lazyRetry(() => import('./pages/BlogPage'));
 const BlogPostPage = lazyRetry(() => import('./pages/BlogPostPage'));
 const PayForFriendPage = lazyRetry(() => import('./pages/PayForFriendPage'));
 const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
+const ReservationPage = lazyRetry(() => import('./pages/ReservationPage'));
 const VerifyEmailChangePage = lazyRetry(() => import('./pages/VerifyEmailChangePage'));
 const OrderTrackingPage = lazyRetry(() => import('./pages/OrderTrackingPage'));
 const WaiterOrderPage = lazyRetry(() => import('./pages/WaiterOrderPage'));
@@ -182,6 +183,14 @@ function App() {
                             <main className="flex-1 flex flex-col relative w-full">
                                 <AnimatePresence mode="wait">
                                     <Routes location={location} key={location.pathname}>
+                                        <Route
+                                            path="/reservar"
+                                            element={
+                                                <PageWrapper skeleton={<GenericSkeleton />}>
+                                                    <ReservationPage />
+                                                </PageWrapper>
+                                            }
+                                        />
                                         <Route
                                             path="/"
                                             element={

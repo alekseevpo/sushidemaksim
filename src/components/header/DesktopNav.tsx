@@ -15,11 +15,7 @@ export default function DesktopNav({ isScrolled, isTransparentHeaderPage }: Desk
         { to: '/blog', label: 'Blog', icon: BookOpen },
         { to: '/contacts', label: 'Contactos', icon: Phone },
         { to: '/promo', label: 'Promo', icon: Star },
-        {
-            label: 'Reserva',
-            onClick: () => window.dispatchEvent(new Event('open:reservation')),
-            icon: Calendar,
-        },
+        { to: '/reservar', label: 'Reserva', icon: Calendar },
     ];
 
     return (

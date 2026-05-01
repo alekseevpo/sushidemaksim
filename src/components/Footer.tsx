@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Heart, Menu, BookOpen, Star, Info } from 'lucide-react';
+import { Phone, Heart, Menu, BookOpen, Star, Info, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../hooks/queries/useSettings';
 
@@ -103,28 +103,35 @@ export default function Footer() {
                             to="/menu"
                             className="hover:text-white transition-colors flex items-center gap-2 no-underline"
                         >
-                            <Menu size={14} strokeWidth={2.5} />
+                            <Menu size={14} strokeWidth={2.5} className="hidden md:block" />
                             Menú
                         </Link>
                         <Link
                             to="/blog"
                             className="hover:text-white transition-colors flex items-center gap-2 no-underline"
                         >
-                            <BookOpen size={14} strokeWidth={2.5} />
+                            <BookOpen size={14} strokeWidth={2.5} className="hidden md:block" />
                             Blog
                         </Link>
                         <Link
                             to="/promo"
                             className="hover:text-white transition-colors flex items-center gap-2 no-underline"
                         >
-                            <Star size={14} strokeWidth={2.5} />
+                            <Star size={14} strokeWidth={2.5} className="hidden md:block" />
                             Promos
+                        </Link>
+                        <Link
+                            to="/reservar"
+                            className="hover:text-white transition-colors flex items-center gap-2 no-underline"
+                        >
+                            <Calendar size={14} strokeWidth={2.5} className="hidden md:block" />
+                            Reservar
                         </Link>
                         <Link
                             to="/contacts"
                             className="hover:text-white transition-colors flex items-center gap-2 no-underline"
                         >
-                            <Info size={14} strokeWidth={2.5} />
+                            <Info size={14} strokeWidth={2.5} className="hidden md:block" />
                             Contacto
                         </Link>
                     </div>

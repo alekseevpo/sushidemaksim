@@ -75,17 +75,15 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                             <div className="px-3 pt-4 pb-2 space-y-1">
                                 {/* Primary Reservation CTA in Mobile Menu - Styled as text with shadow */}
                                 <div className="px-1 pb-2">
-                                    <button
-                                        onClick={() => {
-                                            setShowMobileMenu(false);
-                                            window.dispatchEvent(new Event('open:reservation'));
-                                        }}
+                                    <Link
+                                        to="/reservar"
+                                        onClick={() => setShowMobileMenu(false)}
                                         className="w-full py-2 group flex items-center justify-center gap-3 px-4 rounded-[20px] font-black text-[16px] text-orange-600 no-underline transition-all active:scale-[0.97] border-none bg-transparent text-center drop-shadow-[0_2px_4px_rgba(234,88,12,0.2)]"
                                     >
                                         <span className="tracking-tight uppercase">
                                             RESERVAR MESA
                                         </span>
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 {navLinks.map((link, idx) => {

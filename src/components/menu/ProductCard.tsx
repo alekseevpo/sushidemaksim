@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Share2, Sparkles, Check, Plus, Minus } from 'lucide-react';
+import { Heart, Share2, Flame, Check, Plus, Minus } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
 import { slugify } from '../../utils/formatters';
@@ -100,10 +100,19 @@ const ProductCard = React.memo(function ProductCard({
                 <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1.5 max-w-[90%]">
                     {item.isPopular && (
                         <div
-                            className="h-7 w-7 md:h-8 md:w-8 bg-amber-400 text-amber-950 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-white/95 backdrop-blur-md text-orange-600 border border-orange-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Popular"
                         >
-                            <Sparkles size={14} className="flex-shrink-0" />
+                            <Flame
+                                size={12}
+                                className="flex-shrink-0 fill-orange-500/20 md:hidden"
+                                strokeWidth={2.5}
+                            />
+                            <Flame
+                                size={18}
+                                className="hidden md:block flex-shrink-0 fill-orange-500/20"
+                                strokeWidth={2.5}
+                            />
                         </div>
                     )}
                     {item.isNew && (
@@ -111,7 +120,7 @@ const ProductCard = React.memo(function ProductCard({
                             className="h-5 w-5 md:h-8 md:w-8 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Nuevo"
                         >
-                            <span className="text-[10px] md:text-[14px] flex-shrink-0">✨</span>
+                            <span className="text-[10px] md:text-[18px] flex-shrink-0">✨</span>
                         </div>
                     )}
                     {item.isChefChoice && (
@@ -119,7 +128,7 @@ const ProductCard = React.memo(function ProductCard({
                             className="h-5 w-5 md:h-8 md:w-8 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Sugerencia del Chef"
                         >
-                            <span className="text-[10px] md:text-[14px] flex-shrink-0">👨‍🍳</span>
+                            <span className="text-[10px] md:text-[18px] flex-shrink-0">👨‍🍳</span>
                         </div>
                     )}
                     {item.spicy && (
@@ -127,7 +136,7 @@ const ProductCard = React.memo(function ProductCard({
                             className="h-5 w-5 md:h-8 md:w-8 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Picante"
                         >
-                            <span className="text-[10px] md:text-[14px]">🌶️</span>
+                            <span className="text-[10px] md:text-[18px]">🌶️</span>
                         </div>
                     )}
                     {item.vegetarian && (
@@ -135,7 +144,7 @@ const ProductCard = React.memo(function ProductCard({
                             className="h-5 w-5 md:h-8 md:w-8 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Vegetariano"
                         >
-                            <span className="text-[10px] md:text-[14px]">🥬</span>
+                            <span className="text-[10px] md:text-[18px]">🥬</span>
                         </div>
                     )}
                     {item.allergens &&
@@ -148,7 +157,7 @@ const ProductCard = React.memo(function ProductCard({
                                     className={`h-5 w-5 md:h-8 md:w-8 ${info.bg} ${info.text} border ${info.border} rounded-full flex items-center justify-center shadow-lg`}
                                     title={`Alérgeno: ${allergen}`}
                                 >
-                                    <span className="text-[10px] md:text-[14px] flex-shrink-0">
+                                    <span className="text-[10px] md:text-[18px] flex-shrink-0">
                                         {info.icon}
                                     </span>
                                 </div>
