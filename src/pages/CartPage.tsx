@@ -688,12 +688,7 @@ export default function CartPage() {
         }
 
         // Safari Sync Hack
-        [
-            customerNameRef,
-            guestEmailRef,
-            phoneRef,
-            customNoteRef,
-        ].forEach(ref => {
+        [customerNameRef, guestEmailRef, phoneRef, customNoteRef].forEach(ref => {
             if (ref.current) {
                 ref.current.focus();
                 ref.current.blur();
@@ -706,7 +701,7 @@ export default function CartPage() {
         const finalGuestEmail = (guestEmailRef.current?.value || '').trim();
         const finalPhone = (phoneRef.current?.value || '').trim();
         const finalCustomNote = (customNoteRef.current?.value || '').trim();
-        
+
         // Address is managed via modal/React state, not direct input, so data is reliable
         const finalAddress = streetVal;
         const finalHouse = houseVal;
