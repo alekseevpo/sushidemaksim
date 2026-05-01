@@ -20,7 +20,7 @@ test.describe('Order Checkout Flow', () => {
         });
 
         // Mock menu API
-        await page.route('**/api/menu*', route =>
+        await page.route('**/api/menu**', route =>
             route.fulfill({
                 status: 200,
                 body: JSON.stringify({
