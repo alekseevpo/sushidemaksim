@@ -692,9 +692,6 @@ export default function CartPage() {
             customerNameRef,
             guestEmailRef,
             phoneRef,
-            addressRef,
-            houseRef,
-            apartmentRef,
             customNoteRef,
         ].forEach(ref => {
             if (ref.current) {
@@ -704,13 +701,16 @@ export default function CartPage() {
         });
 
         // Capture values from Refs instead of only trusting state/data
+        // (Only needed for actual text inputs subject to Safari autofill)
         const finalCustomerName = (customerNameRef.current?.value || '').trim();
         const finalGuestEmail = (guestEmailRef.current?.value || '').trim();
         const finalPhone = (phoneRef.current?.value || '').trim();
-        const finalAddress = (addressRef.current?.value || '').trim();
-        const finalHouse = (houseRef.current?.value || '').trim();
-        const finalApartment = (apartmentRef.current?.value || '').trim();
         const finalCustomNote = (customNoteRef.current?.value || '').trim();
+        
+        // Address is managed via modal/React state, not direct input, so data is reliable
+        const finalAddress = streetVal;
+        const finalHouse = houseVal;
+        const finalApartment = aptVal;
 
         // Validate captured values if they were meant to be present
         if (!isAuthenticated && !finalCustomerName) {

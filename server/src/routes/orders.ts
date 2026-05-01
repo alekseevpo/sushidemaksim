@@ -161,6 +161,7 @@ router.post(
         if (promoCode) {
             if (promoCode === 'TEST10') {
                 finalTotal = finalTotal * 0.9; // 10% discount
+                notesToSave += notesToSave ? ` | [PROMO: TEST10 (-10%)]` : `[PROMO: TEST10 (-10%)]`;
             } else {
                 const query = supabase
                     .from('promo_codes')
@@ -460,6 +461,11 @@ router.post(
 
             if (deliveryFee > 0) {
                 waTextParts.push(`Gastos de Envío: ${deliveryFee.toFixed(2)}€`);
+            }
+
+            const promoMatch = receiptNotes.match(/\[PROMO:\s(.*?)\s\(-(\d+(?:\.\d+)?)%\)\]/);
+            if (promoMatch) {
+                waTextParts.push(`Descuento Promocional: ${promoMatch[1]} (-${promoMatch[2]}%)`);
             }
 
             waTextParts.push(`Direccion: ${deliveryAddress}`);

@@ -198,6 +198,7 @@ export async function sendOrderReceiptEmail(
     let noBuzzer = false;
     let scheduledTime = '';
     let customerNote = '';
+    let promoString = '';
 
     // NEW: Robustly extract scheduled time from the DB column natively
     if (
@@ -251,6 +252,12 @@ export async function sendOrderReceiptEmail(
             part.includes('[NO LLAMAR TIMBRE]')
         ) {
             noBuzzer = true;
+        } else if (part.includes('[PROMO:')) {
+            promoString = part
+                .replace('[PROMO: ', '')
+                .replace('[PROMO:', '')
+                .replace(']', '')
+                .trim();
         } else {
             customerNote += (customerNote ? ' | ' : '') + part;
         }
@@ -352,6 +359,16 @@ export async function sendOrderReceiptEmail(
 
         <div style="margin-top: 8px; padding-top: 8px; border-top: 2px solid #e2e8f0;">
           <table style="width:100%; border-collapse:collapse;">
+            ${
+                promoString
+                    ? `
+            <tr>
+              <td style="padding-top: 8px; color: #16a34a; font-size: 14px; font-weight: 700;">Descuento Promocional</td>
+              <td style="padding-top: 8px; text-align: right; color: #16a34a; font-size: 14px; font-weight: 700;">${promoString}</td>
+            </tr>
+            `
+                    : ''
+            }
             <tr>
               <td style="padding-top: 8px; color: #111827; font-size: 18px; font-weight: 900;">TOTAL</td>
               <td style="padding-top: 8px; text-align: right; color: #ea580c; font-size: 20px; font-weight: 900;">${orderData.total.toFixed(2).replace('.', ',')} €</td>
