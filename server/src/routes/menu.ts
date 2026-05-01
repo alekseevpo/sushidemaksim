@@ -32,6 +32,99 @@ export function invalidateMenuCache(): void {
     menuCache.clear();
 }
 
+// GET /api/menu/popular — returns top 6 items based on 90d ABC revenue analysis
+router.get(
+    '/popular',
+    asyncHandler(async (_req: Request, res: Response) => {
+        // Try cache first
+        const cached = getCached('menu:popular');
+        if (cached) {
+            res.set('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+            return res.json(cached);
+        }
+
+        const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+
+        // 1. Fetch completed orders from last 90 days
+        const { data: orders } = await supabase
+            .from('orders')
+            .select('id')
+            .eq('is_archived', false)
+            .neq('status', 'cancelled')
+            .gte('created_at', ninetyDaysAgo);
+
+        const orderIds = (orders || []).map(o => o.id);
+
+        let items90: any[] = [];
+        if (orderIds.length > 0) {
+            const { data: itemsData } = await supabase
+                .from('order_items')
+                .select('menu_item_id, quantity, price_at_time')
+                .in('order_id', orderIds);
+            items90 = itemsData || [];
+        }
+
+        // 2. Calculate revenue per menu_item_id (ABC Logic)
+        const revenueMap: Record<number, number> = {};
+        items90.forEach(item => {
+            if (item.menu_item_id) {
+                revenueMap[item.menu_item_id] =
+                    (revenueMap[item.menu_item_id] || 0) + item.quantity * item.price_at_time;
+            }
+        });
+
+        // 3. Get top 6 ids
+        const topItemIds = Object.entries(revenueMap)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 6)
+            .map(([id]) => Number(id));
+
+        // 4. Fetch their active menu_items data
+        let formatted: any[] = [];
+        if (topItemIds.length > 0) {
+            const { data: menuItems } = await supabase
+                .from('menu_items')
+                .select('*')
+                .in('id', topItemIds);
+
+            const itemsMap: Record<number, any> = {};
+            (menuItems || []).forEach(item => {
+                itemsMap[item.id] = formatMenuItem(item);
+            });
+
+            // Re-sort to match revenue map order
+            formatted = topItemIds.map(id => itemsMap[id]).filter(Boolean);
+        }
+
+        // If we don't have enough popular items from history, fetch some is_popular fallbacks
+        if (formatted.length < 6) {
+            const excludeIds = formatted.map(i => i.id);
+            let fallbackQuery = supabase
+                .from('menu_items')
+                .select('*')
+                .eq('is_popular', true)
+                .limit(6 - formatted.length);
+
+            if (excludeIds.length > 0) {
+                fallbackQuery = fallbackQuery.not('id', 'in', `(${excludeIds.join(',')})`);
+            }
+
+            const { data: fallbacks } = await fallbackQuery;
+            if (fallbacks) {
+                formatted = [...formatted, ...fallbacks.map(formatMenuItem)];
+            }
+        }
+
+        const result = { items: formatted, total: formatted.length };
+
+        // Cache for 6 hours
+        setCache('menu:popular', result, 6 * 60 * 60 * 1000);
+
+        res.set('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+        res.json(result);
+    })
+);
+
 // GET /api/menu — all items, optional ?category= and ?search= filter
 router.get(
     '/',

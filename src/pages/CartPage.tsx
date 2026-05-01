@@ -293,7 +293,7 @@ export default function CartPage() {
     const loadPopularItems = useCallback(async () => {
         setIsLoadingPopular(true);
         try {
-            const data = await api.get('/menu?limit=6');
+            const data = await api.get('/menu/popular');
             setPopularItems(data.items || []);
         } catch (err) {
             console.error('Failed to load recommended items', err);
