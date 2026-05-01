@@ -55,14 +55,16 @@ router.post(
             notes: notes || '',
         };
 
-        // Send confirmation emails (don't wait for them)
+        // Send confirmation emails and wait for them so serverless doesn't kill the process
         try {
-            sendReservationEmail(dataForEmails).catch(err =>
-                console.error('Error sending customer reservation email:', err)
-            );
-            sendReservationEmail(dataForEmails, true).catch(err =>
-                console.error('Error sending admin reservation email:', err)
-            );
+            await Promise.allSettled([
+                sendReservationEmail(dataForEmails).catch(err =>
+                    console.error('Error sending customer reservation email:', err)
+                ),
+                sendReservationEmail(dataForEmails, true).catch(err =>
+                    console.error('Error sending admin reservation email:', err)
+                )
+            ]);
         } catch (emailErr) {
             console.error('Email error (swallowed):', emailErr);
         }
