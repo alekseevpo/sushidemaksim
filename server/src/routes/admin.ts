@@ -2011,6 +2011,24 @@ router.get(
     })
 );
 
+// GET /api/admin/promo-codes
+router.get(
+    '/promo-codes',
+    asyncHandler(async (_req: Request, res: Response) => {
+        const { data: promoCodes, error } = await supabase
+            .from('promo_codes')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('❌ Error fetching promo codes:', error);
+            return res.status(500).json({ error: 'Failed to fetch promo codes' });
+        }
+
+        res.json({ promoCodes });
+    })
+);
+
 // POST /api/admin/promo-codes/generate-special
 router.post(
     '/promo-codes/generate-special',
