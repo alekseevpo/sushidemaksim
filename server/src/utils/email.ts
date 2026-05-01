@@ -826,9 +826,14 @@ export async function sendReservationEmail(
             ${
                 isAdminCopy
                     ? (() => {
-                          const dateStr = new Date(
+                          let dateStr = new Date(
                               reservationData.reservation_date
-                          ).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+                          ).toLocaleDateString('es-ES', {
+                              weekday: 'long',
+                              day: 'numeric',
+                              month: 'long',
+                          });
+                          dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
                           const waMessage = `Hola ${reservationData.name}, confirmo tu reserva para el ${dateStr} a las ${reservationData.reservation_time} (${reservationData.guests} personas). ¡Te esperamos!`;
                           const cleanPhone = reservationData.phone.replace(/\D/g, '');
                           const waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
