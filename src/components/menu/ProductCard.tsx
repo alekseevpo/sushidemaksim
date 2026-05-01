@@ -108,34 +108,34 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.isNew && (
                         <div
-                            className="h-7 w-7 md:h-8 md:w-8 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Nuevo"
                         >
-                            <span className="text-[14px] flex-shrink-0">✨</span>
+                            <span className="text-[10px] md:text-[14px] flex-shrink-0">✨</span>
                         </div>
                     )}
                     {item.isChefChoice && (
                         <div
-                            className="h-7 w-7 md:h-8 md:w-8 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Sugerencia del Chef"
                         >
-                            <span className="text-[14px] flex-shrink-0">👨‍🍳</span>
+                            <span className="text-[10px] md:text-[14px] flex-shrink-0">👨‍🍳</span>
                         </div>
                     )}
                     {item.spicy && (
                         <div
-                            className="h-7 w-7 md:h-8 md:w-8 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Picante"
                         >
-                            <span className="text-[14px]">🌶️</span>
+                            <span className="text-[10px] md:text-[14px]">🌶️</span>
                         </div>
                     )}
                     {item.vegetarian && (
                         <div
-                            className="h-7 w-7 md:h-8 md:w-8 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center justify-center shadow-lg"
                             title="Vegetariano"
                         >
-                            <span className="text-[14px]">🥬</span>
+                            <span className="text-[10px] md:text-[14px]">🥬</span>
                         </div>
                     )}
                     {item.allergens &&
@@ -145,10 +145,12 @@ const ProductCard = React.memo(function ProductCard({
                             return (
                                 <div
                                     key={allergen}
-                                    className={`h-7 w-7 md:h-8 md:w-8 ${info.bg} ${info.text} border ${info.border} rounded-full flex items-center justify-center shadow-lg`}
+                                    className={`h-5 w-5 md:h-8 md:w-8 ${info.bg} ${info.text} border ${info.border} rounded-full flex items-center justify-center shadow-lg`}
                                     title={`Alérgeno: ${allergen}`}
                                 >
-                                    <span className="text-[14px] flex-shrink-0">{info.icon}</span>
+                                    <span className="text-[10px] md:text-[14px] flex-shrink-0">
+                                        {info.icon}
+                                    </span>
                                 </div>
                             );
                         })}
