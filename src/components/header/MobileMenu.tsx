@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, ShieldCheck, Menu, BookOpen, Phone, Star } from 'lucide-react';
+import { Settings, ShieldCheck, Menu, BookOpen, Phone, Star, LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import SafeImage from '../common/SafeImage';
 import { getSharpAvatar } from '../../utils/avatar';
@@ -12,7 +12,7 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: MobileMenuProps) {
-    const { user, isAuthenticated, isLoading } = useAuth();
+    const { user, isAuthenticated, isLoading, logout } = useAuth();
     const location = useLocation();
 
     const hasToken = !!localStorage.getItem('sushi_token');
@@ -169,10 +169,23 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                     {user.email}
                                                 </p>
                                             </div>
-                                            <Settings
-                                                size={20}
-                                                className="text-gray-300 group-hover:text-gray-900 transition-colors shrink-0"
-                                            />
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <button
+                                                    onClick={e => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        logout();
+                                                        setShowMobileMenu(false);
+                                                    }}
+                                                    className="p-2 text-gray-400 hover:text-red-500 transition-colors border-none bg-transparent cursor-pointer active:scale-90"
+                                                >
+                                                    <LogOut size={20} />
+                                                </button>
+                                                <Settings
+                                                    size={20}
+                                                    className="text-gray-300 group-hover:text-gray-900 transition-colors shrink-0"
+                                                />
+                                            </div>
                                         </Link>
 
                                         {(user.role === 'admin' || user.role === 'waiter') && (
