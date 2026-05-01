@@ -29,7 +29,7 @@ export const updateCartItemSchema = z.object({
         itemId: z.string().transform(val => parseInt(val, 10)),
     }),
     body: z.object({
-        quantity: z.number().min(0, 'La cantidad не может быть отрицательной').max(99),
+        quantity: z.number().min(0, 'La cantidad no puede ser negativa').max(99),
         selectedOption: z.string().optional(),
     }),
 });
@@ -57,6 +57,6 @@ export const bulkCartSchema = z.object({
                     selectedOption: z.string().optional(),
                 })
             )
-            .min(1, 'El carrito no может быть пустым при синхронизации'),
+            .min(1, 'El carrito no puede estar vacío al sincronizar'),
     }),
 });

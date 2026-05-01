@@ -12,11 +12,11 @@ const blogPostBase = {
         .string()
         .min(1, 'El slug es obligatorio')
         .max(200, 'El slug no puede superar los 200 caracteres')
-        .regex(/^[a-z0-9-]+$/, 'El slug solo может содержать строчные буквы, цифры и дефисы'),
+        .regex(/^[a-z0-9-]+$/, 'El slug solo puede contener letras minúsculas, números y guiones'),
     excerpt: z
         .string()
         .min(1, 'El resumen es obligatorio')
-        .max(500, 'El resumen не может превышать 500 символов'),
+        .max(500, 'El resumen no puede exceder los 500 caracteres'),
     content: z.string().min(1, 'El contenido es obligatorio'),
     author: z
         .string()

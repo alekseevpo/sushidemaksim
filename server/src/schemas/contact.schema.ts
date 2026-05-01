@@ -8,14 +8,14 @@ export const contactSchema = z.object({
         name: z
             .string()
             .min(1, 'El nombre es obligatorio')
-            .min(2, 'El nombre debe иметь не менее 2 символов'),
+            .min(2, 'El nombre debe tener al menos 2 caracteres'),
 
         email: z.string().min(1, 'El email es obligatorio').email('Email inválido'),
 
         message: z
             .string()
             .min(1, 'El mensaje es obligatorio')
-            .min(10, 'El mensaje должен быть не менее 10 символов'),
+            .min(10, 'El mensaje debe tener al menos 10 caracteres'),
     }),
 });
 

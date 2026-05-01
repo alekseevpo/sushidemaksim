@@ -281,7 +281,7 @@ export async function sendOrderReceiptEmail(
             })
             .join('\n');
 
-        const waMessage = `ваш заказ ${String(orderData.orderId).padStart(5, '0')}\n${itemsListText}\nподтверждён`;
+        const waMessage = `Tu pedido #${String(orderData.orderId).padStart(5, '0')}\n${itemsListText}\nestá confirmado`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
         // wa.me doesn't like '+' prefix usually, digits only is safest
         waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
@@ -341,7 +341,7 @@ export async function sendOrderReceiptEmail(
               ? `
       <div style="margin-bottom: 24px; text-align: center;">
         <a href="${waUrl}" style="display: block; background-color: #25D366; color: #ffffff; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 900; font-size: 16px; text-align: center; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
-          ПОДТВЕРДИТЬ В WHATSAPP
+          CONFIRMAR EN WHATSAPP
         </a>
       </div>
       `
@@ -827,7 +827,7 @@ export async function sendReservationEmail(
                           return `
                 <div style="margin-bottom: 24px; text-align: center;">
                     <a href="${waUrl}" style="display: block; background-color: #25D366; color: #ffffff; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 900; font-size: 16px; text-align: center; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
-                        ПОДТВЕРДИТЬ В WHATSAPP
+                        CONFIRMAR EN WHATSAPP
                     </a>
                 </div>
                 `;

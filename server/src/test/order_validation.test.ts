@@ -95,8 +95,8 @@ describe('Order Schema Validation', () => {
             expect(result.success).toBe(false);
             if (!result.success) {
                 const messages = result.error.issues.map(i => i.message);
-                expect(messages).toContain('Selecciona una fecha для предзаказа');
-                expect(messages).toContain('Selecciona время для предзаказа');
+                expect(messages).toContain('Selecciona una fecha para el pedido anticipado');
+                expect(messages).toContain('Selecciona una hora para el pedido anticipado');
             }
         });
     });

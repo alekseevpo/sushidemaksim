@@ -924,7 +924,7 @@ router.delete(
 
             return res.json({
                 success: true,
-                message: `Usuario #${id} и все связанные данные удалены окончательно`,
+                message: `Usuario #${id} y todos los datos relacionados han sido eliminados permanentemente`,
             });
         }
 

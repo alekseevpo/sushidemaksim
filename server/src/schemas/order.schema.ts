@@ -136,14 +136,14 @@ export const createOrderSchema = z.object({
                 if (!data.scheduledDate || data.scheduledDate.length === 0) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
-                        message: 'Selecciona una fecha для предзаказа',
+                        message: 'Selecciona una fecha para el pedido anticipado',
                         path: ['scheduledDate'],
                     });
                 }
                 if (!data.scheduledTime || data.scheduledTime.length === 0) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
-                        message: 'Selecciona время для предзаказа',
+                        message: 'Selecciona una hora para el pedido anticipado',
                         path: ['scheduledTime'],
                     });
                 }
@@ -198,7 +198,7 @@ export const inviteOrderSchema = z.object({
                 if (!data.address && !data.deliveryAddress) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
-                        message: 'La dirección es obligatoria для приглашения',
+                        message: 'La dirección es obligatoria para la invitación',
                         path: ['address'],
                     });
                 }

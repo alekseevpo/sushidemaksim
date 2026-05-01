@@ -19,7 +19,7 @@ export const reservationIdParamSchema = z.object({
  */
 export const createReservationSchema = z.object({
     body: z.object({
-        name: z.string().min(2, 'El nombre debe иметь al menos 2 caracteres').max(100),
+        name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
         email: z.string().email('Email inválido'),
         phone: z.string().min(9, 'Teléfono inválido').max(20),
         date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido (YYYY-MM-DD)'),
