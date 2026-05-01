@@ -614,153 +614,155 @@ export default function CartPage() {
         isSubmittingRef.current = true;
         setIsOrdering(true);
 
-        const {
-            deliveryType,
-            address: streetVal = '',
-            house: houseVal = '',
-            apartment: aptVal = '',
-            phone,
-            customerName: customerNameVal,
-            guestEmail: guestEmailVal,
-            paymentMethod,
-            guestsCount,
-            isScheduled,
-            scheduledDate,
-            scheduledTime,
-            noCall,
-            noBuzzer,
-            customNote = '',
-        } = data;
+        try {
+            const {
+                deliveryType,
+                address: streetVal = '',
+                house: houseVal = '',
+                apartment: aptVal = '',
+                phone,
+                customerName: customerNameVal,
+                guestEmail: guestEmailVal,
+                paymentMethod,
+                guestsCount,
+                isScheduled,
+                scheduledDate,
+                scheduledTime,
+                noCall,
+                noBuzzer,
+                customNote = '',
+            } = data;
 
-        if (isStoreClosed && !isScheduled) {
-            return showError(
-                'Nuestra cocina está descansando en este momento, ¡pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona "Entrega programada".'
-            );
-        }
-
-        if (isTodayClosed && (!isScheduled || scheduledDate === todayStr)) {
-            return showError(
-                'Lo sentimos, ya no aceptamos más pedidos para hoy. ¡Pero puedes programar tu pedido para mañana o cualquier otro día!'
-            );
-        }
-
-        if (
-            isPickupOnly &&
-            deliveryType === 'delivery' &&
-            (!isScheduled || scheduledDate === todayStr)
-        ) {
-            return showError(
-                'Lo sentimos, actualmente no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
-            );
-        }
-
-        if (isScheduled && scheduledDate && scheduledTime) {
-            if (scheduledDate < todayStr) {
-                return showError('Por favor, selecciona una fecha a partir de hoy.');
+            if (isStoreClosed && !isScheduled) {
+                return showError(
+                    'Nuestra cocina está descansando en este momento, ¡pero estaremos encantados de preparar tu pedido anticipado! Por favor, selecciona "Entrega programada".'
+                );
             }
 
-            if (scheduledDate === todayStr) {
-                const now = new Date();
-                const nowMinutes = now.getHours() * 60 + now.getMinutes();
-                const [h, m] = scheduledTime.split(':').map(Number);
-                const scheduledMinutes = h * 60 + m;
+            if (isTodayClosed && (!isScheduled || scheduledDate === todayStr)) {
+                return showError(
+                    'Lo sentimos, ya no aceptamos más pedidos para hoy. ¡Pero puedes programar tu pedido para mañana o cualquier otro día!'
+                );
+            }
 
-                if (scheduledMinutes < nowMinutes + 15) {
+            if (
+                isPickupOnly &&
+                deliveryType === 'delivery' &&
+                (!isScheduled || scheduledDate === todayStr)
+            ) {
+                return showError(
+                    'Lo sentimos, actualmente no disponemos de reparto a domicilio. ¡Pero puedes hacer tu pedido para recoger en nuestro local!'
+                );
+            }
+
+            if (isScheduled && scheduledDate && scheduledTime) {
+                if (scheduledDate < todayStr) {
+                    return showError('Por favor, selecciona una fecha a partir de hoy.');
+                }
+
+                if (scheduledDate === todayStr) {
+                    const now = new Date();
+                    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+                    const [h, m] = scheduledTime.split(':').map(Number);
+                    const scheduledMinutes = h * 60 + m;
+
+                    if (scheduledMinutes < nowMinutes + 15) {
+                        return showError(
+                            'La hora seleccionada ya ha pasado o es demasiado cercana. Elige una hora posterior.'
+                        );
+                    }
+                }
+
+                if (!isTimeWithinBusinessHours(scheduledDate, scheduledTime)) {
                     return showError(
-                        'La hora seleccionada ya ha pasado o es demasiado cercana. Elige una hora posterior.'
+                        'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!'
+                    );
+                }
+
+                // Explicit safety check for closed days (e.g. Tuesday)
+                const dayOfWeek = getDayOfWeekFromDateString(scheduledDate);
+                if (BUSINESS_HOURS[dayOfWeek].length === 0) {
+                    return showError(
+                        'Lo sentimos, estamos cerrados el día seleccionado. Por favor, elige otro día.'
                     );
                 }
             }
 
-            if (!isTimeWithinBusinessHours(scheduledDate, scheduledTime)) {
-                return showError(
-                    'La hora seleccionada está fuera de nuestro horario de servicio. ¡Por favor, elige un momento en el que nuestros chefs estén en la cocina!'
-                );
+            // Safari Sync Hack
+            [customerNameRef, guestEmailRef, phoneRef, customNoteRef].forEach(ref => {
+                if (ref.current) {
+                    ref.current.focus();
+                    ref.current.blur();
+                }
+            });
+
+            // Capture values from Refs instead of only trusting state/data
+            // (Only needed for actual text inputs subject to Safari autofill)
+            const finalCustomerName = (customerNameRef.current?.value || '').trim();
+            const finalGuestEmail = (guestEmailRef.current?.value || '').trim();
+            const finalPhone = (phoneRef.current?.value || '').trim();
+            const finalCustomNote = (customNoteRef.current?.value || '').trim();
+
+            // Address is managed via modal/React state, not direct input, so data is reliable
+            const finalAddress = streetVal;
+            const finalHouse = houseVal;
+            const finalApartment = aptVal;
+
+            // Validate captured values if they were meant to be present
+            if (!isAuthenticated && !finalCustomerName) {
+                return showError('Por favor, introduce tu nombre');
+            }
+            if (!finalPhone) {
+                return showError('Por favor, introduce tu teléfono de contacto');
+            }
+            if (deliveryType === 'delivery' && !finalAddress) {
+                return showError('Por favor, indica tu calle para el envío');
             }
 
-            // Explicit safety check for closed days (e.g. Tuesday)
-            const dayOfWeek = getDayOfWeekFromDateString(scheduledDate);
-            if (BUSINESS_HOURS[dayOfWeek].length === 0) {
-                return showError(
-                    'Lo sentimos, estamos cerrados el día seleccionado. Por favor, elige otro día.'
-                );
+            tracker.track('checkout_start', {
+                metadata: {
+                    totalValue: cartSubtotal,
+                    itemsCount: items.reduce((s, i) => s + i.quantity, 0),
+                    deliveryType,
+                    paymentMethod,
+                },
+                userId: user?.id,
+            });
+
+            const notesArray = [];
+            const typeLabel =
+                deliveryType === 'pickup'
+                    ? 'RECOGIDA'
+                    : deliveryType === 'reservation'
+                      ? 'RESERVA'
+                      : 'DOMICILIO';
+            notesArray.push(`[TIPO: ${typeLabel}]`);
+            if (deliveryType === 'reservation') {
+                notesArray.push(`[PERSONAS: ${Number(guestsCount) || 2}]`);
             }
-        }
-
-        // Safari Sync Hack
-        [customerNameRef, guestEmailRef, phoneRef, customNoteRef].forEach(ref => {
-            if (ref.current) {
-                ref.current.focus();
-                ref.current.blur();
+            notesArray.push(
+                `[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`
+            );
+            if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
+            if (isScheduled && scheduledDate && scheduledTime) {
+                const [y, m, d] = scheduledDate.split('-');
+                notesArray.push(`[PROGRAMADO: ${d}-${m}-${y} ${scheduledTime}]`);
             }
-        });
+            if (noCall) notesArray.push('[SIN CONFIRMACIÓN LLAMADA]');
+            if (noBuzzer) notesArray.push('[NO LLAMAR TIMBRE]');
+            if (data.chopsticksCount > 0) notesArray.push(`[PALILLOS: ${data.chopsticksCount}]`);
 
-        // Capture values from Refs instead of only trusting state/data
-        // (Only needed for actual text inputs subject to Safari autofill)
-        const finalCustomerName = (customerNameRef.current?.value || '').trim();
-        const finalGuestEmail = (guestEmailRef.current?.value || '').trim();
-        const finalPhone = (phoneRef.current?.value || '').trim();
-        const finalCustomNote = (customNoteRef.current?.value || '').trim();
+            // Add beverage options to notes
+            items.forEach(item => {
+                if (item.selectedOption) {
+                    notesArray.push(`[${item.name}: ${item.selectedOption}]`);
+                }
+            });
 
-        // Address is managed via modal/React state, not direct input, so data is reliable
-        const finalAddress = streetVal;
-        const finalHouse = houseVal;
-        const finalApartment = aptVal;
-
-        // Validate captured values if they were meant to be present
-        if (!isAuthenticated && !finalCustomerName) {
-            return showError('Por favor, introduce tu nombre');
-        }
-        if (!finalPhone) {
-            return showError('Por favor, introduce tu teléfono de contacto');
-        }
-        if (deliveryType === 'delivery' && !finalAddress) {
-            return showError('Por favor, indica tu calle para el envío');
-        }
-
-        tracker.track('checkout_start', {
-            metadata: {
-                totalValue: cartSubtotal,
-                itemsCount: items.reduce((s, i) => s + i.quantity, 0),
-                deliveryType,
-                paymentMethod,
-            },
-            userId: user?.id,
-        });
-
-        const notesArray = [];
-        const typeLabel =
-            deliveryType === 'pickup'
-                ? 'RECOGIDA'
-                : deliveryType === 'reservation'
-                  ? 'RESERVA'
-                  : 'DOMICILIO';
-        notesArray.push(`[TIPO: ${typeLabel}]`);
-        if (deliveryType === 'reservation') {
-            notesArray.push(`[PERSONAS: ${Number(guestsCount) || 2}]`);
-        }
-        notesArray.push(`[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`);
-        if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
-        if (isScheduled && scheduledDate && scheduledTime) {
-            const [y, m, d] = scheduledDate.split('-');
-            notesArray.push(`[PROGRAMADO: ${d}-${m}-${y} ${scheduledTime}]`);
-        }
-        if (noCall) notesArray.push('[SIN CONFIRMACIÓN LLAMADA]');
-        if (noBuzzer) notesArray.push('[NO LLAMAR TIMBRE]');
-        if (data.chopsticksCount > 0) notesArray.push(`[PALILLOS: ${data.chopsticksCount}]`);
-
-        // Add beverage options to notes
-        items.forEach(item => {
-            if (item.selectedOption) {
-                notesArray.push(`[${item.name}: ${item.selectedOption}]`);
+            if (finalCustomNote || customNote.trim()) {
+                notesArray.push((finalCustomNote || customNote).trim());
             }
-        });
 
-        if (finalCustomNote || customNote.trim()) {
-            notesArray.push((finalCustomNote || customNote).trim());
-        }
-
-        try {
             const { lat, lon } = data;
             const payload: any = {
                 deliveryType,
