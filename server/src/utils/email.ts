@@ -277,11 +277,20 @@ export async function sendOrderReceiptEmail(
         const itemsListText = regularItems
             .map((item: any) => {
                 const opt = item.selected_option ? ` (${item.selected_option})` : '';
-                return `${item.name}${opt} x${item.quantity}`;
+                const itemTotal = (item.price_at_time * item.quantity).toFixed(2);
+                return `• ${item.name}${opt} x${item.quantity}: ${itemTotal}€`;
             })
             .join('\n');
 
-        const waMessage = `Tu pedido #${String(orderData.orderId).padStart(5, '0')}\n${itemsListText}\nestá confirmado`;
+        const deliveryFeeText = deliveryItem
+            ? `\n• Gastos de Envío: ${deliveryItem.price_at_time.toFixed(2)}€`
+            : '';
+
+        const scheduledText = scheduledTime ? `\n⏰ *ENTREGA PROGRAMADA: ${scheduledTime}*` : '';
+
+        const paymentMethodLabel = paymentMethod.includes('TARJETA') ? '💳 Tarjeta' : '💵 Efectivo';
+
+        const waMessage = `Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\n*Total: ${orderData.total.toFixed(2)}€*\n*Método de pago: ${paymentMethodLabel}*`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
         // wa.me doesn't like '+' prefix usually, digits only is safest
         waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
