@@ -542,9 +542,11 @@ export default function AddressModal({
         }
     };
 
-    // Geolocation handler
     const handleGeolocate = useCallback(() => {
-        if (!navigator.geolocation) return;
+        if (!navigator.geolocation) {
+            alert('Tu navegador no soporta la geolocalización.');
+            return;
+        }
         setIsGeolocating(true);
         navigator.geolocation.getCurrentPosition(
             pos => {
@@ -566,8 +568,18 @@ export default function AddressModal({
             err => {
                 console.error('Geolocation error:', err);
                 setIsGeolocating(false);
+                // Provide user feedback on failure (e.g. denied permission or timeout)
+                if (err.code === err.PERMISSION_DENIED) {
+                    alert(
+                        'Por favor, permite el acceso a tu ubicación en los ajustes del navegador.'
+                    );
+                } else {
+                    alert(
+                        'No pudimos detectar tu ubicación. Intenta buscar tu calle manualmente.'
+                    );
+                }
             },
-            { enableHighAccuracy: true, timeout: 10000 }
+            { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
         );
     }, [performReverseGeocode]);
 
@@ -756,8 +768,7 @@ export default function AddressModal({
                                 {/* Geolocation Button */}
                                 <button
                                     type="button"
-                                    onPointerDown={e => {
-                                        e.preventDefault();
+                                    onClick={e => {
                                         e.stopPropagation();
                                         handleGeolocate();
                                     }}
@@ -938,8 +949,7 @@ export default function AddressModal({
                                     {isSearchFullscreen && !searchQuery && (
                                         <button
                                             type="button"
-                                            onPointerDown={e => {
-                                                e.preventDefault();
+                                            onClick={e => {
                                                 e.stopPropagation();
                                                 handleGeolocate();
                                             }}
