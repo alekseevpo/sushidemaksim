@@ -9,7 +9,7 @@ const STATIC_ROUTES = [
     { url: '/menu', changefreq: 'weekly', priority: '0.9' },
     { url: '/promo', changefreq: 'weekly', priority: '0.8' },
     { url: '/contacts', changefreq: 'weekly', priority: '0.7' },
-    { url: '/blog', changefreq: 'weekly', priority: '0.8' },
+    { url: '/tablon', changefreq: 'daily', priority: '0.8' },
 ];
 
 const MENU_CATEGORIES = [
@@ -49,36 +49,24 @@ router.get('/', async (req: Request, res: Response) => {
         ).join('\n');
         xmlItems += '\n' + categoryItems;
 
-        // 3. Dynamic Blog Posts with Images
+        // 3. Dynamic Tablón Posts
         const { data: posts } = await supabase
-            .from('blog_posts')
-            .select('title, slug, image_url, updated_at')
-            .eq('published', true);
+            .from('tablon_posts')
+            .select('id, updated_at')
+            .eq('is_approved', true);
 
         if (posts && posts.length > 0) {
-            const blogItems = posts
+            const tablonItems = posts
                 .map(post => {
-                    let imgXml = '';
-                    if (post.image_url) {
-                        const imgUrl = post.image_url.startsWith('http')
-                            ? post.image_url
-                            : `${baseUrl}${post.image_url.startsWith('/') ? '' : '/'}${post.image_url}`;
-                        imgXml = `
-        <image:image>
-            <image:loc>${imgUrl}</image:loc>
-            <image:title>${post.title.replace(/[<>&"']/g, '')}</image:title>
-        </image:image>`;
-                    }
-
                     return `    <url>
-        <loc>${baseUrl}/blog/${post.slug}</loc>
+        <loc>${baseUrl}/tablon/${post.id}</loc>
         <lastmod>${post.updated_at ? new Date(post.updated_at).toISOString().split('T')[0] : today}</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.6</priority>${imgXml}
+        <priority>0.5</priority>
     </url>`;
                 })
                 .join('\n');
-            xmlItems += '\n' + blogItems;
+            xmlItems += '\n' + tablonItems;
         }
 
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

@@ -21,7 +21,7 @@ import { HomeSkeleton } from './components/skeletons/HomeSkeleton';
 import { AdminSkeleton } from './components/skeletons/AdminSkeleton';
 import { ProfileSkeleton } from './components/skeletons/ProfileSkeleton';
 import { PromoSkeleton } from './components/skeletons/PromoSkeleton';
-import { BlogSkeleton } from './components/skeletons/BlogSkeleton';
+import { TablonSkeleton } from './components/skeletons/TablonSkeleton';
 import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
 import { TableMenuSkeleton } from './components/skeletons/TableMenuSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
@@ -55,8 +55,8 @@ const PromoPage = lazyRetry(() => import('./pages/PromoPage'));
 const ProfilePage = lazyRetry(() => import('./pages/ProfilePage'));
 const AdminPage = lazyRetry(() => import('./pages/AdminPage'));
 const ContactsPage = lazyRetry(() => import('./pages/ContactsPage'));
-const BlogPage = lazyRetry(() => import('./pages/BlogPage'));
-const BlogPostPage = lazyRetry(() => import('./pages/BlogPostPage'));
+const TablonPage = lazyRetry(() => import('./pages/TablonPage'));
+const TablonPostPage = lazyRetry(() => import('./pages/TablonPostPage'));
 const PayForFriendPage = lazyRetry(() => import('./pages/PayForFriendPage'));
 const VerifyPage = lazyRetry(() => import('./pages/VerifyPage'));
 const ReservationPage = lazyRetry(() => import('./pages/ReservationPage'));
@@ -82,6 +82,7 @@ const PageWrapper = ({
     const location = useLocation();
     const isProfile = location.pathname === '/profile';
     const isWaiterRoute = location.pathname.startsWith('/waiter');
+    const isTablonRoute = location.pathname.startsWith('/tablon');
 
     useEffect(() => {
         // Scroll to top on pathname change, regardless of search params.
@@ -110,7 +111,7 @@ const PageWrapper = ({
                 className="flex-1 flex flex-col w-full"
                 style={{
                     paddingTop:
-                        !isAdmin && !isWaiterRoute && !isHome && !isProfile
+                        !isAdmin && !isWaiterRoute && !isHome && !isProfile && !isTablonRoute
                             ? 'var(--header-height, 4rem)'
                             : '0',
                 }}
@@ -131,6 +132,7 @@ function App() {
     const isAdminRoute = location.pathname.startsWith('/admin');
     const isWaiterRoute = location.pathname.startsWith('/waiter');
     const isTableRoute = location.pathname === '/table';
+    const isTablonRoute = location.pathname.startsWith('/tablon');
 
     useEffect(() => {
         // Disable automatic scroll restoration on mount
@@ -153,10 +155,18 @@ function App() {
 
     useEffect(() => {
         const isTable = location.pathname === '/table';
+        const isTablon = location.pathname.startsWith('/tablon');
+
         if (isTable) {
             document.documentElement.classList.add('is-table-route');
         } else {
             document.documentElement.classList.remove('is-table-route');
+        }
+
+        if (isTablon) {
+            document.documentElement.classList.add('is-tablon-route');
+        } else {
+            document.documentElement.classList.remove('is-tablon-route');
         }
     }, [location.pathname]);
 
@@ -169,7 +179,7 @@ function App() {
                         <PageTracker />
                         <div
                             className={`min-h-[100svh] flex flex-col transition-colors duration-500 ${
-                                isTableRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'
+                                isTableRoute || isTablonRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'
                             }`}
                         >
                             <Analytics />
@@ -259,18 +269,27 @@ function App() {
                                             }
                                         />
                                         <Route
-                                            path="/blog"
+                                            path="/tablon"
                                             element={
-                                                <PageWrapper skeleton={<BlogSkeleton />}>
-                                                    <BlogPage />
+                                                <PageWrapper skeleton={<TablonSkeleton />}>
+                                                    <TablonPage />
                                                 </PageWrapper>
                                             }
                                         />
                                         <Route
-                                            path="/blog/:slug"
+                                            path="/tablon/:id"
                                             element={
-                                                <PageWrapper skeleton={<BlogSkeleton />}>
-                                                    <BlogPostPage />
+                                                <PageWrapper skeleton={<TablonSkeleton />}>
+                                                    <TablonPostPage />
+                                                </PageWrapper>
+                                            }
+                                        />
+                                        {/* Redirect old blog URLs to tablón */}
+                                        <Route
+                                            path="/blog"
+                                            element={
+                                                <PageWrapper skeleton={<TablonSkeleton />}>
+                                                    <TablonPage />
                                                 </PageWrapper>
                                             }
                                         />

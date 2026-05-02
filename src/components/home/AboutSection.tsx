@@ -89,10 +89,10 @@ export function AboutSection() {
                         ))}
                     </div>
                     <Link
-                        to="/blog"
+                        to="/tablon"
                         className="text-gray-900 font-black text-sm group flex items-center gap-2 hover:text-orange-600 transition-colors"
                     >
-                        LEER MÁS EN NUESTRO BLOG
+                        VER TABLÓN DE LA COMUNIDAD
                         <ArrowRight
                             size={16}
                             strokeWidth={1.5}

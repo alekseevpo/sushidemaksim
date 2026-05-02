@@ -17,6 +17,7 @@ import {
     Search,
     X,
     RotateCcw,
+    Eye,
 } from 'lucide-react';
 
 import { api, ApiError } from '../../utils/api';
@@ -53,6 +54,7 @@ const USERS_TRANSLATIONS = {
             superadmin: 'Владелец',
             admin: 'Админ',
             waiter: 'Официант',
+            moderator: 'Модератор',
             user: 'Клиент',
         },
         status: {
@@ -112,6 +114,7 @@ const USERS_TRANSLATIONS = {
             superadmin: 'Owner',
             admin: 'Admin',
             waiter: 'Camarero',
+            moderator: 'Moderador',
             user: 'Cliente',
         },
         status: {
@@ -389,6 +392,10 @@ const UserRow = memo(
                             <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm">
                                 <Clock size={10} strokeWidth={2.5} /> {t.roles.waiter}
                             </span>
+                        ) : user.role === 'moderator' ? (
+                            <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-purple-100 shadow-sm">
+                                <Eye size={10} strokeWidth={2.5} /> {t.roles.moderator}
+                            </span>
                         ) : (
                             <span className="inline-flex items-center gap-1 bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-gray-200">
                                 <UsersIcon size={10} strokeWidth={2.5} /> {t.roles.user}
@@ -466,7 +473,9 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
     const [userToDelete, setUserToDelete] = useState<any>(null);
     const [userToChangeRole, setUserToChangeRole] = useState<any>(null);
     const [userToVerify, setUserToVerify] = useState<any>(null);
-    const [selectedNewRole, setSelectedNewRole] = useState<'user' | 'admin' | 'waiter'>('user');
+    const [selectedNewRole, setSelectedNewRole] = useState<
+        'user' | 'admin' | 'waiter' | 'moderator'
+    >('user');
 
     const LIMIT = 20;
 
@@ -1024,6 +1033,12 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                             label: t.roles.admin,
                                             icon: Shield,
                                             color: 'red',
+                                        },
+                                        {
+                                            id: 'moderator',
+                                            label: t.roles.moderator,
+                                            icon: Eye,
+                                            color: 'purple',
                                         },
                                     ].map(r => (
                                         <button

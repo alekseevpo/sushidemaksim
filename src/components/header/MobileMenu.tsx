@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, Menu, BookOpen, Phone, Star, LogOut } from 'lucide-react';
+import { ShieldCheck, Menu, Megaphone, Phone, Star, LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import SafeImage from '../common/SafeImage';
 import { getSharpAvatar } from '../../utils/avatar';
@@ -29,7 +29,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
 
     const navLinks = [
         { to: '/menu', label: 'Menú', icon: Menu },
-        { to: '/blog', label: 'Blog', icon: BookOpen },
+        { to: '/tablon', label: 'Tablón', icon: Megaphone },
         { to: '/contacts', label: 'Contactos', icon: Phone },
         { to: '/promo', label: 'Promo', icon: Star },
     ];

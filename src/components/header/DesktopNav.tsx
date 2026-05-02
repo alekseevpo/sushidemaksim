@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Menu, BookOpen, Phone, Star, Calendar } from 'lucide-react';
+import { Menu, Megaphone, Phone, Star, Calendar } from 'lucide-react';
 
 interface DesktopNavProps {
     isScrolled: boolean;
@@ -19,7 +19,7 @@ export default function DesktopNav({ isScrolled, isTransparentHeaderPage }: Desk
 
     const navLinks: NavLink[] = [
         { to: '/menu', label: 'Menú', icon: Menu },
-        { to: '/blog', label: 'Blog', icon: BookOpen },
+        { to: '/tablon', label: 'Tablón', icon: Megaphone },
         { to: '/contacts', label: 'Contactos', icon: Phone },
         { to: '/promo', label: 'Promo', icon: Star },
         { to: '/reservar', label: 'Reserva', icon: Calendar },

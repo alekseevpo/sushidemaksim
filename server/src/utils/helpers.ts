@@ -174,6 +174,48 @@ export function formatBlogPost(p: any) {
     };
 }
 
+/** Cleanly maps a Tablón post from DB to Frontend, with privacy controls */
+export function formatTablonPost(p: any, isAuthenticated: boolean, commentCount: number = 0) {
+    if (!p) return null;
+    const user = p.users;
+    const category = p.tablon_categories;
+
+    return {
+        id: p.id,
+        userId: p.user_id,
+        category: category ? { id: category.id, name: category.name, emoji: category.emoji } : null,
+        tags: p.tags || [],
+        message: p.message,
+        whatsappPhone: isAuthenticated ? p.whatsapp_phone : null,
+        images: p.images || [],
+        isApproved: !!p.is_approved,
+        createdAt: p.created_at,
+        updatedAt: p.updated_at,
+        commentCount,
+        author: isAuthenticated
+            ? { id: user?.id, name: user?.name || 'Usuario', avatar: user?.avatar || null }
+            : { id: null, name: null, avatar: null },
+    };
+}
+
+/** Cleanly maps a Tablón comment from DB to Frontend, with privacy controls */
+export function formatTablonComment(c: any, isAuthenticated: boolean) {
+    if (!c) return null;
+    const user = c.users;
+
+    return {
+        id: c.id,
+        postId: c.post_id,
+        userId: c.user_id,
+        parentId: c.parent_id || null,
+        message: c.message,
+        createdAt: c.created_at,
+        author: isAuthenticated
+            ? { id: user?.id, name: user?.name || 'Usuario', avatar: user?.avatar || null }
+            : { id: null, name: null, avatar: null },
+    };
+}
+
 /** Madrid Time Helpers */
 export function getMadridStartOfDay() {
     const madridNowString = new Date().toLocaleString('en-US', {

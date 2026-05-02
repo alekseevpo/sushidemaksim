@@ -26,7 +26,7 @@ const AdminMenu = lazy(() => import('../components/admin/AdminMenu'));
 const AdminUsers = lazy(() => import('../components/admin/AdminUsers'));
 const AdminOrders = lazy(() => import('../components/admin/AdminOrders'));
 const AdminPromos = lazy(() => import('../components/admin/AdminPromos'));
-const AdminBlog = lazy(() => import('../components/admin/AdminBlog'));
+const AdminTablon = lazy(() => import('../components/admin/AdminTablon'));
 const AdminSettings = lazy(() => import('../components/admin/AdminSettings'));
 const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
 const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
@@ -44,7 +44,7 @@ type TabId =
     | 'menu'
     | 'users'
     | 'promos'
-    | 'blog'
+    | 'tablon'
     | 'settings'
     | 'analytics'
     | 'abandoned'
@@ -63,7 +63,7 @@ export const ADMIN_TRANSLATIONS = {
             menu: 'Управление меню',
             users: 'Пользователи и клиенты',
             promos: 'Управление акциями',
-            blog: 'Управление блогом',
+            tablon: 'Модерация Tablón',
             settings: 'Настройки контактов',
             reservations: 'Бронирование столов',
             delivery: 'Зоны доставки',
@@ -88,7 +88,7 @@ export const ADMIN_TRANSLATIONS = {
             menu: 'Отсюда вы можете добавлять новые блюда, менять цены или помечать блюда акциями. Если блюдо закончилось, вы можете временно скрыть его.',
             users: 'Это справочник ваших клиентов. Вы можете видеть, кто ваши лучшие покупатели, и анализировать их историю заказов.',
             promos: 'Управляйте вашими статическими предложениями здесь. Создавайте рекламные баннеры с разными цветами и иконками.',
-            blog: 'Управляйте своим блогом здесь. Создавайте новые статьи, редактируйте существующие или меняйте статус их публикации.',
+            tablon: 'Модерируйте объявления пользователей: одобряйте, отклоняйте посты и управляйте категориями.',
             analytics:
                 'Это ваш интеллектуальный центр. Здесь вы можете увидеть, какие устройства используют клиенты, в какое время они заказывают и пиковые нагрузки.',
             abandoned:
@@ -110,7 +110,7 @@ export const ADMIN_TRANSLATIONS = {
             menu: 'Gestión de Menú',
             users: 'Usuarios y Clientes',
             promos: 'Gestión de Promociones',
-            blog: 'Gestión de Blog',
+            tablon: 'Moderación Tablón',
             settings: 'Ajustes de Contacto',
             reservations: 'Reservas de Mesas',
             delivery: 'Zonas de Entrega',
@@ -135,7 +135,7 @@ export const ADMIN_TRANSLATIONS = {
             menu: 'Desde aquí puedes añadir nuevos platos, cambiar precios o marcar platos con promociones. Si un plato se agota, puedes ocultarlo temporalmente.',
             users: 'Este es el directorio de tus clientes. Puedes ver quiénes son tus mejores compradores y analizar su historial de pedidos.',
             promos: 'Gestiona tus ofertas estáticas aquí. Crea banners promocionales con diferentes colores, iconos y ofertas.',
-            blog: 'Maneja tu blog aquí. Crea artículos nuevos, edita los existentes o cambia su estado de publicación.',
+            tablon: 'Modera los anuncios de la comunidad: aprueba, rechaza publicaciones y gestiona categorías.',
             analytics:
                 'Este es tu centro de inteligencia. Aquí puedes ver qué dispositivos usan más tus clientes, a qué horas prefieren pedir y qué días de la semana tienes más trabajo.',
             abandoned:
@@ -576,7 +576,7 @@ export default function AdminPage() {
                 badge: newUsersCount > 0 ? newUsersCount : null,
             },
             { id: 'promos', label: t.nav.promos, icon: ShoppingBag },
-            { id: 'blog', label: t.nav.blog, icon: Activity },
+            { id: 'tablon', label: t.nav.tablon, icon: Activity },
             { id: 'settings', label: t.nav.settings, icon: DollarSign },
             {
                 id: 'reservations',
@@ -890,7 +890,7 @@ export default function AdminPage() {
                         {activeTab === 'settings' && <AdminSettings language={language} />}
                         {activeTab === 'delivery' && <AdminDeliveryZones language={language} />}
                         {activeTab === 'promos' && <AdminPromos language={language} />}
-                        {activeTab === 'blog' && <AdminBlog language={language} />}
+                        {activeTab === 'tablon' && <AdminTablon language={language} />}
                         {activeTab === 'reservations' && <AdminReservations language={language} />}
                     </Suspense>
 

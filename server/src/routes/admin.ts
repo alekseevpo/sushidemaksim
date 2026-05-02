@@ -9,11 +9,6 @@ import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validateResource } from '../middleware/validateResource.js';
 import {
-    createBlogPostSchema,
-    updateBlogPostSchema,
-    publishBlogPostSchema,
-} from '../schemas/blog.schema.js';
-import {
     updateUserRoleSchema,
     verifyEmailSchema,
     verifyBirthdaySchema,
@@ -41,7 +36,6 @@ import {
     promoIdParamSchema,
 } from '../schemas/promo.schema.js';
 import {
-    formatBlogPost,
     formatOrder,
     formatAdminMenuItem,
     formatUser,
@@ -51,6 +45,7 @@ import {
 } from '../utils/helpers.js';
 import { processImage } from '../utils/imageProcessor.js';
 import { invalidateMenuCache } from './menu.js';
+import { syncThreadsPosts } from '../services/threads.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,6 +62,22 @@ const router = Router();
 
 // All admin routes require auth + admin role
 router.use(authMiddleware, adminMiddleware);
+
+// GET /api/admin/tablon-categories — List unapproved categories for moderation
+router.get(
+    '/tablon-categories',
+    asyncHandler(async (req: Request, res: Response) => {
+        const approved = req.query.approved === 'true';
+        const { data: categories, error } = await supabase
+            .from('tablon_categories')
+            .select('id, name, emoji, created_by, is_approved, created_at')
+            .eq('is_approved', approved)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.json({ categories: categories || [] });
+    })
+);
 
 // POST /api/admin/menu/upload-image (to Supabase Storage)
 router.post(
@@ -1474,123 +1485,6 @@ router.delete(
     })
 );
 
-// ─── BLOG POSTS MANAGEMENT ────────────────────────────────────────────────────
-router.get(
-    '/blog_posts',
-    asyncHandler(async (_req: Request, res: Response) => {
-        const { data: posts, error } = await supabase
-            .from('blog_posts')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        res.json((posts || []).map(formatBlogPost));
-    })
-);
-
-router.post(
-    '/blog_posts',
-    validateResource(createBlogPostSchema),
-    asyncHandler(async (req: Request, res: Response) => {
-        const {
-            title,
-            slug,
-            excerpt,
-            content,
-            image_url,
-            imageUrl,
-            author,
-            category,
-            read_time,
-            readTime,
-            published,
-        } = req.body;
-        const { data: post, error } = await supabase
-            .from('blog_posts')
-            .insert({
-                title,
-                slug,
-                excerpt,
-                content,
-                image_url: imageUrl || image_url,
-                author,
-                category,
-                read_time: readTime || read_time,
-                published,
-            })
-            .select()
-            .single();
-        if (error) throw error;
-        res.json(formatBlogPost(post));
-    })
-);
-
-router.put(
-    '/blog_posts/:id',
-    validateResource(updateBlogPostSchema),
-    asyncHandler(async (req: Request, res: Response) => {
-        const {
-            title,
-            slug,
-            excerpt,
-            content,
-            image_url,
-            imageUrl,
-            author,
-            category,
-            read_time,
-            readTime,
-            published,
-        } = req.body;
-        const { data: post, error } = await supabase
-            .from('blog_posts')
-            .update({
-                title,
-                slug,
-                excerpt,
-                content,
-                image_url: imageUrl || image_url,
-                author,
-                category,
-                read_time: readTime || read_time,
-                published,
-            })
-            .eq('id', req.params.id)
-            .select()
-            .single();
-        if (error) throw error;
-        res.json(formatBlogPost(post));
-    })
-);
-
-router.delete(
-    '/blog_posts/:id',
-    asyncHandler(async (req: Request, res: Response) => {
-        const { error } = await supabase.from('blog_posts').delete().eq('id', req.params.id);
-        if (error) throw error;
-        res.json({ success: true });
-    })
-);
-
-router.patch(
-    '/blog_posts/:id/publish',
-    validateResource(publishBlogPostSchema),
-    asyncHandler(async (req: Request, res: Response) => {
-        const { published } = req.body;
-        const { data: post, error } = await supabase
-            .from('blog_posts')
-            .update({
-                published,
-                published_at: published ? new Date().toISOString() : null,
-            })
-            .eq('id', req.params.id)
-            .select()
-            .single();
-
-        if (error) throw error;
-        res.json(formatBlogPost(post));
-    })
-);
-
 // GET /api/admin/reports
 router.get(
     '/reports',
@@ -2061,6 +1955,21 @@ router.post(
         }
 
         res.json({ code: data.code });
+    })
+);
+
+// ─── THREADS SYNC ────────────────────────────────────────────────────────────
+
+router.post(
+    '/threads/sync',
+    authMiddleware,
+    adminMiddleware,
+    asyncHandler(async (req: Request, res: Response) => {
+        const result = await syncThreadsPosts();
+        if (!result.success) {
+            return res.status(500).json({ error: result.message || 'Failed to sync threads' });
+        }
+        res.json({ message: 'Threads sync complete', stats: result });
     })
 );
 

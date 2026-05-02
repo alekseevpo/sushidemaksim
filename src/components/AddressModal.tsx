@@ -609,7 +609,7 @@ export default function AddressModal({
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[40px] z-modal max-h-[82dvh] md:max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:top-12 md:bottom-12 md:rounded-[32px] shadow-3xl"
+                        className="fixed inset-0 md:inset-auto md:top-12 md:bottom-12 md:left-0 md:right-0 bg-white z-modal h-[100dvh] md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:rounded-[32px] shadow-3xl"
                     >
                         {/* Header (Desktop only) */}
                         <div className="hidden md:flex px-6 py-4 justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
@@ -630,10 +630,18 @@ export default function AddressModal({
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl">
+                        <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl relative">
+                            {/* Mobile Close Button */}
+                            <button
+                                onClick={onClose}
+                                className="md:hidden absolute top-safe-top right-4 mt-4 w-10 h-10 bg-white/90 backdrop-blur-md shadow-xl rounded-full flex items-center justify-center text-gray-900 active:scale-95 transition z-[1001]"
+                            >
+                                <X size={20} strokeWidth={2.5} />
+                            </button>
+
                             {/* Map Side */}
                             <div
-                                className="h-[32vh] min-h-[220px] max-h-[420px] md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none shrink-0"
+                                className="flex-1 md:h-auto relative bg-gray-100 border-r border-gray-100 shrink-0"
                                 onClick={() => {
                                     // Close search dropdown when tapping on the map area
                                     if (searchResults.length > 0) {
@@ -748,7 +756,8 @@ export default function AddressModal({
                                 {/* Geolocation Button */}
                                 <button
                                     type="button"
-                                    onClick={e => {
+                                    onPointerDown={e => {
+                                        e.preventDefault();
                                         e.stopPropagation();
                                         handleGeolocate();
                                     }}
@@ -929,7 +938,11 @@ export default function AddressModal({
                                     {isSearchFullscreen && !searchQuery && (
                                         <button
                                             type="button"
-                                            onClick={handleGeolocate}
+                                            onPointerDown={e => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                handleGeolocate();
+                                            }}
                                             disabled={isGeolocating}
                                             className="mt-4 w-full flex items-center gap-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all active:scale-[0.98] group"
                                         >

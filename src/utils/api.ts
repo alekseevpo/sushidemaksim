@@ -81,11 +81,11 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
             localStorage.removeItem('sushi_token');
 
             // List of public pages that should NOT redirect on 401
-            const publicPages = ['/', '/menu', '/cart', '/promo', '/contacts', '/blog'];
+            const publicPages = ['/', '/menu', '/cart', '/promo', '/contacts', '/tablon'];
             const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
             const isPublicPage =
                 publicPages.includes(currentPath) ||
-                window.location.pathname.startsWith('/blog/') ||
+                window.location.pathname.startsWith('/tablon/') ||
                 window.location.pathname.startsWith('/track/') ||
                 window.location.pathname.startsWith('/pay-for-friend/');
 

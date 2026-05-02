@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Heart, Menu, BookOpen, Star, Info, Calendar } from 'lucide-react';
+import { Phone, Heart, Menu, Megaphone, Star, Info, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../hooks/queries/useSettings';
 
@@ -107,11 +107,11 @@ export default function Footer() {
                             Menú
                         </Link>
                         <Link
-                            to="/blog"
+                            to="/tablon"
                             className="hover:text-white transition-colors flex items-center gap-2 no-underline"
                         >
-                            <BookOpen size={14} strokeWidth={2.5} className="hidden md:block" />
-                            Blog
+                            <Megaphone size={14} strokeWidth={2.5} className="hidden md:block" />
+                            Tablón
                         </Link>
                         <Link
                             to="/promo"

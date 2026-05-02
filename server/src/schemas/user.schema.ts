@@ -130,8 +130,10 @@ export const favoriteSchema = z.object({
 
 export const updateUserRoleSchema = z.object({
     body: z.object({
-        role: z.enum(['user', 'admin', 'waiter'], {
-            errorMap: () => ({ message: 'Rol inválido. Debe ser: user, admin o waiter' }),
+        role: z.enum(['user', 'admin', 'waiter', 'moderator'], {
+            errorMap: () => ({
+                message: 'Rol inválido. Debe ser: user, admin, waiter o moderator',
+            }),
         }),
     }),
     params: z.object({

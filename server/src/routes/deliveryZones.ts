@@ -233,7 +233,7 @@ router.get(
                 response = await axios.get('https://nominatim.openstreetmap.org/search', {
                     params: {
                         format: 'json',
-                        q: query,
+                        q: query + ', Madrid',
                         limit: 50,
                         addressdetails: 1,
                         countrycodes: 'es',
