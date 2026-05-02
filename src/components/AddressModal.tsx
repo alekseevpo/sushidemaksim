@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X,
@@ -85,16 +85,45 @@ interface AddressModalProps {
     currentAddress?: any;
 }
 
-function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }) {
+function MapUpdater({
+    center,
+    zoom,
+    isOpen,
+}: {
+    center: [number, number];
+    zoom: number;
+    isOpen: boolean;
+}) {
     const map = useMap();
+    const isFirstRenderRef = useRef(true);
+
     useEffect(() => {
-        // Debounce/Timeout to ensure the container transition is finished
+        if (isOpen) {
+            // Only invalidate size when modal opens
+            const timer = setTimeout(() => {
+                map.invalidateSize();
+                if (isFirstRenderRef.current) {
+                    map.setView(center, zoom, { animate: false });
+                    isFirstRenderRef.current = false;
+                }
+            }, 250);
+            return () => clearTimeout(timer);
+        } else {
+            isFirstRenderRef.current = true;
+        }
+        // center/zoom are only used for initial view, subsequent updates handled by other effect
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, map]);
+
+    useEffect(() => {
+        if (isFirstRenderRef.current) return;
+
         const timer = setTimeout(() => {
-            map.invalidateSize();
-            map.setView(center, zoom, { animate: true });
-        }, 100);
+            map.setView(center, zoom, { animate: true, duration: 0.5 });
+        }, 50);
         return () => clearTimeout(timer);
     }, [center, zoom, map]);
+
     return null;
 }
 
@@ -139,6 +168,52 @@ export default function AddressModal({
     );
     const [address, setAddress] = useState(currentAddress?.address || '');
     const [house, setHouse] = useState(currentAddress?.house || '');
+
+    // Memoize delivery zones to prevent heavy re-renders during marker moves
+    const renderedZones = useMemo(
+        () =>
+            deliveryZones.map(zone => {
+                if (
+                    zone.type === 'radius' ||
+                    (zone.maxRadius > 0 && (!zone.coordinates || zone.coordinates.length < 3))
+                ) {
+                    return (
+                        <Circle
+                            key={zone.id}
+                            center={RESTAURANT_LOCATION}
+                            radius={zone.maxRadius * 1000}
+                            pathOptions={{
+                                color: zone.color,
+                                fillColor: zone.color,
+                                fillOpacity: 0.05,
+                                weight: 1.5,
+                                dashArray: '5, 10',
+                            }}
+                        />
+                    );
+                }
+                if (
+                    zone.coordinates &&
+                    Array.isArray(zone.coordinates) &&
+                    zone.coordinates.length >= 3
+                ) {
+                    return (
+                        <Polygon
+                            key={zone.id}
+                            positions={zone.coordinates}
+                            pathOptions={{
+                                color: zone.color,
+                                fillColor: zone.color,
+                                fillOpacity: 0.1,
+                                weight: 2,
+                            }}
+                        />
+                    );
+                }
+                return null;
+            }),
+        [deliveryZones]
+    );
     const [apartment, setApartment] = useState(currentAddress?.apartment || '');
     const [postalCode, setPostalCode] = useState(currentAddress?.postalCode || '');
     const [selectedZone, setSelectedZone] = useState<any>(null);
@@ -432,13 +507,11 @@ export default function AddressModal({
 
             setSearchResults([]);
             setIsSearching(false);
-
-            // Always sync searchQuery with the selected street to prevent re-triggering search
-            if (searchQuery !== street) {
-                setSearchQuery(street);
-            }
+            setSearchQuery('');
+            setIsSearchFullscreen(false);
+            searchInputRef.current?.blur();
         },
-        [searchQuery, deliveryZones, handleContinueWithValues]
+        [deliveryZones, handleContinueWithValues]
     );
 
     const performSearch = useCallback(
@@ -677,6 +750,7 @@ export default function AddressModal({
                                                 : RESTAURANT_LOCATION
                                         }
                                         zoom={mapZoom}
+                                        isOpen={isOpen}
                                     />
 
                                     {/* Static Restaurant Marker */}
@@ -697,48 +771,8 @@ export default function AddressModal({
                                         }}
                                     />
 
-                                    {/* Delivery Zones */}
-                                    {deliveryZones.map(zone => {
-                                        if (
-                                            zone.type === 'radius' ||
-                                            (zone.maxRadius > 0 &&
-                                                (!zone.coordinates || zone.coordinates.length < 3))
-                                        ) {
-                                            return (
-                                                <Circle
-                                                    key={zone.id}
-                                                    center={RESTAURANT_LOCATION}
-                                                    radius={zone.maxRadius * 1000}
-                                                    pathOptions={{
-                                                        color: zone.color,
-                                                        fillColor: zone.color,
-                                                        fillOpacity: 0.05,
-                                                        weight: 1.5,
-                                                        dashArray: '5, 10',
-                                                    }}
-                                                />
-                                            );
-                                        }
-                                        if (
-                                            zone.coordinates &&
-                                            Array.isArray(zone.coordinates) &&
-                                            zone.coordinates.length >= 3
-                                        ) {
-                                            return (
-                                                <Polygon
-                                                    key={zone.id}
-                                                    positions={zone.coordinates}
-                                                    pathOptions={{
-                                                        color: zone.color,
-                                                        fillColor: zone.color,
-                                                        fillOpacity: 0.1,
-                                                        weight: 2,
-                                                    }}
-                                                />
-                                            );
-                                        }
-                                        return null;
-                                    })}
+                                    {/* Delivery Zones - Memoized to prevent jank on marker moves */}
+                                    {renderedZones}
                                 </MapContainer>
 
                                 <AnimatePresence>
