@@ -510,7 +510,6 @@ export default function AddressModal({
             } else if (autoConfirm && currentZone) {
                 handleContinueWithValues(street, houseNum, '', pc, currentZone, newPos);
             }
-
         },
         [deliveryZones, handleContinueWithValues]
     );
