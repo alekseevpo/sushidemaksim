@@ -59,6 +59,7 @@ vi.mock('lucide-react', () => ({
     RotateCcw: () => <div data-testid="rotate-ccw-icon" />,
     Clock3: () => <div data-testid="clock-3-icon" />,
     Users2: () => <div data-testid="users-2-icon" />,
+    Eye: () => <div data-testid="eye-icon" />,
 }));
 
 const mockUsers = [

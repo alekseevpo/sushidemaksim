@@ -753,11 +753,7 @@ export default function DeliveryForm({
                                                 disabled={
                                                     isDayClosedSelect || availableSlots.length === 0
                                                 }
-                                                placeholder={
-                                                    isDayClosedSelect
-                                                        ? 'Cerrado'
-                                                        : 'Selecciona hora'
-                                                }
+                                                placeholder={isDayClosedSelect ? 'Cerrado' : 'Hora'}
                                             />
                                         )}
                                     />

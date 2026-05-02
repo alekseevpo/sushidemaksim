@@ -15,7 +15,7 @@ export default function CustomTimePicker({
     onChange,
     slots,
     disabled = false,
-    placeholder = 'Selecciona hora',
+    placeholder = 'Hora',
 }: CustomTimePickerProps) {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -103,7 +103,7 @@ export default function CustomTimePicker({
                             {/* Header */}
                             <div className="px-4 pt-4 pb-3 border-b border-gray-50">
                                 <div className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                                    Selecciona hora
+                                    Hora
                                 </div>
                             </div>
 
