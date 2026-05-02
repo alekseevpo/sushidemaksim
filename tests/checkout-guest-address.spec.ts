@@ -137,8 +137,8 @@ test.describe('Guest Checkout - Address Selection', () => {
         await expect(result).toBeVisible({ timeout: 15000 });
         await result.click();
 
-        // Check if values are filled in address modal form
-        await expect(page.getByPlaceholder(/^Introduce tu calle\.\.\.$/i)).toHaveValue(/Gran Vía/i);
+        // Check if values are filled in the readonly address block
+        await expect(page.locator('span.truncate').filter({ hasText: /Gran Vía/i })).toBeVisible();
 
         await page.getByPlaceholder(/Ej: 20/i).fill('1');
         await page.getByPlaceholder(/Ej: 1B/i).fill('3A');

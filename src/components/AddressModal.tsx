@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, ArrowRight, Loader2, Search, CheckCircle, Info } from 'lucide-react';
+import {
+    X,
+    MapPin,
+    ArrowRight,
+    Loader2,
+    Search,
+    CheckCircle,
+    Info,
+    Crosshair,
+    Navigation,
+} from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Polygon, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -146,6 +156,9 @@ export default function AddressModal({
     const wasSelectedViaSearchRef = useRef(false);
     const prevOpenRef = useRef(isOpen);
     const [isLocatingAddress, setIsLocatingAddress] = useState(false);
+    const [isSearchFullscreen, setIsSearchFullscreen] = useState(false);
+    const [isGeolocating, setIsGeolocating] = useState(false);
+    const searchInputRef = useRef<HTMLInputElement>(null);
     const houseInputRef = useRef<HTMLInputElement>(null);
     const apartmentInputRef = useRef<HTMLInputElement>(null);
 
@@ -208,10 +221,22 @@ export default function AddressModal({
         prevOpenRef.current = isOpen;
     }, [isOpen, currentAddress]);
 
+    const isMarkerAtRestaurant =
+        Math.abs(markerPosition[0] - RESTAURANT_LOCATION[0]) < 0.0005 &&
+        Math.abs(markerPosition[1] - RESTAURANT_LOCATION[1]) < 0.0005;
+
     useEffect(() => {
-        const detected = detectZone(markerPosition[0], markerPosition[1], deliveryZones);
-        setSelectedZone(detected);
-    }, [markerPosition, deliveryZones]);
+        // Only detect zone if not "fake" restaurant location
+        const isFakeLocation =
+            isMarkerAtRestaurant && isAddressManuallyEdited && !wasSelectedViaSearchRef.current;
+
+        if (isFakeLocation) {
+            setSelectedZone(null);
+        } else {
+            const detected = detectZone(markerPosition[0], markerPosition[1], deliveryZones);
+            setSelectedZone(detected);
+        }
+    }, [markerPosition, deliveryZones, isMarkerAtRestaurant, isAddressManuallyEdited]);
     const handleContinueWithValues = useCallback(
         (
             finalAddress: string,
@@ -511,15 +536,61 @@ export default function AddressModal({
                 performSearch(searchQuery.trim(), true);
             }
         }
+        if (e.key === 'Escape') {
+            setIsSearchFullscreen(false);
+            searchInputRef.current?.blur();
+        }
     };
+
+    // Geolocation handler
+    const handleGeolocate = useCallback(() => {
+        if (!navigator.geolocation) return;
+        setIsGeolocating(true);
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const { latitude, longitude } = pos.coords;
+                skipNextReverseGeocodeRef.current = false;
+                wasSelectedViaSearchRef.current = false;
+                setMarkerPosition([latitude, longitude]);
+                setMapZoom(18);
+                setAddress('');
+                setHouse('');
+                setIsAddressManuallyEdited(false);
+                setIsGeolocating(false);
+                setIsSearchFullscreen(false);
+                setSearchQuery('');
+                setSearchResults([]);
+                // Trigger reverse geocode to fill address fields
+                performReverseGeocode(latitude, longitude);
+            },
+            err => {
+                console.error('Geolocation error:', err);
+                setIsGeolocating(false);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }, [performReverseGeocode]);
+
+    // Autofocus search when modal opens without an address
+    useEffect(() => {
+        if (isOpen && !currentAddress?.address) {
+            setTimeout(() => {
+                searchInputRef.current?.focus();
+            }, 600); // Wait for spring animation
+        }
+    }, [isOpen, currentAddress?.address]);
 
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
+            if (isSearchFullscreen) {
+                setIsSearchFullscreen(false);
+                return;
+            }
             if (e.key === 'Escape') onClose();
         };
         window.addEventListener('keydown', handleEsc);
         return () => window.removeEventListener('keydown', handleEsc);
-    }, [onClose]);
+    }, [onClose, isSearchFullscreen]);
 
     return (
         <AnimatePresence>
@@ -561,14 +632,18 @@ export default function AddressModal({
 
                         <div className="flex-1 overflow-hidden flex flex-col md:flex-row shadow-2xl">
                             {/* Map Side */}
-                            <div className="h-80 md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none">
-                                {/* Floating Close Button (Mobile Only) */}
-                                <button
-                                    onClick={onClose}
-                                    className="md:hidden absolute top-6 right-4 z-[1001] w-10 h-10 bg-white/90 backdrop-blur shadow-xl rounded-full flex items-center justify-center text-gray-900 active:scale-95 transition"
-                                >
-                                    <X size={20} strokeWidth={3} />
-                                </button>
+                            <div
+                                className="h-[32vh] min-h-[220px] max-h-[420px] md:h-auto md:flex-1 relative bg-gray-100 border-r border-gray-100 rounded-t-[40px] md:rounded-t-none shrink-0"
+                                onClick={() => {
+                                    // Close search dropdown when tapping on the map area
+                                    if (searchResults.length > 0) {
+                                        setSearchResults([]);
+                                    }
+                                    if (isSearchFullscreen) {
+                                        setIsSearchFullscreen(false);
+                                    }
+                                }}
+                            >
                                 <MapContainer
                                     center={markerPosition}
                                     zoom={window.innerWidth < 768 ? 14 : 15}
@@ -670,216 +745,317 @@ export default function AddressModal({
                                     )}
                                 </AnimatePresence>
 
-                                {/* Search Overlay */}
-                                <div className="absolute top-6 left-6 right-16 md:top-4 md:left-4 md:right-4 z-[1000] space-y-2">
-                                    <div className="relative group">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500 transition">
+                                {/* Geolocation Button */}
+                                <button
+                                    type="button"
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleGeolocate();
+                                    }}
+                                    disabled={isGeolocating}
+                                    className="absolute bottom-6 right-4 z-[1000] w-12 h-12 bg-white shadow-xl rounded-2xl flex items-center justify-center text-gray-700 hover:text-orange-600 active:scale-90 transition-all border border-gray-100 disabled:opacity-50"
+                                >
+                                    {isGeolocating ? (
+                                        <Loader2
+                                            size={20}
+                                            className="animate-spin text-orange-500"
+                                        />
+                                    ) : (
+                                        <Navigation size={20} strokeWidth={2.5} />
+                                    )}
+                                </button>
+
+                                {/* Search Overlay — fullscreen on mobile when focused */}
+                                <div
+                                    className={`absolute z-[1000] transition-all duration-300 ${
+                                        isSearchFullscreen
+                                            ? 'inset-0 bg-white/98 backdrop-blur-xl flex flex-col p-4 pt-14 md:top-6 md:left-6 md:right-6 md:bottom-auto md:bg-transparent md:backdrop-blur-none md:p-0'
+                                            : 'top-6 left-6 right-16 md:top-6 md:left-6 md:right-6'
+                                    }`}
+                                    onClick={e => e.stopPropagation()}
+                                >
+                                    {/* Fullscreen close button (mobile) */}
+                                    {isSearchFullscreen && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsSearchFullscreen(false);
+                                                searchInputRef.current?.blur();
+                                            }}
+                                            className="md:hidden absolute top-4 right-4 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 z-10"
+                                        >
+                                            <X size={20} strokeWidth={2.5} />
+                                        </button>
+                                    )}
+
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-500 transition-colors z-10">
                                             {isSearching ? (
                                                 <Loader2 size={18} className="animate-spin" />
                                             ) : (
-                                                <Search size={18} />
+                                                <Search size={18} strokeWidth={2.5} />
                                             )}
                                         </div>
                                         <input
+                                            ref={searchInputRef}
                                             type="text"
                                             value={searchQuery}
                                             onChange={e => setSearchQuery(e.target.value)}
                                             onKeyDown={handleSearchKeyDown}
-                                            placeholder="Introduce tu calle y número..."
+                                            onFocus={() => {
+                                                if (window.innerWidth < 768) {
+                                                    setIsSearchFullscreen(true);
+                                                }
+                                            }}
+                                            placeholder="Escribe tu calle y número..."
                                             autoComplete="off"
                                             spellCheck={false}
-                                            className="w-full bg-white/95 backdrop-blur shadow-xl rounded-2xl pl-12 pr-4 py-2 md:py-3.5 text-sm font-bold border-none outline-none ring-2 ring-orange-500/50 focus:ring-orange-500 transition-all placeholder:text-gray-400"
+                                            className="w-full bg-white shadow-[0_8px_30px_-10px_rgba(0,0,0,0.15)] rounded-2xl pl-12 pr-12 py-3.5 md:py-4 text-[15px] font-black border-none outline-none ring-2 ring-orange-500/20 focus:ring-orange-600 transition-all placeholder:text-gray-400 placeholder:font-bold"
                                         />
-                                        <AnimatePresence>
-                                            {(searchResults.length > 0 ||
-                                                (searchQuery.trim().length >= 3 &&
-                                                    /\d/.test(searchQuery))) && (
-                                                <div
-                                                    data-lenis-prevent
-                                                    className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[320px] md:max-h-[440px] divide-y divide-gray-50 animate-in fade-in slide-in-from-top-2 duration-200 z-[1001] custom-scrollbar"
-                                                >
-                                                    {isSearching && <SearchSkeleton count={3} />}
+                                        {/* Clear button */}
+                                        {searchQuery && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setSearchQuery('');
+                                                    setSearchResults([]);
+                                                    searchInputRef.current?.focus();
+                                                }}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors z-10"
+                                            >
+                                                <X
+                                                    size={14}
+                                                    strokeWidth={3}
+                                                    className="text-gray-500"
+                                                />
+                                            </button>
+                                        )}
+                                    </div>
 
-                                                    {/* Virtual Result for exact typed address - NOW PRIORITY & ALWAYS SHOWN IF HAS NUMBER */}
-                                                    {searchQuery.trim().length >= 3 &&
-                                                        /\d/.test(searchQuery) && (
-                                                            <button
-                                                                onPointerDown={e => {
-                                                                    e.preventDefault();
-                                                                    performSearch(
-                                                                        searchQuery.trim(),
-                                                                        true,
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="w-full px-5 py-5 text-left bg-green-50/80 hover:bg-green-100 transition flex items-center gap-4 border-l-4 border-green-600 sticky top-0 z-10"
-                                                            >
-                                                                <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-green-200">
-                                                                    <MapPin
-                                                                        size={20}
-                                                                        className="text-green-600 fill-green-50"
-                                                                    />
-                                                                </div>
-                                                                <div className="flex flex-col min-w-0">
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="text-sm font-black text-gray-900 truncate">
-                                                                            ¿Confirmar ubicación?
-                                                                        </span>
-                                                                        {isSearching && (
-                                                                            <Loader2
-                                                                                size={12}
-                                                                                className="animate-spin text-green-600"
-                                                                            />
-                                                                        )}
-                                                                    </div>
-                                                                    <span className="text-[11px] font-bold text-green-700 uppercase tracking-widest truncate mt-0.5">
-                                                                        LOCALIZAR: "{searchQuery}"
-                                                                    </span>
-                                                                </div>
-                                                                <ArrowRight
-                                                                    size={16}
-                                                                    className="text-green-600 ml-auto shrink-0"
-                                                                />
-                                                            </button>
-                                                        )}
+                                    {/* Results dropdown */}
+                                    <AnimatePresence>
+                                        {(isSearching ||
+                                            searchResults.length > 0 ||
+                                            searchQuery.trim().length >= 3) && (
+                                            <div
+                                                data-lenis-prevent
+                                                className={`${
+                                                    isSearchFullscreen
+                                                        ? 'mt-3 flex-1 overflow-y-auto rounded-2xl bg-white border border-gray-100 divide-y divide-gray-50'
+                                                        : 'absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[200px] md:max-h-[440px] divide-y divide-gray-50'
+                                                } animate-in fade-in slide-in-from-top-2 duration-200 z-[1001] custom-scrollbar`}
+                                            >
+                                                {isSearching && <SearchSkeleton count={3} />}
 
-                                                    {searchResults.map((res, i) => {
-                                                        // Filter out duplicates if the virtual result is basically the first result
-                                                        if (
-                                                            i === 0 &&
-                                                            res.display_name
-                                                                .toLowerCase()
-                                                                .includes(searchQuery.toLowerCase())
-                                                        ) {
-                                                            return null;
-                                                        }
-                                                        // Extract house number from query to show alongside street results that lack one
-                                                        const queryNum =
-                                                            searchQuery.match(
-                                                                /\b(\d+[a-zA-Z]?)\s*$/
-                                                            )?.[1] ||
-                                                            searchQuery.match(
-                                                                /^(\d+[a-zA-Z]?)\s/
-                                                            )?.[1] ||
-                                                            '';
-                                                        const hasOwnHouse =
-                                                            !!res.address?.house_number;
-                                                        const displayHouse = hasOwnHouse
-                                                            ? res.address.house_number
-                                                            : queryNum;
+                                                {searchResults.map((res, i) => {
+                                                    const queryNum =
+                                                        searchQuery.match(
+                                                            /\b(\d+[a-zA-Z]?)\s*$/
+                                                        )?.[1] ||
+                                                        searchQuery.match(
+                                                            /^(\d+[a-zA-Z]?)\s/
+                                                        )?.[1] ||
+                                                        '';
+                                                    const hasOwnHouse = !!res.address?.house_number;
+                                                    const displayHouse = hasOwnHouse
+                                                        ? res.address.house_number
+                                                        : queryNum;
 
-                                                        return (
-                                                            <button
-                                                                key={i}
-                                                                onPointerDown={e => {
-                                                                    e.preventDefault();
-                                                                    selectResult(res, searchQuery);
-                                                                }}
-                                                                className="w-full px-5 py-4 text-left hover:bg-orange-50 transition flex items-start gap-3"
-                                                            >
+                                                    return (
+                                                        <button
+                                                            key={i}
+                                                            onPointerDown={e => {
+                                                                e.preventDefault();
+                                                                selectResult(res, searchQuery);
+                                                                setIsSearchFullscreen(false);
+                                                            }}
+                                                            className="w-full px-4 py-3.5 text-left hover:bg-orange-50 transition flex items-center gap-3 group"
+                                                        >
+                                                            <div className="w-9 h-9 rounded-xl bg-gray-50 group-hover:bg-orange-100 flex items-center justify-center shrink-0 transition-colors">
                                                                 <MapPin
                                                                     size={16}
-                                                                    className="mt-1 text-gray-400 shrink-0"
+                                                                    strokeWidth={2}
+                                                                    className="text-gray-400 group-hover:text-orange-600 transition-colors"
                                                                 />
-                                                                <div className="flex flex-col min-w-0">
-                                                                    <span className="text-sm font-bold text-gray-900 truncate">
-                                                                        {res.address?.road ||
-                                                                            res.display_name.split(
-                                                                                ','
-                                                                            )[0]}
-                                                                        {displayHouse &&
-                                                                            `, ${displayHouse}`}
-                                                                    </span>
-                                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
-                                                                        {res.address?.city ||
-                                                                            res.address?.town ||
-                                                                            res.address?.village ||
-                                                                            res.address?.suburb ||
-                                                                            'Comunidad de Madrid'}
-                                                                        {res.address?.postcode &&
-                                                                            ` • ${res.address.postcode}`}
-                                                                    </span>
-                                                                </div>
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
+                                                            </div>
+                                                            <div className="flex flex-col min-w-0">
+                                                                <span className="text-sm font-black text-gray-900 truncate">
+                                                                    {res.address?.road ||
+                                                                        res.display_name.split(
+                                                                            ','
+                                                                        )[0]}
+                                                                    {displayHouse &&
+                                                                        `, ${displayHouse}`}
+                                                                </span>
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                                                                    {res.address?.city ||
+                                                                        res.address?.town ||
+                                                                        res.address?.village ||
+                                                                        res.address?.suburb ||
+                                                                        'Comunidad de Madrid'}
+                                                                    {res.address?.postcode &&
+                                                                        ` • ${res.address.postcode}`}
+                                                                </span>
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+
+                                                {/* No results message */}
+                                                {!isSearching &&
+                                                    searchResults.length === 0 &&
+                                                    searchQuery.trim().length >= 3 && (
+                                                        <div className="p-8 text-center bg-gray-50/50">
+                                                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                                <Search
+                                                                    size={20}
+                                                                    className="text-gray-300"
+                                                                />
+                                                            </div>
+                                                            <p className="text-sm font-black text-gray-900 tracking-tight">
+                                                                No encontramos resultados
+                                                            </p>
+                                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                                                Intenta añadir el número o revisa el
+                                                                nombre
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                            </div>
+                                        )}
+                                    </AnimatePresence>
+
+                                    {/* Geolocation shortcut inside fullscreen search */}
+                                    {isSearchFullscreen && !searchQuery && (
+                                        <button
+                                            type="button"
+                                            onClick={handleGeolocate}
+                                            disabled={isGeolocating}
+                                            className="mt-4 w-full flex items-center gap-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all active:scale-[0.98] group"
+                                        >
+                                            <div className="w-11 h-11 rounded-xl bg-orange-100 flex items-center justify-center shrink-0 group-hover:bg-orange-200 transition-colors">
+                                                {isGeolocating ? (
+                                                    <Loader2
+                                                        size={20}
+                                                        className="animate-spin text-orange-600"
+                                                    />
+                                                ) : (
+                                                    <Crosshair
+                                                        size={20}
+                                                        className="text-orange-600"
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-sm font-black text-gray-900 tracking-tight">
+                                                    Usar mi ubicación actual
+                                                </p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                    Detectar automáticamente
+                                                </p>
+                                            </div>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 
                             {/* Form Side */}
-                            <div className="w-full md:w-[380px] bg-white flex flex-col overflow-hidden border-l border-gray-100">
-                                <div className="flex-1 overflow-y-auto p-4 md:px-5 md:py-4 space-y-3 scrollbar-hide">
-                                    <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
+                            <div className="w-full md:w-[380px] bg-white flex flex-col flex-1 min-h-0 overflow-hidden border-l border-gray-100">
+                                <div className="flex-1 overflow-y-auto p-3 md:px-5 md:py-4 space-y-2 md:space-y-3 scrollbar-hide">
+                                    <div
+                                        onClick={() => {
+                                            searchInputRef.current?.focus();
+                                            if (window.innerWidth < 768) {
+                                                setIsSearchFullscreen(true);
+                                            }
+                                        }}
+                                        className="cursor-pointer group"
+                                    >
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none">
                                             Calle / Avenida *
                                         </label>
-                                        <input
-                                            value={address}
-                                            onChange={e => {
-                                                setAddress(e.target.value);
-                                                setIsAddressManuallyEdited(true);
-                                            }}
-                                            className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
-                                            placeholder="Introduce tu calle..."
-                                        />
+                                        <div className="w-full bg-gray-50 border-none rounded-2xl px-4 py-2 md:py-3.5 text-sm font-bold text-gray-900 transition-all flex items-center gap-2 group-hover:bg-gray-100 min-h-[36px] md:min-h-[46px]">
+                                            {address ? (
+                                                <span className="truncate">{address}</span>
+                                            ) : (
+                                                <span className="text-gray-400">
+                                                    Busca tu calle en el mapa ↑
+                                                </span>
+                                            )}
+                                            <Search
+                                                size={14}
+                                                className="ml-auto text-gray-300 shrink-0 group-hover:text-orange-500 transition-colors"
+                                            />
+                                        </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-3 gap-2 md:gap-3">
                                         {/* Number - EDITABLE */}
-                                        <div className="flex-1 min-w-0 flex flex-col">
-                                            <p className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
-                                                Número / Portal *
+                                        <div className="flex flex-col">
+                                            <p className="block text-[9px] md:text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none truncate">
+                                                Número *
                                             </p>
                                             <input
                                                 type="text"
                                                 value={house}
                                                 ref={houseInputRef}
                                                 onChange={e => setHouse(e.target.value)}
-                                                className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
+                                                className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
                                                 placeholder="Ej: 20"
                                             />
-                                            {!house && address && (
-                                                <p className="text-[9px] font-bold text-amber-600 mt-1 px-1 leading-none h-2">
-                                                    Escribe tu número manualmente
-                                                </p>
-                                            )}
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
-                                                Piso / Puerta
+                                            <label className="block text-[9px] md:text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none truncate">
+                                                Piso
                                             </label>
                                             <input
                                                 value={apartment}
                                                 ref={apartmentInputRef}
                                                 onChange={e => setApartment(e.target.value)}
-                                                className="w-full bg-gray-50 rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-orange-500/10 transition outline-none"
+                                                className="w-full bg-gray-50 rounded-xl px-3 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-orange-500/10 transition outline-none"
                                                 placeholder="Ej: 1B"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] md:text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none truncate">
+                                                C. Postal
+                                            </label>
+                                            <input
+                                                value={postalCode}
+                                                onChange={e => {
+                                                    setPostalCode(e.target.value);
+                                                    setIsAddressManuallyEdited(true);
+                                                }}
+                                                className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
+                                                placeholder="28001"
                                             />
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
-                                            Código Postal
-                                        </label>
-                                        <input
-                                            value={postalCode}
-                                            onChange={e => {
-                                                setPostalCode(e.target.value);
-                                                setIsAddressManuallyEdited(true);
-                                            }}
-                                            className="w-full bg-gray-50 border-none rounded-2xl px-5 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
-                                            placeholder="Ej: 28001"
-                                        />
-                                    </div>
-
                                     {/* Zone Status */}
                                     <div className="pt-0.5">
-                                        {selectedZone ? (
+                                        {isMarkerAtRestaurant &&
+                                        isAddressManuallyEdited &&
+                                        !wasSelectedViaSearchRef.current ? (
+                                            <div className="flex items-center gap-3 py-3 px-3 bg-red-50 border border-red-100 rounded-2xl animate-in shake duration-500">
+                                                <div className="w-9 h-9 rounded-xl bg-red-500 flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
+                                                    <MapPin
+                                                        className="text-white"
+                                                        size={18}
+                                                        strokeWidth={3}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black text-red-900 tracking-tight leading-tight">
+                                                        Ubicación no confirmada
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-red-600 uppercase tracking-tighter mt-0.5">
+                                                        Selecciona tu calle de la lista o mueve el
+                                                        pin en el mapa
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : selectedZone ? (
                                             <div className="p-2.5 md:p-4 bg-green-50/50 rounded-2xl md:rounded-3xl border border-green-100/50 animate-in slide-in-from-bottom-3 duration-500">
                                                 {/* Mobile Row Layout */}
                                                 <div className="md:hidden flex items-center justify-between py-0.5">
@@ -1001,7 +1177,7 @@ export default function AddressModal({
 
                                 {/* Sticky Footer with Gradient */}
                                 <div className="p-3 md:p-5 bg-white border-t border-gray-50 relative pb-4 md:pb-6 shrink-0">
-                                    <div className="absolute bottom-full left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-full left-0 right-0 h-4 md:h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
                                     {/* Manual Edit Warning */}
                                     <AnimatePresence>

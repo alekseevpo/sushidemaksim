@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, Plus, Star, Trash2, Pencil, X, Loader2, ArrowRight } from 'lucide-react';
+import { MapPin, Plus, Star, Trash2, Pencil, X, Loader2, ArrowRight, Search } from 'lucide-react';
 
 import { UserAddress } from '../../types';
 import { api } from '../../utils/api';
@@ -399,13 +399,28 @@ export default function AddressesTab({
             return;
         }
 
+        const finalPhone = phoneVal ? `+34${phoneVal}` : '';
+
+        // SECURITY CHECK: If the address was manually edited but the coordinates
+        // are still missing or point to the restaurant (fake location check)
+        const isMarkerAtRestaurant =
+            !newAddress.lat ||
+            !newAddress.lon ||
+            (Math.abs(newAddress.lat - 40.397042) < 0.0001 &&
+                Math.abs(newAddress.lon - -3.672449) < 0.0001);
+
+        if (streetVal && !wasSelectedViaSearchRef.current && isMarkerAtRestaurant) {
+            error('Por favor, selecciona tu dirección de la lista para confirmar la ubicación 📍');
+            return;
+        }
+
         const dataToSave = {
             ...newAddress,
             label: labelVal,
             street: streetVal,
             house: houseVal,
             apartment: apartmentVal,
-            phone: phoneVal ? `+34${phoneVal}` : '',
+            phone: finalPhone,
         };
 
         try {
@@ -523,24 +538,26 @@ export default function AddressesTab({
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">
                                 Calle / Avenida *
                             </label>
-                            <div className="relative">
+                            <div className="relative group">
                                 <input
                                     ref={streetRef}
                                     value={searchQuery}
                                     onChange={e => handleStreetChange(e.target.value)}
-                                    className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all ${newAddress.street && 'border-green-100 bg-green-50/10'}`}
+                                    className={`w-full bg-white border border-gray-200 rounded-[18px] pl-11 pr-12 py-4 text-sm font-black text-gray-900 shadow-sm focus:ring-4 focus:ring-orange-600/10 focus:border-orange-500 outline-none transition-all placeholder:text-gray-400 placeholder:font-bold ${newAddress.street && 'border-green-200 bg-green-50/5'}`}
                                     placeholder="Introduce tu calle y número..."
                                     autoComplete="off"
                                 />
-                                <MapPin
-                                    size={16}
-                                    strokeWidth={1.5}
-                                    className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${newAddress.street ? 'text-green-500' : 'text-gray-300'}`}
-                                />
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                                    <Search
+                                        size={18}
+                                        strokeWidth={2.5}
+                                        className={`transition-colors ${newAddress.street ? 'text-green-500' : 'text-orange-500'}`}
+                                    />
+                                </div>
                                 {isSearching && (
-                                    <div className="absolute right-10 top-1/2 -translate-y-1/2">
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
                                         <Loader2
-                                            size={16}
+                                            size={18}
                                             className="animate-spin text-orange-500"
                                         />
                                     </div>
@@ -548,8 +565,9 @@ export default function AddressesTab({
                             </div>
 
                             {showSuggestions &&
-                                (suggestions.length > 0 ||
-                                    (searchQuery.trim().length >= 3 && /\d/.test(searchQuery))) && (
+                                (isSearching ||
+                                    suggestions.length > 0 ||
+                                    searchQuery.trim().length >= 3) && (
                                     <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-y-auto max-h-[320px] animate-in fade-in slide-in-from-top-2 duration-200 divide-y divide-gray-50 scrollbar-thin scrollbar-thumb-gray-200">
                                         {/* Sticky LOCALIZAR Button */}
                                         {searchQuery.trim().length >= 3 &&
@@ -639,6 +657,26 @@ export default function AddressesTab({
                                                 </button>
                                             );
                                         })}
+
+                                        {/* No results message */}
+                                        {!isSearching &&
+                                            suggestions.length === 0 &&
+                                            searchQuery.trim().length >= 3 && (
+                                                <div className="p-8 text-center bg-gray-50/50">
+                                                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                        <Search
+                                                            size={20}
+                                                            className="text-gray-300"
+                                                        />
+                                                    </div>
+                                                    <p className="text-sm font-black text-gray-900 tracking-tight">
+                                                        No encontramos resultados
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                                        Intenta añadir el número o revisa el nombre
+                                                    </p>
+                                                </div>
+                                            )}
                                     </div>
                                 )}
                         </div>
