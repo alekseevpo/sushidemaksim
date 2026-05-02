@@ -1038,7 +1038,12 @@ export default function AddressModal({
                                         </label>
                                         <div className="w-full bg-gray-50 border-none rounded-2xl px-4 py-2 md:py-3.5 text-sm font-bold text-gray-900 transition-all flex items-center gap-2 group-hover:bg-gray-100 min-h-[36px] md:min-h-[46px]">
                                             {address ? (
-                                                <span className="truncate" data-testid="selected-address-name">{address}</span>
+                                                <span
+                                                    className="truncate"
+                                                    data-testid="selected-address-name"
+                                                >
+                                                    {address}
+                                                </span>
                                             ) : (
                                                 <span className="text-gray-400">
                                                     Busca tu calle en el mapa ↑
