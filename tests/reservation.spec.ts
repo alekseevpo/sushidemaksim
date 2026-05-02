@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Reservation Page Flow', () => {
     test('SUCCESS: should be able to fill the reservation form and submit', async ({ page }) => {
+        // Set fixed time to a Sunday afternoon to ensure store is open and slots available
+        await page.clock.setFixedTime(new Date('2026-05-10T15:00:00'));
         await page.goto('/reservar');
 
         // 1. Check SEO and Content
@@ -13,12 +15,7 @@ test.describe('Reservation Page Flow', () => {
 
         // 3. Select Date (using custom picker)
         await page.getByText('Hoy/Mañana').click();
-        // Click the first enabled day button in the calendar grid (must be a number)
-        await page
-            .locator('.grid-cols-7 button:not([disabled])')
-            .filter({ hasText: /^[1-9]\d?$/ })
-            .first()
-            .click();
+        await page.getByRole('button', { name: 'Hoy', exact: true }).click();
 
         // 4. Select Time (should be visible after date selection)
         await page.getByText('Selecciona', { exact: true }).click();
