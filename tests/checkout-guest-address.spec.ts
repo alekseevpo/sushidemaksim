@@ -138,7 +138,7 @@ test.describe('Guest Checkout - Address Selection', () => {
         await result.click();
 
         // Check if values are filled in the readonly address block
-        await expect(page.locator('span.truncate').filter({ hasText: /Gran Vía/i })).toBeVisible();
+        await expect(page.getByTestId('selected-address-name')).toContainText(/Gran Vía/i);
 
         await page.getByPlaceholder(/Ej: 20/i).fill('1');
         await page.getByPlaceholder(/Ej: 1B/i).fill('3A');

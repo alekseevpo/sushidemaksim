@@ -13,7 +13,8 @@ test.describe('Reservation Page Flow', () => {
 
         // 3. Select Date (using custom picker)
         await page.getByText('Hoy/Mañana').click();
-        await page.getByRole('button', { name: 'Hoy', exact: true }).click();
+        // Click the first enabled day button in the calendar grid (must be a number)
+        await page.locator('.grid-cols-7 button:not([disabled])').filter({ hasText: /^[1-9]\d?$/ }).first().click();
 
         // 4. Select Time (should be visible after date selection)
         await page.getByText('Selecciona', { exact: true }).click();

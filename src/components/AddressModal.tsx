@@ -96,6 +96,7 @@ function MapUpdater({
 }) {
     const map = useMap();
     const isFirstRenderRef = useRef(true);
+    const lastProcessedCenterRef = useRef<[number, number]>(center);
 
     useEffect(() => {
         if (isOpen) {
@@ -105,21 +106,27 @@ function MapUpdater({
                 if (isFirstRenderRef.current) {
                     map.setView(center, zoom, { animate: false });
                     isFirstRenderRef.current = false;
+                    lastProcessedCenterRef.current = center;
                 }
             }, 250);
             return () => clearTimeout(timer);
         } else {
             isFirstRenderRef.current = true;
         }
-        // center/zoom are only used for initial view, subsequent updates handled by other effect
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, map]);
 
     useEffect(() => {
         if (isFirstRenderRef.current) return;
+        if (
+            center[0] === lastProcessedCenterRef.current[0] &&
+            center[1] === lastProcessedCenterRef.current[1]
+        )
+            return;
 
         const timer = setTimeout(() => {
             map.setView(center, zoom, { animate: true, duration: 0.5 });
+            lastProcessedCenterRef.current = center;
         }, 50);
         return () => clearTimeout(timer);
     }, [center, zoom, map]);
@@ -1031,7 +1038,7 @@ export default function AddressModal({
                                         </label>
                                         <div className="w-full bg-gray-50 border-none rounded-2xl px-4 py-2 md:py-3.5 text-sm font-bold text-gray-900 transition-all flex items-center gap-2 group-hover:bg-gray-100 min-h-[36px] md:min-h-[46px]">
                                             {address ? (
-                                                <span className="truncate">{address}</span>
+                                                <span className="truncate" data-testid="selected-address-name">{address}</span>
                                             ) : (
                                                 <span className="text-gray-400">
                                                     Busca tu calle en el mapa ↑
