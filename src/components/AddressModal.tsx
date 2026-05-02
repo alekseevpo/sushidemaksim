@@ -574,9 +574,7 @@ export default function AddressModal({
                         'Por favor, permite el acceso a tu ubicación en los ajustes del navegador.'
                     );
                 } else {
-                    alert(
-                        'No pudimos detectar tu ubicación. Intenta buscar tu calle manualmente.'
-                    );
+                    alert('No pudimos detectar tu ubicación. Intenta buscar tu calle manualmente.');
                 }
             },
             { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
