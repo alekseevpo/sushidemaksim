@@ -404,6 +404,12 @@ export default function AddressModal({
             skipNextReverseGeocodeRef.current = true;
             skipNextSearchRef.current = true;
 
+            setSearchResults([]);
+            setIsSearching(false);
+            setSearchQuery('');
+            setIsSearchFullscreen(false);
+            searchInputRef.current?.blur();
+
             const newPos: [number, number] = [lat, lon];
             setMarkerPosition(newPos);
             wasSelectedViaSearchRef.current = true;
@@ -505,11 +511,6 @@ export default function AddressModal({
                 handleContinueWithValues(street, houseNum, '', pc, currentZone, newPos);
             }
 
-            setSearchResults([]);
-            setIsSearching(false);
-            setSearchQuery('');
-            setIsSearchFullscreen(false);
-            searchInputRef.current?.blur();
         },
         [deliveryZones, handleContinueWithValues]
     );
