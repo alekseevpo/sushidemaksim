@@ -17,7 +17,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTableI18n } from '../utils/tableI18n';
 
 // ========== SUB-COMPONENTS (Memoized for performance) ==========
 
@@ -814,7 +813,6 @@ export default function LoginModal({
     const [recoveryEmail, setRecoveryEmail] = useState('');
     const { login, register, forgotPassword, resetPassword } = useAuth();
     const { success: showSuccess, error: showError } = useToast();
-    const { t } = useTableI18n();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -906,7 +904,7 @@ export default function LoginModal({
             const res = await register(name, email, phone, password, tableRedirect);
             if (res.success) {
                 setMode('register-success');
-                showSuccess(t('verify_email_title'));
+                showSuccess('VERIFICA TU EMAIL');
             } else {
                 showError(res.error || 'Error al registrarse');
             }
@@ -1014,7 +1012,7 @@ export default function LoginModal({
                                     {mode === 'forgot' && 'Recuperar acceso'}
                                     {mode === 'verify-sent' && 'Verifica tu email'}
                                     {mode === 'reset-password' && 'Nueva contraseña'}
-                                    {mode === 'register-success' && t('verify_email_title')}
+                                    {mode === 'register-success' && 'VERIFICA TU EMAIL'}
                                 </h2>
                                 <p className="text-[13px] text-gray-400 font-medium mt-1 leading-tight">
                                     {mode === 'login' && 'Entra y disfruta del mejor sushi.'}
@@ -1054,7 +1052,11 @@ export default function LoginModal({
                             {mode === 'register-success' && (
                                 <div className="text-center space-y-6">
                                     <div className="bg-orange-50 text-orange-700 p-6 rounded-3xl border border-orange-100 font-medium text-sm leading-relaxed">
-                                        <p>{t('verify_email_text')}</p>
+                                        <p>
+                                            Para completar el registro y recibir tu código de
+                                            descuento del 10%, debes activar tu cuenta haciendo clic
+                                            en el enlace que te hemos enviado por email.
+                                        </p>
                                         <p className="mt-3 text-xs opacity-75 italic">
                                             (No olvides revisar la carpeta de SPAM 📥)
                                         </p>
@@ -1067,8 +1069,7 @@ export default function LoginModal({
                                             }}
                                             className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2"
                                         >
-                                            <CheckCircle2 size={18} strokeWidth={2.5} />{' '}
-                                            {t('got_it_btn')}
+                                            <CheckCircle2 size={18} strokeWidth={2.5} /> ENTENDIDO
                                         </button>
                                         <button
                                             onClick={() => setMode('login')}

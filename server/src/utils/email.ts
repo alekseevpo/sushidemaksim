@@ -505,7 +505,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
     <div style="padding:32px;text-align:center;">
       <h2 style="color:#111827;margin:0 0 16px;font-size:20px;">¡Hola ${name}!</h2>
       <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 24px;">
-        Gracias por registrarte en **Sushi de Maksim**. Estamos encantados de tenerте con nosotros.
+        Gracias por registrarte en **Sushi de Maksim**. Estamos encantados de tenerte con nosotros.
       </p>
       <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 32px;">
         Prepárate para disfrutar del mejor sushi artesanal directamente en tu mesa. ¡Explora nuestro menú y haz tu primer pedido hoy mismo!
