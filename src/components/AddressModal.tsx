@@ -1,15 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    X,
-    MapPin,
-    ArrowRight,
-    Loader2,
-    Search,
-    CheckCircle,
-    Info,
-    Crosshair,
-} from 'lucide-react';
+import { X, MapPin, ArrowRight, Loader2, Search, CheckCircle, Info, Crosshair } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Polygon, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -548,6 +539,9 @@ export default function AddressModal({
     useEffect(() => {
         // Don't trigger search if modal is closed, or query is exactly the selected street
         if (!isOpen || searchQuery === address || skipNextSearchRef.current) {
+            if (searchQuery === address) {
+                setSearchResults([]);
+            }
             skipNextSearchRef.current = false;
             return;
         }
@@ -803,8 +797,6 @@ export default function AddressModal({
                                     )}
                                 </AnimatePresence>
 
-
-
                                 {/* Search Overlay — fullscreen on mobile when focused */}
                                 <div
                                     className={`absolute z-[1000] transition-all duration-300 ${
@@ -876,7 +868,8 @@ export default function AddressModal({
                                     <AnimatePresence>
                                         {(isSearching ||
                                             searchResults.length > 0 ||
-                                            searchQuery.trim().length >= 3) && (
+                                            (searchQuery.trim().length >= 3 &&
+                                                searchQuery !== address)) && (
                                             <div
                                                 data-lenis-prevent
                                                 className={`${
@@ -944,7 +937,8 @@ export default function AddressModal({
                                                 {/* No results message */}
                                                 {!isSearching &&
                                                     searchResults.length === 0 &&
-                                                    searchQuery.trim().length >= 3 && (
+                                                    searchQuery.trim().length >= 3 &&
+                                                    searchQuery !== address && (
                                                         <div className="p-8 text-center bg-gray-50/50">
                                                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                                                 <Search
