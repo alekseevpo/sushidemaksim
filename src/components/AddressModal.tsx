@@ -731,7 +731,7 @@ export default function AddressModal({
 
                             {/* Map Side */}
                             <div
-                                className="flex-[1.6] md:flex-1 relative bg-gray-100 border-r border-gray-100 shrink-0"
+                                className="flex-1 md:flex-1 relative bg-gray-100 border-r border-gray-100 shrink-0"
                                 onClick={() => {
                                     // Close search dropdown when tapping on the map area
                                     if (searchResults.length > 0) {
@@ -1023,7 +1023,7 @@ export default function AddressModal({
 
                             {/* Form Side */}
                             <div className="w-full md:w-[380px] bg-white flex flex-col flex-1 min-h-0 overflow-hidden border-l border-gray-100">
-                                <div className="flex-1 overflow-y-auto p-3 md:px-5 md:py-4 space-y-1.5 md:space-y-3 scrollbar-hide">
+                                <div className="flex-1 overflow-y-auto px-3 py-1 md:px-5 md:py-4 space-y-1 md:space-y-3 scrollbar-hide">
                                     <div
                                         onClick={() => {
                                             searchInputRef.current?.focus();
@@ -1247,7 +1247,7 @@ export default function AddressModal({
                                 </div>
 
                                 {/* Sticky Footer with Gradient */}
-                                <div className="p-3 md:p-5 bg-white border-t border-gray-50 relative pb-8 md:pb-6 shrink-0">
+                                <div className="p-3 md:p-5 bg-white border-t border-gray-50 relative pb-6 md:pb-6 shrink-0">
                                     <div className="absolute bottom-full left-0 right-0 h-4 md:h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
                                     {/* Manual Edit Warning */}
