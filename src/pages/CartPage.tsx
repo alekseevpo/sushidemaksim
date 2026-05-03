@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { AlertCircle } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
@@ -60,7 +59,6 @@ export default function CartPage() {
     const [isOrderingState, setIsOrdering] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
     const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
-    const [isInviting, setIsInviting] = useState(false);
     const [isLoadingSettings, setIsLoadingSettings] = useState(true);
     const [lastOrderSummary, setLastOrderSummary] = useState<{
         total: number;
@@ -301,116 +299,6 @@ export default function CartPage() {
             setIsLoadingPopular(false);
         }
     }, []);
-
-    const handleInvite = async () => {
-        if (!isAuthenticated) {
-            document.dispatchEvent(new CustomEvent('custom:openLogin'));
-            return;
-        }
-
-        const formData = methods.getValues();
-        const {
-            deliveryType,
-            address: streetVal = '',
-            house: houseVal = '',
-            apartment: aptVal = '',
-            phone,
-            isScheduled,
-            scheduledDate,
-            scheduledTime,
-            paymentMethod,
-            guestsCount,
-            chopsticksCount,
-            customNote = '',
-        } = formData;
-
-        const finalTotal = cartSubtotal - discountAmount;
-
-        if (items.length === 0) return;
-
-        if (deliveryType === 'delivery' && (!streetVal || !streetVal.trim())) {
-            return showError('Por favor, indica tu calle para el envío');
-        }
-
-        setIsInviting(true);
-
-        const notesArray = [];
-        notesArray.push(`[TIPO: ${deliveryType === 'pickup' ? 'RECOGIDA' : 'DOMICILIO'}]`);
-        if (paymentMethod)
-            notesArray.push(
-                `[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`
-            );
-        if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
-        if (customNote && customNote.trim()) notesArray.push(customNote.trim());
-
-        try {
-            const payload: any = {
-                deliveryType,
-                address: streetVal,
-                house: houseVal,
-                apartment: aptVal,
-                postalCode:
-                    formData.postalCode || (selectedZone ? selectedZone.postalCodes?.[0] : ''),
-                phone: `+34${phone}`,
-                senderName: user?.name || formData.customerName || 'Un amigo',
-                notes: notesArray.join(' | '),
-                total: finalTotal,
-                items: items.map(i => ({
-                    id: i.id,
-                    name: i.name,
-                    quantity: i.quantity,
-                    price: i.isGift ? 0 : i.price,
-                    image: i.image,
-                    isGift: i.isGift,
-                    giftLabel: i.giftLabel,
-                })),
-                deliveryAddress:
-                    deliveryType === 'pickup'
-                        ? 'RECOGIDA'
-                        : `${streetVal}${houseVal ? `, ${houseVal}` : ''}`,
-                phoneNumber: `+34${phone}`,
-                isScheduled,
-                scheduledDate,
-                scheduledTime,
-                guestsCount,
-                chopsticksCount,
-                customNote,
-                paymentMethod,
-                deliveryZoneId: selectedZone?.id,
-            };
-
-            const inviteData = await api.post('/orders/invite', payload);
-
-            if (inviteData?.shareUrl) {
-                const inviteTitle = '¡Paga mi pedido de Sushi de Maksim! 🍣';
-                const inviteText = `${user?.name || formData.customerName || 'Tu amigo'} te ha enviado un link para pagar su pedido.`;
-                const finalShareUrl = inviteData.shareUrl;
-
-                setIsInviting(false);
-
-                const fullInviteContent = `${inviteTitle}\n\n${inviteText}\n${finalShareUrl}`;
-                await navigator.clipboard.writeText(fullInviteContent);
-                showSuccess('¡Invitación preparada! Enlace copiado');
-
-                if (navigator.share) {
-                    try {
-                        await navigator.share({
-                            title: inviteTitle,
-                            text: `${inviteText}\n\n${finalShareUrl}`,
-                        });
-                    } catch (shareErr) {
-                        // Usually user cancelled share
-                        console.log('Share error or cancelled', shareErr);
-                    }
-                }
-            } else {
-                setIsInviting(false);
-            }
-        } catch (err: any) {
-            showError(err.message || 'Error al generar invitación');
-            setIsInviting(false);
-        }
-    };
 
     useEffect(() => {
         if (items.length === 0 && popularItems.length === 0 && !isLoadingPopular) {
@@ -905,13 +793,6 @@ export default function CartPage() {
                             <div className="mb-6">
                                 <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 md:p-5 shadow-sm">
                                     <div className="flex items-start gap-3">
-                                        <div className="mt-0.5 w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0 border border-orange-200 shadow-inner">
-                                            <AlertCircle
-                                                size={22}
-                                                className="text-orange-600"
-                                                strokeWidth={2.5}
-                                            />
-                                        </div>
                                         <div className="flex-1">
                                             <h3 className="font-black text-orange-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
                                                 Restaurante Cerrado
@@ -1040,18 +921,10 @@ export default function CartPage() {
                                         onApplyPromo={handleApplyPromo}
                                         onRemovePromo={handleRemovePromo}
                                         isOrdering={isOrdering}
-                                        isInviting={isInviting}
-                                        onInvite={handleInvite}
                                         isApplyingPromo={isApplyingPromo}
                                         setPromoCode={setPromoCode}
                                         minOrder={MIN_ORDER}
                                     />
-
-                                    <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                        <p className="text-[10px] text-gray-400 text-center uppercase tracking-widest font-bold">
-                                            Pago seguro & encriptado
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
                         </div>

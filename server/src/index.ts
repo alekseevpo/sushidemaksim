@@ -92,13 +92,13 @@ app.get('/invitacion/:id', async (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Invita a ${senderName}! 🎁 — Sushi de Maksim</title>
-    <meta name="description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
+    <title>¡Invita a ${senderName}! - Sushi de Maksim</title>
+    <meta name="description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera.">
     
     <!-- WhatsApp / Telegram / Facebook Priority -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="¡Invita a ${senderName}! 🎁">
-    <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
+    <meta property="og:title" content="¡Invita a ${senderName}!">
+    <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera.">
     <meta property="og:image" content="${pandaImg}">
     <meta property="og:image:secure_url" content="${pandaImg}">
     <meta property="og:image:type" content="image/webp">
@@ -109,7 +109,7 @@ app.get('/invitacion/:id', async (req, res) => {
     <!-- Twitter / Telegram Card (Summary Large) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="${pandaImg}">
-    <meta name="twitter:title" content="¡Invita a ${senderName}! 🎁">
+    <meta name="twitter:title" content="¡Invita a ${senderName}!">
     <meta name="twitter:description" content="Sorprende a tu amigo con el mejor sushi de Madrid.">
     <meta property="og:site_name" content="Sushi de Maksim">
     
@@ -119,7 +119,6 @@ app.get('/invitacion/:id', async (req, res) => {
 </head>
 <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fdfbf7;">
     <div style="text-align: center;">
-        <h1 style="font-size: 60px; margin: 0;">🍣</h1>
         <p style="color: #666;">Redirigiendo a la sorpresa...</p>
     </div>
 </body>
@@ -163,7 +162,7 @@ app.get('/compartir/item/:id', async (req, res) => {
     
     <!-- WhatsApp / Telegram / Facebook Tags -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="¡Mira este ${item.name} en Sushi de Maksim! 🍣">
+    <meta property="og:title" content="¡Mira este ${item.name} en Sushi de Maksim!">
     <meta property="og:description" content="${item.description}">
     <meta property="og:image" content="${imageUrl}">
     <meta property="og:image:secure_url" content="${imageUrl}">
@@ -174,7 +173,7 @@ app.get('/compartir/item/:id', async (req, res) => {
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="${imageUrl}">
-    <meta name="twitter:title" content="¡Mira este ${item.name} en Sushi de Maksim! 🍣">
+    <meta name="twitter:title" content="¡Mira este ${item.name} en Sushi de Maksim!">
     <meta name="twitter:description" content="${item.description}">
     
     <!-- Redirect to React App -->
@@ -183,7 +182,6 @@ app.get('/compartir/item/:id', async (req, res) => {
 </head>
 <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #000;">
     <div style="text-align: center; color: white;">
-        <h1 style="font-size: 60px; margin: 0;">🍣</h1>
         <p style="opacity: 0.6; font-weight: 500;">Cargando ${item.name}...</p>
     </div>
 </body>

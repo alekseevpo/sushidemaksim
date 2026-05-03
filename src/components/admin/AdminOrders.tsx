@@ -98,6 +98,16 @@ const ORDERS_TRANSLATIONS = {
             delivered: 'Заказ доставлен',
             cancelled: 'Отменен',
         },
+        statusNamesMesa: {
+            waiting_payment: 'Ожидание оплаты',
+            pending: 'Оформлен (Система)',
+            received: 'Заказ оформлен',
+            confirmed: 'Заказ подтвержден',
+            preparing: 'Кухня (Зал)',
+            on_the_way: 'Зал (Подача)',
+            delivered: 'Заказ подан',
+            cancelled: 'Отменен',
+        },
         corruptOrder: 'ОШИБКА: ЗАКАЗ БЕЗ ТОВАРОВ',
         corruptOrderDesc: 'Этот заказ был прерван при создании. Пожалуйста, свяжитесь с клиентом.',
     },
@@ -157,6 +167,16 @@ const ORDERS_TRANSLATIONS = {
             preparing: 'Entrega (Cocina)',
             on_the_way: 'Entrega (En camino)',
             delivered: 'Pedido Entregado',
+            cancelled: 'Cancelado',
+        },
+        statusNamesMesa: {
+            waiting_payment: 'Esperando Pago',
+            pending: 'Realizado (Sistema)',
+            received: 'Pedido Realizado',
+            confirmed: 'Pedido Confirmado',
+            preparing: 'Cocina (Sala)',
+            on_the_way: 'Sala (Servir)',
+            delivered: 'Pedido Servido',
             cancelled: 'Cancelado',
         },
         corruptOrder: 'ERROR: PEDIDO SIN PRODUCTOS',
@@ -489,9 +509,26 @@ export default function AdminOrders({
                                                         )?.color || ''
                                                     }`}
                                                 >
-                                                    {statusOptions.find(
-                                                        s => s.value === order.status
-                                                    )?.label || order.status}
+                                                    {(() => {
+                                                        const isMesaStatus = order.deliveryAddress
+                                                            ?.toUpperCase()
+                                                            .includes('MESA');
+                                                        if (
+                                                            isMesaStatus &&
+                                                            (t as any).statusNamesMesa
+                                                        ) {
+                                                            return (
+                                                                (t as any).statusNamesMesa[
+                                                                    order.status
+                                                                ] || order.status
+                                                            );
+                                                        }
+                                                        return (
+                                                            statusOptions.find(
+                                                                s => s.value === order.status
+                                                            )?.label || order.status
+                                                        );
+                                                    })()}
                                                 </span>
                                                 {order.notes && (
                                                     <div
@@ -642,9 +679,14 @@ export default function AdminOrders({
                                         }
                                     });
 
+                                    const isMesa = order.deliveryAddress
+                                        ?.toUpperCase()
+                                        .includes('MESA');
+
                                     const isPickup =
-                                        deliveryType === 'RECOGIDA EN LOCAL' ||
-                                        order.deliveryAddress === 'RECOGIDA';
+                                        !isMesa &&
+                                        (deliveryType === 'RECOGIDA EN LOCAL' ||
+                                            order.deliveryAddress === 'RECOGIDA');
 
                                     return (
                                         <div className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-hidden">
@@ -844,21 +886,29 @@ export default function AdminOrders({
                                                 <div className="space-y-4">
                                                     <div className="flex flex-wrap gap-2.5 mb-2">
                                                         <div
-                                                            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${isPickup ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-700 border-gray-200'}`}
+                                                            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${
+                                                                isMesa
+                                                                    ? 'bg-red-50 text-red-700 border-red-200'
+                                                                    : isPickup
+                                                                      ? 'bg-amber-100 text-amber-700 border-amber-200'
+                                                                      : 'bg-gray-100 text-gray-700 border-gray-200'
+                                                            }`}
                                                         >
-                                                            {isPickup ? (
+                                                            {isMesa ? (
+                                                                <Activity size={14} />
+                                                            ) : isPickup ? (
                                                                 <Store size={14} />
                                                             ) : (
                                                                 <Truck size={14} />
                                                             )}
-                                                            {isPickup
-                                                                ? t.types.recogida
-                                                                : t.types.domicilio}
+                                                            {isMesa
+                                                                ? t.types.mesa
+                                                                : isPickup
+                                                                  ? t.types.recogida
+                                                                  : t.types.domicilio}
                                                         </div>
-                                                        {order.deliveryAddress
-                                                            ?.toUpperCase()
-                                                            .includes('MESA') && (
-                                                            <div className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border bg-red-50 text-red-700 border-red-200">
+                                                        {isMesa && (
+                                                            <div className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border bg-red-600 text-white border-red-700">
                                                                 <Activity
                                                                     size={14}
                                                                     strokeWidth={2.5}
@@ -1097,7 +1147,12 @@ export default function AdminOrders({
                                                                 value={opt.value}
                                                                 className="bg-white text-gray-900 font-black uppercase tracking-widest"
                                                             >
-                                                                {opt.label}
+                                                                {isMesa &&
+                                                                (t as any).statusNamesMesa
+                                                                    ? (t as any).statusNamesMesa[
+                                                                          opt.value
+                                                                      ] || opt.label
+                                                                    : opt.label}
                                                             </option>
                                                         ))}
                                                     </select>

@@ -454,7 +454,7 @@ router.post(
             ];
 
             if (isScheduled) {
-                waTextParts.push(`📅 *ENTREGA PROGRAMADA: ${serverEstimatedTime}*`);
+                waTextParts.push(`*ENTREGA PROGRAMADA: ${serverEstimatedTime}*`);
             }
 
             waTextParts.push(`PRODUCTOS:\n${itemsSummary}`);
@@ -856,10 +856,10 @@ router.get(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- PRIMARY PREVIEW TAGS (Telegram/WhatsApp priority) -->
-    <title>¡Invita a ${senderName}! 🎁 — Sushi de Maksim</title>
-    <meta name="description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
-    <meta property="og:title" content="¡Invita a ${senderName}! 🎁">
-    <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera. 🍣✨">
+    <title>¡Invita a ${senderName}! - Sushi de Maksim</title>
+    <meta name="description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera.">
+    <meta property="og:title" content="¡Invita a ${senderName}!">
+    <meta property="og:description" content="¿Te animas a invitar a ${senderName}? Su pedido favorito de Sushi de Maksim te espera.">
     <meta property="og:image" content="${pandaImg}">
     <meta property="og:image:secure_url" content="${pandaImg}">
     <meta property="og:image:type" content="image/webp">
@@ -871,7 +871,7 @@ router.get(
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="${pandaImg}">
-    <meta name="twitter:title" content="¡Invita a ${senderName}! 🎁">
+    <meta name="twitter:title" content="¡Invita a ${senderName}!">
     <meta name="twitter:description" content="Sorprende a tu amigo(a) con su sushi favorito.">
     
     <meta property="og:site_name" content="Sushi de Maksim">
@@ -886,7 +886,6 @@ router.get(
 </head>
 <body>
     <div class="loader">
-        <h1 style="font-size: 40px; margin-bottom: 10px;">🍣</h1>
         <p>Redirigiendo a la sorpresa...</p>
     </div>
 </body>

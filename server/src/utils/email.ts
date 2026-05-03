@@ -96,7 +96,7 @@ export async function sendResetCodeEmail(to: string, code: string): Promise<void
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
     <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;">
-      <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+      <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
     </div>
     <div style="padding:32px;">
       <p style="color:#374151;font-size:16px;margin:0 0 8px;">Hola,</p>
@@ -139,7 +139,6 @@ export async function sendBirthdayGiftEmail(
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
     <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
-      <div style="font-size:50px;margin-bottom:10px;">🎁</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Feliz Cumpleaños!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Queremos celebrar tu día especial</p>
     </div>
@@ -172,7 +171,7 @@ export async function sendBirthdayGiftEmail(
 
     await sendEmail({
         to,
-        subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim 🍣',
+        subject: '¡Feliz Cumpleaños! Tu regalo te espera en Sushi de Maksim',
         html,
     });
 }
@@ -186,7 +185,7 @@ export async function sendOrderReceiptEmail(
     isAdminCopy = false
 ): Promise<void> {
     const subject = isAdminCopy
-        ? `🚨 [NUEVO PEDIDO] #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`
+        ? `[NUEVO PEDIDO] #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`
         : `Confirmación de Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`;
 
     const greeting = isAdminCopy ? '¡Hola Administrador!' : `¡Hola ${orderData.customerName}!`;
@@ -286,9 +285,9 @@ export async function sendOrderReceiptEmail(
             ? `\n• Gastos de Envío: ${deliveryItem.price_at_time.toFixed(2)}€`
             : '';
 
-        const scheduledText = scheduledTime ? `\n⏰ *ENTREGA PROGRAMADA: ${scheduledTime}*` : '';
+        const scheduledText = scheduledTime ? `\n*ENTREGA PROGRAMADA: ${scheduledTime}*` : '';
 
-        const paymentMethodLabel = paymentMethod.includes('TARJETA') ? '💳 Tarjeta' : '💵 Efectivo';
+        const paymentMethodLabel = paymentMethod.includes('TARJETA') ? 'Tarjeta' : 'Efectivo';
 
         const waMessage = `Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\n*Total: ${orderData.total.toFixed(2)}€*\n*Método de pago: ${paymentMethodLabel}*`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
@@ -302,7 +301,7 @@ export async function sendOrderReceiptEmail(
     <tr style="border-bottom: 1px solid #f3f4f6;">
       <td style="padding: 12px 0;">
         <div style="font-weight: 600; color: #111827; font-size: 15px;">${item.name} ${item.quantity > 1 ? `<span style="color:#ea580c;">x${item.quantity}</span>` : ''}</div>
-        ${item.selected_option ? `<div style="color: #ea580c; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 2px;">🍬 Opción: ${item.selected_option}</div>` : ''}
+        ${item.selected_option ? `<div style="color: #ea580c; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 2px;">Opción: ${item.selected_option}</div>` : ''}
         <div style="color: #6b7280; font-size: 13px;">Precio unitario: ${item.price_at_time.toFixed(2).replace('.', ',')} €</div>
       </td>
       <td style="padding: 12px 0; text-align: right; vertical-align: top; font-weight: 700; color: #111827; font-size: 15px;">
@@ -335,7 +334,7 @@ export async function sendOrderReceiptEmail(
   <div style="max-width:600px;margin:10px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
     
     <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-      <h1 style="color: #fff; margin: 0; font-size: 24px;">🍣 Sushi de Maksim</h1>
+      <h1 style="color: #fff; margin: 0; font-size: 24px;">Sushi de Maksim</h1>
       <p style="color: #6b7280; margin: 8px 0 0; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">Confirmación de Pedido</p>
     </div>
 
@@ -393,13 +392,13 @@ export async function sendOrderReceiptEmail(
             <td style="width: 50%; vertical-align: top;">
               <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Método de Pago</h4>
               <div style="color: #111827; font-size: 15px; font-weight: 700;">
-                ${paymentMethod.includes('TARJETA') ? '💳 Tarjeta' : '💵 Efectivo'}
+                ${paymentMethod.includes('TARJETA') ? 'Tarjeta' : 'Efectivo'}
               </div>
             </td>
             <td style="width: 50%; vertical-align: top;">
               <h4 style="color: #9ca3af; margin: 0 0 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Tipo de Entrega</h4>
               <div style="color: #111827; font-size: 15px; font-weight: 700;">
-                ${deliveryType.includes('RECOGIDA') ? '🏬 Recogida en Local' : '🚚 Entrega a Domicilio'}
+                ${deliveryType.includes('RECOGIDA') ? 'Recogida en Local' : 'Entrega a Domicilio'}
               </div>
             </td>
           </tr>
@@ -410,9 +409,9 @@ export async function sendOrderReceiptEmail(
                 ? `
         <h4 style="color: #9ca3af; margin: 12px 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
         <div style="background-color: #FFF7ED; border-radius: 12px; padding: 12px; border: 1px solid #ffedd5;">
-          ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #ffedd5;">⏰ Entrega programada: <span style="color: #ea580c;">${scheduledTime}</span></div>` : ''}
-          ${noCall ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🚫 No llamar para confirmar pedido</div>' : ''}
-          ${noBuzzer ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🔕 No llamar al timbre (llamar al móvil)</div>' : ''}
+          ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #ffedd5;">Entrega programada: <span style="color: #ea580c;">${scheduledTime}</span></div>` : ''}
+          ${noCall ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">No llamar para confirmar pedido</div>' : ''}
+          ${noBuzzer ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">No llamar al timbre (llamar al móvil)</div>' : ''}
           ${customerNote ? `<div style="color: #4b5563; font-size: 13px; line-height: 1.4; margin-top: ${noCall || noBuzzer ? '8px' : '0'}; border-top: ${noCall || noBuzzer ? '1px solid #ffedd5' : 'none'}; padding-top: ${noCall || noBuzzer ? '8px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
         </div>
         `
@@ -426,8 +425,8 @@ export async function sendOrderReceiptEmail(
         <div style="color: #4b5563; font-size: 13px; line-height: 1.5;">
           ${
               deliveryType.includes('RECOGIDA')
-                  ? '<strong>📍 Dirección:</strong> Calle Barrilero, 20, 28007 Madrid'
-                  : `<strong>📍 Dirección:</strong> ${orderData.deliveryAddress}`
+                  ? '<strong>Dirección:</strong> Calle Barrilero, 20, 28007 Madrid'
+                  : `<strong>Dirección:</strong> ${orderData.deliveryAddress}`
           }
           <br>
           <strong>📱 Teléfono:</strong> ${orderData.phoneNumber}
@@ -506,7 +505,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
     <div style="padding:32px;text-align:center;">
       <h2 style="color:#111827;margin:0 0 16px;font-size:20px;">¡Hola ${name}!</h2>
       <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 24px;">
-        Gracias por registrarte en **Sushi de Maksim**. Estamos encantados de tenerte con nosotros. 🤍
+        Gracias por registrarte en **Sushi de Maksim**. Estamos encantados de tenerте con nosotros.
       </p>
       <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 32px;">
         Prepárate para disfrutar del mejor sushi artesanal directamente en tu mesa. ¡Explora nuestro menú y haz tu primer pedido hoy mismo!
@@ -522,7 +521,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
 
     await sendEmail({
         to,
-        subject: '¡Bienvenido a Sushi de Maksim! 🍣',
+        subject: '¡Bienvenido a Sushi de Maksim!',
         html,
     });
 }
@@ -569,7 +568,7 @@ export async function sendVerificationEmail(
           * Mínimo de pedido: <strong>20€</strong>
         </p>
         <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0;">
-          ⚠️ Válido solo durante <strong>7 días</strong>
+          Válido solo durante <strong>7 días</strong>
         </p>
       </div>
 
@@ -598,7 +597,7 @@ export async function sendVerificationEmail(
 
     await sendEmail({
         to,
-        subject: '¡Activa tu cuenta y recibe un regalo! 🎁 — Sushi de Maksim',
+        subject: '¡Activa tu cuenta y recibe un regalo! — Sushi de Maksim',
         html,
     });
 }
@@ -671,10 +670,9 @@ export async function sendNewsletterWelcomeEmail(
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
     <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-      <h1 style="color:#fff;margin:0;font-size:24px;">🍣 Sushi de Maksim</h1>
+      <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
     </div>
     <div style="background:linear-gradient(135deg,#000000,#333333);padding:24px;text-align:center;position:relative;">
-      <div style="font-size:50px;margin-bottom:10px;">✨</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Ya eres del Club!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Bienvenido a la familia Sushi de Maksim</p>
     </div>
@@ -707,7 +705,7 @@ export async function sendNewsletterWelcomeEmail(
 
     await sendEmail({
         to,
-        subject: '¡Bienvenido al Club! 🎉 Tu regalo de Sushi de Maksim te espera',
+        subject: '¡Bienvenido al Club! Tu regalo de Sushi de Maksim te espera',
         html,
     });
 }
@@ -747,9 +745,6 @@ export async function sendAbandonedCartEmail(
        <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
     </div>
     <div style="background:#111;padding:32px 24px;text-align:center;">
-       <div style="background:#ea580c;display:inline-block;padding:8px 12px;border-radius:12px;margin-bottom:12px;">
-         <span style="font-size:32px;">🍣</span>
-       </div>
        <h1 style="color:#fff;margin:0;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¿Se te antoja algo?</h1>
     </div>
     <div style="padding:32px 24px;text-align:center;">
@@ -780,7 +775,7 @@ export async function sendAbandonedCartEmail(
 
     await sendEmail({
         to,
-        subject: '🍣 Te has olvidado algo delicioso...',
+        subject: 'Te has olvidado algo delicioso...',
         html,
     });
 }
@@ -793,10 +788,10 @@ export async function sendReservationEmail(
     isAdminCopy = false
 ): Promise<void> {
     const subject = isAdminCopy
-        ? `📅 [NUEVA RESERVA] - ${reservationData.name} (${reservationData.guests} pers.)`
-        : `Confirmación de Reserva — Sushi de Maksim 🍣`;
+        ? `[NUEVA RESERVA] - ${reservationData.name} (${reservationData.guests} pers.)`
+        : `Confirmación de Reserva — Sushi de Maksim`;
 
-    const greeting = isAdminCopy ? '¡Hola Administrador!' : `¡Hola ${reservationData.name}! 🎉`;
+    const greeting = isAdminCopy ? '¡Hola Administrador!' : `¡Hola ${reservationData.name}!`;
 
     const html = `
 <!DOCTYPE html>
@@ -809,7 +804,7 @@ export async function sendReservationEmail(
     <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
         
         <div style="background-color: #000000; padding: 32px 20px; text-align: center;">
-            <h1 style="color:#fff;margin:0;font-size:26px;">🍣 Sushi de Maksim</h1>
+            <h1 style="color:#fff;margin:0;font-size:26px;">Sushi de Maksim</h1>
             <p style="color: #6b7280; margin: 10px 0 0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Reserva de Mesa</p>
         </div>
 
@@ -898,7 +893,7 @@ export async function sendReservationEmail(
                     ? `
             <div style="background-color: #FFF7ED; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #ffedd5;">
                 <p style="color: #c2410c; font-size: 14px; font-weight: 800; margin: 0;">
-                    ⏳ Tu reserva está en estado: PENDIENTE
+                    Tu reserva está en estado: PENDIENTE
                 </p>
                 <p style="color: #4b5563; font-size: 13px; margin: 8px 0 0;">
                     Te enviaremos otro email o te llamaremos para confirmar la mesa.
@@ -945,17 +940,16 @@ export async function sendLoyaltyGiftEmail(
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
     <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-      <h1 style="color:#fff;margin:0;font-size:22px;">🍣 Sushi de Maksim</h1>
+      <h1 style="color:#fff;margin:0;font-size:22px;">Sushi de Maksim</h1>
     </div>
     <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
-      <div style="font-size:50px;margin-bottom:10px;">⭐</div>
       <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Gracias por tu Fidelidad!</h1>
       <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Tu 4º pedido merece un premio</p>
     </div>
     <div style="padding:24px;text-align:center;">
       <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Hola ${name}!</p>
       <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
-        Acabas de completar cuatro pedidos con nosotros... Eso significa que ya eres parte de la verdadera mafia del sushi. 😎 Para celebrarlo, tienes un descuento especial para tu <strong>5º pedido</strong>:
+        Acabas de completar cuatro pedidos con nosotros... Eso significa que ya eres parte de la verdadera mafia del sushi. Para celebrarlo, tienes un descuento especial para tu <strong>5º pedido</strong>:
       </p>
       
       <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
@@ -981,7 +975,7 @@ export async function sendLoyaltyGiftEmail(
 
     await sendEmail({
         to,
-        subject: '⭐ Tienes un premio por tu 4º pedido — Sushi de Maksim',
+        subject: 'Tienes un premio por tu 4º pedido — Sushi de Maksim',
         html,
     });
 }
@@ -997,12 +991,11 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
     <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-      <h1 style="color:#fff;margin:0;font-size:22px;">🍣 Sushi de Maksim</h1>
+      <h1 style="color:#fff;margin:0;font-size:22px;">Sushi de Maksim</h1>
     </div>
     <div style="background:linear-gradient(135deg,#ea580c,#f26522);padding:24px;text-align:center;position:relative;">
-      <div style="font-size:50px;margin-bottom:10px;">🍣</div>
       <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Tu Roll Dulce de Regalo!</h1>
-      <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">¡Has completado 9 pedidos! ⭐</p>
+      <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">¡Has completado 9 pedidos!</p>
     </div>
     <div style="padding:24px;text-align:center;">
       <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Felicidades ${name}!</p>
@@ -1013,7 +1006,7 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
       <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
         <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Regalo</p>
         <div style="font-size:32px;font-weight:900;color:#ea580c;letter-spacing:3px;">${code}</div>
-        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">🍣 ROLL DULCE GRATIS EN TU PEDIDO</p>
+        <p style="color:#c2410c;font-size:20px;font-weight:bold;margin:12px 0 0;">ROLL DULCE GRATIS EN TU PEDIDO</p>
       </div>
 
       <p style="color:#374151;font-size:14px;line-height:1.4;margin:0 0 32px;">
@@ -1035,7 +1028,7 @@ export async function sendDessertGiftEmail(to: string, name: string, code: strin
 
     await sendEmail({
         to,
-        subject: '🍣 ¡Felicidades! Tienes un Roll Dulce de regalo por tu 9º pedido',
+        subject: '¡Felicidades! Tienes un Roll Dulce de regalo por tu 9º pedido',
         html,
     });
 }
@@ -1055,11 +1048,11 @@ export async function sendContactFormEmail(
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
   <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
     <div style="background:#111;padding:24px;text-align:center;">
-       <h1 style="color:#fff;margin:0;font-size:20px;">📩 Nuevo Mensaje de Contacto</h1>
+       <h1 style="color:#fff;margin:0;font-size:20px;">Nuevo Mensaje de Contacto</h1>
     </div>
     <div style="padding:32px;">
-      <p style="margin:0 0 16px;"><strong style="color:#374151;">De:</strong> ${fromName} (${fromEmail})</p>
-      <p style="margin:0 0 8px;"><strong style="color:#374151;">Mensaje:</strong></p>
+      <p style="margin:0 0 16px;"><strong>De:</strong> ${fromName} (${fromEmail})</p>
+      <p style="margin:0 0 8px;"><strong>Mensaje:</strong></p>
       <div style="background:#f3f4f6;padding:20px;border-radius:12px;color:#4b5563;line-height:1.6;font-style:italic;">
         "${message}"
       </div>
@@ -1073,7 +1066,7 @@ export async function sendContactFormEmail(
 
     await sendEmail({
         to: config.adminEmail,
-        subject: `📩 Mensaje de ${fromName} via sushidemaksim.com`,
+        subject: `Mensaje de ${fromName} via sushidemaksim.com`,
         html,
     });
 }

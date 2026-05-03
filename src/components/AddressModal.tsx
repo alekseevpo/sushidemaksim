@@ -731,7 +731,7 @@ export default function AddressModal({
 
                             {/* Map Side */}
                             <div
-                                className="flex-1 md:h-auto relative bg-gray-100 border-r border-gray-100 shrink-0"
+                                className="flex-[1.6] md:flex-1 relative bg-gray-100 border-r border-gray-100 shrink-0"
                                 onClick={() => {
                                     // Close search dropdown when tapping on the map area
                                     if (searchResults.length > 0) {
@@ -1023,7 +1023,7 @@ export default function AddressModal({
 
                             {/* Form Side */}
                             <div className="w-full md:w-[380px] bg-white flex flex-col flex-1 min-h-0 overflow-hidden border-l border-gray-100">
-                                <div className="flex-1 overflow-y-auto p-3 md:px-5 md:py-4 space-y-2 md:space-y-3 scrollbar-hide">
+                                <div className="flex-1 overflow-y-auto p-3 md:px-5 md:py-4 space-y-1.5 md:space-y-3 scrollbar-hide">
                                     <div
                                         onClick={() => {
                                             searchInputRef.current?.focus();
@@ -1033,19 +1033,19 @@ export default function AddressModal({
                                         }}
                                         className="cursor-pointer group"
                                     >
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none">
                                             Calle / Avenida *
                                         </label>
-                                        <div className="w-full bg-gray-50 border-none rounded-2xl px-4 py-2 md:py-3.5 text-sm font-bold text-gray-900 transition-all flex items-center gap-2 group-hover:bg-gray-100 min-h-[36px] md:min-h-[46px]">
+                                        <div className="w-full bg-gray-50 border-none rounded-2xl px-4 py-2 md:py-3.5 text-[14px] font-bold text-gray-900 transition-all flex items-center gap-2 group-hover:bg-gray-100 min-h-[36px] md:min-h-[46px]">
                                             {address ? (
                                                 <span
-                                                    className="truncate"
+                                                    className="truncate text-[14px] font-bold"
                                                     data-testid="selected-address-name"
                                                 >
                                                     {address}
                                                 </span>
                                             ) : (
-                                                <span className="text-gray-400">
+                                                <span className="text-gray-400 text-[14px] font-bold">
                                                     Busca tu calle en el mapa ↑
                                                 </span>
                                             )}
@@ -1059,32 +1059,32 @@ export default function AddressModal({
                                     <div className="grid grid-cols-3 gap-2 md:gap-3">
                                         {/* Number - EDITABLE */}
                                         <div className="flex flex-col">
-                                            <p className="block text-[9px] md:text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none truncate">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none truncate">
                                                 Número *
-                                            </p>
+                                            </label>
                                             <input
                                                 type="text"
                                                 value={house}
                                                 ref={houseInputRef}
                                                 onChange={e => setHouse(e.target.value)}
-                                                className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
+                                                className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-[14px] font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400 placeholder:font-bold"
                                                 placeholder="Ej: 20"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[9px] md:text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none truncate">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none truncate">
                                                 Piso
                                             </label>
                                             <input
                                                 value={apartment}
                                                 ref={apartmentInputRef}
                                                 onChange={e => setApartment(e.target.value)}
-                                                className="w-full bg-gray-50 rounded-xl px-3 py-2 md:py-3.5 text-sm font-bold border-none focus:ring-2 ring-orange-500/10 transition outline-none"
+                                                className="w-full bg-gray-50 rounded-xl px-3 py-2 md:py-3.5 text-[14px] font-bold text-gray-900 border-none focus:ring-2 ring-orange-500/10 transition outline-none placeholder:text-gray-400 placeholder:font-bold"
                                                 placeholder="Ej: 1B"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[9px] md:text-[10px] font-black text-gray-400 uppercase mb-0.5 md:mb-1.5 px-1 tracking-widest leading-none truncate">
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 md:mb-1.5 px-1 tracking-widest leading-none truncate">
                                                 C. Postal
                                             </label>
                                             <input
@@ -1093,7 +1093,7 @@ export default function AddressModal({
                                                     setPostalCode(e.target.value);
                                                     setIsAddressManuallyEdited(true);
                                                 }}
-                                                className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-sm font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400"
+                                                className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-[14px] font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400 placeholder:font-bold"
                                                 placeholder="28001"
                                             />
                                         </div>
@@ -1243,7 +1243,7 @@ export default function AddressModal({
                                 </div>
 
                                 {/* Sticky Footer with Gradient */}
-                                <div className="p-3 md:p-5 bg-white border-t border-gray-50 relative pb-4 md:pb-6 shrink-0">
+                                <div className="p-3 md:p-5 bg-white border-t border-gray-50 relative pb-8 md:pb-6 shrink-0">
                                     <div className="absolute bottom-full left-0 right-0 h-4 md:h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
                                     {/* Manual Edit Warning */}

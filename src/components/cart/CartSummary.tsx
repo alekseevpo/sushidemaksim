@@ -15,8 +15,6 @@ interface CartSummaryProps {
     onApplyPromo: (code: string) => void;
     onRemovePromo: () => void;
     isOrdering: boolean;
-    isInviting: boolean;
-    onInvite: () => void;
     isApplyingPromo: boolean;
     setPromoCode: (code: string) => void;
     minOrder?: number;
@@ -35,8 +33,6 @@ export default function CartSummary({
     onApplyPromo,
     onRemovePromo,
     isOrdering,
-    isInviting,
-    onInvite,
     isApplyingPromo,
     setPromoCode,
     minOrder = 0,
@@ -269,22 +265,6 @@ export default function CartSummary({
                         </span>
                         <ArrowRight size={18} strokeWidth={2} />
                     </>
-                )}
-            </button>
-
-            <button
-                onClick={() => {
-                    triggerHaptic(HAPTIC_PATTERNS.LIGHT);
-                    onInvite();
-                }}
-                data-testid="invite-button"
-                disabled={isInviting || isOrdering || items.length === 0}
-                className="w-full py-4 bg-white border-2 border-orange-100 text-orange-600 rounded-2xl font-black text-base uppercase tracking-wider hover:bg-orange-50 hover:border-orange-200 transition-all flex items-center justify-center gap-2 mb-4 active:scale-95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {isInviting ? (
-                    <div className="w-5 h-5 border-2 border-orange-200 border-t-orange-600 rounded-full animate-spin" />
-                ) : (
-                    '¡Que me inviten!'
                 )}
             </button>
 

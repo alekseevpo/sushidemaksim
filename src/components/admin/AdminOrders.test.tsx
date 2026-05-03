@@ -130,4 +130,40 @@ describe('AdminOrders (Integration)', () => {
             expect(screen.queryByText(/550E8400/)).not.toBeInTheDocument();
         });
     });
+
+    it('shows table labels for MESA orders in Russian', async () => {
+        const tableOrder = {
+            ...mockOrders[0],
+            id: 'T1234567', // 8 characters
+            deliveryAddress: 'MESA 5',
+            status: 'preparing',
+        };
+
+        vi.mocked(api.get).mockResolvedValue({
+            orders: [tableOrder],
+            pagination: { page: 1, limit: 10, total: 1, pages: 1 },
+        });
+
+        render(
+            <AdminOrders
+                isGlobalSoundEnabled={false}
+                setIsGlobalSoundEnabled={() => {}}
+                globalPendingCount={0}
+                language="ru"
+            />
+        );
+
+        // Use findByText to wait for async loading
+        const orderId = await screen.findByText(/T1234567/i, {}, { timeout: 5000 });
+        expect(orderId).toBeInTheDocument();
+
+        // Should show 'СТОЛ' from t.types.mesa
+        expect(screen.getByText(/СТОЛ/i)).toBeInTheDocument();
+        // Should show the specific table number badge (might be multiple times)
+        const tableBadges = screen.getAllByText(/MESA 5/i);
+        expect(tableBadges.length).toBeGreaterThan(0);
+        // Should show table-specific status 'Кухня (Зал)' (appears in badge and dropdown)
+        const statusLabels = screen.getAllByText(/Кухня \(Зал\)/i);
+        expect(statusLabels.length).toBeGreaterThan(0);
+    });
 });
