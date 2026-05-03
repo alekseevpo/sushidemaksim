@@ -62,3 +62,17 @@ export const promoLimiter = rateLimit({
     legacyHeaders: false,
     skip,
 });
+
+/**
+ * Limiter for contact form submissions to prevent bot spam
+ */
+export const contactLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: skip() ? 50 : 3, // 3 attempts per hour
+    message: {
+        error: 'Demasiados mensajes enviados. Por favor, inténtalo de nuevo en una hora.',
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip,
+});

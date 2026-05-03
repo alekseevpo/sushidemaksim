@@ -481,6 +481,15 @@ export default function ContactsPage() {
                                         )}
                                     </AnimatePresence>
                                 </div>
+                                {/* Honeypot field - hidden from humans but filled by bots */}
+                                <div className="hidden" aria-hidden="true">
+                                    <input
+                                        type="text"
+                                        {...register('website' as any)}
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                    />
+                                </div>
                                 <button
                                     type="submit"
                                     disabled={submitting}
