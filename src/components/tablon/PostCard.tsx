@@ -14,11 +14,11 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
         <Link
             to={`/tablon/${post.id}`}
             data-testid={`tablon-post-${post.id}`}
-            className="group flex flex-col h-full bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/5"
+            className="group flex flex-col h-full bg-transparent border-none md:bg-gray-900/50 md:backdrop-blur-sm md:border md:border-white/10 rounded-none md:rounded-2xl overflow-visible md:overflow-hidden hover:border-orange-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/5"
         >
             {/* Images preview */}
             {post.images.length > 0 && (
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-64 md:h-48 overflow-hidden rounded-2xl md:rounded-none">
                     <img
                         src={post.images[0]}
                         alt="Foto del anuncio"
@@ -35,7 +35,7 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
                 </div>
             )}
 
-            <div className="p-5 flex flex-col flex-grow">
+            <div className="py-5 px-0 md:p-5 flex flex-col flex-grow">
                 {/* Category badge + time */}
                 <div className="flex items-center justify-between mb-3">
                     {post.category && (

@@ -93,7 +93,7 @@ export default function TablonPostPage() {
                     </Link>
 
                     {/* Post Card */}
-                    <article className="bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+                    <article className="bg-transparent border-none md:bg-gray-900/50 md:backdrop-blur-sm md:border md:border-white/10 rounded-none md:rounded-2xl overflow-visible md:overflow-hidden">
                         {/* Images */}
                         {post.images.length > 0 && (
                             <div
@@ -132,7 +132,7 @@ export default function TablonPostPage() {
                             </div>
                         )}
 
-                        <div className="p-6 md:p-8">
+                        <div className="py-6 px-0 md:p-8">
                             {/* Header */}
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">

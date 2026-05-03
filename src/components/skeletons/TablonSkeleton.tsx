@@ -25,10 +25,10 @@ export function TablonSkeleton() {
                     {[1, 2, 3, 4, 5, 6].map(i => (
                         <div
                             key={i}
-                            className="bg-gray-900/50 border border-white/10 rounded-2xl overflow-hidden"
+                            className="bg-transparent border-none md:bg-gray-900/50 md:border md:border-white/10 rounded-none md:rounded-2xl overflow-visible md:overflow-hidden"
                         >
-                            <div className="h-48 bg-white/5 animate-pulse" />
-                            <div className="p-5 space-y-4">
+                            <div className="h-64 md:h-48 bg-white/5 animate-pulse rounded-2xl md:rounded-none" />
+                            <div className="py-5 px-0 md:p-5 space-y-4">
                                 <div className="flex justify-between items-center">
                                     <div className="h-5 w-24 bg-white/5 rounded-full animate-pulse" />
                                     <div className="h-4 w-12 bg-white/5 rounded animate-pulse" />
