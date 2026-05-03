@@ -59,9 +59,13 @@ describe('ContactsPage (Security)', () => {
             </QueryClientProvider>
         );
 
-    it('submits contact form', async () => {
+    it('submits contact form after security delay', async () => {
+        // Use fake timers to control the mount time
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2024-01-01T00:00:00Z'));
         renderPage();
 
+        // Fill form fields
         fireEvent.change(screen.getByPlaceholderText(/Nombre completo/i), {
             target: { value: 'John Doe' },
         });
@@ -73,6 +77,10 @@ describe('ContactsPage (Security)', () => {
         });
 
         (api.post as any).mockResolvedValue({ success: true });
+
+        // Advance time and switch back to real timers so waitFor works correctly
+        vi.advanceTimersByTime(5000);
+        vi.useRealTimers();
 
         const submitButton = screen.getByRole('button', { name: /ENVIAR MENSAJE/i });
         fireEvent.click(submitButton);
