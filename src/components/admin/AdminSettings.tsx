@@ -157,14 +157,12 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
         },
     });
 
-    // Update local state when remote data changes
+    // Update local state ONLY when remote data is initially loaded or when it truly changes from server
     useEffect(() => {
-        if (remoteSettings && (!localSettings || !updateMutation.isPending)) {
-            // Only update if we don't have local settings or we just finished a save
-            // to avoid losing unsaved changes, but sync after success
+        if (remoteSettings) {
             setLocalSettings(remoteSettings);
         }
-    }, [remoteSettings, localSettings, updateMutation.isPending]);
+    }, [remoteSettings]);
 
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
@@ -261,6 +259,10 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     setLocalSettings({
                                         ...localSettings,
                                         isTodayClosed: e.target.checked,
+                                        // If orders are closed, pickup only loses its meaning
+                                        isPickupOnly: e.target.checked
+                                            ? false
+                                            : localSettings.isPickupOnly,
                                     })
                                 }
                                 className="sr-only peer"
@@ -288,6 +290,10 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                     setLocalSettings({
                                         ...localSettings,
                                         isPickupOnly: e.target.checked,
+                                        // If pickup only is enabled, we are definitely NOT closed
+                                        isTodayClosed: e.target.checked
+                                            ? false
+                                            : localSettings.isTodayClosed,
                                     })
                                 }
                                 className="sr-only peer"
