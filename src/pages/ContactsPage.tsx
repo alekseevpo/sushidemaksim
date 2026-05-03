@@ -87,6 +87,7 @@ const MADRID_HOLIDAYS_2026 = [
 export default function ContactsPage() {
     const { success: showSuccess, error: showError } = useToast();
     const [submitting, setSubmitting] = useState(false);
+    const [mountTime] = useState(Date.now());
 
     const {
         register,
@@ -144,6 +145,17 @@ export default function ContactsPage() {
 
     const onSubmit = async (data: ContactInput) => {
         setSubmitting(true);
+
+        // Timer check: Bots fill forms in milliseconds
+        const now = Date.now();
+        if (now - mountTime < 4000) {
+            // Silently fail or pretend success for bots
+            await new Promise(r => setTimeout(r, 1000));
+            showSuccess('¡Mensaje enviado con éxito! Te responderemos pronto.');
+            reset();
+            setSubmitting(false);
+            return;
+        }
 
         try {
             await api.post('/contact', data);
@@ -481,11 +493,17 @@ export default function ContactsPage() {
                                         )}
                                     </AnimatePresence>
                                 </div>
-                                {/* Honeypot field - hidden from humans but filled by bots */}
+                                {/* Honeypot fields - hidden from humans but filled by bots */}
                                 <div className="hidden" aria-hidden="true">
                                     <input
                                         type="text"
                                         {...register('website' as any)}
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                    />
+                                    <input
+                                        type="text"
+                                        {...register('phone' as any)}
                                         tabIndex={-1}
                                         autoComplete="off"
                                     />

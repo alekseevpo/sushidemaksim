@@ -15,6 +15,10 @@ export const contactSchema = z.object({
         .string()
         .min(1, 'El mensaje es obligatorio')
         .min(10, 'El mensaje debe tener al menos 10 caracteres'),
+
+    // Honeypot fields
+    website: z.string().optional(),
+    phone: z.string().optional(),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;
