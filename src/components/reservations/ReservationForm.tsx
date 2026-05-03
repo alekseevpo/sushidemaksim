@@ -202,7 +202,7 @@ export default function ReservationForm({
                     </p>
                 </motion.div>
             ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-3.5">
                     {error && (
                         <div className="p-4 bg-orange-50 border border-orange-100 rounded-2xl flex items-center gap-3 text-orange-600 text-xs font-bold">
                             <AlertCircle size={16} />
@@ -226,13 +226,13 @@ export default function ReservationForm({
                                 placeholder="Tu nombre и apellidos"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-full pl-11 pr-4 py-3 bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] focus:bg-white focus:border-orange-600 outline-none transition-all font-bold text-base text-gray-900 shadow-sm placeholder:text-gray-400 placeholder:font-medium"
+                                className="w-full pl-11 pr-4 py-2.5 bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] focus:bg-white focus:border-orange-600 outline-none transition-all font-bold text-base text-gray-900 shadow-sm placeholder:text-gray-400 placeholder:font-medium"
                             />
                         </div>
                     </div>
 
                     {/* 2. Fecha и Hora */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
                                 Fecha
@@ -277,7 +277,7 @@ export default function ReservationForm({
                     </div>
 
                     {/* 3. Personas и Teléfono */}
-                    <div className="grid grid-cols-1 sm:grid-cols-[0.8fr,1.2fr] gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
                                 Personas
@@ -368,7 +368,7 @@ export default function ReservationForm({
                                     placeholder="tucorreo@ejemplo.com"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="w-full pl-11 pr-4 py-3 bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] focus:bg-white focus:border-orange-600 outline-none transition-all font-bold text-base text-gray-900 shadow-sm placeholder:text-gray-400 placeholder:font-medium"
+                                    className="w-full pl-11 pr-4 py-2.5 bg-gray-50/50 border-2 border-transparent rounded-[1.25rem] focus:bg-white focus:border-orange-600 outline-none transition-all font-bold text-base text-gray-900 shadow-sm placeholder:text-gray-400 placeholder:font-medium"
                                 />
                             </div>
                         </div>
@@ -377,7 +377,7 @@ export default function ReservationForm({
                     <button
                         disabled={isSubmitting}
                         type="submit"
-                        className="w-full py-5 bg-orange-600 text-white rounded-[1.5rem] font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3 mt-8 active:scale-[0.98] border-none cursor-pointer h-16"
+                        className="w-full py-4 bg-orange-600 text-white rounded-[1.5rem] font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3 mt-4 active:scale-[0.98] border-none cursor-pointer h-14"
                     >
                         {isSubmitting ? (
                             <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />

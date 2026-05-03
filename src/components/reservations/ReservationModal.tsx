@@ -35,10 +35,10 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                         exit={{ y: 20, opacity: 0, scale: 0.95 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         onClick={e => e.stopPropagation()}
-                        className="relative w-[92%] max-w-sm bg-white rounded-[2.5rem] shadow-2xl flex flex-col border border-white/20 mt-[10vh] md:mt-[15vh]"
+                        className="relative w-[92%] max-w-sm bg-white rounded-[2.5rem] shadow-2xl flex flex-col border border-white/20 my-auto"
                     >
                         {/* Compact Header */}
-                        <div className="px-6 pt-6 pb-2 flex items-center justify-between shrink-0">
+                        <div className="px-6 pt-5 pb-1 flex items-center justify-between shrink-0">
                             <div>
                                 <h2 className="text-xl font-black text-gray-900 tracking-tight leading-tight">
                                     Reservar Mesa
@@ -55,7 +55,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                             </button>
                         </div>
 
-                        <div className="px-6 py-4 flex flex-col gap-5 overflow-visible">
+                        <div className="px-6 py-2 flex flex-col gap-5 overflow-visible">
                             <ReservationForm onSuccess={() => {}} />
                         </div>
                     </motion.div>
