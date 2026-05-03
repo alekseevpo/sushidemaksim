@@ -108,11 +108,14 @@ function MapUpdater({
 
     useEffect(() => {
         if (isFirstRenderRef.current) return;
-        if (
-            center[0] === lastProcessedCenterRef.current[0] &&
-            center[1] === lastProcessedCenterRef.current[1]
-        )
-            return;
+
+        // Skip automatic centering if the change is very small (likely from a marker drag)
+        const dist = Math.sqrt(
+            Math.pow(center[0] - lastProcessedCenterRef.current[0], 2) +
+                Math.pow(center[1] - lastProcessedCenterRef.current[1], 2)
+        );
+
+        if (dist < 0.0001) return;
 
         const timer = setTimeout(() => {
             map.setView(center, zoom, { animate: true, duration: 0.5 });
@@ -179,6 +182,7 @@ export default function AddressModal({
                             key={zone.id}
                             center={RESTAURANT_LOCATION}
                             radius={zone.maxRadius * 1000}
+                            interactive={false}
                             pathOptions={{
                                 color: zone.color,
                                 fillColor: zone.color,
@@ -198,6 +202,7 @@ export default function AddressModal({
                         <Polygon
                             key={zone.id}
                             positions={zone.coordinates}
+                            interactive={false}
                             pathOptions={{
                                 color: zone.color,
                                 fillColor: zone.color,
@@ -741,6 +746,7 @@ export default function AddressModal({
                                     style={{ height: '100%', width: '100%' }}
                                     zoomControl={false}
                                     attributionControl={false}
+                                    preferCanvas={true}
                                 >
                                     <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
                                     <MapUpdater
