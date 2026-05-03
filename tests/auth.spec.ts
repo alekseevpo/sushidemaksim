@@ -49,7 +49,7 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/Crea una contraseña segura/i).fill('password123!');
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
         await page.waitForLoadState('networkidle');
-        await expect(page.getByText(/Cuenta creada/i).first()).toBeVisible({
+        await expect(page.getByText(/VERIFICA TU EMAIL/i).first()).toBeVisible({
             timeout: 20000,
         });
     });

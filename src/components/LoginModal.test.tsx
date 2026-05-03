@@ -188,8 +188,11 @@ describe('LoginModal - Registration', () => {
                 'Password123!',
                 undefined
             );
-            expect(mockOnClose).toHaveBeenCalled();
-            expect(mockSuccess).toHaveBeenCalledWith(expect.stringContaining('¡Cuenta creada!'));
+            // Modal stays open and shows success screen
+            expect(mockOnClose).not.toHaveBeenCalled();
+            expect(mockSuccess).toHaveBeenCalledWith('VERIFICA TU EMAIL');
+            expect(screen.getByText(/debes activar tu cuenta/i)).toBeInTheDocument();
+            expect(screen.getByText('ENTENDIDO')).toBeInTheDocument();
         });
     });
 
