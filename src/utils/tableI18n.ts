@@ -44,6 +44,10 @@ export const translations = {
         collab: 'Сотрудничество',
         partners_franchise: 'Партнеры / Франшиза',
         open_business: 'Присоединяйтесь к семье Sushi de Maksim',
+        verify_email_title: 'ПРОВЕРЬТЕ ПОЧТУ',
+        verify_email_text:
+            'Для завершения регистрации и получения промо-кода на скидку 10% необходимо активировать аккаунт, перейдя по ссылке в письме.',
+        got_it_btn: 'ПОНЯТНО',
     },
     es: {
         welcome_title: 'Oferta Especial',
@@ -87,6 +91,10 @@ export const translations = {
         collab: 'Socio & Expansión',
         partners_franchise: 'Partners / Franquicias',
         open_business: 'Únete a la familia de Sushi de Maksim',
+        verify_email_title: 'VERIFICA TU EMAIL',
+        verify_email_text:
+            'Para completar el registro y recibir tu código de descuento del 10%, debes activar tu cuenta haciendo clic en el enlace que te hemos enviado.',
+        got_it_btn: 'ENTENDIDO',
     },
     en: {
         welcome_title: 'Special Offer',
@@ -129,6 +137,10 @@ export const translations = {
         collab: 'Partner & Expansion',
         partners_franchise: 'Partners / Franchise',
         open_business: 'Join the Sushi de Maksim family',
+        verify_email_title: 'CHECK YOUR EMAIL',
+        verify_email_text:
+            'To complete your registration and receive your 10% discount code, please activate your account by clicking the link in the email we just sent you.',
+        got_it_btn: 'GOT IT',
     },
 };
 

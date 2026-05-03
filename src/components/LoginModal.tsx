@@ -17,6 +17,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTableI18n } from '../utils/tableI18n';
 
 // ========== SUB-COMPONENTS (Memoized for performance) ==========
 
@@ -789,7 +790,13 @@ export default function LoginModal({
 }: {
     isOpen: boolean;
     onClose: () => void;
-    initialMode?: 'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password';
+    initialMode?:
+        | 'login'
+        | 'register'
+        | 'forgot'
+        | 'verify-sent'
+        | 'reset-password'
+        | 'register-success';
 }) {
     const [mode, setMode] = useState<
         | 'login'
@@ -798,6 +805,7 @@ export default function LoginModal({
         | 'verify-sent'
         | 'verify-code'
         | 'reset-password'
+        | 'register-success'
         | 'success'
         | 'loading'
     >(initialMode);
@@ -806,6 +814,7 @@ export default function LoginModal({
     const [recoveryEmail, setRecoveryEmail] = useState('');
     const { login, register, forgotPassword, resetPassword } = useAuth();
     const { success: showSuccess, error: showError } = useToast();
+    const { t } = useTableI18n();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -896,13 +905,8 @@ export default function LoginModal({
 
             const res = await register(name, email, phone, password, tableRedirect);
             if (res.success) {
-                onClose();
-                if (isTableRoute) {
-                    showSuccess('¡Cuenta creada! Revisa tu email para activar tu descuento. 🎁');
-                } else {
-                    showSuccess('¡Cuenta creada! Verifica tu email para tu descuento. 🍣');
-                    navigate('/menu');
-                }
+                setMode('register-success');
+                showSuccess(t('verify_email_title'));
             } else {
                 showError(res.error || 'Error al registrarse');
             }
@@ -1010,6 +1014,7 @@ export default function LoginModal({
                                     {mode === 'forgot' && 'Recuperar acceso'}
                                     {mode === 'verify-sent' && 'Verifica tu email'}
                                     {mode === 'reset-password' && 'Nueva contraseña'}
+                                    {mode === 'register-success' && t('verify_email_title')}
                                 </h2>
                                 <p className="text-[13px] text-gray-400 font-medium mt-1 leading-tight">
                                     {mode === 'login' && 'Entra y disfruta del mejor sushi.'}
@@ -1017,6 +1022,7 @@ export default function LoginModal({
                                     {mode === 'forgot' && 'Te ayudamos a volver.'}
                                     {mode === 'verify-sent' && 'Hemos enviado un código.'}
                                     {mode === 'reset-password' && 'Casi has terminado.'}
+                                    {mode === 'register-success' && '¡Ya casi está listo!'}
                                 </p>
                             </div>
 
@@ -1043,6 +1049,35 @@ export default function LoginModal({
                                     onBack={() => setMode('login')}
                                     isLoading={isLoading}
                                 />
+                            )}
+
+                            {mode === 'register-success' && (
+                                <div className="text-center space-y-6">
+                                    <div className="bg-orange-50 text-orange-700 p-6 rounded-3xl border border-orange-100 font-medium text-sm leading-relaxed">
+                                        <p>{t('verify_email_text')}</p>
+                                        <p className="mt-3 text-xs opacity-75 italic">
+                                            (No olvides revisar la carpeta de SPAM 📥)
+                                        </p>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        <button
+                                            onClick={() => {
+                                                onClose();
+                                                navigate('/menu');
+                                            }}
+                                            className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2"
+                                        >
+                                            <CheckCircle2 size={18} strokeWidth={2.5} />{' '}
+                                            {t('got_it_btn')}
+                                        </button>
+                                        <button
+                                            onClick={() => setMode('login')}
+                                            className="w-full py-3 text-gray-400 font-bold hover:text-gray-600 transition-colors text-[10px] uppercase tracking-widest"
+                                        >
+                                            Ir al login
+                                        </button>
+                                    </div>
+                                </div>
                             )}
 
                             {mode === 'verify-sent' && (
