@@ -95,6 +95,8 @@ export interface Order {
     deliveryType?: 'delivery' | 'pickup' | 'reservation' | 'table';
     tableNumber?: number;
     notes?: string;
+    paymentMethod?: string;
+    paymentStatus?: string;
     createdAt: string;
     updatedAt?: string;
     estimatedDeliveryTime?: string;

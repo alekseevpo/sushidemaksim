@@ -192,7 +192,7 @@ export async function sendOrderReceiptEmail(
 
     // Parse notes for special instructions
     const notes = orderData.notes || '';
-    let paymentMethod = 'No especificado';
+    let paymentMethod = orderData.paymentMethod || 'No especificado';
     let noCall = false;
     let noBuzzer = false;
     let scheduledTime = '';
@@ -219,13 +219,17 @@ export async function sendOrderReceiptEmail(
     parts.forEach((part: string) => {
         if (part.includes('[TIPO:')) {
             deliveryType = part.replace('[TIPO: ', '').replace(']', '').replace('[TIPO:', '');
-        } else if (part.includes('[MÉTODO DE PAGO:') || part.includes('[PAGO:')) {
+        } else if (
+            (part.includes('[MÉTODO DE PAGO:') || part.includes('[PAGO:')) &&
+            (!orderData.paymentMethod || orderData.paymentMethod === 'No especificado')
+        ) {
             paymentMethod = part
                 .replace('[MÉTODO DE PAGO: ', '')
                 .replace('[MÉTODO DE PAGO:', '')
                 .replace('[PAGO: ', '')
                 .replace('[PAGO:', '')
-                .replace(']', '');
+                .replace(']', '')
+                .trim();
         } else if (part.includes('[ENTREGA PROGRAMADA:') || part.includes('[PROGRAMADO:')) {
             if (!scheduledTime) {
                 scheduledTime = part
@@ -287,7 +291,14 @@ export async function sendOrderReceiptEmail(
 
         const scheduledText = scheduledTime ? `\n*ENTREGA PROGRAMADA: ${scheduledTime}*` : '';
 
-        const paymentMethodLabel = paymentMethod.includes('TARJETA') ? 'Tarjeta' : 'Efectivo';
+        const paymentMethodLabel =
+            paymentMethod.toUpperCase().includes('TARJETA') ||
+            paymentMethod.toLowerCase().includes('card')
+                ? 'Tarjeta'
+                : paymentMethod.toUpperCase().includes('EFECTIVO') ||
+                    paymentMethod.toLowerCase().includes('cash')
+                  ? 'Efectivo'
+                  : paymentMethod;
 
         const waMessage = `Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\n*Total: ${orderData.total.toFixed(2)}€*\n*Método de pago: ${paymentMethodLabel}*`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');

@@ -412,6 +412,7 @@ router.post(
                         deliveryAddress,
                         phoneNumber,
                         notes: receiptNotes,
+                        paymentMethod: (fullOrder as any).payment_method || paymentMethod,
                         estimatedDeliveryTime:
                             (fullOrder as any).estimated_delivery_time || serverEstimatedTime,
                     },
@@ -433,6 +434,7 @@ router.post(
                         deliveryAddress,
                         phoneNumber,
                         notes: receiptNotes,
+                        paymentMethod: (fullOrder as any).payment_method || paymentMethod,
                         estimatedDeliveryTime:
                             (fullOrder as any).estimated_delivery_time || serverEstimatedTime,
                     });
