@@ -1067,7 +1067,11 @@ export default function AddressModal({
                                                 value={house}
                                                 ref={houseInputRef}
                                                 onChange={e => setHouse(e.target.value)}
-                                                className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-[14px] font-bold text-gray-900 outline-none focus:ring-2 ring-orange-500/10 transition-all placeholder:text-gray-400 placeholder:font-bold"
+                                                className={`w-full bg-gray-50 border-none rounded-xl px-3 py-2 md:py-3.5 text-[14px] font-bold text-gray-900 outline-none transition-all placeholder:text-gray-400 placeholder:font-bold ${
+                                                    address && !house
+                                                        ? 'ring-2 ring-red-500 bg-red-50 animate-pulse'
+                                                        : 'focus:ring-2 ring-orange-500/10'
+                                                }`}
                                                 placeholder="Ej: 20"
                                             />
                                         </div>
@@ -1248,7 +1252,27 @@ export default function AddressModal({
 
                                     {/* Manual Edit Warning */}
                                     <AnimatePresence>
-                                        {isAddressManuallyEdited && (
+                                        {address && !house && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.95 }}
+                                                className="mb-4 p-3 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 shadow-sm"
+                                            >
+                                                <div className="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center shrink-0 shadow-sm">
+                                                    <Info size={18} className="text-white" />
+                                                </div>
+                                                <p className="text-[11px] font-black text-red-900 leading-tight">
+                                                    DATO NECESARIO:{' '}
+                                                    <span className="opacity-70 font-bold block uppercase tracking-tighter mt-0.5">
+                                                        Para una ubicación exacta, mueve el marcador
+                                                        sobre tu casa o añade el número.
+                                                    </span>
+                                                </p>
+                                            </motion.div>
+                                        )}
+
+                                        {isAddressManuallyEdited && house && (
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
