@@ -9,7 +9,6 @@ import {
     CheckCircle,
     Info,
     Crosshair,
-    Navigation,
 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Polygon, Circle } from 'react-leaflet';
 import L from 'leaflet';
@@ -804,25 +803,7 @@ export default function AddressModal({
                                     )}
                                 </AnimatePresence>
 
-                                {/* Geolocation Button */}
-                                <button
-                                    type="button"
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        handleGeolocate();
-                                    }}
-                                    disabled={isGeolocating}
-                                    className="absolute bottom-6 right-4 z-[1000] w-12 h-12 bg-white shadow-xl rounded-2xl flex items-center justify-center text-gray-700 hover:text-orange-600 active:scale-90 transition-all border border-gray-100 disabled:opacity-50"
-                                >
-                                    {isGeolocating ? (
-                                        <Loader2
-                                            size={20}
-                                            className="animate-spin text-orange-500"
-                                        />
-                                    ) : (
-                                        <Navigation size={20} strokeWidth={2.5} />
-                                    )}
-                                </button>
+
 
                                 {/* Search Overlay — fullscreen on mobile when focused */}
                                 <div
