@@ -950,7 +950,8 @@ export default function AdminOrders({
                                                                     ?.toLowerCase()
                                                                     .includes('envío') ||
                                                                 (item as any).menuItemId === '-1' ||
-                                                                (item as any).menu_item_id === '-1' ||
+                                                                (item as any).menu_item_id ===
+                                                                    '-1' ||
                                                                 (item as any).menuItemId === '0' ||
                                                                 !(item as any).menuItemId;
                                                             return !isDeliveryFee;

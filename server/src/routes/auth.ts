@@ -406,7 +406,16 @@ router.get(
         if (promoError) throw promoError;
 
         res.json({
-            user: formatUser(user, orderCount || 0, addresses || [], 0, 0, 'N/A', 'N/A', promoCodes || []),
+            user: formatUser(
+                user,
+                orderCount || 0,
+                addresses || [],
+                0,
+                0,
+                'N/A',
+                'N/A',
+                promoCodes || []
+            ),
         });
     })
 );

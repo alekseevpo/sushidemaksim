@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { MessageCircle, Lock, Trash2, Edit3, User } from 'lucide-react';
+import { MessageCircle, Lock, Trash2, Edit3, User, Camera } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTablonPost, useDeleteTablonPost } from '../hooks/queries/useTablon';
 import { CommentSection } from '../components/tablon/CommentSection';
