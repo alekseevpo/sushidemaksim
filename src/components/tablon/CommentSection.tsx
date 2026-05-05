@@ -184,6 +184,7 @@ export function CommentSection({
                             onReply={handleReply}
                             onDelete={handleDelete}
                             onLoginPrompt={onLoginPrompt}
+                            depth={0}
                         />
                     ))}
                 </div>
@@ -203,6 +204,7 @@ interface CommentItemProps {
     onReply: (id: string) => void;
     onDelete: (id: string) => void;
     onLoginPrompt: () => void;
+    depth: number;
 }
 
 function CommentItem({
@@ -214,6 +216,7 @@ function CommentItem({
     onReply,
     onDelete,
     onLoginPrompt,
+    depth,
 }: CommentItemProps) {
     const replies = childMap[comment.id] || [];
     const timeAgo = getCommentTimeAgo(comment.createdAt);
@@ -278,7 +281,9 @@ function CommentItem({
 
             {/* Replies */}
             {replies.length > 0 && (
-                <div className="ml-10 mt-3 space-y-3 border-l border-white/5 pl-4">
+                <div
+                    className={`${depth < 3 ? 'ml-6 md:ml-10' : 'ml-0'} mt-3 space-y-3 ${depth < 3 ? 'border-l border-white/5 pl-4' : 'pt-2'}`}
+                >
                     {replies.map(reply => (
                         <CommentItem
                             key={reply.id}
@@ -290,6 +295,7 @@ function CommentItem({
                             onReply={onReply}
                             onDelete={onDelete}
                             onLoginPrompt={onLoginPrompt}
+                            depth={depth + 1}
                         />
                     ))}
                 </div>
