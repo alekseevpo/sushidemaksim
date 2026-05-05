@@ -60,8 +60,8 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                 return (
                     !name.includes('gastos') &&
                     !name.includes('envío') &&
-                    item.menuItemId !== -1 &&
-                    item.menuItemId !== 0 &&
+                    item.menuItemId !== '-1' &&
+                    item.menuItemId !== '0' &&
                     !!item.menuItemId
                 );
             })
