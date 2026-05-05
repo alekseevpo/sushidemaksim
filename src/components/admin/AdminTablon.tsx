@@ -7,13 +7,13 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
-import type { AdminLanguage } from '../../pages/AdminPage';
+import { AdminLanguage } from '../../constants/admin';
 
 interface AdminTablonProps {
     language: AdminLanguage;
 }
 
-const t = {
+const t: Record<AdminLanguage, any> = {
     ru: {
         title: 'Модерация Tablón',
         pending: 'Ожидают модерации',
