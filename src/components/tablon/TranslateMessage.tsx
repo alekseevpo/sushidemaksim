@@ -18,6 +18,10 @@ export function TranslateMessage({
     const [isLoading, setIsLoading] = useState(false);
     const [showTranslated, setShowTranslated] = useState(false);
 
+    // Detect browser language
+    const browserLang =
+        typeof navigator !== 'undefined' ? navigator.language.split('-')[0].toLowerCase() : 'es';
+
     const handleTranslate = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -29,8 +33,8 @@ export function TranslateMessage({
 
         setIsLoading(true);
         try {
-            // Always translate to Spanish
-            const targetLang = 'es';
+            // Translate to browser language
+            const targetLang = browserLang;
 
             const res = await fetch(
                 `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(
@@ -67,15 +71,48 @@ export function TranslateMessage({
                 });
             } else {
                 navigator.clipboard.writeText(shareUrl);
-                alert('Enlace copiado al portapapeles');
+                // Simple toast-like feedback could be better but keeping it simple
+                alert(
+                    browserLang === 'ru'
+                        ? 'Ссылка скопирована'
+                        : browserLang === 'en'
+                          ? 'Link copied'
+                          : 'Enlace copiado al portapapeles'
+                );
             }
         },
-        [shareUrl, originalText]
+        [shareUrl, originalText, browserLang]
     );
 
-    const btnTextTranslate = 'Ver traducción';
-    const btnTextOriginal = 'Ver original';
-    const btnTextTranslating = 'Traduciendo...';
+    // Localized labels
+    const labels: Record<
+        string,
+        { translate: string; original: string; translating: string; by: string }
+    > = {
+        ru: {
+            translate: 'Перевести',
+            original: 'Оригинал',
+            translating: 'Перевод...',
+            by: 'Переведено Google',
+        },
+        en: {
+            translate: 'Translate',
+            original: 'Show original',
+            translating: 'Translating...',
+            by: 'Translated by Google',
+        },
+        es: {
+            translate: 'Ver traducción',
+            original: 'Ver original',
+            translating: 'Traduciendo...',
+            by: 'Traducido por Google',
+        },
+    };
+
+    const currentLabels = labels[browserLang] || labels.es;
+
+    // Show translate button only if browser is not Spanish (posts are Spanish by default)
+    const shouldShowTranslate = browserLang !== 'es' || (showTranslated && translatedText);
 
     return (
         <div className={className} onClick={e => e.stopPropagation()}>
@@ -83,19 +120,21 @@ export function TranslateMessage({
                 {showTranslated && translatedText ? translatedText : originalText}
             </p>
             <div className="flex items-center gap-4 mt-2">
-                <button
-                    type="button"
-                    onClick={handleTranslate}
-                    disabled={isLoading}
-                    className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 active:scale-95"
-                >
-                    <Languages size={12} strokeWidth={2.5} />
-                    {isLoading
-                        ? btnTextTranslating
-                        : showTranslated
-                          ? btnTextOriginal
-                          : btnTextTranslate}
-                </button>
+                {shouldShowTranslate && (
+                    <button
+                        type="button"
+                        onClick={handleTranslate}
+                        disabled={isLoading}
+                        className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 active:scale-95"
+                    >
+                        <Languages size={12} strokeWidth={2.5} />
+                        {isLoading
+                            ? currentLabels.translating
+                            : showTranslated
+                              ? currentLabels.original
+                              : currentLabels.translate}
+                    </button>
+                )}
 
                 {shareUrl && (
                     <button
@@ -104,13 +143,17 @@ export function TranslateMessage({
                         className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors inline-flex items-center gap-1.5 active:scale-95"
                     >
                         <Share2 size={12} strokeWidth={2.5} />
-                        Compartir
+                        {browserLang === 'ru'
+                            ? 'Поделиться'
+                            : browserLang === 'en'
+                              ? 'Share'
+                              : 'Compartir'}
                     </button>
                 )}
 
                 {showTranslated && (
                     <span className="text-[10px] text-gray-700 italic ml-auto">
-                        Translated by Google
+                        {currentLabels.by}
                     </span>
                 )}
             </div>
