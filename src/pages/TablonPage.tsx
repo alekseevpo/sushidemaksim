@@ -70,7 +70,7 @@ export default function TablonPage() {
                 <link rel="canonical" href="https://sushidemaksim.vercel.app/tablon" />
             </Helmet>
 
-            <div className="min-h-[100svh] bg-[#0d0d0d] pt-24 pb-20 relative">
+            <div className="min-h-[100svh] bg-[#0d0d0d] pt-[var(--header-height,64px)] relative flex flex-col">
                 {/* Ambient Background Glows */}
                 <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
                     <div className="absolute top-[-10%] right-[-10%] w-[80vw] h-[80vw] bg-orange-900/15 rounded-full blur-[140px]" />
@@ -79,9 +79,9 @@ export default function TablonPage() {
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 max-w-6xl mx-auto px-4">
+                <div className="relative z-10 max-w-6xl mx-auto px-4 pb-20 flex-1 w-full">
                     {/* Sticky Header for Filters */}
-                    <div className="sticky top-[64px] z-30 bg-[#0d0d0d]/80 backdrop-blur-xl -mx-4 px-4 py-4 mb-8 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:backdrop-blur-none md:border-none md:px-0 md:py-0 transition-all duration-300">
+                    <div className="sticky top-[var(--header-height,64px)] z-30 bg-[#0d0d0d]/95 backdrop-blur-xl -mx-4 px-4 py-4 mb-8 border-b border-white/10 shadow-lg shadow-black/20 md:mx-0 md:rounded-2xl md:border-t">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             {!catsLoading && (
                                 <CategoryFilter

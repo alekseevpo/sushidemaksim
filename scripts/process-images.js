@@ -52,15 +52,15 @@ async function processImage(filename) {
                 width: metadata.width,
                 height: metadata.height,
                 channels: 4,
-                background: { r: 0, g: 0, b: 0, alpha: 1 }
-            }
+                background: { r: 0, g: 0, b: 0, alpha: 1 },
+            },
         })
-        .composite([
-            { input: Buffer.from(svgLighting), blend: 'over' },
-            { input: transparentProduct, blend: 'over' }
-        ])
-        .png()
-        .toFile(outputPath);
+            .composite([
+                { input: Buffer.from(svgLighting), blend: 'over' },
+                { input: transparentProduct, blend: 'over' },
+            ])
+            .png()
+            .toFile(outputPath);
 
         console.log(`Processed: ${filename}`);
     } catch (err) {
@@ -71,7 +71,7 @@ async function processImage(filename) {
 async function run() {
     const files = fs.readdirSync(inputDir).filter(f => f.endsWith('.webp'));
     console.log(`Starting batch process for ${files.length} images...`);
-    
+
     for (const file of files) {
         await processImage(file);
     }

@@ -4,20 +4,20 @@
         <script>
             // --- IMMEDIATE THEME SETUP ---
             // Fix white flash on refresh by setting background color immediately
-            (function() {
+            (function () {
                 const isTable = window.location.pathname.startsWith('/table');
                 const isDark = isTable;
                 const bgColor = isDark ? '#0d0d0d' : '#fbf7f0';
                 const themeColor = isDark ? '#000000' : '#ea580c';
-                
+
                 document.documentElement.style.backgroundColor = bgColor;
                 if (isDark) {
                     document.documentElement.style.colorScheme = 'dark';
                     document.documentElement.classList.add('is-table-route');
                 }
-                
+
                 // Update theme-color meta tag if it exists
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     const meta = document.querySelector('meta[name="theme-color"]');
                     if (meta) meta.setAttribute('content', themeColor);
                 });
@@ -38,7 +38,6 @@
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://dvsmzciknlfevgxpnefr.supabase.co" />
 
-
         <!-- SEO -->
         <title>Sushi de Maksim — Auténtica cocina japonesa</title>
         <meta name="description" content="Sushi fresco con entrega a domicilio en Madrid." />
@@ -54,7 +53,10 @@
             content="Sushi y rollos frescos con entrega a domicilio en Madrid. Pide online."
         />
         <meta property="og:image" content="https://www.sushidemaksim.com/og-image-v20.jpg" />
-        <meta property="og:image:secure_url" content="https://www.sushidemaksim.com/og-image-v20.jpg" />
+        <meta
+            property="og:image:secure_url"
+            content="https://www.sushidemaksim.com/og-image-v20.jpg"
+        />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/jpeg" />
@@ -72,7 +74,7 @@
 
         <!-- Theme -->
         <meta name="theme-color" content="#ea580c" />
-        
+
         <style>
             /* Initial critical CSS to support the script above */
             html {

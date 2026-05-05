@@ -14,9 +14,7 @@ async function convertToWebp() {
         const outputPath = path.join(outputDir, file.replace('.png', '.webp'));
 
         try {
-            await sharp(inputPath)
-                .webp({ quality: 80 })
-                .toFile(outputPath);
+            await sharp(inputPath).webp({ quality: 80 }).toFile(outputPath);
             console.log(`Converted: ${file} -> ${path.basename(outputPath)}`);
         } catch (err) {
             console.error(`Error converting ${file}:`, err);

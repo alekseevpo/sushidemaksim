@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -93,6 +93,7 @@ export const useTablonPosts = (filters: TablonFilters = {}) => {
         queryKey: TABLON_KEYS.posts(filters),
         queryFn: () => api.get(`/tablon${qs ? `?${qs}` : ''}`),
         staleTime: 2 * 60 * 1000,
+        placeholderData: keepPreviousData,
     });
 };
 
