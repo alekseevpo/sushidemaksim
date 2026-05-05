@@ -118,7 +118,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                 <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">
                                     {t('order_received' as any)}
                                 </h2>
-                                <div className="px-4 py-2 bg-orange-600/20 border border-orange-600/30 rounded-xl mb-4">
+                                <div className="mb-4">
                                     <span className="text-orange-500 font-black text-lg">
                                         #{String(lastOrderId).padStart(5, '0')}
                                     </span>

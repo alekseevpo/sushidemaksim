@@ -71,7 +71,7 @@ export default function CartEmptyView({
                 {(popularItems.length > 0 || isLoadingPopular) && (
                     <div className="mt-4">
                         <div className="flex flex-col items-center justify-center gap-2 mb-10">
-                            <span className="inline-block px-4 py-1.5 bg-orange-600/10 text-orange-600 text-[10px] font-black uppercase tracking-widest rounded-full mb-2">
+                            <span className="inline-block text-orange-600 text-[10px] font-black uppercase tracking-widest mb-2">
                                 RECOMENDACIONES DEL CHEF
                             </span>
                             <h2 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tighter m-0 flex items-center gap-3 w-full justify-center">
@@ -130,7 +130,7 @@ export default function CartEmptyView({
                                                       </div>
                                                   }
                                               />
-                                              <div className="absolute top-3 right-3 bg-orange-600 text-white text-[8px] font-black px-2 py-1 rounded-lg shadow-lg uppercase tracking-widest">
+                                              <div className="absolute top-3 right-3 text-orange-600 text-[8px] font-black uppercase tracking-widest drop-shadow-md">
                                                   Best Seller
                                               </div>
                                           </div>

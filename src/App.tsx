@@ -193,7 +193,7 @@ function App() {
                             <FloatingCart />
 
                             {!isAdminRoute && !isWaiterRoute && <Header />}
-                            <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-hidden">
+                            <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-clip">
                                 <AnimatePresence initial={false}>
                                     <Routes location={location} key={location.pathname}>
                                         <Route

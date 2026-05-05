@@ -98,7 +98,7 @@ export default function StoreStatusBanner() {
                                         <p className="text-white font-black text-[10px] md:text-sm uppercase tracking-tight">
                                             {statusTitle}
                                         </p>
-                                        <span className="px-1.5 py-0.5 bg-orange-600/20 text-orange-500 text-[7px] md:text-[8px] font-black rounded-full border border-orange-500/20">
+                                        <span className="text-orange-500 text-[7px] md:text-[8px] font-black">
                                             PRE-ORDEN
                                         </span>
                                     </div>

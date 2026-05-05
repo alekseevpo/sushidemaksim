@@ -50,7 +50,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                                 <div className="text-center md:text-left">
                                     {promo.subtitle && (
-                                        <span className="inline-block px-3 py-1 bg-orange-600 text-white text-[10px] font-black uppercase rounded-full mb-4">
+                                        <span className="inline-block text-white text-[10px] font-black uppercase mb-4">
                                             {promo.subtitle || promo.title}
                                         </span>
                                     )}
@@ -101,7 +101,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-600/20 to-transparent pointer-events-none"></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                         <div className="text-center md:text-left">
-                            <span className="inline-block px-3 py-1 bg-orange-600 text-white text-[10px] font-black uppercase rounded-full mb-4">
+                            <span className="inline-block text-white text-[10px] font-black uppercase mb-4">
                                 Oferta de Bienvenida
                             </span>
                             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">

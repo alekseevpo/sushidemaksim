@@ -91,7 +91,7 @@ export function HeroSection() {
                     transition={{ duration: 0.8, ease: 'easeOut' }}
                     className="space-y-6"
                 >
-                    <span className="inline-block px-4 py-1.5 bg-orange-600/10 border border-orange-600/20 text-orange-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] rounded-full backdrop-blur-sm">
+                    <span className="inline-block text-white text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">
                         Artesanía japonesa en tu mesa
                     </span>
 

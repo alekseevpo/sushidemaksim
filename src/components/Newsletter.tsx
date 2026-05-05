@@ -47,7 +47,7 @@ export default function Newsletter() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
                             >
-                                <span className="inline-block px-4 py-1.5 bg-orange-600/20 backdrop-blur-md border border-orange-500/30 text-orange-500 text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full mb-6">
+                                <span className="inline-block text-white text-[10px] md:text-xs font-black uppercase tracking-widest mb-6">
                                     Sushi Club
                                 </span>
                                 <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight tracking-tighter">

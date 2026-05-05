@@ -12,7 +12,7 @@ export function PressSection() {
                     className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24"
                 >
                     <div className="flex-1 text-center lg:text-left">
-                        <span className="inline-block px-3 py-1 bg-orange-600 text-white text-[10px] font-black uppercase rounded-full mb-6 tracking-widest">
+                        <span className="inline-block text-orange-600 text-[10px] font-black uppercase mb-6 tracking-widest">
                             Aliados y Prensa Premium
                         </span>
                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight mb-6">
