@@ -125,6 +125,9 @@ export interface User {
     isSuperadmin?: boolean;
     orderCount: number;
     totalSpent?: number;
+    avgCheck?: number;
+    frequency?: string;
+    favoriteDish?: string;
     isVerified?: boolean;
     deletedAt?: string;
     promoCodes?: {

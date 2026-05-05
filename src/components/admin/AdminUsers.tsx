@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from 'react';
+import { useState, useEffect, useCallback, memo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -23,6 +23,7 @@ import {
 import { api, ApiError } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
+import { UserAnalyticsTooltip } from './UserAnalyticsTooltip';
 
 interface AdminUsersProps {
     language?: 'ru' | 'es';
@@ -217,6 +218,9 @@ const UserRow = memo(
                 .toUpperCase()
                 .slice(0, 2) || '??';
 
+        const [showTooltip, setShowTooltip] = useState(false);
+        const triggerRef = useRef<HTMLDivElement>(null);
+
         return (
             <tr
                 className={`hover:bg-gray-50/50 transition-all group ${user.deletedAt ? 'opacity-50 grayscale bg-gray-50/30' : ''}`}
@@ -259,8 +263,28 @@ const UserRow = memo(
                         </div>
                         <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                                <div className="font-black text-gray-900 line-clamp-1">
-                                    {user.name}
+                                <div
+                                    ref={triggerRef}
+                                    className="relative group/name cursor-help"
+                                    onMouseEnter={() => setShowTooltip(true)}
+                                    onMouseLeave={() => setShowTooltip(false)}
+                                >
+                                    <div className="font-black text-gray-900 line-clamp-1 group-hover/name:text-orange-600 transition-colors">
+                                        {user.name}
+                                    </div>
+                                    <UserAnalyticsTooltip
+                                        isVisible={showTooltip}
+                                        language={language}
+                                        triggerRef={triggerRef}
+                                        stats={{
+                                            orderCount: user.orderCount,
+                                            totalSpent: user.totalSpent,
+                                            avgCheck: user.avgCheck || 0,
+                                            frequency: user.frequency || 'N/A',
+                                            favoriteDish: user.favoriteDish || 'N/A',
+                                            registrationDate: user.createdAt,
+                                        }}
+                                    />
                                 </div>
                                 {user.isVerified ? (
                                     <span

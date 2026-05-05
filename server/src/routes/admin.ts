@@ -42,6 +42,7 @@ import {
     getMadridStartOfDay,
     getMadridYesterdayStartOfDay,
     formatDeliveryZone,
+    calculateUserStats,
 } from '../utils/helpers.js';
 import { processImage } from '../utils/imageProcessor.js';
 import { invalidateMenuCache } from './menu.js';
@@ -455,61 +456,12 @@ router.get(
             const { data: usersWithAllOrders } = await statsQuery.in('id', userIds);
 
             (usersWithAllOrders || []).forEach((u: any) => {
-                const userOrders = u.orders || [];
-                const orderCount = userOrders.length;
-                const totalSpent = userOrders.reduce(
-                    (sum: number, o: any) => sum + Number(o.total || 0),
-                    0
-                );
-                const avgCheck =
-                    orderCount > 0 ? Math.round((totalSpent / orderCount) * 100) / 100 : 0;
-
-                // Favorite dish calculation
-                const dishCounts: Record<string, number> = {};
-                userOrders.forEach((o: any) => {
-                    (o.items || []).forEach((item: any) => {
-                        const name = item.name;
-                        const qty = Number(item.quantity || 1);
-                        dishCounts[name] = (dishCounts[name] || 0) + qty;
-                    });
-                });
-
-                let favoriteDish = 'N/A';
-                let maxQty = 0;
-                Object.entries(dishCounts).forEach(([name, qty]) => {
-                    if (qty > maxQty) {
-                        maxQty = qty;
-                        favoriteDish = name;
-                    }
-                });
-
-                // Frequency calculation: average days between orders
-                let frequency = 'N/A';
-                if (orderCount > 1) {
-                    const sortedOrders = [...userOrders].sort(
-                        (a, b) =>
-                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-                    );
-                    const firstOrder = new Date(sortedOrders[0].created_at);
-                    const lastOrder = new Date(sortedOrders[orderCount - 1].created_at);
-                    const daysDiff =
-                        (lastOrder.getTime() - firstOrder.getTime()) / (1000 * 3600 * 24);
-                    const avgDays = daysDiff / (orderCount - 1);
-                    frequency =
-                        avgDays < 1 ? 'Varias veces al día' : `Cada ${Math.round(avgDays)} días`;
-                } else if (orderCount === 1) {
-                    frequency = 'Primer pedido';
-                }
-
+                const stats = calculateUserStats(u.orders || []);
                 userStatsMap[u.id] = {
+                    ...stats,
                     name: u.name,
                     email: u.email,
                     avatar: u.avatar,
-                    orderCount,
-                    totalSpent,
-                    avgCheck,
-                    frequency,
-                    favoriteDish,
                     registrationDate: u.created_at,
                 };
             });
@@ -718,7 +670,9 @@ router.get(
 
         // Base query for sorting & counts
         const getBaseQuery = (options = {}) => {
-            let q = supabase.from('users').select('*, orders(total)', options);
+            let q = supabase
+                .from('users')
+                .select('*, orders(total, created_at, items:order_items(name, quantity))', options);
 
             if (filter === 'active') {
                 q = q.is('deleted_at', null);
@@ -766,9 +720,18 @@ router.get(
             });
 
             totalCount = allUsersWithStats.length;
-            usersWithStats = allUsersWithStats
-                .slice(offset, offset + limit)
-                .map(u => formatUser(u, u.orderCount, u.addresses, u.totalSpent));
+            usersWithStats = allUsersWithStats.slice(offset, offset + limit).map(u => {
+                const stats = calculateUserStats(u.orders || []);
+                return formatUser(
+                    u,
+                    stats.orderCount,
+                    u.addresses,
+                    stats.totalSpent,
+                    stats.avgCheck,
+                    stats.frequency,
+                    stats.favoriteDish
+                );
+            });
         } else {
             // Direct sort via Supabase
             let query = getBaseQuery({ count: 'exact' });
@@ -797,13 +760,16 @@ router.get(
 
             totalCount = count || 0;
             usersWithStats = (users || []).map((u: any) => {
-                const orderCount = u.orders?.length || 0;
-                const totalSpent =
-                    Math.round(
-                        (u.orders?.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0) ||
-                            0) * 100
-                    ) / 100;
-                return formatUser(u, orderCount, u.addresses, totalSpent);
+                const stats = calculateUserStats(u.orders || []);
+                return formatUser(
+                    u,
+                    stats.orderCount,
+                    u.addresses,
+                    stats.totalSpent,
+                    stats.avgCheck,
+                    stats.frequency,
+                    stats.favoriteDish
+                );
             });
         }
 

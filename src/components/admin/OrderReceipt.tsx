@@ -53,12 +53,25 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
         const deliveryFee = Number(order.deliveryFee) || 0;
         const totalValue = Number(order.total) || 0;
 
-        // Sum of all items (unit price * quantity)
-        const itemsSubtotal = items.reduce((sum, item) => {
-            const unitPrice = Number(item?.priceAtTime || item?.price) || 0;
-            const qty = Number(item?.quantity) || 1;
-            return sum + unitPrice * qty;
-        }, 0);
+        // Sum of all items (original menu price * quantity) - excluding delivery fee item
+        const itemsSubtotal = items
+            .filter(item => {
+                const name = (item.name || '').toLowerCase();
+                return (
+                    !name.includes('gastos') &&
+                    !name.includes('envío') &&
+                    item.menuItemId !== -1 &&
+                    item.menuItemId !== 0 &&
+                    !!item.menuItemId
+                );
+            })
+            .reduce((sum, item) => {
+                const unitPrice = Number(item?.price || item?.priceAtTime) || 0;
+                const qty = Number(item?.quantity) || 1;
+                return sum + unitPrice * qty;
+            }, 0);
+
+        const globalDiscount = itemsSubtotal - (totalValue - deliveryFee);
 
         // Taxes calculation (simplified 10% for food)
         const ivaValue = totalValue * 0.090909; // 10% included in price: Total - (Total / 1.1)
@@ -140,8 +153,12 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                     {items.map((item, idx) => {
                         const itemQty = Number(item?.quantity) || 1;
                         const itemName = item?.name || 'Producto';
-                        const unitPrice = Number(item?.priceAtTime || item?.price) || 0;
-                        const lineTotal = unitPrice * itemQty;
+                        const originalUnitPrice = Number(item?.price || item?.priceAtTime) || 0;
+                        const paidUnitPrice = item?.isGift
+                            ? 0
+                            : Number(item?.priceAtTime || item?.price) || 0;
+                        const lineTotal = paidUnitPrice * itemQty;
+                        const hasDiscount = originalUnitPrice > paidUnitPrice;
 
                         return (
                             <div
@@ -149,8 +166,17 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                                 className="flex justify-between py-1 border-b border-dashed border-black/10"
                             >
                                 <span className="w-10">{itemQty}x</span>
-                                <span className="flex-1 px-1 leading-[1.2]">{itemName}</span>
-                                <span className="w-20 text-right">{lineTotal.toFixed(2)}€</span>
+                                <div className="flex-1 px-1 flex flex-col">
+                                    <span className="leading-[1.2]">{itemName}</span>
+                                    {hasDiscount && (
+                                        <span className="text-[9px] opacity-60">
+                                            Original: {originalUnitPrice.toFixed(2)}€
+                                        </span>
+                                    )}
+                                </div>
+                                <span className="w-20 text-right">
+                                    {item?.isGift ? 'GRATIS' : `${lineTotal.toFixed(2)}€`}
+                                </span>
                             </div>
                         );
                     })}
@@ -168,6 +194,12 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                         <div className="flex justify-between text-[11px]">
                             <span>Envío / Delivery</span>
                             <span>{deliveryFee.toFixed(2)}€</span>
+                        </div>
+                    )}
+                    {globalDiscount > 0.05 && (
+                        <div className="flex justify-between text-[11px] font-bold">
+                            <span>DESCUENTO</span>
+                            <span>-{globalDiscount.toFixed(2)}€</span>
                         </div>
                     )}
 

@@ -40,6 +40,9 @@ export function formatUser(
     orderCount: number = 0,
     addresses: any[] = [],
     totalSpent: number = 0,
+    avgCheck: number = 0,
+    frequency: string = 'N/A',
+    favoriteDish: string = 'N/A',
     promoCodes: any[] = []
 ) {
     if (!u) return null;
@@ -59,6 +62,9 @@ export function formatUser(
         deletedAt: u.deleted_at,
         orderCount: orderCount,
         totalSpent: totalSpent,
+        avgCheck: avgCheck,
+        frequency: frequency,
+        favoriteDish: favoriteDish,
         addresses: (addresses || []).map(a => ({
             id: a.id,
             label: a.label,
@@ -273,4 +279,61 @@ export function isValidUUID(uuid: string): boolean {
     if (!uuid || typeof uuid !== 'string') return false;
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidRegex.test(uuid);
+}
+/**
+ * Calculates user statistics based on their order history.
+ */
+export function calculateUserStats(userOrders: any[]) {
+    const orderCount = userOrders.length;
+    const totalSpent = userOrders.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
+    const avgCheck = orderCount > 0 ? Math.round((totalSpent / orderCount) * 100) / 100 : 0;
+
+    // Favorite dish calculation
+    const dishCounts: Record<string, number> = {};
+    userOrders.forEach((o: any) => {
+        // Handle both 'order_items' and 'items' (Supabase alias)
+        const items = o.order_items || o.items || [];
+        items.forEach((item: any) => {
+            const name = item.name;
+            const qty = Number(item.quantity || 1);
+            dishCounts[name] = (dishCounts[name] || 0) + qty;
+        });
+    });
+
+    let favoriteDish = 'N/A';
+    let maxQty = 0;
+    Object.entries(dishCounts).forEach(([name, qty]) => {
+        if (qty > maxQty) {
+            maxQty = qty;
+            favoriteDish = name;
+        }
+    });
+
+    // Frequency calculation
+    let frequency = 'N/A';
+    if (orderCount > 1) {
+        const sortedOrders = [...userOrders].sort(
+            (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+        const firstOrder = new Date(sortedOrders[0].created_at);
+        const lastOrder = new Date(sortedOrders[orderCount - 1].created_at);
+        const daysDiff = (lastOrder.getTime() - firstOrder.getTime()) / (1000 * 3600 * 24);
+        const avgDays = daysDiff / (orderCount - 1);
+
+        // Localization is handled on frontend, but we provide base strings
+        if (avgDays < 1) frequency = 'Varias veces al día';
+        else if (avgDays < 2) frequency = 'Diariamente';
+        else if (avgDays < 7) frequency = 'Semanalmente';
+        else frequency = `Cada ${Math.round(avgDays)} días`;
+    } else if (orderCount === 1) {
+        frequency = 'Primer pedido';
+    }
+
+    return {
+        orderCount,
+        totalSpent,
+        avgCheck,
+        frequency,
+        favoriteDish,
+    };
 }

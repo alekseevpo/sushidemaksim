@@ -10,12 +10,9 @@ import {
     Globe,
     Volume2,
     VolumeX,
-    Calendar,
-    ShoppingCart,
     Wallet,
-    TrendingUp,
+    ShoppingCart,
     Clock,
-    Heart,
     X,
     MessageSquare,
     Store,
@@ -29,6 +26,41 @@ import { cn } from '../../utils/cn';
 import { useToast } from '../../context/ToastContext';
 import { Order, OrderItem } from '../../types';
 import { AdminOrdersSkeleton } from '../skeletons/AdminOrdersSkeleton';
+import { UserAnalyticsTooltip } from './UserAnalyticsTooltip';
+import { memo, useRef } from 'react';
+
+// Wrap the order item in a memo component to prevent unnecessary re-renders of the whole list when hovering a name
+const OrderRowName = memo(
+    ({ name, stats, language }: { name: string; stats: any; language: 'ru' | 'es' }) => {
+        const [showTooltip, setShowTooltip] = useState(false);
+        const triggerRef = useRef<HTMLDivElement>(null);
+        return (
+            <div
+                ref={triggerRef}
+                className="relative group/name cursor-help inline-block"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+            >
+                <p className="font-black text-gray-900 text-[16px] truncate leading-tight mb-1 group-hover/name:text-orange-600 transition-colors">
+                    {name}
+                </p>
+                <UserAnalyticsTooltip
+                    isVisible={showTooltip}
+                    language={language}
+                    triggerRef={triggerRef}
+                    stats={{
+                        orderCount: stats?.orderCount || 0,
+                        totalSpent: stats?.totalSpent || 0,
+                        avgCheck: stats?.avgCheck || 0,
+                        frequency: stats?.frequency || 'N/A',
+                        favoriteDish: stats?.favoriteDish || 'N/A',
+                        registrationDate: stats?.registrationDate,
+                    }}
+                />
+            </div>
+        );
+    }
+);
 
 interface AdminOrdersProps {
     isGlobalSoundEnabled: boolean;
@@ -110,6 +142,7 @@ const ORDERS_TRANSLATIONS = {
         },
         corruptOrder: 'ОШИБКА: ЗАКАЗ БЕЗ ТОВАРОВ',
         corruptOrderDesc: 'Этот заказ был прерван при создании. Пожалуйста, свяжитесь с клиентом.',
+        discount: 'Скидка',
     },
     es: {
         searchPlaceholder: 'Buscar ID, Teléfono, Promo...',
@@ -182,6 +215,7 @@ const ORDERS_TRANSLATIONS = {
         corruptOrder: 'ERROR: PEDIDO SIN PRODUCTOS',
         corruptOrderDesc:
             'Este pedido se interrumpió durante su creación. Por favor, contacte con el cliente.',
+        discount: 'Descuento',
     },
 } as const;
 
@@ -406,9 +440,7 @@ export default function AdminOrders({
                                 label: t.filters.active,
                                 badge: globalPendingCount > 0,
                             },
-                            { id: 'unpaid', label: t.filters.unpaid },
                             { id: 'preparing', label: t.filters.preparing },
-                            { id: 'on_the_way', label: t.filters.on_the_way },
                             { id: 'delivered', label: t.filters.delivered },
                             { id: 'cancelled', label: t.filters.cancelled },
                             { id: 'all', label: t.filters.all },
@@ -751,24 +783,12 @@ export default function AdminOrders({
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-black text-gray-900 text-[16px] truncate leading-tight mb-1">
-                                                                {order.users?.name || t.guest}
-                                                            </p>
-                                                            {order.userStats && (
-                                                                <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black border border-blue-100 w-fit uppercase tracking-tighter">
-                                                                    <Calendar
-                                                                        size={12}
-                                                                        strokeWidth={2.5}
-                                                                    />
-                                                                    {t.regDate}{' '}
-                                                                    {new Date(
-                                                                        order.userStats
-                                                                            .registrationDate
-                                                                    ).toLocaleDateString(
-                                                                        dateLocale
-                                                                    )}
-                                                                </div>
-                                                            )}
+                                                            <OrderRowName
+                                                                name={order.users?.name || t.guest}
+                                                                stats={order.userStats}
+                                                                language={language}
+                                                            />
+                                                            {/* Registration date removed - now in tooltip */}
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-3">
@@ -795,81 +815,7 @@ export default function AdminOrders({
                                                     )}
                                                 </div>
 
-                                                {order.userStats && (
-                                                    <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50/50 rounded-3xl border border-gray-100 shadow-inner">
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 text-gray-400">
-                                                                <ShoppingCart
-                                                                    size={12}
-                                                                    strokeWidth={2}
-                                                                />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">
-                                                                    {t.userStats.orders}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[13px] font-black text-gray-900">
-                                                                {order.userStats.orderCount || 0}
-                                                            </p>
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 text-gray-400">
-                                                                <Wallet size={12} strokeWidth={2} />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">
-                                                                    {t.userStats.invested}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[13px] font-black text-gray-900">
-                                                                {formatCurrency(
-                                                                    order.userStats.totalSpent || 0
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 text-gray-400">
-                                                                <TrendingUp
-                                                                    size={12}
-                                                                    strokeWidth={2}
-                                                                />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">
-                                                                    {t.userStats.avgTicket}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[13px] font-black text-gray-900">
-                                                                {formatCurrency(
-                                                                    order.userStats.avgCheck || 0
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 text-gray-400">
-                                                                <Clock size={12} strokeWidth={2} />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">
-                                                                    {t.userStats.frequency}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[10px] font-black text-gray-900 leading-none uppercase tracking-tight">
-                                                                {order.userStats.frequency ||
-                                                                    t.userStats.firstOrder}
-                                                            </p>
-                                                        </div>
-                                                        <div className="col-span-2 pt-3 border-t border-gray-200 mt-1 space-y-1.5">
-                                                            <div className="flex items-center gap-2 text-orange-500">
-                                                                <Heart
-                                                                    size={12}
-                                                                    strokeWidth={3}
-                                                                    fill="currentColor"
-                                                                />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">
-                                                                    {t.userStats.favorite}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[11px] font-black text-gray-900 line-clamp-1 uppercase tracking-tight">
-                                                                {order.userStats.favoriteDish ||
-                                                                    'N/A'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                )}
+                                                {/* Customer Analytics Grid removed - now in tooltip */}
 
                                                 {!isPickup && (
                                                     <div className="max-w-[300px]">
@@ -1042,18 +988,97 @@ export default function AdminOrders({
                                                                         )}
                                                                     </div>
                                                                 </div>
-                                                                <span
-                                                                    className={`text-[12px] font-black tabular-nums ${item.isGift ? 'text-green-600' : 'text-gray-400'}`}
-                                                                >
-                                                                    {item.isGift
-                                                                        ? 'GRATIS'
-                                                                        : formatCurrency(
-                                                                              item.priceAtTime *
-                                                                                  item.quantity
-                                                                          )}
-                                                                </span>
+                                                                <div className="flex flex-col items-end gap-1">
+                                                                    {(item.price >
+                                                                        item.priceAtTime ||
+                                                                        (item.isGift &&
+                                                                            item.price > 0)) && (
+                                                                        <span className="text-[10px] text-gray-400 line-through tabular-nums opacity-60 leading-none">
+                                                                            {formatCurrency(
+                                                                                (item.price ||
+                                                                                    item.priceAtTime) *
+                                                                                    item.quantity
+                                                                            )}
+                                                                        </span>
+                                                                    )}
+                                                                    <span
+                                                                        className={`text-[12px] font-black tabular-nums leading-none ${item.isGift ? 'text-green-600' : 'text-gray-900'}`}
+                                                                    >
+                                                                        {item.isGift
+                                                                            ? 'GRATIS'
+                                                                            : formatCurrency(
+                                                                                  item.priceAtTime *
+                                                                                      item.quantity
+                                                                              )}
+                                                                    </span>
+                                                                    {item.price >
+                                                                        item.priceAtTime &&
+                                                                        !item.isGift && (
+                                                                            <span className="text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded-lg border border-green-100 uppercase tracking-tighter">
+                                                                                -
+                                                                                {formatCurrency(
+                                                                                    (item.price -
+                                                                                        item.priceAtTime) *
+                                                                                        item.quantity
+                                                                                )}
+                                                                            </span>
+                                                                        )}
+                                                                </div>
                                                             </div>
                                                         ))}
+
+                                                    {(() => {
+                                                        const itemsSubtotal = (order.items || [])
+                                                            .filter(item => {
+                                                                const isDeliveryFee =
+                                                                    item.name
+                                                                        ?.toLowerCase()
+                                                                        .includes('gastos') ||
+                                                                    item.name
+                                                                        ?.toLowerCase()
+                                                                        .includes('envío') ||
+                                                                    (item as any).menuItemId ===
+                                                                        -1 ||
+                                                                    (item as any).menu_item_id ===
+                                                                        -1 ||
+                                                                    (item as any).menuItemId ===
+                                                                        0 ||
+                                                                    !(item as any).menuItemId;
+                                                                return !isDeliveryFee;
+                                                            })
+                                                            .reduce(
+                                                                (sum, item) =>
+                                                                    sum +
+                                                                    (item.isGift
+                                                                        ? 0
+                                                                        : (item.priceAtTime || 0) *
+                                                                          item.quantity),
+                                                                0
+                                                            );
+                                                        const orderSubtotal =
+                                                            order.total - (order.deliveryFee || 0);
+                                                        const globalDiscount =
+                                                            itemsSubtotal - orderSubtotal;
+
+                                                        if (globalDiscount > 0.05) {
+                                                            return (
+                                                                <div className="flex items-center justify-between gap-3 py-3 border-t border-dashed border-gray-100 px-3">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className="text-[11px] font-black text-green-600 uppercase tracking-widest">
+                                                                            {t.discount}
+                                                                        </span>
+                                                                    </div>
+                                                                    <span className="text-[12px] font-black text-green-600 tabular-nums">
+                                                                        -
+                                                                        {formatCurrency(
+                                                                            globalDiscount
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    })()}
 
                                                     {order.deliveryFee && order.deliveryFee > 0 ? (
                                                         <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3">
