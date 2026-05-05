@@ -34,7 +34,7 @@ export default function CookieConsent() {
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className="fixed bottom-4 left-4 right-4 z-[9999] max-w-3xl mx-auto"
                 >
-                    <div className="relative overflow-hidden bg-white border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 md:gap-5">
+                    <div className="relative overflow-hidden bg-white border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] rounded-2xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-5">
                         {/* Logo Background */}
                         <img
                             src="/logo.svg"
@@ -42,31 +42,25 @@ export default function CookieConsent() {
                             className="absolute -right-6 top-1/2 -translate-y-1/2 h-[120%] opacity-[0.04] pointer-events-none z-0 grayscale rotate-12"
                         />
 
-                        <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0 shadow-inner relative z-10">
-                            <ShieldCheck size={24} strokeWidth={2} className="text-orange-600" />
-                        </div>
-
-                        <div className="flex-1 text-center md:text-left relative z-10">
-                            <h3 className="text-base font-black text-gray-900 mb-1">
+                        <div className="flex-1 text-left relative z-10">
+                            <h3 className="text-base font-black text-gray-900 mb-1.5 flex items-center gap-2">
+                                <ShieldCheck size={18} className="text-orange-600" />
                                 Tu privacidad es importante
                             </h3>
                             <p className="text-gray-500 text-xs md:text-[13px] leading-relaxed max-w-xl">
                                 Utilizamos cookies propias y de terceros para mejorar tu experiencia
                                 y personalizar el contenido de{' '}
-                                <span
-                                    className="font-black text-orange-600 whitespace-nowrap"
-                                    style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.3)' }}
-                                >
+                                <span className="font-black text-orange-600 whitespace-nowrap">
                                     Sushi de Maksim
                                 </span>
                                 .
                             </p>
                         </div>
 
-                        <div className="flex items-center justify-center gap-2 w-full md:w-auto relative z-10 mt-2 md:mt-0">
+                        <div className="flex items-center justify-start gap-2 w-full md:w-auto relative z-10">
                             <button
                                 onClick={handleDecline}
-                                className="flex-1 md:flex-none px-4 py-2.5 text-xs md:text-[13px] font-bold text-gray-500 hover:text-gray-900 transition-colors bg-gray-50 hover:bg-gray-100 rounded-xl"
+                                className="flex-1 md:flex-none px-4 py-2.5 text-xs md:text-[13px] font-bold text-gray-500 hover:text-gray-900 transition-colors bg-gray-50 hover:bg-gray-100 rounded-xl whitespace-nowrap"
                             >
                                 Solo necesarias
                             </button>
