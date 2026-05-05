@@ -49,14 +49,14 @@ export default function MenuPage() {
     }, [search, user?.id]);
 
     const isScrollingProgrammatically = useRef(false);
-    const hasScrolledToCategory = useRef(false);
+    const [initialScrollDone, setInitialScrollDone] = useState(initialCategory === 'all');
 
     // Scroll Spy implementation
     useEffect(() => {
         if (isLoading || isError || items.length === 0 || debouncedSearch) return;
 
         // Don't start scroll spy until the initial category scroll has completed
-        if (!hasScrolledToCategory.current && initialCategory !== 'all') return;
+        if (!initialScrollDone) return;
 
         const observerOptions = {
             root: null,
@@ -85,7 +85,7 @@ export default function MenuPage() {
         if (menuTop) observer.observe(menuTop);
 
         return () => observer.disconnect();
-    }, [isLoading, isError, items.length, debouncedSearch, initialCategory]);
+    }, [isLoading, isError, items.length, debouncedSearch, initialScrollDone]);
 
     const handleCategoryClick = (id: string) => {
         setActiveCategory(id);
@@ -173,13 +173,8 @@ export default function MenuPage() {
 
     // Handle initial category scroll from query param
     useEffect(() => {
-        if (
-            !isLoading &&
-            items.length > 0 &&
-            !hasScrolledToCategory.current &&
-            initialCategory !== 'all'
-        ) {
-            hasScrolledToCategory.current = true;
+        if (!isLoading && items.length > 0 && !initialScrollDone && initialCategory !== 'all') {
+            setInitialScrollDone(true);
 
             // Block scroll spy during programmatic scroll
             isScrollingProgrammatically.current = true;
@@ -201,7 +196,7 @@ export default function MenuPage() {
                 }, 300);
             }, 150);
         }
-    }, [isLoading, items.length, initialCategory]);
+    }, [isLoading, items.length, initialCategory, initialScrollDone]);
 
     const handleShare = (item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
