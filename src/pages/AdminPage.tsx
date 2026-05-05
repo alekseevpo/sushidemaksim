@@ -198,6 +198,7 @@ export default function AdminPage() {
     const audioMesaRef = useRef<HTMLAudioElement | null>(null);
     const [audioBlocked, setAudioBlocked] = useState(false);
     const hasInteracted = useRef(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const isFirstLoad = useRef(true);
 
     // New Users Notification State
@@ -662,8 +663,24 @@ export default function AdminPage() {
                 src="https://assets.mixkit.co/active_storage/sfx/22/22-preview.mp3"
                 preload="auto"
             />
+            {/* Mobile Overlay */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] md:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Sidebar */}
-            <aside className="w-full md:w-60 bg-white/80 backdrop-blur-xl border-r border-gray-300 flex flex-col md:fixed h-full z-10 transition-all duration-300 shadow-2xl">
+            <aside
+                className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-[101] transition-transform duration-300 shadow-2xl
+                    ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+            >
                 <div className="p-4 border-b border-gray-100">
                     <div className="flex flex-col gap-3">
                         <img
@@ -682,6 +699,7 @@ export default function AdminPage() {
                                 key={tab.id}
                                 onClick={() => {
                                     setActiveTab(tab.id as TabId);
+                                    setIsMobileMenuOpen(false);
                                     if (typeof navigator !== 'undefined' && navigator.vibrate) {
                                         navigator.vibrate(5);
                                     }
@@ -739,10 +757,18 @@ export default function AdminPage() {
                 <div className="w-full flex-1 flex flex-col">
                     {/* Top Bar */}
                     <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                        <h1 className="text-2xl metallic-text flex items-center gap-3 group">
-                            <div className="w-1.5 h-6 bg-slate-800 rounded-full group-hover:h-8 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                            {navLinks.find(t_link => t_link.id === activeTab)?.label}
-                        </h1>
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="md:hidden p-2 text-slate-600 hover:bg-gray-100 rounded-xl active:scale-95 transition-all"
+                            >
+                                <MenuIcon size={24} strokeWidth={2.5} />
+                            </button>
+                            <h1 className="text-xl md:text-2xl metallic-text flex items-center gap-2 md:gap-3 group">
+                                <div className="hidden md:block w-1.5 h-6 bg-slate-800 rounded-full group-hover:h-8 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                                {navLinks.find(t_link => t_link.id === activeTab)?.label}
+                            </h1>
+                        </div>
                         <div className="flex items-center gap-2 md:gap-4">
                             {/* Language Switcher */}
                             <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200 shadow-inner">
