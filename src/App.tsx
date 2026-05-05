@@ -104,8 +104,8 @@ const PageWrapper = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="flex-1 flex flex-col"
+            transition={{ duration: 0.2, ease: 'linear' }}
+            className="flex-1 flex flex-col [grid-area:1/1]"
             style={{
                 paddingTop: '0',
             }}
@@ -193,8 +193,8 @@ function App() {
                             <FloatingCart />
 
                             {!isAdminRoute && !isWaiterRoute && <Header />}
-                            <main className="flex-1 flex flex-col relative w-full">
-                                <AnimatePresence mode="wait">
+                            <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-hidden">
+                                <AnimatePresence initial={false}>
                                     <Routes location={location} key={location.pathname}>
                                         <Route
                                             path="/reservar"
