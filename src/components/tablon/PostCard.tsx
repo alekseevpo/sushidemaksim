@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Heart, MessageSquare, User, Camera } from 'lucide-react';
+import { getCategoryIcon } from '../../utils/tablonIcons';
 import type { TablonPost } from '../../hooks/queries/useTablon';
 import { TranslateMessage } from './TranslateMessage';
 
@@ -28,8 +30,9 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
                         height={192}
                     />
                     {post.images.length > 1 && (
-                        <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full">
-                            +{post.images.length - 1} 📷
+                        <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-lg flex items-center gap-1.5 border border-white/10 uppercase tracking-widest">
+                            <Camera size={10} strokeWidth={3} />
+                            <span>+{post.images.length - 1}</span>
                         </div>
                     )}
                 </div>
@@ -38,12 +41,19 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
             <div className="py-5 px-0 md:p-5 flex flex-col flex-grow">
                 {/* Category badge + time */}
                 <div className="flex items-center justify-between mb-3">
-                    {post.category && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-500/15 text-orange-400 rounded-full text-xs font-medium">
-                            {post.category.emoji} {post.category.name}
-                        </span>
-                    )}
-                    <span className="text-xs text-gray-500">{timeAgo}</span>
+                    {post.category &&
+                        (() => {
+                            const Icon = getCategoryIcon(post.category.name);
+                            return (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-500/10 text-orange-500 rounded-lg text-[10px] font-black uppercase tracking-widest border border-orange-500/20">
+                                    <Icon size={10} strokeWidth={3} />
+                                    {post.category.name}
+                                </span>
+                            );
+                        })()}
+                    <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">
+                        {timeAgo}
+                    </span>
                 </div>
 
                 {/* Message */}
@@ -51,6 +61,7 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
                     originalText={post.message}
                     className="mb-4"
                     textClassName="text-gray-200 text-sm leading-relaxed line-clamp-3"
+                    shareUrl={`${window.location.origin}/tablon/${post.id}`}
                 />
 
                 {/* Tags */}
@@ -79,8 +90,8 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
                                 height={24}
                             />
                         ) : (
-                            <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs">
-                                👤
+                            <div className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-gray-500">
+                                <User size={12} strokeWidth={2.5} />
                             </div>
                         )}
                         <span className="text-xs text-gray-400">
@@ -90,8 +101,19 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                        💬 {post.commentCount}
+                    <div className="flex items-center gap-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                        {Object.values(post.reactions || {}).reduce((a, b) => a + b, 0) > 0 && (
+                            <div className="flex items-center gap-1.5 text-orange-500">
+                                <Heart size={12} fill="currentColor" />
+                                <span>
+                                    {Object.values(post.reactions || {}).reduce((a, b) => a + b, 0)}
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex items-center gap-1.5">
+                            <MessageSquare size={12} />
+                            <span>{post.commentCount}</span>
+                        </div>
                     </div>
                 </div>
             </div>

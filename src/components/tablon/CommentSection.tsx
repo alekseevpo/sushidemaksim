@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
+import { X, CornerDownRight, Trash2, Send, User } from 'lucide-react';
 import type { TablonComment } from '../../hooks/queries/useTablon';
 import { useCreateTablonComment, useDeleteTablonComment } from '../../hooks/queries/useTablon';
 import { useAuth } from '../../hooks/useAuth';
@@ -22,6 +23,12 @@ export function CommentSection({
     const deleteComment = useDeleteTablonComment();
     const [message, setMessage] = useState('');
     const [replyTo, setReplyTo] = useState<string | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const replyingToName = useMemo(() => {
+        if (!replyTo) return null;
+        return comments.find(c => c.id === replyTo)?.author.name || 'Alguien';
+    }, [replyTo, comments]);
 
     // Build threaded comments
     const threadedComments = useMemo(() => {
@@ -62,6 +69,14 @@ export function CommentSection({
         }
     }, [isAuthenticated, message, postId, replyTo, createComment, onLoginPrompt]);
 
+    const handleReply = useCallback((commentId: string) => {
+        setReplyTo(commentId);
+        setTimeout(() => {
+            inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            inputRef.current?.focus();
+        }, 100);
+    }, []);
+
     const handleDelete = useCallback(
         async (commentId: string) => {
             if (!confirm('¿Eliminar este comentario?')) return;
@@ -88,25 +103,30 @@ export function CommentSection({
                             height={32}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-sm">
-                            👤
+                        <div className="w-full h-full flex items-center justify-center text-gray-500 bg-gray-800">
+                            <User size={16} strokeWidth={2.5} />
                         </div>
                     )}
                 </div>
                 <div className="flex-1">
                     {replyTo && (
-                        <div className="flex items-center gap-2 mb-2 text-xs text-gray-400">
-                            <span>Respondiendo a un comentario</span>
+                        <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                            <span>
+                                Respondiendo a{' '}
+                                <span className="text-orange-500">{replyingToName}</span>
+                            </span>
                             <button
                                 onClick={() => setReplyTo(null)}
-                                className="text-orange-400 hover:text-orange-300"
+                                className="text-red-500 hover:text-red-400 flex items-center gap-1 transition-colors"
                             >
-                                ✕ Cancelar
+                                <X size={10} strokeWidth={3} />
+                                <span>Cancelar</span>
                             </button>
                         </div>
                     )}
                     <div className="flex gap-2">
                         <input
+                            ref={inputRef}
                             type="text"
                             value={message}
                             onChange={e => setMessage(e.target.value)}
@@ -133,10 +153,14 @@ export function CommentSection({
                         <button
                             onClick={handleSubmit}
                             disabled={!message.trim() || createComment.isPending}
-                            className="px-4 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 disabled:opacity-30 transition-all"
+                            className="px-4 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-black hover:bg-orange-600 disabled:opacity-30 transition-all flex items-center justify-center min-w-[50px]"
                             data-testid="comment-submit"
                         >
-                            {createComment.isPending ? '...' : '→'}
+                            {createComment.isPending ? (
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <Send size={16} strokeWidth={2.5} />
+                            )}
                         </button>
                     </div>
                 </div>
@@ -153,11 +177,11 @@ export function CommentSection({
                         <CommentItem
                             key={comment.id}
                             comment={comment}
-                            replies={threadedComments.childMap[comment.id] || []}
+                            childMap={threadedComments.childMap}
                             isAuthenticated={isAuthenticated}
                             currentUserId={user?.id}
                             isModerator={!!isModerator}
-                            onReply={setReplyTo}
+                            onReply={handleReply}
                             onDelete={handleDelete}
                             onLoginPrompt={onLoginPrompt}
                         />
@@ -172,7 +196,7 @@ export function CommentSection({
 
 interface CommentItemProps {
     comment: TablonComment;
-    replies: TablonComment[];
+    childMap: Record<string, TablonComment[]>;
     isAuthenticated: boolean;
     currentUserId?: string;
     isModerator: boolean;
@@ -183,7 +207,7 @@ interface CommentItemProps {
 
 function CommentItem({
     comment,
-    replies,
+    childMap,
     isAuthenticated,
     currentUserId,
     isModerator,
@@ -191,25 +215,24 @@ function CommentItem({
     onDelete,
     onLoginPrompt,
 }: CommentItemProps) {
+    const replies = childMap[comment.id] || [];
     const timeAgo = getCommentTimeAgo(comment.createdAt);
     const canDelete = currentUserId === comment.userId || isModerator;
 
     return (
         <div data-testid={`comment-${comment.id}`}>
             <div className="flex gap-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-700 overflow-hidden">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-500 overflow-hidden border border-white/5">
                     {isAuthenticated && comment.author.avatar ? (
                         <img
                             src={comment.author.avatar}
                             alt=""
                             className="w-full h-full object-cover"
-                            width={28}
-                            height={28}
+                            width={32}
+                            height={32}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xs">
-                            👤
-                        </div>
+                        <User size={14} strokeWidth={2.5} />
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -226,7 +249,7 @@ function CommentItem({
                         className="mt-1"
                         textClassName="text-sm text-gray-300 break-words whitespace-pre-wrap"
                     />
-                    <div className="flex gap-3 mt-1.5">
+                    <div className="flex gap-3 mt-2">
                         <button
                             onClick={() => {
                                 if (!isAuthenticated) {
@@ -235,15 +258,17 @@ function CommentItem({
                                 }
                                 onReply(comment.id);
                             }}
-                            className="text-xs text-gray-500 hover:text-orange-400 transition-colors"
+                            className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-orange-400 transition-colors"
                         >
+                            <CornerDownRight size={10} strokeWidth={3} />
                             Responder
                         </button>
                         {canDelete && (
                             <button
                                 onClick={() => onDelete(comment.id)}
-                                className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+                                className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-red-400 transition-colors"
                             >
+                                <Trash2 size={10} strokeWidth={3} />
                                 Eliminar
                             </button>
                         )}
@@ -258,7 +283,7 @@ function CommentItem({
                         <CommentItem
                             key={reply.id}
                             comment={reply}
-                            replies={[]}
+                            childMap={childMap}
                             isAuthenticated={isAuthenticated}
                             currentUserId={currentUserId}
                             isModerator={isModerator}

@@ -84,6 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const data = await api.post('/auth/login', { email, password });
                 localStorage.setItem('sushi_token', data.token);
+                // invalidateQueries marks the cached null as stale so
+                // refetchQueries actually re-runs the queryFn (v5 skips fresh queries)
+                await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
                 await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
                 return { success: true, wasReactivated: data.wasReactivated };
             } catch (error: unknown) {

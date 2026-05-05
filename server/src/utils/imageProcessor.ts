@@ -25,8 +25,7 @@ export async function processImage(buffer: Buffer, options: ImageOptions): Promi
         });
     } else if (options.type === 'tablon') {
         // Tablon community posts: larger images, slightly lower quality
-        pipeline = sharp(buffer).webp({ quality: options.quality || 75 });
-        pipeline = pipeline.resize(1200, null, {
+        pipeline = pipeline.webp({ quality: options.quality || 75 }).resize(1200, null, {
             withoutEnlargement: true,
             fit: 'inside',
         });

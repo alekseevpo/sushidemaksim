@@ -142,6 +142,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 isPickupOnly: data.isPickupOnly === 'true',
             };
         },
+        refetchOnWindowFocus: false,
     });
 
     const updateMutation = useMutation({

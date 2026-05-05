@@ -1,34 +1,74 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import {
+    X,
+    Plus,
+    Camera,
+    Tag,
+    MessageSquare,
+    Trash2,
+    LayoutGrid,
+    CheckCircle2,
+    Smartphone,
+    AlertCircle,
+    Megaphone,
+} from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import {
     useTablonCategories,
     useCreateTablonPost,
+    useEditTablonPost,
     useUploadTablonImage,
     useSuggestCategory,
 } from '../../hooks/queries/useTablon';
+import { TablonPost } from '../../hooks/queries/useTablon';
 import { TABLON_MAX_IMAGES, TABLON_MAX_TAGS } from '../../constants/tablon';
+import { getCategoryIcon } from '../../utils/tablonIcons';
 
-interface CreatePostModalProps {
+interface PostModalProps {
     isOpen: boolean;
     onClose: () => void;
+    post?: TablonPost; // New prop for editing
 }
 
-export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
+export function PostModal({ isOpen, onClose, post }: PostModalProps) {
     const { user } = useAuth();
     const { data: categoriesData } = useTablonCategories();
     const createPost = useCreateTablonPost();
+    const editPost = useEditTablonPost();
     const uploadImage = useUploadTablonImage();
     const suggestCategory = useSuggestCategory();
 
-    const [categoryId, setCategoryId] = useState<number | ''>('');
-    const [message, setMessage] = useState('');
-    const [whatsappPhone, setWhatsappPhone] = useState(user?.phone || '');
+    const [categoryId, setCategoryId] = useState<number | ''>(post?.category?.id || '');
+    const [message, setMessage] = useState(post?.message || '');
+    const [whatsappPhone, setWhatsappPhone] = useState(post?.whatsappPhone || user?.phone || '');
     const [tagInput, setTagInput] = useState('');
-    const [tags, setTags] = useState<string[]>([]);
-    const [images, setImages] = useState<string[]>([]);
+    const [tags, setTags] = useState<string[]>(post?.tags || []);
+    const [images, setImages] = useState<string[]>(post?.images || []);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [hpValue, setHpValue] = useState(''); // Honeypot field
+    const [openTime] = useState(Date.now()); // Time-to-submit check
+
+    // Reset state and handle scroll lock
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+            setCategoryId(post?.category?.id || '');
+            setMessage(post?.message || '');
+            setWhatsappPhone(post?.whatsappPhone || user?.phone || '');
+            setTags(post?.tags || []);
+            setImages(post?.images || []);
+            setError('');
+            setSuccess(false);
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen, post, user?.phone]);
 
     // New category suggestion
     const [showSuggestCategory, setShowSuggestCategory] = useState(false);
@@ -64,7 +104,14 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             setError('');
 
             try {
-                for (const file of Array.from(files)) {
+                const remainingSlots = TABLON_MAX_IMAGES - images.length;
+                const filesToUpload = Array.from(files).slice(0, remainingSlots);
+
+                if (Array.from(files).length > remainingSlots) {
+                    setError(`Solo se permite un máximo de ${TABLON_MAX_IMAGES} imágenes`);
+                }
+
+                for (const file of filesToUpload) {
                     if (file.size > 5 * 1024 * 1024) {
                         setError('Cada imagen debe pesar menos de 5MB');
                         continue;
@@ -116,28 +163,65 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             return;
         }
 
+        // Anti-bot check: Honeypot
+        if (hpValue) {
+            console.warn('Bot detected via honeypot');
+            return;
+        }
+
+        // Anti-bot check: Time-to-submit (min 3 seconds)
+        if (Date.now() - openTime < 3000) {
+            setError('Por favor, tómate un momento para revisar tu anuncio antes de enviar.');
+            return;
+        }
+
         try {
-            await createPost.mutateAsync({
-                categoryId,
-                tags,
-                message: message.trim(),
-                whatsappPhone: whatsappPhone.trim(),
-                images,
-            });
+            if (post) {
+                await editPost.mutateAsync({
+                    id: post.id,
+                    categoryId: categoryId as number,
+                    tags,
+                    message: message.trim(),
+                    whatsappPhone: whatsappPhone.trim(),
+                    images,
+                });
+            } else {
+                await createPost.mutateAsync({
+                    categoryId,
+                    tags,
+                    message: message.trim(),
+                    whatsappPhone: whatsappPhone.trim(),
+                    images,
+                });
+            }
             setSuccess(true);
             setTimeout(() => {
                 onClose();
-                // Reset
-                setCategoryId('');
-                setMessage('');
-                setTags([]);
-                setImages([]);
+                if (!post) {
+                    // Reset only if creating new
+                    setCategoryId('');
+                    setMessage('');
+                    setTags([]);
+                    setImages([]);
+                }
                 setSuccess(false);
             }, 2000);
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Error al publicar');
         }
-    }, [categoryId, message, whatsappPhone, tags, images, createPost, onClose]);
+    }, [
+        categoryId,
+        message,
+        whatsappPhone,
+        tags,
+        images,
+        createPost,
+        editPost,
+        post,
+        onClose,
+        hpValue,
+        openTime,
+    ]);
 
     if (!isOpen) return null;
 
@@ -157,56 +241,77 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             >
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-white">📢 Publicar anuncio</h2>
+                    <h2 className="text-xl font-bold text-white">
+                        {post ? '✏️ Editar anuncio' : '📢 Publicar anuncio'}
+                    </h2>
                     <button
                         onClick={onClose}
-                        className="p-2 text-gray-400 hover:text-white transition-colors"
+                        className="p-2.5 rounded-xl bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
                         data-testid="create-post-close"
                     >
-                        ✕
+                        <X size={18} strokeWidth={2.5} />
                     </button>
                 </div>
 
                 {success ? (
-                    <div className="text-center py-8">
-                        <div className="text-5xl mb-4">✅</div>
-                        <p className="text-lg font-medium text-white">
-                            ¡Tu anuncio ha sido enviado!
+                    <div className="text-center py-10">
+                        <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                            <CheckCircle2 size={40} strokeWidth={2.5} />
+                        </div>
+                        <p className="text-xl font-black text-white uppercase tracking-tight">
+                            ¡Enviado con éxito!
                         </p>
-                        <p className="text-sm text-gray-400 mt-2">
-                            Un moderador lo revisará pronto.
+                        <p className="text-sm text-gray-400 mt-2 font-medium">
+                            Un moderador revisará tu anuncio pronto.
                         </p>
                     </div>
                 ) : (
                     <div className="space-y-5">
+                        {/* Honeypot field (hidden from users) */}
+                        <div className="absolute opacity-0 pointer-events-none -z-10 h-0 overflow-hidden">
+                            <input
+                                type="text"
+                                value={hpValue}
+                                onChange={e => setHpValue(e.target.value)}
+                                tabIndex={-1}
+                                autoComplete="off"
+                            />
+                        </div>
                         {/* Category Selection */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">
+                                <LayoutGrid size={14} className="text-orange-500" />
                                 Categoría *
                             </label>
-                            <div className="flex flex-wrap gap-2">
-                                {categories.map(cat => (
-                                    <button
-                                        key={cat.id}
-                                        type="button"
-                                        data-testid={`category-option-${cat.name.toLowerCase().replace(/\s+/g, '-')}`}
-                                        onClick={() => setCategoryId(cat.id)}
-                                        className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-                                            categoryId === cat.id
-                                                ? 'bg-orange-500 text-white'
-                                                : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                                        }`}
-                                    >
-                                        {cat.emoji} {cat.name}
-                                    </button>
-                                ))}
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {categories.map(cat => {
+                                    const Icon = getCategoryIcon(cat.name);
+                                    const isSelected = categoryId === cat.id;
+                                    return (
+                                        <button
+                                            key={cat.id}
+                                            type="button"
+                                            data-testid={`category-option-${cat.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                            onClick={() => setCategoryId(cat.id)}
+                                            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 border-2 ${
+                                                isSelected
+                                                    ? 'bg-orange-500/10 border-orange-500/50 text-orange-500 shadow-lg shadow-orange-500/10'
+                                                    : 'bg-white/5 border-transparent text-gray-500 hover:bg-white/10 hover:text-gray-300'
+                                            }`}
+                                        >
+                                            <Icon size={14} strokeWidth={2.5} />
+                                            <span className="truncate">{cat.name}</span>
+                                        </button>
+                                    );
+                                })}
                                 <button
                                     type="button"
                                     onClick={() => setShowSuggestCategory(!showSuggestCategory)}
-                                    className="px-3 py-1.5 rounded-full text-sm bg-white/5 text-gray-500 hover:bg-white/10 transition-all border border-dashed border-gray-600"
+                                    className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest bg-white/5 text-gray-500 hover:bg-white/10 transition-all border-2 border-dashed border-gray-700/50"
                                     data-testid="suggest-category-btn"
                                 >
-                                    ➕ Otra
+                                    <Plus size={14} strokeWidth={2.5} />
+                                    <span>Otra</span>
                                 </button>
                             </div>
 
@@ -247,7 +352,8 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
                         {/* Message */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                                <MessageSquare size={14} className="text-orange-500" />
                                 Mensaje *
                             </label>
                             <textarea
@@ -255,19 +361,20 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                                 onChange={e => setMessage(e.target.value)}
                                 placeholder="Escribe tu anuncio aquí..."
                                 rows={4}
-                                maxLength={2000}
+                                maxLength={500}
                                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 resize-none focus:outline-none focus:border-orange-500/50 transition-colors"
                                 data-testid="post-message"
                             />
                             <p className="text-xs text-gray-500 mt-1 text-right">
-                                {message.length}/2000
+                                {message.length}/500
                             </p>
                         </div>
 
                         {/* WhatsApp phone */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                                📱 WhatsApp *
+                            <label className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                                <Smartphone size={14} className="text-orange-500" />
+                                WhatsApp *
                             </label>
                             <input
                                 type="tel"
@@ -284,8 +391,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
                         {/* Tags */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                                🏷️ Etiquetas ({tags.length}/{TABLON_MAX_TAGS})
+                            <label className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                                <Tag size={14} className="text-orange-500" />
+                                Etiquetas ({tags.length}/{TABLON_MAX_TAGS})
                             </label>
                             <div className="flex gap-2">
                                 <input
@@ -307,10 +415,10 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                                     type="button"
                                     onClick={handleAddTag}
                                     disabled={tags.length >= TABLON_MAX_TAGS || !tagInput.trim()}
-                                    className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 disabled:opacity-30 transition-all"
+                                    className="w-10 h-10 flex items-center justify-center bg-white/10 text-white rounded-xl hover:bg-white/20 disabled:opacity-30 transition-all"
                                     data-testid="post-tag-add"
                                 >
-                                    +
+                                    <Plus size={18} strokeWidth={2.5} />
                                 </button>
                             </div>
                             {tags.length > 0 && (
@@ -324,9 +432,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                                             <button
                                                 type="button"
                                                 onClick={() => handleRemoveTag(tag)}
-                                                className="text-gray-500 hover:text-white ml-1"
+                                                className="text-gray-500 hover:text-red-400 transition-colors"
                                             >
-                                                ✕
+                                                <X size={12} strokeWidth={3} />
                                             </button>
                                         </span>
                                     ))}
@@ -336,8 +444,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
                         {/* Images */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                                📷 Fotos ({images.length}/{TABLON_MAX_IMAGES})
+                            <label className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                                <Camera size={14} className="text-orange-500" />
+                                Fotos ({images.length}/{TABLON_MAX_IMAGES})
                             </label>
                             <div className="flex gap-3 flex-wrap">
                                 {images.map((url, idx) => (
@@ -355,9 +464,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                                         <button
                                             type="button"
                                             onClick={() => handleRemoveImage(idx)}
-                                            className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 text-white rounded-full text-xs flex items-center justify-center"
+                                            className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors"
                                         >
-                                            ✕
+                                            <Trash2 size={12} strokeWidth={2.5} />
                                         </button>
                                     </div>
                                 ))}
@@ -370,9 +479,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                                         data-testid="post-upload-btn"
                                     >
                                         {uploading ? (
-                                            <div className="w-5 h-5 border-2 border-gray-400 border-t-orange-500 rounded-full animate-spin" />
+                                            <div className="w-6 h-6 border-2 border-white/20 border-t-orange-500 rounded-full animate-spin" />
                                         ) : (
-                                            <span className="text-2xl">+</span>
+                                            <Camera size={24} strokeWidth={1.5} />
                                         )}
                                     </button>
                                 )}
@@ -388,25 +497,32 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                             />
                         </div>
 
-                        {/* Error */}
                         {error && (
-                            <p
-                                className="text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2"
+                            <div
+                                className="flex items-center gap-3 text-sm text-red-400 bg-red-500/10 rounded-xl px-4 py-3 border border-red-500/20"
                                 data-testid="post-error"
                             >
-                                {error}
-                            </p>
+                                <AlertCircle size={18} />
+                                <span className="font-medium">{error}</span>
+                            </div>
                         )}
 
                         {/* Submit */}
                         <button
                             type="button"
                             onClick={handleSubmit}
-                            disabled={createPost.isPending || uploading}
-                            className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-red-600 disabled:opacity-50 transition-all shadow-lg shadow-orange-500/20"
+                            disabled={createPost.isPending || editPost.isPending || uploading}
+                            className="w-full h-14 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:brightness-110 disabled:opacity-50 transition-all shadow-xl shadow-orange-500/20 flex items-center justify-center gap-3 active:scale-[0.98]"
                             data-testid="post-submit"
                         >
-                            {createPost.isPending ? 'Publicando...' : '📢 Publicar anuncio'}
+                            {createPost.isPending || editPost.isPending ? (
+                                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    <Megaphone size={18} strokeWidth={2.5} />
+                                    {post ? 'Guardar cambios' : 'Publicar anuncio'}
+                                </>
+                            )}
                         </button>
                     </div>
                 )}

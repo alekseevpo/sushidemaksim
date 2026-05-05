@@ -175,10 +175,27 @@ export function formatBlogPost(p: any) {
 }
 
 /** Cleanly maps a Tablón post from DB to Frontend, with privacy controls */
-export function formatTablonPost(p: any, isAuthenticated: boolean, commentCount: number = 0) {
+export function formatTablonPost(
+    p: any,
+    isAuthenticated: boolean,
+    commentCount: number = 0,
+    reactionsData: any[] = [],
+    currentUserId: string | null = null
+) {
     if (!p) return null;
     const user = p.users;
     const category = p.tablon_categories;
+
+    // Aggregate reactions
+    const reactions: Record<string, number> = {};
+    let userReaction: string | null = null;
+
+    reactionsData.forEach(r => {
+        reactions[r.reaction_type] = (reactions[r.reaction_type] || 0) + 1;
+        if (currentUserId && r.user_id === currentUserId) {
+            userReaction = r.reaction_type;
+        }
+    });
 
     return {
         id: p.id,
@@ -192,6 +209,8 @@ export function formatTablonPost(p: any, isAuthenticated: boolean, commentCount:
         createdAt: p.created_at,
         updatedAt: p.updated_at,
         commentCount,
+        reactions,
+        userReaction,
         author: isAuthenticated
             ? { id: user?.id, name: user?.name || 'Usuario', avatar: user?.avatar || null }
             : { id: null, name: null, avatar: null },

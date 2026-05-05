@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { Languages, Share2 } from 'lucide-react';
 
 interface TranslateMessageProps {
     originalText: string;
     className?: string;
     textClassName?: string;
+    shareUrl?: string;
 }
 
 export function TranslateMessage({
     originalText,
     className = '',
     textClassName = 'text-gray-200 text-sm leading-relaxed whitespace-pre-wrap',
+    shareUrl,
 }: TranslateMessageProps) {
     const [translatedText, setTranslatedText] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +53,26 @@ export function TranslateMessage({
         }
     };
 
+    const handleShare = useCallback(
+        (e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!shareUrl) return;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Anuncio en Tablón | Sushi de Maksim',
+                    text: originalText.slice(0, 100) + '...',
+                    url: shareUrl,
+                });
+            } else {
+                navigator.clipboard.writeText(shareUrl);
+                alert('Enlace copiado al portapapeles');
+            }
+        },
+        [shareUrl, originalText]
+    );
+
     const btnTextTranslate = 'Ver traducción';
     const btnTextOriginal = 'Ver original';
     const btnTextTranslating = 'Traduciendo...';
@@ -59,19 +82,38 @@ export function TranslateMessage({
             <p className={textClassName}>
                 {showTranslated && translatedText ? translatedText : originalText}
             </p>
-            <button
-                type="button"
-                onClick={handleTranslate}
-                disabled={isLoading}
-                className="text-xs text-gray-500 hover:text-gray-300 font-medium mt-1.5 transition-colors disabled:opacity-50 inline-flex items-center gap-1 active:scale-95"
-            >
-                🌎{' '}
-                {isLoading
-                    ? btnTextTranslating
-                    : showTranslated
-                      ? btnTextOriginal
-                      : btnTextTranslate}
-            </button>
+            <div className="flex items-center gap-4 mt-2">
+                <button
+                    type="button"
+                    onClick={handleTranslate}
+                    disabled={isLoading}
+                    className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 active:scale-95"
+                >
+                    <Languages size={12} strokeWidth={2.5} />
+                    {isLoading
+                        ? btnTextTranslating
+                        : showTranslated
+                          ? btnTextOriginal
+                          : btnTextTranslate}
+                </button>
+
+                {shareUrl && (
+                    <button
+                        type="button"
+                        onClick={handleShare}
+                        className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors inline-flex items-center gap-1.5 active:scale-95"
+                    >
+                        <Share2 size={12} strokeWidth={2.5} />
+                        Compartir
+                    </button>
+                )}
+
+                {showTranslated && (
+                    <span className="text-[10px] text-gray-700 italic ml-auto">
+                        Translated by Google
+                    </span>
+                )}
+            </div>
         </div>
     );
 }

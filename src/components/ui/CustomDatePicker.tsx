@@ -116,7 +116,7 @@ export default function CustomDatePicker({
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-orange-500 transition-colors"
                     size={18}
                 />
-                <div className="w-full pl-11 pr-4 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[14px] font-bold flex items-center text-gray-900 focus-within:ring-4 focus-within:ring-orange-600/5 focus-within:border-orange-600 transition-all select-none">
+                <div className="w-full pl-11 pr-4 h-[44px] bg-gray-50/50 border-2 border-transparent rounded-2xl text-[14px] font-bold flex items-center text-gray-900 focus-within:ring-4 focus-within:ring-orange-600/5 focus-within:border-orange-600 transition-all select-none shadow-sm">
                     {value ? (
                         formatDateForDisplay(value)
                     ) : (

@@ -1,11 +1,14 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { MessageCircle, Lock, Trash2, Edit3, User } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTablonPost, useDeleteTablonPost } from '../hooks/queries/useTablon';
 import { CommentSection } from '../components/tablon/CommentSection';
+import { PostModal } from '../components/tablon/PostModal';
+import { PostReactions } from '../components/tablon/PostReactions';
 import { TranslateMessage } from '../components/tablon/TranslateMessage';
-import { TABLON_EDIT_WINDOW_MS } from '../constants/tablon';
+import { getCategoryIcon } from '../utils/tablonIcons';
 
 export default function TablonPostPage() {
     const { id } = useParams<{ id: string }>();
@@ -15,6 +18,7 @@ export default function TablonPostPage() {
     const deletePost = useDeleteTablonPost();
 
     const [showLoginToast, setShowLoginToast] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const handleLoginPrompt = useCallback(() => {
         setShowLoginToast(true);
@@ -53,8 +57,7 @@ export default function TablonPostPage() {
     const { post, comments } = data;
     const isOwner = user?.id === post.userId;
     const isModerator = user?.role === 'moderator' || user?.role === 'admin' || user?.isSuperadmin;
-    const canEdit =
-        isOwner && Date.now() - new Date(post.createdAt).getTime() < TABLON_EDIT_WINDOW_MS;
+    const canEdit = isOwner; // Owners can edit anytime now
     const canDelete = isOwner || isModerator;
 
     const whatsappLink = post.whatsappPhone
@@ -147,8 +150,8 @@ export default function TablonPostPage() {
                                                 height={40}
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-lg">
-                                                👤
+                                            <div className="w-full h-full flex items-center justify-center text-gray-500 bg-gray-800">
+                                                <User size={24} strokeWidth={2.5} />
                                             </div>
                                         )}
                                     </div>
@@ -171,11 +174,16 @@ export default function TablonPostPage() {
                                 </div>
 
                                 {/* Category badge */}
-                                {post.category && (
-                                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500/15 text-orange-400 rounded-full text-xs font-medium">
-                                        {post.category.emoji} {post.category.name}
-                                    </span>
-                                )}
+                                {post.category &&
+                                    (() => {
+                                        const Icon = getCategoryIcon(post.category.name);
+                                        return (
+                                            <span className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 text-orange-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-orange-500/20 shadow-lg shadow-orange-500/5">
+                                                <Icon size={12} strokeWidth={2.5} />
+                                                {post.category.name}
+                                            </span>
+                                        );
+                                    })()}
                             </div>
 
                             {/* Message */}
@@ -183,7 +191,19 @@ export default function TablonPostPage() {
                                 originalText={post.message}
                                 className="mb-6"
                                 textClassName="text-gray-200 leading-relaxed whitespace-pre-wrap"
+                                shareUrl={window.location.href}
                             />
+
+                            {/* Reactions */}
+                            <div className="mb-8">
+                                <PostReactions
+                                    postId={post.id}
+                                    reactions={post.reactions}
+                                    userReaction={post.userReaction}
+                                    isAuthenticated={isAuthenticated}
+                                    onLoginPrompt={handleLoginPrompt}
+                                />
+                            </div>
 
                             {/* Tags */}
                             {post.tags.length > 0 && (
@@ -201,36 +221,38 @@ export default function TablonPostPage() {
                             )}
 
                             {/* Action buttons */}
-                            <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                            <div className="flex items-center gap-2 pt-6 border-t border-white/5 overflow-x-auto no-scrollbar">
                                 {/* WhatsApp button (auth only) */}
                                 {isAuthenticated && whatsappLink ? (
                                     <a
                                         href={whatsappLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700 transition-all"
+                                        className="flex-1 min-w-fit flex items-center justify-center gap-1.5 px-3 py-2.5 text-[9px] font-black uppercase tracking-widest text-green-500 hover:text-green-400 bg-green-500/5 hover:bg-green-500/10 border border-green-500/20 rounded-xl transition-all whitespace-nowrap"
                                         data-testid="whatsapp-contact"
                                     >
-                                        💬 WhatsApp
+                                        <MessageCircle size={12} strokeWidth={2.5} />
+                                        WhatsApp
                                     </a>
                                 ) : !isAuthenticated ? (
                                     <button
                                         onClick={handleLoginPrompt}
-                                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-700 text-gray-400 rounded-xl text-sm cursor-not-allowed"
+                                        className="flex-1 min-w-fit flex items-center justify-center gap-1.5 px-3 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-gray-400 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all whitespace-nowrap"
                                     >
-                                        🔒 Contacto (Inicia sesión)
+                                        <Lock size={12} strokeWidth={2.5} />
+                                        Contacto
                                     </button>
                                 ) : null}
-
-                                <div className="flex-1" />
 
                                 {/* Edit */}
                                 {canEdit && (
                                     <button
-                                        className="px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                                        onClick={() => setIsEditModalOpen(true)}
+                                        className="flex-1 min-w-fit flex items-center justify-center gap-1.5 px-3 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all whitespace-nowrap"
                                         data-testid="edit-post-btn"
                                     >
-                                        ✏️ Editar
+                                        <Edit3 size={12} strokeWidth={2.5} />
+                                        Editar
                                     </button>
                                 )}
 
@@ -239,10 +261,11 @@ export default function TablonPostPage() {
                                     <button
                                         onClick={handleDelete}
                                         disabled={deletePost.isPending}
-                                        className="px-3 py-2 text-sm text-gray-400 hover:text-red-400 transition-colors"
+                                        className="flex-1 min-w-fit flex items-center justify-center gap-1.5 px-3 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-xl transition-all whitespace-nowrap"
                                         data-testid="delete-post-btn"
                                     >
-                                        🗑️ Eliminar
+                                        <Trash2 size={12} strokeWidth={2.5} />
+                                        Eliminar
                                     </button>
                                 )}
                             </div>
@@ -259,6 +282,13 @@ export default function TablonPostPage() {
                         />
                     </div>
                 </div>
+
+                {/* Edit Modal */}
+                <PostModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    post={post}
+                />
 
                 {/* Login toast */}
                 {showLoginToast && (

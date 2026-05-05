@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface HeaderLogoProps {
     isTable: boolean;
@@ -13,21 +13,31 @@ export default function HeaderLogo({
     isTransparentHeaderPage,
     setShowMobileMenu,
 }: HeaderLogoProps) {
+    const location = useLocation();
+    const targetPath = isTable ? '/table' : '/';
+    const isAlreadyOnTarget = location.pathname === targetPath;
+
     return (
         <div
             className={`flex-1 flex items-center h-full ${isTable ? 'justify-end' : 'justify-start'}`}
         >
             <Link
-                to={isTable ? '/table' : '/'}
+                to={targetPath}
                 onClick={e => {
                     if (isTable) {
                         e.preventDefault();
                     }
                     setShowMobileMenu(false);
-                    if ((window as any).lenis) {
-                        (window as any).lenis.scrollTo(0);
-                    } else {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                    // Only scroll to top if we're already on the target page.
+                    // If navigating to a different page, let React Router handle it cleanly
+                    // without interfering with scroll — the PageWrapper will handle scroll reset.
+                    if (isAlreadyOnTarget) {
+                        if ((window as any).lenis) {
+                            (window as any).lenis.scrollTo(0, { immediate: true });
+                        } else {
+                            window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+                        }
                     }
                 }}
                 className="flex items-center no-underline gap-0 group h-full"

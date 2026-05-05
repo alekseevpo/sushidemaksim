@@ -8,17 +8,30 @@ test.describe('Reservation Page Flow', () => {
 
         // 1. Check SEO and Content
         await expect(page).toHaveTitle(/Reservar Mesa/);
+
+        // Handle cookie banner if present
+        const cookieBtn = page.getByRole('button', { name: 'Aceptar' });
+        if (await cookieBtn.isVisible()) {
+            await cookieBtn.click();
+        }
+
         await expect(page.getByText('C. de Barrilero, 20, 28007 Madrid España')).toBeVisible();
 
         // 2. Fill Name
-        await page.getByPlaceholder('Tu nombre и apellidos').fill('Playwright Test User');
+        await page.getByPlaceholder('Tu nombre y apellidos').fill('Playwright Test User');
 
         // 3. Select Date (using custom picker)
-        await page.getByText('Hoy/Mañana').click();
-        await page.getByRole('button', { name: 'Hoy', exact: true }).click();
+        await page
+            .locator('span')
+            .filter({ hasText: /^Fecha$/ })
+            .click();
+        await page.locator('button').filter({ hasText: /^Hoy$/ }).click();
 
         // 4. Select Time (should be visible after date selection)
-        await page.getByText('Selecciona', { exact: true }).click();
+        await page
+            .locator('span')
+            .filter({ hasText: /^Hora$/ })
+            .click();
         // Click the first available time slot
         const firstSlot = page
             .locator('button[type="button"]')

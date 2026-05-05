@@ -1,12 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
+import { Search, X, Clock, Calendar, Flame, Plus } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTablonPosts, useTablonCategories } from '../hooks/queries/useTablon';
 import type { TablonFilters } from '../hooks/queries/useTablon';
 import { CategoryFilter } from '../components/tablon/CategoryFilter';
 import { PostCard } from '../components/tablon/PostCard';
-import { CreatePostModal } from '../components/tablon/CreatePostModal';
+import { PostModal } from '../components/tablon/PostModal';
 import { TablonSkeleton } from '../components/skeletons/TablonSkeleton';
+import { useDebounce } from '../hooks/useDebounce';
 
 export default function TablonPage() {
     const { isAuthenticated } = useAuth();
@@ -17,9 +20,16 @@ export default function TablonPage() {
     });
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showLoginToast, setShowLoginToast] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
+    const debouncedSearch = useDebounce(searchInput, 500);
 
     const { data: categoriesData, isLoading: catsLoading } = useTablonCategories();
     const { data, isLoading } = useTablonPosts(filters);
+
+    // Sync debounced search to filters
+    useEffect(() => {
+        setFilters(prev => ({ ...prev, search: debouncedSearch || undefined, page: 1 }));
+    }, [debouncedSearch]);
 
     const categories = categoriesData?.categories || [];
     const posts = data?.posts || [];
@@ -29,7 +39,7 @@ export default function TablonPage() {
         setFilters(prev => ({ ...prev, category: catId || undefined, page: 1 }));
     }, []);
 
-    const handleSortChange = useCallback((sort: 'newest' | 'oldest') => {
+    const handleSortChange = useCallback((sort: 'newest' | 'oldest' | 'popular') => {
         setFilters(prev => ({ ...prev, sort, page: 1 }));
     }, []);
 
@@ -70,40 +80,81 @@ export default function TablonPage() {
 
                 {/* Content */}
                 <div className="relative z-10 max-w-6xl mx-auto px-4">
-                    {/* Filters */}
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                        {!catsLoading && (
-                            <CategoryFilter
-                                categories={categories}
-                                selectedCategoryId={filters.category || null}
-                                onSelect={handleCategorySelect}
-                            />
-                        )}
+                    {/* Sticky Header for Filters */}
+                    <div className="sticky top-[64px] z-30 bg-[#0d0d0d]/80 backdrop-blur-xl -mx-4 px-4 py-4 mb-8 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:backdrop-blur-none md:border-none md:px-0 md:py-0 transition-all duration-300">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            {!catsLoading && (
+                                <CategoryFilter
+                                    categories={categories}
+                                    selectedCategoryId={filters.category || null}
+                                    onSelect={handleCategorySelect}
+                                />
+                            )}
 
-                        {/* Sort */}
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                            <button
-                                onClick={() => handleSortChange('newest')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                                    filters.sort === 'newest'
-                                        ? 'bg-white/15 text-white'
-                                        : 'text-gray-500 hover:text-gray-300'
-                                }`}
-                                data-testid="sort-newest"
-                            >
-                                🆕 Recientes
-                            </button>
-                            <button
-                                onClick={() => handleSortChange('oldest')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                                    filters.sort === 'oldest'
-                                        ? 'bg-white/15 text-white'
-                                        : 'text-gray-500 hover:text-gray-300'
-                                }`}
-                                data-testid="sort-oldest"
-                            >
-                                📅 Antiguos
-                            </button>
+                            <div className="flex items-center gap-3 w-full md:w-auto">
+                                {/* Search */}
+                                <div className="flex-1 max-w-md relative">
+                                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500">
+                                        <Search size={16} />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar..."
+                                        value={searchInput}
+                                        onChange={e => setSearchInput(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-orange-500/50 transition-all"
+                                    />
+                                    {searchInput && (
+                                        <button
+                                            onClick={() => setSearchInput('')}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Sort */}
+                                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 relative h-10 flex-shrink-0">
+                                    {[
+                                        { id: 'newest', icon: Clock },
+                                        { id: 'popular', icon: Flame },
+                                        { id: 'oldest', icon: Calendar },
+                                    ].map(item => {
+                                        const isActive = filters.sort === item.id;
+                                        const Icon = item.icon;
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() =>
+                                                    handleSortChange(
+                                                        item.id as 'newest' | 'oldest' | 'popular'
+                                                    )
+                                                }
+                                                className={`relative p-2 rounded-lg transition-colors duration-300 z-10 ${
+                                                    isActive
+                                                        ? 'text-white'
+                                                        : 'text-gray-500 hover:text-gray-300'
+                                                }`}
+                                                title={item.id}
+                                            >
+                                                <Icon size={16} strokeWidth={2.5} />
+                                                {isActive && (
+                                                    <motion.div
+                                                        layoutId="activeTabHeader"
+                                                        className="absolute inset-0 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20 z-[-1]"
+                                                        transition={{
+                                                            type: 'spring',
+                                                            stiffness: 400,
+                                                            damping: 30,
+                                                        }}
+                                                    />
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -174,10 +225,10 @@ export default function TablonPage() {
                 {/* FAB (Floating Action Button) */}
                 <button
                     onClick={handleCreateClick}
-                    className="fixed bottom-24 right-4 md:bottom-10 md:right-10 w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-xl shadow-orange-500/30 flex items-center justify-center text-2xl z-fixed active:scale-90 transition-transform"
+                    className="fixed bottom-24 right-4 md:bottom-10 md:right-10 w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-xl shadow-orange-500/30 flex items-center justify-center z-fixed active:scale-90 transition-transform hover:scale-105 active:rotate-12"
                     data-testid="create-post-fab"
                 >
-                    ✏️
+                    <Plus size={24} strokeWidth={3} />
                 </button>
 
                 {/* Login toast */}
@@ -188,10 +239,7 @@ export default function TablonPage() {
                 )}
 
                 {/* Create Post Modal */}
-                <CreatePostModal
-                    isOpen={showCreateModal}
-                    onClose={() => setShowCreateModal(false)}
-                />
+                <PostModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
             </div>
         </>
     );

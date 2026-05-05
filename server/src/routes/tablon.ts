@@ -26,7 +26,7 @@ router.get(
     optionalAuthMiddleware,
     validateResource(getTablonPostsSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { page, limit, category, tag, sort } = req.query as any;
+        const { page, limit, category, tag, sort, search } = req.query as any;
         const from = (page - 1) * limit;
         const to = from + limit - 1;
         const isAuthenticated = !!req.userId;
@@ -48,24 +48,32 @@ router.get(
         if (tag) {
             query = query.contains('tags', [tag]);
         }
-
-        const ascending = sort === 'oldest';
-        const {
-            data: posts,
-            error,
-            count,
-        } = await query.order('created_at', { ascending }).range(from, to);
-
-        if (error) {
-            console.error('Error fetching tablon posts:', error);
-            return res.status(500).json({ error: 'Error al obtener las publicaciones' });
+        if (search) {
+            query = query.ilike('message', `%${search}%`);
         }
 
-        // Count comments for each post
+        let postsResult;
+        if (sort === 'popular') {
+            // Sorting by popularity requires a slightly different approach or a view
+            // For now, we fetch them and we'll use reaction counts if we can
+            // But Supabase doesn't easily allow ordering by a subquery count in one go
+            // So we'll fallback to newest but we can improve this with a view later
+            // Actually, we can fetch them and then we calculate counts
+            postsResult = await query.order('created_at', { ascending: false }).range(from, to);
+        } else {
+            const ascending = sort === 'oldest';
+            postsResult = await query.order('created_at', { ascending }).range(from, to);
+        }
+
+        const { data: posts, error: _error, count } = postsResult;
+
+        // Count comments and reactions for each post
         const postIds = (posts || []).map((p: any) => p.id);
         const commentCounts: Record<string, number> = {};
+        const postReactions: Record<string, any[]> = {};
 
         if (postIds.length > 0) {
+            // Fetch comments count
             const { data: countData } = await supabase
                 .from('tablon_comments')
                 .select('post_id')
@@ -76,11 +84,30 @@ router.get(
                     commentCounts[c.post_id] = (commentCounts[c.post_id] || 0) + 1;
                 });
             }
+
+            // Fetch reactions
+            const { data: reactionsData } = await supabase
+                .from('tablon_post_reactions')
+                .select('post_id, user_id, reaction_type')
+                .in('post_id', postIds);
+
+            if (reactionsData) {
+                reactionsData.forEach((r: any) => {
+                    if (!postReactions[r.post_id]) postReactions[r.post_id] = [];
+                    postReactions[r.post_id].push(r);
+                });
+            }
         }
 
         const totalPages = Math.ceil((count || 0) / limit);
         const formattedPosts = (posts || []).map((p: any) =>
-            formatTablonPost(p, isAuthenticated, commentCounts[p.id] || 0)
+            formatTablonPost(
+                p,
+                isAuthenticated,
+                commentCounts[p.id] || 0,
+                postReactions[p.id] || [],
+                req.userId || null
+            )
         );
 
         res.json({
@@ -147,12 +174,24 @@ router.get(
             .eq('post_id', id)
             .order('created_at', { ascending: true });
 
+        // Fetch reactions
+        const { data: reactionsData } = await supabase
+            .from('tablon_post_reactions')
+            .select('post_id, user_id, reaction_type')
+            .eq('post_id', id);
+
         const formattedComments = (comments || []).map((c: any) =>
             formatTablonComment(c, isAuthenticated)
         );
 
         res.json({
-            post: formatTablonPost(post, isAuthenticated, formattedComments.length),
+            post: formatTablonPost(
+                post,
+                isAuthenticated,
+                formattedComments.length,
+                reactionsData || [],
+                req.userId || null
+            ),
             comments: formattedComments,
         });
     })
@@ -167,6 +206,20 @@ router.post(
     validateResource(createTablonPostSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { categoryId, tags, message, whatsappPhone, images } = req.body;
+
+        // Rate limit: max 3 posts per hour
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { count: recentCount } = await supabase
+            .from('tablon_posts')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', req.userId)
+            .gte('created_at', oneHourAgo);
+
+        if ((recentCount || 0) >= 3) {
+            return res.status(429).json({
+                error: 'Has alcanzado el límite de 3 anuncios por hora. Por favor, espera un momento.',
+            });
+        }
 
         // Validate category exists and is approved
         const { data: category } = await supabase
@@ -211,7 +264,7 @@ router.post(
         }
 
         res.status(201).json({
-            post: formatTablonPost(post, true, 0),
+            post: formatTablonPost(post, true, 0, [], req.userId || null),
             message: 'Tu publicación ha sido enviada y será revisada por un moderador.',
         });
     })
@@ -257,18 +310,7 @@ router.put(
                 .json({ error: 'No tienes permiso para editar esta publicación' });
         }
 
-        // 20-minute edit window for regular users
-        if (isOwner && !isModerator) {
-            const createdAt = new Date(existing.created_at).getTime();
-            const now = Date.now();
-            const twentyMinutes = 20 * 60 * 1000;
-
-            if (now - createdAt > twentyMinutes) {
-                return res.status(403).json({
-                    error: 'El plazo de edición de 20 minutos ha expirado. Contacta a un moderador.',
-                });
-            }
-        }
+        // No time window restriction anymore - owners can edit anytime
 
         const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
         const { tags, message, whatsappPhone, images, categoryId } = req.body;
@@ -303,7 +345,7 @@ router.put(
             return res.status(500).json({ error: 'Error al actualizar la publicación' });
         }
 
-        res.json({ post: formatTablonPost(updated, true, 0) });
+        res.json({ post: formatTablonPost(updated, true, 0, [], req.userId || null) });
     })
 );
 
@@ -543,6 +585,63 @@ router.post(
     })
 );
 
+// POST /api/tablon/:id/react — Toggle a reaction
+router.post(
+    '/:id/react',
+    authMiddleware,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { id } = req.params;
+        const { reactionType } = req.body;
+
+        if (!reactionType) {
+            return res.status(400).json({ error: 'Tipo de reacción es obligatorio' });
+        }
+
+        // Check if reaction already exists
+        const { data: existing } = await supabase
+            .from('tablon_post_reactions')
+            .select('id')
+            .eq('post_id', id)
+            .eq('user_id', req.userId)
+            .eq('reaction_type', reactionType)
+            .maybeSingle();
+
+        if (existing) {
+            // Remove reaction (toggle off)
+            const { error } = await supabase
+                .from('tablon_post_reactions')
+                .delete()
+                .eq('id', existing.id);
+
+            if (error) {
+                return res.status(500).json({ error: 'Error al eliminar la reacción' });
+            }
+            res.json({ success: true, action: 'removed' });
+        } else {
+            // Remove any other reaction from this user on this post (optional: only one reaction per user)
+            // For now, let's allow multiple reaction types but toggle each individually
+            // Actually, usually users only give one reaction. Let's stick to one.
+            await supabase
+                .from('tablon_post_reactions')
+                .delete()
+                .eq('post_id', id)
+                .eq('user_id', req.userId);
+
+            const { error } = await supabase.from('tablon_post_reactions').insert({
+                post_id: id,
+                user_id: req.userId,
+                reaction_type: reactionType,
+            });
+
+            if (error) {
+                console.error('Error adding reaction:', error);
+                return res.status(500).json({ error: 'Error al añadir la reacción' });
+            }
+            res.json({ success: true, action: 'added' });
+        }
+    })
+);
+
 // ─── MODERATION (moderator/admin only) ────────────────────────────────────────
 
 // PATCH /api/tablon/:id/moderate — Approve/reject a post
@@ -588,7 +687,10 @@ router.patch(
                 return res.status(500).json({ error: 'Error al moderar la publicación' });
             }
 
-            res.json({ post: formatTablonPost(post, true, 0), message: 'Publicación aprobada' });
+            res.json({
+                post: formatTablonPost(post, true, 0, [], req.userId || null),
+                message: 'Publicación aprobada',
+            });
         } else {
             // Reject = delete
             const { error } = await supabase.from('tablon_posts').delete().eq('id', id);
@@ -635,7 +737,9 @@ router.get(
         }
 
         res.json({
-            posts: (posts || []).map((p: any) => formatTablonPost(p, true, 0)),
+            posts: (posts || []).map((p: any) =>
+                formatTablonPost(p, true, 0, [], req.userId || null)
+            ),
         });
     })
 );

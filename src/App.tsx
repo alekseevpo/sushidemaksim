@@ -87,14 +87,17 @@ const PageWrapper = ({
     useEffect(() => {
         // Scroll to top on pathname change, regardless of search params.
         // We keep hash check to respect anchor links.
-        if (!location.hash) {
+        // Skip auto-scroll when navigating with a category param (e.g. /menu?category=sopas)
+        // — the target page will handle scrolling to the correct section.
+        const hasCategory = new URLSearchParams(location.search).has('category');
+        if (!location.hash && !hasCategory) {
             // Use requestAnimationFrame to ensure it wins against browser native restoration
             requestAnimationFrame(() => {
                 window.scrollTo(0, 0);
                 (window as any).lenis?.scrollTo(0, { immediate: true });
             });
         }
-    }, [location.pathname, location.hash]);
+    }, [location.pathname, location.hash, location.search]);
 
     return (
         <motion.div

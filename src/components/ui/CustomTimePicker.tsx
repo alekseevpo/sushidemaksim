@@ -64,7 +64,7 @@ export default function CustomTimePicker({
                     size={18}
                 />
                 <div
-                    className={`w-full pl-11 pr-10 h-11 bg-gray-50 border border-gray-100 rounded-xl text-[14px] font-bold flex items-center text-gray-900 transition-all select-none ${
+                    className={`w-full pl-11 pr-10 h-[44px] bg-gray-50/50 border-2 border-transparent rounded-2xl text-[14px] font-bold flex items-center text-gray-900 transition-all select-none shadow-sm ${
                         isOpen ? 'ring-4 ring-orange-600/5 border-orange-600' : ''
                     } ${disabled ? 'bg-gray-100 text-gray-400' : ''}`}
                 >

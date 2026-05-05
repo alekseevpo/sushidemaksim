@@ -32,7 +32,7 @@ router.get(
                 return acc;
             }, {});
 
-            res.set('Cache-Control', 'public, max-age=300, s-maxage=3600');
+            res.set('Cache-Control', 'public, max-age=30, s-maxage=30');
             res.json(settingsMap);
         } catch (e) {
             console.error('Settings fetch error:', e);

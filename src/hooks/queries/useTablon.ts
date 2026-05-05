@@ -28,6 +28,8 @@ export interface TablonPost {
     updatedAt: string;
     commentCount: number;
     author: TablonAuthor;
+    reactions: Record<string, number>; // e.g. { "❤️": 5, "👍": 2 }
+    userReaction: string | null; // e.g. "❤️" or null
 }
 
 export interface TablonComment {
@@ -60,7 +62,8 @@ export interface TablonFilters {
     limit?: number;
     category?: string;
     tag?: string;
-    sort?: 'newest' | 'oldest';
+    search?: string;
+    sort?: 'newest' | 'oldest' | 'popular';
 }
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
@@ -184,6 +187,19 @@ export const useCreateTablonComment = () => {
             message: string;
             parentId?: string | null;
         }) => api.post(`/tablon/${postId}/comments`, { message, parentId }),
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({ queryKey: TABLON_KEYS.post(variables.postId) });
+            queryClient.invalidateQueries({ queryKey: TABLON_KEYS.all });
+        },
+    });
+};
+
+/** Toggle a reaction (like) on a post */
+export const useToggleReaction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ postId, reactionType }: { postId: string; reactionType: string }) =>
+            api.post(`/tablon/${postId}/react`, { reactionType }),
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: TABLON_KEYS.post(variables.postId) });
             queryClient.invalidateQueries({ queryKey: TABLON_KEYS.all });

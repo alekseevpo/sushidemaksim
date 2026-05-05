@@ -49,10 +49,14 @@ export default function MenuPage() {
     }, [search, user?.id]);
 
     const isScrollingProgrammatically = useRef(false);
+    const hasScrolledToCategory = useRef(false);
 
     // Scroll Spy implementation
     useEffect(() => {
         if (isLoading || isError || items.length === 0 || debouncedSearch) return;
+
+        // Don't start scroll spy until the initial category scroll has completed
+        if (!hasScrolledToCategory.current && initialCategory !== 'all') return;
 
         const observerOptions = {
             root: null,
@@ -81,7 +85,7 @@ export default function MenuPage() {
         if (menuTop) observer.observe(menuTop);
 
         return () => observer.disconnect();
-    }, [isLoading, isError, items.length, debouncedSearch]);
+    }, [isLoading, isError, items.length, debouncedSearch, initialCategory]);
 
     const handleCategoryClick = (id: string) => {
         setActiveCategory(id);
@@ -168,7 +172,6 @@ export default function MenuPage() {
     }, [isLoading, items.length]);
 
     // Handle initial category scroll from query param
-    const hasScrolledToCategory = useRef(false);
     useEffect(() => {
         if (
             !isLoading &&
@@ -177,14 +180,26 @@ export default function MenuPage() {
             initialCategory !== 'all'
         ) {
             hasScrolledToCategory.current = true;
+
+            // Block scroll spy during programmatic scroll
+            isScrollingProgrammatically.current = true;
+
+            // Wait for React to render the ProductGrid sections into the DOM
+            // before scrolling. A short timeout is more reliable than rAF here
+            // because items are available but sections need a full render cycle.
             setTimeout(() => {
                 const el = document.getElementById(`section-${initialCategory}`);
                 if (el) {
                     const offset = window.innerWidth < 1024 ? 130 : 80;
                     const top = el.getBoundingClientRect().top + window.scrollY - offset;
-                    window.scrollTo({ top, behavior: 'smooth' });
+                    window.scrollTo({ top, behavior: 'instant' as ScrollBehavior });
                 }
-            }, 600);
+
+                // Re-enable scroll spy after the scroll is settled
+                setTimeout(() => {
+                    isScrollingProgrammatically.current = false;
+                }, 300);
+            }, 150);
         }
     }, [isLoading, items.length, initialCategory]);
 

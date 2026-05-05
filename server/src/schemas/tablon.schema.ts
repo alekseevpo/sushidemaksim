@@ -16,7 +16,7 @@ export const createTablonPostSchema = z.object({
         message: z
             .string()
             .min(10, 'El mensaje debe tener al menos 10 caracteres')
-            .max(2000, 'El mensaje no puede superar los 2000 caracteres'),
+            .max(500, 'El mensaje no puede superar los 500 caracteres'),
         whatsappPhone: z
             .string()
             .min(6, 'El teléfono debe tener al menos 6 dígitos')
@@ -37,7 +37,7 @@ export const updateTablonPostSchema = z.object({
         message: z
             .string()
             .min(10, 'El mensaje debe tener al menos 10 caracteres')
-            .max(2000, 'El mensaje no puede superar los 2000 caracteres')
+            .max(500, 'El mensaje no puede superar los 500 caracteres')
             .optional(),
         whatsappPhone: z.string().min(6).max(20).optional(),
         images: z.array(z.string().url()).max(3).optional(),
@@ -85,7 +85,8 @@ export const getTablonPostsSchema = z.object({
             }),
         category: z.string().optional(),
         tag: z.string().optional(),
-        sort: z.enum(['newest', 'oldest']).optional().default('newest'),
+        search: z.string().optional(),
+        sort: z.enum(['newest', 'oldest', 'popular']).optional().default('newest'),
     }),
 });
 
