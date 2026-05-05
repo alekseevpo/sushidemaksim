@@ -19,7 +19,7 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
             className="group flex flex-col h-full bg-transparent border-none md:bg-gray-900/50 md:backdrop-blur-sm md:border md:border-white/10 rounded-none md:rounded-2xl overflow-visible md:overflow-hidden hover:border-orange-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/5"
         >
             {/* Images preview */}
-            {post.images.length > 0 && (
+            {post.images.length > 0 ? (
                 <div className="relative h-64 md:h-48 overflow-hidden rounded-2xl md:rounded-none">
                     <img
                         src={post.images[0]}
@@ -35,6 +35,17 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
                             <span>+{post.images.length - 1}</span>
                         </div>
                     )}
+                </div>
+            ) : (
+                <div className="relative h-64 md:h-48 overflow-hidden rounded-2xl md:rounded-none bg-white/5 flex flex-col items-center justify-center gap-3 border-b border-white/5 group-hover:bg-white/[0.07] transition-colors duration-300">
+                    <Camera
+                        size={32}
+                        strokeWidth={1}
+                        className="text-gray-700 group-hover:text-gray-600 transition-colors"
+                    />
+                    <span className="text-[10px] font-black text-gray-700 group-hover:text-gray-600 uppercase tracking-[0.2em] transition-colors">
+                        Sin fotos
+                    </span>
                 </div>
             )}
 

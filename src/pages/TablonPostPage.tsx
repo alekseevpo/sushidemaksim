@@ -98,7 +98,7 @@ export default function TablonPostPage() {
                     {/* Post Card */}
                     <article className="bg-transparent border-none md:bg-gray-900/50 md:backdrop-blur-sm md:border md:border-white/10 rounded-none md:rounded-2xl overflow-visible md:overflow-hidden">
                         {/* Images */}
-                        {post.images.length > 0 && (
+                        {post.images.length > 0 ? (
                             <div
                                 className={`grid ${
                                     post.images.length === 1
@@ -132,6 +132,13 @@ export default function TablonPostPage() {
                                         />
                                     </a>
                                 ))}
+                            </div>
+                        ) : (
+                            <div className="relative h-64 md:h-80 bg-white/5 flex flex-col items-center justify-center gap-4 border-b border-white/5">
+                                <Camera size={48} strokeWidth={1} className="text-gray-800" />
+                                <span className="text-xs font-black text-gray-800 uppercase tracking-[0.3em]">
+                                    Sin fotos
+                                </span>
                             </div>
                         )}
 
